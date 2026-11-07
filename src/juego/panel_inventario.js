@@ -1,22 +1,32 @@
-// Panel de inventario (hito 2): el inventario es el equipo (valravnx, 29 oct). Tu personaje de verdad en el centro y,
-// a los lados, un cuadro por cada lugar de equipo: la ropa por capas, la cintura (el cinturón y sus huecos) y la
-// espalda (la mochila y sus huecos). Lo que se lleva en las manos o al hombro NO sale aquí: se coge del mundo y se ve
-// en el personaje. Mientras no haya objetos en el suelo ni fabricación (hito 3), el arcón de pruebas hace de mundo:
-// de él se coge con las manos, al hombro o a un hueco, y en él se deja lo que sobra.
-// Todo lo que cambia pasa por accion(), que manda la acción con autor a la lógica pura (src/logica/inventario.js).
-// En PC se arrastra (o se toca lo que se quiere y luego dónde); en el móvil se toca y el panel va a pantalla completa.
+// El panel de equipo (valravnx, 7 nov: «cambiamos inventario por equipo, con las imágenes y estilo del menú de crafteo,
+// y sobre todo, poder desequipar, poner en manos o en el suelo lo que tengas puesto»). El inventario es el equipo
+// (valravnx, 29 oct): tu personaje de verdad en el centro y, a los lados, un cuadro por cada lugar donde se lleva algo
+// (la ropa por capas, la cintura y la espalda); debajo, las manos y el hombro, los huecos del cinturón y los de lo que
+// abras (la mochila, el saco…). Cada cosa con su imagen (la de su modelo del juego, docs/recursos/iconos-vN/; la ropa,
+// dibujada con su tinte, src/juego/iconos_ropa.js).
+// Al tocar algo, su ficha (a la derecha en PC; abajo en el móvil) dice qué es y dónde está, y lo que se puede hacer con
+// ello: quitártelo a las manos, ponértelo, dejarlo en el suelo a tus pies (con lo que lleve dentro) o guardarlo en otro
+// sitio (tocando ese sitio). En PC también se arrastra.
+// Todo lo que cambia pasa por accion() (la acción con autor a la lógica pura, src/logica/inventario.js; en línea, al
+// servidor) y soltarSuelo(ruta) (al suelo del mundo). El arcón de pruebas, donde aún lo hay (no en el juego de
+// verdad), hace de mundo: de él se coge y en él se deja.
 import { CATALOGO, pila, MATERIAL_DE_OBJETO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { nombrePrenda, rasgosPrenda } from '../logica/hechura.js';
+import { PRENDAS } from '../logica/prendas.js';
+import { RECETAS, PARA } from '../logica/fabricacion.js';
+import { svgPrenda } from './iconos_ropa.js';
+import { carpetaIconos } from './panel_fabricar.js';
 import { tr } from '../idioma.js';
 
 // Los cuadros del equipo, a los dos lados del personaje, de arriba abajo más o menos a la altura de lo que visten.
 const IZQUIERDA = [['ropa:cabeza', 'Cabeza'], ['ropa:sobre', 'Sobre todo'], ['ropa:abrigo', 'Abrigo'], ['ropa:guantes', 'Guantes'], ['ropa:piernas', 'Piernas']];
 const DERECHA = [['espalda', 'Espalda'], ['ropa:exterior', 'Exterior'], ['ropa:interior', 'Camisa'], ['cintura', 'Cintura'], ['ropa:pies', 'Pies']];
+const MANOS_HOMBRO = [['mano:der', 'Mano derecha'], ['mano:izq', 'Mano izquierda'], ['hombro', 'Al hombro']];
 export const CUADROS_EQUIPO = [...IZQUIERDA, ...DERECHA].map(([r]) => r);
+const NOMBRE_SITIO = Object.fromEntries([...IZQUIERDA, ...DERECHA, ...MANOS_HOMBRO]);
 
-// Grupos del arcón de pruebas, sacados del catálogo. Los materiales de obra van aparte, contados: obras con lo que
-// llevas (roadmap, hito «Equipo y carga»): el arcón de pruebas tiene lo que antes era el montón común de la
-// construcción; de ahí se coge lo que se lleva a una obra, y el botón de rellenar lo llena.
+// Grupos del arcón de pruebas, sacados del catálogo. Los materiales de obra van aparte, contados (el arcón de pruebas
+// tiene lo que antes era el montón común de la construcción).
 const GRUPOS = [
   ['Ropa', d => d.capa],
   ['Cinturones', d => d.lugar === 'cintura'],
@@ -27,8 +37,7 @@ const GRUPOS = [
   ['Recursos', (d, k) => d.recurso && d.tam !== 'E' && !(k in MATERIAL_DE_OBJETO)],
 ];
 
-// Ropa cosida de muestra en el arcón (mientras no se cosa en el banco): cada una con su hechura y su tinte, que van con
-// ella al inventario y se ven puestos. Dos prendas del mismo tipo con distinta hechura son cosas distintas.
+// Ropa cosida de muestra en el arcón (mientras no se cosa en el banco): cada una con su hechura y su tinte.
 export const MUESTRAS = [
   ['tunica_lana', { hechura: { corte: 'corto', tejido: 'sarga' }, tinte: 'glasto' }],
   ['tunica_lana', { hechura: { tejido: 'cuadros' }, tinte: 'verde' }],
@@ -41,27 +50,34 @@ export const MUESTRAS = [
 ].map(([tipo, o]) => ({ tipo, rasgos: rasgosPrenda(tipo, o) }));
 
 const NOMBRE_TAM = { P: 'pequeño', M: 'mediano', G: 'grande', E: 'enorme' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// lo que se lleva puesto (no en una mano ni en un hueco)
+const esPuesto = r => !r.includes('/') && !r.startsWith('mano:');
+// para qué sirve: lo de la receta que lo da
+const PARA_TIPO = {};
+for (const [k, r] of Object.entries(RECETAS)) if (PARA[k] && !PARA_TIPO[r.da]) PARA_TIPO[r.da] = PARA[k];
 
 // accionArcon y materialesArcon (opcionales): la acción de construcción con autor (sacar_arcon, dejar_arcon) y lo que
-// hay en el arcón de materiales; sin ellos (en línea, hasta que el servidor lleve los inventarios), los materiales de
-// obra se cogen del arcón como los demás recursos.
-// alSuelo(tipo) (opcional): lo enorme del arcón (la rastra) no cabe en el inventario: va al suelo, delante de ti.
-export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, hayArcon = () => true }) {
+// hay en el arcón de materiales. alSuelo(tipo) (opcional): lo enorme del arcón (la rastra) va al suelo, delante de ti.
+// soltarSuelo(ruta) (opcional): deja en el suelo, a tus pies, lo que hay en esa ruta (con lo que lleve dentro).
+export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, soltarSuelo = null, hayArcon = () => true }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }
   let vista = null;        // ruta del contenedor cuyos huecos se ven
   let aviso = { txt: '', error: false };
+  const base = carpetaIconos();
+  let indice = {}, pedido = false;   // las imágenes: cuáles aún no tienen su modelo (se piden al abrir)
+  const cargarIndice = () => { if (pedido || typeof fetch !== 'function') return; pedido = true; fetch(base + 'indice.json').then(r => r.ok ? r.json() : null).then(j => { if (j && j.iconos) { indice = j.iconos; arconHecho = false; pintar(); } }).catch(() => {}); };
 
-  panel.innerHTML = `<button class="cerrar inv-cerrar">✕</button><h2>${tr('Inventario')}</h2>
-    <div class="inv-cuerpo">
-      <div class="inv-figura"><div class="inv-col inv-izq"></div><canvas class="inv-retrato"></canvas><div class="inv-col inv-der"></div><div class="inv-cinto"></div></div>
-      <div class="inv-lado">
-        <div class="inv-huecos"></div>
-        <div class="inv-sel"></div>
-        <div class="inv-aviso"></div>
-        <div class="inv-carga"></div>
-      </div>
-    <div class="inv-arcon"><h3>${tr('Arcón de pruebas')}</h3><p class="inv-nota">${tr('Mientras no haya objetos en el suelo ni fabricación, el arcón hace de mundo: toca algo y luego dónde lo quieres, o cógelo con las manos; suéltalo aquí para dejarlo.')}</p><div class="inv-materiales"></div><div class="inv-grupos"></div></div>
-    </div>`;
+  panel.classList.add('eq-panel');
+  panel.innerHTML = `<div class="eq-cab"><div><h2>${tr('Equipo')}</h2><small>${tr('Lo que llevas puesto, en las manos y guardado. Toca algo para ver qué puedes hacer con ello.')}</small></div><button class="cerrar inv-cerrar" aria-label="✕">✕</button></div>
+    <div class="eq-centro">
+      <div class="eq-tuyo"><div class="inv-figura"><div class="inv-col inv-izq"></div><canvas class="inv-retrato"></canvas><div class="inv-col inv-der"></div></div>
+      <div class="eq-filas"><div class="eq-manos"></div><div class="inv-cinto"></div></div>
+      <div class="inv-huecos"></div></div>
+      <div class="inv-arcon"><h3>${tr('Arcón de pruebas')}</h3><p class="inv-nota">${tr('Mientras no haya objetos en el suelo ni fabricación, el arcón hace de mundo: toca algo y luego dónde lo quieres, o cógelo con las manos; suéltalo aquí para dejarlo.')}</p><div class="inv-materiales"></div><div class="inv-grupos"></div></div>
+    </div>
+    <aside class="inv-sel"></aside>
+    <div class="eq-pie"><div class="inv-aviso"></div><div class="inv-carga"></div></div>`;
   const q = s => panel.querySelector(s);
   const inv = () => inventario();
   const def = c => c && CATALOGO[c.tipo];
@@ -94,6 +110,8 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     if (r.ok) { avisar(''); alCambiar(); retratoHecho = false; } else avisar(motivo(r.motivo), true);   // con otra ropa, otro retrato
     return r;
   }
+  // si lo elegido se ha ido (o el contenedor abierto), se deja de ver
+  const seFue = (ruta) => { if (vista && (vista === ruta || vista.startsWith(ruta + '/'))) vista = null; };
 
   // cuántas unidades se cogen del arcón para la ruta: la pila entera, o lo que quepa si ya hay de lo mismo
   function cantidadPara(tipo, ruta) {
@@ -101,13 +119,14 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const hay = b.cosa && b.cosa.tipo === tipo ? b.cosa.n : 0;
     return Math.max(1, pila(tipo) - hay);
   }
+  const manoLibre = () => ['mano:der', 'mano:izq'].find(m => !inv().lugares[m] && !inv().manoBloqueada(m));
 
   // Lo que pasa al soltar lo elegido en la ruta (por clic o al arrastrar).
   function aRuta(ruta) {
     if (!sel) return;
     if (sel.de === 'arcon') hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: cantidadPara(sel.tipo, ruta), a: ruta, ...(sel.rasgos || {}) });
     else if (sel.ruta !== ruta) {
-      const r = hacer({ tipo: 'mover', de: sel.ruta, a: ruta });
+      const r = esPuesto(sel.ruta) && !ruta.startsWith(sel.ruta) ? hacer({ tipo: 'quitarse', lugar: sel.ruta, a: ruta }) : hacer({ tipo: 'mover', de: sel.ruta, a: ruta });
       if (r.ok && vista && (vista === sel.ruta || vista.startsWith(sel.ruta + '/'))) vista = ruta; // el contenedor se mudó
     }
     sel = null;
@@ -115,12 +134,12 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   function alArcon() {
     if (!sel || sel.de !== 'inv') return;
     const r = hacer({ tipo: 'soltar', de: sel.ruta });
-    if (r.ok) { if (vista && (vista === sel.ruta || vista.startsWith(sel.ruta + '/'))) vista = null; avisar(tr('Devuelto al arcón.')); }
+    if (r.ok) { seFue(sel.ruta); avisar(tr('Devuelto al arcón.')); }
     sel = null;
   }
   function ponerse() {
     if (!sel) return;
-    if (sel.de === 'inv') { hacer({ tipo: 'ponerse', de: sel.ruta }); sel = null; return; }
+    if (sel.de === 'inv') { const r = hacer({ tipo: 'ponerse', de: sel.ruta }); if (r.ok) avisar(tr('Te lo pones.')); sel = null; return; }
     const d = CATALOGO[sel.tipo];
     const lugar = d.capa ? 'ropa:' + d.capa : d.lugar;
     if (inv().lugares[lugar]) { avisar(tr(lugar === 'hombro' ? 'Ya llevas algo al hombro: suéltalo antes.' : 'Ya llevas algo ahí: quítatelo antes.'), true); return; }
@@ -128,17 +147,29 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     if (r.ok && lugar === 'hombro') avisar(tr('Lo llevas al hombro.'));
     sel = null;
   }
-  // coger del arcón con las manos (como si se cogiera del suelo): en la derecha, o en la izquierda si la derecha está ocupada
+  // a las manos: del arcón (como si se cogiera del suelo), de un hueco o quitándotelo (lo puesto)
   function aLasManos() {
-    if (!sel || sel.de !== 'arcon') return;
-    const libre = ['mano:der', 'mano:izq'].find(m => !inv().lugares[m] && !inv().manoBloqueada(m));
+    if (!sel) return;
+    const libre = manoLibre();
     if (!libre) { avisar(tr('Llevas las manos ocupadas: suelta lo que llevas.'), true); return; }
-    const r = hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: cantidadPara(sel.tipo, libre), a: libre });
-    if (r.ok) avisar(tr('Lo llevas en las manos.'));
+    let r;
+    if (sel.de === 'arcon') r = hacer({ tipo: 'coger', objeto: sel.tipo, cantidad: cantidadPara(sel.tipo, libre), a: libre });
+    else if (esPuesto(sel.ruta)) r = hacer({ tipo: 'quitarse', lugar: sel.ruta, a: libre });
+    else r = hacer({ tipo: 'mover', de: sel.ruta, a: libre });
+    if (r.ok) { if (sel.de === 'inv') seFue(sel.ruta); avisar(tr('Lo llevas en las manos.')); }
+    sel = null;
+  }
+  // al suelo, a tus pies, con lo que lleve dentro (en línea lo deja el servidor y lo ven todos)
+  function alSueloDe() {
+    if (!sel || sel.de !== 'inv' || !soltarSuelo) return;
+    const ruta = sel.ruta;
+    const r = soltarSuelo(ruta);
+    if (r && r.ok) { seFue(ruta); avisar(r.enviado ? '' : tr('Lo dejas en el suelo.')); alCambiar(); retratoHecho = false; }
+    else if (r && r.motivo) avisar(motivo(r.motivo), true);
     sel = null;
   }
 
-  // Clic en un cuadro (lugar del cuerpo o hueco).
+  // Clic en un cuadro (lugar del cuerpo, mano, hombro o hueco).
   function tocar(ruta) {
     const c = inv().buscar(ruta).cosa;
     if (sel && !(sel.de === 'inv' && sel.ruta === ruta)) { aRuta(ruta); pintar(); return; }
@@ -151,28 +182,32 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   }
 
   // ---- dibujo ----
+  // la imagen de una cosa: la ropa, dibujada con su tinte; lo demás, la de su modelo (o «sin modelo aún»)
+  function imagen(tipo, c = null, grande = false) {
+    const ropa = PRENDAS[tipo] ? svgPrenda(tipo, c) : '';
+    const sin = !ropa && indice[tipo] && indice[tipo].propio === false;
+    return `<span class="fab-ic eq-ic${grande ? ' eq-grande' : ''}">${ropa || `<img class="fab-img" src="${esc(base + tipo + '.webp')}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`}${sin ? `<em class="fab-pend">${esc(tr('sin modelo aún'))}</em>` : ''}</span>`;
+  }
   // el nombre de una cosa; la ropa, con su hechura y su tinte («Túnica de lana · Corto, Sarga · Azul de glasto»)
   const nombreDe = (c) => def(c).capa ? nombrePrenda(c.tipo, c, tr) : tr(def(c).nombre);
-  function textoCosa(c) {
-    return `<span class="inv-nom">${nombreDe(c)}</span>${c.n > 1 ? `<b class="inv-n">${c.n}</b>` : ''}`;
-  }
-  function cuadro(ruta, etiqueta, extra = '', estilo = '') {
+  function cuadro(ruta, etiqueta, extra = '') {
     const b = inv().buscar(ruta), c = b.cosa;
     const elegido = sel && sel.de === 'inv' && sel.ruta === ruta;
-    const clase = ['inv-c', c ? 'lleno' : 'vacio', elegido ? 'sel' : '', vista === ruta ? 'abierto' : '', c && def(c).huecos ? 'contenedor' : '', extra].join(' ');
-    const dentro = c ? textoCosa(c) : `<span class="inv-et">${etiqueta}</span>`;
+    const bloqueada = ruta.startsWith('mano:') && !c && inv().manoBloqueada(ruta);
+    const clase = ['inv-c', c ? 'lleno' : 'vacio', elegido ? 'sel' : '', vista === ruta ? 'abierto' : '', c && def(c).huecos ? 'contenedor' : '', bloqueada ? 'bloqueada' : '', extra].join(' ');
+    const dentro = c ? `${imagen(c.tipo, c)}<span class="inv-nom">${esc(nombreDe(c))}</span>${c.n > 1 ? `<b class="inv-n">${c.n}</b>` : ''}` : `<span class="inv-et">${esc(etiqueta)}</span>`;
     const tit = c ? `${nombreDe(c)} (${tr(NOMBRE_TAM[def(c).tam])})` : etiqueta;
-    return `<button class="${clase}" data-ruta="${ruta}" draggable="${!!c}" title="${tit}" style="${estilo}">${dentro}</button>`;
+    return `<button class="${clase}" data-ruta="${ruta}" draggable="${!!c}" title="${esc(tit)}">${dentro}</button>`;
   }
-
-  // cada cuadro con el nombre de su lugar encima (una sola vez); dentro, lo que llevas puesto o vacío
+  // cada cuadro con el nombre de su lugar encima; dentro, lo que llevas o vacío
   function pintarFigura() {
     const col = (lista) => lista.map(([ruta, et]) => `<div class="inv-sitio"><small>${tr(et)}</small>${cuadro(ruta, '—')}</div>`).join('');
     q('.inv-izq').innerHTML = col(IZQUIERDA);
     q('.inv-der').innerHTML = col(DERECHA);
-    // los huecos del cinturón, en fila bajo el personaje (sin cinturón, ninguno)
+    q('.eq-manos').innerHTML = `<small>${tr('Manos y hombro')}</small><div>${MANOS_HOMBRO.map(([ruta, et]) => `<div class="inv-mano"><small>${tr(et)}</small>${cuadro(ruta, '—')}</div>`).join('')}</div>`;
+    // los huecos del cinturón, en fila (sin cinturón, ninguno)
     const hc = inv().huecosCintura();
-    q('.inv-cinto').innerHTML = hc.length ? `<small>${tr('Huecos del cinturón')}</small><div>${hc.map(x => cuadro(x.ruta, x.tam, 'mini')).join('')}</div>` : '';
+    q('.inv-cinto').innerHTML = hc.length ? `<small>${tr('Huecos del cinturón')}</small><div>${hc.map(x => cuadro(x.ruta, tr(NOMBRE_TAM[x.tam]), 'mini')).join('')}</div>` : '';
   }
   let retratoHecho = false;
   function pintarRetrato() {
@@ -189,27 +224,50 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const partes = vista.split('/');
     const atras = partes.length > 1 ? `<button class="inv-atras" data-vista="${partes.slice(0, -1).join('/')}">←</button>` : '';
     const admite = d.admite ? `<p class="inv-nota">${tr('Solo admite: {l}.', { l: d.admite.map(nombre).join(', ').toLowerCase() })}</p>` : '';
-    caja.innerHTML = `<h3>${atras}${tr(d.nombre)}</h3>${admite}<div class="inv-rejilla">${d.huecos.map((hh, i) => cuadro(vista + '/' + i, hh.tam)).join('')}</div>`;
+    caja.innerHTML = `<h3>${atras}${tr('Huecos de {c}', { c: nombreDe(c).toLowerCase() })}</h3>${admite}<div class="inv-rejilla">${d.huecos.map((hh, i) => cuadro(vista + '/' + i, tr(NOMBRE_TAM[hh.tam]))).join('')}</div>`;
   }
 
+  // dónde está lo elegido, en palabras
+  function dondeEsta(ruta) {
+    if (NOMBRE_SITIO[ruta]) return ruta.startsWith('mano:') ? tr(ruta === 'mano:der' ? 'En la mano derecha.' : 'En la mano izquierda.') : ruta === 'hombro' ? tr('Lo llevas al hombro.') : tr('Lo llevas puesto ({l}).', { l: tr(NOMBRE_SITIO[ruta]).toLowerCase() });
+    const p = ruta.split('/'), cont = inv().buscar(p.slice(0, -1).join('/')).cosa;
+    return tr('Guardado en {c}.', { c: cont ? nombreDe(cont).toLowerCase() : '' });
+  }
   function pintarSel() {
     const caja = q('.inv-sel');
-    if (!sel) { caja.innerHTML = ''; return; }
+    panel.classList.toggle('eq-con-sel', !!sel);
+    if (!sel) { caja.innerHTML = `<p class="inv-nota eq-vacia">${tr('Toca algo de tu equipo o del arcón para ver qué es y qué puedes hacer con ello.')}</p>`; return; }
     const c = sel.de === 'arcon' ? { tipo: sel.tipo, n: 1, ...(sel.rasgos || {}) } : inv().buscar(sel.ruta).cosa;
+    if (!c) { sel = null; pintarSel(); return; }
     const d = CATALOGO[c.tipo];
-    const puesto = sel.de === 'inv' && !sel.ruta.includes('/');
+    const enInv = sel.de === 'inv', puesto = enInv && esPuesto(sel.ruta);
     const alHombro = d.lugar === 'hombro';
-    const ponible = (d.capa || d.lugar) && !puesto && !alHombro;
-    const manos = sel.de === 'arcon' && !d.capa && !d.lugar && d.tam !== 'E';
+    const ponible = (d.capa || d.lugar) && !puesto;
+    const aManos = d.tam !== 'E' && (sel.de === 'arcon' ? !d.capa && !d.lugar : !sel.ruta.startsWith('mano:'));
     const aSuelo = sel.de === 'arcon' && d.tam === 'E' && !d.recurso && !!alSuelo;
-    caja.innerHTML = `<p><b>${nombreDe(c)}</b> · ${tr(NOMBRE_TAM[d.tam])}${d.huecos ? ' · ' + tr('{n} huecos', { n: d.huecos.length }) : ''}</p>
-      <p class="inv-nota">${tr(aSuelo ? 'Es enorme: no se lleva encima. Déjalo en el suelo y arrástralo.' : sel.de === 'arcon' && !ponible && !alHombro ? 'Cógelo con las manos o toca un hueco donde guardarlo.' : 'Ahora toca dónde lo quieres.')}</p>
-      <div class="inv-botones">${aSuelo ? `<button class="inv-alsuelo">${tr('Dejarlo en el suelo')}</button>` : ''}${ponible ? `<button class="inv-ponerse">${tr('Ponérselo')}</button>` : ''}${alHombro && sel.de === 'arcon' ? `<button class="inv-ponerse">${tr('Al hombro')}</button>` : ''}${manos ? `<button class="inv-manos">${tr('Cogerlo con las manos')}</button>` : ''}${sel.de === 'inv' && hayArcon() ? `<button class="inv-devolver">${tr('Al arcón')}</button>` : ''}<button class="inv-dejar">${tr('Cancelar')}</button></div>`;
+    const chips = [tr(NOMBRE_TAM[d.tam]), ...(c.n > 1 ? [`× ${c.n}`] : []), ...(d.huecos ? [tr('{n} huecos', { n: d.huecos.length })] : []),
+      ...(PRENDAS[c.tipo] ? [tr('{p} kg', { p: PRENDAS[c.tipo].peso })] : [])].map(t => `<span class="fab-chip">${esc(t)}</span>`).join('');
+    const dentro = enInv && c.dentro && c.dentro.some(Boolean) ? `<p class="inv-nota">${tr('Lleva cosas dentro: van con él.')}</p>` : '';
+    const para = PARA_TIPO[c.tipo] ? `<p class="fab-para">${esc(tr(PARA_TIPO[c.tipo]))}</p>` : '';
+    const btn = (cls, txt, prim = false) => `<button class="${cls} ${prim ? 'fab-btn' : 'fab-btn2'}">${esc(txt)}</button>`;
+    const botones = [
+      aManos ? btn('inv-manos', puesto ? tr('Quitártelo a las manos') : tr('Cogerlo con las manos'), puesto) : '',
+      ponible ? btn('inv-ponerse', alHombro ? tr('Al hombro') : tr('Ponértelo'), !puesto) : '',
+      enInv && soltarSuelo ? btn('inv-suelo', tr('Dejarlo en el suelo')) : '',
+      aSuelo ? btn('inv-alsuelo', tr('Dejarlo en el suelo')) : '',
+      enInv && hayArcon() ? btn('inv-devolver', tr('Al arcón')) : '',
+      btn('inv-dejar', tr('Cancelar')),
+    ].join('');
+    const pista = aSuelo ? tr('Es enorme: no se lleva encima. Déjalo en el suelo y arrástralo.') : enInv ? tr('O toca otro sitio de tu equipo para llevarlo allí.') : tr('Cógelo con las manos o toca un hueco donde guardarlo.');
+    caja.innerHTML = `<button class="eq-sel-cerrar" aria-label="✕"></button>${imagen(c.tipo, c, true)}<h3 class="fab-titulo">${esc(nombreDe(c))}</h3>
+      <p class="eq-donde">${esc(enInv ? dondeEsta(sel.ruta) : tr('En el arcón de pruebas.'))}</p>${para}<div class="fab-chips">${chips}</div>${dentro}
+      <div class="fab-acciones inv-botones">${botones}</div><p class="inv-nota">${esc(pista)}</p>`;
   }
 
   function pintarCarga() {
     const l = inv().lleno();
-    q('.inv-carga').innerHTML = tr('Carga: {c}% · velocidad al andar: {v}%', { c: Math.round(l.fraccion * 100), v: Math.round(inv().velocidad() * 100) });
+    const pc = Math.round(l.fraccion * 100);
+    q('.inv-carga').innerHTML = `<span>${tr('Carga: {c}% · velocidad al andar: {v}%', { c: pc, v: Math.round(inv().velocidad() * 100) })}</span><span class="fab-barra eq-barra"><i style="width:${Math.min(100, pc)}%"></i></span>`;
     const a = q('.inv-aviso');
     a.textContent = aviso.txt; a.className = 'inv-aviso' + (aviso.error ? ' error' : '');
   }
@@ -219,22 +277,25 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     if (!conArcon()) { caja.innerHTML = ''; return; }
     const hay = materialesArcon();
     caja.innerHTML = `<div class="inv-grupo"><h4>${tr('Materiales de obra')}</h4><div>${Object.entries(OBJETO_DE_MATERIAL).map(([m, k]) =>
-      `<button class="inv-objeto${sel && sel.de === 'arcon' && sel.tipo === k ? ' sel' : ''}" data-tipo="${k}" data-arcon="${m}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)} <b>${hay[m] || 0}</b></button>`).join('')}</div></div>`;
+      `<button class="inv-objeto${sel && sel.de === 'arcon' && sel.tipo === k ? ' sel' : ''}" data-tipo="${k}" data-arcon="${m}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${imagen(k)}<span>${nombre(k)} <b>${hay[m] || 0}</b></span></button>`).join('')}</div></div>`;
   }
+  let arconHecho = false;
   function pintarArcon() {
     // sin arcón (el juego de verdad, valravnx 1 nov), no se ve: lo que llevas se coge del mundo
     q('.inv-arcon').hidden = !hayArcon();
+    panel.classList.toggle('eq-sin-arcon', !hayArcon());
     if (!hayArcon()) return;
     pintarMateriales();
-    if (q('.inv-grupos').childElementCount) {
-      for (const b of panel.querySelectorAll('.inv-objeto')) b.classList.toggle('sel', !!sel && sel.de === 'arcon' && sel.tipo === b.dataset.tipo && String(sel.muestra ?? '') === (b.dataset.muestra ?? ''));
+    if (arconHecho && q('.inv-grupos').childElementCount) {
+      for (const b of panel.querySelectorAll('.inv-grupos .inv-objeto')) b.classList.toggle('sel', !!sel && sel.de === 'arcon' && sel.tipo === b.dataset.tipo && String(sel.muestra ?? '') === (b.dataset.muestra ?? ''));
       return;
     }
+    arconHecho = true;
     const ks = Object.keys(CATALOGO);
-    const cosidas = `<div class="inv-grupo"><h4>${tr('Ropa cosida (muestras)')}</h4><div>${MUESTRAS.map((m, i) =>
-      `<button class="inv-objeto" data-tipo="${m.tipo}" data-muestra="${i}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[m.tipo].tam])}">${nombrePrenda(m.tipo, m.rasgos, tr)}</button>`).join('')}</div></div>`;
+    const boton = (k, txt, extra = '', c = null) => `<button class="inv-objeto" data-tipo="${k}"${extra} draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${imagen(k, c)}<span>${esc(txt)}</span></button>`;
+    const cosidas = `<div class="inv-grupo"><h4>${tr('Ropa cosida (muestras)')}</h4><div>${MUESTRAS.map((m, i) => boton(m.tipo, nombrePrenda(m.tipo, m.rasgos, tr), ` data-muestra="${i}"`, m.rasgos)).join('')}</div></div>`;
     q('.inv-grupos').innerHTML = GRUPOS.map(([t, f]) => `<div class="inv-grupo"><h4>${tr(t)}</h4><div>${ks.filter(k => f(CATALOGO[k], k) || (t === 'Recursos' && !conArcon() && CATALOGO[k].tam !== 'E' && k in MATERIAL_DE_OBJETO)).map(k =>
-      `<button class="inv-objeto" data-tipo="${k}" draggable="true" title="${tr(NOMBRE_TAM[CATALOGO[k].tam])}">${nombre(k)}</button>`).join('')}</div></div>`).join('') + cosidas;
+      boton(k, nombre(k))).join('')}</div></div>`).join('') + cosidas;
   }
 
   function pintar() {
@@ -259,9 +320,10 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     }
     if (t.classList.contains('inv-ponerse')) ponerse();
     else if (t.classList.contains('inv-manos')) aLasManos();
+    else if (t.classList.contains('inv-suelo')) alSueloDe();
     else if (t.classList.contains('inv-alsuelo')) { const r = alSuelo(sel.tipo); if (r && r.ok) sel = null; }
     else if (t.classList.contains('inv-devolver')) alArcon();
-    else if (t.classList.contains('inv-dejar')) sel = null;
+    else if (t.classList.contains('inv-dejar') || t.classList.contains('eq-sel-cerrar')) sel = null;
     pintar();
   });
   panel.addEventListener('dragstart', (e) => {
@@ -281,7 +343,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   });
   panel.addEventListener('dragend', () => { if (sel) { sel = null; pintar(); } });
 
-  function abrir() { panel.hidden = false; boton && boton.classList.add('sel'); pintar(); }
+  function abrir() { panel.hidden = false; boton && boton.classList.add('sel'); cargarIndice(); pintar(); }
   function cerrar() { panel.hidden = true; sel = null; retratoHecho = false; boton && boton.classList.remove('sel'); }
   function alternar() { if (panel.hidden) abrir(); else cerrar(); }
   if (boton) boton.onclick = alternar;

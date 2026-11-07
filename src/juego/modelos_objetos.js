@@ -19,6 +19,10 @@
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
+//  - cintos de cuero (7 nov, para el panel de equipo): la correa enrollada de canto, con la hebilla de hierro en la punta
+//    de fuera; el de anillas, con sus dos anillas de hierro; el de armas, más ancho y oscuro, con el tahalí de la espada.
+//  - saco (7 nov): un saco de lino lleno, tumbado, con la boca atada con cordel.
+//  - bandolera (7 nov): la bolsa de cuero con su tapa y la correa larga tirada en un arco.
 //  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
 //    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
@@ -252,9 +256,61 @@ export function modeloHachaPiedra() {
   return mallas(L);
 }
 function hachaPiedraSuelo(n, id) { const g = new THREE.Group(), h = modeloHachaPiedra(); h.rotation.set(Math.PI / 2, 0, az(id, 3) * 6); h.position.y = 0.03; g.add(h); return g; }
+// Una correa de cuero de canto (el cinto enrollado): tramos cortos a lo largo de los puntos (en el suelo, XZ)
+function correaCanto(L, pts, ancho, grueso, color) {
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], dx = b.x - a.x, dz = b.z - a.z, l = Math.hypot(dx, dz);
+    L.add(cajaR(l + 0.004, ancho, grueso, 0.001), color, (a.x + b.x) / 2, ancho / 2, (a.z + b.z) / 2, { y: -Math.atan2(dz, dx) }, { tex: 'liso' });
+  }
+}
+function cintoDe(clase) {
+  return (n, id) => {
+    const L = new Lote({ rangoSuelo: 0.04, variacion: 0.008 });   // la correa, de una pieza: sin cambio de color entre tramos
+    const ancho = clase === 'armas' ? 0.048 : 0.036, color = clase === 'armas' ? CUERO_OSC : CUERO;
+    // la correa enrollada: espiral de 1,6 vueltas que se abre hacia fuera y sale recta con la hebilla
+    const pts = [];
+    for (let i = 0; i <= 40; i++) { const t = i / 40, a = t * Math.PI * 2 * 1.6, r = 0.05 + t * 0.06; pts.push(v3(Math.cos(a) * r, 0, Math.sin(a) * r)); }
+    const u = pts[pts.length - 1], w = pts[pts.length - 2], dx = u.x - w.x, dz = u.z - w.z, l = Math.hypot(dx, dz);
+    const fin = v3(u.x + dx / l * 0.1, 0, u.z + dz / l * 0.1);
+    pts.push(fin);
+    correaCanto(L, pts, ancho, 0.006, color);
+    // la hebilla de hierro en la punta, un marco alrededor de la correa
+    const giro = -Math.atan2(dz, dx);
+    L.add(new THREE.TorusGeometry(ancho * 0.6, 0.004, 4, 4), 'hierro', fin.x, ancho / 2 + 0.002, fin.z, { y: giro + Math.PI / 2, z: Math.PI / 4 }, { escala: v3(1, 1.25, 1), plano: true, sinSuelo: true });
+    L.add(cajaR(0.004, ancho * 1.05, 0.004, 0.001), 'hierro', fin.x, ancho / 2, fin.z, { y: giro }, { sinSuelo: true }); // el clavillo
+    if (clase === 'anillas') for (const k of [12, 26]) { // dos anillas de hierro por fuera de la correa, colgando
+      const q = pts[k], r = Math.hypot(q.x, q.z);
+      L.add(new THREE.TorusGeometry(0.017, 0.0035, 4, 12), 'hierro', q.x * (1 + 0.025 / r), 0.018, q.z * (1 + 0.025 / r), { y: -Math.atan2(q.z, q.x) + Math.PI / 2, x: 0.5 }, { plano: true, sinSuelo: true });
+    }
+    if (clase === 'armas') { // el tahalí de la espada: una correa en lazo que sale del cinto
+      const q = pts[30], r = Math.hypot(q.x, q.z), sx = q.x / r, sz = q.z / r;
+      L.add(tubo([v3(q.x, 0.03, q.z), v3(q.x + sx * 0.06, 0.012, q.z + sz * 0.06), v3(q.x + sx * 0.1 - sz * 0.04, 0.008, q.z + sz * 0.1 + sx * 0.04), v3(q.x + sx * 0.05 - sz * 0.06, 0.008, q.z + sz * 0.05 + sx * 0.06), v3(q.x - sz * 0.03, 0.02, q.z + sx * 0.03)], 0.007, 4), CUERO, 0, 0, 0, null, { escala: v3(1, 0.5, 1), tex: 'liso', sinSuelo: true });
+    }
+    return mallas(L);
+  };
+}
+function saco(n, id) {
+  const L = lote(0.12);
+  // el saco de lino lleno, tumbado: el cuerpo blando, el cuello recogido y atado con cordel, la boca abierta en volantes
+  L.add(new THREE.IcosahedronGeometry(0.2, 3), 'lino', 0, 0.13, 0, { z: 0.08 }, { escala: v3(1.35, 0.65, 0.95), plano: false });
+  L.add(new THREE.IcosahedronGeometry(0.06, 2), 'lino', 0.3, 0.1, 0.01, null, { escala: v3(1.2, 0.8, 0.9) });
+  L.add(new THREE.TorusGeometry(0.032, 0.006, 4, 12), CORDEL, 0.34, 0.1, 0.01, { y: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  L.add(new THREE.ConeGeometry(0.055, 0.09, 7, 1, true), 'lino', 0.4, 0.1, 0.01, { z: Math.PI / 2 }, { sinSuelo: true });
+  return mallas(L);
+}
+function bandolera(n, id) {
+  const L = lote(0.05);
+  // la bolsa de cuero, de pie, con la tapa caída por delante y su cierre; la correa larga tirada en un arco
+  L.add(cajaR(0.2, 0.17, 0.07, 0.03), CUERO, 0, 0.085, 0, { y: 0.3 }, { tex: 'liso' });
+  L.add(cajaR(0.21, 0.1, 0.012, 0.008), CUERO_OSC, 0.012, 0.12, 0.037, { y: 0.3 }, { tex: 'liso', sinSuelo: true });
+  L.add(cil(0.006, 0.006, 0.012, 6), 'madera', 0.025, 0.08, 0.05, { x: Math.PI / 2, y: 0.3 }, { tex: 'veta', sinSuelo: true }); // el botón de madera
+  L.add(tubo([v3(-0.1, 0.15, -0.02), v3(-0.18, 0.04, 0.05), v3(-0.14, 0.004, 0.24), v3(0.1, 0.004, 0.32), v3(0.24, 0.006, 0.18), v3(0.1, 0.15, 0.05)], 0.012, 4), CUERO_OSC, 0, 0, 0, null, { escala: v3(1, 1, 1), tex: 'liso' });
+  return mallas(L);
+}
 
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo,
+  cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

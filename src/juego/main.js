@@ -153,7 +153,7 @@ prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena co
 vigilar(renderer); // fotogramas, triángulos y memoria (src/mundo/rendimiento.js)
 const escena = new THREE.Scene();
 // En la demo, el mundo de verdad: Whitholm, la isla de los playtests (src/mundo/mundo_juego.js). El mapa lo genera antes el
-// menú de la demo (window.__mundoDemo). Sin él (el prototipo de construcción suelto, o la demo con ?llano=1), el llano.
+// menú de la demo (window.__mundoDemo). Sin él (la demo con ?llano=1, que usan las pruebas de navegador de la construcción), el llano.
 const MUNDO = window.__mundoDemo || null;
 // (en el mundo, lo más cerca que se dibuja a 0,5 m y no a 0,1 (valravnx, 6 nov: «a lo lejos sigue hundido el terreno bajo
 // el agua»): la hondura tiene la misma precisión repartida entre lo cerca y lo lejos según el cociente lejos/cerca, y
@@ -2267,7 +2267,7 @@ $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
-const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo,
+const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta),
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => (hayArcon() ? mundo.materiales : null), hayArcon,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
