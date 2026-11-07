@@ -1399,9 +1399,9 @@
     },
     {
      "nombre": "El inventario pasa a ser «Equipo» (valravnx, 7 nov): con las imágenes de cada cosa y el estilo del panel de fabricar, y sobre todo, lo que llevas puesto se puede quitar, a las manos o al suelo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T05:57:54+01:00",
-     "rama": "trabajo/20261107-0558-equipo"
+     "fin": "2026-11-07T07:26:18+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -1522,7 +1522,9 @@
    "tareas": [
     {
      "nombre": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T06:25:08+00:00",
+     "rama": "trabajo/20261107-0625"
     },
     {
      "nombre": "Explorar libre como admin (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente, no solo de la isla del rey, que quiero poder explorar libre»): el mapa del panel enseña el continente entero, un clic lleva a cualquier sitio y la cuenta de admin puede andar fuera de Whitholm",
@@ -3139,6 +3141,13 @@
      "archivo": "jugar/demo/v132.html",
      "capturas": "capturas/demo-v132",
      "notas": "Juncos, barro y yesca ya tienen de dónde salir: los juncos se cortan en la orilla de los ríos con una lasca de sílex, el barro se cava en la orilla con el palo cavador (no se agota) y la yesca se coge de los hongos yesqueros de los tocones del bosque, o se hace con las manos de fibra seca o de corteza. Con sus modelos y sus imágenes en el panel."
+    },
+    {
+     "v": "v133",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v133.html",
+     "capturas": "capturas/demo-v133",
+     "notas": "El inventario pasa a ser «Equipo» (valravnx, 7 nov), con el estilo del panel de fabricar: cada cosa con su imagen, las manos y el hombro también en el panel y una ficha al tocar algo. Lo que llevas puesto se quita a las manos o se deja en el suelo, a tus pies, con lo que lleve dentro; de las manos se vuelve a poner. Modelos nuevos de los tres cintos, el saco y la bandolera (imágenes en iconos-v3). En el móvil, la ficha sale abajo sin tapar el equipo."
     }
    ]
   },

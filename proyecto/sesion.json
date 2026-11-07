@@ -1,15 +1,9 @@
 {
  "A": {
-  "inicio": "2026-11-07T05:23:59+00:00",
-  "tarea": "Quitar la construcción aparte (hito1): sus pruebas de navegador pasan a la demo y deja de construirse",
-  "hito": "orden",
-  "rama": "trabajo/20261107-0523"
+  "inicio": "2026-11-07T06:25:08+00:00",
+  "tarea": "Copia de seguridad diaria del servidor de verdad (el mundo, los objetos, las fichas y las cuentas), guardada fuera de la máquina (en el almacenamiento de Hetzner o en un repositorio privado), con las últimas 14 y una restauración probada una vez; antes de abrir el juego a nadie de fuera (auditoría del 4 nov)",
+  "hito": "admin",
+  "rama": "trabajo/20261107-0625"
  },
- "B": null,
- "chat:trabajo/20261107-0558-equipo": {
-  "inicio": "2026-11-07T05:57:54+01:00",
-  "tarea": "El inventario pasa a ser «Equipo» (valravnx, 7 nov): con las imágenes de cada cosa y el estilo del panel de fabricar, y sobre todo, lo que llevas puesto se puede quitar, a las manos o al suelo",
-  "hito": "crafting",
-  "rama": "trabajo/20261107-0558-equipo"
- }
+ "B": null
 }

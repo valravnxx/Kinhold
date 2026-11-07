@@ -4922,5 +4922,23 @@
   "pruebas": "Todas en la nube y en el PC de valravnx: 33 de 36 grupos bien a la primera; niveles de detalle, perfil gráfico y demo única fallaron en el PC (cuentan triángulos y perfil sin tarjeta gráfica, y su PC la tiene) y pasaron en la nube. Recorrido de jugador 74/74 (aquí). Recolección 56/56, y con MUTAR=2 (sin mirar la herramienta) falla como debe. Capturas de cerca de la orilla en PC y móvil.",
   "capturas": "capturas/demo-v132",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T05:57:54+01:00",
+  "fin": "2026-11-07T07:26:18+01:00",
+  "titulo": "P3: el inventario pasa a ser «Equipo», y lo puesto se quita",
+  "hito": "crafting",
+  "hecho": [
+   "El inventario pasa a llamarse «Equipo» (el botón y el panel), con el estilo del panel de fabricar: cada cosa con su imagen; la ropa, dibujada con su color y su tinte (src/juego/iconos_ropa.js).",
+   "Las manos y el hombro salen ahora también en el panel, debajo del personaje, junto a los huecos del cinturón.",
+   "Al tocar algo sale su ficha (a la derecha en PC, abajo en el móvil sin tapar el equipo): qué es, dónde lo llevas, para qué sirve, su tamaño y lo que se puede hacer.",
+   "Lo que llevas puesto se quita a una mano libre («Quitártelo a las manos») o se deja en el suelo a tus pies con lo que lleve dentro («Dejarlo en el suelo», en línea por el servidor); de las manos o de un hueco, «Ponértelo» lo vuelve a poner. Todo pasa por la lógica con su autor.",
+   "Modelos nuevos de los tres cintos de cuero (el de anillas y el de armas con lo suyo), el saco y la bandolera; las imágenes salen en docs/recursos/iconos-v3 (la v1 y la v2 no se tocan).",
+   "Prueba del panel ampliada: manos y hombro, imágenes, quitarse a las manos, al suelo y volver a ponérselo; con MUTAR_QUITAR=1 falla como debe. La de las imágenes comprueba que todo lo que se lleva puesto tiene su modelo (MUTAR=5 falla).",
+   "Aún mal (revisión visual): los cintos enrollados se ven un poco a tramos de cerca; varios recursos (bayas, grano, tela, agua, flechas…) siguen con el hatillo."
+  ],
+  "pruebas": "Todas en el PC de valravnx y en la nube: 33 de 36 grupos bien a la primera; construcción, rastra y carretilla fallaban porque sus páginas de prueba no servían las imágenes (404 en la consola): ahora las sirven y pasaron en su PC, con la del panel. Capturas de PC y móvil, miradas.",
+  "capturas": "capturas/demo-v133",
+  "estado": "ok"
  }
 ]
