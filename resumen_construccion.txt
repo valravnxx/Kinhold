@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2270 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2774 KB
+
+== Construir demo única
+      2593 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3868 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2669 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2265 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2783 KB
+dist/kinhold_trozos.html 2279 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: construcción
+  OK   después de recargar sigue lo construido — 226 → 226
+  OK   si vuelve a pasar enseguida no recarga en bucle: ofrece Recargar
+
+Resultado: 2 fallos: lo de la casa humilde sí sale, en el arcón están los 10 materiales de obra; un tronco delgado se coge con las manos y sale del arcón
+!! FALLA: python3 pruebas/prueba_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/construccion
+
+HAY FALLOS
+tardó 1000 s
