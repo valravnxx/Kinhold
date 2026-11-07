@@ -1,0 +1,111 @@
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: sale la pantalla de la cuenta
+  OK   pc: la pantalla tapa el juego entero
+  OK   pc: la caja cabe en la pantalla — [450, 830, 130.515625, 669.46875]
+  OK   pc: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   pc: sin correo, dicho al momento — Falta el correo.
+  OK   pc: correo que no vale, dicho al momento — Ese correo no es válido.
+  OK   pc: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   pc: lo que no vale no llega al servidor
+  OK   pc: al crear la cuenta sale «Confirma tu correo» — Un momento…
+  OK   pc: dice a qué correo (a medias no: el que ha escrito)
+  OK   pc: y sigue tapando el juego
+  OK   pc: la caja del correo cabe en la pantalla — [450, 830, 246.390625, 553.609375]
+  OK   pc: al recargar sin confirmar, otra vez «Confirma tu correo»
+  OK   pc: (con el correo a medias, que es lo que sabe el servidor)
+  OK   pc: código corto, dicho al momento — El código son 6 cifras.
+  OK   pc: código mal, lo dice — El código no es correcto.
+  OK   pc: otro código enseguida, que espere — Espera 48 s para pedir otro código.
+  OK   pc: el código llega (al registro del servidor de pruebas)
+  OK   pc: con el bueno se quita la pantalla
+  OK   pc: y ya entra en el mundo
+  OK   pc: sigue siendo el mismo personaje
+  OK   pc: el cliente sabe su cuenta — Ana_pc
+  OK   pc: el servidor la guarda con ese personaje — [{'usuario': 'Ana_pc', 'autor': 'jugador:fc2b5b5a', 'sal': 'b9c33e87d48e0a7f7b20b84aa787cb6a', 'hash': '215d2b14a65e609b
+  OK   pc: sin la contraseña en claro
+  OK   pc: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas
+  OK   pc: la caja de las salidas cabe en la pantalla — [440, 840, 214.375, 585.625]
+  OK   pc: elige motdale: se quita el panel y aparece allí — [19404, 10720]
+  OK   pc: el servidor lo apunta como su sitio — {'x': 19404, 'y': -53.47772787957268, 'z': 10720, 'giro': 0}
+  OK   pc: al recargar entra solo
+  OK   pc: y no vuelve a preguntar dónde empieza: sale donde eligió — [19404, 10720]
+  OK   pc: en otro aparato, pantalla y otro personaje
+  OK   pc: «Entrar» no pide repetir la contraseña
+  OK   pc: contraseña mal, lo dice y no entra — Usuario o contraseña incorrectos.
+  OK   pc: con la buena, es el personaje de la cuenta — jugador:fc2b5b5a
+  OK   pc: y sin pantalla
+  OK   pc: el menú enseña la cuenta — Cuenta: Ana_pc
+  OK   pc: «Cambiar la contraseña» abre su caja
+  OK   pc: el menú cabe a lo ancho — [410, 870]
+  OK   pc: con la actual mal, lo dice — La contraseña actual no es correcta.
+  OK   pc: con la buena, cambia
+  OK   pc: y aquí queda una ficha nueva
+  OK   pc: «Cambiar el correo» manda el código al nuevo — Te hemos mandado un código de 6 cifras a a***@e***.com. Caduca en 15 minutos.
+  OK   pc: con el código, el correo cambia
+  OK   pc: el servidor guarda el correo nuevo — [{'verificado': 'Ana_pc', 'correo': 'ana.nueva.pc@ejemplo.com', 't': 1794087387275}]
+  OK   pc: «Salir de la cuenta» olvida la ficha — []
+  OK   pc: al volver a jugar, pantalla otra vez
+  OK   pc: «¿Has olvidado la contraseña?» abre recuperar
+  OK   pc: la caja de recuperar cabe en la pantalla — [450, 830, 261.6875, 538.3125]
+  OK   pc: pide el código y la contraseña nueva — Si hay una cuenta con ese usuario o correo, y su correo está confirmado, le llegará un código.
+  OK   pc: llega el código para recuperar
+  OK   pc: con el código mal, lo dice — El código no es correcto.
+  OK   pc: con el bueno, entra con el personaje de la cuenta — jugador:fc2b5b5a
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea con el mundo listo
+  OK   movil: sale la pantalla de la cuenta
+  OK   movil: la pantalla tapa el juego entero
+  OK   movil: la caja cabe en la pantalla — [16, 374, 143.421875, 700.5625]
+  OK   movil: usuario corto, dicho al momento — El usuario tiene que tener de 3 a 20 letras.
+  OK   movil: sin correo, dicho al momento — Falta el correo.
+  OK   movil: correo que no vale, dicho al momento — Ese correo no es válido.
+  OK   movil: contraseñas distintas, dicho al momento — Las dos contraseñas no son iguales.
+  OK   movil: lo que no vale no llega al servidor
+  OK   movil: al crear la cuenta sale «Confirma tu correo» — Un momento…
+  OK   movil: dice a qué correo (a medias no: el que ha escrito)
+  OK   movil: y sigue tapando el juego
+  OK   movil: la caja del correo cabe en la pantalla — [16, 374, 268.390625, 575.609375]
+  OK   movil: al recargar sin confirmar, otra vez «Confirma tu correo»
+  OK   movil: (con el correo a medias, que es lo que sabe el servidor)
+  OK   movil: código corto, dicho al momento — El código son 6 cifras.
+  OK   movil: código mal, lo dice — El código no es correcto.
+  OK   movil: otro código enseguida, que espere — Espera 26 s para pedir otro código.
+  OK   movil: el código llega (al registro del servidor de pruebas)
+  OK   movil: con el bueno se quita la pantalla
+  OK   movil: y ya entra en el mundo
+  OK   movil: sigue siendo el mismo personaje
+  OK   movil: el cliente sabe su cuenta — Ana_movil
+  OK   movil: el servidor la guarda con ese personaje — [{'usuario': 'Ana_movil', 'autor': 'jugador:fe712dc7', 'sal': '1f6ecfeecefdc46cc792072f68350ead', 'hash': 'c641f95ae6807
+  OK   movil: sin la contraseña en claro
+  OK   movil: personaje nuevo: sale «¿Dónde empiezas?» con las tres salidas
+  OK   movil: la caja de las salidas cabe en la pantalla — [16, 374, 225.40625, 618.59375]
+  OK   movil: elige ciudad: se quita el panel y aparece allí — [32993, 6524]
+  OK   movil: el servidor lo apunta como su sitio — {'x': 32993, 'y': -90.00639184344942, 'z': 6524, 'giro': 0}
+  OK   movil: al recargar entra solo
+  OK   movil: y no vuelve a preguntar dónde empieza: sale donde eligió — [32993, 6524]
+  OK   movil: en otro aparato, pantalla y otro personaje
+  OK   movil: «Entrar» no pide repetir la contraseña
+  OK   movil: contraseña mal, lo dice y no entra — Usuario o contraseña incorrectos.
+  OK   movil: con la buena, es el personaje de la cuenta — jugador:fe712dc7
+  OK   movil: y sin pantalla
+  OK   movil: el menú enseña la cuenta — Cuenta: Ana_movil
+  OK   movil: «Cambiar la contraseña» abre su caja
+  OK   movil: el menú cabe a lo ancho — [16, 374]
+  OK   movil: con la actual mal, lo dice — La contraseña actual no es correcta.
+  OK   movil: con la buena, cambia
+  OK   movil: y aquí queda una ficha nueva
+  OK   movil: «Cambiar el correo» manda el código al nuevo — Te hemos mandado un código de 6 cifras a a***@e***.com. Caduca en 15 minutos.
+  OK   movil: con el código, el correo cambia
+  OK   movil: el servidor guarda el correo nuevo — [{'verificado': 'Ana_movil', 'correo': 'ana.nueva.movil@ejemplo.com', 't': 1794087705278}]
+  OK   movil: «Salir de la cuenta» olvida la ficha — []
+  OK   movil: al volver a jugar, pantalla otra vez
+  OK   movil: «¿Has olvidado la contraseña?» abre recuperar
+  OK   movil: la caja de recuperar cabe en la pantalla — [16, 374, 283.6875, 560.3125]
+  OK   movil: pide el código y la contraseña nueva — Si hay una cuenta con ese usuario o correo, y su correo está confirmado, le llegará un código.
+  OK   movil: llega el código para recuperar
+  OK   movil: con el código mal, lo dice — El código no es correcto.
+  OK   movil: con el bueno, entra con el personaje de la cuenta — jugador:fe712dc7
+  OK   movil: sin errores en la página
+Fallos: 0
