@@ -2713,7 +2713,6 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  pintarLlevas: () => pintarLlevas(),
   get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate, cielo, ambiente,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
