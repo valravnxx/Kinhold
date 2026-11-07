@@ -1,0 +1,127 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+El panel se abre con el botón y con H
+  OK   sale el botón «Fabricar»
+  OK   el botón lo abre
+  OK   en la pestaña «Con las manos»
+  OK   H lo cierra
+  OK   y H lo vuelve a abrir
+  OK   en «Todo», todas las recetas, a la vista (sin aprender ninguna)
+  OK   cada carta con su imagen, que carga
+  OK   y ninguna receta sale «sin modelo aún»
+Con 3 fibras en la mano
+  OK   el servidor le da las 3 fibras (arcón de pruebas)
+  OK   el cordel, en «Puedes hacerlo ya» — {'cls': 'fab-carta fab-ya fab-sel', 'txt': 'Cordel de fibra', 'sec': 'fab-sec fab-sec-ya'}
+  OK   y su ficha dice que la fibra sale de la mano, y para qué sirve — Cordel de fibra
+
+Para atar; también sirve como cinturón de cordel (1 hueco).
+
+Con las manos
+15 s
+LO QUE PIDE
+Fibra cruda
+3 de la mano
+3/3
+Hacer · 15 s
+  OK   el leñero, en «Te falta algo», con lo que falta en rojo en su ficha — Leñero
+
+A la espalda: solo leña y troncos cortos.
+
+Con las manos
+30 s
+LO QUE PIDE
+Rama
+faltan 4
+0/4
+Cordel de fibra
+faltan 2
+0/2
+Hacer antes: 1 cordel de fibra (con 3 fibra cruda · 15 s)
+Te falta: 4 rama y 2 cordel de fibra
+  OK   y el atajo «Hacer antes: 1 cordel de fibra», que dice con qué y cuánto tarda — Leñero
+
+A la espalda: solo leña y troncos cortos.
+
+Con las manos
+30 s
+LO QUE PIDE
+Rama
+faltan 4
+0/4
+Cordel de fibra
+faltan 2
+0/2
+Hacer antes: 1 cordel de fibra (con 3 fibra cruda · 15 s)
+Te falta: 4 rama y 2 cordel de fibra
+  OK   la lasca, en gris, con la piedra de tallar que hace falta — Lasca de sílex
+
+Corta fibra y juncos, despieza.
+
+En la piedra de tallar
+20 s
+LO QUE PIDE
+Sílex
+1
+Piedra
+1
+
+Hace falta una piedra de tallar a tu lado.
+Hacer (con el atajo) y recoger, por el servidor
+  OK   el servidor gasta la fibra de lo que lleva
+  OK   sale en «En marcha», con lo que le queda y su barra
+  OK   terminado (15 s), sale «Recoger»
+  OK   y el cordel es suyo en el servidor
+  OK   y el panel dice lo que recoge
+Poner la piedra de tallar delante
+  OK   con una piedra, la piedra de tallar se puede poner (en su ficha)
+  OK   el servidor la tiene, de su autor
+  OK   y se dibuja delante
+  OK   la lasca pasa a «Te falta algo» — {'cls': 'fab-carta fab-casi', 'txt': 'faltan 2\nLasca de sílex', 'sec': 'fab-sec fab-sec-casi'}
+Depositar en la piedra de tallar (valravnx, 6 nov): sus recetas gastan lo depositado en ella
+  lleva: {"mano:der":"cordel"}
+  OK   Usar delante de la piedra de tallar abre el panel en su pestaña — tallar
+  OK   con lo que tiene encima (nada) y lo que lleva para dejar
+  OK   con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)
+  OK   sale el cordel que lleva, para dejarlo
+  OK   dejarlo lo deposita en el servidor
+  OK   y sale encima de la piedra de tallar, para cogerlo
+  OK   cogerlo lo devuelve a lo que lleva
+  OK   coge una piedra con la mano libre
+  OK   la ficha de la lasca tiene el atajo «Poner en la piedra de tallar lo que falta: 1 sílex y 1 piedra (los llevas tú)» — Lasca de sílex
+
+Corta fibra y juncos, despieza.
+
+En la piedra de tallar
+20 s
+LO QUE PIDE (DE LO QUE ESTÁ EN LA ESTACIÓN)
+Sílex
+faltan 1
+0/1
+Piedra
+faltan 1
+0/1
+Poner en la piedra de tallar lo que falta: 1 sílex y 1 piedra (los llevas tú)
+Te falta: 1 sílex y 1 piedra
+  OK   de un toque: el servidor tiene el sílex y la piedra en la piedra de tallar — [{'id': 'piedra_tallar:1', 'tipo': 'piedra_tallar', 'x': 0, 'z': 1.2, 'autor': 'jugador:5f8981b6', 'cola': [], 'deposito': {'cordel': 1, 'piedra': 1, 'silex': 1}}]
+  OK   la lasca pasa a «Puedes hacerlo ya», y su ficha dice que sale de la estación — {'cls': 'fab-carta fab-ya fab-sel', 'txt': 'Lasca de sílex', 'sec': 'fab-sec fab-sec-ya'}
+  OK   y se ven puestos encima de la piedra de tallar
+En el móvil, otro jugador
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  OK   el móvil es otro jugador
+  OK   ve la piedra de tallar del otro
+  OK   y lo depositado en ella, puesto encima
+  OK   su panel va a pantalla completa — [390, 844]
+  OK   en la pestaña de la piedra de tallar, con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)
+  OK   y ve lo depositado, con su imagen
+  OK   sin salirse de lado
+  OK   la ficha no tapa nada mientras no se toca una carta
+  OK   al tocar una carta, su ficha sube desde abajo, dentro de la pantalla — [410.890625, 844, 844]
+  OK   con «Hacer» a mano
+  OK   y tocando fuera se vuelve a bajar
+Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)
+  OK   la hoguera y el banco de tronco se dibujan
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+TODO CORRECTO
