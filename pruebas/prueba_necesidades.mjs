@@ -8,13 +8,14 @@
 // guardan al salir y al volver (con su ficha) siguen como estaban.
 // MUTAR=1: el servidor no las avanza (sed y hambre quietas); MUTAR=2: el cansancio sale de lo que dice el navegador
 // (su «anim»), no de lo que corre de verdad; MUTAR=3: rendido sin llegar al máximo (el servidor no recorta). Las tres
-// deben FALLAR.
+// deben FALLAR. MUTAR=4: se bebe en cualquier sitio (sin mirar si hay agua): tiene que FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, RITMOS, ESFUERZOS, AVISO, FUERTE } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO } from '../src/logica/necesidades.js';
+import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
 
 const MUTAR = process.env.MUTAR;
@@ -74,12 +75,21 @@ console.log('Lo que se puede mover (el servidor no deja correr al rendido)');
   comprobar('rendido, el servidor le recorta lo que corre de más', rRend > 3, `${rRend.toFixed(2)} m`);
 }
 
+console.log('Beber del río (la lógica)');
+{
+  const rio = (x, z) => (x > 10 ? 1 : null);   // agua de x = 10 en adelante
+  comprobar('con el agua a 1 m, hay agua cerca; a 2,5 m, también; a 4 m, no', hayAguaCerca(rio, 9, 0) && hayAguaCerca(rio, 7.6, 0) && !hayAguaCerca(rio, 6, 0));
+  comprobar('dentro del agua, también', hayAguaCerca(rio, 12, 0));
+  comprobar(`un trago baja la sed ${TRAGO} y van uno cada ${ESPERA_TRAGO / 1000} s`, saciar({ ...nuevas(), sed: 70 }, 'sed', TRAGO).sed === 40 && ESPERA_TRAGO >= 1000);
+}
+
 console.log('Con el servidor de verdad');
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
-if (MUTAR === '1' || MUTAR === '2') {
+if (MUTAR === '1' || MUTAR === '2' || MUTAR === '4') {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('necesidades.set(a, avanzarNecesidades(', 'necesidades.set(a, ((n) => n)(')
-    : fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;");
+    : MUTAR === '2' ? fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;")
+    : fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_necesidades.mjs');
   writeFileSync(copia, mutada.replaceAll("from '../src/", "from '../src/"));
@@ -152,5 +162,43 @@ try {
   rmSync(dir, { recursive: true, force: true });
   if (copia) rmSync(copia, { force: true });
 }
+console.log('Beber con el servidor de verdad y el terreno de Whitholm');
+{
+  const T = terrenoWhitholm();
+  // un sitio seco con agua al lado y otro seco sin agua, cerca de la salida
+  let orilla = null, seco = null;
+  for (let r = 5; r < 3000 && !(orilla && seco); r += 5) for (let k = 0; k < 48; k++) {
+    const x = Math.cos(k / 48 * 2 * Math.PI) * r, z = Math.sin(k / 48 * 2 * Math.PI) * r;
+    if (T.aguaEn(x, z) || !T.enIsla(x, z)) continue;
+    const cerca = hayAguaCerca(T.aguaEn, x, z);
+    if (cerca && !orilla) orilla = { x, z }; else if (!cerca && !seco) seco = { x, z };
+  }
+  comprobar('hay una orilla y un sitio seco cerca de la salida', !!orilla && !!seco, JSON.stringify({ orilla, seco }));
+  const dir2 = mkdtempSync(join(tmpdir(), 'kinhold-beber-'));
+  let srv2 = null;
+  try {
+    srv2 = crearServidor({ puerto: 0, archivo: join(dir2, 'mundo.jsonl'), terreno: T, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false, salidaComun: true, ticoNecesidades: 250 });
+    const puerto = await srv2.listo, c = await cliente(puerto);
+    const beberAqui = async (p, idb) => {
+      c.mandar({ tipo: 'estado', x: p.x, y: T.suelo(p.x, p.z), z: p.z, giro: 0, anim: 'quieto' }); await pausa(300);
+      const r = new Promise(res => c.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'resultado_objeto' && m.id === idb) res(m); }));
+      c.mandar({ tipo: 'objeto', id: idb, accion: { tipo: 'beber', x: p.x, z: p.z } });
+      return r;
+    };
+    srv2.necesidades.set(c.bienvenida.autor, { ...nuevas(), sed: 70 });
+    let r = await beberAqui(seco, 901);
+    comprobar('en seco, sin agua al lado, no se bebe (lo mira el servidor, donde te tiene)', !r.ok && /no hay agua/.test(r.motivo || ''), r.motivo);
+    r = await beberAqui(orilla, 902);
+    comprobar(`en la orilla se bebe: la sed baja ${TRAGO}`, r.ok && Math.abs(r.datos.sed - (70 - TRAGO)) < 0.5, JSON.stringify(r.datos || r.motivo));
+    r = await beberAqui(orilla, 903);
+    comprobar('otro trago enseguida, no: trago a trago', !r.ok && /trago/.test(r.motivo || ''), r.motivo);
+    await pausa(ESPERA_TRAGO);
+    r = await beberAqui(orilla, 904);
+    comprobar('pasado el rato, otro trago', r.ok && r.datos.sed < 70 - TRAGO, JSON.stringify(r.datos || r.motivo));
+    c.ws.close();
+  } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
+  finally { if (srv2) await srv2.cerrar(); rmSync(dir2, { recursive: true, force: true }); if (copia) rmSync(copia, { force: true }); }
+}
+
 console.log(`\n${ok} correctas, ${mal} fallan`);
 process.exit(mal ? 1 : 0);

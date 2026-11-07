@@ -7,7 +7,8 @@
 // terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
 // ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste;
 // va al río a por barro, juncos y yesca, se hace un taladro de fuego, y levanta y enciende una hoguera en la orilla.
-// Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas.
+// Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas; lejos del agua no puede beber, y en la
+// orilla del río bebe con las manos, trago a trago.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -35,7 +36,7 @@ import { idArbol } from '../src/logica/tala.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
-import { avisos, AVISO } from '../src/logica/necesidades.js';
+import { avisos, AVISO, hayAguaCerca } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -376,6 +377,25 @@ try {
     comprobar('en su orilla hay juncos, barro, hongos yesqueros, sílex, piedra y ramas', ['juncos', 'barro', 'yesquero', 'silex', 'piedra', 'ramas'].every(t => de(t).length), ['juncos', 'barro', 'yesquero', 'silex', 'piedra', 'ramas'].map(t => `${t} ${de(t).length}`).join(', '));
     // las manos libres para el camino: lo que lleve, a sus pies (en su tierra)
     for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    // P4, beber del río: lejos del agua no se puede; en la orilla, sí, trago a trago, y la sed baja
+    const aguaAqui = hayAguaCerca(T.aguaEn, J.pos.x, J.pos.z);
+    r = await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z });
+    comprobar('lejos del agua no puede beber', aguaAqui || (!r.ok && /no hay agua/.test(r.motivo || '')), aguaAqui ? 'tiene agua al lado' : r.motivo);
+    await J.andar(rio.x, rio.z);
+    // de allí, a la orilla: el sitio seco más cercano con agua a menos de 2,5 m
+    let orillaSeca = null;
+    for (let d = 0; d <= 12 && !orillaSeca; d += 0.5) for (let k = 0; k < 16 && !orillaSeca; k++) {
+      const x = rio.x + Math.cos(k / 16 * 2 * Math.PI) * d, z = rio.z + Math.sin(k / 16 * 2 * Math.PI) * d;
+      if (!T.aguaEn(x, z) && hayAguaCerca(T.aguaEn, x, z)) orillaSeca = { x, z };
+    }
+    comprobar('junto al río hay orilla seca con agua al lado', !!orillaSeca);
+    await J.andar(orillaSeca.x, orillaSeca.z);
+    const sedAntes = J.nec.sed;
+    r = await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z });
+    await pausa(300);
+    comprobar('en la orilla bebe agua con las manos: la sed baja', r.ok && J.nec.sed < sedAntes, `${r.motivo || ''} sed ${sedAntes} → ${J.nec.sed}`);
+    const r2b = await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z });
+    comprobar('trago a trago: enseguida otra vez, no', !r2b.ok && /trago/.test(r2b.motivo || ''), r2b.motivo);
     await J.andar(rio.x, rio.z);
     r = await recoger(de('ramas')[0]);
     comprobar('recoge ramas junto al río', r.ok && J.cuantos('rama') > 0, r.motivo);
@@ -562,7 +582,8 @@ try {
 
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
   // hambre (la sed, más), sin que nadie se las haya puesto: le llegan solas del servidor
-  comprobar('le han subido solas la sed y el hambre (la sed, más) y le llegan del servidor', J.nec && J.nec.sed > 0 && J.nec.hambre > 0 && J.nec.sed > J.nec.hambre, JSON.stringify(J.nec));
+  // (la sed, que bebió en el río, vuelve a subir desde ahí)
+  comprobar('le han subido solas la sed y el hambre y le llegan del servidor', J.nec && J.nec.sed > 0 && J.nec.hambre > 0, JSON.stringify(J.nec));
   // sus avisos (los círculos de la derecha, src/juego/avisos_necesidades.js) salen de esos números: desde 40; a esta
   // hora del día (la sed sube a 40 en 24 minutos), aún ninguno; la prueba de navegador de los avisos mira cómo se ven
   const susAvisos = avisos(J.nec).map(a => a.que).filter(q => q !== 'cansancio');

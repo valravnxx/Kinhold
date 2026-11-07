@@ -4,11 +4,18 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
+## Procesado
+
+### 7 nov 2026 (21:24 UTC+1) — por el chat: los arbustos de bayas
+valravnx: «debes hacer que los arbustos que tengan bayas se vean claramente, y al recolectarlas estas desaparezcan del mismo, y en buen nivel».
+→ Va en la tarea de comer bayas y setas de P4: el arbusto se queda y lo que desaparece al cogerlas son las bayas.
+### 7 nov 2026 (20:27 UTC) — en la sesión del carril A: la base no estaba borrada
+valravnx: «reinicié el juego y apareció de nuevo, sería un bug o algo, no está borrada, pero aparecía como tal y como en linea arriba, habria que ver las causas solo».
+→ No se perdió nada: el mundo del servidor estaba entero. Causa encontrada (comprobada con la lógica de presencia, src/logica/presencia.js): al ahogarte vuelves a la salida (0, 4); al teletransportarte con el admin, el servidor te pone en la base, pero el navegador aún le manda algún estado desde la salida (los que iban de camino). La regla «volver a la salida es libre» (RADIO_SALIDA) le cree y te devuelve allí; los siguientes, ya desde la base, se recortan por el límite de velocidad (8 m/s), y el servidor te deja en la salida acercándote a 8 m/s. Como lo que te manda (la casa, los puestos, lo del suelo) es lo de los trozos de donde él cree que estás, no te llega nada de tu base; el mojón sí, porque se manda a todos. Al recargar se arregla. valravnx: «zanjamos pues, es tema mio de tpearme y no algo que un jugador vea nunca». → Tarea cerrada sin cambiar el juego.
+
 ### 7 nov 2026 (19:52 UTC+1) — por el chat: MUY IMPORTANTE, se ha borrado la base al morir en el río
 valravnx (con una captura: junto a su mojón, sin nada más; «En tu tierra: aún no tienes nada almacenado»; «Teletransportado (admin)»): «muy gran e importante problema, he muerto en el rio y se me ha borrado TODO lo que habia en mi base, la casa, lo del suelo, estaciones de trabajo, TODO».
-→ Pendiente: averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.
-
-## Procesado
+→ Tarea nueva, la primera del hito «Orden» (la coge el carril A el 7 nov a las 19:23 UTC): averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.
 
 ### 7 nov 2026 (19:58 UTC+1) — en la sesión del carril A: llevar troncos delgados y juncos
 valravnx: «haz un estudio de lo siguiente: la rastra lleva solo troncos cortos y tal, pero, solo se pueden llevar los finos a mano? igual que los juncos, tenemos para llevar plantas, porque no juncos ahi? como ves meter en rastra troncos finos o troncos cortos, y en la mochila para plantas los juncos?».

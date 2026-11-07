@@ -8,6 +8,7 @@
 #     pulsar fuera;
 #   - los efectos: con el cansancio al máximo no se corre (Mayúsculas + W: a paso de andar), sin él sí; con el frío al
 #     máximo se anda más despacio (torpe);
+#   - beber del río: en la salida no hay agua al lado; en una orilla, con sed, «Usar» bebe y la sed baja;
 #   - en inglés, la ficha sale en inglés;
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_avisos_navegador.py <html> <carpeta_capturas>
@@ -102,6 +103,27 @@ def recorrido(pg, nombre, pref, movil):
         poner(pg, {})
         comprobar(f'{nombre}: rendido no corre (a paso de andar); descansado, sí', v_corre > 5 and v_rendido < 4 and abs(v_rendido - v_anda) < 0.3, f'rendido {v_rendido:.2f}, descansado {v_corre:.2f}, andando {v_anda:.2f} m/s')
         comprobar(f'{nombre}: helado, anda más despacio', v_helado < v_anda * 0.85, f'{v_helado:.2f} contra {v_anda:.2f} m/s')
+    if not movil:
+        # beber del río (P4): junto al agua, con sed, «Usar» (la F) bebe; lejos del agua, no hay agua al lado
+        comprobar(f'{nombre}: en la salida no hay agua al lado', pg.evaluate(f'{K}.aguaAlLado()') is False)
+        o = pg.evaluate(f"""(() => {{ const k = {K}, a = (x, z) => k.mundoJ.aguaEn(x, z);
+          for (let r = 5; r < 3000; r += 5) for (let i = 0; i < 48; i++) {{
+            const x = Math.cos(i / 48 * 2 * Math.PI) * r, z = Math.sin(i / 48 * 2 * Math.PI) * r;
+            if (a(x, z)) continue;
+            for (const d of [1.5, 2.5]) for (let j = 0; j < 8; j++) if (a(x + Math.cos(j * Math.PI / 4) * d, z + Math.sin(j * Math.PI / 4) * d)) return {{ x, z }};
+          }} return null; }})()""")
+        comprobar(f'{nombre}: hay una orilla cerca de la salida', bool(o), str(o))
+        if o:
+            pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); }}', [o['x'], o['z']])
+            pg.wait_for_function(f'{K}.mundoListo', timeout=300000)
+            try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
+            except Exception: pass
+            pg.wait_for_timeout(1500)
+            poner(pg, {'sed': 70})
+            pg.keyboard.press('f'); pg.wait_for_timeout(600)
+            sed = pg.evaluate(f'{K}.necesidades.sed')
+            comprobar(f'{nombre}: junto al agua, con sed, «Usar» bebe: la sed baja', abs(sed - 40) < 0.5, f'{sed}')
+            pg.screenshot(path=f'{SALIDA}/{pref}_3_beber.png', timeout=180000)
     comprobar(f'{nombre}: sin errores en la página', not errores, '; '.join(errores[:3]))
 
 with sync_playwright() as p:

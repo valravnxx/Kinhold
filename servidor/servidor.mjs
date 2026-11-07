@@ -139,7 +139,7 @@ import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades } from '../src/logica/necesidades.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, hayAguaCerca, TRAGO, ESPERA_TRAGO } from '../src/logica/necesidades.js';
 import { puestasDe } from '../src/logica/prendas.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
@@ -344,6 +344,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     writeFileSync(archivoNecesidades + '.tmp', JSON.stringify(Object.fromEntries([...necesidades].map(([a, n]) => [a, redondearNecesidades(n)])))); reemplazar(archivoNecesidades + '.tmp', archivoNecesidades);
   };
   const cansar = (a, tipo) => { necesidades.set(a, esfuerzoNecesidad(necesidadesDe(a), tipo)); necesidadesCambiadas = true; };
+  // Beber del río con las manos (P4): con agua a tu lado (donde el servidor te tiene), un trago baja la sed; uno cada
+  // ESPERA_TRAGO ms. Devuelve { ok, motivo, sed }.
+  const ultimoTrago = new Map();
+  const beber = (a, ahora) => {
+    const p = presencia && presencia.ultimo.get(a);
+    if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z)) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
+    if (ahora - (ultimoTrago.get(a) || -Infinity) < ESPERA_TRAGO) return { ok: false, motivo: 'Despacio: trago a trago.' };
+    ultimoTrago.set(a, ahora);
+    const n = saciarNecesidad(necesidadesDe(a), 'sed', TRAGO);
+    necesidades.set(a, n); necesidadesCambiadas = true;
+    return { ok: true, sed: Math.round(n.sed * 100) / 100 };
+  };
 
   // Dónde empieza cada uno (valravnx, 5 nov: tres salidas en zonas del rey, «lo eligen»; src/logica/whitholm.js,
   // SALIDAS_INICIO): un personaje nuevo (sin posición apuntada) llega sin posición y elige una con { tipo: 'salida',
@@ -889,6 +901,13 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         if (!msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion)) return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
         // el autor lo pone el servidor, y la hora también
         const ahora = Date.now();
+        // beber del río (P4): lo llevan las necesidades, no los objetos
+        if (msg.accion.tipo === 'beber') {
+          const r = beber(autor, ahora);
+          enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: { sed: r.sed } } : { motivo: r.motivo }) });
+          if (r.ok) enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidadesDe(autor)) });
+          return;
+        }
         const r = objetos.ejecutar(Object.assign({}, msg.accion, { autor }), ahora);
         if (r.entrada) appendFileSync(archivoObjetosReg, JSON.stringify(r.entrada) + '\n');
         if (r.ok) guardarObjetos();
@@ -966,7 +985,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
-      antesNec.delete(autor);
+      antesNec.delete(autor); ultimoTrago.delete(autor);
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }

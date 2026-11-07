@@ -1460,13 +1460,15 @@
     },
     {
      "nombre": "Beber del río con las manos (el agua de río se bebe sin problema, GDD): Usar en la orilla o en el agua que se vadea; el servidor comprueba que hay agua a tu lado y baja la sed. Recorrido: el jugador nuevo busca un río y bebe",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T19:39:26+01:00",
-     "rama": "trabajo/20261107-1939-beber"
+     "fin": "2026-11-07T21:10:07+01:00"
     },
     {
      "nombre": "Comer: bayas y setas del bosque (documento de sistemas, apartado 3: se recogen con las manos, según la estación) para el primer hambre, con su modelo (estilo v5) en la mata y en el suelo; comer desde el equipo, por el servidor. Recorrido: con hambre, el jugador recoge bayas y se las come",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T21:26:16+01:00",
+     "rama": "trabajo/20261107-2126-bayas"
     },
     {
      "nombre": "El frío: sube de noche (el ciclo de día y noche de la v137), según el bioma y la ropa que llevas puesta (cada prenda abriga), y baja bajo techo y junto al fuego (la hoguera y el hogar de P3 calientan en un radio). Recorrido: de noche y sin fuego sube el frío; junto a la hoguera baja",
@@ -1640,6 +1642,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T12:24:06+00:00",
      "fin": "2026-11-07T14:09:48+00:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba",
+     "estado": "hecho",
+     "inicio": "2026-11-07T19:23:34+00:00",
+     "fin": "2026-11-07T20:28:41+00:00"
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
@@ -3390,6 +3398,13 @@
      "archivo": "jugar/demo/v142.html",
      "capturas": "capturas/demo-v142",
      "notas": "Los almacenajes de la base: acopio de troncos, pila de piedras y leñera, en su pestaña «Almacenajes» de Construir. Se levantan como obra y solo en tu tierra; cada uno guarda lo suyo (troncos; piedra suelta; leña y ramas) y se ve lleno. Con Usar, «Guardar y sacar». La obra no coge de ellos sola. El contador «En tu tierra» cuenta lo guardado en ellos."
+    },
+    {
+     "v": "v143",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v143.html",
+     "capturas": "capturas/demo-v143",
+     "notas": "Beber del río con las manos"
     }
    ]
   },
