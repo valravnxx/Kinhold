@@ -9,12 +9,14 @@
 //   3. Golpe maestro: atacar por el mismo lado del golpe que viene, al principio de su preparación.
 //      Desvía su golpe y el tuyo entra sin que pueda pararse.
 import { azar } from '../logica/azar.js';
+import { ZONAS_CUERPO, proteccion } from '../logica/prendas.js';
 
 // Cuatro direcciones (valravnx, 31 oct). Abajo es clavar (la estocada): fuera el tajo bajo y el centro («bloquear o
 // atacar al centro es hiper difícil»).
 export const LINEAS = ['alto', 'izquierda', 'derecha', 'estocada'];
 export const NOMBRE_LINEA = { alto: 'Alto', izquierda: 'Izquierda', derecha: 'Derecha', estocada: 'Estocada' };
-export const ZONAS = ['cabeza', 'torso', 'brazoI', 'brazoD', 'piernaI', 'piernaD'];
+// Las zonas del cuerpo son las de la ropa (src/logica/prendas.js): una sola lista. Los pies no los busca ningún golpe.
+export const ZONAS = ZONAS_CUERPO.filter(z => z !== 'pies');
 export const NOMBRE_ZONA = { cabeza: 'cabeza', torso: 'torso', brazoI: 'brazo izquierdo', brazoD: 'brazo derecho', piernaI: 'pierna izquierda', piernaD: 'pierna derecha' };
 // Un golpe desde mi izquierda llega por el lado derecho del rival: visto desde el rival, por su derecha.
 export const ESPEJO = { alto: 'alto', estocada: 'estocada', izquierda: 'derecha', derecha: 'izquierda' };
@@ -36,10 +38,14 @@ export const ARMAS = {
   piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5 },
 };
 
+// Una sola tabla de armadura (7 nov): lo que frena un golpe sale de las prendas puestas (src/logica/prendas.js), zona
+// a zona, como en la ropa: lo que se ve es lo que protege. Los tres nombres del duelo son conjuntos de prendas (lo que
+// se ve con ellos en el taller: src/combate/taller.js). Sin yelmo, la cabeza va al aire con cualquiera de los tres.
+const LINO = ['camisa_lino', 'pantalon_lino'];
 export const ARMADURAS = {
-  lino:     { nombre: 'Lino',          corte: 1.0,  perforante: 1.0,  contundente: 1.0 },
-  gambeson: { nombre: 'Gambesón',      corte: 0.55, perforante: 0.8,  contundente: 0.8 },
-  malla:    { nombre: 'Cota de malla', corte: 0.2,  perforante: 0.55, contundente: 0.7 },
+  lino:     { nombre: 'Lino',          prendas: LINO },
+  gambeson: { nombre: 'Gambesón',      prendas: [...LINO, 'gambeson'] },
+  malla:    { nombre: 'Cota de malla', prendas: [...LINO, 'gambeson', 'cota_malla'] },
 };
 
 // ---------- Curación (GDD 13: tabla del análisis, apartado 15) ----------
@@ -141,6 +147,8 @@ export class Luchador {
     this.botiquin = { ...BOTIQUIN }; this.cercaFuego = false; this.cura = null;
   }
   get def() { return ARMAS[this.arma]; }
+  // La parte de un golpe de ese tipo que le pasa a esa zona, con las prendas de su armadura (1 = nada lo frena).
+  proteccion(zona, tipo) { return proteccion((ARMADURAS[this.armadura] || ARMADURAS.lino).prendas, zona, tipo); }
 
   // efectos de las heridas
   peorHerida(zonas) {
@@ -413,7 +421,7 @@ export function resolverGolpe(at, de, linea, r) {
   const herir = (factor = 1, nota) => {
     const zona = elegir(ZONAS_POR_LINEA[linea], r);
     const tipo = a.contundente ? 'contundente' : linea === 'estocada' ? 'perforante' : 'corte';
-    const sev = a.danio * ARMADURAS[de.armadura][tipo] * at.calidad * at.factorBrazo() * (0.8 + 0.4 * r()) * factor;
+    const sev = a.danio * de.proteccion(zona, tipo) * at.calidad * at.factorBrazo() * (0.8 + 0.4 * r()) * factor;
     const h = de.recibirHerida(zona, sev, tipo);
     return { resultado: 'herida', zona, gravedad: h.gravedad, sev, tipo, nota };
   };
@@ -516,7 +524,7 @@ export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null)
         const zona = zonaPorAltura(L, p.y, lateral);
         const a = ARMAS[p.arma];
         const v = Math.hypot(p.vx, p.vy, p.vz);
-        const sev = a.danio * (v / a.vMax) * ARMADURAS[L.armadura][a.danioTipo] * (0.8 + 0.4 * r());
+        const sev = a.danio * (v / a.vMax) * L.proteccion(zona, a.danioTipo) * (0.8 + 0.4 * r());
         const herida = L.recibirHerida(zona, sev, a.danioTipo);
         return { tipo: 'blanco', luchador: L, zona, gravedad: herida.gravedad, sev };
       }

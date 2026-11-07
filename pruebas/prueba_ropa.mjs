@@ -11,7 +11,7 @@ import { readdirSync, readFileSync } from 'fs';
 import { PRENDAS, MATERIALES_ROPA, ZONAS_PARTE, ZONAS_CUERPO, GOLPES, TALLER, DIBUJO_EN_OTRO_CUERPO, PRENDA_DE_DIBUJO,
   zonasDe, proteccion, abrigo, peso, puestasDe, capasDibujo, prendasDeCapas } from '../src/logica/prendas.js';
 import { Inventario, CATALOGO, CAPAS } from '../src/logica/inventario.js';
-import { ZONAS, ARMADURAS } from '../src/combate/logica.js';
+import { ZONAS, ARMADURAS, Luchador } from '../src/combate/logica.js';
 
 if (process.env.MUTAR === '1') PRENDAS.cota_malla.partes = ['cuerpo', 'falda'];
 if (process.env.MUTAR === '3') TALLER.descalzo = 'zapatos';
@@ -63,10 +63,17 @@ comprobar('el cargador del taller toma el orden de las capas de los datos de las
 
 console.log('Protección por tipo de golpe');
 const lino = ['camisa_lino', 'pantalon_lino'], gamb = [...lino, 'gambeson'], malla = [...gamb, 'cota_malla'];
+// Una sola tabla de armadura (7 nov): el duelo no tiene números propios; sus tres armaduras son estas prendas.
+comprobar('las armaduras del duelo son prendas: lino, + gambesón, + cota',
+  ARMADURAS.lino.prendas.join() === lino.join() && ARMADURAS.gambeson.prendas.join() === gamb.join() && ARMADURAS.malla.prendas.join() === malla.join());
+const distintos = [];
+for (const g of GOLPES) for (const z of ZONAS) for (const [k, p] of [['lino', lino], ['gambeson', gamb], ['malla', malla]])
+  if (new Luchador({ armadura: k }).proteccion(z, g) !== proteccion(p, z, g)) distintos.push(`${k} ${z} ${g}`);
+comprobar('el duelo protege lo mismo que la ropa en cada zona y golpe', ZONAS.length === 6 && !distintos.length, distintos.join(', '));
+const anteriores = { gambeson: { corte: 0.55, perforante: 0.8, contundente: 0.8 }, malla: { corte: 0.2, perforante: 0.55, contundente: 0.7 } };
 for (const g of GOLPES) {
-  comprobar(`torso, ${g}: camisa = «lino» del combate`, cerca(proteccion(lino, 'torso', g), ARMADURAS.lino[g]));
-  comprobar(`torso, ${g}: camisa y gambesón = «gambesón» del combate`, cerca(proteccion(gamb, 'torso', g), ARMADURAS.gambeson[g]), proteccion(gamb, 'torso', g).toFixed(3));
-  comprobar(`torso, ${g}: y con cota = «malla» del combate`, cerca(proteccion(malla, 'torso', g), ARMADURAS.malla[g]), proteccion(malla, 'torso', g).toFixed(3));
+  comprobar(`torso, ${g}: camisa y gambesón frenan como el «gambesón» de antes`, cerca(proteccion(gamb, 'torso', g), anteriores.gambeson[g]), proteccion(gamb, 'torso', g).toFixed(3));
+  comprobar(`torso, ${g}: y con cota, como la «malla» de antes`, cerca(proteccion(malla, 'torso', g), anteriores.malla[g]), proteccion(malla, 'torso', g).toFixed(3));
 }
 comprobar('la cota protege los brazos', proteccion(malla, 'brazoD', 'corte') < proteccion(gamb, 'brazoD', 'corte'));
 comprobar('la cabeza queda sin proteger (aún no hay yelmo)', proteccion(malla, 'cabeza', 'corte') === 1);

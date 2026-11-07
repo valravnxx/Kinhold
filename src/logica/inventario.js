@@ -101,6 +101,7 @@ export const CATALOGO = {
   lasca_silex: { nombre: 'Lasca de sílex', tam: 'P', herramienta: true },
   lanza_endurecida: { nombre: 'Lanza endurecida', tam: 'M' },
   palo_cavador: { nombre: 'Palo cavador', tam: 'M', herramienta: true },
+  taladro_fuego: { nombre: 'Taladro de fuego', tam: 'M', herramienta: true },   // de arco (7 nov): para encender el fuego
   honda: { nombre: 'Honda', tam: 'P' },
   antorcha: { nombre: 'Antorcha', tam: 'M' },
   rastra: { nombre: 'Rastra', tam: 'E' },
