@@ -310,10 +310,16 @@ export function acabarObra(mundo, registro, autor, construccion, claveObra) {
 }
 
 // Rehace un mundo desde cero aplicando, en orden, las acciones que salieron bien.
-export function reproducir(entradas) {
+// alCaer(entrada, resultado): para cada una que salió bien y ahora no (el código o el terreno han cambiado y lo que
+// dependía de ella tampoco estará; valravnx, 7 nov: «se me ha borrado TODO lo que habia en mi base»). El servidor lo avisa.
+export function reproducir(entradas, alCaer = null) {
   const m = new Mundo();
   const reg = new RegistroAcciones();
-  for (const e of entradas) if (e.ok) ejecutar(m, reg, { autor: e.autor, tipo: e.tipo, ...e.datos });
+  for (const e of entradas) {
+    if (!e.ok) continue;
+    const r = ejecutar(m, reg, { autor: e.autor, tipo: e.tipo, ...e.datos });
+    if (!r.ok && alCaer) alCaer(e, r);
+  }
   return m;
 }
 

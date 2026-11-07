@@ -213,7 +213,15 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const previas = leerArchivo(archivo);
   // si quedó una línea a medias, lo nuevo empieza en una línea aparte
   if (existsSync(archivo)) { const t = readFileSync(archivo, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivo, '\n'); }
-  const mundo = reproducir(previas);
+  // si alguna acción que salió bien ya no sale al rehacerlo (por un cambio del código o del terreno), lo construido
+  // después que dependía de ella falta aunque el archivo lo tenga: se avisa en el registro (journalctl -u kinhold), con
+  // lo que hay que mirar (servidor/revisar_mundo.mjs). El archivo no se toca: con el arreglo, vuelve todo.
+  const caidasAlRehacer = [];
+  const mundo = reproducir(previas, (e, r) => caidasAlRehacer.push({ n: e.n, autor: e.autor, tipo: e.tipo, motivo: r.motivo }));
+  if (caidasAlRehacer.length) {
+    const c = caidasAlRehacer[0];
+    registrar(`AVISO: ${caidasAlRehacer.length} acciones que salieron bien ya no salen al rehacer el mundo (la primera, n.º ${c.n}, ${c.tipo} de ${c.autor}: ${c.motivo}). Lo que dependía de ellas no está; el archivo lo guarda. Mirar con: node servidor/revisar_mundo.mjs`);
+  }
   const registro = new RegistroAcciones();
   registro.total = previas.reduce((m, e) => Math.max(m, e.n || 0), 0);
 
@@ -980,7 +988,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, abandono, revisarTierras, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, caidasAlRehacer, terreno, abandono, revisarTierras, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };

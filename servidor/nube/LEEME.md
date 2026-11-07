@@ -148,6 +148,11 @@ disco (`KINHOLD_COPIA_DESTINO=/mnt/otro/kinhold`).
   y lo vuelve a arrancar): `bash /opt/kinhold/servidor/nube/restaurar.sh --ultima`, o con el archivo de una copia.
   Si la máquina se ha perdido: en una nueva (pasos de arriba), pon otra vez la clave y `copia.env` y trae las copias
   con `rsync -e "ssh -p 23 -i /etc/kinhold/copia_clave" u123456@u123456.your-storagebox.de:kinhold/ /var/backups/kinhold/`.
+- **Si falta algo del mundo** (valravnx, 7 nov: se le borró lo de su base): `node /opt/kinhold/servidor/revisar_mundo.mjs`
+  (solo lee, con el servidor en marcha) dice por cada tierra cuántas construcciones, piezas, puestos y cosas del suelo
+  tiene, si algo ha quedado enterrado bajo el terreno de hoy y si alguna acción que salió bien ya no sale al rehacer el
+  mundo con el código de hoy (el servidor también lo avisa al arrancar, en `journalctl -u kinhold`). Para mirar una
+  copia: sácala en una carpeta (`tar -xzf <copia> -C /tmp/copia`) y `node … revisar_mundo.mjs /tmp/copia`.
 - Dentro van las cuentas (las contraseñas, solo resumidas) y los correos: la carpeta y cada copia son solo de root.
 - La prueba: `node pruebas/prueba_copia_servidor.mjs` (el servidor de verdad: una cuenta, 16 días de copias, se
   pierde todo, se trae de «fuera», se restaura y la cuenta vuelve a entrar).
