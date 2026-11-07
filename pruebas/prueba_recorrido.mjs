@@ -68,9 +68,15 @@ function cliente(puerto) {
     c.estar = (x, z) => { c.pos = { x, z }; ws.send(JSON.stringify({ tipo: 'estado', x, y: T.suelo(x, z), z, giro: 0, anim: 'andar' })); };
     // andar hasta (x, z): corriendo, un paso de 0,6 m cada 100 ms (6 m/s), como lo manda la demo: el servidor recorta lo
     // que vaya más deprisa de lo que se puede (movimiento sin trampas, src/logica/presencia.js)
+    // (P4) rendido o casi (el cansancio a 90 o más), anda: a 3,6 m/s, un paso de 0,36 m; el servidor no deja correr al
+    // rendido (src/logica/necesidades.js, factorVelocidad), como a un jugador de verdad
     c.andar = async (x, z) => {
-      const { x: x0, z: z0 } = c.pos, d = Math.hypot(x - x0, z - z0), n = Math.max(1, Math.ceil(d / 0.6));
-      for (let i = 1; i <= n; i++) { c.estar(x0 + (x - x0) * i / n, z0 + (z - z0) * i / n); await pausa(100); }
+      for (let i = 0; i < 100000; i++) {
+        const paso = c.nec && c.nec.cansancio >= 90 ? 0.36 : 0.6;   // (lo mira a cada paso: se cansa por el camino)
+        const { x: x0, z: z0 } = c.pos, d = Math.hypot(x - x0, z - z0);
+        if (d <= paso) { c.estar(x, z); await pausa(100); break; }
+        c.estar(x0 + (x - x0) * paso / d, z0 + (z - z0) * paso / d); await pausa(100);
+      }
       await pausa(150);
     };
     c.salida = (salida) => { const id = ++c.id + 200000; const p = c.esperar(m => m.tipo === 'salida' && m.id === id); ws.send(JSON.stringify({ tipo: 'salida', id, salida })); return p; };
