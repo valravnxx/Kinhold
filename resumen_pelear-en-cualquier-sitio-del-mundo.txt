@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2317 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2821 KB
+
+== Construir demo única
+      2687 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 3944 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2720 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2311 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2830 KB
+dist/kinhold_trozos.html 2326 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: pelear en cualquier sitio del mundo
+  OK   el rival no se mete a nado detrás de ti (se queda en la orilla) — lo más hondo que pisó: 0.00 m
+  OK   sin errores en la página
+
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 175 s
