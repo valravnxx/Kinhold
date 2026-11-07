@@ -1,0 +1,77 @@
+Jugador simulado: jugador:b9fd2e72
+Vista pc
+  OK   pc: entra en línea con el mundo listo
+  OK   pc: crea una cuenta que no es de admin
+  OK   pc: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   pc: y F9 no abre nada
+  OK   pc: sin la cuenta de admin no se puede ir fuera de la isla — {'libre': False, 'dentro': False}
+  OK   pc: la clave que guardaba el navegador antes se borra
+  OK   pc: al que trae el admin, su navegador le pone junto a él y le avisa — {'tipo': 'admin', 'id': 3, 'que': 'traer', 'ok': True, 'quien': 'jugador:95418f85', 'x': 1461.6, 'y': 176.68095446081867, 'z': 880, 'giro': -1.5707963267948966} · El admin te ha llevado junto a él. · [1461.6, 880]
+  OK   pc: sin errores en la página (sin admin)
+  OK   pc: crea la cuenta de admin
+  OK   pc: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   pc: se abre en «Info», sin el mapa: lo del servidor y dónde estás — Depuración (admin)InfoMapaModosArcónConectados además de ti: 1Servidor en marcha3 minConectados2Cuentas3Construcciones0Piezas (a medias)0 (0)Muebles0Mojones0Cosas en el suelo0Estaciones de fabricar0Ac
+  OK   pc: se abre sin pedir ninguna clave
+  OK   pc: el otro jugador sale en la lista — Conectados además de ti: 1
+  OK   pc: el otro jugador, pintado en el mapa donde está — {'x': 657.5522388059703, 'y': 410.53134328358203, 'rgb': [45, 88, 120]}
+  OK   pc: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   pc: se vuelve a abrir
+  OK   pc: un clic en el mapa te lleva a ese punto — esperado {'x': 390.5043098353199, 'z': -297.0516407762698}, está {'x': 390.5043098353199, 'y': 33.36227536496793, 'z': -297.0516407762698, 'suelo': 33.36227536496793}
+  OK   pc: y en el suelo — {'x': 390.5043098353199, 'y': 33.36227536496793, 'z': -297.0516407762698, 'suelo': 33.36227536496793}
+  OK   pc: en la lista, «Ir» y «Traer»
+  OK   pc: «Traer» le pone junto a ti y a él le llega adónde — Traído: b9fd2e72 · {'tipo': 'admin', 'que': 'traido', 'x': 391.1273791830137, 'y': 33.38122326994477, 'z': -295.57794318586514, 'giro': -2.741592653589793} · [390.5043098353199, -297.0516407762698]
+  OK   pc: velocidad ×10: la confirma el servidor y el juego la usa — Modos: autoconstruir no, velocidad ×10
+  OK   pc: autoconstruir se activa — Modos: autoconstruir sí, velocidad ×10
+  OK   pc: y se vuelven a apagar
+  OK   pc: el arcón de admin: buscar «hacha de hierro» e invocarla, a lo que llevas — 1 · 1 de Hacha de hierro: en lo que llevas.
+  OK   pc: cámara libre: sube y avanza volando y el personaje se queda donde estaba — {'activa': True, 'x': 397.5370238163973, 'y': 47.114453823984505, 'z': -290.01892679519233, 'sube': 0} → {'activa': True, 'x': 396.745843493526, 'y': 47.504465386655035, 'z': -290.8101071180636, 'sube': 0} · personaje [390.5043098353199, -297.0516407762698] → [390.5043098353199, -297.0516407762698]
+  OK   pc: «Ir aquí» pone al personaje bajo la cámara y la quita — [396.745843493526, -290.8101071180636]
+  OK   pc: F10 la pone y la quita
+  OK   pc: el mapa del panel es el del continente entero, con sus regiones — {'continente': True, 'cuadro': {'x0': 0, 'y0': 0, 'x1': 256, 'y1': 256}, 'regiones': [['Whitholm', True, 194.5, 51.5], ['Eikwold', False, 76.5, 95.5], ['Highfell', False, 136.5, 171.5], ['Storaa', False, 188.5, 173.5], ['Rudmere', False, 80.5, 194.5]]}
+  OK   pc: un clic en otra región (Eikwold) te lleva allí — esperado {'x': -108187.83673469388, 'z': 49066.93877551021}
+  OK   pc: allí se carga el terreno y estás en el suelo — {'x': -108187.83673469388, 'y': 124.23843450702675, 'z': 49066.93877551021, 'suelo': 124.23843410002524, 'isla': False}
+  OK   pc: y puedes andar por allí — 1.25 m
+  OK   pc: el servidor te tiene allí (fuera de la isla) — {'autor': 'jugador:82cb150c', 'cuenta': 'valravnx', 'x': -108188.7212743655, 'y': 124.15757768758789, 'z': 49066.05423583864, 'giro': -2.3542523338414343} / [-108188.7212743655, 49066.05423583864]
+  OK   pc: Esc lo cierra
+  OK   pc: M lo cierra
+  OK   pc: «Cerrar» lo cierra con el mapa
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: entra en línea con el mundo listo
+  OK   movil: crea una cuenta que no es de admin
+  OK   movil: sin la cuenta de admin no sale el botón «Admin» (ni con ?admin)
+  OK   movil: sin la cuenta de admin no se puede ir fuera de la isla — {'libre': False, 'dentro': False}
+  OK   movil: la clave que guardaba el navegador antes se borra
+  OK   movil: al que trae el admin, su navegador le pone junto a él y le avisa — {'tipo': 'admin', 'id': 3, 'que': 'traer', 'ok': True, 'quien': 'jugador:a9d8404a', 'x': 1461.6, 'y': 176.68095446081867, 'z': 880, 'giro': -1.5707963267948966} · El admin te ha llevado junto a él. · [1461.6, 880]
+  OK   movil: sin errores en la página (sin admin)
+  OK   movil: crea la cuenta de admin
+  OK   movil: con la cuenta de admin sale el botón «Admin», sin recargar
+  OK   movil: se abre en «Info», sin el mapa: lo del servidor y dónde estás — Depuración (admin)InfoMapaModosArcónConectados además de ti: 1Servidor en marcha9 minConectados2Cuentas6Construcciones0Piezas (a medias)0 (0)Muebles0Mojones0Cosas en el suelo0Estaciones de fabricar0Ac
+  OK   movil: se abre sin pedir ninguna clave
+  OK   movil: el otro jugador sale en la lista — Conectados además de ti: 1
+  OK   movil: el otro jugador, pintado en el mapa donde está — {'x': 203.37313432835822, 'y': 427.0238805970149, 'rgb': [45, 88, 120]}
+  OK   movil: «Ir» te pone junto a él y cierra el panel — a 1.60 m
+  OK   movil: se vuelve a abrir
+  OK   movil: un clic en el mapa te lleva a ese punto — esperado {'x': 426.60738742994727, 'z': -354.63376453486126}, está {'x': 426.60738742994727, 'y': 35.91481703703798, 'z': -354.63376453486126, 'suelo': 35.91481703703798}
+  OK   movil: y en el suelo — {'x': 426.60738742994727, 'y': 35.91481703703798, 'z': -354.63376453486126, 'suelo': 35.91481703703798}
+  OK   movil: en la lista, «Ir» y «Traer»
+  OK   movil: «Traer» le pone junto a ti y a él le llega adónde — Traído: b9fd2e72 · {'tipo': 'admin', 'que': 'traido', 'x': 427.2304567776411, 'y': 35.91746530728622, 'z': -353.1600669444566, 'giro': -2.741592653589793} · [426.60738742994727, -354.63376453486126]
+  OK   movil: velocidad ×10: la confirma el servidor y el juego la usa — Modos: autoconstruir no, velocidad ×10
+  OK   movil: autoconstruir se activa — Modos: autoconstruir sí, velocidad ×10
+  OK   movil: y se vuelven a apagar
+  OK   movil: el arcón de admin: buscar «hacha de hierro» e invocarla, a lo que llevas — 1 · 1 de Hacha de hierro: en lo que llevas.
+  OK   movil: cámara libre: sube y avanza volando y el personaje se queda donde estaba — {'activa': True, 'x': 433.6401014110247, 'y': 49.65069586132596, 'z': -347.6010505537838, 'sube': 0} → {'activa': True, 'x': 433.6401014110247, 'y': 53.85069586132597, 'z': -347.6010505537838, 'sube': 0} · personaje [426.60738742994727, -354.63376453486126] → [426.60738742994727, -354.63376453486126]
+  OK   movil: «Ir aquí» pone al personaje bajo la cámara y la quita — [433.6401014110247, -347.6010505537838]
+  OK   movil: el botón «Cámara» la quita
+  OK   movil: el mapa del panel es el del continente entero, con sus regiones — {'continente': True, 'cuadro': {'x0': 0, 'y0': 0, 'x1': 256, 'y1': 256}, 'regiones': [['Whitholm', True, 194.5, 51.5], ['Eikwold', False, 76.5, 95.5], ['Highfell', False, 136.5, 171.5], ['Storaa', False, 188.5, 173.5], ['Rudmere', False, 80.5, 194.5]]}
+  OK   movil: un clic en otra región (Eikwold) te lleva allí — esperado {'x': -107932.89839572193, 'z': 49548.87700534759}
+  OK   movil: allí se carga el terreno y estás en el suelo — {'x': -107932.89839572193, 'y': 99.5135100888385, 'z': 49548.87700534759, 'suelo': 99.51351013885295, 'isla': False}
+  OK   movil: y puedes andar por allí — 2.86 m
+  OK   movil: el servidor te tiene allí (fuera de la isla) — {'autor': 'jugador:cccf1aa2', 'cuenta': 'admmovil', 'x': -107935.15196267748, 'y': 99.68813334824047, 'z': 49547.11881289961, 'giro': -2.356194286542491} / [-107935.15196267748, 49547.11881289961]
+  OK   movil: «Cerrar» lo cierra con el mapa
+  OK   movil: sin errores en la página
+Vista pc_en
+  OK   en inglés: ningún texto sin traducir — []
+  OK   en inglés: el panel en inglés — Debug (admin)InfoMapModesChestConnected besides you: 1Click on the map to go there.b9fd2e721500, 900GoBringClose
+
+Todo bien
