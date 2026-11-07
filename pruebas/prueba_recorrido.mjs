@@ -449,9 +449,11 @@ try {
     comprobar('la levanta trabajando en ella: apagada, con sus ramas puestas', rt.ok && rt.datos.terminada && H().fuego && H().fuego.hasta === 0 && H().fuego.combustible > 0, rt.motivo || JSON.stringify(H() && H().fuego));
     r = await J.objeto({ tipo: 'encender_fuego', estacion: hog, x: J.pos.x, z: J.pos.z });
     comprobar('sin la yesca y el taladro en las manos no la enciende', !r.ok, r.motivo);
-    for (const t of ['taladro_fuego', 'yesca']) { const o = sueloMio(t) || s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === t).sort((a, b) => Math.hypot(a.x - J.pos.x, a.z - J.pos.z) - Math.hypot(b.x - J.pos.x, b.z - J.pos.z))[0];
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l] && !['taladro_fuego', 'yesca'].includes(J.inv.lugares[l].tipo)) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    for (const t of ['taladro_fuego', 'yesca']) { if (J.cuantos(t)) continue; const o = sueloMio(t) || s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === t).sort((a, b) => Math.hypot(a.x - J.pos.x, a.z - J.pos.z) - Math.hypot(b.x - J.pos.x, b.z - J.pos.z))[0];
       if (o && Math.hypot(o.x - J.pos.x, o.z - J.pos.z) > 1.5) await J.andar(o.x + 0.3, o.z);
-      if (o) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: t === 'yesca' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z }); }
+      const libre = ['mano:der', 'mano:izq'].find(l => !J.inv.lugares[l]);
+      if (o && libre) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: libre, x: J.pos.x, z: J.pos.z }); }
     await J.andar(fogon.x, fogon.z);
     comprobar('coge del suelo su taladro y su yesca', J.cuantos('taladro_fuego') === 1 && J.cuantos('yesca') >= 1, enMano());
     const yescas = J.cuantos('yesca');
