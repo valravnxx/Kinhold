@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (05:57 UTC+1) — por el chat: el inventario pasa a ser «Equipo»
+valravnx: «cambiamos inventario por equipo, con las imagenes y estilo de el menu de crafteo, y sobretodo, poder desequipar, poner en manos o en el suelo lo que tengas puesto».
+→ Tarea nueva en P3 (la lleva el chat): el panel de inventario pasa a llamarse «Equipo», con las imágenes de cada cosa y el estilo del panel de fabricar; y, sobre todo, lo que llevas puesto (ropa, cinturón, mochila, lo del hombro…) se puede quitar: a las manos o al suelo.
+
 ### 6 nov 2026 (18:21 UTC+1) — por el chat: los dos atajos del panel, sí
 valravnx, tras explicarle los dos atajos con un ejemplo: «me gustan esas dos opciones, pero dilo mas claro».
 → Los dos entran en el panel nuevo de fabricar (tarea de P3), con textos claros que digan qué hace el botón, qué gasta y qué falta: «Hacer antes: 1 cordel de fibra (con 3 fibra que llevas · 15 s)» y «Poner en la piedra lo que falta: 1 rama y 1 cordel (los llevas tú)».
