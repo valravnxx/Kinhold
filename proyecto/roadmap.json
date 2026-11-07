@@ -1423,11 +1423,13 @@
    "num": "P4",
    "nombre": "Un primer día con sentido",
    "jugable": "Día y noche; sed, hambre, frío y cansancio con sus avisos; la cama; morir y que te saqueen; liebres para cazar y asar; herramientas que se gastan y se reparan.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "tareas": [
     {
      "nombre": "Planificar el hito con el GDD y el documento de sistemas: día y noche, sed (beber del río), hambre, frío y cansancio, cama ligada, morir y saqueo, liebres (despiece y asar en la hoguera o el hogar), durabilidad y reparar. Cada tarea de una sesión y con su parte en el recorrido de jugador",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T14:17:52+01:00",
+     "rama": "trabajo/20261107-1417-plan-p4"
     },
     {
      "nombre": "Revisión completa y publicación",
