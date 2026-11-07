@@ -467,13 +467,15 @@ function hiladaPaja(ancho, grueso, largo, r = 0.14) {
   g.translate(0, 0, -ancho / 2); g.rotateY(-Math.PI / 2);
   return g;
 }
-function lotePaja(ctx = CTX_TEJADO, L = loteTejado()) {
+// (los juncos, igual que la paja pero de su color: el tejado de la casa humilde, 7 nov)
+const COLOR_PAJA = { c: 'paja', o: 'pajaOsc' }, COLOR_JUNCO = { c: 'junco', o: 'juncoOsc' };
+function lotePaja(ctx = CTX_TEJADO, L = loteTejado(), col = COLOR_PAJA) {
   const M = marcoTejado(ctx, P.juntaPaja), GR = GRUESO_PAJA, FILAS = 2;
   const total = M.largo + M.V, lf = total / FILAS;
   for (let f = 0; f < FILAS; f++) {
     const s0 = -M.V + f * lf, l = f === FILAS - 1 ? lf + 0.02 : lf * 1.3;
     const c = M.punto(s0 + l / 2, GR / 2 + (FILAS - 1 - f) * 0.06);
-    L.add(hiladaPaja(M.ancho, GR, l), f % 2 ? 'pajaOsc' : 'paja', M.cx, c.y, c.z, M.giro, { rayas: RAYAS_PAJA, sinSuelo: true });
+    L.add(hiladaPaja(M.ancho, GR, l), f % 2 ? col.o : col.c, M.cx, c.y, c.z, M.giro, { rayas: RAYAS_PAJA, sinSuelo: true });
   }
   // mechones: manojos cortos y romos de paja que asoman del canto del alero, en dos filas, cada uno con su largo y giro
   const bajada = new THREE.Vector3(0, -Math.sin(M.ang), -Math.cos(M.ang));
@@ -487,17 +489,19 @@ function lotePaja(ctx = CTX_TEJADO, L = loteTejado()) {
     const dir = bajada.clone().add(new THREE.Vector3((ruido(sd + 9) - 0.5) * 0.35, -0.15 - fila * 0.1, 0)).normalize();
     const m = new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir));
     const manojo = cil(0.022, 0.032, largo, 5); manojo.translate(0, largo / 2 - 0.02, 0);
-    L.add(manojo, ruido(sd + 2) > 0.5 ? 'paja' : 'pajaOsc', x, base.y, base.z, m, { sinSuelo: true, escala: new THREE.Vector3(1.3, 1, 0.8), brillo: 0.85 + ruido(sd + 7) * 0.2 });
+    L.add(manojo, ruido(sd + 2) > 0.5 ? col.c : col.o, x, base.y, base.z, m, { sinSuelo: true, escala: new THREE.Vector3(1.3, 1, 0.8), brillo: 0.85 + ruido(sd + 7) * 0.2 });
   }
   if (ctx.cumbrera) {
     const yC = M.sub + GR * 0.78, r = 0.24;
-    L.add(cil(r, r, M.ancho, 14), 'pajaOsc', M.cx, yC, M.S / 2, { z: Math.PI / 2 }, { sinSuelo: true, rayas: RAYAS_PAJA });
+    L.add(cil(r, r, M.ancho, 14), col.o, M.cx, yC, M.S / 2, { z: Math.PI / 2 }, { sinSuelo: true, rayas: RAYAS_PAJA });
     for (const l of [-1, 1]) if ((ctx.extremos || []).includes(l))
-      L.add(new THREE.SphereGeometry(r, 14, 8), 'pajaOsc', l < 0 ? M.x0 : M.x1, yC, M.S / 2, null, { sinSuelo: true, escala: new THREE.Vector3(0.3, 1, 1) });
+      L.add(new THREE.SphereGeometry(r, 14, 8), col.o, l < 0 ? M.x0 : M.x1, yC, M.S / 2, null, { sinSuelo: true, escala: new THREE.Vector3(0.3, 1, 1) });
   }
   return L;
 }
 const tejadoPaja = (ctx = CTX_TEJADO) => deLote(lotePaja(ctx));
+const loteJuncos = (ctx = CTX_TEJADO, L = loteTejado()) => lotePaja(ctx, L, COLOR_JUNCO);
+const tejadoJuncos = (ctx = CTX_TEJADO) => deLote(loteJuncos(ctx));
 // Tablillas: tablazón debajo y filas de tablillas solapadas, cada fila desplazada media tablilla, con el pie un poco
 // levantado (se ve el canto de cada fila); tabla de remate en los lados que vuelan y caballete en la cumbrera
 function loteTablillas(ctx = CTX_TEJADO, L = loteTejado()) {
@@ -594,7 +598,7 @@ const tejadoTejas = (ctx = CTX_TEJADO) => deLote(loteTejas(ctx));
 //          hasta la punta (x = z = +1) y se cubre como la cumbrera de su material
 //   'hoya' (rincón de un tejado en L): alto = el mayor de los dos; la limahoya baja por la diagonal hasta (-1, -1)
 // Sin ctx (fantasma, muestrario): limatesa.
-const LOTE_MITAD = { remate_paja: lotePaja, remate_tablilla: loteTablillas, remate_teja: loteTejas };
+const LOTE_MITAD = { remate_paja: lotePaja, remate_juncos: loteJuncos, remate_tablilla: loteTablillas, remate_teja: loteTejas };
 // giro que lleva el eje x local a lo largo de p0 → p1, con el y local hacia arriba (lo más posible)
 function aLoLargo(p0, p1) {
   const a = p1.clone().sub(p0).normalize(), lado = new THREE.Vector3().crossVectors(a, new THREE.Vector3(0, 1, 0)).normalize();
@@ -619,16 +623,17 @@ function remateTejado(tipo, ctx = {}) {
   const p0 = new THREE.Vector3(-S / 2 + h0, h0 * sub / S, -S / 2 + h0), p1 = new THREE.Vector3(S / 2, sub, S / 2);
   const giro = aLoLargo(p0, p1), largo = p0.distanceTo(p1);
   const en = (t, alto) => p0.clone().lerp(p1, t).add(new THREE.Vector3(0, alto, 0));
-  if (tipo === 'remate_paja') {
+  if (tipo === 'remate_paja' || tipo === 'remate_juncos') {
+    const oscuro = tipo === 'remate_juncos' ? COLOR_JUNCO.o : COLOR_PAJA.o;
     // limatesa: un rollo de paja como la cumbrera; limahoya: la paja se junta sola, con un poco de sombra en la junta
     if (tesa) {
       const r = 0.22, rollo = cil(r, r, largo + 0.1, 14); rollo.rotateZ(Math.PI / 2);
       const c = en(0.5, GRUESO_PAJA * 0.8);
-      L.add(rollo, 'pajaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, rayas: RAYAS_PAJA });
+      L.add(rollo, oscuro, c.x, c.y, c.z, giro, { sinSuelo: true, rayas: RAYAS_PAJA });
     } else {
       const surco = cil(0.1, 0.1, largo, 8); surco.rotateZ(Math.PI / 2);
       const c = en(0.5, GRUESO_PAJA * 0.62);
-      L.add(surco, 'pajaOsc', c.x, c.y, c.z, giro, { sinSuelo: true, brillo: 0.7, rayas: RAYAS_PAJA });
+      L.add(surco, oscuro, c.x, c.y, c.z, giro, { sinSuelo: true, brillo: 0.7, rayas: RAYAS_PAJA });
     }
   } else if (tipo === 'remate_tablilla') {
     if (tesa) {
@@ -1346,9 +1351,10 @@ export function modeloPieza(tipo, ctx) {
     case 'muro_tabla_ventana': return muroTablasVentana();
     case 'medio_muro': return medioMuro();
     case 'tejado_paja': return tejadoPaja(ctx || CTX_TEJADO);
+    case 'tejado_juncos': return tejadoJuncos(ctx || CTX_TEJADO);
     case 'tejado_tablilla': return tejadoTablillas(ctx || CTX_TEJADO);
     case 'tejado_teja': return tejadoTejas(ctx || CTX_TEJADO);
-    case 'remate_paja': case 'remate_tablilla': case 'remate_teja': return remateTejado(tipo, ctx || {});
+    case 'remate_paja': case 'remate_juncos': case 'remate_tablilla': case 'remate_teja': return remateTejado(tipo, ctx || {});
     case 'hastial': return hastial();
     case 'escalera_mano': return escaleraMano(ctx);
     case 'escalera_tabla': return escaleraTablas(ctx);

@@ -1349,7 +1349,9 @@
     },
     {
      "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T14:29:49+00:00",
+     "rama": "trabajo/20261107-1429"
     },
     {
      "nombre": "Almacenajes de la base (con su modelo, que se ve lleno): acopio de troncos, pila de piedras y leñera. Guardar y sacar con Usar; de quien tiene la tierra; la obra no coge de ellos sola",
@@ -1360,7 +1362,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos o de paja y puerta de varas, con el estilo v5 y pagada con lo que llevas",
+     "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
      "estado": "pendiente"
     },
     {
@@ -1372,7 +1374,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Recorrido entero de nada al banco de tronco, sin arcón, en el recorrido de jugador; y prueba de valravnx entre dos",
+     "nombre": "Recorrido entero de nada a la casa humilde cerrada y techada y al banco de tronco, sin arcón, en el recorrido de jugador (cada material sacado del mundo: pruebas/prueba_origenes.mjs); y prueba de valravnx entre dos",
      "estado": "pendiente"
     },
     {
@@ -1400,6 +1402,10 @@
      "fin": "2026-11-06T23:37:13+01:00"
     },
     {
+     "nombre": "Origen de la piel, el mimbre, la resina y la corteza (lo piden recetas de este tramo y aún no salen de ningún sitio: honda, odre, cestas, nasa, yesca de corteza, antorcha con resina; pruebas/prueba_origenes.mjs): sacarlos del mundo o quitar esas recetas del tramo",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
     },
@@ -1411,9 +1417,9 @@
     },
     {
      "nombre": "El tejado de la casa humilde y que nada esencial se escurra (valravnx, 7 nov: «no puede ser que os paseis cosas tan esenciales por alto»): tejado de juncos y su remate, con el junco como material de obra; prueba de que cada material de este tramo sale de algún sitio del mundo y de que la casa humilde se puede hacer entera; la regla en CLAUDE.md",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T12:48:08+01:00",
-     "rama": "trabajo/20261107-1250-tejado"
+     "fin": "2026-11-07T15:18:19+01:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -1560,9 +1566,9 @@
     },
     {
      "nombre": "El duelo con lo que llevas: la ropa y la armadura puestas y el arma de la mano salen del inventario",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T12:24:06+00:00",
-     "rama": "trabajo/20261107-1224"
+     "fin": "2026-11-07T14:09:48+00:00"
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
@@ -1699,6 +1705,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T09:48:41+01:00",
      "fin": "2026-11-07T13:45:38+01:00"
+    },
+    {
+     "nombre": "Los llanos sin nada a 0,4 m (valravnx, 7 nov: «hay tramos que no aparece vegetacion ni nada en la estepa… a momentos aparece un manto azul»): tierra adentro, lo que quedaba por debajo del mar sube a una altura de tierra de verdad, con relieve, y crece lo que toca",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T15:30:52+01:00",
+     "rama": "trabajo/20261107-1530-llanos"
     }
    ],
    "num": "G"
@@ -3272,6 +3284,13 @@
      "archivo": "jugar/demo/v137.html",
      "capturas": "capturas/demo-v137",
      "notas": "El día y la noche: el sol, la luna con su fase y las estrellas, y la luz que los sigue"
+    },
+    {
+     "v": "v138",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v138.html",
+     "capturas": "capturas/demo-v138",
+     "notas": "El tejado de la casa humilde (valravnx, 7 nov): tejado de juncos y su remate de esquina (2 varas y 4 juncos, cortados en la orilla con una lasca), con el junco como material de obra. Lo que pide paja se esconde del menú: la paja sale del cereal, que aún no hay. Prueba nueva que sigue cada material hasta el mundo y no deja pasar ninguna parte de la casa sin origen."
     }
    ]
   },

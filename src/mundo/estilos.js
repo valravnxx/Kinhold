@@ -8,7 +8,7 @@ import { azarLineal as azar, pseudo3 as ruido3 } from '../logica/azar.js';
 // Paleta: apagada y natural, un punto más cálida y limpia que la v2
 export const PALETA = {
   madera: 0x7a5a3f, maderaOsc: 0x5c4330, corte: 0xc9a777, tabla: 0x93714f,
-  paja: 0xb59d6c, pajaOsc: 0x9a8457, piedra: 0x9c978d, piedraOsc: 0x7d7970, mortero: 0x8a8274,
+  paja: 0xb59d6c, pajaOsc: 0x9a8457, junco: 0x9a9168, juncoOsc: 0x7b744f, piedra: 0x9c978d, piedraOsc: 0x7d7970, mortero: 0x8a8274,
   hierro: 0x55555a, hierba: 0x7d9455, hierbaClara: 0x98a866, tierra: 0x7f6a4f, camino: 0x9a8566,
   tierraCorte: 0x6a5440, tierraCorteOsc: 0x4f3f31, raiz: 0x5a4632,
   lino: 0xcbbf9f, lana: 0x8a7a63, lanaOsc: 0x6e5240, pano: 0x7d3c30, piel: 0x93734f, barro: 0x9a7356,
@@ -80,7 +80,7 @@ export function textura(tipo) {
 }
 // qué textura lleva cada color de la paleta, y cuántas repeticiones por metro
 export const TEX = {
-  madera: 'veta', maderaOsc: 'veta', tabla: 'veta', corte: 'anillos', paja: 'paja', pajaOsc: 'paja',
+  madera: 'veta', maderaOsc: 'veta', tabla: 'veta', corte: 'anillos', paja: 'paja', pajaOsc: 'paja', junco: 'paja', juncoOsc: 'paja',
   piedra: 'piedra', piedraOsc: 'piedra', mortero: 'piedra', corteza: 'corteza',
   hoja: 'hojas', hojaOsc: 'hojas', hojaClara: 'hojas', pino: 'hojas', pinoOsc: 'hojas',
   abeto: 'hojas', abetoOsc: 'hojas', haya: 'hojas', hayaOsc: 'hojas', fresno: 'hojas', encina: 'hojas', encinaOsc: 'hojas',

@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 7 nov 2026 (15:22 UTC+1) — por el chat: llanos sin nada en la estepa, y un manto azul encima
+valravnx, con dos capturas del mismo sitio desde la cámara libre: «hay tramos que no aparece vegetacion ni nada en la estepa, y con freecam coincide con que a momentos aparece un manto azul sobre ese mismo sitio… y es como zona 100% sin nada, pero es una pradera que deberia tener todo como el resto».
+→ Visto en la lógica: tierra adentro, donde el terreno quedaría por debajo del mar, se pone a 0,4 m justos («nunca por debajo del mar»), y salen llanos de kilómetros completamente planos a 0,4 m. Ahí no crece nada (la hierba pide 1 m sobre el mar; los árboles, 1,5) y, de lejos, el mar de lejos (4 m más bajo) le gana en la hondura comprimida y se ve el manto azul. Tarea del chat: esos llanos, a una altura de tierra de verdad y con su relieve, y una prueba que no deje llanos así.
+
 ### 7 nov 2026 (14:15 UTC+1) — por el chat: planificar P4
 valravnx: «haz la planificación ya de p4».
 → Hecho: 15 tareas en el roadmap (hito «Un primer día con sentido»), que sigue pendiente detrás de P3.

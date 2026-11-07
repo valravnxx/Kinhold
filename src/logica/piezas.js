@@ -23,7 +23,7 @@ export const MAX_PLANTA = 3;  // plantas 0..3
 //  h = hogar (chimenea) en una casilla de la planta baja  clave i,j,k  (sobre el cimiento de piedra f:i,j,0)
 
 export const MATERIALES = {
-  piedra: 'Piedra', tronco: 'Tronco delgado', vara: 'Vara', barro: 'Barro', paja: 'Paja',
+  piedra: 'Piedra', tronco: 'Tronco delgado', vara: 'Vara', barro: 'Barro', paja: 'Paja', junco: 'Juncos',
   cuerda: 'Cuerda', tabla: 'Tabla', clavo: 'Clavo', hierro: 'Hierro', teja: 'Teja',
 };
 
@@ -35,7 +35,7 @@ export const MATERIALES = {
 // La piedra (sin tallar) va como pesada: el GDD sube «piedras pequeñas» con polea (provisional).
 export const CLASES_PESO = { ligero: 'Ligero', pesado: 'Pesado', muy_pesado: 'Muy pesado' };
 export const CLASE_PESO = {
-  tabla: 'ligero', vara: 'ligero', paja: 'ligero', clavo: 'ligero', cuerda: 'ligero', barro: 'ligero', hierro: 'ligero',
+  tabla: 'ligero', vara: 'ligero', paja: 'ligero', junco: 'ligero', clavo: 'ligero', cuerda: 'ligero', barro: 'ligero', hierro: 'ligero',
   teja: 'ligero', // las tejas se suben de pocas en pocas, a mano
   tronco: 'pesado', piedra: 'pesado',
 };
@@ -64,6 +64,10 @@ export const PIEZAS = {
   medio_muro:         { nombre: 'Medio muro', hueco: 'e', nivel: 1, peso: 80, cap: 0, coste: { tronco: 1, vara: 2 }, medio: true, cat: 'muro' },
 
   tejado_paja:        { nombre: 'Tejado de paja', hueco: 'r', nivel: 1, peso: 80, cap: 400, coste: { vara: 2, paja: 4 }, cat: 'tejado' },
+  // El de la casa humilde (valravnx, 7 nov: «si se ha hecho el paso a paso… no se ha tenido en cuenta el maldito techo»):
+  // el GDD pone «tejado de juncos o de paja», y la paja sale del cereal, que aún no hay. El de juncos, con los juncos que
+  // se cortan en la orilla con una lasca; mismo peso, carga y coste que el de paja (provisional: sistemas no lo trae).
+  tejado_juncos:      { nombre: 'Tejado de juncos', hueco: 'r', nivel: 1, peso: 80, cap: 400, coste: { vara: 2, junco: 4 }, cat: 'tejado' },
   tejado_tablilla:    { nombre: 'Tejado de tablillas', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { tabla: 3, clavo: 4 }, cat: 'tejado' },
   // Sistemas: «Tejado de teja — N2, 10 tejas + vigas, 200 kg; no se pudre ni arde fácil; pesa». Las vigas de debajo
   // (los pares que sostienen las tejas) van como 1 tronco (provisional). Lo de pudrirse y arder queda anotado para
@@ -75,6 +79,7 @@ export const PIEZAS = {
   // del mismo material que el tejado que remata: uno por material, con la mitad del coste y del peso de su tramo
   // (provisional; la paja, 40 kg como dice sistemas).
   remate_paja:        { nombre: 'Remate de paja (esquina)', hueco: 'r', nivel: 1, peso: 40, cap: 400, coste: { vara: 1, paja: 2 }, esquina: true, cat: 'tejado' },
+  remate_juncos:      { nombre: 'Remate de juncos (esquina)', hueco: 'r', nivel: 1, peso: 40, cap: 400, coste: { vara: 1, junco: 2 }, esquina: true, cat: 'tejado' },
   remate_tablilla:    { nombre: 'Remate de tablillas (esquina)', hueco: 'r', nivel: 2, peso: 50, cap: 500, coste: { tabla: 2, clavo: 2 }, esquina: true, cat: 'tejado' },
   remate_teja:        { nombre: 'Remate de teja (esquina)', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { teja: 5, tronco: 1 }, esquina: true, noSePudre: true, ardePoco: true, cat: 'tejado' },
   // El hastial ya se dibuja solo con el tejado; la pieza queda oculta para no romper partidas guardadas.
@@ -140,12 +145,15 @@ export const DECORACION = {
 // de después (tablas, clavos, hierro, tejas), y los muebles igual. Así quedan guardados la teja, la chimenea, el
 // adarve, la empalizada, la polea, el polipasto, la escalera de tablas y los muebles de tablas o hierro. Solo se
 // esconden: la lógica y el servidor las siguen sabiendo construir (las pruebas y lo ya construido). Provisional.
-export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja'];
+// La paja, igual (7 nov): sale del cereal (GDD), que aún no hay; lo que la pide (el tejado y el remate de paja, la cama
+// de paja, la antorcha de pie y la alfombra) no se puede hacer sin el arcón de pruebas y no se enseña. El tejado de la
+// casa humilde es el de juncos (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
+export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja', 'paja'];
 export const NIVEL_TRAMO = 1;
 export function enEsteTramo(def) {
   return (def.nivel ?? 0) <= NIVEL_TRAMO && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));
 }
 
 export const MATERIALES_INICIALES = {
-  piedra: 120, tronco: 120, vara: 120, barro: 80, paja: 80, cuerda: 40, tabla: 80, clavo: 120, hierro: 20, teja: 100,
+  piedra: 120, tronco: 120, vara: 120, barro: 80, paja: 80, junco: 80, cuerda: 40, tabla: 80, clavo: 120, hierro: 20, teja: 100,
 };

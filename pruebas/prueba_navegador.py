@@ -58,7 +58,7 @@ with sync_playwright() as p:
 
     print('PC: el menú de construir solo enseña lo de este tramo')
     ev(f"{K}.cambiarModo('construir')")
-    guardadas = ['Tejado de teja', 'Chimenea', 'Adarve', 'Empalizada', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
+    guardadas = ['Tejado de teja', 'Tejado de paja', 'Cama de paja', 'Chimenea', 'Adarve', 'Empalizada', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
                  'Cama de madera', 'Mesa', 'Banco', 'Arcón', 'Barril', 'Estantería', 'Muro de tablas']
     vistas = []
     for cat in ['tierra', 'base', 'estructura', 'muro', 'tejado', 'acceso', 'exterior', 'deco']:
@@ -70,7 +70,7 @@ with sync_playwright() as p:
         if cat == 'deco': pg.screenshot(path=f'{SALIDA}/00b_menu_construir_muebles.png')
     fuera = [n for n in guardadas if n in vistas]
     comprobar('lo de niveles posteriores no sale en el menú', not fuera, ', '.join(fuera))
-    comprobar('lo de la casa humilde sí sale', all(n in vistas for n in ['Muro de troncos', 'Tejado de paja', 'Escalera de mano', 'Andamio', 'Cama de paja']))
+    comprobar('lo de la casa humilde sí sale', all(n in vistas for n in ['Muro de troncos', 'Tejado de juncos', 'Escalera de mano', 'Andamio', 'Taburete']))
     pg.click('#pestanas button[data-cat="base"]')
 
     print('PC: cabaña completa')
@@ -717,7 +717,7 @@ with sync_playwright() as p:
     ev("document.querySelector('.inv-materiales [data-tipo=tronco_delgado]').click()")
     ev("document.querySelector('.inv-manos') && document.querySelector('.inv-manos').click()")
     lleva = ev(f"{K}.inventario.cuantos('tronco_delgado')")
-    comprobar('en el arcón están los 10 materiales de obra; un tronco delgado se coge con las manos y sale del arcón', nb == 10 and lleva == 1 and t0 - ev(f"{K}.mundo.materiales.tronco") == 1, f'botones={nb} lleva={lleva}')
+    comprobar('en el arcón están los 11 materiales de obra; un tronco delgado se coge con las manos y sale del arcón', nb == 11 and lleva == 1 and t0 - ev(f"{K}.mundo.materiales.tronco") == 1, f'botones={nb} lleva={lleva}')
     esperar(pg, 400)
     pg.screenshot(path=f'{SALIDA}/27b_arcon_materiales.png')
     ev(f"{K}.panelInventario.cerrar()")

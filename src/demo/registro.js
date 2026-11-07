@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v137 (el día y la noche)";
+export const VERSION_DEMO = "Demo única · v138 (el tejado de juncos)";
 export const REGISTRO_DEMO = [
+  "v138: el tejado de la casa humilde (valravnx, 7 nov: «no se ha tenido en cuenta el maldito techo»): tejado de juncos y su remate de esquina (2 varas y 4 juncos; los juncos, de la orilla, con una lasca), con el junco como material de obra y el estilo del de paja. Lo que pide paja (tejado y remate de paja, cama de paja, antorcha de pie y alfombra) se esconde del menú: la paja sale del cereal, que aún no hay.",
+  "v138, provisional: el tejado de juncos pesa, carga y cuesta como el de paja (el documento de sistemas no lo trae).",
   "v137: el ciclo de día y noche (valravnx, 7 nov). La hora es la del servidor: todos ven el mismo cielo. El día dura 2 horas reales y la noche 1 (GDD). El sol sale por el este, a mediodía está al sur y se pone por el oeste, y la luz lo sigue con sus sombras y sus colores: blanca a mediodía, dorada al caer la tarde; el cielo va del azul al naranja y al morado del crepúsculo.",
   "v137: de noche, estrellas (con la Vía Láctea) que giran alrededor del polo, y la luna con su fase, que sale de dónde está el sol: la llena alumbra y hace sombra; con la nueva está más oscuro, pero se ve. El agua refleja el cielo de cada momento.",
   "v137, provisional: el reloj del mundo empieza el 7 nov a las 6:00; el sol sube hasta 48° a mediodía; una luna llena cada 8 días del mundo (un día real); los colores de cada momento. La noche es más clara de lo que sería de verdad, para que se pueda jugar.",

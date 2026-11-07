@@ -30,6 +30,7 @@
 //   t, lista } con los que han cambiado (también el propio). Una intención que no se puede: { tipo:
 //   'combate_rechazo', que, motivo }. La bienvenida lleva tc (reloj del combate, ms), luchadores y ahora (su reloj, ms: la hora del cielo, src/logica/cielo.js). Lo que
 //   resuelve el combate (golpes, disparos, impactos) se guarda aparte, en combate.jsonl junto al mundo.
+//   Lo que le protege es la ropa que lleva puesta en su inventario del servidor (al entrar y cada vez que cambia).
 //
 //   Lo que lleva cada uno y lo del suelo (src/logica/objetos_red.js): el cliente manda { tipo: 'objeto', id, accion:
 //   { tipo: 'mover'|'ponerse'|'quitarse'|'soltar_suelo'|'coger_suelo'|'talar'|'trocear'|'recoger'|'coger'|'soltar'|
@@ -139,6 +140,7 @@ import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
 import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades } from '../src/logica/necesidades.js';
+import { puestasDe } from '../src/logica/prendas.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -376,6 +378,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const enviar = (ws, msg) => { if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg)); };
   // Si ha cambiado lo que se ve que lleva (al coger, soltar, ponerse algo…), se vuelve a repartir su aspecto.
   const repartirLlevado = (autor) => {
+    vestirLuchador(autor);
     const e = aspectos.get(autor); if (!e) return;
     const l = llevadoDe(objetos.invs.de(autor).lugares);
     if (huellaLlevado(l) === huellaLlevado(e.llevado)) return;
@@ -387,6 +390,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
   // Strandvang, tierras del rey: ahí no se hiere a otro jugador (tierras: en(x, z) de src/logica/tierras_rey.js)
   const combate = new CombateServidor({ semilla, tierras: tierras || null });
+  // el duelo con lo que llevas (7 nov): lo que le protege es la ropa que tiene puesta en su inventario del servidor
+  const vestirLuchador = (autor) => combate.vestir(autor, puestasDe(objetos.invs.de(autor).lugares));
   const t0 = reloj();
   const ponerAlDia = () => combate.avanzarHasta((reloj() - t0) / 1000);
   let escritas = 0;
@@ -517,6 +522,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const ap = apartados.get(autor);
       if (ap) { apartados.delete(autor); combate.volver(autor, ap.L); } else combate.entrar(autor);
     }
+    vestirLuchador(autor);
     // lo de alrededor de donde aparece: donde lo dejó o la salida (si es nuevo, la común hasta que elija)
     if (salidaComun && terreno && !posiciones.has(autor)) elegirSalida(autor, 'lindholt');
     vista.quitar(autor);

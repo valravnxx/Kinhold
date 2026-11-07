@@ -5062,6 +5062,41 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-07T12:48:08+01:00",
+  "fin": "2026-11-07T15:18:19+01:00",
+  "titulo": "P3: el tejado de juncos, y que nada esencial se escurra",
+  "hito": "crafting",
+  "hecho": [
+   "Fallo del plan, reconocido: la casa humilde no se podía techar. El único tejado era el de paja, la paja no sale de ningún sitio, el junco no era material de obra y el recorrido de jugador paraba en coger juncos, sin llegar a la casa.",
+   "Tejado de juncos y su remate de esquina (2 varas y 4 juncos; 1 vara y 2 juncos el remate), con el junco como material de obra y el estilo del de paja en su color.",
+   "Lo que pide paja (tejado y remate de paja, cama de paja, antorcha de pie y alfombra) se esconde del menú de este tramo, como lo de después: la paja sale del cereal (GDD), que aún no hay.",
+   "Prueba nueva, de dónde sale cada cosa (pruebas/prueba_origenes.mjs): sigue la cadena desde el mundo sin arcón y falla si a la casa humilde le falta alguna parte hecha solo con lo que se consigue, o si el juego enseña algo sin origen y sin tarea viva. Con MUTAR=1 (sin juncos) y MUTAR=2 falla.",
+   "La prueba ha sacado otros huecos: la piel, el mimbre, la resina y la corteza no salen de ningún sitio (honda, odre, cestas, nasa, yesca de corteza, antorcha con resina): tarea nueva en P3.",
+   "Reglas nuevas en CLAUDE.md: al planificar un hito, la cadena de cada material hasta el mundo y las tareas con nombre concreto; antes de pasar un hito a revisión, el repaso de lo esencial contra el recorrido de jugador.",
+   "Las tareas de la casa humilde y del recorrido dicen ya su tejado (de juncos) y que el recorrido la levanta entera, cerrada y techada, sin arcón."
+  ],
+  "pruebas": "Todas en la nube (su PC no estaba libre): las del tramo y de la construcción, puestas al día (el tejado de juncos a la vista, lo de paja escondido); la de lo que llevas puesto falló una vez sin relación con esto y pasó al repetirla. Capturas de los tejados de cerca, al lado del de paja, miradas.",
+  "capturas": "capturas/demo-v138",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T12:23:10+00:00",
+  "fin": "2026-11-07T14:09:48+00:00",
+  "titulo": "P6: el duelo con lo que llevas puesto",
+  "hito": "orden",
+  "hecho": [
+   "En línea, lo que te protege en el duelo es la ropa que llevas puesta en tu inventario del servidor: al entrar y cada vez que cambia lo que llevas, el servidor viste a tu luchador con esas prendas. Antes todos peleaban con el gambesón que ponía el servidor.",
+   "El cliente ya no dice su armadura: «equipar» solo cambia el arma, y si una versión de antes manda la armadura, no cuenta.",
+   "Los demás ven lo que llevas puesto (la foto de cada luchador lleva sus prendas) y la copia del navegador se viste con ella. Al volver a empezar sigues con lo puesto.",
+   "Decisión provisional: ponerse o quitarse algo cambia lo que te protege enseguida, también en mitad de una pelea; lo que se tarda en ponerse cada prenda no existe todavía.",
+   "El arma de la mano sigue siendo la espada larga: que salga del inventario y lo compruebe el servidor es la tarea siguiente del hito.",
+   "Pruebas: la del combate en el servidor comprueba que equipar con «malla» no cambia nada, que con la cota protege lo de sus prendas zona a zona, que los demás y la copia lo ven, y que en el servidor de verdad el luchador lleva lo de su inventario y, al quitarse la camisa, deja de llevarla (rota a propósito con MUTAR_ROPA=1, falla). El recorrido de jugador comprueba que uno nuevo lucha con la camisa y el pantalón, sin armadura.",
+   "Sin versión nueva: no cambia nada que se vea; el servidor lo coge al actualizarse a main."
+  ],
+  "pruebas": "En la nube, 37 grupos: todos bien (el PC de valravnx no estaba para pruebas). Aquí, combate en el servidor 81/81 y recorrido 79/79. Miradas las capturas del combate en el mundo (PC y móvil): igual que antes. Tras unir main (el día y la noche, v137, que no toca el combate), el grupo de lógica otra vez en la nube: bien.",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-07T14:17:52+01:00",
   "fin": "2026-11-07T14:24:53+01:00",
   "titulo": "P4, un primer día con sentido: planificado (chat con valravnx)",

@@ -80,6 +80,10 @@ const casas = [
   casaPlanta(m, PLANTA_L, 'muro_zarzo', EN_L('tejado_paja', 'remate_paja')),
   casaPlanta(m, PLANTA_2x3, 'muro_tabla', CUATRO('tejado_tablilla', 'remate_tablilla')),
   casaPlanta(m, [[0, 0], [1, 0], [0, 1], [1, 1]], 'muro_entramado', [['remate_teja', 0, 0, 0], ['remate_teja', 1, 0, 1], ['remate_teja', 0, 1, 3], ['remate_teja', 1, 1, 2]]),
+  // (7 nov) la casa humilde, con su tejado de juncos
+  casa(m, 2, 2, 'muro_tronco', 'tejado_juncos', 'dos'),
+  casa(m, 1, 2, 'muro_zarzo', 'tejado_juncos', 'una'),
+  casaPlanta(m, PLANTA_L, 'muro_zarzo', EN_L('tejado_juncos', 'remate_juncos')),
 ];
 const SEP = 9, objetos = [];
 casas.forEach((c, n) => {
