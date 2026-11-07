@@ -2291,5 +2291,11 @@
  "{e}: quitas el marco y lo entregado cae al suelo.": "{e}: ты убираешь каркас, и принесённое падает на землю.",
  "{e}: recuperas el 75 % del material, y lo que guarda cae al suelo.": "{e}: ты возвращаешь 75 % материала, а то, что в нём лежит, падает на землю.",
  "Está ardiendo: espera a que se apague.": "Он горит: подожди, пока погаснет.",
- "Tiene encargos a medias: espera a que terminen y recógelos.": "В нём есть незаконченные заказы: дождись, пока они закончатся, и забери их."
+ "Tiene encargos a medias: espera a que terminen y recógelos.": "В нём есть незаконченные заказы: дождись, пока они закончатся, и забери их.",
+ "v144: llevar más de una vez (valravnx, 7 nov: «metelo ya»): la rastra lleva también troncos delgados (hasta 5, apoyados en los travesaños con la punta de atrás arrastrando) y varas (hasta 12, en un haz); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda.": "v144: носить больше за раз (valravnx, 7 ноября: «делай сейчас»): волокуша везёт и тонкие брёвна (до 5, на перекладинах, задний конец волочится) и жерди (до 12, связкой); тростник и лоза идут в увязку вместе с соломой и волокном и видны на спине как связанные снопы.",
+ "v144, provisional: 5 troncos delgados pesan 75 kg, como 3 cortos: la rastra va igual de despacio; 12 varas, 24 kg. El tronco largo sigue sin ir en la rastra (es cosa de carro), ni el delgado en la carretilla (no cabe).": "v144, временно: 5 тонких брёвен весят 75 кг, как 3 коротких: волокуша идёт так же медленно; 12 жердей — 24 кг. Длинное бревно по-прежнему не кладут на волокушу (это для телеги), а тонкое — в тачку (не помещается).",
+ "Demo única · v144 (troncos delgados en la rastra y juncos en el fardo)": "Единое демо · v144 (тонкие брёвна на волокуше и тростник в увязке)",
+ "En la rastra solo van troncos (cortos o delgados), varas, piedras o un bloque de piedra.": "На волокушу кладут только брёвна (короткие или тонкие), жерди, камни или каменную глыбу.",
+ "A la espalda: pieles, tela, fibras, paja, juncos y mimbre.": "На спине: шкуры, ткань, волокно, солома, тростник и лоза.",
+ "Se arrastra a mano: 3 troncos cortos, 5 troncos delgados, 12 varas o un montón de piedras, despacio; se queda donde la dejas, con lo que lleve.": "Тянут вручную: 3 коротких бревна, 5 тонких брёвен, 12 жердей или куча камней, медленно; остаётся там, где оставишь, с грузом."
 }

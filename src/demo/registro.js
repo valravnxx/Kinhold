@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v143 (beber del río)";
+export const VERSION_DEMO = "Demo única · v144 (troncos delgados en la rastra y juncos en el fardo)";
 export const REGISTRO_DEMO = [
+  "v144: llevar más de una vez (valravnx, 7 nov: «metelo ya»): la rastra lleva también troncos delgados (hasta 5, apoyados en los travesaños con la punta de atrás arrastrando) y varas (hasta 12, en un haz); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda.",
+  "v144, provisional: 5 troncos delgados pesan 75 kg, como 3 cortos: la rastra va igual de despacio; 12 varas, 24 kg. El tronco largo sigue sin ir en la rastra (es cosa de carro), ni el delgado en la carretilla (no cabe).",
   "v143: beber del río con las manos (P4). Con agua a tu lado (río, lago o mar, a menos de 2,5 m), «Usar» bebe un trago, que baja la sed 30; con sed (su aviso), «Usar» bebe antes que nada, y en el menú del clic derecho sale «Beber agua». Lo da el servidor: mira dónde te tiene y si hay agua ahí. Un trago cada segundo y medio.",
   "v143, provisional: tres o cuatro tragos quitan la sed; aún sin animación de beber (el personaje se queda de pie).",
   "v142: los almacenajes de la base (revisión del 1 nov): el acopio de troncos, la pila de piedras y la leñera, en su propia pestaña de Construir («Almacenajes»). Se levantan como obra (el marco, su material y su trabajo) y solo en tu tierra o en la de quien te invita. Cada uno guarda lo suyo: el acopio, los troncos; la pila, la piedra suelta; la leñera, la leña y las ramas.",
