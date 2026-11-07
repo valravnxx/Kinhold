@@ -1,0 +1,63 @@
+PC: arrastrar del arcón a la silueta y a los huecos
+  OK   el botón abre el panel
+  OK   10 cuadros de equipo (espalda, cintura y 8 capas de ropa) — 10
+  OK   el panel se llama «Equipo» (el botón y el título)
+  OK   las manos y el hombro, en el panel
+  OK   lo del arcón, con la imagen de su modelo
+  OK   lo de la camisa puesta se ve con su imagen (la prenda dibujada)
+  OK   el retrato es tu personaje dibujado (un 10–60 % del cuadro) — 0.17
+  OK   empieza con camisa y pantalón de lino
+  OK   sin cinturón no hay cuadros de cintura
+  OK   arrastrar el cinto de cuero a la cintura se lo pone — cinto_cuero:1
+  OK   con el cinto, 3 cuadros de cintura bajo la silueta — 3
+  OK   el cuchillo, arrastrado a un hueco pequeño del cinto — cuchillo:1
+  OK   el hacha (mediana) no entra en un hueco pequeño, y se dice por qué — No cabe en ese hueco.
+  OK   tocar el leñero abre sus 6 huecos — lenero:1 ·  · espalda
+  OK   la leña entra en el leñero, una pila entera — lena:3
+  OK   la piedra no entra en el leñero
+  OK   el personaje se pone la túnica que dice el inventario — ['tunica', 'descalzo']
+  OK   con el hacha en la mano, el saco no se sube al hombro (valravnx, 1 nov) — Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.
+  OK   del arcón: el hacha con las manos y el odre colgado al hombro — hacha_mano:1 · odre:1
+  OK   el hacha se ve en la mano del personaje
+  OK   abajo se ve lo que llevas en la mano y al hombro — En la mano derecha: Hacha de mano
+Soltar
+Al hombro: Odre
+Soltar
+Al cinto: Cuchillo
+  OK   la barra de abajo: las dos manos, el hombro y el cinto, cada cosa con su imagen y su botón de soltar — {'huecos': 4, 'imgs': 3, 'soltar': 2, 'hombro': True, 'fondo': 'url("http://127.0.0.1:59165/recursos/interfaz-v1/hueco.webp")'}
+  OK   arrastrar el cuchillo del cinto al arcón lo deja
+  OK   se ve la carga y la velocidad — Carga: 42% · velocidad al andar: 97%
+  OK   cada cambio queda en el registro de acciones con autor — 10
+  OK   «Soltar» deja lo de la mano (y el hacha ya no se ve)
+  OK   y lo del hombro; sin nada, abajo quedan las dos manos vacías (sin nada que soltar)
+  OK   lo que llevas se guarda al recargar
+  OK   la tecla I abre el panel
+  OK   al recargar, el personaje lleva otra vez la túnica — ['tunica', 'descalzo']
+  OK   la túnica cosida entra con su hechura y su tinte — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'corto', 'tejido': 'sarga'}, 'tinte': 'glasto'}
+  OK   su cuadro dice la hechura y el tinte — Túnica de lana · Corto, Sarga · Azul de glasto
+  OK   puesta: la túnica corta, de sarga y azul, y la cota corta — {'tinte': 'glasto', 'corte': 'corto', 'tejido': 'sarga', 'cota': 'corto', 'alturaCota': 0.8149861425161362, 'capas': ['tunica', 'cota', 'descalzo']}
+  OK   otra túnica cosida, con lo suyo (cuadros y verde) — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'largo', 'tejido': 'cuadros'}, 'tinte': 'verde'}
+  OK   la ficha de lo puesto dice qué es, dónde lo llevas y qué se puede hacer — Túnica de lana · Cuadros · Verde ·  · Lo llevas puesto (abrigo). ·  · mediano · 0.8 kg · Quitártelo a las manos · Dejarlo en el suelo · Al arcón · Cancelar ·  · O toca otro sitio de tu equipo para llevarlo allí.
+  OK   la ficha enseña su imagen grande
+  OK   «Quitártelo a las manos»: la túnica pasa a la mano y deja de verse puesta — tunica_lana:1 · ['cota', 'descalzo'] · Lo llevas en las manos.
+  OK   y sale en su cuadro de la mano
+  OK   de la mano, «Ponértelo» la vuelve a poner
+  OK   «Dejarlo en el suelo»: el cinturón puesto queda a tus pies — None · 0→1
+  OK   sin cinturón, ya no salen sus huecos
+  OK   quitarse queda en el registro de acciones con autor — 1
+  OK   y lo cierra
+  OK   sin errores en la página (PC)
+Móvil: tocar y pantalla completa
+  OK   en el móvil el panel ocupa la pantalla — {'x': 0, 'y': 0, 'width': 390, 'height': 844}
+  OK   tocar la cuerda y luego la cintura se la pone
+  OK   la cuerda trenzada da 2 cuadros de cintura — 2
+  OK   bayas en el primer hueco de la cuerda (pila de 10) — bayas:10
+  OK   el tronco corto (grande) se coge con las dos manos
+  OK   «Ponérselo» pone el zurrón a la espalda
+  OK   móvil: la ficha sale abajo y deja ver el equipo — {'x': 0, 'y': 604.234375, 'width': 390, 'height': 239.765625}
+  OK   móvil: la ficha de la espalda deja dejarlo en el suelo
+  OK   el ✕ cierra el panel
+  OK   en el móvil, lo que llevas se ve abajo sin salirse de la pantalla — {'x': 152, 'y': 757, 'width': 164, 'height': 61}
+  OK   sin errores en la página (móvil)
+
+TODO CORRECTO
