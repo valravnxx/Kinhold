@@ -13,6 +13,13 @@ export const ESPECIES = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', '
 // radio de la copa y alto (m) de cada especie a escala 1: para no dibujar los que tapan al personaje
 export const TAMANO_ESPECIE = { abeto: [2.1, 10.5], pino: [2.3, 9.5], abedul: [1.6, 9], roble: [3.2, 7.5], haya: [2.3, 10.8], fresno: [2.6, 9.2], encina: [2.6, 5.5] };
 export const RADIO_TRONCO = { abeto: 0.3, pino: 0.27, abedul: 0.15, roble: 0.52, haya: 0.36, fresno: 0.27, encina: 0.34 };
+// Los jóvenes (revisión del 1 nov: de 3 a 5 m, finos y de copa rala): su propio modelo, de 4 m a escala 1 (la lógica,
+// src/logica/vegetacion.js, les da de 0,75 a 1,25). Lo mismo que arriba, para ellos.
+export const TAMANO_JOVEN = { abeto: [0.95, 4], pino: [1.1, 4], abedul: [0.95, 4], roble: [1.35, 4], haya: [1.1, 4], fresno: [1.25, 4], encina: [1.2, 4] };
+export const RADIO_JOVEN = { abeto: 0.075, pino: 0.07, abedul: 0.05, roble: 0.08, haya: 0.07, fresno: 0.065, encina: 0.075 };
+// el radio del tronco y [radio de la copa, alto] de un árbol del mundo (con su edad), a escala 1
+export const radioTronco = (o) => (o.edad === 'joven' ? RADIO_JOVEN : RADIO_TRONCO)[o.especie];
+export const tamanoArbol = (o) => (o.edad === 'joven' ? TAMANO_JOVEN : TAMANO_ESPECIE)[o.especie];
 
 // copas: [x, y, z, radio, color, escala (x, y, z) opcional]; s = sencillo
 function copas(L, lista, s, det, desde = 0) {
@@ -76,9 +83,69 @@ const HACER = {
   },
 };
 
+// Los jóvenes, de 4 m: tronco fino (lo que da el tronco delgado de la casa humilde), alguna rama suelta y la copa rala,
+// con huecos por los que se ve el tronco; cada uno con los colores y el porte de su especie para que se reconozca.
+// ramas: [x, y, z, largo, giro z, giro x]
+function ramitas(L, lista, s, mat = 'corteza') {
+  if (s) return;
+  for (const [x, y, z, l, gz, gx = 0] of lista) L.add(cil(0.012, 0.026, l, 4), mat, x, y, z, { z: gz, x: gx });
+}
+// la copa del joven: la misma de bultos, algo más llena que su lista (1,3 de radio) y un poco más abajo, para que el
+// alto se quede en unos 4 m
+const copasJ = (L, lista, s, det, desde) => copas(L, lista.map(([x, y, z, r, ...m]) => [x * 1.1, y * 0.93, z * 1.1, r * 1.3, ...m]), s, det, desde);
+const JOVEN = {
+  abeto: (L, s) => {
+    L.add(cil(0.025, 0.075, 2.2, s ? 4 : 5), 'corteza', 0, 1.1, 0);
+    // pocos pisos, pequeños y separados: se ve el tronco entre ellos
+    const pisos = s ? [[0.9, 1.0, 1.15], [0.6, 0.9, 2.2], [0.3, 0.9, 3.4]] : [[0.95, 0.85, 1.05], [0.75, 0.8, 1.85], [0.55, 0.75, 2.6], [0.35, 0.7, 3.25], [0.15, 0.55, 3.75]];
+    pisos.forEach(([r, h, y], i) => L.add(pisoPino(r, h, s ? 5 : 7, i * 1.7), i % 2 ? 'abetoOsc' : 'abeto', 0, y, 0, { y: i * 1.1 }, { copa: 0 }));
+  },
+  pino: (L, s) => {
+    L.add(cil(0.022, 0.07, 3.3, s ? 4 : 5), 'corteza', 0, 1.65, 0);
+    L.add(cil(0.015, 0.03, 0.9, 4), 'cortezaRoja', 0.05, 3.5, 0, { z: -0.05 });
+    ramitas(L, [[0.3, 2.6, 0.05, 0.7, -1.0], [-0.28, 2.9, -0.1, 0.6, 1.0, 0.2]], s, 'cortezaRoja');
+    copasJ(L, s ? [[0, 3.55, 0, 0.6, 'pino', [1.3, 0.75, 1.2]], [0.55, 2.85, 0.1, 0.4, 'pinoOsc', [1.3, 0.75, 1.2]]]
+      : [[0, 3.55, 0, 0.55, 'pino', [1.3, 0.75, 1.2]], [0.6, 2.85, 0.1, 0.38, 'pinoOsc', [1.3, 0.7, 1.2]], [-0.55, 3.1, -0.15, 0.36, 'pinoOsc', [1.3, 0.7, 1.2]]], s, s ? 0 : 1, 13);
+  },
+  abedul: (L, s) => {
+    const marcas = (v) => (Math.sin(v.y * 9.1 + Math.sin(v.y * 2.7) * 2) > 0.8 ? 0.55 : 1);
+    L.add(cil(0.02, 0.05, 3.7, s ? 4 : 5), 'cortezaClara', 0, 1.85, 0, { z: 0.04 }, { rayas: marcas });
+    ramitas(L, [[0.22, 2.5, 0.05, 0.6, -0.9], [-0.2, 3.0, -0.05, 0.5, 0.8]], s, 'cortezaClara');
+    copasJ(L, s ? [[0.05, 3.5, 0, 0.55, 'hojaClara', [1, 1.35, 1]], [-0.35, 2.7, 0.15, 0.4, 'hoja', [1, 1.3, 1]]]
+      : [[0.05, 3.55, 0, 0.45, 'hojaClara', [1, 1.4, 1]], [0.45, 2.75, 0.05, 0.36, 'hoja', [1, 1.3, 1]], [-0.4, 3.1, -0.05, 0.33, 'hojaClara', [1, 1.3, 1]], [0, 2.3, 0.35, 0.28, 'hoja', [1, 1.2, 1]], [0.15, 2.95, -0.4, 0.3, 'hoja', [1, 1.2, 1]]], s, s ? 0 : 1, 15);
+  },
+  roble: (L, s) => {
+    // ya algo torcido y más abierto que los otros
+    L.add(cil(0.03, 0.08, 2.6, s ? 4 : 5), 'corteza', 0.05, 1.3, 0, { z: -0.06 });
+    L.add(cil(0.015, 0.035, 1.2, 4), 'corteza', 0.35, 2.75, 0, { z: -0.6 });
+    L.add(cil(0.015, 0.032, 1.1, 4), 'corteza', -0.3, 2.8, 0.1, { z: 0.6 });
+    copasJ(L, s ? [[0.6, 3.3, 0.1, 0.6, 'hojaOsc', [1.2, 0.8, 1.1]], [-0.55, 3.4, 0, 0.55, 'hoja', [1.2, 0.8, 1.1]]]
+      : [[0.65, 3.25, 0.1, 0.52, 'hojaOsc', [1.2, 0.8, 1.1]], [-0.6, 3.4, 0.05, 0.5, 'hoja', [1.2, 0.8, 1.1]], [0.05, 3.7, -0.35, 0.42, 'hoja', [1.2, 0.8, 1.1]], [0.1, 2.55, 0.45, 0.32, 'hojaOsc', [1.2, 0.8, 1.1]], [-0.25, 2.9, -0.45, 0.34, 'hojaOsc', [1.2, 0.8, 1.1]]], s, s ? 0 : 1, 17);
+  },
+  haya: (L, s) => {
+    L.add(cil(0.022, 0.07, 3.5, s ? 4 : 5), 'cortezaGris', 0, 1.75, 0);
+    ramitas(L, [[0.25, 2.2, 0, 0.6, -1.0], [-0.22, 2.7, 0.05, 0.55, 1.0]], s, 'cortezaGris');
+    copasJ(L, s ? [[0, 3.4, 0, 0.6, 'haya', [1, 1.3, 1]], [0.3, 2.4, 0.1, 0.4, 'hayaOsc']]
+      : [[0, 3.45, 0, 0.5, 'haya', [1, 1.35, 1]], [0.45, 2.45, 0.1, 0.36, 'hayaOsc'], [-0.4, 2.85, -0.1, 0.35, 'haya'], [0.05, 2.0, -0.35, 0.28, 'hayaOsc'], [-0.1, 2.5, 0.4, 0.3, 'haya']], s, s ? 0 : 1, 19);
+  },
+  fresno: (L, s) => {
+    L.add(cil(0.02, 0.065, 3.0, s ? 4 : 5), 'corteza', 0, 1.5, 0);
+    L.add(cil(0.012, 0.028, 1.0, 4), 'corteza', 0.3, 3.1, 0, { z: -0.55 });
+    L.add(cil(0.012, 0.028, 0.95, 4), 'corteza', -0.28, 3.15, 0, { z: 0.55 });
+    copasJ(L, s ? [[0.6, 3.5, 0.05, 0.5, 'fresno', [1.1, 0.85, 1.1]], [-0.55, 3.6, -0.05, 0.48, 'fresno', [1.1, 0.85, 1.1]]]
+      : [[0.65, 3.5, 0.05, 0.42, 'fresno', [1.1, 0.85, 1.1]], [-0.6, 3.6, -0.05, 0.4, 'fresno', [1.1, 0.85, 1.1]], [0.05, 3.75, 0.35, 0.36, 'hojaClara'], [0, 2.7, -0.4, 0.28, 'hoja'], [-0.15, 3.0, 0.45, 0.3, 'fresno']], s, s ? 0 : 1, 21);
+  },
+  encina: (L, s) => {
+    L.add(cil(0.025, 0.075, 2.4, s ? 4 : 5), 'corteza', 0.05, 1.2, 0, { z: -0.1 });
+    ramitas(L, [[0.25, 1.9, 0.05, 0.6, -1.0], [-0.22, 2.2, 0, 0.55, 0.9]], s);
+    copasJ(L, s ? [[0, 3.3, 0, 0.65, 'encina', [1.15, 0.85, 1.15]], [0.5, 2.5, 0.2, 0.4, 'encinaOsc']]
+      : [[0, 3.35, 0, 0.55, 'encina', [1.15, 0.85, 1.15]], [0.5, 2.55, 0.2, 0.38, 'encinaOsc'], [-0.5, 2.7, -0.15, 0.38, 'encina'], [0.05, 2.15, -0.4, 0.3, 'encinaOsc'], [-0.1, 2.4, 0.45, 0.32, 'encina']], s, s ? 0 : 1, 23);
+  },
+};
+
 const cache = {};
-// { abeto: { geo, mats }, pino: …, … }; sencillo: con menos caras, para los árboles de lejos
-export function modelosEspecies({ sencillo = false } = {}) {
-  const k = sencillo ? 's' : 'n';
-  return (cache[k] ||= Object.fromEntries(ESPECIES.map(e => [e, modeloLote((L) => HACER[e](L, sencillo))])));
+// { abeto: { geo, mats }, pino: …, … }; sencillo: con menos caras, para los árboles de lejos. joven: los árboles jóvenes
+export function modelosEspecies({ sencillo = false, joven = false } = {}) {
+  const k = (sencillo ? 's' : 'n') + (joven ? 'j' : '');
+  return (cache[k] ||= Object.fromEntries(ESPECIES.map(e => [e, modeloLote((L) => (joven ? JOVEN : HACER)[e](L, sencillo))])));
 }

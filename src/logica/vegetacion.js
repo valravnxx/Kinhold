@@ -19,7 +19,15 @@ const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)
 export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5, canto: 1.3 };
 const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4 };
 export const DENSIDAD_BOSQUE = 0.55;   // de cerca, la densidad de un bosque de verdad (la del mapa)
-export const TAM_ADULTO = 0.95;     // desde este tamaño (1 = adulto normal de su especie), el árbol es adulto al talarlo
+// Jóvenes y adultos, bien distintos (revisión del 1 nov; GDD apartado 8 y sistemas apartado 3): cada árbol sale con su
+// edad. El joven mide de 3 a 5 m (su propio modelo, fino y de copa rala: src/mundo/especies.js, a 4 m a escala 1) y
+// sale sobre todo en los bordes del bosque y en los claros; el adulto es CRECE_ADULTO veces el de antes (más alto y más
+// grueso: se escala entero). Decisión provisional (6 nov, anotada en el registro y el diario): la parte de jóvenes es
+// 0,1 + 0,45 × linde + 0,35 × (1 − densidad del bosque), hasta 0,85; dentro del bosque cerrado, uno de cada seis.
+export const CRECE_ADULTO = 1.3;
+export const ALTO_JOVEN = [3, 5];   // m
+export const parteJovenes = (d, linde) => Math.min(0.85, 0.1 + 0.45 * linde + 0.35 * (1 - d));
+export const TAM_ADULTO = 0.95;     // (de antes: ya no decide la edad, que lleva cada árbol; se queda para lo guardado)
 export const CLARO_ARBOLES = 8;     // m sin árboles alrededor del sitio de salida (el personaje empieza en (0, 4) de la escena)
 const PRADO = { pradera: 1, mixto: 0.8, caducifolio: 0.7, encinar: 0.55, taiga: 0.5, brezal: 0.6, matorral: 0.45, turbera: 0.8, alpino: 0.6 };
 const PASO_PEND = 3;                   // la pendiente, con vecinos a 3 m (la forma del terreno, no cada piedrecita)
@@ -29,7 +37,7 @@ const PASO_PEND = 3;                   // la pendiente, con vecinos a 3 m (la fo
 // matas (es lo que más cuesta: solo alrededor de donde se juega), o un cuadro { x0, z0, x1, z1 } (sin el borde de la
 // derecha ni el de abajo: así los trozos del juego, uno al lado de otro, no repiten nada). Lo de hierba tiene que caer
 // dentro de `cuadro` (la pendiente sale de su rejilla).
-// Devuelve { arboles: [{ x, z, y, especie, tam, giro, tono }], hierba: [{ x, z, y, tam, giro, tono }],
+// Devuelve { arboles: [{ x, z, y, especie, edad: 'joven' | 'adulto', tam, giro, tono }], hierba: [{ x, z, y, tam, giro, tono }],
 //            flores: [{ x, z, y, tam, giro, color }], matas: [ídem hierba], piedras: [{ x, z, y, tam, giro, roca }] }
 export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
   const { x0, z0, x1, z1 } = cuadro;
@@ -60,14 +68,19 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
   };
   const R = { arboles: [], hierba: [], flores: [], matas: [], piedras: [] };
 
-  // árboles: rejilla desordenada de 4,5 m; del tamaño de los del juego (6–11 m), ±15 % cada uno
+  // árboles: rejilla desordenada de 4,5 m; los adultos de 8 a 14 m (los de antes, 6–11 m, un 30 % más), ±15 % cada uno;
+  // los jóvenes, de 3 a 5 m
   recorrer(CELDA.arbol, CAPA.arbol, x0, z0, x1, z1, (cx, cz, r) => {
     const x = cx + (r() - 0.5) * 4, z = cz + (r() - 0.5) * 4, u = r(), q = r(), v = r(), giro = r() * 6.3, tono = 0.82 + r() * 0.3;
     if (x < x0 || x > x1 || z < z0 || z > z1) return;
     const s = sitioEn(x, z); if (!s || s.y < 1.5) return;
-    const { d, especie, tam } = bosqueEn(s.st, s.s, x, z, { semilla, u });
+    const w = r();   // (el último: así lo de antes de cada árbol sale igual)
+    const { d, especie, tam, linde } = bosqueEn(s.st, s.s, x, z, { semilla, u });
     if (!especie || q > d * DENSIDAD_BOSQUE) return;
-    R.arboles.push({ x, z, y: s.y, especie, tam: tam * (0.85 + v * 0.3), giro, tono });
+    const pj = parteJovenes(d, linde);
+    // el joven: tam es su alto en m / 4 (su modelo mide 4 m), de 3 a 5 m repartidos con el mismo azar w
+    if (w < pj) R.arboles.push({ x, z, y: s.y, especie, edad: 'joven', tam: (ALTO_JOVEN[0] + (ALTO_JOVEN[1] - ALTO_JOVEN[0]) * (w / pj)) / 4, giro, tono });
+    else R.arboles.push({ x, z, y: s.y, especie, edad: 'adulto', tam: CRECE_ADULTO * tam * (0.85 + v * 0.3), giro, tono });
   });
 
   // hierba, flores y matorrales: más en los claros que bajo el bosque; calvas de tierra

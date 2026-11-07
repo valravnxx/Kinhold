@@ -49,7 +49,7 @@ for (const [sx, sz] of sitios) {
     if (e.x >= c.x1 || e.z >= c.z1) continue;   // (los trozos no tienen el borde de la derecha ni el de abajo)
     const x = e.x - O.x, z = e.z - O.z;
     if (Math.hypot(x, z - 2) < CLARO_ARBOLES) continue;
-    const id = idArbol(x, z), edad = e.tam >= TAM_ADULTO ? 'adulto' : 'joven', t = T.arbol(id, x, z);
+    const id = idArbol(x, z), edad = e.edad, t = T.arbol(id, x, z);
     arboles++; if (edad === 'adulto') adultos++;
     if (!t || t.edad !== edad || t.x !== r2(x) || t.z !== r2(z)) arbolesMal.push(id);
   }
@@ -59,7 +59,7 @@ for (const [sx, sz] of sitios) {
     if (!t || t.tipo !== p.tipo || t.x !== r2(p.x - O.x) || t.z !== r2(p.z - O.z)) puntosMal.push(p.id);
   }
 }
-comprobar('cada árbol de cuatro cuadros de 100 m está en el servidor, con su sitio y su edad', arboles > 50 && adultos > 0 && arbolesMal.length === 0, `${arboles} árboles (${adultos} adultos), mal: ${arbolesMal.slice(0, 3).join(' ')}`);
+comprobar('cada árbol de cuatro cuadros de 100 m está en el servidor, con su sitio y su edad', arboles > 50 && adultos > 0 && adultos < arboles && arbolesMal.length === 0, `${arboles} árboles (${adultos} adultos), mal: ${arbolesMal.slice(0, 3).join(' ')}`);
 comprobar('y cada punto de recogida, con su sitio y su clase', puntos > 20 && puntosMal.length === 0, `${puntos} puntos, mal: ${puntosMal.slice(0, 3).join(' ')}`);
 // un árbol cuyo nombre cuadra con su sitio pero que no está en el mundo (en el centro de un claro de la salida)
 const falso = idArbol(1, 1);
@@ -119,7 +119,7 @@ try {
   // un árbol adulto de verdad cerca de la salida, y un sitio a su lado para talarlo
   const c = { x0: O.x - 60, z0: O.z - 60, x1: O.x + 60, z1: O.z + 60 };
   const e = vegetacionEn(T.paisaje, T.alt, T.semilla, c).arboles
-    .map(e => ({ ...e, x: e.x - O.x, z: e.z - O.z })).filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES && e.tam >= TAM_ADULTO && e.x < 59 && e.z < 59)
+    .map(e => ({ ...e, x: e.x - O.x, z: e.z - O.z })).filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES && e.edad === 'adulto' && e.x < 59 && e.z < 59)
     .sort((a, b) => Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z))[0];
   const id = idArbol(e.x, e.z), px = e.x + 1, pz = e.z;
   s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });

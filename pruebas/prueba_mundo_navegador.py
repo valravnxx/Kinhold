@@ -148,10 +148,13 @@ with sync_playwright() as p:
           let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
           return {{ cuenta: c, arboles: arb.length, especies: [...new Set(arb.map(o => o.especie))], buenas: arb.every(o => ESP.includes(o.especie)),
             agua, cerca: Math.min(...arb.map(o => Math.hypot(o.x, o.z - 2))), talables: arb.filter(o => o.id && k.talaV.porId.has(o.id)).length, firma: h,
-            mallas: ESP.filter(e => ['arboles_', 'arbolesMedios_', 'arbolesLejos_'].some(n => k.escena.getObjectByName(n + e))) }}; }})()""")
+            mallas: ESP.filter(e => ['arboles_', 'arbolesMedios_', 'arbolesLejos_'].some(n => ['', '_joven'].some(j => k.escena.getObjectByName(n + e + j)))),
+            jovenes: arb.filter(o => o.edad === 'joven').length, adultos: arb.filter(o => o.edad === 'adulto').length,
+            mallasJoven: arb.filter(o => o.edad === 'joven' && o.malla).every(o => o.malla.name.endsWith('_joven')) }}; }})()""")
         print('  lo que crece:', json.dumps({x: v[x] for x in ['cuenta', 'especies', 'agua', 'cerca', 'talables', 'firma']}))
         c = v['cuenta']
         comprobar('hay árboles, de las especies del mundo, cada una con su malla', v['arboles'] > 20 and v['buenas'] and sorted(v['mallas']) == sorted(v['especies']), ', '.join(v['especies']))
+        comprobar('hay árboles jóvenes y adultos, y los jóvenes con su propio modelo', v['jovenes'] > 3 and v['adultos'] > 3 and v['mallasJoven'], f"{v['jovenes']} jóvenes, {v['adultos']} adultos")
         comprobar('hay hierba, matas y piedras', c['hierba'] > 300 and c['matas'] > 5 and c['piedras'] > 10, f"{c['hierba']} hierba, {c['flores']} flores, {c['matas']} matas, {c['piedras']} piedras")
         comprobar('nada de lo que crece en el agua (salvo los cantos del río)', v['agua'] == 0, f"{v['agua']}")
         comprobar('ningún árbol pegado a la salida (a menos de 8 m)', v['cerca'] >= 8, f"{v['cerca']:.1f} m")

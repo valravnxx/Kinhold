@@ -4861,5 +4861,24 @@
   ],
   "pruebas": "Lógica de combate 120/120 y combate en el servidor 74/74 aquí. En la nube y en el PC de valravnx, 36 grupos: todos bien. En el PC fallaron demo-única, el perfil gráfico en el juego, los niveles de detalle del personaje y el panel de fabricación, y no llegó a acabar «construcción»; repetidos en la nube, los cinco bien. Tras unir main (demo v129), las de lógica tocadas, otra vez bien aquí. Sin capturas: no cambia nada que se vea. Sin versión nueva: no cambia nada jugable.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-06T23:22:25+00:00",
+  "fin": "2026-11-07T01:03:59+00:00",
+  "titulo": "P3: árboles jóvenes y adultos bien distintos",
+  "hito": "crafting",
+  "hecho": [
+   "Cada árbol del mundo sale ya con su edad (joven o adulto) desde la lógica (src/logica/vegetacion.js), con el azar de su celda: la misma en el juego, en el servidor (que valida la tala con ella) y en el recorrido de jugador. Antes la edad salía del tamaño y el juego y la tala usaban umbrales distintos (0,95 y 1,1).",
+   "Los jóvenes tienen su propio modelo en cada una de las siete especies (src/mundo/especies.js), de 4 m a escala 1 y de 3 a 5 m en el mundo: tronco fino, alguna rama suelta y copa rala con huecos por los que se ve el tronco; el abeto, en pocos pisos pequeños y separados. Cada uno con los colores y el porte de su especie. Su tronco y su copa, con sus medidas propias para chocar, para el tocón al talarlo y para no tapar al personaje.",
+   "Los adultos, un 30 % más altos y más gruesos que los de antes (escalados enteros): de media 10,6 m frente a los 4,0 m de los jóvenes.",
+   "Decisión provisional (registro de la demo): la parte de jóvenes es 0,1 + 0,45 × linde + 0,35 × (1 − densidad del bosque), hasta el 85 %. Medido en los sitios de salida: 60 % de jóvenes en lindes y claros, 26 % dentro del bosque cerrado.",
+   "Lo que rebrota tras talar aún vuelve como era: va con la tarea siguiente (talar el joven). El bosque del horizonte no cambia (con los jóvenes, la media de alto queda parecida).",
+   "Coste: el modelo joven tiene de 125 a 452 triángulos (el adulto, de 192 a 556) y de 56 a 88 el sencillo de lejos; cada especie pasa a tener hasta tres mallas más (sus jóvenes). Fotogramas: 180 en PC y 145 en la vista de móvil, en la tarjeta gráfica del PC de valravnx. No comprobado: los fotogramas en un móvil de verdad.",
+   "Pruebas: la de lo que crece comprueba la edad, el alto de los jóvenes (3–5 m), que los adultos doblan a los jóvenes y que hay más jóvenes en lindes y claros (rota a propósito con MUTAR=3: falla); la del mundo en el navegador, que hay jóvenes y adultos y que los jóvenes van en su malla; la del terreno del servidor, con la edad de la lógica.",
+   "Demo v130, con capturas de los jóvenes al lado de los adultos (PC y móvil, y de cerca) y del juego."
+  ],
+  "pruebas": "Lógica de lo que crece, tala y terreno del servidor aquí, bien. En el PC de valravnx y en la nube, 36 grupos: en el PC fallaron seis (las traducciones al ruso de las notas, que faltaban; y, como en la sesión anterior, el perfil gráfico en el juego, los niveles de detalle del personaje, la demo única, objetos en el suelo, y en «la demo en el mundo» un fotograma de 114 ms al llegar de golpe a otro sitio). Con las traducciones puestas, los seis repetidos en la nube: todos bien.",
+  "capturas": "capturas/demo-v130",
+  "estado": "ok"
  }
 ]
