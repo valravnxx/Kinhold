@@ -1,0 +1,10 @@
+120 costas que miran al oeste
+  OK   hay costas que medir
+  OK   a 80 m de la orilla ya cubre de sobra (más de 4 m) en casi todas — 113 de 120
+  OK   en las playas, una franja somera (a 20 m, entre 0,2 y 3 m) — 12 de 18 playas
+  OK   al pie de los acantilados, hondo ya (a 20 m, más de 4 m) — 49 de 53 acantilados
+  OK   mar adentro (de 100 a 1500 m) el fondo no sale a flote — 0 de 120 con un bajo de menos de 0,5 m
+  OK   tierra adentro (a más de 400 m del mar, en lo bajo), sin arena de playa — 0 de 402 puntos con arena
+  OK   en las playas, arena junto a la orilla (a 15 m) — 13 de 18
+
+7 bien, 0 mal
