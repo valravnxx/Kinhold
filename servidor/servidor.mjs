@@ -138,6 +138,7 @@ import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades } from '../src/logica/necesidades.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -171,7 +172,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS } = {}) {
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000 } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
@@ -180,6 +181,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoObjetos = resolve(dirname(archivo), 'objetos.json');
   const archivoObjetosReg = resolve(dirname(archivo), 'objetos.jsonl');
   const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
+  const archivoNecesidades = resolve(dirname(archivo), 'necesidades.json');
   const archivoAdmin = resolve(dirname(archivo), 'admin.jsonl');
   // lo que se dice en el chat de texto: quién, qué y dónde (para moderar: la cuenta de admin lo puede revisar)
   const archivoCharla = resolve(dirname(archivo), 'charla.jsonl');
@@ -321,6 +323,26 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     posicionesCambiadas = false;
     writeFileSync(archivoPosiciones + '.tmp', JSON.stringify(Object.fromEntries(posiciones))); reemplazar(archivoPosiciones + '.tmp', archivoPosiciones);
   };
+  // Las necesidades (P4; src/logica/necesidades.js): hambre, sed, frío y cansancio de cada personaje (autor → sus
+  // cuatro números). Las lleva el servidor: suben con el tiempo mientras está conectado (decisión provisional: sin
+  // conectar no cambian, hasta que el personaje se quede dormido en el mundo, en la tarea de desconectarse), con lo que
+  // corre y carga (lo que mide el servidor, no lo que diga el navegador) y con lo que hace (sus acciones, con su
+  // autor). Cada ticoNecesidades ms se avanzan y a cada uno le llegan las suyas, { tipo: 'necesidades', necesidades };
+  // también en la bienvenida. Se guardan en necesidades.json en cada latido y al salir.
+  const necesidades = new Map();
+  if (existsSync(archivoNecesidades)) {
+    try { for (const [a, n] of Object.entries(JSON.parse(readFileSync(archivoNecesidades, 'utf8')))) necesidades.set(a, validarNecesidades(n)); }
+    catch (e) { registrar(`necesidades.json no válido, se empieza de cero: ${e && e.message}`); }
+  }
+  let necesidadesCambiadas = false;
+  const necesidadesDe = (a) => { let n = necesidades.get(a); if (!n) { n = necesidadesNuevas(); necesidades.set(a, n); } return n; };
+  const guardarNecesidades = () => {
+    if (!necesidadesCambiadas) return;
+    necesidadesCambiadas = false;
+    writeFileSync(archivoNecesidades + '.tmp', JSON.stringify(Object.fromEntries([...necesidades].map(([a, n]) => [a, redondearNecesidades(n)])))); reemplazar(archivoNecesidades + '.tmp', archivoNecesidades);
+  };
+  const cansar = (a, tipo) => { necesidades.set(a, esfuerzoNecesidad(necesidadesDe(a), tipo)); necesidadesCambiadas = true; };
+
   // Dónde empieza cada uno (valravnx, 5 nov: tres salidas en zonas del rey, «lo eligen»; src/logica/whitholm.js,
   // SALIDAS_INICIO): un personaje nuevo (sin posición apuntada) llega sin posición y elige una con { tipo: 'salida',
   // salida: id }. Se apunta enseguida como su posición: es donde aparece, y lo recuerda. Solo una vez: quien ya tiene
@@ -392,6 +414,25 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
   }, tico);
 
+  // las necesidades de los conectados: el tiempo, lo que corren (la distancia que el servidor les ha visto andar desde
+  // el tic anterior) y lo que cargan suelto
+  const antesNec = new Map();   // autor → { x, z, t }
+  const ticNecesidades = setInterval(() => {
+    const t = reloj();
+    for (const [ws, a] of clientes) {
+      if (conexionDe.get(a) !== ws) continue;
+      const e = presencia.ultimo.get(a), p = antesNec.get(a);
+      const dt = p ? (t - p.t) / 1000 : 0;
+      const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;
+      if (e) antesNec.set(a, { x: e.x, z: e.z, t }); else antesNec.set(a, { x: 0, z: 0, t });
+      if (!(dt > 0)) continue;
+      const inv = objetos.invs.de(a);
+      necesidades.set(a, avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: 0 }));
+      necesidadesCambiadas = true;
+      enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(a)) });
+    }
+  }, ticoNecesidades);
+
   // latido: quien no ha contestado al ping anterior (ni mandado nada) se da por ido
   const ticLatido = setInterval(() => {
     for (const ws of clientes.keys()) {
@@ -401,6 +442,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
     for (const a of clientes.values()) { apuntarPosicion(a); apuntarVisto(a); }
     guardarPosiciones();
+    try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
     try { guardarAbandono(); } catch (e) { registrar(`no se pudo guardar abandono.json: ${e && e.message}`); }
     const ahora = reloj();
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
@@ -482,7 +524,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     const suyos = vista.trozosDe(autor);
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
       aspectos: [...aspectos].filter(([a]) => a !== autor).map(([a, e]) => ({ autor: a, ...e })), tc: combate.ms(), ahora: Date.now(), luchadores: combate.cambiados(true),
-      inventario: objetos.inventarioDe(autor), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
+      inventario: objetos.inventarioDe(autor), necesidades: redondearNecesidades(necesidadesDe(autor)), suelo: objetos.sueloVisible(Date.now(), suyos), tala: objetos.talaVisible(suyos), recoleccion: objetos.recoleccionVisible(suyos),
       estaciones: objetos.estacionesVisibles(suyos), encargos: objetos.encargosDe(autor, Date.now()),
       trozos: { lado: LADO_RED, radio: RADIO_RED }, posicion: posiciones.get(autor) || null, cuenta: usuarioDe(autor), admin: esAdmin(autor), correo: estadoCorreo(autor), arcon: !!arconPruebas });
 
@@ -848,6 +890,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
         if (r.ok) repartirLlevado(autor);
+        if (r.ok) cansar(autor, msg.accion.tipo);   // talar, trocear, fabricar y recoger cansan (src/logica/necesidades.js)
         // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
         // lo talado y lo recogido, solo lo de su trozo y solo a quien lo tiene alrededor (el autor siempre)
         const aSuTrozo = (sitio, hacer) => {
@@ -894,6 +937,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       // lo que llevas tal como queda (también si sale mal: el navegador lo había adelantado)
       if (usaInventario) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
       if (usaInventario && r.ok) repartirLlevado(autor);
+      if (r.ok && accion.tipo === 'trabajar') cansar(autor, 'trabajar');   // cada rato de obra cansa
       if (r.ok) {
         // solo a quien tiene su trozo alrededor (y al autor); lo que no tiene sitio, a todos
         const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
@@ -916,6 +960,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
+      antesNec.delete(autor);
+      try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
       aspectos.delete(autor); presencia.quitar(autor); recienLlegado.delete(autor); vista.quitar(autor);
@@ -928,9 +974,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, abandono, revisarTierras, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, abandono, revisarTierras, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
 }
 
