@@ -3,8 +3,8 @@
 // src/logica/tala.js; aquí se dibuja con el estilo v5 y se guarda en el navegador.
 //
 // Cómo se ve (provisional):
-//  - el árbol que cae es el mismo modelo del bosque, que gira sobre su base hacia el lado contrario al del que tala,
-//    cada vez más deprisa (como al caer), y se queda un momento en el suelo; después quedan el tronco y las ramas
+//  - el árbol que cae es el mismo modelo del bosque, que gira sobre su base hacia donde cae (la boca, la cuesta o su
+//    inclinación: src/logica/tala.js), cada vez más deprisa (como al caer), y se queda un momento en el suelo; después quedan el tronco y las ramas
 //    como objetos del suelo (src/juego/suelo.js), donde cayó.
 //  - el tocón: el pie del tronco con su corteza y el corte claro con anillos arriba.
 import * as THREE from 'three';
@@ -45,6 +45,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     arboles.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala) });
   }
   const tala = new Tala(arboles);
+  tala.alturaEn = altura; // sin boca, cuesta abajo (en línea lo decide el servidor con su terreno)
   if (almacen) cargarTala(almacen, tala);
   const grupo = new THREE.Group(); grupo.name = 'tala'; raiz.add(grupo);
   const tocones = new Map();  // id → objeto del tocón

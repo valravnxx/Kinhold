@@ -2033,6 +2033,8 @@ function golpeTala() {
   avisoTala(a, r);
 }
 function avisoTala(a, r) {
+  // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
+  if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
   estado.talando = null;
   const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);

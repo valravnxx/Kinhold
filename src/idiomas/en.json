@@ -2286,5 +2286,7 @@
  "v142: el contador de arriba («En tu tierra») cuenta ya lo guardado en los almacenajes de tu tierra (hasta ahora, lo que había en su suelo).": "v142: the counter at the top («On your land») now counts what is stored in the storage on your land (until now, what lay on its ground).",
  "v143: beber del río con las manos (P4). Con agua a tu lado (río, lago o mar, a menos de 2,5 m), «Usar» bebe un trago, que baja la sed 30; con sed (su aviso), «Usar» bebe antes que nada, y en el menú del clic derecho sale «Beber agua». Lo da el servidor: mira dónde te tiene y si hay agua ahí. Un trago cada segundo y medio.": "v143: drinking from the river with your hands (P4). With water next to you (river, lake or sea, within 2.5 m), «Use» takes a sip, which lowers thirst by 30; when thirsty (its warning), «Use» drinks before anything else, and the right-click menu shows «Drink water». The server does it: it checks where it has you and whether there is water there. One sip every second and a half.",
  "v143, provisional: tres o cuatro tragos quitan la sed; aún sin animación de beber (el personaje se queda de pie).": "v143, provisional: three or four sips clear thirst; no drinking animation yet (the character stays standing).",
- "Demo única · v143 (beber del río)": "Single demo · v143 (drinking from the river)"
+ "Demo única · v143 (beber del río)": "Single demo · v143 (drinking from the river)",
+ "Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.": "You've cut from several sides: with no notch, it will fall the way it leans or downhill.",
+ "La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.": "The notch is open: it will fall towards this side. Cut it from behind and stand clear."
 }
