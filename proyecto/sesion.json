@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-07T14:29:49+00:00",
+  "tarea": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
+  "hito": "crafting",
+  "rama": "trabajo/20261107-1429"
+ },
  "B": null,
  "chat:trabajo/20261107-1437-necesidades": {
   "inicio": "2026-11-07T14:37:33+01:00",
