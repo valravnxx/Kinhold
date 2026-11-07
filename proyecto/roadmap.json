@@ -1359,7 +1359,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos o de paja y puerta de varas, con el estilo v5 y pagada con lo que llevas",
+     "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
      "estado": "pendiente"
     },
     {
@@ -1371,7 +1371,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Recorrido entero de nada al banco de tronco, sin arcón, en el recorrido de jugador; y prueba de valravnx entre dos",
+     "nombre": "Recorrido entero de nada a la casa humilde cerrada y techada y al banco de tronco, sin arcón, en el recorrido de jugador (cada material sacado del mundo: pruebas/prueba_origenes.mjs); y prueba de valravnx entre dos",
      "estado": "pendiente"
     },
     {
@@ -1397,6 +1397,10 @@
      "estado": "hecho",
      "inicio": "2026-11-06T18:55:00+01:00",
      "fin": "2026-11-06T23:37:13+01:00"
+    },
+    {
+     "nombre": "Origen de la piel, el mimbre, la resina y la corteza (lo piden recetas de este tramo y aún no salen de ningún sitio: honda, odre, cestas, nasa, yesca de corteza, antorcha con resina; pruebas/prueba_origenes.mjs): sacarlos del mundo o quitar esas recetas del tramo",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",

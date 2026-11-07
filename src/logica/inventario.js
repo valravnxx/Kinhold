@@ -146,7 +146,7 @@ export const CATALOGO = {
 // 1 nov: «su tronco delgado es la madera de la casa humilde»; las piezas de este tramo lo piden a él). Hasta el 7 nov
 // era el tronco corto, que sale de tronzar el largo de un adulto con hacha de hierro: no se puede tener en este tramo.
 export const OBJETO_DE_MATERIAL = {
-  piedra: 'piedra', tronco: 'tronco_delgado', vara: 'vara', barro: 'barro', paja: 'paja', cuerda: 'cuerda',
+  piedra: 'piedra', tronco: 'tronco_delgado', vara: 'vara', barro: 'barro', paja: 'paja', junco: 'junco', cuerda: 'cuerda',
   tabla: 'tabla', clavo: 'clavo', hierro: 'barra_hierro', teja: 'teja',
 };
 export const MATERIAL_DE_OBJETO = Object.fromEntries(Object.entries(OBJETO_DE_MATERIAL).map(([m, o]) => [o, m]));

@@ -13,7 +13,7 @@ class S(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(S, directory=d)); threading.Thread(target=srv.serve_forever, daemon=True).start()
 nombres = [('pieza', t) for t in arg.get('piezas', '').split(',') if t] + [('deco', t) for t in arg.get('deco', '').split(',') if t] + [('arma', t) for t in arg.get('armas', '').split(',') if t]
-if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida', 'teja_dos_aguas', 'teja_una_caida', 'paja_cuatro_aguas', 'tablillas_en_L', 'teja_en_L', 'paja_en_L', 'tablillas_cuatro_aguas', 'teja_piramide']]
+if arg.get('casas'): nombres = [('casa', t) for t in ['paja_dos_aguas', 'tablillas_dos_aguas', 'paja_una_caida', 'tablillas_una_caida', 'teja_dos_aguas', 'teja_una_caida', 'paja_cuatro_aguas', 'tablillas_en_L', 'teja_en_L', 'paja_en_L', 'tablillas_cuatro_aguas', 'teja_piramide', 'juncos_dos_aguas', 'juncos_una_caida', 'juncos_en_L']]
 if arg.get('solo'): nombres = [(i, n) for i, n in enumerate(nombres) if n[1] in arg['solo'].split(',')]
 else: nombres = list(enumerate(nombres))
 vistas = arg.get('vistas', 'tres,frente,cerca').split(',')
