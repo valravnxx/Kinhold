@@ -1342,7 +1342,9 @@
     },
     {
      "nombre": "Los puestos de trabajo como obra, en su propia pestaña del menú de construcción («Puestos de trabajo», aparte de los muebles): se pone el marco y se le llevan los materiales, como a cualquier obra; cada uno donde le toca (piedra de tallar y banco de tronco, dentro o fuera; hoguera, solo fuera; hogar, solo dentro). Fuera el ponerlos al momento desde el panel de fabricar",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T10:25:06+00:00",
+     "rama": "trabajo/20261107-1024"
     },
     {
      "nombre": "La hoguera, fuera: piedras en círculo y ramas; se enciende con yesca y el taladro de fuego, arde un rato por cada leña o rama que se le echa y se apaga sola (quedan cenizas); luz y calor. Por el servidor, todos la ven igual",
