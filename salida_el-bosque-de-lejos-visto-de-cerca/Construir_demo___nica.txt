@@ -1,0 +1,25 @@
+▲ [WARNING] Duplicate key "usar" in object literal [duplicate-object-key]
+
+    src/juego/main.js:2825:84:
+      2825 │ ...vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
+           ╵                                                ~~~~
+
+  The original key "usar" is here:
+
+    src/juego/main.js:2732:46:
+      2732 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+▲ [WARNING] Duplicate key "pintarLlevas" in object literal [duplicate-object-key]
+
+    src/juego/main.js:2827:46:
+      2827 │   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
+           ╵                                               ~~~~~~~~~~~~
+
+  The original key "pintarLlevas" is here:
+
+    src/juego/main.js:2716:2:
+      2716 │   pintarLlevas: () => pintarLlevas(),
+           ╵   ~~~~~~~~~~~~
+
+dist/kinhold_demo.html 3974 KB
