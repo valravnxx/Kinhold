@@ -101,14 +101,26 @@ export function modeloFuego(cual, id) {
       const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), i === llamas.length - 1 ? MAT_NUCLEO : MAT_LLAMA);
       m.geometry.translate(0, h / 2, 0); m.position.set(x, 0.08, z); m.name = 'llama'; m.userData.fase = i * 1.7; g.add(m);
     });
-    for (let i = 0; i < 7; i++) { // el humo, que sube y se deshace
-      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.18, 1), new THREE.MeshLambertMaterial({ color: 0xa29d96, transparent: true, opacity: 0.35, depthWrite: false }));
-      m.name = 'humo'; m.userData.fase = i / 7; g.add(m);
+    for (let i = 0; i < 10; i++) { // el humo, tenue: bocanadas pequeñas que suben, se abren y se deshacen
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.07, 1), new THREE.MeshLambertMaterial({ color: 0x9a958e, transparent: true, opacity: 0, depthWrite: false }));
+      m.name = 'humo'; m.userData.fase = i / 10; g.add(m);
     }
-    moverHumo(g, 0);
+    moverFuego(g, 0);
   }
   g.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = m.name === 'ceniza'; } });
   return g;
+}
+// Mueve las llamas (como las de las chimeneas) y el humo de la hoguera: más tenue y más fino que el de una chimenea,
+// porque sale a la altura de los ojos (t: segundos).
+function moverFuego(g, t) {
+  for (const m of g.children) {
+    if (m.name !== 'humo') continue;
+    const u = (m.userData.fase + t * 0.12) % 1, f = m.userData.fase;
+    m.position.set(Math.sin(u * 4 + f * 9) * 0.08 + u * 0.25, 0.45 + u * 2.2, Math.cos(u * 3 + f * 7) * 0.07);
+    m.scale.setScalar(0.6 + u * 3.2);
+    m.material.opacity = 0.16 * Math.min(1, u * 5) * (1 - u);
+  }
+  moverHumo({ userData: g.userData, children: g.children.filter(m => m.name === 'llama') }, t); // las llamas, como las de las chimeneas
 }
 // Cómo está el fuego de una estación ahora: 'ardiendo', 'cenizas' o '' (y si tiene algo puesto sin arder).
 export function vistaFuego(f, ahora) {
@@ -226,8 +238,8 @@ export function crearEstaciones({ raiz, altura, fab }) {
     for (const o of vistas.values()) {
       const f = o.getObjectByName('fuego');
       if (!f || o.userData.firmaFuego.indexOf('ardiendo') !== 0) continue;
-      moverHumo(f, t / 1000);
-      vF.set(0, 0.35, 0); f.localToWorld(vF); arden.push(vF.clone());
+      moverFuego(f, t / 1000);
+      vF.set(0, 0.9, 0); f.localToWorld(vF); arden.push(vF.clone()); // la luz, por encima de las piedras (si no, las quema)
     }
     return arden;
   }

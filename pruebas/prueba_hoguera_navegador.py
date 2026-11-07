@@ -132,6 +132,7 @@ try:
         mirar_hoguera(A)
         A.keyboard.press('f')
         comprobar('Usar le lleva las piedras', servidorDice(lambda d: cuantos(d, yo, 'piedra') == 0) is not None)
+        comprobar('y lo que lleva le llega del servidor: las manos, vacías', esperar(A, f"!{K}.inventario.lugares['mano:der'] && !{K}.inventario.lugares['mano:izq']", 8000), str(A.evaluate(f"JSON.stringify([{K}.inventario.lugares['mano:der'], {K}.inventario.lugares['mano:izq']])")))
         for n in (3, 1):   # (en una mano caben 3 ramas)
             coger(A, 'rama', n, 'mano:der')
             comprobar(f'el servidor le da {n} rama(s) (arcón de pruebas)', servidorDice(lambda d: cuantos(d, yo, 'rama') == n) is not None)
