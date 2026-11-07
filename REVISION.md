@@ -4,6 +4,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
+### 7 nov 2026 (19:52 UTC+1) — por el chat: MUY IMPORTANTE, se ha borrado la base al morir en el río
+valravnx (con una captura: junto a su mojón, sin nada más; «En tu tierra: aún no tienes nada almacenado»; «Teletransportado (admin)»): «muy gran e importante problema, he muerto en el rio y se me ha borrado TODO lo que habia en mi base, la casa, lo del suelo, estaciones de trabajo, TODO».
+→ Pendiente: averiguar si se ha perdido en el servidor (el mundo de verdad) o solo no le llega al navegador (los trozos al volver de la salida tras ahogarse y teletransportarse), y arreglarlo con su prueba. Va antes que cualquier otra cosa.
+
 ## Procesado
 
 ### 7 nov 2026 (18:42 UTC+1) — por el chat: la interfaz, aplicarla
