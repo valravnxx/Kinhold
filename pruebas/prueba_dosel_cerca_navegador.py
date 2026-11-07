@@ -1,8 +1,9 @@
 # Prueba en navegador (Chromium sin pantalla) del bosque de lejos visto de cerca (valravnx, 7 nov: «el tema de los
 # arboles de lejos que hiciste crea este glitch grafico de monticulos que equivaldrian rollo a 50 metros cada uno, queda
 # muy irreal a estas cortas distancias, habria que hacerlo mas suave, y tambien que comiencen a aparecer algo mas lejos»).
-# En Whitholm, sin servidor y con el PC alto (el horizonte y las copas de cerca): empieza en un prado al pie de una ladera
-# con bosque y mira al bosque espeso más cercano entre 300 y 700 m, a ras de suelo. Comprueba que las copas de cerca están, que cada punto lleva lo que sube sobre el suelo y que no empiezan hasta 240 m o más del jugador (antes, desde los árboles de
+# En Whitholm, sin servidor y con el PC alto (el horizonte y las copas de cerca): empieza en un prado en lo alto y mira
+# al bosque espeso más cercano (entre 300 y 700 m, algo más abajo). Comprueba que las copas de cerca están, que cada
+# punto lleva lo que sube sobre el suelo y que no empiezan hasta 240 m o más del jugador (antes, desde los árboles de
 # verdad, a veces a cien metros); y saca capturas en PC (1280×800) y móvil (390×844), con y sin las copas de cerca.
 # Uso: python3 pruebas/prueba_dosel_cerca_navegador.py <html> <carpeta_capturas>
 # MUTAR=1: las copas de cerca como antes (sin suavizar y desde el jugador): tiene que fallar.
@@ -23,7 +24,7 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=213100,31000&graficos=pc-3'   # (un prado al pie de una ladera con bosque espeso a 400 m al oeste)
+BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=211700,31900&graficos=pc-3'   # (un prado en lo alto, con bosque espeso a 400 m, unos 40 m más abajo)
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = os.environ.get('MUTAR') == '1'
 K = 'window.__kinhold'
@@ -48,7 +49,7 @@ BUSCAR = f"""(() => {{ const h = window.__graficos.horizonte, m = h.muestras; wh
 def ir(pg, s):
     """mira al bosque, a ras de suelo, con las copas de cerca ya hechas"""
     pg.evaluate(f"""(s => {{ const pj = {K}.pj, dx = s.p[0] - s.q[0], dz = s.p[1] - s.q[1]; pj.rot = Math.atan2(dx, dz);
-      {K}.cam.yaw = Math.atan2(-dx, -dz); {K}.cam.pitch = 0.06; }})""", s)
+      {K}.cam.yaw = Math.atan2(-dx, -dz); {K}.cam.pitch = 0.12; }})""", s)
     pg.wait_for_function(f"(() => {{ const t = {K}.mundoJ.terreno; return t.faltan() === 0 && {K}.decorado.pendientes === 0; }})()", timeout=900000)
     pg.wait_for_timeout(3000)
     return pg.evaluate(f"""(() => {{ const h = window.__graficos.horizonte; h.completarDoselCerca({K}.pj.x, {K}.pj.z);
