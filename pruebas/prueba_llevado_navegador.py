@@ -4,7 +4,8 @@
 # en la cintura, lo de la espalda detrás, lo del hombro arriba, lo de la mano en la mano) y que, al andar, sigue a su
 # hueso. Capturas de cerca, de frente, de lado y de espalda, en PC y en móvil.
 # Uso: python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html <carpeta>
-# MUTAR=1 hace que las piezas no sigan a los huesos: tiene que fallar.
+# MUTAR=1 hace que las piezas no sigan a los huesos: tiene que fallar. MUTAR_MANOS=1 dibuja lo hecho a mano con la
+# bolsa o el hatillo y el hacha de piedra como la de hierro: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, json
 from playwright.sync_api import sync_playwright
 
@@ -45,7 +46,15 @@ EQUIPOS = {
     'armas': {'cintura': C('cinto_armas', 1, [C('espada'), C('cuchillo'), None]), 'espalda': C('carcaj', 1, [C('flecha', 10), C('flecha', 10)]),
               'hombro': C('tronco_corto')},
     'zurron': {'cintura': C('cuerda_trenzada', 1, [C('cuerda', 3), None]), 'espalda': C('zurron', 1, [None] * 4), 'mano:izq': C('tronco_corto')},
+    # lo que se fabrica con las manos (P3, 7 nov): cada uno con su modelo en la mano y en el cinturón
+    'a_mano': {'cintura': C('cinto_anillas', 1, [C('taladro_fuego'), C('palo_cavador'), C('lasca_silex'), C('cordel', 2)]),
+               'mano:der': C('hacha_piedra'), 'mano:izq': C('cuerda', 2)},
+    'a_mano2': {'cintura': C('cuerda_trenzada', 1, [C('cuerda'), C('lasca_silex')]), 'mano:der': C('palo_cavador'), 'mano:izq': C('lasca_silex')},
+    'a_mano3': {'cintura': C('cordel', 1, [C('lasca_silex')]), 'mano:der': C('taladro_fuego'), 'mano:izq': C('cordel', 3)},
+    'lenero_en_manos': {'cintura': C('cordel', 1, [None]), 'mano:der': C('lenero', 1, [None] * 6)},
 }
+# lo que se fabrica con las manos: ninguno sale con la bolsa o el hatillo de lo que aún no tiene modelo
+A_MANO = ('a_mano', 'a_mano2', 'a_mano3', 'lenero_en_manos')
 VISTAS = {'frente': 0.0, 'lado': 1.5708, 'espalda': 3.1416}
 
 MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.escena.updateMatrixWorld(true);
@@ -61,6 +70,8 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
     r.piezas[o.name.slice(8)] = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, x1 - x0, y1 - y0, z1 - z0].map(v => +v.toFixed(3));
   }
   r.modo = j.modo; r.alHombro = !!j.alHombro;
+  r.genericos = j.llevado.grupo.children.filter(o => o.userData.generico).map(o => o.name.slice(8));
+  r.hacha = j.hacha ? { nombre: j.hacha.name, visible: j.hacha.visible } : null;
   for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01', 'head', 'upperarm_r']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
 
@@ -138,6 +149,7 @@ with sync_playwright() as pw:
         pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)
         if os.environ.get('MUTAR'): pg.evaluate('globalThis.__sinSeguirLlevado = true')
         if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
+        if os.environ.get('MUTAR_MANOS'): pg.evaluate('globalThis.__sinModelosManos = true')
         pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
         for nombre, lugares in EQUIPOS.items():
             equipar(pg, lugares)
@@ -146,10 +158,27 @@ with sync_playwright() as pw:
                 revisar(nombre, m)
                 faltan = [k for k, t in (('cinturon', 'cintura'), ('espalda', 'espalda'), ('hombro', 'hombro')) if t in lugares and k not in m['piezas']]
                 comprobar(f'{nombre}: se ve todo lo que lleva', not faltan, f'piezas {sorted(m["piezas"])}, faltan {faltan}')
+            if disp == 'pc' and nombre in A_MANO:
+                comprobar(f'{nombre}: lo hecho a mano, cada uno con su modelo (sin bolsa ni hatillo)', not m['genericos'], f'con el de relleno: {m["genericos"]}')
+            if disp == 'pc' and nombre == 'a_mano':
+                comprobar('a_mano: el hacha de piedra en la mano es la de piedra y se ve', m['hacha'] == {'nombre': 'hacha_piedra', 'visible': True}, str(m['hacha']))
+            if disp == 'pc' and nombre == 'lenero_en_manos':
+                comprobar('lenero_en_manos: el leñero cogido delante, entre las dos manos', 'manos' in m['piezas'] and m['piezas']['manos'][3] > 0.25, str(m['piezas'].get('manos')))
             vistas = VISTAS if disp == 'pc' else {'frente': 0.6, 'espalda': 3.6}
             for v, g in vistas.items():
                 mirar(pg, g, 2.3 if disp == 'pc' else 3.2)
                 pg.screenshot(path=f'{SALIDA}/{disp}_{nombre}_{v}.png')
+        # lo hecho a mano, de cerca (en la mano y en el cinturón)
+        for nombre in A_MANO:
+            equipar(pg, EQUIPOS[nombre])
+            for v, (g, d, a) in ({'frente': (0.35, 1.3, 0.15), 'lado': (1.2, 1.3, 0.15)} if disp == 'pc' else {'frente': (0.35, 1.8, 0.15)}).items():
+                mirar(pg, g, d, a)
+                pg.screenshot(path=f'{SALIDA}/{disp}_cerca_{nombre}_{v}.png')
+        if disp == 'pc':
+            # el hacha de hierro vuelve a ser la de hierro al cambiarla
+            equipar(pg, {'mano:der': C('hacha_mano')})
+            h = pg.evaluate(f'{K}.jugador.hacha && {K}.jugador.hacha.name')
+            comprobar('con el hacha de mano, se ve la de hierro (no se queda la de piedra)', h == 'hacha', str(h))
         # el tronco al hombro de cerca (revisión del 1 nov): de frente, de lado (los dos) y desde arriba, por delante
         cercaTronco(pg, disp, 'hombre')
         if disp == 'pc':
