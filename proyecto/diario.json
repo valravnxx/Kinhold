@@ -5244,5 +5244,50 @@
   "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin desbordarse; las maquetas de los ocho estados, miradas una a una en PC y móvil.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:52:00+01:00",
+  "fin": "2026-11-07T18:01:30+01:00",
+  "titulo": "P4: el estudio de la interfaz, séptima versión (acabado de juego publicado)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Estudio de cómo se ve y cómo responde la interfaz de juegos publicados (valravnx: «imagina que este es el interfaz que tenemos y te pido hacerlo mejor y mas de videojuego publicado final»): siete juegos del género, las cuatro clases de interfaz (dentro y fuera del mundo), las cifras de movimiento y respuesta, y las guías de contraste, tamaño de letra y accesibilidad, con fuentes.",
+   "Séptima versión de la propuesta: botones redondos con bisel de latón, huecos de placa translúcida, iconos macizos con filo oscuro y el texto suelto con sombra; la temperatura con llama o copo (el termómetro no es de la Edad Media); lo que va bien, medio transparente, y al andar se apaga; un aro en el suelo bajo lo que vas a coger; escarcha en los bordes con el frío; lo cogido entra por la izquierda; mantener para talar llena un aro.",
+   "En el móvil, arriba solo menú y hablar; Fabricar y Construir, en arco junto al botón de acción. El menú, un centro con pestañas (Q/E) encima del mundo desenfocado. Maquetas de nueve estados en PC y móvil."
+  ],
+  "pruebas": "Sin cambios en el juego. El documento, abierto en PC (1280 px) y móvil (390 px): sin errores y sin desbordarse; las maquetas de los nueve estados, miradas una a una en PC y móvil (corregidos el botón de acción vacío al andar y la barra de construir que se salía en el móvil).",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T18:09:00+01:00",
+  "fin": "2026-11-07T18:41:44+01:00",
+  "titulo": "P4: el estudio de la interfaz, octava versión (cada sistema y acabado de juego terminado)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Repaso en el código de cada sistema que toca la interfaz (valravnx: «revisa cada una de las funcionalidades y si deben o no estar donde están y como se puede usar cada cosa… quiero que se vea como un VIDEOJUEGO ACABADO»): la acción, las manos y el hombro, el equipo, fabricar, construir y la obra, tu tierra, las necesidades, hablar, el mapa, el menú y los avisos; para cada uno, qué hace hoy, qué falla, cómo lo hacen otros juegos (con fuentes) y dónde va.",
+   "Lo que cambia de verdad: el equipo con «A tus pies» (lo del suelo a dos pasos, como en DayZ) y todas las bolsas abiertas a la vez, la ropa en su pestaña en el móvil; la obra dice qué le falta; con algo al hombro, las manos se ven apagadas; un menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra, con lo almacenado y los invitados).",
+   "El acabado, con materiales de verdad renderizados en Blender (Cycles): cuero, roble, latón y hierro; los iconos, láminas de latón repujado sacadas de sus siluetas; las cosas, de los modelos del juego con luz de contra y contorno; el personaje, del modelo del taller; los tableros, con un marco de 9 trozos. Las herramientas, en herramientas/interfaz/.",
+   "Regla nueva en CLAUDE.md: las propuestas de interfaz revisan cada sistema, no solo un estilo, y llevan acabado de juego terminado."
+  ],
+  "pruebas": "Sin cambios en el juego. Las maquetas de once estados en PC y móvil, miradas una a una (corregidos: la veta del roble, que salía en columnas; las teclas encima del número de las manos; los paneles más altos que lo que llevan; las pestañas del móvil). El documento, en PC y móvil, sin errores ni desbordarse. No comprobado: los fotogramas en el móvil con estas imágenes.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T17:01:29+01:00",
+  "fin": "2026-11-07T18:52:34+01:00",
+  "titulo": "P4: los avisos de las necesidades y sus efectos (chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Un círculo por necesidad a la derecha, solo cuando hace falta (desde 40 de 100): hambre naranja, sed azul, frío celeste y cansancio gris, con su dibujo (cuenco, gota, copo y luna) y un anillo de lo lleno que está; desde 75 late. En el PC, en columna a la izquierda de los botones de modo; en el móvil, en fila justo debajo de ellos (arriba tapaba «Reiniciar»).",
+   "Al pulsar un círculo, su ficha: cuánto (en %), qué te pasa ahora y cómo se quita (beber del río, comer, el fuego y el techo, descansar). Se cierra al pulsar fuera. En español, inglés y ruso.",
+   "Los efectos: con el cansancio al máximo no se corre, y el servidor tampoco lo deja (su límite de lo que se puede andar baja a 0,6); con el frío al máximo se anda un 20 % más despacio. Golpear flojo al estar rendido queda para la tarea del cansancio, que une este cansancio con el del combate.",
+   "Pruebas: pruebas/prueba_avisos_navegador.py nueva (PC y móvil: qué círculos salen, sus colores, que no tapan botones, la ficha, no correr rendido, más lento helado, en inglés; rota sin pintar los avisos y corriendo rendido, falla); pruebas/prueba_necesidades.mjs con el límite del servidor (29 comprobaciones; rota con el rendido sin llegar al máximo, falla); el recorrido de jugador mira sus avisos.",
+   "Aún no comprobado en una tarjeta gráfica de verdad ni en un móvil de verdad. La ficha del hambre dice «come bayas y setas, o carne de caza», que llegan en sus tareas; hasta entonces el hambre no se quita."
+  ],
+  "pruebas": "Batería entera en la nube correcta, sin las de en línea; el recorrido de jugador falló al no dejar correr al rendido (corría siempre) y ahora anda cuando está rendido; tras unir main (la hoguera), otra vez la lógica, los avisos, la hoguera, la demo y el chat",
+  "capturas": "capturas/demo-v141",
+  "estado": "ok"
  }
 ]

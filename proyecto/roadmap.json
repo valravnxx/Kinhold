@@ -1447,9 +1447,9 @@
     },
     {
      "nombre": "Los avisos en círculos a la derecha (PC y móvil), uno por necesidad con su color (naranja, azul, celeste y gris), que solo salen cuando hace falta; al pulsarlos, qué efecto tiene y cómo se quita. Y los efectos en el juego: sin correr, más lento y golpes flojos según lo que toque. Recorrido: sale el aviso de sed y se lee qué hacer",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T17:01:29+01:00",
-     "rama": "trabajo/20261107-1701-avisos"
+     "fin": "2026-11-07T18:52:34+01:00"
     },
     {
      "nombre": "Beber del río con las manos (el agua de río se bebe sin problema, GDD): Usar en la orilla o en el agua que se vadea; el servidor comprueba que hay agua a tu lado y baja la sed. Recorrido: el jugador nuevo busca un río y bebe",
@@ -1515,6 +1515,58 @@
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
+  },
+  {
+   "id": "interfaz",
+   "num": "P4b",
+   "nombre": "La interfaz nueva",
+   "jugable": "La interfaz del estudio del 7 nov (octava versión) en el juego, en PC y en el móvil: la barra de abajo, la acción, el menú con pestañas, el equipo, fabricar, construir, tu tierra, las necesidades y hablar, con el acabado renderizado.",
+   "estado": "en_curso",
+   "nota": "valravnx, 7 nov: «aplica por ahora, pero le haremos reviews». El estudio: diseno/estudios/interfaz.html; las herramientas del kit: herramientas/interfaz/. Cada tarea, con capturas de PC y móvil para que valravnx la revise.",
+   "tareas": [
+    {
+     "nombre": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
+     "estado": "en_curso",
+     "inicio": "2026-11-07T18:43:47+01:00",
+     "rama": "trabajo/20261107-1845-interfaz"
+    },
+    {
+     "nombre": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Fabricar con el acabado nuevo, en su pestaña: cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo) y «Hacer ×3»; lo que está en marcha, con su barra",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Construir: «Poner | Quitar» (X) y la planta arriba (desmontar, dentro de construir); las piezas con su imagen y el coste en iconos (en rojo lo que no tienes) y lo que hay en tu tierra; deshacer lo último; sin mojón, se abre en la pestaña Tierra",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La pestaña «Tu tierra»: cada almacenaje con lo que tiene (la obra no coge de ahí sola), quién puede construir y «Quitarle», y cuándo vuelve al rey si no se usa",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las necesidades con los medallones de latón del estudio (sobre los avisos de P4): medio transparentes si van bien; la que va mal, más grande, con flecha y nombre; la ficha en dos líneas; el frío escarcha los bordes de la pantalla",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Hablar: el botón arriba, ocho frases rápidas que llegan a cada uno en su lengua (el servidor reparte el número de la frase) y escribir",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
   },
   {
    "id": "talar",
@@ -3315,6 +3367,13 @@
      "archivo": "jugar/demo/v140.html",
      "capturas": "capturas/demo-v140",
      "notas": "La hoguera, fuera: se levanta apagada con sus ramas, se enciende con la yesca y el taladro de fuego, arde un rato por cada rama o leña que se le echa y se apaga sola (quedan las cenizas); da luz y calor. Por el servidor: todos la ven igual."
+    },
+    {
+     "v": "v141",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v141.html",
+     "capturas": "capturas/demo-v141",
+     "notas": "Las necesidades: hambre, sed, frío y cansancio, con sus avisos"
     }
    ]
   },
@@ -4253,11 +4312,6 @@
    "pregunta": "Copia de seguridad del servidor: ya se hace cada día en la máquina (las 14 últimas), pero falta el sitio de fuera, que solo puede crear valravnx. Propuesta: una Storage Box de Hetzner (la más pequeña), con los pasos de servidor/nube/LEEME.md («Copia de seguridad»). ¿Vale, o prefieres otro sitio (un repositorio privado, otra máquina, un NAS)? Mientras no esté, la copia sale con error en el servidor",
    "desde": "2026-11-07",
    "hito": "admin"
-  },
-  {
-   "pregunta": "La interfaz del juego (estudio del 7 nov, sexta versión, con trece juegos del género, diseno/estudios/interfaz.html): ¿el arma en un hueco «al cinto» junto a las manos (y si la llevas en la mano, la acción golpea)? ¿Hablar con ocho frases rápidas que llegan traducidas, más escribir, y cuáles? ¿En el móvil, los tres atajos a la vista o solo en el menú? ¿«Poner | Quitar» dentro de construir, con deshacer? ¿Lo demás como en la quinta versión (medallones sin números, ficha en dos líneas, menú de cuatro, cuero y roble)?",
-   "desde": "2026-11-07",
-   "hito": "supervivencia"
   }
  ]
 }

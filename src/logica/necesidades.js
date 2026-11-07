@@ -92,6 +92,13 @@ export function efectos(n) {
   };
 }
 
+// lo que se puede mover (multiplica la velocidad): rendido, sin correr (0,6: andar sí, correr no); helado, torpe (0,8).
+// El servidor lo usa para su límite de lo que se puede andar (src/logica/presencia.js), y el navegador para su paso.
+export function factorVelocidad(n) {
+  const e = efectos(n);
+  return (e.sinCorrer ? 0.6 : 1) * (e.torpe ? 0.8 : 1);
+}
+
 // los círculos que salen ahora: [{ que, fuerte }]
 export function avisos(n) {
   return NECESIDADES.filter(k => n[k] >= AVISO).map(k => ({ que: k, fuerte: n[k] >= FUERTE }));

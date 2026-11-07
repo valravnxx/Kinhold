@@ -139,7 +139,7 @@ import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades } from '../src/logica/necesidades.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades } from '../src/logica/necesidades.js';
 import { puestasDe } from '../src/logica/prendas.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
@@ -587,7 +587,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           recienLlegado.delete(autor);
         }
         // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
-        const rec = presencia.recibir(autor, msg, reloj(), { admin: esAdmin(autor), vel: modosDe(autor).velocidad });
+        const rec = presencia.recibir(autor, msg, reloj(), { admin: esAdmin(autor), vel: (modosDe(autor).velocidad || 1) * velocidadNecesidades(necesidadesDe(autor)) });   // (rendido, no corre; helado, más lento)
         if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
         if (rec.recortado) anotarRecorte(autor, rec.recortado);
         ponerAlDia();
