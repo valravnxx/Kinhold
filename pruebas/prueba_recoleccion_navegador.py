@@ -2,18 +2,18 @@
 # Va junto a cada tipo de punto (ramas, piedra, sílex, ortigas, hierba larga), pulsa Usar y comprueba que lo recogido
 # va al inventario por huecos, que el punto desaparece y que vuelve a salir pasado su tiempo. Capturas de cerca en PC
 # (1280×800) y móvil (390×844).
-# Uso: python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_hito1.html <carpeta>
+# Uso: python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html <carpeta>
 # MUTAR=1: Usar no recoge (se quita el punto antes): tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
-RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
+RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_demo.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas'
 os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
+os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
 # la carpeta del taller que carga el juego (la dice src/mundo/eleccion.js), para no quedarse atrás cuando cambia
 import re
 TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)
@@ -23,7 +23,7 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html'
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = os.environ.get('MUTAR') == '1'
 

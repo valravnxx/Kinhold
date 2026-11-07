@@ -3,26 +3,26 @@
 # lados, sin manos ni hombro; lo de las manos y el hombro se coge del arcón (que hace de mundo), se ve abajo con
 # «Soltar» y el personaje lleva puesto lo que dice el inventario. En PC se arrastra; en el móvil se toca y el panel va
 # a pantalla completa. Comprueba lo que queda en la lógica (inventario con autor) y saca capturas.
-# Uso: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_hito1.html <carpeta>
+# Uso: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html <carpeta>
 # MUTAR=1 quita a propósito los huecos del cinturón en la página: tiene que fallar. MUTAR_RETRATO=1 impide dibujar el
 # retrato (tiene que fallar la del retrato).
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
-RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
+RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_demo.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas'
 os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/construccion'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/construccion/prueba.html')
+os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html'
+URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 

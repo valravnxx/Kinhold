@@ -9,7 +9,7 @@ import sys, os, re, shutil, tempfile, threading, http.server, functools, sockets
 from playwright.sync_api import sync_playwright
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-CONSTR = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_hito1.html')
+CONSTR = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_demo.html')
 ESTILO = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'dist/kinhold_estilo.html')
 PERSONAJE = os.path.abspath(sys.argv[3] if len(sys.argv) > 3 else 'dist/kinhold_personaje.html')
 SALIDA = sys.argv[4] if len(sys.argv) > 4 else 'capturas/idioma'
@@ -28,7 +28,7 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL_PERSONAJE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'
-URL_CONSTR = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html'
+URL_CONSTR = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html?modo=construir&sinservidor=1&llano=1'
 URL_ESTILO = f'http://127.0.0.1:{srv.server_address[1]}/jugar/estilo/prueba.html'
 os.makedirs(SALIDA, exist_ok=True)
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
@@ -91,7 +91,7 @@ with sync_playwright() as p:
         sufijo = 'movil' if movil else 'pc'
 
         # ---------- construcción ----------
-        pg.goto(URL_CONSTR + '?lang=en')
+        pg.goto(URL_CONSTR + '&lang=en')
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()')
         pg.wait_for_timeout(500)
@@ -215,7 +215,7 @@ with sync_playwright() as p:
         pg.on('pageerror', lambda e: err.append(str(e)))
         pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
         K, S, P = 'window.__kinhold', 'window.__estilo', 'window.__personaje'
-        pg.goto(URL_CONSTR + '?lang=ru')
+        pg.goto(URL_CONSTR + '&lang=ru')
         pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         pg.evaluate('localStorage.clear(); window.__kinhold.reiniciar()'); pg.wait_for_timeout(400)
         comprobar('ruso: construcción con ?lang=ru', pg.evaluate('document.documentElement.lang') == 'ru')
