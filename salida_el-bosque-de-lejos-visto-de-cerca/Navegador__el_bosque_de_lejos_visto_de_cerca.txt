@@ -1,0 +1,41 @@
+PC
+  OK   PC: hay un prado a 400 m de un bosque espeso — {'p': [-3300, -100], 'q': [-2900, -100]}
+  FALLA PC: delante, las copas de cerca — {'tris': 0, 'alto': 0, 'ini': 250, 'rampa': 150}
+  FALLA PC: cada punto lleva lo que sube sobre el suelo (para meterlo bajo el suelo cerca) — {'tris': 0, 'alto': 0, 'ini': 250, 'rampa': 150}
+  OK   PC: no empiezan hasta 240 m del jugador, y suben poco a poco — {'tris': 0, 'alto': 0, 'ini': 250, 'rampa': 150}
+  OK   PC: sin errores en la página
+móvil
+  OK   móvil: hay un prado a 400 m de un bosque espeso — {'p': [-3300, -100], 'q': [-2900, -100]}
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_dosel_cerca_navegador.py", line 80, in <module>
+    d = ir(pg, s)
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_dosel_cerca_navegador.py", line 60, in ir
+    pg.wait_for_function(f"(s => {{ const t = {K}.mundoJ.terreno, O = {K}.mundoJ.salida; return t.alturaEn(s.p[0] + O.x, s.p[1] + O.z) !== null && t.alturaEn(s.q[0] + O.x, s.q[1] + O.z) !== null && t.faltan() === 0 && {K}.decorado.pendientes === 0; }})", arg=s, timeout=900000)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 12809, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1153, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 941, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 900000ms exceeded.
