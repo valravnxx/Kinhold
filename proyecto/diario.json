@@ -5043,5 +5043,22 @@
   "pruebas": "En la nube, los 36 grupos bien (el PC de valravnx no estaba para pruebas); la primera vez fallaron lógica y demo única por cuatro textos de la versión sin traducir, y el panel de fabricación por un toque en el móvil tapado por el propio panel: arreglados y repetidos esos tres, bien. Fabricación 125/125 (rota a propósito con MUTAR=1, falla), objetos en el servidor 69/69 y el recorrido 78/78 aquí. Miradas las capturas del menú de los puestos (PC y móvil), del marco y de la piedra de tallar levantada.",
   "capturas": "capturas/demo-v136",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T09:48:41+01:00",
+  "fin": "2026-11-07T13:45:38+01:00",
+  "titulo": "El ciclo de día y noche: cielo con estrellas, sol y luna, y la luz que sigue al sol (chat con valravnx)",
+  "hito": "graficos",
+  "hecho": [
+   "La hora del mundo sale del reloj del servidor (va en su bienvenida): todos ven el mismo cielo. Día de 2 h reales y noche de 1 h (GDD); el sol sale por el este a las 6, a mediodía está al sur a 48° y se pone por el oeste a las 18 (src/logica/cielo.js, lógica pura).",
+   "La luz que hace sombra sigue al sol, con su color y su fuerza por lo alto que está (de la luz «mañana» del estilo v5 a mediodía a la dorada del ocaso), y de noche la de la luna según su fase; de una a otra, las dos casi apagadas. La luz del cielo, la niebla y lo que refleja el agua cambian con la hora.",
+   "El cielo lo pinta la niebla del posprocesado por la dirección de cada píxel: degradado, halo y disco del sol, la luna con la cara que le da el sol (su fase sale sola, una vuelta cada 8 días del mundo) y estrellas en tres capas con una Vía Láctea tenue, que giran alrededor del polo.",
+   "Medido en las capturas (brillo medio del suelo, de 255): de día 107, de noche con luna llena 45 y con luna nueva 27: oscuro pero se ve. Las pruebas automáticas sin ?hora siguen con la luz «mañana» quieta; ?hora=H&luna=F deja una hora y una fase quietas.",
+   "Pruebas nuevas: pruebas/prueba_cielo.mjs (23 comprobaciones, con el servidor de verdad para su reloj; rota con día y noche iguales, con la luz apagada de golpe y sin el reloj, falla) y pruebas/prueba_cielo_navegador.py (mediodía, ocaso, luna llena, medianoche y luna nueva en PC y móvil, y la noche con el horizonte del PC alto; rota sin el cielo vivo, falla).",
+   "Aún mal o sin comprobar: el ocaso sale algo pálido; el crepúsculo dura solo 2 o 3 minutos reales (la noche es de 1 h); no comprobado en una tarjeta gráfica de verdad (ni sus fotogramas ni cómo se ven las estrellas en una pantalla de mucha resolución)."
+  ],
+  "pruebas": "Batería entera en la nube correcta (lógica y todos los grupos de navegador, PC y móvil), sin las de en línea; tras unir main, otra vez la lógica y los grupos de gráficos, del día y la noche y de la demo en el mundo",
+  "capturas": "capturas/demo-v137",
+  "estado": "ok"
  }
 ]

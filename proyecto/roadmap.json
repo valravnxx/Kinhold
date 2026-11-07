@@ -1632,9 +1632,9 @@
     },
     {
      "nombre": "El ciclo de día y noche: cielo con estrellas, sol y luna, y la luz del sol que cambia (valravnx, 7 nov)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T09:48:41+01:00",
-     "rama": "trabajo/20261107-0948-cielo"
+     "fin": "2026-11-07T13:45:38+01:00"
     }
    ],
    "num": "G"
@@ -3201,6 +3201,13 @@
      "archivo": "jugar/demo/v136.html",
      "capturas": "capturas/demo-v136",
      "notas": "Los puestos de trabajo son obra: la piedra de tallar, la hoguera y el banco de tronco se levantan desde Construir, en su pestaña «Puestos de trabajo»: se pone el marco, se le lleva lo que pide y se trabaja en él; la hoguera, solo fuera"
+    },
+    {
+     "v": "v137",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v137.html",
+     "capturas": "capturas/demo-v137",
+     "notas": "El día y la noche: el sol, la luna con su fase y las estrellas, y la luz que los sigue"
     }
    ]
   },
