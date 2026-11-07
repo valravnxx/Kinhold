@@ -1,0 +1,19 @@
+Lógica: el crédito de metros
+  OK   correr 20 s a 6 m/s no se recorta nunca — x=140
+  OK   los estados que llegan juntos tras un tirón de la red pasan enteros — x=42
+  OK   nadar con la corriente a favor no se recorta
+  OK   saltarse 100 m se queda en lo que da el crédito, en la misma dirección — x=46, recortado 84 m
+  OK   la altura del recortado va con lo recortado (no se queda en la del sitio saltado) — y=1.6
+  OK   si insiste, avanza a VEL_MAX y no más — 8 m en 1 s
+  OK   volver a la salida al ahogarse es libre
+  OK   cuando el servidor lo mueve (admin), el primer estado allí no se recorta
+  OK   sin límite (solo pruebas que colocan de golpe) no se recorta
+En el servidor
+  OK   B ve a A donde ha corrido — x=6
+  OK   B ve a A recortado, no en el sitio saltado — a 16 m de donde estaba, no a 500
+  OK   se anota en seguridad.jsonl quién y cuánto — 481.6 m
+  OK   insistir no llena el registro (uno cada 10 s como mucho) — 1 líneas
+  OK   lo que se guarda al salir es lo recortado — x=22.5, z=-8.7
+  OK   al volver a conectar tampoco se salta: el servidor lo ancla donde lo dejó — x=35.1, z=-18.5
+
+15 correctas, 0 fallos
