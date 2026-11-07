@@ -2248,5 +2248,11 @@
  "si sigues sin comer, al rato mueres": "if you still do not eat, after a while you die",
  "Al máximo: te cansas el doble, las heridas se curan despacio y {m}.": "At the maximum: you tire twice as fast, wounds heal slowly and {m}.",
  "Te cansas el doble (otra necesidad está al máximo).": "You tire twice as fast (another need is at the maximum).",
- "Aún aguantas; al máximo te cansarás el doble y {m}.": "You can still hold on; at the maximum you will tire twice as fast and {m}."
+ "Aún aguantas; al máximo te cansarás el doble y {m}.": "You can still hold on; at the maximum you will tire twice as fast and {m}.",
+ "Bebes agua con las manos. Aún tienes sed.": "You drink water with your hands. You are still thirsty.",
+ "Bebes agua con las manos. Ya no tienes sed.": "You drink water with your hands. You are no longer thirsty.",
+ "Bebes agua con las manos.": "You drink water with your hands.",
+ "Aquí no hay agua: busca un río, un lago o el mar.": "There is no water here: find a river, a lake or the sea.",
+ "Despacio: trago a trago.": "Slowly: one sip at a time.",
+ "Beber agua": "Drink water"
 }

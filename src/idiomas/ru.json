@@ -2248,5 +2248,11 @@
  "si sigues sin comer, al rato mueres": "если так и не поешь, через некоторое время умрёшь",
  "Al máximo: te cansas el doble, las heridas se curan despacio y {m}.": "На пределе: устаёшь вдвое быстрее, раны заживают медленно, и {m}.",
  "Te cansas el doble (otra necesidad está al máximo).": "Устаёшь вдвое быстрее (другая потребность на пределе).",
- "Aún aguantas; al máximo te cansarás el doble y {m}.": "Пока держишься; на пределе будешь уставать вдвое быстрее, и {m}."
+ "Aún aguantas; al máximo te cansarás el doble y {m}.": "Пока держишься; на пределе будешь уставать вдвое быстрее, и {m}.",
+ "Bebes agua con las manos. Aún tienes sed.": "Пьёшь воду руками. Жажда ещё осталась.",
+ "Bebes agua con las manos. Ya no tienes sed.": "Пьёшь воду руками. Жажды больше нет.",
+ "Bebes agua con las manos.": "Пьёшь воду руками.",
+ "Aquí no hay agua: busca un río, un lago o el mar.": "Здесь нет воды: найди реку, озеро или море.",
+ "Despacio: trago a trago.": "Не спеши: глоток за глотком.",
+ "Beber agua": "Попить воды"
 }

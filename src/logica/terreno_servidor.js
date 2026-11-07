@@ -80,9 +80,19 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     return conMarcas(alt, cerca)(xm, zm) - y0;
   };
   const enIsla = (x, z) => dentroDeIsla(x + O.x, z + O.z, isla);
+  // el agua en (x, z) de la escena, como la ve el navegador (src/mundo/mundo_juego.js, aguaEn): lo hondo (m) del río o
+  // del mar, o null en seco. Los ríos de alrededor se guardan mientras no se vaya 300 m más allá.
+  let rios = null;
+  const aguaEn = (x, z) => {
+    const xm = x + O.x, zm = z + O.z;
+    if (!rios || Math.hypot(xm - rios.x, zm - rios.z) > 300) rios = { x: xm, z: zm, tramos: paisaje.riosEn(xm - 900, zm - 900, xm + 900, zm + 900) };
+    const s = alt(xm, zm), w = paisaje.agua(xm, zm, rios.tramos);
+    if (w !== null && w > s) return w - s;
+    return s < 0 ? -s : null;
+  };
 
   return {
-    origen: O, y0, suelo, enIsla, alturas, paisaje, alt, semilla,
+    origen: O, y0, suelo, enIsla, alturas, paisaje, alt, semilla, aguaEn,
     // El árbol de nombre id que el navegador dice tener en (x, z) de la escena: el del servidor ({ id, x, z, edad }) o null.
     arbol(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;
