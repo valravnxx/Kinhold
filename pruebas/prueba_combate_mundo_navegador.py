@@ -21,7 +21,7 @@ os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes'), f'{sitio}/recursos/personajes')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass

@@ -13,7 +13,7 @@ os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in ['taller-v24', 'taller-carga-v3']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):

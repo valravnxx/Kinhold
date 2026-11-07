@@ -13,7 +13,7 @@ os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 # la carpeta del taller que carga el juego (la dice src/mundo/eleccion.js), para no quedarse atrás cuando cambia
 import re
 TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)

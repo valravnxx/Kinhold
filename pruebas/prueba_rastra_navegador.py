@@ -14,7 +14,7 @@ os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', TALLER), f'{sitio}/recursos/personajes/{TALLER}')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
