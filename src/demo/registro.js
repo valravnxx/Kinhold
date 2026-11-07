@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v142 (los almacenajes de la base)";
+export const VERSION_DEMO = "Demo única · v143 (beber del río)";
 export const REGISTRO_DEMO = [
+  "v143: beber del río con las manos (P4). Con agua a tu lado (río, lago o mar, a menos de 2,5 m), «Usar» bebe un trago, que baja la sed 30; con sed (su aviso), «Usar» bebe antes que nada, y en el menú del clic derecho sale «Beber agua». Lo da el servidor: mira dónde te tiene y si hay agua ahí. Un trago cada segundo y medio.",
+  "v143, provisional: tres o cuatro tragos quitan la sed; aún sin animación de beber (el personaje se queda de pie).",
   "v142: los almacenajes de la base (revisión del 1 nov): el acopio de troncos, la pila de piedras y la leñera, en su propia pestaña de Construir («Almacenajes»). Se levantan como obra (el marco, su material y su trabajo) y solo en tu tierra o en la de quien te invita. Cada uno guarda lo suyo: el acopio, los troncos; la pila, la piedra suelta; la leñera, la leña y las ramas.",
   "v142: con Usar delante de uno, «Guardar y sacar»: el panel se abre con él, con lo guardado (tocar: sacar) y lo que llevas que se guarda ahí (tocar: guardar). Lo guardado se ve puesto como se guarda de verdad: los troncos en filas entre las estacas, las piedras en montón y la leña apilada bajo el tejadillo. Es de la tierra: solo su dueño y sus invitados guardan o sacan. La obra no coge de ellos sola: hay que sacar lo que se vaya a usar y llevarlo.",
   "v142: el contador de arriba («En tu tierra») cuenta ya lo guardado en los almacenajes de tu tierra (hasta ahora, lo que había en su suelo).",
