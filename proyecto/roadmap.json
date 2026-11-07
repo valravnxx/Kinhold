@@ -1321,7 +1321,9 @@
     },
     {
      "nombre": "Talar un árbol joven con hacha de piedra da un tronco delgado y varas; el tronco delgado es la madera de la casa humilde (las piezas de este tramo lo piden a él)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T01:22:33+00:00",
+     "rama": "trabajo/20261107-0122"
     },
     {
      "nombre": "Materiales del tramo que no tenían origen: juncos o hierba larga (orillas y prados), barro (cavado en la orilla con el palo cavador) y yesca (fibra seca, corteza, hongo de los árboles)",
