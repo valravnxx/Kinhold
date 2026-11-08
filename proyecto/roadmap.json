@@ -1362,9 +1362,10 @@
     },
     {
      "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T02:23:02+00:00",
-     "rama": "trabajo/20261108-0223"
+     "rama": "trabajo/20261108-0223",
+     "fin": "2026-11-08T05:11:49+00:00"
     },
     {
      "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
@@ -3445,6 +3446,13 @@
      "archivo": "jugar/demo/v147.html",
      "capturas": "capturas/demo-v147",
      "notas": "v147: el árbol cae hacia la boca que le cortas (P5): los golpes del primer tercio la abren hacia donde está quien los da y el árbol caerá hacia ese lado, aunque luego se corte por detrás; el aviso lo dice. Sin boca (golpes de lados opuestos), cae cuesta abajo y, en llano, hacia donde se inclina. Lo decide el servidor."
+    },
+    {
+     "v": "v148",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v148.html",
+     "capturas": "capturas/demo-v148",
+     "notas": "Más almacenajes de la base: el soporte de varas, el almiar (paja y juncos), el hoyo de barro y el cesto (lo pequeño), cada uno con su modelo y lleno con lo que guarda"
     }
    ]
   },
