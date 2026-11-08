@@ -326,9 +326,13 @@ console.log('Depositar en las estaciones y volver a coger');
 console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y leñera (revisión del 1 nov)');
 {
   const E = ESTACIONES;
-  comprobar('los tres, sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas)', igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera'])
+  comprobar('los siete del documento de sistemas, sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja y juncos; barro; lo pequeño)',
+    igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera', 'soporte_varas', 'almiar', 'hoyo_barro', 'cesto'])
+    && igual(E.soporte_varas.guarda, ['vara']) && igual(E.almiar.guarda, ['paja', 'junco']) && igual(E.hoyo_barro.guarda, ['barro'])
+    && ['silex', 'fibra', 'cordel', 'yesca'].every(t => E.cesto.guarda.includes(t)) && E.cesto.guarda.every(t => CATALOGO[t] && CATALOGO[t].tam === 'P')
     && E.acopio_troncos.guarda.includes('tronco_delgado') && igual(E.pila_piedras.guarda, ['piedra']) && igual(E.lenera.guarda, ['lena', 'rama']) && !Object.values(RECETAS).some(r => r.uso === 'almacen'));
-  comprobar('su coste sale del mundo (varas, piedras y ramas)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama'].includes(m))));
+  comprobar('su coste sale del mundo (varas, piedras, ramas y juncos)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama', 'junco'].includes(m))));
+  comprobar('el almiar y el hoyo de barro, solo fuera; el soporte de varas y el cesto, dentro o fuera', E.almiar.donde === 'fuera' && E.hoyo_barro.donde === 'fuera' && E.soporte_varas.donde === 'ambos' && E.cesto.donde === 'ambos');
   const fab = new Fabricacion();
   let r = fab.colocar('ana', 'pila_piedras', 0, 0, false, null, false);
   comprobar('fuera de tu tierra no se pone', !r.ok && /tierra/.test(r.motivo || ''), r.motivo);
@@ -368,6 +372,33 @@ console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y le
   comprobar('el tronco delgado, del hombro al acopio de troncos', r.ok && !hom.lugares.hombro && fab.estaciones[ac].deposito.tronco_delgado === 1, r.motivo);
   r = fab.retirar('ana', ac, 'tronco_delgado', 1, { x: 5, z: 0 }, hom);
   comprobar('y se vuelve a sacar', r.ok && hom.cuantos('tronco_delgado') === 1, r.motivo);
+  // los otros cuatro (8 nov): cada uno, lo suyo y nada más
+  const prueba = (tipo, x, coste, bien, mal) => {
+    const i = jugador(); for (const [t, n] of Object.entries(coste)) i.meterDonde(t, n);
+    const id = levantar(fab, 'ana', tipo, x, 0, i), q = jugador(); q.lugares['mano:der'] = { tipo: bien, n: 2 }; q.lugares['mano:izq'] = { tipo: mal, n: 1 };
+    const rb = fab.depositar('ana', id, 'mano:der', undefined, { x, z: 0 }, q), rm = fab.depositar('ana', id, 'mano:izq', undefined, { x, z: 0 }, q);
+    comprobar(`${E[tipo].nombre.toLowerCase()}: guarda ${CATALOGO[bien].nombre.toLowerCase()} y no ${CATALOGO[mal].nombre.toLowerCase()}`, rb.ok && fab.estaciones[id].deposito[bien] === 2 && !rm.ok && /solo guarda/.test(rm.motivo || ''), `${rb.motivo || ''} ${rm.motivo || ''}`);
+    return id;
+  };
+  prueba('soporte_varas', 10, { vara: 4 }, 'vara', 'rama');
+  prueba('almiar', 15, { vara: 2 }, 'junco', 'piedra');
+  prueba('almiar', 20, { vara: 2 }, 'paja', 'vara');
+  const cs = prueba('cesto', 25, { junco: 3 }, 'fibra', 'piedra');
+  { const q = jugador(); q.lugares['mano:der'] = { tipo: 'silex', n: 3 }; q.lugares['mano:izq'] = { tipo: 'cordel', n: 1 };
+    const r1 = fab.depositar('ana', cs, 'mano:der', undefined, { x: 25, z: 0 }, q), r2 = fab.depositar('ana', cs, 'mano:izq', undefined, { x: 25, z: 0 }, q);
+    comprobar('en el cesto, también el sílex y un cordel suelto', r1.ok && r2.ok && fab.estaciones[cs].deposito.silex === 3 && fab.estaciones[cs].deposito.cordel === 1, `${r1.motivo || ''} ${r2.motivo || ''}`); }
+  // el hoyo de barro: hay que llevar el palo cavador para cavarlo
+  { const i = jugador(); i.meterDonde('piedra', 6);
+    const c = fab.colocar('ana', 'hoyo_barro', 30, 0, false, null, true);
+    fab.entregarEstacion('ana', c.id, { x: 30, z: 0 }, i, null, T0);
+    const sin = fab.trabajarEstacion('ana', c.id, MAX_RATO_ESTACION, { x: 30, z: 0 }, i);
+    comprobar('el hoyo de barro no se cava sin el palo cavador', c.ok && !sin.ok && /palo cavador/.test(sin.motivo || ''), sin.motivo);
+    i.lugares['mano:der'] = { tipo: 'palo_cavador', n: 1 };
+    for (let k = 0; k < 10 && fab.estaciones[c.id].obra; k++) fab.trabajarEstacion('ana', c.id, MAX_RATO_ESTACION, { x: 30, z: 0 }, i);
+    comprobar('con él, sí (y el palo no se gasta)', !fab.estaciones[c.id].obra && i.cuantos('palo_cavador') === 1);
+    const q = jugador(); q.lugares['mano:der'] = { tipo: 'barro', n: 1 }; q.lugares['mano:izq'] = { tipo: 'junco', n: 1 };
+    const rb = fab.depositar('ana', c.id, 'mano:der', undefined, { x: 30, z: 0 }, q), rm = fab.depositar('ana', c.id, 'mano:izq', undefined, { x: 30, z: 0 }, q);
+    comprobar('y guarda el barro, no los juncos', rb.ok && fab.estaciones[c.id].deposito.barro === 1 && !rm.ok, `${rb.motivo || ''} ${rm.motivo || ''}`); }
 }
 
 console.log('De qué sitio sale cada cosa: la mano, el cinturón o el suelo');

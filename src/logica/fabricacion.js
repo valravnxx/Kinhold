@@ -56,6 +56,12 @@
 //    de ellos sola, ni las recetas: hay que sacar lo que se vaya a usar. Provisional (el documento deja sus costes y lo
 //    que cabe para cuando se hagan): el acopio, 4 varas y 15 s, 12 troncos; la pila, 4 piedras y 10 s, 40 piedras; la
 //    leñera, 4 varas y 6 ramas y 15 s, 30 de leña y ramas. El acopio guarda también el tronco corto (es tronco).
+//    Los otros cuatro (8 nov), igual de provisionales: el soporte de varas (dos caballetes de varas cruzadas), 4 varas y
+//    10 s, 24 varas, dentro o fuera; el almiar (el montón alrededor de un palo hincado), 2 varas y 10 s, 24 haces de paja
+//    y de juncos, fuera; el hoyo de barro (cavado con el palo cavador, que hay que llevar, y bordeado de piedras), 6
+//    piedras y 20 s, 16 cestas de barro, fuera; y el cesto (de juncos, como la cesta de recolección), 3 haces de juncos
+//    y 15 s, 30 de lo pequeño (sílex y lascas, fibra, yesca, cordel, cuerda, resina, bayas, setas, frutos secos y
+//    hierbas), dentro o fuera.
 import { CATALOGO } from './inventario.js';
 import { ALCANCE_COGER } from './suelo.js';
 import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
@@ -86,6 +92,10 @@ export const ESTACIONES = {
   acopio_troncos: { nombre: 'Acopio de troncos', un: 'un acopio de troncos', uso: 'almacen', coste: { vara: 4 }, donde: 'fuera', trabajo: 15, tierra: true, guarda: ['tronco_delgado', 'tronco_largo', 'tronco_corto'], cabe: 12, hace: 'Guarda los troncos, apilados fuera' },
   pila_piedras:   { nombre: 'Pila de piedras', un: 'una pila de piedras', uso: 'almacen', coste: { piedra: 4 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['piedra'], cabe: 40, hace: 'Guarda la piedra suelta' },
   lenera:         { nombre: 'Leñera', un: 'una leñera', uso: 'almacen', coste: { vara: 4, rama: 6 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['lena', 'rama'], cabe: 30, hace: 'Guarda la leña y las ramas, a cubierto' },
+  soporte_varas:  { nombre: 'Soporte de varas', un: 'un soporte de varas', uso: 'almacen', coste: { vara: 4 }, donde: 'ambos', trabajo: 10, tierra: true, guarda: ['vara'], cabe: 24, hace: 'Guarda las varas, tumbadas en dos caballetes' },
+  almiar:         { nombre: 'Almiar', un: 'un almiar', uso: 'almacen', coste: { vara: 2 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['paja', 'junco'], cabe: 24, hace: 'Guarda la paja y los juncos, en montón alrededor de un palo' },
+  hoyo_barro:     { nombre: 'Hoyo de barro', un: 'un hoyo de barro', uso: 'almacen', coste: { piedra: 6 }, requiere: ['palo_cavador'], donde: 'fuera', trabajo: 20, tierra: true, guarda: ['barro'], cabe: 16, hace: 'Guarda el barro húmedo, en un hoyo cavado y bordeado de piedras' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
@@ -444,7 +454,7 @@ export class Fabricacion {
     if (c.dentro && c.dentro.some(Boolean)) return { ok: false, motivo: 'Vacíalo antes.' };
     if (c.hechura || c.tinte || c.carga) return { ok: false, motivo: 'Eso no se deja en una estación.' };
     const def = ESTACIONES[e.tipo];
-    if (!guardaTipo(e.tipo, c.tipo)) return { ok: false, motivo: `${def.nombre}: solo guarda ${def.guarda.map(t => CATALOGO[t].nombre.toLowerCase()).join(', ')}.` };
+    if (!guardaTipo(e.tipo, c.tipo)) return { ok: false, motivo: `${def.nombre}: solo guarda ${def.guardaTxt || def.guarda.map(t => CATALOGO[t].nombre.toLowerCase()).join(', ')}.` };
     const n = cantidad === undefined || cantidad === null ? c.n : cantidad;
     if (!Number.isInteger(n) || n < 1 || n > c.n) return { ok: false, motivo: 'Cantidad no válida.' };
     const hay = totalDeposito(e.deposito), max = cabeEn(e.tipo), donde = def.guarda ? def.nombre : 'En la estación';
