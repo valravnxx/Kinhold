@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (14:17 UTC) — por el chat: repaso y limpieza del roadmap
+valravnx: «hay en roadmap por hacer el banco de tronco, pero ya está integrado, porque? hay que revisar y limpiar cosas de roadmap». Sobre el hito de gráficos (todas sus tareas hechas y aún en curso): «Darlo por hecho».
+→ Repasadas en el código las tareas sin hacer de los hitos vivos. Cerradas por estar ya hechas: el banco de tronco (puesto con sus recetas de N1, y el recorrido lo levanta) y el recorrido de nada a la casa humilde cerrada y techada (paso 16 del recorrido). El hito «Perfiles gráficos y posprocesado», hecho. Corregido el tamaño de main.js en su tarea (casi 3.000 líneas). Lo demás sigue sin hacer de verdad.
+
 ### 8 nov 2026 — valravnx, en la sesión: el revisor de las pruebas
 valravnx: «solo añade un revisor de cuan importante es cada prueba para lo exacto que se haga, si no es inmediatamente importante, no se hace, hay que priorizar el progreso, estamos en 720h ya de trabajo y llevamos NADA del contenido, no puede ser que seamos tan lentos».
 → pruebas_nube.mjs es el revisor: sin grupos de siempre, solo los que pide cada archivo cambiado, con su porqué; la sesión quita lo que no importa (--sin). CLAUDE.md, paso 6; fuera la batería entera al llevar un hito a revisión.

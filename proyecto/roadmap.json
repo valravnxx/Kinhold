@@ -1380,7 +1380,9 @@
     },
     {
      "nombre": "El banco de tronco (2 troncos cortos y el hacha): la entrada al tier 1, con sus recetas de madera (tablas, mangos, cestas, la cuerda buena)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "fin": "2026-11-08T15:19:10+01:00",
+     "nota": "Ya estaba hecho: el banco de tronco es un puesto de trabajo (2 troncos cortos, con el hacha y la lasca) con sus recetas de N1 del documento de sistemas (cuerda, cinturón de cuerda, cestas, nasa, trampa de lazo, pala, azada, hoz, mayal, cubo), y el recorrido de jugador lo levanta (paso 16f). Cerrada en el repaso del roadmap (valravnx, 8 nov)."
     },
     {
      "nombre": "Desbrozar matorrales y arbustos (valravnx, 8 nov): con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos del mundo se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación, como los árboles talados. El arbusto de bayas, igual: se pierden sus bayas. Recorrido: el jugador desbroza un matorral y se lleva sus ramas",
@@ -1394,7 +1396,9 @@
     },
     {
      "nombre": "Recorrido entero de nada a la casa humilde cerrada y techada y al banco de tronco, sin arcón, en el recorrido de jugador (cada material sacado del mundo: pruebas/prueba_origenes.mjs); y prueba de valravnx entre dos",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "fin": "2026-11-08T15:19:10+01:00",
+     "nota": "Ya lo hace el recorrido de jugador (paso 16): la casa humilde entera, cerrada y techada, y el banco de tronco, sin arcón y con cada material sacado del mundo. La prueba entre dos la hace valravnx en la revisión del hito. Cerrada en el repaso del roadmap (valravnx, 8 nov)."
     },
     {
      "nombre": "Estudio del panel de fabricación (valravnx, 6 nov): cómo lo hacen otros juegos y propuesta con imágenes, para PC y móvil; valravnx decide si se hace",
@@ -1706,7 +1710,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "Partir src/juego/main.js (2.400 líneas) en partes con sentido, sin cambiar nada de lo que hace",
+     "nombre": "Partir src/juego/main.js (casi 3.000 líneas) en partes con sentido, sin cambiar nada de lo que hace",
      "estado": "pendiente"
     },
     {
@@ -1782,7 +1786,7 @@
   {
    "id": "graficos",
    "nombre": "Perfiles gráficos y posprocesado",
-   "estado": "en_curso",
+   "estado": "hecho",
    "lleva": "chat",
    "jugable": "Seis perfiles gráficos, de móvil de gama baja a PC de gama alta, y el posprocesado del estilo (oclusión ambiental, gradación de color, brillo de las luces, niebla, desenfoque puntual y haces de luz), sin que ningún perfil esconda lo que importa para jugar.",
    "nota": "Lo lleva el chat con valravnx (4 nov), aparte de los P1–P7: los carriles no lo tocan.",
