@@ -8,11 +8,12 @@
 //      MUTAR=3 → como si una imagen estuviera vacía (tiene que fallar)
 //      MUTAR=4 → como si el odre saliera aún con el hatillo (tiene que fallar)
 //      MUTAR=5 → como si el cinto de cuero saliera aún con el hatillo (tiene que fallar)
+//      MUTAR=6 → como si faltara el hueco del kit de la interfaz (tiene que fallar)
 import { readFileSync, existsSync, statSync } from 'fs';
 import { RECETAS, ESTACIONES, PARA } from '../src/logica/fabricacion.js';
 import { CATALOGO } from '../src/logica/inventario.js';
 import { PRENDAS } from '../src/logica/prendas.js';
-import { CARPETA_ICONOS } from '../src/logica/iconos.js';
+import { CARPETA_ICONOS, CARPETA_INTERFAZ } from '../src/logica/iconos.js';
 
 const MUTAR = process.env.MUTAR;
 const carpeta = 'docs/' + CARPETA_ICONOS;
@@ -57,6 +58,21 @@ for (const k of Object.keys(para)) ok(Object.hasOwn(RECETAS, k), `«para qué» 
 for (const l of ['en', 'ru']) {
   const dic = JSON.parse(readFileSync(`src/idiomas/${l}.json`, 'utf8'));
   for (const t of new Set(Object.values(para))) ok(Object.hasOwn(dic, t), `«${t}» traducido (${l})`);
+}
+
+// el kit de la interfaz (herramientas/interfaz/kit.py): lo que piden la plantilla y la barra de abajo, en su carpeta y
+// la plantilla con la misma carpeta que el código
+{
+  const kit = 'docs/' + CARPETA_INTERFAZ, plantilla = readFileSync('src/plantilla.html', 'utf8');
+  const pide = new Set([...plantilla.matchAll(/recursos\/interfaz-v\d+\/([a-z_]+\.webp)/g)].map(m => m[1]));
+  for (const n of ['g_soltar', 'g_alhombro', 'g_amanos']) pide.add(n + '.webp');
+  ok(pide.size >= 5, `la plantilla pide el kit (${pide.size} imágenes)`);
+  ok([...plantilla.matchAll(/recursos\/(interfaz-v\d+)\//g)].every(m => m[1] + '/' === CARPETA_INTERFAZ.replace('recursos/', '')), 'la plantilla usa la misma carpeta del kit que el código');
+  for (const n of pide) {
+    const f = kit + n, hay = existsSync(f) && !(MUTAR === '6' && n === 'hueco.webp');
+    ok(hay, `existe ${f}`);
+    if (hay) { const b = readFileSync(f); ok(b.toString('ascii', 8, 12) === 'WEBP' && b.length > 800, `${n} es una imagen WebP de verdad`); }
+  }
 }
 
 console.log(`${bien} bien, ${fallos} fallos · ${hace.size} imágenes que enseña el panel, ${sinModelo.length} aún sin su modelo`);

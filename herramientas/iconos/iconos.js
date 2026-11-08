@@ -26,8 +26,11 @@ renderer.shadowMap.enabled = false;
 document.body.style.margin = '0'; document.body.appendChild(renderer.domElement);
 const escena = new THREE.Scene();
 escena.add(new THREE.HemisphereLight(0xdfe6ee, 0x5a4a36, 1.6));
-const sol = new THREE.DirectionalLight(0xfff1dc, 2.6); sol.position.set(3, 5, 4); escena.add(sol);
-const contra = new THREE.DirectionalLight(0xbfd0e0, 0.7); contra.position.set(-4, 2, -3); escena.add(contra);
+// la luz (estudio de la interfaz, 7 nov): la principal de arriba a la izquierda, como el resto de la interfaz, y una de
+// contra cálida y otra de canto que separan cada cosa de un fondo oscuro (a 60 px se perdían sobre el cuero)
+const sol = new THREE.DirectionalLight(0xfff1dc, 2.9); sol.position.set(-3, 5, 4); escena.add(sol);
+const contra = new THREE.DirectionalLight(0xffe2b0, 2.2); contra.position.set(4, 3, -3); escena.add(contra);
+const canto = new THREE.DirectionalLight(0xffffff, 1.0); canto.position.set(0, -2, -4); escena.add(canto);
 const camara = new THREE.PerspectiveCamera(28, 1, 0.01, 100);
 
 const mallas = L => {
@@ -35,8 +38,9 @@ const mallas = L => {
   for (const [tex, geos] of Object.entries(L.cerrar(null, true))) g.add(new THREE.Mesh(mergeGeometries(geos), materialTex(tex)));
   return g;
 };
-// lo de la mano, tumbado en diagonal y de frente; las herramientas largas, encuadradas por la cabeza
-const LARGAS = new Set(['antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
+// lo de la mano, tumbado en diagonal y de frente; las herramientas largas (y las hachas: si no, a 60 px eran un palo),
+// encuadradas por la cabeza
+const LARGAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
 const enDiagonal = (o, t) => { const g = new THREE.Group(); o.rotation.z = -Math.PI / 4; g.add(o); g.userData.plano = true; g.userData.larga = LARGAS.has(t); return g; };
 const deMano = t => enDiagonal(mallas(loteEnMano(t)), t);
 // lo de la espalda, con algo dentro para que se vea para qué es
@@ -79,7 +83,7 @@ window.__iconos = {
     const f = fuentes[nombre], o = f.hacer();
     o.userData.icono = true; escena.add(o); o.updateMatrixWorld(true);
     const caja = new THREE.Box3().setFromObject(o), c = caja.getCenter(new THREE.Vector3()), s = caja.getSize(new THREE.Vector3());
-    if (o.userData.larga) { c.x += s.x * 0.2; c.y += s.y * 0.2; s.multiplyScalar(0.6); } // la cabeza de la herramienta
+    if (o.userData.larga) { const k = HACHAS.includes(nombre) ? [0.24, 0.5] : [0.17, 0.68]; c.x += s.x * k[0]; c.y += s.y * k[0]; s.multiplyScalar(k[1]); } // las hachas, más por la cabeza // la cabeza de la herramienta
     const plano = o.userData.plano, arriba = o.userData.arriba;
     const radio = plano ? Math.max(s.x, s.y) / 2 * 1.05 : arriba ? Math.max(s.x, s.z) / 2 * 1.02 : s.length() / 2;
     const d = radio / Math.tan(THREE.MathUtils.degToRad(camara.fov / 2)) * (plano || arriba ? 1 : 0.9);

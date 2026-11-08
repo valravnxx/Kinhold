@@ -75,8 +75,8 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   body.combate.tactil #llevas{display:none}
   /* pantallas bajas: las rosas algo más pequeñas, para que la de parar no llegue a los botones de modo */
   @media (max-height:740px){#cmbRosa,#cmbRosaParar{width:116px;height:116px}#cmbRosaParar{bottom:calc(148px + env(safe-area-inset-bottom,0px))}}
-  /* PC: el aliento encima de lo que llevas en las manos (los dos iban abajo en el centro, uno encima del otro) */
-  body.combate:not(.tactil) #cmbEstado{bottom:calc(58px + env(safe-area-inset-bottom,0px))}
+  /* PC: el aliento encima de lo que llevas en las manos (los huecos de abajo, de 64 px; iban los dos en el centro) */
+  body.combate:not(.tactil) #cmbEstado{bottom:calc(112px + env(safe-area-inset-bottom,0px))}
   body.combate.tactil #cmbEstado{left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(162px + env(safe-area-inset-bottom,0px));transform:none;flex-wrap:wrap;max-width:150px;gap:4px 8px;font-size:12px}
   body.combate.tactil #btnUsar{display:none}
   body.combate.tactil #cmbMsg{top:calc(50% - 150px);font-size:14px}

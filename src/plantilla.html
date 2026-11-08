@@ -26,11 +26,31 @@ button:active{transform:scale(.97)}
 
 #aviso{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);max-width:min(560px,92vw);background:var(--panel);border-left:4px solid var(--verde);padding:8px 12px;border-radius:8px;font-size:13.5px;pointer-events:none}
 #aviso.error{border-left-color:var(--rojo)}
-#llevas{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;background:var(--panel);padding:6px 8px 6px 12px;border-radius:10px;font-size:13px;max-width:min(560px,60vw)}
-#llevas button{padding:3px 9px;font-size:12px}
-#llevas .llevo{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+/* lo que llevas (estudio de la interfaz, 7 nov): tus dos manos, el hombro si llevas algo y el cinto, cada cosa con su
+   imagen, en huecos de cuero con filo de latón (renderizados: recursos/interfaz-v1/, herramientas/interfaz/kit.py) */
+#llevas{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:8px;padding-bottom:9px;z-index:3}
+#llevas .hu{position:relative;width:64px;height:64px;display:grid;place-items:center;background:url(../../recursos/interfaz-v1/hueco.webp) center/contain no-repeat;filter:drop-shadow(0 3px 4px rgba(0,0,0,.55))}
+#llevas .hu.cinto{width:50px;height:50px}
+#llevas .hu.hombro{width:70px;height:70px}
+#llevas .hu img{width:84%;height:84%;object-fit:contain;filter:drop-shadow(0 0 1px #120b06) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+#llevas .hu.sel:after{content:"";position:absolute;inset:-3px;border-radius:9px;box-shadow:0 0 0 2px #f0cf8a,0 0 14px 2px rgba(240,190,100,.65);pointer-events:none}
+#llevas .hu.apagada{opacity:.4}
+#llevas .hu .n{position:absolute;right:8%;bottom:3%;font:600 15px Georgia,serif;color:#f1e6cf;text-shadow:0 1px 2px #000,0 0 4px #000}
+#llevas .hu .k{position:absolute;left:-5px;bottom:-5px;min-width:19px;height:19px;padding:0 4px;display:grid;place-items:center;border-radius:4px;background:linear-gradient(#625a50,#2b2520);color:#f1e6cf;font:600 11.5px Georgia,serif;border:1px solid #8a7550;box-shadow:0 2px 0 #120d09}
+#llevas .hu button{position:absolute;top:-9px;width:26px;height:26px;min-width:0;padding:0;border:0;border-radius:50%;background:url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;display:grid;place-items:center;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+#llevas .hu button:active{background-image:url(../../recursos/interfaz-v1/boton_pulsado.webp);transform:scale(.95)}
+#llevas .hu button img{width:56%;height:56%;filter:none}
+/* soltar, arriba a la izquierda (las imágenes van de abajo a la izquierda a arriba a la derecha: no tapa la cabeza del
+   hacha); al hombro o a las manos, arriba a la derecha */
+#llevas .hu [data-soltar]{left:-9px}
+#llevas .hu [data-alhombro],#llevas .hu [data-amanos]{right:-9px}
+#llevas .sep{width:1px;align-self:stretch;margin:10px 2px;background:linear-gradient(transparent,rgba(193,154,85,.75),transparent)}
+#llevas .carga{position:absolute;left:6px;right:6px;bottom:0;height:4px;border-radius:2px;background:rgba(0,0,0,.5);box-shadow:inset 0 0 0 1px rgba(193,154,85,.35)}
+#llevas .carga i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#a8792f,#efc777)}
+#llevas .llevo{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;align-self:center;padding:6px 10px;border-radius:6px;background:var(--panel);font-size:13px}
 #llevas .llevo>span{color:var(--muted)}
-#llevas i{width:1px;align-self:stretch;background:var(--linea);margin:0 4px}
+#llevas .llevo button{padding:3px 9px;font-size:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 body.construyendo #llevas{display:none}
 
 #modos{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
@@ -51,7 +71,7 @@ body.construyendo #llevas{display:none}
 .pieza small{color:var(--muted);font-size:11.5px;margin-top:2px}
 .pieza.sel small{color:#3a2c18}
 
-#confirmar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--panel);padding:10px;border-radius:12px;display:flex;gap:8px}
+#confirmar{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom,0px));z-index:8;transform:translateX(-50%);background:var(--panel);padding:10px;border-radius:12px;display:flex;gap:8px}
 #btnConfirmar{background:var(--rojo);color:#fff;border-color:transparent}
 
 #joystick{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(36,30,24,.35);border:2px solid rgba(241,232,216,.3);touch-action:none}
@@ -282,11 +302,11 @@ body.construyendo #pomo{left:25px;top:25px}
   .inv-sel .eq-sel-cerrar{display:block;position:absolute;left:50%;top:5px;transform:translateX(-50%);width:54px;height:7px;padding:0;border:0;border-radius:5px;background:#5b4e40}
   .inv-figura{grid-template-columns:70px minmax(0,1fr) 70px}
   .inv-c{width:62px;height:62px}
-  #llevas{left:calc(152px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));transform:none;bottom:calc(24px + env(safe-area-inset-bottom,0px));max-width:none;flex-direction:column;align-items:stretch;gap:5px;font-size:12px}
-  #llevas .llevo{gap:5px;min-width:0;flex-wrap:wrap;white-space:normal}
-  #llevas .llevo b{flex:1 1 auto;min-width:6em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #llevas .llevo>span{font-size:11px}
-  #llevas i{display:none}
+  /* móvil: a la derecha del joystick, sin pisarlo (ni con el botón de soltar, que sobresale 9 px) */
+  #llevas{left:calc(162px + env(safe-area-inset-left,0px));transform:none;bottom:calc(26px + env(safe-area-inset-bottom,0px));gap:5px;flex-wrap:wrap;max-width:calc(100vw - 166px)}
+  #llevas .hu{width:50px;height:50px} #llevas .hu.cinto{width:42px;height:42px} #llevas .hu.hombro{width:54px;height:54px} #llevas .sep{margin:10px 0}
+  #llevas .hu button{width:30px;height:30px;top:-12px}
+  #llevas .llevo{flex-wrap:wrap;white-space:normal;font-size:12px}
   .inv-retrato{height:380px}
 }
 /* el aguante (valravnx, 30 oct): un anillo abajo, en el centro (a la derecha tapaba los botones), que se vacía al correr y al nadar; rojo al ahogarse */
