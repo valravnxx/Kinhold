@@ -276,7 +276,7 @@ try:
         B.evaluate(f"{NUEVOS}({K}, false)")
         B.add_style_tag(content='#materiales { visibility: hidden !important; }')
         comprobar('en el móvil, el almiar y el cesto se ven igual', esperar(B, f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0", 8000))
-        encuadre(B, 'almiar', 7.5, 0.35, 0.4, 0.7, 2.0); B.wait_for_timeout(2500)
+        encuadre(B, 'almiar', 6.5, 0.4, 0.4, 0.5, -2.2); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_almiar.png')
         encuadre(B, 'cesto', 2.6, 0.6, 0.3, 0.5, -1.2); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cesto.png')
