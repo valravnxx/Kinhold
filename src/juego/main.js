@@ -26,8 +26,8 @@ import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ } from '../logica/iconos.js';
-import { crearEstaciones, MODELO_ESTACION } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, MOTIVO_MURO } from '../logica/fabricacion.js';
+import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
@@ -1500,6 +1500,31 @@ function usarFuego(e, a) {
     mostrarAviso(!r.ok ? tr(r.motivo) : r.avivada ? tr('Avivas el fuego: vuelve la llama.') : a.tipo === 'encender_fuego' ? tr('El fuego prende.') : a.tipo === 'brasas_fuego' ? tr('Cubres el fuego con su ceniza: queda en brasas.') : tr('Echas al fuego: 1 {c}.', { c: tr(CATALOGO[a.objeto].nombre).toLowerCase() }), !r.ok);
   });
 }
+// La cama ligada (P4; src/logica/fabricacion.js): ligar la que tienes delante (una por personaje: la de antes deja de
+// serlo) y dormir en la tuya. Dormido, te tumbas en ella y el cansancio baja deprisa (lo lleva el servidor); al moverte,
+// te levantas.
+const esMiCama = e => !!(e.ligadas && e.ligadas.includes(yoAutor()));
+function ligarCama(e) {
+  hacerFabricacion({ tipo: 'ligar_cama', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+    mostrarAviso(r.ok ? tr('{e}: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.', { e: tr(ESTACIONES[e.tipo].nombre) }) : tr(r.motivo), !r.ok);
+  });
+}
+function dormir(e) {
+  hacerFabricacion({ tipo: 'dormir', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    estado.talando = null; estado.obrando = null; estado.obrandoPuesto = null;
+    // tumbado en su sitio de la cama, a lo largo (el modelo va a lo largo de X: el cuerpo, con la cabeza a la cabecera)
+    const g = Number.isFinite(e.giro) ? e.giro : 0, s = SITIO_DORMIR[e.tipo] || { x: 0, z: 0, y: 0 };
+    pj.x = e.x + s.x * Math.cos(g) + s.z * Math.sin(g); pj.z = e.z - s.x * Math.sin(g) + s.z * Math.cos(g); pj.rot = g + Math.PI / 2;
+    estado.durmiendo = { id: e.id, alto: s.y };
+    jugador.durmiendo = true;
+    mostrarAviso(tr('Duermes. Muévete para levantarte.'));
+  });
+}
+function despertar() {
+  if (!estado.durmiendo) return;
+  estado.durmiendo = null; jugador.durmiendo = false;
+}
 function quitarPuesto(e) {
   hacerFabricacion({ tipo: 'quitar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
     mostrarAviso(r.ok ? tr('Marco quitado: lo que tenía, en el suelo.') : tr(r.motivo), !r.ok);
@@ -1528,6 +1553,8 @@ function usar() {
   // delante de una estación de fabricar, Usar abre el panel en su pestaña, con lo que tiene encima (estudio del panel,
   // valravnx, 6 nov)
   if (!it && pj.k === 0 && estacionParaUsar() && estacionParaUsar().obra) { usarPuesto(estacionParaUsar()); return; }
+  // delante de una cama terminada: ligarla si no es la tuya; si lo es, dormir en ella
+  if (!it && pj.k === 0 && estacionParaUsar() && esCama(estacionParaUsar().tipo)) { const c = estacionParaUsar(); if (esMiCama(c)) dormir(c); else ligarCama(c); return; }
   if (!it && pj.k === 0 && estacionParaUsar() && panelFabricar) { panelFabricar.abrirEstacion(estacionParaUsar().id); return; }
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
@@ -1573,6 +1600,11 @@ function opcionesUsar() {
     if (e.obra) {
       ops.push({ texto: tr('Obra: {p}', { p: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarPuesto(e) });
       ops.push({ texto: tr('Quitar el marco: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => quitarPuesto(e) });
+    } else if (esCama(e.tipo)) {
+      // las camas (P4): ligarla (donde reapareces) y dormir en la tuya
+      const mia = esMiCama(e);
+      if (!mia) ops.push({ texto: tr('Ligar tu cama: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => ligarCama(e) });
+      else ops.push({ texto: tr('Dormir: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => dormir(e) });
     } else {
       ops.push({ texto: tr(esAlmacen(e.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
       // la hoguera: encenderla (con yesca y el taladro de fuego) y echarle una rama o una leña de lo que llevas
@@ -2325,6 +2357,7 @@ function paso() {
   if (nado.e.muerto) ahogado();
   pintarAguante();
   if (mag > 0.05) {
+    despertar();           // moverse te levanta de la cama
     estado.talando = null; // moverse deja de talar
     if (estado.obrando || estado.obrandoPuesto) { estado.obrando = null; estado.obrandoPuesto = null; mostrarAviso(t('dejasObra')); } // y de construir
     const s = Math.sin(cam.yaw), co = Math.cos(cam.yaw);
@@ -2354,7 +2387,7 @@ function paso() {
   // (en el mar, subiendo y bajando con las olas)
   const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + (ag.mar ? alturaOla(pj.x, pj.z) : Math.sin(performance.now() / 600) * 0.04) : alturaSuelo();
   // (window.__mutarSuelo: solo para romper a propósito la prueba del mundo, los pies siguen el suelo muy despacio)
-  pj.y += (yObjetivo - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));
+  pj.y += (yObjetivo + (estado.durmiendo ? estado.durmiendo.alto : 0) - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));   // dormido, encima del lecho
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
   pasoObra(); pasoPuesto();
@@ -2387,7 +2420,7 @@ function paso() {
   moverGente(dt);
   moverFuegos();
   if (charla) charla.paso();
-  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
+  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
   cielo.paso();
@@ -2398,7 +2431,7 @@ function paso() {
 // ---------------- Interfaz ----------------
 const CATEGORIAS = [
   ['tierra', t('catTierra')], ['base', t('catBase')], ['estructura', t('catEstructura')], ['muro', t('catMuros')],
-  ['tejado', t('catTejados')], ['acceso', t('catAcceso')], ['exterior', t('catExterior')], ['puestos', tr('Puestos de trabajo')], ['almacenajes', tr('Almacenajes')], ['deco', t('catDeco')],
+  ['tejado', t('catTejados')], ['acceso', t('catAcceso')], ['exterior', t('catExterior')], ['puestos', tr('Puestos de trabajo')], ['almacenajes', tr('Almacenajes')], ['camas', tr('Camas')], ['deco', t('catDeco')],
 ];
 let categoria = 'base';
 function construirBarra() {
@@ -2411,8 +2444,9 @@ function construirBarra() {
     tabs.appendChild(b);
   }
   const lista = $('piezas'); lista.innerHTML = '';
-  const entradas = categoria === 'puestos' || categoria === 'almacenajes'
-    ? Object.entries(ESTACIONES).filter(([k]) => esAlmacen(k) === (categoria === 'almacenajes')).map(([k, d]) => ({ clase: 'puesto', tipo: k, def: d }))
+  const catPuesto = k => esAlmacen(k) ? 'almacenajes' : esCama(k) ? 'camas' : 'puestos';
+  const entradas = categoria === 'puestos' || categoria === 'almacenajes' || categoria === 'camas'
+    ? Object.entries(ESTACIONES).filter(([k]) => catPuesto(k) === categoria).map(([k, d]) => ({ clase: 'puesto', tipo: k, def: d }))
     : categoria === 'deco'
     ? Object.entries(DECORACION).filter(([, d]) => enEsteTramo(d)).map(([k, d]) => ({ clase: 'deco', tipo: k, def: d }))
     : Object.entries(PIEZAS).filter(([, d]) => d.cat === categoria && enEsteTramo(d)).map(([k, d]) => ({ clase: k === 'mojon' ? 'mojon' : 'pieza', tipo: k, def: d }));

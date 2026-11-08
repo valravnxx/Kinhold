@@ -5610,5 +5610,21 @@
   "pruebas": "Revisor en la nube: lógica, recorrido (177/0), panel de fabricación, la hoguera y el hogar (prueba de navegador nueva, PC y móvil), correctos. Fuera, por la sesión: los almacenajes y los colgaderos (estaciones.js solo añade el hogar) y la demo única (solo cambia el texto del registro).",
   "capturas": "capturas/demo-v155",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T15:28:48+01:00",
+  "fin": "2026-11-08T17:35:38+01:00",
+  "titulo": "P4: la cama ligada, el refugio de ramas y la cama de juncos (demo v156)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Dos camas nuevas, en una pestaña «Camas» de Construir, que se levantan como obra: el refugio de ramas (fuera; un tejadillo de ramas a un agua con una capa de ramaje y un lecho seco dentro) y la cama de juncos (dentro de la casa; un colchón de juncos atado con cordel, con almohada de juncos). Estilo v5, capturas de cerca en PC y móvil.",
+   "Ligar una (una por personaje: la de antes deja de serlo), en tu tierra o en la de quien te ha invitado a construir; varios pueden ligar la misma. Por el servidor, con su autor, y se guarda.",
+   "Dormir en la tuya: te tumbas en su lecho (con las animaciones de tumbarse y levantarse del taller, en una carpeta nueva, taller-dormir-v1, con una de estar dormido con los brazos bajados) y el cansancio baja deprisa; al moverte te levantas. Los demás te ven dormido.",
+   "Recorrido de jugador (paso 17): recoge 12 ramas y hace 4 cordeles, levanta el refugio en su tierra, lo liga y duerme; luego corta juncos en el río, levanta la cama de juncos dentro de su casa y la liga, y el refugio deja de ser su cama.",
+   "Cómo reaparecer en ella al morir llega con la tarea de morir (P4)."
+  ],
+  "pruebas": "Revisor en la nube: lógica (con las pruebas nuevas de las camas; MUTAR=4 las hace fallar), el recorrido de jugador con el paso 17 (180/180 aquí), la prueba de navegador nueva de la cama ligada (PC y móvil; MUTAR=1 la hace fallar), el panel de fabricación (con las imágenes nuevas, iconos-v12) y los 30 grupos de navegador que copian la carpeta nueva de animaciones: todo bien. «La demo en el mundo» falló por un fotograma de 60,2 ms (el límite es 60) al llegar de golpe a otro sitio, como otras veces: no toca nada de las camas.",
+  "capturas": "capturas/demo-v156",
+  "estado": "ok"
  }
 ]

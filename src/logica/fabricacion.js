@@ -106,11 +106,21 @@ export const ESTACIONES = {
   // su estaquilla; y las herramientas, colgadas por la cabeza entre dos varas
   colgadero_mochilas:     { nombre: 'Colgadero de mochilas', un: 'un colgadero de mochilas', uso: 'almacen', coste: { vara: 2, rama: 4, cordel: 2 }, donde: 'dentro', muro: true, trabajo: 15, tierra: true, guarda: DE_ESPALDA, guardaTxt: 'lo que se lleva a la espalda (mochilas, leñero, fardo, cestas…), vacío', cabe: 4, hace: 'Cuelga en el muro lo que se lleva a la espalda, vacío: cada uno de su estaquilla' },
   colgadero_herramientas: { nombre: 'Colgadero de herramientas', un: 'un colgadero de herramientas', uso: 'almacen', coste: { vara: 3, cordel: 2 }, donde: 'dentro', muro: true, trabajo: 15, tierra: true, guarda: HERRAMIENTAS, guardaTxt: 'las herramientas', cabe: 8, hace: 'Cuelga en el muro las herramientas, por la cabeza entre dos varas' },
+  // las camas (P4, la cama ligada; valravnx, 8 nov: «ambas viables»): uso «cama», sin recetas ni nada que guardar; se
+  // levantan como obra y se ligan (ligarCama): donde reapareces y donde se duerme (dormir). El refugio de ramas, para
+  // cuando aún no tienes casa (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo, fuera); la cama de juncos,
+  // dentro de la casa (un lecho de juncos del río atados con cordel de fibra, de los de la época). Provisional: la cama,
+  // 8 haces de juncos y 2 cordel; el refugio, 40 s de trabajo y la cama, 25 s (diario y registro).
+  refugio_ramas:  { nombre: 'Refugio de ramas', un: 'un refugio de ramas', uso: 'cama', coste: { rama: 12, cordel: 4 }, donde: 'fuera', trabajo: 40, tierra: true, hace: 'Un tejadillo de ramas apoyado en un travesaño, con un lecho de ramas debajo: para dormir cuando aún no tienes casa' },
+  cama_juncos:    { nombre: 'Cama de juncos', un: 'una cama de juncos', uso: 'cama', coste: { junco: 8, cordel: 2 }, donde: 'dentro', trabajo: 25, tierra: true, hace: 'Un lecho de haces de juncos atados con cordel, dentro de la casa' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
 export const ALMACENAJES = Object.keys(ESTACIONES).filter(esAlmacen);
+// Las camas (uso «cama»): se ligan (una por personaje) y se duerme en ellas.
+export const esCama = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'cama';
+export const CAMAS = Object.keys(ESTACIONES).filter(esCama);
 export const cabeEn = tipo => (Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].cabe) || DEPOSITO_MAX;
 // Si en una estación se puede dejar ese tipo (los almacenajes, solo lo suyo).
 export const guardaTipo = (tipo, t) => !Object.hasOwn(ESTACIONES, tipo) || !ESTACIONES[tipo].guarda || ESTACIONES[tipo].guarda.includes(t);
@@ -354,7 +364,7 @@ export class Fabricacion {
     const e = ESTACIONES[tipo];
     if (e.donde === 'fuera' && dentro) return { ok: false, motivo: `${e.nombre}: solo fuera, no bajo techo.` };
     if (e.donde === 'dentro' && !dentro) return { ok: false, motivo: `${e.nombre}: solo dentro de la casa.` };
-    if (e.tierra && enTierra === false) return { ok: false, motivo: 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
+    if (e.tierra && enTierra === false) return { ok: false, motivo: e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).' : 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
     return { ok: true };
   }
   // Poner el marco de un puesto en (x, z) (y: la altura del suelo en el que se apoya, si se da): no gasta nada; su
@@ -508,6 +518,37 @@ export class Fabricacion {
     if (!e.fuego) e.fuego = fuegoNuevo(e.tipo);
     return { e };
   }
+  // La cama ligada de un autor (la id de su estación), o null. Una por personaje.
+  camaDe(autor) {
+    for (const e of Object.values(this.estaciones)) if (e.ligadas && e.ligadas.includes(autor)) return e.id;
+    return null;
+  }
+  camaAlLado(estacion, pos) {
+    const { e, motivo } = this.estacionAlLado(estacion, pos);
+    if (!e) return { motivo };
+    if (!esCama(e.tipo)) return { motivo: 'Eso no es una cama.' };
+    if (e.obra) return { motivo: 'Aún está a medias: termínala primero.' };
+    return { e };
+  }
+  // Ligar la cama que tienes al lado (la de antes deja de serlo). En tu tierra o en la de quien te ha invitado a
+  // construir (enTierra: si está en la tierra de alguien; quién puede tocarla lo mira antes el servidor, puedeTocar).
+  // Varios pueden ligar la misma (la pareja o el grupo que vive junto).
+  ligarCama(autor, estacion, pos, enTierra = true) {
+    const { e, motivo } = this.camaAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    if (!enTierra) return { ok: false, motivo: 'La cama ligada va en tu tierra o en la de quien te ha invitado a construir.' };
+    if (e.ligadas && e.ligadas.includes(autor)) return { ok: false, motivo: 'Ya es tu cama ligada.' };
+    for (const o of Object.values(this.estaciones)) if (o.ligadas && o.ligadas.includes(autor)) { o.ligadas = o.ligadas.filter(a => a !== autor); if (!o.ligadas.length) delete o.ligadas; }
+    e.ligadas = [...(e.ligadas || []), autor];
+    return { ok: true, estacion: e.id, ligada: true };
+  }
+  // Dormir en tu cama ligada (la que tienes al lado). Lo que hace dormir (el cansancio que baja) lo lleva el servidor.
+  dormir(autor, estacion, pos) {
+    const { e, motivo } = this.camaAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    if (!e.ligadas || !e.ligadas.includes(autor)) return { ok: false, motivo: 'Solo se duerme en tu cama ligada: lígala primero.' };
+    return { ok: true, estacion: e.id, dormir: true };
+  }
   // Encender el fuego de una estación: gasta 1 yesca de lo que llevas y pide llevar el taladro de fuego. En brasas (el
   // hogar), se aviva sin nada.
   encenderFuego(autor, estacion, pos, inv, ahora) {
@@ -632,7 +673,7 @@ export class Fabricacion {
     const copia = l => l.map(c => ({ ...c }));
     return {
       version: VERSION_FABRICACION, siguiente: this.siguiente,
-      estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola), deposito: { ...e.deposito }, ...(e.obra ? { obra: copiaObra(e.obra) } : {}), ...(e.fuego ? { fuego: { ...e.fuego } } : {}) })),
+      estaciones: Object.values(this.estaciones).map(e => ({ ...e, cola: copia(e.cola), deposito: { ...e.deposito }, ...(e.obra ? { obra: copiaObra(e.obra) } : {}), ...(e.fuego ? { fuego: { ...e.fuego } } : {}), ...(e.ligadas ? { ligadas: [...e.ligadas] } : {}) })),
       manos: Object.fromEntries(Object.entries(this.manos).filter(([, l]) => l.length).map(([k, l]) => [k, copia(l)])),
     };
   }
@@ -651,6 +692,11 @@ export class Fabricacion {
       if (Number.isFinite(e.giro)) this.estaciones[e.id].giro = normalGiro(e.giro);
       const ob = limpiarObra(e.obra, e.tipo); if (ob) this.estaciones[e.id].obra = ob;
       else if (ESTACIONES[e.tipo].fuego) this.estaciones[e.id].fuego = e.fuego ? limpiarFuego(e.fuego, e.tipo) : fuegoNuevo(e.tipo); // las de antes del fuego: con sus ramas puestas
+      // quién la tiene ligada (solo las camas terminadas; nombres de autor, sin repetir)
+      if (!ob && esCama(e.tipo) && Array.isArray(e.ligadas)) {
+        const l = [...new Set(e.ligadas.filter(a => typeof a === 'string' && a.length > 0 && a.length <= 64))];
+        if (l.length) this.estaciones[e.id].ligadas = l;
+      }
     }
     for (const [k, l] of Object.entries(d.manos || {})) {
       if (k in Object.prototype) continue;
@@ -687,6 +733,8 @@ export function migrarFabricacion(datos) {
 // { autor, tipo: 'recoger_fabricado', estacion: id | null, x, z }
 // { autor, tipo: 'depositar_estacion', estacion: id, de: ruta, cantidad?, x, z } — de lo que llevas a la estación
 // { autor, tipo: 'retirar_estacion', estacion: id, objeto: tipo, cantidad?, x, z } — de la estación a lo que llevas
+// { autor, tipo: 'ligar_cama', estacion: id, x, z }          — ligar esa cama (la de antes deja de serlo)
+// { autor, tipo: 'dormir', estacion: id, x, z }              — dormir en tu cama ligada
 // { autor, tipo: 'encender_fuego', estacion: id, x, z }      — encender su fuego (1 yesca; llevar el taladro de fuego)
 // { autor, tipo: 'echar_fuego', estacion: id, objeto: 'rama' | 'lena', x, z } — echarle al fuego una de lo que llevas
 // { autor, tipo: 'brasas_fuego', estacion: id, x, z }       — dejarlo en brasas (el hogar); encender_fuego lo aviva
@@ -696,7 +744,8 @@ export function migrarFabricacion(datos) {
 // de una casa). Se anota en el registro, salga bien o no.
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion', 'desmontar_estacion'];
 export const DEL_FUEGO = ['encender_fuego', 'echar_fuego', 'brasas_fuego'];
-export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO];
+export const DE_LA_CAMA = ['ligar_cama', 'dormir'];
+export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO, ...DE_LA_CAMA];
 export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false, alMuro = () => null) {
   let res;
   const a = accion;
@@ -708,7 +757,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!Number.isFinite(a.x) || !Number.isFinite(a.z) || !est(a.estacion) || (a.tipo === 'fabricar' && !txt(a.receta))
     || ((a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && (!txt(a.estacion) || (a.cantidad !== undefined && a.cantidad !== null && !Number.isInteger(a.cantidad))))
     || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
-    || ((OBRA_ESTACION.includes(a.tipo) || DEL_FUEGO.includes(a.tipo)) && !txt(a.estacion)) || (a.tipo === 'echar_fuego' && !txt(a.objeto)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
+    || ((OBRA_ESTACION.includes(a.tipo) || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo)) && !txt(a.estacion)) || (a.tipo === 'echar_fuego' && !txt(a.objeto)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
     || (a.tipo === 'colocar_estacion' && a.y !== undefined && a.y !== null && !Number.isFinite(a.y))
     || (a.tipo === 'colocar_estacion' && a.giro !== undefined && a.giro !== null && !Number.isFinite(a.giro))) res = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) res = { ok: false, motivo: 'Sin hora.' };
@@ -729,6 +778,8 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
     else if (a.tipo === 'encender_fuego') res = fab.encenderFuego(a.autor, a.estacion, pos, inv, ahora);
     else if (a.tipo === 'echar_fuego') res = fab.echarFuego(a.autor, a.estacion, a.objeto, pos, inv, ahora);
+    else if (a.tipo === 'ligar_cama') { const e = fab.estaciones[a.estacion]; res = fab.ligarCama(a.autor, a.estacion, pos, e ? !!enTierras(e.x, e.z) : false); }
+    else if (a.tipo === 'dormir') res = fab.dormir(a.autor, a.estacion, pos);
     else if (a.tipo === 'brasas_fuego') res = fab.brasasFuego(a.autor, a.estacion, pos, ahora);
     else if (a.tipo === 'fabricar') res = fab.fabricar(a.autor, a.receta, a.estacion || null, pos, inv, suelo, ahora);
     else res = fab.recoger(a.autor, a.estacion || null, pos, inv, ahora, suelo, suelo ? enTierras(a.x, a.z) : false);
@@ -736,7 +787,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
+    e.resultado = res.ligada ? { estacion: res.estacion, ligada: true } : res.dormir ? { estacion: res.estacion, dormir: true } : res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
       : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado }, ...(res.avivada ? { avivada: true } : {}) }
       : res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.desmontada ? { estacion: res.estacion, desmontada: true, devuelto: { ...res.devuelto }, guardado: { ...res.guardado } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
       : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }
