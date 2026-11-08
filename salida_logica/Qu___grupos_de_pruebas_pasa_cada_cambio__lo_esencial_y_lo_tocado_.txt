@@ -1,0 +1,8 @@
+  OK   sin cambios de código, solo los esenciales (lógica, la demo y la web) — logica, demo-unica, web
+  OK   tocar el mapa del rey pide su grupo y los esenciales, nada más — logica, demo-unica, mapa-del-rey, web
+  OK   tocar el archivo de prueba de un grupo pide ese grupo — logica, la-hoguera, demo-unica, web
+  OK   lo nombrado a mano entra
+  OK   la tabla solo nombra grupos que existen
+  OK   cada grupo de navegador tiene su archivo de prueba
+
+Todo bien
