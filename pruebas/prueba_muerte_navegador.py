@@ -4,7 +4,7 @@
 #   - tu jugador muere de sed: el aviso lo dice, y vuelve a su sitio de salida (sin cama);
 #   - un jugador simulado (node) a unos metros muere también: su cuerpo se queda donde cayó, tumbado y con su ropa, con
 #     la mitad de lo que llevaba en el suelo alrededor, y él ya no está ahí (ha vuelto a su salida);
-#   - pasado el tiempo del cuerpo (20 s en la prueba), se va.
+#   - pasado el tiempo del cuerpo (45 s en la prueba), se va.
 # Uso: python3 pruebas/prueba_muerte_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1: el navegador no tumba los cuerpos (se ven de pie): tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
@@ -102,7 +102,7 @@ try:
             captura(pg, f'{SALIDA}/{nombre}_cuerpo.png')
             pg.evaluate(f"(() => {{ const k = {K}; k.cam.pitch = 0.25; k.cam.dist = 3.2; }})()"); pg.wait_for_timeout(4000)
             captura(pg, f'{SALIDA}/{nombre}_cuerpo_cerca.png')
-            try: pg.wait_for_function(f"(autor) => !({CUERPOS})().some(c => c.de === autor)", arg=autor, timeout=40000); se_va = True
+            try: pg.wait_for_function(f"(autor) => !({CUERPOS})().some(c => c.de === autor)", arg=autor, timeout=70000); se_va = True
             except Exception: se_va = False
             comprobar(f'{nombre}: pasado su tiempo, el cuerpo se va', se_va)
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))

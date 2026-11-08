@@ -1197,6 +1197,26 @@ try {
   const susAvisos = avisos(J.nec).map(a => a.que).filter(q => q !== 'cansancio');
   comprobar('sus avisos salen de lo que manda el servidor: con la sed y el hambre por debajo de 40, aún ninguno de los dos', J.nec.sed < AVISO ? susAvisos.length === 0 : susAvisos.includes('sed'), `${JSON.stringify(J.nec)} → ${susAvisos.join(',') || 'ninguno'}`);
 
+  // 16k (8 nov, con la tarea de morir): a estas alturas del día tiene la sed al máximo y, sin beber, se moriría
+  // (src/logica/muerte.js): va al agua más cercana y bebe, como haría un jugador, y vuelve
+  console.log('16k. Con la sed al máximo, va a beber al agua más cercana y vuelve');
+  {
+    const desde = { ...J.pos };
+    let agua = null;
+    for (let d = 5; d <= 1500 && !agua; d += 5) for (let k = 0; k < 48 && !agua; k++) {
+      const x = desde.x + Math.cos(k / 48 * 2 * Math.PI) * d, z = desde.z + Math.sin(k / 48 * 2 * Math.PI) * d;
+      if (!T.aguaEn(x, z) && hayAguaCerca(T.aguaEn, x, z)) agua = { x: r2(x), z: r2(z) };
+    }
+    comprobar('hay agua a menos de 1,5 km', !!agua, agua ? `a ${Math.round(Math.hypot(agua.x - desde.x, agua.z - desde.z))} m` : '');
+    if (agua) {
+      await J.andar(agua.x, agua.z);
+      const sedAntes = J.nec.sed;
+      for (let i = 0; i < 8 && J.nec.sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); }
+      comprobar('bebe hasta quitarse la sed', J.nec.sed <= 40, `sed ${sedAntes} → ${J.nec.sed}`);
+      await J.andar(desde.x, desde.z);
+    }
+  }
+
   // P4, la cama ligada (valravnx, 8 nov: «ambas viables»): un refugio de ramas fuera, en su tierra (12 ramas del bosque
   // y 4 cordeles de fibra), lo liga y duerme en él (el cansancio baja deprisa); luego va al río a por juncos, hace una
   // cama de juncos dentro de su casa (8 haces y 2 cordeles) y la liga: el refugio deja de ser su cama

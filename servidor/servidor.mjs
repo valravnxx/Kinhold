@@ -1255,9 +1255,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_SALIDA=comun: los nuevos empiezan en la salida común sin elegir, solo para las pruebas de navegador
   // que buscan lo de alrededor de ella. Nunca en el servidor de verdad (ahí cada personaje nuevo elige su salida).
   const salidaComun = process.env.KINHOLD_PRUEBAS_SALIDA === 'comun';
-  // KINHOLD_PRUEBAS_MUERTE=rapida: los nuevos llegan con la sed al máximo y se mueren de sed en 3 s (y el cuerpo se va a
-  // los 20 s), solo para la prueba de navegador de morir. Nunca en el servidor de verdad.
+  // KINHOLD_PRUEBAS_MUERTE=rapida: los nuevos llegan con la sed al máximo y se mueren de sed en 3 s (y el cuerpo se va a los
+  // 45 s), solo para la prueba de navegador de morir. Nunca en el servidor de verdad.
   const muerteRapida = process.env.KINHOLD_PRUEBAS_MUERTE === 'rapida';
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 20000 } : {}) });
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 45000 } : {}) });
   s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}${muerteRapida ? ' · AVISO: muerte rápida de sed (KINHOLD_PRUEBAS_MUERTE=rapida), solo para pruebas' : ''}`));
 }
