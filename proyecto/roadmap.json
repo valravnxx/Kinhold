@@ -1394,7 +1394,9 @@
     },
     {
      "nombre": "Mazo de piedra y romper rocas (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo»): el mazo de piedra (1 piedra, 1 rama y 2 cordel, con las manos), con su modelo (estilo v5); con él se rompen las rocas medianas del mundo (hasta 1 m, aproximadamente) en muchos golpes según su tamaño, por el servidor y con su autor: cansa y da de 6 a 25 piedras sueltas según el tamaño; la roca desaparece, deja cascotes y vuelve a salir pasados unos meses reales (las grandes y los afloramientos, solo con hierro: la cantera de N2). Recorrido: el jugador hace el mazo, rompe una roca y se lleva sus piedras",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T15:24:55+00:00",
+     "rama": "trabajo/20261108-1524"
     },
     {
      "nombre": "Recorrido entero de nada a la casa humilde cerrada y techada y al banco de tronco, sin arcón, en el recorrido de jugador (cada material sacado del mundo: pruebas/prueba_origenes.mjs); y prueba de valravnx entre dos",
