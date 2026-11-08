@@ -123,6 +123,11 @@ def coger(pg, objeto, n, a):
 def mirar(pg, tipo, dist=3.2, pitch=0.5, yaw=0):
     pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === '{tipo}'); if (!e) return;
       Object.assign({K}.pj, {{ x: e.x + 0.6, z: e.z + 1.4, rot: Math.atan2(-0.6, -1.4) }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
+def encuadre(pg, tipo, dist, pitch, yaw, lado=1.1, atras=0.9, cual=0):
+    # para mirar uno de cerca sin que el personaje lo tape: el personaje un poco detrás y a un lado, y la cámara delante
+    pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).filter(x => x.tipo === '{tipo}')[{cual}]; if (!e) return;
+      const s = Math.sin({yaw}), c = Math.cos({yaw});
+      Object.assign({K}.pj, {{ x: e.x - s * {atras} + c * {lado}, z: e.z - c * {atras} - s * {lado}, rot: {yaw} + Math.PI }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
 DEPOSITO = "(t => { const o = window.__kinhold.escena.getObjectByName('estacion_' + t); const d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => { if (m.isMesh) n++; }); return n; })"
 PANEL = "document.getElementById('panelFabricar').innerText"
 
@@ -236,9 +241,12 @@ try:
         A.evaluate(f"{NUEVOS}({K}, true)")
         for t in ['soporte_varas', 'almiar', 'hoyo_barro', 'cesto']:
             comprobar(f'{t}: se dibuja con lo guardado', esperar(A, f"{DEPOSITO}('{t}') > 0", 5000), str(A.evaluate(f"{DEPOSITO}('{t}')")))
-        for t, dist, pitch, yaw in [('soporte_varas', 3.6, 0.4, 0.5), ('almiar', 4.6, 0.3, 0.3), ('hoyo_barro', 2.6, 0.75, 0), ('cesto', 1.6, 0.7, 0.3)]:
-            mirar(A, t, dist, pitch, yaw); A.wait_for_timeout(2200)
-            captura(A, f'{SALIDA}/PC_{t}_lleno.png')
+        A.add_style_tag(content='#materiales { visibility: hidden !important; }')   # (cuenta también los de mirar)
+        for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 4.2, 0.35, 0.6, 1.3, 0.9, 0, 'soporte_varas_lleno'), ('soporte_varas', 4.2, 0.35, 0.6, 1.3, 0.9, 1, 'soporte_varas_vacio'),
+                ('almiar', 6.0, 0.3, 0.4, 1.8, 1.4, 0, 'almiar_lleno'), ('almiar', 5.0, 0.3, 0.4, 1.6, 1.0, 1, 'almiar_juncos'),
+                ('hoyo_barro', 3.2, 0.7, 0.3, 1.0, 0.8, 0, 'hoyo_barro_lleno'), ('cesto', 2.4, 0.75, 0.3, 0.7, 0.5, 0, 'cesto_lleno')]:
+            encuadre(A, t, dist, pitch, yaw, lado, atras, cual); A.wait_for_timeout(2200)
+            captura(A, f'{SALIDA}/PC_{nombre}.png')
         # el almiar solo con juncos (de pie, en cono) y el soporte vacío, junto a los llenos
         A.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === 'pila_piedras');
           Object.assign({K}.pj, {{ x: e.x - 1.5, z: e.z + 2.5, rot: Math.atan2(0.2, 1) }}); {K}.cam.yaw = 0; {K}.cam.dist = 10; {K}.cam.pitch = 0.42; }})()"""); A.wait_for_timeout(2500)
@@ -262,10 +270,11 @@ try:
                   B.evaluate("document.querySelector('#panelFabricar .fab-aviso').textContent"))
         B.evaluate(f"{K}.panelFabricar.cerrar()")
         B.evaluate(f"{NUEVOS}({K}, false)")
-        mirar(B, 'almiar', 4.6, 0.35, 0.3); B.wait_for_timeout(2500)
+        B.add_style_tag(content='#materiales { visibility: hidden !important; }')
+        encuadre(B, 'almiar', 7.0, 0.35, 0.4, 1.4, 1.4); B.wait_for_timeout(2500)
         comprobar('en el móvil, el almiar y el cesto se ven igual', B.evaluate(f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0"))
         captura(B, f'{SALIDA}/movil_almiar.png')
-        mirar(B, 'cesto', 1.7, 0.7, 0.3); B.wait_for_timeout(2000)
+        encuadre(B, 'cesto', 2.8, 0.75, 0.3, 0.6, 0.5); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cesto.png')
         B.evaluate(f"{K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.endsWith(':mirar')))")
 
