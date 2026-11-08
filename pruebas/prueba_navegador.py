@@ -1273,7 +1273,7 @@ with sync_playwright() as p:
     mv.wait_for_timeout(900)
     comprobar('móvil: Colocar pone el marco de la obra', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].some(p => p.tipo === 'cim_tronco' && p.obra)"))
     mv.screenshot(path=f'{SALIDA}/07d_movil_obra.png')
-    mv.click('#modos button[data-modo=mover]', no_wait_after=True)
+    mv.evaluate(f"{K}.cambiarModo('mover')")   # (ya en mover: Terminar solo se ve construyendo)
     mv.evaluate(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.3; {K}.cam.dist=4.5")
     mv.wait_for_timeout(1200)
     mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')
