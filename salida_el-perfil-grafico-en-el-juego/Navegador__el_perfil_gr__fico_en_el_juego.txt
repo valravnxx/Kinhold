@@ -1,0 +1,40 @@
+PC
+  OK   PC: el juego tiene perfil gráfico
+  OK   PC: sin tarjeta gráfica arranca con el más barato (Móvil básico) — movil-1
+  OK   PC: el más barato no lleva horizonte
+  OK   PC: dibuja con posprocesado (2 pasadas en el más barato) — 2
+  OK   PC: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 331994
+  OK   PC: los fps del panel son los del mundo (no uno por cada pasada) — panel 2 fps; el mundo se dibujó 6 veces en 2,5 s
+  OK   PC: se sigue viendo el cielo de la página (no sale negro) — [192, 207, 212]
+  OK   PC: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	2 por segundo · Cada fotograma	615.4 ms de media; el más lento, 627 ms · Resolución	960×600 (0.75×) · Triángulos	332 mil por fotograma · Llamadas de dibujo	89 · Memoria gr
+  OK   PC: y tiene los seis perfiles para elegir
+  OK   PC: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   PC: al volver a entrar sigue el elegido — movil-3
+  OK   PC: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   PC: con el PC alto también se ve el cielo — [213, 216, 213]
+  OK   PC: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 418002}
+  OK   PC: lo lejano toma el color de sus texturas (suelo y bosque, cada 100 m, con filtrado lineal) — {'usa': 1, 'paso': 100, 'n': [611, 631], 'c': [611, 631], 'filtro': True, 'bosque': 133254, 'nx': 611}
+  OK   PC: el bosque de lejos va en el mismo suelo lejano (sin malla aparte; dentro del bosque, el suelo sube con sus copas) — {'dl': 0, 'bosque': 40963, 'suben': 40963}
+  OK   PC: con el horizonte se ve lo lejano (cambia la franja del horizonte) — cambia el 14.9 % de la franja
+  OK   PC: sin errores de página
+Móvil
+  OK   móvil: el juego tiene perfil gráfico
+  OK   móvil: sin tarjeta gráfica arranca con el más barato (Móvil básico) — movil-1
+  OK   móvil: el más barato no lleva horizonte
+  OK   móvil: dibuja con posprocesado (2 pasadas en el más barato) — 2
+  OK   móvil: el rendimiento cuenta los triángulos del mundo (no los de la última pasada) — 214356
+  OK   móvil: los fps del panel son los del mundo (no uno por cada pasada) — panel 0 fps; el mundo se dibujó 2 veces en 2,5 s
+  OK   móvil: se sigue viendo el cielo de la página (no sale negro) — [162, 174, 177]
+  OK   móvil: el panel de rendimiento dice el perfil — Rendimiento en este aparato · Fotogramas	0 por segundo · Cada fotograma	3489 ms de media; el más lento, 3489 ms · Resolución	292×633 (0.75×) · Triángulos	214 mil por fotograma · Llamadas de dibujo	75 · Memoria gr
+  OK   móvil: y tiene los seis perfiles para elegir
+  OK   móvil: al pulsar «Móvil alto y tableta» cambia (4 pasadas: oclusión y suavizado) — movil-3 4
+  OK   móvil: al volver a entrar sigue el elegido — movil-3
+  OK   móvil: ?graficos=pc-3 pone el PC alto (3 pasadas: oclusión y MSAA) — pc-3 3
+  OK   móvil: con el PC alto también se ve el cielo — [179, 181, 177]
+  OK   móvil: el PC alto lleva el horizonte, la isla entera cada 100 m — {'activo': True, 'tris': 418002}
+  OK   móvil: lo lejano toma el color de sus texturas (suelo y bosque, cada 100 m, con filtrado lineal) — {'usa': 1, 'paso': 100, 'n': [611, 631], 'c': [611, 631], 'filtro': True, 'bosque': 133254, 'nx': 611}
+  OK   móvil: el bosque de lejos va en el mismo suelo lejano (sin malla aparte; dentro del bosque, el suelo sube con sus copas) — {'dl': 0, 'bosque': 40963, 'suben': 40963}
+  OK   móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) — cambia el 25.0 % de la franja
+  OK   móvil: sin errores de página
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas/graficos_juego
