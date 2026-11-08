@@ -1520,7 +1520,9 @@
     },
     {
      "nombre": "El frío: sube de noche (el ciclo de día y noche de la v137), según el bioma y la ropa que llevas puesta (cada prenda abriga), y baja bajo techo y junto al fuego (la hoguera y el hogar de P3 calientan en un radio). Recorrido: de noche y sin fuego sube el frío; junto a la hoguera baja",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T19:25:15+00:00",
+     "rama": "trabajo/20261108-1924"
     },
     {
      "nombre": "El cansancio y descansar: sube al trabajar, correr, cargar y combatir (el mismo cansancio que ya lleva el combate, no otro), y se descansa sentado (una acción nueva, con su animación) y durmiendo del todo. Recorrido: después de talar y cargar troncos, el jugador se sienta a descansar",
