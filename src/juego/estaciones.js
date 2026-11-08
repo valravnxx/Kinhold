@@ -87,19 +87,54 @@ function hoguera(id) {
   return g;
 }
 
-// ---------- el fuego de la hoguera ----------
+// El hogar (8 nov): el hogar abierto de las casas humildes, en el suelo y en medio de la casa (el humo sale por el
+// tejado): un lecho de barro pisado algo levantado, con losas de piedra donde va el fuego y un bordillo de piedras
+// metidas en el barro (sus 8 piedras y sus 2 cestas de barro), ennegrecido por el fuego en el centro.
+function hogar(id) {
+  const L = new Lote({ rangoSuelo: 0.25, variacion: 0.07 });
+  const lecho = new THREE.CylinderGeometry(0.62, 0.68, 0.1, 18, 1); // el lecho de barro, un poco ovalado
+  L.add(lecho, 'tierraCorte', 0, 0.05, 0, { y: az(id, 1) * 0.3 }, { escala: new THREE.Vector3(1.12, 1, 0.92) });
+  L.add(new THREE.CircleGeometry(0.42, 16), 0x4a4038, 0, 0.102, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra', escala: new THREE.Vector3(1.1, 0.9, 1) }); // lo quemado
+  for (let i = 0; i < 4; i++) { // las losas del fuego, planas y algo separadas
+    const a = i * Math.PI / 2 + 0.5 + (az(id, 30 + i) - 0.5) * 0.4, d = 0.14;
+    L.add(piedraIrregular(0.15, 1, id + 'l' + i, 0.12), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * d, 0.1, Math.sin(a) * d, { y: az(id, 40 + i) * 6 }, { escala: new THREE.Vector3(1.25, 0.16, 1), plano: true, sinSuelo: true });
+  }
+  for (let i = 0; i < 8; i++) { // el bordillo, de piedras medio hundidas en el barro
+    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.25, rx = 0.66, rz = 0.55;
+    L.add(piedraIrregular(0.12 + az(id, i + 10) * 0.03, 1, id + 'b' + i, 0.24), i % 3 ? 'piedra' : 'piedraOsc', Math.cos(a) * rx, 0.1, Math.sin(a) * rz, { y: a + az(id, i + 20) }, { escala: new THREE.Vector3(1.35, 0.72, 0.95), plano: true });
+  }
+  const g = mallas(L);
+  const R = new Lote({ rangoSuelo: 0.3, variacion: 0.08 });
+  for (let i = 0; i < 3; i++) { // lo puesto para arder: ramas cruzadas sobre las losas
+    const a = i * 2.1 + 0.3, largo = 0.55;
+    const m = new THREE.Matrix4().makeRotationY(a).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2 - 0.18));
+    R.add(cil(0.026, 0.034, largo, 6), 'corteza', Math.cos(a) * 0.04, 0.16 + i * 0.03, -Math.sin(a) * 0.04, m);
+  }
+  const ramas = mallas(R); ramas.name = 'ramas';
+  const o = new THREE.Group(); o.add(g); o.add(ramas);
+  o.userData.alzaFuego = 0.1; // el fuego, sobre el lecho
+  return o;
+}
+
+// ---------- el fuego de la hoguera (y del hogar) ----------
 const MAT_BRASA = new THREE.MeshLambertMaterial({ color: 0xc2541c, emissive: 0xc2541c, emissiveIntensity: 0.9 });
 const MAT_CENIZA = new THREE.MeshLambertMaterial({ color: 0x8d8780 });
+const MAT_BRASA_CUBIERTA = new THREE.MeshLambertMaterial({ color: 0x9a3a14, emissive: 0xb0400f, emissiveIntensity: 0.75 });
 const MAT_TIZON = new THREE.MeshLambertMaterial({ color: 0x2b2420 });
 const MAT_LLAMA = new THREE.MeshLambertMaterial({ color: 0xffb347, emissive: 0xffb347, emissiveIntensity: 1 });
 const MAT_NUCLEO = new THREE.MeshLambertMaterial({ color: 0xffc870, emissive: 0xffc870, emissiveIntensity: 1 });
-// Lo que se ve del fuego según su estado: 'ardiendo' (brasas, llamas y humo), 'cenizas' (ceniza y tizones) o nada.
+// Lo que se ve del fuego según su estado: 'ardiendo' (brasas, llamas y humo), 'brasas' (ceniza con brasas que asoman,
+// sin llama ni humo), 'cenizas' (ceniza y tizones) o nada.
 export function modeloFuego(cual, id) {
   const g = new THREE.Group(); g.name = 'fuego';
   g.userData.humo = { x: 0, y: 0.35, z: 0 }; g.userData.fuego = { x: 0, y: 0.35, z: 0 };
-  if (cual === 'cenizas' || cual === 'ardiendo') {
+  if (cual === 'cenizas' || cual === 'ardiendo' || cual === 'brasas') {
     const lecho = new THREE.Mesh(piedraIrregular(0.26, 1, id + 'ceniza', 0.12), cual === 'ardiendo' ? MAT_BRASA : MAT_CENIZA);
     lecho.scale.set(1, 0.12, 1); lecho.position.y = 0.02; lecho.name = cual === 'ardiendo' ? 'llama' : 'ceniza'; g.add(lecho);
+    if (cual === 'brasas') for (let i = 0; i < 7; i++) { // las brasas que asoman entre la ceniza que las cubre
+      const a = i * 0.9 + az(id, 70 + i) * 0.6, d = 0.04 + az(id, 80 + i) * 0.13, b = new THREE.Mesh(piedraIrregular(0.035, 0, id + 'br' + i, 0.3), MAT_BRASA_CUBIERTA);
+      b.position.set(Math.cos(a) * d, 0.04, Math.sin(a) * d); b.scale.set(1.3, 0.6, 1); b.name = 'brasa'; g.add(b);
+    }
     for (let i = 0; i < 3; i++) { // tizones: restos de rama quemados
       const a = i * 2.1 + az(id, 60 + i), t = new THREE.Mesh(cil(0.02, 0.026, 0.3, 5), MAT_TIZON);
       t.position.set(Math.cos(a) * 0.1, 0.04, Math.sin(a) * 0.1); t.rotation.set(Math.PI / 2 - 0.15, 0, a); g.add(t);
@@ -135,7 +170,7 @@ function moverFuego(g, t) {
 // Cómo está el fuego de una estación ahora: 'ardiendo', 'cenizas' o '' (y si tiene algo puesto sin arder).
 export function vistaFuego(f, ahora) {
   const st = estadoFuego(f, ahora);
-  return { cual: st.encendida ? 'ardiendo' : st.cenizas ? 'cenizas' : '', ramas: st.encendida || st.combustible > 0 };
+  return { cual: st.encendida ? 'ardiendo' : st.brasas ? 'brasas' : st.cenizas ? 'cenizas' : '', ramas: st.encendida || st.combustible > 0 };
 }
 
 function bancoTronco(id) {
@@ -282,7 +317,7 @@ function colgaderoMochilas(id) {
   return mallas(L);
 }
 
-export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
+export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
@@ -489,6 +524,7 @@ const DEPOSITO_SITIOS = {
   piedra_tallar: { encima: [[-0.18, 0.2, 0.08], [0.16, 0.2, -0.1], [-0.05, 0.2, -0.18]], radio: 0.75, empieza: -0.6 },
   banco_tronco:  { encima: [[0, 0.5, 0]], radio: 0.7, empieza: 2.6 },
   hoguera:       { encima: [], radio: 0.92, empieza: 0.3 },
+  hogar:         { encima: [], radio: 0.95, empieza: 0.3 },
   obra:          { encima: [], radio: 0.95, empieza: 1.9 },   // lo entregado a un marco, fuera del armazón
 };
 const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'lena']);
@@ -531,7 +567,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -568,7 +604,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     o.userData.firmaFuego = firma;
     const viejo = o.getObjectByName('fuego'); if (viejo) o.remove(viejo);
     const r = o.getObjectByName('ramas'); if (r) r.visible = v.ramas;
-    if (v.cual) o.add(modeloFuego(v.cual, e.id));
+    if (v.cual) { const f = modeloFuego(v.cual, e.id), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || 0; o.add(f); }
   }
   // Cada fotograma: el fuego que se apaga solo (al pasar su hora), las llamas y el humo. Devuelve dónde arde cada una
   // (en el mundo) para las luces.
@@ -580,9 +616,10 @@ export function crearEstaciones({ raiz, altura, fab }) {
     const arden = [];
     for (const o of vistas.values()) {
       const f = o.getObjectByName('fuego');
-      if (!f || o.userData.firmaFuego.indexOf('ardiendo') !== 0) continue;
-      moverFuego(f, t / 1000);
-      vF.set(0, 0.9, 0); f.localToWorld(vF); arden.push(vF.clone()); // la luz, por encima de las piedras (si no, las quema)
+      const brasas = !!f && o.userData.firmaFuego.indexOf('brasas') === 0;
+      if (!f || (o.userData.firmaFuego.indexOf('ardiendo') !== 0 && !brasas)) continue;
+      if (!brasas) moverFuego(f, t / 1000);
+      vF.set(0, brasas ? 0.5 : 0.9, 0); f.localToWorld(vF); const p = vF.clone(); p.k = brasas ? 0.22 : 1; arden.push(p); // la luz, por encima de las piedras (si no, las quema); las brasas, poca
     }
     return arden;
   }
@@ -621,8 +658,8 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (Number.isFinite(e.giro)) n.giro = e.giro;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)
-      if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: e.fuego.encendida && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,
-        combustible: Math.max(0, Number(e.fuego.combustible) || 0), cenizas: !!e.fuego.cenizas };
+      if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: (e.fuego.encendida || e.fuego.brasas) && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,
+        combustible: Math.max(0, Number(e.fuego.combustible) || 0), cenizas: !!e.fuego.cenizas, ...(e.fuego.brasas ? { brasas: true } : {}) };
     }
     fab.estaciones = nuevas;
     refrescar();

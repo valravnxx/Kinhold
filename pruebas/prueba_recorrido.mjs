@@ -7,6 +7,7 @@
 // terminarlo; luego se fabrica un hacha de piedra (fibra, cordel, piedra de tallar, y lo que pide dejado encima de
 // ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste;
 // va al río a por barro, juncos y yesca, se hace un taladro de fuego, y levanta y enciende una hoguera en la orilla;
+// (y, con la casa hecha, levanta dentro el hogar, lo enciende, lo deja en brasas y lo aviva);
 // levanta una pila de piedras y, con las varas del árbol, un almiar en su tierra, y guarda en ellos.
 // Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas; lejos del agua no puede beber, y en la
 // orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come. Y desbroza un matorral
@@ -38,6 +39,7 @@ import { idArbol } from '../src/logica/tala.js';
 import { idMata } from '../src/logica/recoleccion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
+import { ESTACIONES } from '../src/logica/fabricacion.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { avisos, AVISO, hayAguaCerca } from '../src/logica/necesidades.js';
@@ -932,6 +934,69 @@ try {
     comprobar('cerrada: un muro terminado en cada uno de sus cuatro lados', claves.size === 4 && lados.every(pz => terminada(pz) && casa.piezas.get(pz.clave).hueco === 'e'), [...claves].join(' '));
     comprobar('y techada: dentro está bajo techo; fuera, no', s.mundo.bajoTecho(C.x, C.z) && !s.mundo.bajoTecho(C.x + 4, C.z));
     comprobar('es suya: todo lo pagó con lo que llevaba (sin arcón)', J.bienvenida.arcon === false && s.mundo.materiales.piedra === piedraArcon);
+
+    // 16j. el hogar, dentro (8 nov): 8 piedras de alrededor (en dos viajes, 3 en cada mano) y 2 cestas de barro del río;
+    // se enciende con ramas, yesca y su taladro, se deja en brasas y se aviva sin yesca
+    console.log('16j. Levanta el hogar dentro de su casa con piedras y barro, lo enciende, lo deja en brasas y lo aviva sin yesca');
+    const sitioHogar = { x: r2(C.x + 0.3), z: r2(C.z + 0.2) };
+    await soltarManos();
+    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hogar', x: C.x + 6, z: C.z });
+    comprobar('fuera de la casa no puede poner el hogar', !r.ok && /dentro/.test(r.motivo || ''), r.motivo);
+    await J.andar(C.x, C.z);
+    const rh = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hogar', x: sitioHogar.x, z: sitioHogar.z });
+    comprobar('dentro de su casa pone el marco del hogar', rh.ok, rh.motivo);
+    const hg = rh.datos && rh.datos.id, HG = () => P(hg);
+    const faltaHogar = m => (HG()?.obra ? (ESTACIONES.hogar.coste[m] || 0) - (HG().obra.entregado[m] || 0) : 0);
+    for (let viaje = 0; viaje < 3 && hg && faltaHogar('piedra') > 0; viaje++) {
+      const quiere = Math.min(6, faltaHogar('piedra'));
+      for (const q of libres(aqui, 'piedra')) { if (J.cuantos('piedra') >= quiere) break; await coger(q); }
+      await J.andar(C.x, C.z);
+      await J.objeto({ tipo: 'entregar_estacion', estacion: hg, x: J.pos.x, z: J.pos.z });
+      await soltarManos();
+    }
+    comprobar('le lleva sus 8 piedras, recogidas alrededor de la casa', hg && faltaHogar('piedra') === 0, `le faltan ${faltaHogar('piedra')}`);
+    // el barro, del río: su palo cavador sigue en la orilla
+    const palo2 = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'palo_cavador'), rio)[0];
+    if (palo2) { await J.andar(palo2.x + 0.4, palo2.z); await J.objeto({ tipo: 'coger_suelo', objeto: palo2.id, cantidad: 1, a: 'mano:izq', x: J.pos.x, z: J.pos.z }); }
+    const barro2 = libres(ribera, 'barro')[0] || barro;
+    for (let v = 0; v < 2; v++) await recoger(barro2);
+    comprobar('cava 2 cestas de barro en la orilla', J.cuantos('barro') === 2, enMano());
+    await J.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J.pos.x, z: J.pos.z });   // el palo, otra vez en la orilla
+    // y de paso, su taladro de fuego y una yesca (de las que dejó junto a la hoguera, o de un hongo yesquero)
+    const taladro = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'taladro_fuego'), rio)[0];
+    if (taladro) { await J.andar(taladro.x + 0.3, taladro.z); await J.objeto({ tipo: 'coger_suelo', objeto: taladro.id, cantidad: 1, a: 'mano:izq', x: J.pos.x, z: J.pos.z }); }
+    await J.andar(C.x, C.z);
+    r = await J.objeto({ tipo: 'entregar_estacion', estacion: hg, x: J.pos.x, z: J.pos.z });
+    comprobar('le lleva sus 2 cestas de barro', r.ok && faltaHogar('barro') === 0 && J.cuantos('barro') === 0, r.motivo || enMano());
+    let rth = { ok: true, datos: {} };
+    for (let i = 0; i < 8 && rth.ok && !rth.datos.terminada; i++) rth = await J.objeto({ tipo: 'trabajar_estacion', estacion: hg, segundos: 5, x: J.pos.x, z: J.pos.z });
+    comprobar('lo levanta trabajando en él: el hogar, apagado y sin nada puesto', rth.ok && rth.datos.terminada && HG().fuego && HG().fuego.combustible === 0, rth.motivo || JSON.stringify(HG() && HG().fuego));
+    await J.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J.pos.x, z: J.pos.z }); // el taladro, en el suelo de casa
+    for (const q of libres(aqui, 'ramas')) { if (J.cuantos('rama') >= 2) break; await coger(q); }
+    await J.andar(C.x, C.z);
+    let echadas = 0;
+    while (J.cuantos('rama') && echadas < 4) { const q = await J.objeto({ tipo: 'echar_fuego', estacion: hg, objeto: 'rama', x: J.pos.x, z: J.pos.z }); if (!q.ok) break; echadas++; }
+    comprobar('le echa ramas de alrededor (cada una, 4 min y medio en el hogar)', echadas >= 1 && HG().fuego.combustible === echadas * 270, `${echadas} · ${JSON.stringify(HG().fuego)}`);
+    await soltarManos();
+    const tl = enSuelo('taladro_fuego', J.pos, 2.5)[0];
+    if (tl) await J.objeto({ tipo: 'coger_suelo', objeto: tl.id, cantidad: 1, a: 'mano:izq', x: J.pos.x, z: J.pos.z });
+    if (!J.cuantos('yesca')) {
+      const ys = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'yesca'), J.pos)[0];
+      if (ys) { await J.andar(ys.x + 0.3, ys.z); await J.objeto({ tipo: 'coger_suelo', objeto: ys.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z }); }
+      else for (const q of libres(alrededor(J.pos, 200), 'yesquero')) { const c = await coger(q); if (c.ok) break; }
+      await J.andar(C.x, C.z);
+    }
+    comprobar('lleva el taladro de fuego y yesca', J.cuantos('taladro_fuego') === 1 && J.cuantos('yesca') >= 1, enMano());
+    const yescas2 = J.cuantos('yesca');
+    r = await J.objeto({ tipo: 'encender_fuego', estacion: hg, x: J.pos.x, z: J.pos.z });
+    comprobar('enciende el hogar dentro de su casa (bajo techo)', r.ok && HG().fuego.hasta > Date.now() && J.cuantos('yesca') === yescas2 - 1 && s.mundo.bajoTecho(HG().x, HG().z), r.motivo);
+    r = await J.objeto({ tipo: 'brasas_fuego', estacion: hg, x: J.pos.x, z: J.pos.z });
+    const vb = s.objetos.estacionesVisibles().find(e => e.id === hg);
+    comprobar('lo deja en brasas y todos lo ven en brasas, sin llama', r.ok && vb.fuego.brasas && !vb.fuego.encendida, r.motivo || JSON.stringify(vb && vb.fuego));
+    r = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hg, x: J.pos.x, z: J.pos.z });
+    comprobar('con brasas no se hace nada al fuego', !r.ok, r.motivo);
+    r = await J.objeto({ tipo: 'encender_fuego', estacion: hg, x: J.pos.x, z: J.pos.z });
+    comprobar('y lo aviva sin gastar yesca: vuelve la llama', r.ok && J.cuantos('yesca') === yescas2 - 1 && s.objetos.estacionesVisibles().find(e => e.id === hg).fuego.encendida, r.motivo);
   }
   }
 

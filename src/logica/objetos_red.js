@@ -32,7 +32,8 @@
 //     gastan de ahí); { tipo: 'retirar_estacion', estacion, objeto, cantidad?, x, z } — volver a cogerlo. En tierra de
 //     otro, solo su dueño y sus invitados (como al poner la estación)
 //   { tipo: 'encender_fuego', estacion, x, z } — encender la hoguera (1 yesca de lo que llevas; llevar el taladro de
-//     fuego); { tipo: 'echar_fuego', estacion, objeto: 'rama' | 'lena', x, z } — echarle una (src/logica/fuego.js). En
+//     fuego); { tipo: 'echar_fuego', estacion, objeto: 'rama' | 'lena', x, z } — echarle una (src/logica/fuego.js); { tipo: 'brasas_fuego', estacion, x, z } — dejar el hogar en
+//     brasas (encender_fuego lo aviva). En
 //     tierra de otro, solo su dueño y sus invitados
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
@@ -233,7 +234,7 @@ export class ObjetosServidor {
   // El fuego, como lo ve cada uno: encendido o no, los s que le quedan, lo puesto sin arder y si hay cenizas (no la
   // hora del servidor: cada navegador lo cuenta desde que le llega).
   estacionesVisibles(trozos = null, ahora = Date.now()) {
-    const fuego = f => { const st = estadoFuego(f, ahora); return { encendida: st.encendida, queda: +st.queda.toFixed(1), combustible: st.combustible, cenizas: st.cenizas }; };
+    const fuego = f => { const st = estadoFuego(f, ahora); return { encendida: st.encendida, ...(st.brasas ? { brasas: true } : {}), queda: +st.queda.toFixed(1), combustible: st.combustible, cenizas: st.cenizas }; };
     return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
       .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito }, ...(e.fuego ? { fuego: fuego(e.fuego) } : {}),
         ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}) }));

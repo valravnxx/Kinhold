@@ -38,7 +38,10 @@
 //  - «Rama larga» y «rama curva» son ramas: la rastra gasta 5 ramas (2 largas y 3). La antorcha, con fibra o con
 //    resina (dos recetas). La cesta de recolección, con mimbre o con juncos (dos recetas). El cinturón de cuerda es
 //    la cuerda trenzada del inventario (2 huecos pequeños).
-//  - El hogar da el mismo uso que la hoguera (el fuego); llega como estación con la casa humilde (su tarea del hito).
+//  - El hogar (8 nov) da el mismo uso que la hoguera (el fuego), solo dentro de la casa: un lecho de piedras y barro en
+//    el suelo, en medio de la casa (el hogar abierto de las casas humildes; el humo sale por el tejado de juncos).
+//    Provisional (diario y registro): 8 piedras y 2 cestas de barro, 20 s de trabajo. Lo suyo del fuego (más duradero,
+//    se deja en brasas), en src/logica/fuego.js.
 //  - Quedan para cuando existan sus materiales u objetos: envueltas de piel (no hay prenda de pies de piel), anzuelo
 //    (no hay hueso), refugio de ramas (es una obra), carretilla (no hay rodaja de tronco), zurrón y chaleco (no hay
 //    piel limpia), vendas, y lo de cocinar y calentarse al fuego.
@@ -64,7 +67,7 @@
 //    hierbas), dentro o fuera.
 import { CATALOGO } from './inventario.js';
 import { ALCANCE_COGER } from './suelo.js';
-import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
+import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
 export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que se gasta
@@ -76,7 +79,7 @@ export const MAX_RATO_ESTACION = 5;         // s de trabajo como mucho en una so
 // Los usos: qué estaciones dan cada uno. Una receta pide un uso, no una estación concreta.
 export const USOS = {
   manos:  { nombre: 'Con las manos', estaciones: [] },
-  fuego:  { nombre: 'Al fuego', estaciones: ['hoguera', 'hogar'] }, // el hogar, con la casa humilde
+  fuego:  { nombre: 'Al fuego', estaciones: ['hoguera', 'hogar'] },
   tallar: { nombre: 'En la piedra de tallar', estaciones: ['piedra_tallar'] },
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
 };
@@ -89,6 +92,7 @@ const DE_ESPALDA = Object.keys(CATALOGO).filter(k => CATALOGO[k].lugar === 'espa
 const HERRAMIENTAS = Object.keys(CATALOGO).filter(k => CATALOGO[k].herramienta);
 export const ESTACIONES = {
   hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, donde: 'fuera', trabajo: 10, fuego: true, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
+  hogar:         { nombre: 'Hogar', un: 'un hogar', uso: 'fuego', coste: { piedra: 8, barro: 2 }, donde: 'dentro', trabajo: 20, fuego: true, hace: 'El fuego de dentro de la casa: más duradero, se deja en brasas; cocinar, calentarse, endurecer al fuego, antorchas' },
   piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, donde: 'ambos', trabajo: 5, hace: 'Herramientas de piedra y sílex' },
   banco_tronco:  { nombre: 'Banco de trabajo de tronco', un: 'un banco de trabajo de tronco', uso: 'banco', coste: { tronco_corto: 2 }, requiere: ['hacha_piedra', 'lasca_silex'], donde: 'ambos', trabajo: 20, hace: 'Trabajos de madera, mangos, cestería, primeras piezas de construcción' },
   // los almacenajes de la base (uso «almacen»: sin recetas): guarda, lo único que se deja en ellos; cabe, cuánto
@@ -112,7 +116,7 @@ export const cabeEn = tipo => (Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tip
 export const guardaTipo = (tipo, t) => !Object.hasOwn(ESTACIONES, tipo) || !ESTACIONES[tipo].guarda || ESTACIONES[tipo].guarda.includes(t);
 export const MOTIVO_MURO = n => `${n}: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.`;
 export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
-// Las estaciones que existen de un uso (el hogar aún no), y cómo se nombran juntas («una hoguera o un hogar»).
+// Las estaciones que existen de un uso, y cómo se nombran juntas («una hoguera o un hogar»).
 export const estacionesDeUso = uso => (USOS[uso] ? USOS[uso].estaciones : []).filter(t => Object.hasOwn(ESTACIONES, t));
 export const conQue = uso => estacionesDeUso(uso).map(t => ESTACIONES[t].un).join(' o ');
 
@@ -409,7 +413,7 @@ export class Fabricacion {
     e.obra.trabajo = Math.min(def.trabajo, e.obra.trabajo + segundos);
     const suyo = e.obra.aportes.find(x => x.autor === autor && x.trabajo !== undefined);
     if (suyo) suyo.trabajo = +(suyo.trabajo + segundos).toFixed(3); else e.obra.aportes.push({ autor, trabajo: +segundos.toFixed(3) });
-    if (e.obra.trabajo >= def.trabajo - 1e-9) { const aportes = e.obra.aportes; delete e.obra; if (def.fuego) e.fuego = fuegoNuevo(); return { ok: true, estacion: e.id, terminada: true, progreso: 1, aportes }; }
+    if (e.obra.trabajo >= def.trabajo - 1e-9) { const aportes = e.obra.aportes; delete e.obra; if (def.fuego) e.fuego = fuegoNuevo(e.tipo); return { ok: true, estacion: e.id, terminada: true, progreso: 1, aportes }; }
     return { ok: true, estacion: e.id, terminada: false, progreso: e.obra.trabajo / def.trabajo };
   }
   // Quitar el marco de un puesto a medio hacer: lo entregado cae al suelo donde estaba (con suelo; sin él, se pierde).
@@ -431,7 +435,7 @@ export class Fabricacion {
     const { e, motivo } = this.estacionAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
     if (e.obra) return this.quitarEstacion(autor, estacion, pos, suelo, ahora, enTierras);
-    if (e.fuego && estadoFuego(e.fuego, ahora).encendida) return { ok: false, motivo: 'Está ardiendo: espera a que se apague.' };
+    if (e.fuego && (estadoFuego(e.fuego, ahora).encendida || estadoFuego(e.fuego, ahora).brasas)) return { ok: false, motivo: 'Está ardiendo: espera a que se apague.' };
     if (e.cola.length) return { ok: false, motivo: 'Tiene encargos a medias: espera a que terminen y recógelos.' };
     const devuelto = {};
     for (const [t, n] of Object.entries(ESTACIONES[e.tipo].coste)) { const r = Math.floor(n * RECUPERA_ESTACION); if (r > 0) devuelto[t] = r; }
@@ -501,15 +505,17 @@ export class Fabricacion {
     if (!e) return { motivo };
     if (!ESTACIONES[e.tipo].fuego) return { motivo: 'Eso no tiene fuego.' };
     if (e.obra) return { motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
-    if (!e.fuego) e.fuego = fuegoNuevo();
+    if (!e.fuego) e.fuego = fuegoNuevo(e.tipo);
     return { e };
   }
-  // Encender el fuego de una estación: gasta 1 yesca de lo que llevas y pide llevar el taladro de fuego.
+  // Encender el fuego de una estación: gasta 1 yesca de lo que llevas y pide llevar el taladro de fuego. En brasas (el
+  // hogar), se aviva sin nada.
   encenderFuego(autor, estacion, pos, inv, ahora) {
     const { e, motivo } = this.fuegoAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
     const st = estadoFuego(e.fuego, ahora);
     if (st.encendida) return { ok: false, motivo: 'Ya está encendida.' };
+    if (st.brasas) { const r = avivar(e.fuego, ahora); return r.ok ? { ok: true, estacion: e.id, encendida: true, avivada: true, hasta: r.hasta, gastado: {} } : r; }
     if (!(st.combustible > 0)) return { ok: false, motivo: 'No tiene nada que arder: échale ramas o leña.' };
     if (!(inv.cuantos(HERRAMIENTA_FUEGO) > 0)) return { ok: false, motivo: 'Para encenderla hace falta llevar el taladro de fuego y yesca.' };
     const ruta = YESCAS.flatMap(t => rutasGastables(inv, t))[0];
@@ -525,10 +531,17 @@ export class Fabricacion {
     if (!e) return { ok: false, motivo };
     const ruta = rutasGastables(inv, objeto)[0];
     if (!ruta) return { ok: false, motivo: objeto === 'lena' ? 'No llevas leña.' : objeto === 'rama' ? 'No llevas ramas.' : 'Al fuego solo se echan ramas o leña.' };
-    const r = echar(e.fuego, objeto, ahora);
+    const r = echar(e.fuego, objeto, ahora, e.tipo);
     if (!r.ok) return r;
     inv.sacar(ruta, 1);
     return { ok: true, estacion: e.id, echado: { [objeto]: 1 }, encendida: r.encendida, segundos: r.segundos };
+  }
+  // Dejar en brasas el fuego de una estación que lo admite (el hogar): sin gastar nada.
+  brasasFuego(autor, estacion, pos, ahora) {
+    const { e, motivo } = this.fuegoAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    const r = dejarEnBrasas(e.fuego, ahora, e.tipo);
+    return r.ok ? { ok: true, estacion: e.id, brasas: true, hasta: r.hasta } : r;
   }
 
   // La cola de una estación (o de las manos de un autor).
@@ -637,7 +650,7 @@ export class Fabricacion {
       if (Number.isFinite(e.y)) this.estaciones[e.id].y = e.y;
       if (Number.isFinite(e.giro)) this.estaciones[e.id].giro = normalGiro(e.giro);
       const ob = limpiarObra(e.obra, e.tipo); if (ob) this.estaciones[e.id].obra = ob;
-      else if (ESTACIONES[e.tipo].fuego) this.estaciones[e.id].fuego = e.fuego ? limpiarFuego(e.fuego) : fuegoNuevo(); // las de antes del fuego: con sus ramas puestas
+      else if (ESTACIONES[e.tipo].fuego) this.estaciones[e.id].fuego = e.fuego ? limpiarFuego(e.fuego, e.tipo) : fuegoNuevo(e.tipo); // las de antes del fuego: con sus ramas puestas
     }
     for (const [k, l] of Object.entries(d.manos || {})) {
       if (k in Object.prototype) continue;
@@ -676,12 +689,13 @@ export function migrarFabricacion(datos) {
 // { autor, tipo: 'retirar_estacion', estacion: id, objeto: tipo, cantidad?, x, z } — de la estación a lo que llevas
 // { autor, tipo: 'encender_fuego', estacion: id, x, z }      — encender su fuego (1 yesca; llevar el taladro de fuego)
 // { autor, tipo: 'echar_fuego', estacion: id, objeto: 'rama' | 'lena', x, z } — echarle al fuego una de lo que llevas
+// { autor, tipo: 'brasas_fuego', estacion: id, x, z }       — dejarlo en brasas (el hogar); encender_fuego lo aviva
 // suelo: el Suelo del mundo (lo da quien valida). ahora: la hora del que valida, nunca la del mensaje. Lo gastado sale
 // de lo del autor o del suelo a su lado y lo fabricado va al autor (o a sus pies si no le cabe y hay suelo), nunca a
 // otro. enTierras(x, z): si ese sitio es de la tierra del autor. bajoTecho(x, z): si ese sitio está bajo techo (dentro
 // de una casa). Se anota en el registro, salga bien o no.
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion', 'desmontar_estacion'];
-export const DEL_FUEGO = ['encender_fuego', 'echar_fuego'];
+export const DEL_FUEGO = ['encender_fuego', 'echar_fuego', 'brasas_fuego'];
 export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO];
 export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false, alMuro = () => null) {
   let res;
@@ -715,14 +729,15 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
     else if (a.tipo === 'encender_fuego') res = fab.encenderFuego(a.autor, a.estacion, pos, inv, ahora);
     else if (a.tipo === 'echar_fuego') res = fab.echarFuego(a.autor, a.estacion, a.objeto, pos, inv, ahora);
+    else if (a.tipo === 'brasas_fuego') res = fab.brasasFuego(a.autor, a.estacion, pos, ahora);
     else if (a.tipo === 'fabricar') res = fab.fabricar(a.autor, a.receta, a.estacion || null, pos, inv, suelo, ahora);
     else res = fab.recoger(a.autor, a.estacion || null, pos, inv, ahora, suelo, suelo ? enTierras(a.x, a.z) : false);
   }
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
-      : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado } }
+    e.resultado = res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
+      : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado }, ...(res.avivada ? { avivada: true } : {}) }
       : res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.desmontada ? { estacion: res.estacion, desmontada: true, devuelto: { ...res.devuelto }, guardado: { ...res.guardado } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
       : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }
       : res.dejado ? { estacion: res.estacion, dejado: { ...res.dejado } } : res.cogido ? { estacion: res.estacion, cogido: { ...res.cogido } } : res.id ? { estacion: res.id, ...(res.obra ? { obra: true } : {}) } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]) };
