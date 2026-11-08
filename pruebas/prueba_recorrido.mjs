@@ -82,9 +82,9 @@ if (MUTAR) { const punto = T.punto.bind(T); T.punto = (id, x, z) => (id.startsWi
 const O = T.origen;
 
 // el cliente: como la demo en línea, por websocket
-function cliente(puerto) {
+function cliente(puerto, ficha = null) {
   return new Promise((listo, fallo) => {
-    const ws = new WebSocket(`ws://127.0.0.1:${puerto}`);
+    const ws = new WebSocket(`ws://127.0.0.1:${puerto}${ficha ? '/?ficha=' + ficha : ''}`);
     const c = { ws, esperas: [], id: 0, inv: null, pos: null };
     c.esperar = (cond, ms = 5000) => new Promise((r, f) => { const t = setTimeout(() => f(new Error('tiempo agotado')), ms); c.esperas.push({ cond, r: (m) => { clearTimeout(t); r(m); } }); });
     c.objeto = (accion) => { const id = ++c.id; const p = c.esperar(m => m.tipo === 'resultado_objeto' && m.id === id); ws.send(JSON.stringify({ tipo: 'objeto', id, accion })); return p; };
@@ -1305,6 +1305,16 @@ try {
     r = await J.objeto({ tipo: 'dormir', estacion: cama, x: J.pos.x, z: J.pos.z });
     comprobar('y duerme en ella', r.ok, r.motivo);
     await J.andar(D.x - 0.8, D.z);
+    // desconectarse (GDD, apartado 6; src/logica/dormidos.js): sale del juego en su casa, en su tierra; se queda dormido,
+    // protegido desde el primer momento, y pasa a su cama ligada; al volver con su ficha, despierta en ella
+    const ficha = J.bienvenida.ficha, enCama = s.objetos.fab.estaciones[cama];
+    J.ws.close(); await pausa(400);
+    const dz = s.dormidos.de(yo);
+    comprobar('sale del juego en su casa: se queda dormido en su cama, protegido (fuera del combate)', !!dz && dz.enCama && Math.hypot(dz.x - enCama.x, dz.z - enCama.z) < 0.01 && !s.dormidos.atacable(yo, Date.now()) && !s.combate.luchadores[yo], JSON.stringify(dz));
+    const J2 = await cliente(puerto, ficha);
+    const pv = J2.bienvenida.posicion;
+    comprobar('al volver, es él y despierta en su cama', J2.bienvenida.autor === yo && !s.dormidos.esta(yo) && !!pv && Math.hypot(pv.x - enCama.x, pv.z - enCama.z) < 0.01, JSON.stringify(pv));
+    J2.ws.close();
   }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)
