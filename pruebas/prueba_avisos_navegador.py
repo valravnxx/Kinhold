@@ -102,7 +102,7 @@ def recorrido(pg, nombre, pref, movil):
     comprobar(f'{nombre}: con las cuatro, los cuatro círculos', pg.evaluate(f'{K}.avisosNec.visibles.length') == 4)
     # descansar sentado (8 nov): el botón de la ficha del cansancio
     if MUTAR == '3': pg.evaluate(f'(() => {{ const a = {K}.jugador.mh && {K}.jugador.mh.acciones; if (a) delete a.sentado; }})()')
-    pg.click('#avisosNec .aviso-nec[data-que="cansancio"]'); pg.wait_for_timeout(400)
+    pg.evaluate("document.querySelector('#avisosNec .aviso-nec[data-que=\"cansancio\"]').click()"); pg.wait_for_timeout(400)   # (en fuerte late: nunca está quieto para el clic de Playwright)
     boton = pg.evaluate("(() => { const b = document.querySelector('#fichaNec .sentarse'); return b ? b.textContent : null; })()")
     comprobar(f'{nombre}: la ficha del cansancio lleva el botón para sentarse', bool(boton) and 'Sentarte' in boton, str(boton))
     rb = rect(pg, '#fichaNec .sentarse'); rf = rect(pg, '#fichaNec')
