@@ -1,0 +1,28 @@
+Lógica pura
+  OK   un texto normal se queda igual
+  OK   sin espacios de sobra ni saltos de línea
+  OK   sin caracteres de control ni invisibles de dirección (con ellos se da la vuelta a lo que se lee)
+  OK   vacío, solo espacios o lo que no es texto: no vale
+  OK   como mucho 120 letras
+  OK   y un emoji no se parte por la mitad
+  OK   un mensaje enorme ni se mira
+  OK   el bocadillo dura entre 4 y 12 s, más cuanto más largo
+  OK   la primera frase pasa
+  OK   otra antes de un segundo, no
+  OK   pasado el segundo, sí; y otro jugador no cuenta
+  OK   como mucho 6 en 20 s — 6
+  OK   pasado el rato, vuelve a poder
+  OK   le llega al que habla y a quien está a 50 m o menos — ["a","b"]
+  OK   y al que habla aunque aún no tenga sitio
+  OK   lo que llega al navegador se comprueba otra vez
+Con el servidor de verdad
+  OK   lo que dice A le llega a él (lo que ha aceptado el servidor) — [{"tipo":"dicho","autor":"jugador:d409cc5b","texto":"Buenas, vecino"}]
+  OK   y a B, a 20 m — [{"tipo":"dicho","autor":"jugador:d409cc5b","texto":"Buenas, vecino"}]
+  OK   pero no a C, a 200 m — []
+  OK   el autor es el de la conexión (aunque el mensaje diga otro)
+  OK   hablar otra vez antes de un segundo: no, y se le dice por qué — ["Más despacio: espera un poco antes de volver a hablar."]
+  OK   lo vacío o lo que no es texto no vale — ["Ese mensaje está vacío o no vale.","Ese mensaje está vacío o no vale."]
+  OK   B contesta y A lo recibe tal cual (como texto: el navegador no lo pone como HTML)
+  OK   lo dicho queda en charla.jsonl, con su autor, dónde y a cuántos llegó — [{"t":1794111668793,"autor":"jugador:d409cc5b","cuenta":null,"x":0,"z":0,"texto":"Buenas, vecino","oyen":2},{"t":1794111670595,"autor":"jugador:57b57801","cuenta":null,"x":20,"z":0,"texto":"<b>hola</b>","oyen":2}]
+
+24 bien, 0 mal

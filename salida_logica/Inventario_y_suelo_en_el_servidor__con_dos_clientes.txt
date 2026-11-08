@@ -1,0 +1,86 @@
+Bienvenida
+  OK   lleva el inventario del jugador — {"tipo":"camisa_lino","n":1}
+  OK   y el suelo (vacío al empezar)
+Sin presencia, nada que dependa del sitio
+  OK   soltar sin que el servidor sepa dónde estás se rechaza — El servidor aún no sabe dónde estás.
+Soltar al suelo
+  OK   A suelta su camisa
+  OK   A recibe su inventario sin la camisa
+  OK   B ve la camisa en el suelo — {"id":"s1","cosa":{"tipo":"camisa_lino","n":1},"x":0.2,"z":0,"autor":"jugador:6d690122","soltado":1794111658360,"desaparece":1794115258360}
+  OK   B no recibe el inventario de A
+El autor lo pone el servidor
+  OK   B diciendo que es A suelta lo suyo, no lo de A
+El sitio es el de la presencia
+  OK   B lejos, diciendo que está al lado, no la coge — No estás ahí.
+  OK   B al lado sí la coge
+  OK   la camisa está en lo que lleva B
+  OK   ya no está para A — Ahí no hay nada que coger.
+El arcón de pruebas
+  OK   sin arcón de pruebas, 'coger' (meter algo de la nada) y 'soltar' (hacerlo desaparecer) se rechazan — Aquí no hay arcón. · Aquí no hay arcón.
+  OK   con él (el servidor de pruebas), A coge un hacha del arcón
+  OK   y no otra donde ya lleva algo — Ese sitio está ocupado.
+  OK   aunque salga mal, le llega lo que lleva (para deshacer lo adelantado)
+  OK   una acción desconocida se rechaza — Acción desconocida.
+Reordenar lo que llevas
+  OK   B se quita su camisa a la mano izquierda
+  OK   y se pone la que ha cogido — mano:der · 
+  OK   y pasa la suya a la otra mano
+  OK   lo de A no cambia
+Mensajes raros
+  OK   no tumban el servidor
+Talar
+  OK   un árbol lejos de donde estás no vale — Está demasiado lejos.
+  OK   ni uno cuyo nombre no cuadra con su sitio — Ahí no hay ningún árbol.
+  OK   B, lejos, no lo tala aunque diga que está al lado — Está demasiado lejos.
+  OK   A lo tala a golpes (adulto con hierro: 14) y el resultado dice que cae y hacia dónde — 14 golpes · 
+  OK   B se entera: el árbol cae y queda el tocón
+  OK   y ve el tronco largo y las ramas en el suelo
+  OK   talado, ya no se tala (ni diciendo que es otro árbol más joven) — Ese árbol ya está talado: solo queda el tocón.
+Trocear
+  OK   A tronza el tronco largo (18 golpes con hierro) en troncos cortos — 18 golpes · {"tipo":"tronco_corto","n":3}
+  OK   el tronco largo ya no está y los cortos sí
+Recoger
+  OK   A recoge una piedra suelta y va a lo que lleva
+  OK   B se entera de que ese punto ya está recogido
+  OK   y no se vuelve a recoger hasta que vuelva — Ya lo han recogido: aún no ha vuelto a salir.
+  OK   un punto cuyo nombre no cuadra con su clase no vale — Datos no válidos.
+Fabricar por el servidor
+  OK   A coge 3 de fibra (del arcón de pruebas)
+  OK   A encarga un cordel con las manos: gasta la fibra que lleva
+  OK   y le llega lo que lleva, ya sin la fibra
+  OK   antes de su tiempo no se recoge — Aún no está terminado.
+  OK   B no recoge el cordel de A — Aquí no tienes nada.
+  OK   terminado, el cordel va a lo que lleva A — {"dados":[{"objeto":"cordel","cantidad":1,"donde":[["mano:der",1]]}],"quedan":false}
+  OK   lo que pide un sitio va desde donde el servidor tiene al autor — No estás ahí.
+  OK   A pone el marco de una piedra de tallar, sin gastar nada
+  OK   B ve el marco, con lo que lleva entregado
+  OK   sin su material no se trabaja en él — Primero hay que llevarle todo el material. Le falta: 1 de Piedra.
+  OK   A le lleva la piedra que recogió
+  OK   un rato de trabajo de más no cuela — Rato de trabajo no válido.
+  OK   entre los dos la levantan (el trabajo de los dos se suma) — {"estacion":"piedra_tallar:1","terminada":true,"progreso":1,"aportes":[{"autor":"jugador:6d690122","entrega":{"piedra":1}},{"autor":"jugador:707b743d","trabajo":2},{"autor":"jugador:6d690122","trabajo":3}]}
+  OK   B la ve levantada (sin las colas de nadie) — [{"id":"piedra_tallar:1","tipo":"piedra_tallar","x":5.5,"z":5,"autor":"jugador:6d690122","deposito":{}}]
+  OK   a la hoguera, sin lo que cuesta, no se le entrega nada — Le falta: 6 de Piedra, 4 de Rama. No lo llevas ni lo tienes a tu lado.
+  OK   y su marco se quita
+  OK   B deja un sílex en la piedra de tallar de A, y A lo ve puesto en ella
+  OK   A coge otra piedra
+  OK   sin la piedra depositada, la lasca no se encarga aunque la lleve — Falta en la estación: 1 de Piedra.
+  OK   depositar va desde donde el servidor tiene al autor — No estás ahí.
+  OK   A deposita su piedra
+  OK   A encarga la lasca sin decir la estación: la de al lado, con lo depositado en ella — {"encargo":{"autor":"jugador:6d690122","receta":"lasca_silex","empieza":1794111659471,"fin":1794111679471},"estacion":"piedra_tallar:1","usado":{"encima":{},"suelo":{},"estacion":{"silex":1,"piedra":1}}}
+  OK   y B ve la piedra de tallar vacía
+  OK   con las manos llenas, la lasca cae al suelo a sus pies y la ven los dos — {"dados":[{"objeto":"lasca_silex","cantidad":1,"alSuelo":"s7"}],"quedan":false}
+  OK   ni se quita el marco de un puesto en tierra de otro — Es tierra de otro: solo su dueño y sus invitados.
+  OK   bajo techo el servidor no deja poner una hoguera — Hoguera: solo fuera, no bajo techo.
+  OK   en tierra de otro no se coloca una estación (ni se gasta nada) — Es tierra de otro: solo su dueño y sus invitados.
+  OK   ni se deja ni se coge nada de una estación en tierra de otro — Es tierra de otro: solo su dueño y sus invitados.
+  OK   la pila de piedras de otro: ni se guarda ni se saca nada — Es tierra de otro: solo su dueño y sus invitados.
+  OK   un almacenaje, en tierra de nadie no; en la suya, sí — Los almacenajes van en tu tierra (o en la de quien te invita). / ok
+  OK   cada acción queda en el registro, bien o mal, con su autor — 78 entradas
+Al volver a arrancar
+  OK   los inventarios y el suelo siguen igual
+  OK   B vuelve con su ficha y lleva lo suyo
+  OK   y ve en el suelo los pantalones que soltó
+  OK   y la piedra de tallar de A, sin perder nada de lo encargado
+  OK   y el tocón y lo recogido
+
+71 correctas, 0 fallos
