@@ -4,8 +4,10 @@
 // grupo en su máquina y a la vez. «logica» va siempre a la nube (no necesita tarjeta). Sube la rama actual si hace falta,
 // espera, trae las capturas (en JPG) y la salida de cada grupo a /tmp/kinhold_capturas/ (como probar_todo.sh) y dice qué
 // ha fallado. Sale con error si algo falla.
-// Uso: node herramientas/pruebas_nube.mjs                       todos los grupos
+// Uso: node herramientas/pruebas_nube.mjs                       lo esencial y los grupos de lo que toca la rama
+//      node herramientas/pruebas_nube.mjs --mas cavar           eso y además esos grupos
 //      node herramientas/pruebas_nube.mjs cavar web             solo esos grupos (bash herramientas/probar_todo.sh --grupos)
+//      node herramientas/pruebas_nube.mjs --todo                la batería entera (al llevar un hito a revisión)
 //      SIN_TRAER=1 node herramientas/pruebas_nube.mjs           sin traer capturas
 //      SOLO_NUBE=1 node herramientas/pruebas_nube.mjs           sin mirar el PC de valravnx
 // Lo lanza la subida de una rama nube-pedido/<id>/<grupos> (la nube) o pc-pedido/<id>/<grupos> (su PC); esas ramas y las
@@ -14,6 +16,7 @@
 import { execFileSync } from 'child_process';
 import { mkdirSync, rmSync, readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { ESENCIALES, gruposPara, pruebasDeGrupos } from './grupos_pruebas.mjs';
 
 const REPO = 'valravnxx/Kinhold';
 const C = '/tmp/kinhold_capturas';
@@ -49,11 +52,30 @@ const todos = JSON.parse(sh('bash', ['herramientas/probar_todo.sh', '--grupos'])
 // valravnx, 31 oct: «no hagas las pruebas de en línea de ningún tipo» (las de dos páginas y un servidor: jugar, duelo,
 // volver donde lo dejaste, lo que llevas en línea). Sin nombrarlas no se lanzan; nombradas a mano, sí.
 const EN_LINEA = (g) => /en-linea|volver-donde/.test(g);
-const pedidos = process.argv.slice(2).length ? process.argv.slice(2) : todos.filter(g => !EN_LINEA(g));
-if (!process.argv.slice(2).length) console.log(`Sin las de en línea (valravnx, 31 oct): ${todos.filter(EN_LINEA).join(', ')}`);
+// Qué se pasa (valravnx, 8 nov: «solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas»;
+// herramientas/grupos_pruebas.mjs): sin nada, lo esencial y los grupos de lo que toca la rama (lo cambiado desde main);
+// --mas <grupos>, eso y además esos; <grupos>, solo esos (para repetir lo que falló); --todo, la batería entera (al
+// llevar un hito a revisión).
+const args = process.argv.slice(2), TODO = args.includes('--todo'), MAS = args.includes('--mas');
+const nombrados = args.filter(a => !a.startsWith('--'));
+let pedidos;
+if (TODO) {
+  pedidos = todos.filter(g => !EN_LINEA(g));
+  console.log(`La batería entera, sin las de en línea (valravnx, 31 oct): ${todos.filter(EN_LINEA).join(', ')}`);
+} else if (nombrados.length && !MAS) pedidos = nombrados;
+else {
+  try { sh('git', ['fetch', '-q', 'origin', 'main']); } catch {}
+  let base = 'origin/main';
+  try { base = sh('git', ['merge-base', 'origin/main', 'HEAD']); } catch {}
+  const archivos = sh('git', ['diff', '--name-only', base, 'HEAD']).split('\n').filter(Boolean);
+  const grupoDe = (n) => sh('bash', ['-c', `source <(sed -n '/^grupo_de()/,/^}/p' herramientas/probar_todo.sh); grupo_de "$1"`, '_', n]);
+  const pruebas = pruebasDeGrupos(readFileSync('herramientas/probar_todo.sh', 'utf8'), grupoDe);
+  pedidos = gruposPara(archivos, { todos, pruebas, nombrados }).filter(g => !EN_LINEA(g) || nombrados.includes(g));
+  console.log(`Lo esencial (${ESENCIALES.join(', ')}) y lo de lo tocado (${archivos.length} archivos cambiados desde main)${nombrados.length ? ' y lo nombrado' : ''}; la batería entera, con --todo`);
+}
 const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica');
 const aNube = pedidos.filter(g => !alPC.includes(g));
-console.log(`Pruebas de ${rama} (${sha.slice(0, 7)})${process.argv.length > 2 ? ': ' + pedidos.join(', ') : ''}`);
+console.log(`Pruebas de ${rama} (${sha.slice(0, 7)}): ${pedidos.join(', ')}`);
 
 // sube la rama del pedido y encuentra su ejecución
 async function lanzar(donde, grupos) {

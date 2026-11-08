@@ -41,6 +41,19 @@ import { avisos, AVISO, hayAguaCerca } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 const MUTAR = process.env.MUTAR === '1';
+
+// El reloj acelerado (valravnx, 8 nov: «no puede ser que… cada pequeña mejora sea de tantas horas»): el recorrido
+// tardaba unos 35 minutos de verdad, casi todos andando a paso de jugador (6 m/s, hasta el río y vuelta) y esperando
+// entre hachazos. El servidor corre en este mismo proceso, así que se le acelera el reloj entero: Date.now y
+// performance.now corren RELOJ veces más deprisa, y las esperas de la prueba (pausa) duran RELOJ veces menos. Para el
+// servidor todo pasa igual que antes (los mismos pasos de 0,6 m cada 100 ms de su reloj, las mismas esperas entre golpes,
+// la sed y el hambre al mismo ritmo de su hora); solo se acorta la espera de verdad. RELOJ=1 lo deja como antes.
+const RELOJ = Math.max(1, Number(process.env.RELOJ) || 8);
+if (RELOJ > 1) {
+  const d0 = Date.now(), p0 = performance.now(), dReal = Date.now.bind(Date), pReal = performance.now.bind(performance);
+  Date.now = () => d0 + Math.round((dReal() - d0) * RELOJ);
+  performance.now = () => p0 + (pReal() - p0) * RELOJ;
+}
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -95,7 +108,7 @@ function cliente(puerto) {
     ws.on('error', fallo);
   });
 }
-const pausa = (ms) => new Promise(r => setTimeout(r, ms));
+const pausa = (ms) => new Promise(r => setTimeout(r, ms / RELOJ));   // en ms del reloj (acelerado): RELOJ veces menos de verdad
 const r2 = v => Math.round(v * 100) / 100;
 
 // Las zonas del rey (valravnx, 4 nov; src/logica/zonas_rey.js): la de la salida no se reclama, así que pone su tierra
@@ -118,7 +131,7 @@ const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));
 let s = null;
 try {
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
+  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, ticoNecesidades: 1000 / RELOJ });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
   const puerto = await s.listo, J = await cliente(puerto);
   console.log('0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey');
   comprobar('llega sin posición: aún no ha elegido', J.bienvenida.posicion === null, JSON.stringify(J.bienvenida.posicion));
@@ -438,7 +451,7 @@ try {
     r = await J.objeto({ tipo: 'recoger_fabricado', estacion: pt.id, x: J.pos.x, z: J.pos.z });
     comprobar('y la coge: lleva un cuchillo de sílex', r.ok && J.cuantos('lasca_silex') === 1, r.motivo || enMano());
     r = await recoger(de('juncos')[0]);
-    comprobar('con la lasca, corta un haz de juncos', r.ok && J.cuantos('junco') === 1, r.motivo || enMano());
+    comprobar('con la lasca, corta de 1 a 3 haces de juncos (valravnx, 8 nov: al azar)', r.ok && J.cuantos('junco') >= 1 && J.cuantos('junco') <= 3, r.motivo || enMano());
     await aSusPies('junco');
     r = await recoger(de('yesquero')[0]);
     comprobar('y coge yesca de los hongos yesqueros de un tocón, con las manos', r.ok && J.cuantos('yesca') >= 1, r.motivo || enMano());

@@ -87,6 +87,7 @@ paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, espe
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
+paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs
 paso "Las zonas en el mapa del rey y tu tierra" node pruebas/prueba_mapa_zonas.mjs
 paso "Las zonas del rey: veta marcada, ciudad y salida no se reclaman" node pruebas/prueba_zonas_rey.mjs
 paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs
