@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2475 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2981 KB
+
+== Construir demo única
+      3090 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4207 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2878 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2469 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2991 KB
+dist/kinhold_trozos.html 2483 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Recorrido de jugador: uno nuevo, sin arcón y con lo que recoge, de principio a fin
+
+Todavía no se puede (sin el arcón): la resina — los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs
+
+210 bien, 0 mal
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 917 s
