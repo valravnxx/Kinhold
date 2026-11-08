@@ -756,6 +756,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (Number.isFinite(e.y)) n.y = e.y;
       if (Number.isFinite(e.giro)) n.giro = e.giro;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
+      if (Array.isArray(e.ligadas)) n.ligadas = e.ligadas.filter(a => typeof a === 'string');   // las camas: quién la tiene ligada
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)
       if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: (e.fuego.encendida || e.fuego.brasas) && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,
         combustible: Math.max(0, Number(e.fuego.combustible) || 0), cenizas: !!e.fuego.cenizas, ...(e.fuego.brasas ? { brasas: true } : {}) };

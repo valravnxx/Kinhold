@@ -128,6 +128,9 @@ with sync_playwright() as p:
         av = usar_delante(pg, ref)
         mio = ev(f"(Object.values({K}.fabCliente.estaciones).find(x => x.tipo === 'refugio_ramas').ligadas || []).length")
         comprobar(f'{nombre}: con Usar delante del refugio, lo liga', mio == 1 and 'tu cama' in av, av)
+        # en línea las estaciones llegan del servidor (estacionesV.poner): quién la tiene ligada tiene que llegar también
+        ev(f"{K}.estacionesV.poner(JSON.parse(JSON.stringify(Object.values({K}.fabCliente.estaciones))))")
+        comprobar(f'{nombre}: lo ligado sigue al volver a ponerle las estaciones (como llegan del servidor)', ev(f"(Object.values({K}.fabCliente.estaciones).find(x => x.tipo === 'refugio_ramas').ligadas || []).length") == 1)
         av = usar_delante(pg, ref)
         pg.wait_for_timeout(2500)
         dorm = ev(f"({{ d: !!{K}.estado.durmiendo, j: {K}.jugador.durmiendo, modo: {K}.jugador.modo, x: {K}.pj.x, z: {K}.pj.z }})")

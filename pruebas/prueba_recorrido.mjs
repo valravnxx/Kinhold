@@ -1114,6 +1114,7 @@ try {
     comprobar('sin ligarlo, no duerme en él', !r.ok && /ligada/.test(r.motivo || ''), r.motivo);
     r = await J.objeto({ tipo: 'ligar_cama', estacion: refugio, x: J.pos.x, z: J.pos.z });
     comprobar('lo liga: ya es su cama (donde reaparecerá)', r.ok && s.objetos.fab.camaDe(yo) === refugio, r.motivo);
+    comprobar('y lo que reparte el servidor de las estaciones dice que es la suya (el navegador lo mira para dormir)', (s.objetos.estacionesVisibles().find(e => e.id === refugio)?.ligadas || []).includes(yo));
     J.estar(S.x, S.z); await pausa(1500);
     const c0 = J.nec.cansancio;
     r = await J.objeto({ tipo: 'dormir', estacion: refugio, x: J.pos.x, z: J.pos.z });
