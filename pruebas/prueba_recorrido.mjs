@@ -758,19 +758,20 @@ try {
     if ((await recoger(barro)).ok) cavadas++;
     comprobar('cava 4 cestas de barro (3 las deja a sus pies: con el palo en una mano, en la otra le caben 3)', cavadas === 4 && J.cuantos('barro') === 1, `${cavadas} · ${enMano()}`);
     await J.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J.pos.x, z: J.pos.z });   // el palo se queda en la orilla
-    // los juncos, con la lasca del cinturón, al fardo
+    // los juncos, con la lasca del cinturón, al fardo (cada corte da de 1 a 3 haces: valravnx, 8 nov), hasta llevar 3
+    const enFardo = () => (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
     let cortados = 0;
     const noCorta = [];
     for (const p of libres(ribera, 'juncos')) {
-      if (cortados >= 3) break;
+      if (enFardo() >= 3) break;
       const c = await coger(p);
       if (!c.ok) { noCorta.push(c.motivo); continue; }
       cortados++;
       const lj = manos.find(l => J.inv.lugares[l]?.tipo === 'junco');
-      if (lj) { const hueco = [0, 1, 2, 3].find(n => !J.inv.lugares.espalda?.dentro?.[n] || (J.inv.lugares.espalda.dentro[n].tipo === 'junco' && J.inv.lugares.espalda.dentro[n].n < 3)); await J.objeto({ tipo: 'mover', de: lj, a: `espalda/${hueco}` }); }
+      const hueco = [0, 1, 2, 3].find(n => !J.inv.lugares.espalda?.dentro?.[n]);
+      if (lj && hueco !== undefined) await J.objeto({ tipo: 'mover', de: lj, a: `espalda/${hueco}` });
     }
-    const enFardo = (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
-    comprobar('corta 3 haces de juncos con la lasca del cinturón y los mete en el fardo', cortados === 3 && enFardo === 3, `${cortados} · en el fardo ${enFardo} · ${enMano()} · ${libres(ribera, 'juncos').length} sin probar · no corta: ${[...new Set(noCorta)].join(' | ')}`);
+    comprobar('corta juncos con la lasca del cinturón y los mete en el fardo: lleva al menos 3 haces', enFardo() >= 3 && !manos.some(l => J.inv.lugares[l]?.tipo === 'junco'), `${cortados} cortes · en el fardo ${enFardo()} · ${enMano()} · ${libres(ribera, 'juncos').length} sin probar · no corta: ${[...new Set(noCorta)].join(' | ')}`);
     const mb = enSuelo('barro', montonBarro, 2)[0];
     if (mb) await J.andar(mb.x + 0.4, mb.z);
     r = mb ? await J.objeto({ tipo: 'coger_suelo', objeto: mb.id, cantidad: 3, a: 'mano:izq', x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no está el barro' };
@@ -886,7 +887,7 @@ try {
     }
     const jg = enSuelo('junco', juncoGuardado, 2)[0];
     if (jg) { await J.andar(jg.x + 0.4, jg.z); await J.objeto({ tipo: 'coger_suelo', objeto: jg.id, cantidad: 1, a: 'mano:izq', x: J.pos.x, z: J.pos.z }); }
-    comprobar('lleva 2 varas y 4 haces de juncos (1 en la mano y 3 en el fardo)', J.cuantos('vara') === 2 && J.cuantos('junco') === 4, enMano());
+    comprobar('lleva 2 varas y al menos 4 haces de juncos (en la mano y en el fardo)', J.cuantos('vara') === 2 && J.cuantos('junco') >= 4, `${enMano()} · ${J.cuantos('junco')} haces`);
     r = await entregar(tejado, 'vara', 2);
     comprobar('desde el suelo no se lo puede dar: el tejado está en la planta de arriba', !r.ok && /andamio/.test(r.motivo || ''), r.motivo);
     // sube por el andamio: de pie en lo alto, en la planta 1 de su casa
@@ -896,7 +897,7 @@ try {
     await pausa(300);
     const subido = (await J.accion({ tipo: 'entregar', construccion: casa.id, clave: tejado.clave, material: 'vara', cantidad: 2, desde: 1 }));
     const rj = await J.accion({ tipo: 'entregar', construccion: casa.id, clave: tejado.clave, material: 'junco', cantidad: 4, desde: 1 });
-    comprobar('sube al andamio y desde arriba le da al tejado sus 2 varas y sus 4 haces de juncos', subido.ok && rj.ok && falta(tejado, 'vara') === 0 && falta(tejado, 'junco') === 0 && J.cuantos('junco') === 0, `${subido.motivo || ''} ${rj.motivo || ''}`);
+    comprobar('sube al andamio y desde arriba le da al tejado sus 2 varas y sus 4 haces de juncos', subido.ok && rj.ok && falta(tejado, 'vara') === 0 && falta(tejado, 'junco') === 0, `${subido.motivo || ''} ${rj.motivo || ''}`);
     let tt = { ok: true }, nt = 0;
     for (; nt < 400 && tt.ok && obra(tejado); nt++) tt = await J.accion({ tipo: 'trabajar', construccion: casa.id, clave: tejado.clave, segundos: 5 });
     comprobar('lo trabaja desde el andamio: la casa ya tiene techo', terminada(tejado) && s.mundo.bajoTecho(C.x, C.z), `${nt} ratos ${tt.motivo || ''}`);
