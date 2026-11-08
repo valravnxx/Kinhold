@@ -1,0 +1,14 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: mientras está, se le ve y sin símbolo
+  FALLA pc: al cortarse, el símbolo de desconectado sale encima de él — [3, 0.7821722091305616, -5, True]
+  OK   pc: y no desaparece: se queda donde estaba
+  FALLA pc: sin errores en la página — Unexpected end of input
+Vista movil
+  OK   movil: en línea
+  FALLA movil: mientras está, se le ve y sin símbolo
+  FALLA movil: al cortarse, el símbolo de desconectado sale encima de él — [3, 0.7821722091305616, -5, True]
+  OK   movil: y no desaparece: se queda donde estaba
+  FALLA movil: sin errores en la página — Unexpected end of input
+
+5 fallos: pc: al cortarse, el símbolo de desconectado sale encima de él; pc: sin errores en la página; movil: mientras está, se le ve y sin símbolo; movil: al cortarse, el símbolo de desconectado sale encima de él; movil: sin errores en la página
