@@ -120,7 +120,7 @@ console.log('El hogar de la casa: solo dentro, más duradero y en brasas');
   inv.meterDonde('rama', 1);
   fab.depositar('ana', id, inv.rutasCon('rama')[0], 1, yo, inv);
   r = fab.fabricar('ana', 'lanza_endurecida', id, yo, inv, null, T0 + 6 * MIN);
-  comprobar('con brasas no se fabrica (hace falta llama)', !r.ok && /apagado/.test(r.motivo), r.motivo);
+  comprobar('con brasas no se fabrica (hace falta llama)', !r.ok && /brasas/.test(r.motivo), r.motivo);
   comprobar('las brasas calientan la mitad', Math.abs(calorEn([{ x: 0, z: 0, fuego: e.fuego }], 0, 0, T0 + 6 * MIN) - 0.5) < 1e-9);
   comprobar('mientras hay brasas no se desmonta', !fab.desmontarEstacion('ana', id, yo, null, T0 + 6 * MIN).ok);
   const guard = new Fabricacion().importar(JSON.parse(JSON.stringify(fab.exportar())));

@@ -568,7 +568,7 @@ export class Fabricacion {
         e = this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
         if (!e) return { ok: false, motivo: `Hace falta ${conQue(rc.uso)} a tu lado.` };
       }
-      if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
+      if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: estadoFuego(e.fuego, ahora).brasas ? 'Está en brasas: avívalo para que vuelva la llama.' : 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
       cola = e.cola; max = COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);

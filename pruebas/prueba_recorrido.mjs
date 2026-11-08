@@ -940,7 +940,8 @@ try {
     console.log('16j. Levanta el hogar dentro de su casa con piedras y barro, lo enciende, lo deja en brasas y lo aviva sin yesca');
     const sitioHogar = { x: r2(C.x + 0.3), z: r2(C.z + 0.2) };
     await soltarManos();
-    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hogar', x: C.x + 6, z: C.z });
+    await J.andar(C.x + 6, C.z);
+    r = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hogar', x: C.x + 6.8, z: C.z });
     comprobar('fuera de la casa no puede poner el hogar', !r.ok && /dentro/.test(r.motivo || ''), r.motivo);
     await J.andar(C.x, C.z);
     const rh = await J.objeto({ tipo: 'colocar_estacion', estacion: 'hogar', x: sitioHogar.x, z: sitioHogar.z });

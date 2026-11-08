@@ -168,8 +168,8 @@ try:
         A.evaluate(f"{K}.cambiarModo('construir')"); A.wait_for_timeout(200)
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
-        comprobar('la pestaña «Puestos de trabajo», con los tres puestos, lo que piden y dónde van', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and len(menu) == 3 and any('Piedra de tallar' in m and '1 piedra' in m for m in menu) and any('Hoguera' in m and 'solo fuera' in m for m in menu), str(menu))
+        comprobar('la pestaña «Puestos de trabajo», con los cuatro puestos (el hogar, 8 nov), lo que piden y dónde van', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and len(menu) == 4 and any('Piedra de tallar' in m and '1 piedra' in m for m in menu) and any('Hoguera' in m and 'solo fuera' in m for m in menu) and any('Hogar' in m and 'solo dentro' in m for m in menu), str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
@@ -277,7 +277,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 3 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 4 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 

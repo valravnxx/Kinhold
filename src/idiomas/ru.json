@@ -2395,5 +2395,6 @@
  "No está encendido.": "Он не горит.",
  "Ya está en brasas.": "Он уже на углях.",
  "No está en brasas.": "Он не на углях.",
- "Está en brasas: avívalo.": "Он на углях: раздуй его."
+ "Está en brasas: avívalo.": "Он на углях: раздуй его.",
+ "Está en brasas: avívalo para que vuelva la llama.": "Он на углях: раздуй его, чтобы вернулось пламя."
 }

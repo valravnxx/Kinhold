@@ -94,6 +94,8 @@ with sync_playwright() as p:
         print(f'{nombre}: la casa y su hogar')
         pg, err = entrar(nav, vista, movil)
         ev = pg.evaluate
+        ev(f"{K}.llevarPara('mojon', 'mojon'); {K}.cambiarModo('construir'); {K}.seleccionar('mojon', 'mojon'); {K}.apuntar({OX - 3}, {OZ - 3}); {K}.colocar()")
+        comprobar(f'{nombre}: su mojón (para construir la casa)', ev(f'!!{K}.miMojon'))
         r = ev(CASA)
         comprobar(f'{nombre}: la casa de 3×3 con muros y tejado', not r['fallos'], json.dumps(r, ensure_ascii=False)[:200])
         fuera = poner(pg, 'hogar', OX - 2.0, OZ + 3.0)
