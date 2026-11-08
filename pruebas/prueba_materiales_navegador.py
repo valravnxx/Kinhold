@@ -25,7 +25,7 @@ class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=0&lang=es'
+BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=184596,46280&lang=es'   # (la salida en línea: las coordenadas de abajo son de su escena)
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 MIMBRERA = (-12, -850)   # (escena) la mimbrera más cercana a la salida, en la ribera del río del sur (mirado con la lógica)
