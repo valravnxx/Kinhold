@@ -1253,7 +1253,7 @@
    "num": "P3",
    "nombre": "De nada a una casa (fabricar y la casa humilde)",
    "jugable": "Un jugador nuevo, sin nada, fabrica sus herramientas de piedra con lo que recoge, tala árboles jóvenes, acopia troncos, piedras, varas, juncos y barro en su tierra, levanta una casa humilde de una planta con su hogar dentro y llega al banco de tronco, la entrada al tier 1. Sin arcón.",
-   "estado": "revision",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD y del documento de sistemas",
