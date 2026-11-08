@@ -1430,7 +1430,9 @@
     },
     {
      "nombre": "Origen de la piel, el mimbre, la resina y la corteza (lo piden recetas de este tramo y aún no salen de ningún sitio: honda, odre, cestas, nasa, yesca de corteza, antorcha con resina; pruebas/prueba_origenes.mjs): sacarlos del mundo o quitar esas recetas del tramo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T16:54:16+00:00",
+     "rama": "trabajo/20261108-1654"
     },
     {
      "nombre": "Revisión completa y publicación",

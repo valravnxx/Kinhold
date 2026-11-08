@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-08T16:54:16+00:00",
+  "tarea": "Origen de la piel, el mimbre, la resina y la corteza (lo piden recetas de este tramo y aún no salen de ningún sitio: honda, odre, cestas, nasa, yesca de corteza, antorcha con resina; pruebas/prueba_origenes.mjs): sacarlos del mundo o quitar esas recetas del tramo",
+  "hito": "crafting",
+  "rama": "trabajo/20261108-1654"
+ },
  "B": {
   "inicio": "2026-11-08T16:59:03+01:00",
   "tarea": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
