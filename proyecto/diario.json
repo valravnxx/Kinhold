@@ -5311,7 +5311,7 @@
  {
   "inicio": "2026-11-07T18:43:47+01:00",
   "fin": "2026-11-08T10:09:58+01:00",
-  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v151)",
+  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v152)",
   "hito": "interfaz",
   "hecho": [
    "La barra de abajo, nueva: tus dos manos con la imagen de lo que llevas en cada una (1 y 2) y su botón de soltar; el hombro solo cuando cargas algo, y entonces las manos se apagan; el hueco del cinto con su arma (C; tócalo para cogerla con la mano libre); y la carga en una raya debajo. Fuera la línea «En la mano».",
@@ -5320,7 +5320,7 @@
    "En el móvil, la barra empieza a la derecha del joystick, sin tocarlo, y con huecos más pequeños; el aviso de confirmar y el estado del combate suben para no quedar debajo de ella."
   ],
   "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea) después de unir main: todo bien menos «la web» (la página no estaba regenerada tras unir; regenerada, pasa) y el combate con lag simulado de la lógica, que pasa repetido aquí (81/81). Antes, «la demo en el mundo» falló una vez por 3,6 ms (un fotograma de 63,6 ms en la nube) y pasó repetida. La prueba nueva de la barra (con MUTAR_BARRA=1 falla) y la de las imágenes y el kit (447/447; con MUTAR=6 falla). Capturas de cerca de la barra en PC y móvil (con las manos llenas, con algo al hombro y sin nada), miradas ampliadas.",
-  "capturas": "capturas/demo-v151",
+  "capturas": "capturas/demo-v152",
   "estado": "ok"
  },
  {
@@ -5481,6 +5481,23 @@
   ],
   "pruebas": "Batería entera en la nube: 40 de 41 (falla «entrar con la cuenta», igual en main); después de unir main, construcción otra vez en la nube y la lógica aquí. Modelos 184/184 (con MUTAR=1, el hueco de la puerta de barro falla)",
   "capturas": "capturas/demo-v150",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T08:08:57+00:00",
+  "fin": "2026-11-08T11:16:32+00:00",
+  "titulo": "Colgaderos de mochilas y de herramientas, de dentro y en el muro (demo v151)",
+  "hito": "crafting",
+  "hecho": [
+   "Dos almacenajes nuevos de dentro (valravnx, 8 nov), en la pestaña «Almacenajes» de Construir: el colgadero de herramientas y el de mochilas, con sus modelos de varas, estaquillas y cordel, en el estilo v5.",
+   "El de herramientas: dos listones de vara contra el muro y, arriba, dos varas con una ranura; el mango cae por ella y la cabeza se queda encima, como en los colgaderos de siempre (y como el de los juegos del género: una barra en el muro con cada herramienta a la vista). Le caben 8.",
+   "El de mochilas: un riel de medio tronco con cuatro estaquillas inclinadas; lo de la espalda cuelga vacío, cada uno de la suya por una correa. Lo que llevas a la espalda se cuelga tal cual desde el panel y, al sacarlo, vuelve a la espalda si la tienes libre.",
+   "Van en un muro lleno de la planta baja (sin puerta ni ventana) y solo dentro: al ponerlos, el marco se pega a la cara del muro más cercano, mirando a la habitación. El servidor lo comprueba con el mismo muro más cercano y guarda el sitio y el giro.",
+   "Provisional: 3 varas y 2 cordeles (herramientas); 2 varas, 4 ramas y 2 cordeles (mochilas). Imágenes del panel nuevas en iconos-v9 (la rama de la interfaz ya usa iconos-v8: al unirla habrá que sacar las imágenes con los colgaderos).",
+   "El recorrido de jugador no se amplía con esto: lo está cambiando el carril A con la casa humilde (rama trabajo/20261108-0523); los colgaderos piden su casa terminada."
+  ],
+  "pruebas": "En la nube, la batería entera sobre la rama (43 grupos): bien salvo la pestaña de almacenajes (lista de la prueba al día), la web (faltaba una traducción) y un fotograma lento en la demo en el mundo; repetidos tras unir main: lógica de construcción, panel de fabricar, almacenajes, colgaderos (nueva, rota a propósito con MUTAR=1), web, demo en el mundo y demo única, bien. En lógica falla a veces «lo que no se puede se rechaza al que lo manda» de la prueba de combate en el servidor: aquí, 2 de 6 en main y 2 de 6 en la rama; no toca nada de esto.",
+  "capturas": "capturas/demo-v151",
   "estado": "ok"
  }
 ]
