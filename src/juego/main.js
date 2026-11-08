@@ -13,7 +13,7 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
-import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC } from '../logica/necesidades.js';
+import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
@@ -1535,6 +1535,8 @@ function usar() {
       empezarTala(a); return;
     }
     if (aguaAlLado()) { beber(); return; }   // junto al agua, sin otra cosa que usar, se bebe
+    // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
+    if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { comer(comidaQueLlevas()[0]); return; }
     mostrarAviso(t('nadaQueUsar')); return;
   }
   usarInteractivo(it);
@@ -1580,6 +1582,8 @@ function opcionesUsar() {
     const verbo = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verbo(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
+  // lo que llevas de comer (P4)
+  for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
   if (aguaAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
@@ -1696,6 +1700,22 @@ function beber() {
   if (!aguaAlLado()) { mostrarAviso(tr('Aquí no hay agua: busca un río, un lago o el mar.'), true); return; }
   if (necesidades) { necesidades = saciarNecesidad(necesidades, 'sed', TRAGO); avisosNec.pintar(necesidades); }
   mostrarAviso(tr('Bebes agua con las manos.'));
+}
+// Comer (P4): una unidad de lo que llevas (bayas, setas…). En línea, por el servidor; sin servidor (pruebas), aquí.
+const comidaQueLlevas = () => Object.keys(NUTRE).filter(t => inventario().cuantos(t) > 0);
+function comer(tipo) {
+  if (objetosRed) {
+    objetosRed.mandar({ tipo: 'comer', objeto: tipo }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Comes: {c}.', { c: tr(CATALOGO[tipo].nombre).toLowerCase() }));
+    });
+    return;
+  }
+  const r = inventario().gastar(tipo, 1);
+  if (!r.ok) { mostrarAviso(tr('No llevas nada de eso.'), true); return; }
+  if (necesidades) { necesidades = saciarNecesidad(necesidades, 'hambre', NUTRE[tipo]); avisosNec.pintar(necesidades); }
+  panelInventario.pintar(); pintarLlevas(); vestir();
+  mostrarAviso(tr('Comes: {c}.', { c: tr(CATALOGO[tipo].nombre).toLowerCase() }));
 }
 function recoger(punto) {
   if (objetosRed) { // en línea lo recoge el servidor (el punto, como lo ve este navegador: decisión provisional)
@@ -2427,7 +2447,7 @@ $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
-const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta),
+const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta), comer: (t) => comer(t), comestible,
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => (hayArcon() ? mundo.materiales : null), hayArcon,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
@@ -2750,7 +2770,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
-  beber, aguaAlLado,
+  beber, aguaAlLado, comer,
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado

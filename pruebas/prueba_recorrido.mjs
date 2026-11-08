@@ -8,7 +8,7 @@
 // ella), tala con ella un árbol joven (tronco delgado y varas), se echa el tronco al hombro y levanta con él un poste;
 // va al río a por barro, juncos y yesca, se hace un taladro de fuego, y levanta y enciende una hoguera en la orilla.
 // Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas; lejos del agua no puede beber, y en la
-// orilla del río bebe con las manos, trago a trago.
+// orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -579,6 +579,24 @@ try {
       comprobar('una piedra, en el fardo no', !r.ok, r.motivo);
     }
   }
+  }
+
+  // P4, comer: el arbusto de bayas más cercano (lo que se recoge alrededor de donde está), coge las bayas con las
+  // manos y se come una; el arbusto ya no da más hasta que vuelvan
+  {
+    const aqui = { x0: O.x + J.pos.x - 150, z0: O.z + J.pos.z - 150, x1: O.x + J.pos.x + 150, z1: O.z + J.pos.z + 150 };
+    const matas = cerca(recogidaEn(T.paisaje, T.alt, T.semilla, aqui).filter(p => p.tipo === 'bayas').map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) })), J.pos);
+    comprobar('hay un arbusto de bayas a menos de 150 m', matas.length > 0, `${matas.length}`);
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    let r = await recoger(matas[0]);
+    comprobar('coge las bayas del arbusto con las manos (de 3 a 6)', r.ok && J.cuantos('bayas') >= 3 && J.cuantos('bayas') <= 6, r.motivo || `${J.cuantos('bayas')} bayas`);
+    comprobar('y el arbusto ya no tiene bayas', !s.objetos.recoleccion.disponible(matas[0].id, Date.now()));
+    r = await recoger(matas[0]);
+    comprobar('otra vez, no', !r.ok, r.motivo);
+    const hambreAntes = J.nec.hambre, n0 = J.cuantos('bayas');
+    r = await J.objeto({ tipo: 'comer', objeto: 'bayas' });
+    await pausa(300);
+    comprobar('se come una: el hambre baja y le queda una menos', r.ok && J.nec.hambre < hambreAntes && J.cuantos('bayas') === n0 - 1, `${r.motivo || ''} hambre ${hambreAntes} → ${J.nec.hambre}, bayas ${n0} → ${J.cuantos('bayas')}`);
   }
 
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de

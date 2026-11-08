@@ -113,6 +113,11 @@ export function hayAguaCerca(aguaEn, x, z) {
   return false;
 }
 
+// Comer (P4): lo que se come y cuánta hambre quita cada uno (decisión provisional; el documento solo dice que lo
+// cocinado sacia más). Una mata de bayas da de 3 a 6: entre 15 y 30 puntos.
+export const NUTRE = { bayas: 5, setas: 7 };
+export const comestible = (tipo) => Object.prototype.hasOwnProperty.call(NUTRE, tipo);
+
 // los círculos que salen ahora: [{ que, fuerte }]
 export function avisos(n) {
   return NECESIDADES.filter(k => n[k] >= AVISO).map(k => ({ que: k, fuerte: n[k] >= FUERTE }));

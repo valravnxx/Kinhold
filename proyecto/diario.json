@@ -5368,5 +5368,23 @@
   "pruebas": "Batería entera en la nube, 41 de 41 (94 min); después de unir main, otra vez fabricación, hoguera, almacenajes y rastra en la nube, y lógica y recorrido de jugador aquí (111/111). La prueba de fabricación, 153/153 (con MUTAR=3, 4 fallan)",
   "capturas": "capturas/demo-v145",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T21:26:16+01:00",
+  "fin": "2026-11-08T02:02:27+01:00",
+  "titulo": "P4: comer bayas y setas (chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "En el bosque y en los claros, arbustos de bayas (valravnx, 7 nov: «que los arbustos que tengan bayas se vean claramente, y al recolectarlas estas desaparezcan del mismo»): una mata redonda de 1,1 m, más grande que las de adorno, con cañas pardo rojizo y racimos de bayas rojas y negro moradas por toda la cara de fuera. Las bayas son otra malla: al cogerlas desaparecen y el arbusto se queda; vuelven con la estación.",
+   "En el bosque, corros de setas de pie gordo (de 9 a 22 cm, grandes para que se vean entre la hierba); al cogerlas se van enteras.",
+   "Con las manos, «Usar» coge de 3 a 6 bayas o setas. Comer, por el servidor y con su autor: «Comer uno» en el panel de lo que llevas, «Comer: bayas» en el menú del clic derecho y, con hambre, «Usar» come si no hay otra cosa al lado. Cada baya quita 5 de hambre y cada seta 7.",
+   "Las bayas y las setas, con su modelo en el suelo y su icono (iconos v6).",
+   "Las bayas de la mata, ligeras: unos 4600 triángulos por mata (la primera versión tenía 27 000; medido en la página).",
+   "Pruebas: prueba_necesidades (comer: sin bayas no, una baya baja el hambre 5 y gasta una, una piedra no se come); el recorrido de jugador busca un arbusto de bayas, las coge, ya no se pueden volver a coger y se come una; prueba nueva de navegador de las bayas y las setas en PC y móvil (se ven el arbusto y sus bayas, con rojo de baya en la captura; al cogerlas se van las bayas y queda el arbusto; con hambre, «Usar» come; las setas se van enteras), rota a propósito quitando «siempre» al arbusto: falla.",
+   "Decisión provisional (registro de la demo): lo que quita cada cosa; todas las setas son buenas (aún no hay venenosas); sin animación de comer. No comprobado en una tarjeta gráfica de verdad."
+  ],
+  "pruebas": "Batería entera en la nube correcta tras unir main (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea",
+  "capturas": "capturas/demo-v146",
+  "estado": "ok"
  }
 ]

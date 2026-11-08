@@ -25,6 +25,8 @@
 //  - bandolera (7 nov): la bolsa de cuero con su tapa y la correa larga tirada en un arco.
 //  - taladro de fuego (7 nov): el arco con su cordel, el huso de punta tostada, la tabla con muescas quemadas y la
 //    piedra de apoyo.
+//  - bayas (P4): un puñado de bayas rojas y negro morado sobre una hoja ancha, con alguna ramita de su mata.
+//  - setas (P4): tres setas de sombrero pardo y pie crema, una tumbada, como recién cogidas.
 //  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
 //    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
@@ -36,6 +38,7 @@ import { cajaR } from '../mundo/modelos.js';
 const FIBRA = 0xb3a77f, CORDEL = 0x9c8a60, CUERDA = 0x86714c, JUNCO = 0x7f8a4c, JUNCO_PUNTA = 0xa59a62, MIMBRE = 0xb39a6c;
 const TOSTADO = 0x2f2620, LIBER = 0xb49a74, YESQUERO = 0x6e6152, YESCA_CORTE = 0xa58a62, YESCA_FIBRA = 0xc2b48a;
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_PELO = 0x7d6346, AMBAR = 0x8a561d, AMBAR_CLARO = 0xa36d2a;
+const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, HOJA_BAYA = 0x3f5a2e, SETA = 0x8c5a32, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const lote = (rango = 0.05) => new Lote({ rangoSuelo: rango, variacion: 0.06 });
@@ -124,6 +127,36 @@ function yesca(n, id) {
     const c = v3(0.07 + Math.cos(a) * d, y, Math.sin(a) * d);
     L.add(tubo([c.clone().add(v3(-0.03, 0, -0.01)), c.clone().add(v3(0, 0.01, 0.02 * Math.sin(a))), c.clone().add(v3(0.03, -0.004, 0.01))], 0.002, 3), i % 3 ? YESCA_FIBRA : FIBRA, 0, 0, 0, { y: a }, { tex: 'liso', sinSuelo: i > 8 });
   }
+  return mallas(L);
+}
+
+function bayas(n, id) {
+  const L = lote(0.03);
+  // la hoja ancha, algo abarquillada, y encima el montón de bayas (más con más)
+  const hoja = new THREE.CircleGeometry(0.075, 10); hoja.rotateX(-Math.PI / 2); hoja.scale(1.5, 1, 1);
+  const p = hoja.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, (p.getX(i) ** 2 + p.getZ(i) ** 2) * 1.6);
+  L.add(hoja, HOJA_BAYA, 0, 0.003, 0, { y: az(id, 1) }, { tex: 'liso' });
+  const k = Math.min(16, 7 + (n || 1) * 2);
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399, d = 0.012 + Math.sqrt(i / k) * 0.05, y = 0.018 + (i < k / 3 ? 0.02 : 0);
+    L.add(new THREE.IcosahedronGeometry(0.014, 1), i % 3 ? BAYA_ROJA : BAYA_NEGRA, Math.cos(a) * d * 1.3, y, Math.sin(a) * d, null, { tex: 'liso', sinSuelo: true, brillo: 1.15 });
+  }
+  L.add(cil(0.002, 0.003, 0.09, 4), 0x6e3a2c, 0.04, 0.03, 0.03, { z: 1.2, y: 0.5 }, { tex: 'corteza', sinSuelo: true });
+  return mallas(L);
+}
+function setas(n, id) {
+  const L = lote(0.03);
+  const seta = (x, z, h, r, inclX, inclZ, g) => {
+    const m = new THREE.Matrix4().makeRotationY(g).multiply(new THREE.Matrix4().makeRotationX(inclX)).multiply(new THREE.Matrix4().makeRotationZ(inclZ));
+    L.add(cil(r * 0.32, r * 0.42, h, 7), SETA_PIE, x, h / 2, z, m, { tex: 'liso' });
+    const somb = new THREE.SphereGeometry(r, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); somb.scale(1, 0.62, 1); somb.translate(0, h, 0);
+    L.add(somb, SETA, x, 0, z, m, { tex: 'liso', sinSuelo: true });
+    const lam = new THREE.CircleGeometry(r * 0.97, 12); lam.rotateX(Math.PI / 2); lam.translate(0, h + 0.001, 0);
+    L.add(lam, SETA_LAMINAS, x, 0, z, m, { tex: 'liso', sinSuelo: true });
+  };
+  seta(-0.03, 0, 0.07, 0.045, 0.08, 0, az(id, 1));
+  seta(0.05, 0.03, 0.055, 0.036, -0.1, 0.12, az(id, 2) * 3);
+  seta(0.01, -0.06, 0.06, 0.04, Math.PI / 2 - 0.15, 0, az(id, 3) * 6);   // la tumbada
   return mallas(L);
 }
 
@@ -345,7 +378,7 @@ function bandolera(n, id) {
 
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
-  fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
+  fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
