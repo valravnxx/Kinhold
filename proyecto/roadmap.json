@@ -1727,9 +1727,9 @@
     },
     {
      "nombre": "Pruebas rápidas (valravnx, 8 nov: «solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas»): cada cambio pasa solo lo esencial y los grupos de lo que toca; la batería entera, al llevar un hito a revisión. El recorrido de jugador, con el reloj acelerado; fuera de las máquinas de pruebas lo que no prueba nada",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T11:50:47+00:00",
-     "rama": "trabajo/20261108-1205-pruebas-rapidas"
+     "fin": "2026-11-08T13:02:24+00:00"
     }
    ]
   },
