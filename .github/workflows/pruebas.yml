@@ -156,21 +156,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Borrar ramas de pruebas viejas (más de 3 horas; al final, para no retrasar las pruebas)
+      - name: Borrar ramas de pruebas viejas (más de 3 horas; la hora sale del nombre, unos segundos)
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          limite=$(( $(date +%s) - 3 * 3600 ))
-          for prefijo in nube nube-pedido pc-pedido; do
-            gh api "repos/${{ github.repository }}/git/matching-refs/heads/$prefijo/" --jq '.[] | "\(.ref) \(.object.sha)"' | while read -r ref sha; do
-              [ "$ref" = "refs/heads/${{ github.ref_name }}" ] && continue
-              fecha=$(gh api "repos/${{ github.repository }}/commits/$sha" --jq .commit.committer.date) || continue
-              if [ "$(date -d "$fecha" +%s)" -lt "$limite" ]; then gh api -X DELETE "repos/${{ github.repository }}/git/${ref#refs/}" && echo "borrada $ref"; fi
-            done
-          done
-          true
+        run: node herramientas/limpiar_ramas.mjs "${{ github.ref_name }}"
       - name: Borrar la rama del pedido
         env:
           GH_TOKEN: ${{ github.token }}

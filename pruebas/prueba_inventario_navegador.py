@@ -6,7 +6,7 @@
 # el móvil se toca y el panel va a pantalla completa. Comprueba lo que queda en la lógica (inventario con autor) y saca
 # capturas.
 # Uso: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html <carpeta>
-# MUTAR=1 quita a propósito los huecos del cinturón en la página: tiene que fallar. MUTAR_RETRATO=1 impide dibujar el
+# MUTAR_BARRA=1 deja la barra de abajo sin imágenes (tiene que fallar la de la barra). MUTAR=1 quita a propósito los huecos del cinturón en la página: tiene que fallar. MUTAR_RETRATO=1 impide dibujar el
 # retrato (tiene que fallar la del retrato). MUTAR_QUITAR=1 hace que la lógica no deje quitarse nada (tienen que fallar
 # las de quitarse a las manos).
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
@@ -24,6 +24,10 @@ shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), 
 import re as _re
 _ICONOS = _re.search(r"CARPETA_ICONOS = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()).group(1)
 shutil.copytree(os.path.join(RAIZ, 'docs', _ICONOS), f'{sitio}/{_ICONOS}')  # las imágenes de cada cosa
+# las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
+import re as _rk
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+    if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
@@ -47,6 +51,7 @@ def abrir_pagina(nav, **ctx):
     pg.evaluate(f'localStorage.clear(); {K}.reiniciar()')
     if os.environ.get('MUTAR'): pg.evaluate(f'{K}.inventario.huecosCintura = () => []')
     if os.environ.get('MUTAR_RETRATO'): pg.evaluate(f'{K}.renderer.getPixelRatio = () => 100')
+    if os.environ.get('MUTAR_BARRA'): pg.evaluate('window.__sinImagenes = true')
     pg.wait_for_timeout(500)
     return pg, errores
 
@@ -111,6 +116,13 @@ with sync_playwright() as p:
     comprobar('el hacha se ve en la mano del personaje', pg.evaluate(f'!!({K}.jugador.hacha && {K}.jugador.hachaEnMano)'))
     llevas = pg.inner_text('#llevas')
     comprobar('abajo se ve lo que llevas en la mano y al hombro', pg.is_visible('#llevas') and 'Hacha de mano' in llevas and 'Odre' in llevas, llevas)
+    # la barra de abajo (estudio de la interfaz, 7 nov): cada cosa con su imagen en su hueco, las manos y el hombro, y
+    # cada una con su botón de soltar; el hueco con el kit renderizado (se ha cargado de verdad)
+    barra = pg.evaluate('''(() => { const l = document.getElementById('llevas');
+      const imgs = [...l.querySelectorAll('.hu > img')].filter(i => i.complete && i.naturalWidth > 0).length;
+      const fondo = getComputedStyle(l.querySelector('.hu')).backgroundImage;
+      return { huecos: l.querySelectorAll('.hu').length, imgs, soltar: l.querySelectorAll('[data-soltar]').length, hombro: !!l.querySelector('.hu.hombro'), fondo }; })()''')
+    comprobar('la barra de abajo: las dos manos, el hombro y el cinto, cada cosa con su imagen y su botón de soltar', barra['huecos'] >= 4 and barra['imgs'] >= 3 and barra['soltar'] == 2 and barra['hombro'] and 'interfaz-v1/hueco.webp' in barra['fondo'], str(barra))
     pg.drag_and_drop(R('cintura/1'), '#panelInventario .inv-arcon h3')
     comprobar('arrastrar el cuchillo del cinto al arcón lo deja', lugar(pg, 'cintura/1') is None)
     carga = pg.inner_text('#panelInventario .inv-carga')
@@ -124,7 +136,7 @@ with sync_playwright() as p:
     pg.click('#llevas [data-soltar="mano:der"]')
     comprobar('«Soltar» deja lo de la mano (y el hacha ya no se ve)', lugar(pg, 'mano:der') is None and not pg.evaluate(f'{K}.jugador.hachaEnMano'))
     pg.click('#llevas [data-soltar="hombro"]')
-    comprobar('y lo del hombro; sin nada, la línea se esconde', lugar(pg, 'hombro') is None and not pg.is_visible('#llevas'))
+    comprobar('y lo del hombro; sin nada, abajo quedan las dos manos vacías (sin nada que soltar)', lugar(pg, 'hombro') is None and pg.is_visible('#llevas') and pg.locator('#llevas [data-soltar]').count() == 0 and pg.locator('#llevas .hu').count() >= 2)
     # se guarda: al recargar sigue lo mismo
     pg.reload(); pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     comprobar('lo que llevas se guarda al recargar', lugar(pg, 'cintura') == 'cinto_cuero:1' and lugar(pg, 'espalda/2') == 'lena:3')

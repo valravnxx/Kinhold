@@ -25,6 +25,10 @@ for c in ('v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
+# las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
+import re as _rk
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+    if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL_PERSONAJE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'

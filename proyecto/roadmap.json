@@ -1369,9 +1369,10 @@
     },
     {
      "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T05:24:06+00:00",
-     "rama": "trabajo/20261108-0523"
+     "rama": "trabajo/20261108-0523",
+     "fin": "2026-11-08T12:13:20+00:00"
     },
     {
      "nombre": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
@@ -1578,9 +1579,9 @@
    "tareas": [
     {
      "nombre": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T18:43:47+01:00",
-     "rama": "trabajo/20261108-1025"
+     "fin": "2026-11-08T13:15:36+00:00"
     },
     {
      "nombre": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
@@ -1723,6 +1724,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T20:42:58+00:00",
      "fin": "2026-11-07T23:15:38+00:00"
+    },
+    {
+     "nombre": "Pruebas rápidas (valravnx, 8 nov: «solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas»): cada cambio pasa solo lo esencial y los grupos de lo que toca; la batería entera, al llevar un hito a revisión. El recorrido de jugador, con el reloj acelerado; fuera de las máquinas de pruebas lo que no prueba nada",
+     "estado": "hecho",
+     "inicio": "2026-11-08T11:50:47+00:00",
+     "fin": "2026-11-08T13:02:24+00:00"
     }
    ]
   },
@@ -3517,6 +3524,13 @@
      "archivo": "jugar/demo/v152.html",
      "capturas": "capturas/demo-v152",
      "notas": "El mapa del rey enseña las zonas ya tomadas por un mojón (valravnx, 8 nov): cada dueño de un color apagado, distinto de los demás, con su mojón; las de quien te ha invitado a construir, del color de la tuya y, de cerca, «Te han invitado». Sin nombres."
+    },
+    {
+     "v": "v153",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v153.html",
+     "capturas": "capturas/demo-v153",
+     "notas": "La barra de abajo, nueva (primera tarea de la interfaz): tus dos manos con la imagen de lo que llevas, el hombro solo cuando cargas algo (y entonces las manos, apagadas), el cinto con su arma (tócalo para cogerla con la mano) y la carga en una raya. Los huecos y los botones, con el kit de la interfaz: cuero, roble, latón y hierro renderizados, y los iconos repujados. Las imágenes de las cosas, otra vez sacadas con luz de contra y contorno."
     }
    ]
   },

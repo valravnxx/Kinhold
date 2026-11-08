@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (12:13 UTC) — en la sesión del carril A: lo probado a mano se aprueba
+valravnx: «porque te tiras 4h haciendo testeos de algo que te he confirmado yo que he testeado a mano? NUNCA HAGAS ESO. solo aprueba y listo».
+→ Regla nueva en CLAUDE.md. La casa humilde queda hecha (él la levantó entera a mano con el andamio) y se une sin más pruebas.
+
+### 8 nov 2026 (11:50 UTC) — valravnx, en la sesión: revisión completa de las baterías de prueba
+valravnx: «hazme una revisión completa de las baterías de prueba, no puede ser que la media de tiempo de cada pequeña mejora sea de tantas horas, hay que quitar toda la prueba que no sea imprescindible y hacer de las actualizaciones algo mucho mas rapido, porque cada vez es peor, solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas».
+→ Cambia la regla de las pruebas de CLAUDE.md (antes: «todas, siempre»). Tarea en «Orden», la lleva el chat (rama trabajo/20261108-1205-pruebas-rapidas).
+
 ### 8 nov 2026 (09:18 UTC) — valravnx, en la sesión del carril A: cama de juncos, el mapa de los mojones y la cama en tierra de otro
 valravnx: «podemos hacer una cama de juncos? o no existian en la epoca? por ahora estamos sin manera de tener cama en el earlygame, que es lo mas importante, quiza con juncos y fibra podría haber una, luego, otra cosa que vas a hacer, primero es ver que zonas del mapa están tomadas ya por mojones con colores diferentes, y luego que salgan del mismo color al tuyo las que te han dado permiso de construcción, y poder poner tu cama de respawn en una que te hayan dado permiso de construcción para vivir en pareja o grupo».
 Lo que pide, en orden:

@@ -37,10 +37,17 @@ body.pc{background-image:url(fondo_pc.png)} body.movil{background-image:url(fond
 .med .fl{position:absolute;right:-3px;top:-5px;font:700 14px Garamond,serif;text-shadow:0 1px 2px #000}
 .med .nom{position:absolute;top:100%;margin-top:1px;left:50%;transform:translateX(-50%);font:16px Fell,serif;white-space:nowrap}
 .k{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:4px;background:linear-gradient(#625a50,#2b2520);color:var(--claro);font:600 12.5px Garamond,serif;border:1px solid #8a7550;box-shadow:0 2px 0 #120d09}
-/* tablero de roble con marco de hierro (9 trozos) */
-.tablero{position:fixed;border:38px solid transparent;border-image:url(kit/marco.png) 104 / 38px stretch;background:radial-gradient(ellipse at 50% 40%,rgba(30,18,9,.25),rgba(14,8,4,.62)),url(kit/tablero.jpg) center/600px;background-clip:padding-box;box-shadow:0 18px 40px rgba(0,0,0,.6)}
-.tablero.fino{border-width:26px;border-image-width:26px}
-.tablero .dentro{margin:-14px}
+/* tablero de roble con marco de hierro (9 trozos). La madera va DEBAJO del marco (::before, metida bajo los cantos de
+   roble del marco) y el marco encima (::after); el contenido, con su margen por dentro de los cantos y de las escuadras.
+   Cuentas: marco.png de 512 px, cantos de 59 px y escuadras hasta 104 px; cortado a 104 y dibujado a 38 px (0,365):
+   cantos de 22 px y escuadras de 38 px. A 26 px (fino): cantos de 15 px y escuadras de 26 px. */
+.tablero{position:fixed;padding:40px 42px 38px;box-shadow:0 18px 40px rgba(0,0,0,.55);border-radius:4px;isolation:isolate}
+.tablero:before{content:"";position:absolute;inset:12px;z-index:-1;background:radial-gradient(ellipse at 50% 40%,rgba(30,18,9,.2),rgba(14,8,4,.6)),url(kit/tablero.jpg) top center/1536px auto repeat-y;border-radius:2px}
+.tablero:after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border:38px solid transparent;border-image:url(kit/marco.png) 104 / 38px stretch}
+.tablero.fino{padding:28px 30px 26px}
+.tablero.fino:before{inset:8px}
+.tablero.fino:after{border-width:26px;border-image-width:26px}
+.tablero .dentro{margin:0;position:relative;z-index:1}
 .placa{background:url(kit/cuero.jpg) center/cover;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55),inset 0 0 18px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.55);border-radius:6px}
 .etq{position:fixed;transform:translate(-50%,-100%);display:flex;gap:8px;align-items:center;font-size:17px;padding:6px 13px;white-space:nowrap}
 .etq small{color:var(--gris);font-size:14.5px}
@@ -51,6 +58,7 @@ body.pc{background-image:url(fondo_pc.png)} body.movil{background-image:url(fond
 .tab{font:17px Fell,serif;color:#cdbb9a;padding:2px 6px;white-space:nowrap}
 .tab.sel{color:var(--oro);text-shadow:0 0 8px rgba(240,190,100,.5)}
 .tabs{display:flex;align-items:center;gap:4px}
+.correa.tabs{padding:0 18px !important}
 .tabs .sep{width:1px;height:18px;background:linear-gradient(transparent,rgba(193,154,85,.6),transparent)}
 .titulo{font:24px Fell,serif;color:var(--oro);display:flex;align-items:center;gap:10px}
 .titulo img{width:30px;height:30px}
@@ -94,12 +102,29 @@ body.pc{background-image:url(fondo_pc.png)} body.movil{background-image:url(fond
 .frases{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .frase{padding:7px 10px;font:17px Fell,serif;display:flex;gap:8px;align-items:center}
 .frase b{font:600 12px Garamond,serif;color:#b89a68}
+/* las cosas (imágenes del juego): un filo claro muy fino y su sombra, para leerse sobre el cuero y el roble oscuros */
+img[src^="kit/"]:not([src*="kit/g_"]){filter:drop-shadow(0 0 1px rgba(255,236,200,.5)) drop-shadow(0 2px 2px rgba(0,0,0,.65))}
+.hueco{background:radial-gradient(circle at 50% 46%,rgba(160,118,74,.38),rgba(0,0,0,0) 60%),url(kit/hueco.png) center/contain no-repeat}
+.pieza .im{background:radial-gradient(ellipse at 50% 50%,rgba(160,118,74,.32),rgba(0,0,0,0) 65%)}
+/* el menú en el móvil: una columna que ocupa la pantalla; nada se sale de su tablero */
+.hubm{position:fixed;inset:0;display:flex;flex-direction:column;gap:6px;padding:8px 6px 6px}
+.hubm .tablero{position:relative;flex:none}
+.hubm .tablero.crece{flex:1;min-height:0}
+.hubm .tablero.crece .dentro{height:100%;overflow:hidden}
+.hubm .pieza{font-size:15px;padding:5px 3px 6px} .hubm .pieza .im{height:50px} .hubm .pieza .im img{max-height:50px}
+.itabs{display:flex;align-items:flex-start;gap:0;flex:1;margin-right:6px}
+.itab{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0;font:12.5px Fell,serif;white-space:nowrap;color:#bba987;text-shadow:0 1px 2px #000}
+.itab .o{width:44px;height:44px;background:url(kit/boton.png) center/contain no-repeat;display:grid;place-items:center;opacity:.7}
+.itab .o img{width:52%;height:52%}
+.itab.sel{color:var(--oro)} .itab.sel .o{opacity:1;filter:drop-shadow(0 0 7px rgba(240,190,100,.75))}
 </style></head><body>
 <script>
 const q = new URLSearchParams(location.search), E = q.get('e') || 'normal', D = q.get('d') || 'pc', pc = D === 'pc';
 document.body.className = D;
 const h = (s) => document.body.insertAdjacentHTML('beforeend', s);
 const G = (n) => `<img src="kit/g_${n}.png" alt="">`;
+const PEST = [['Equipo', 'equipo'], ['Fabricar', 'fabricar'], ['Construir', 'construir'], ['Mapa', 'mapa'], ['Tu tierra', 'mojon']];
+const cabMovil = (sel) => `<div style="display:flex;align-items:flex-start;justify-content:space-between"><div class="itabs">${PEST.map(([t, g], i) => `<div class="itab${i === sel ? ' sel' : ''}"><span class="o">${G(g)}</span>${t}</div>`).join('')}</div><div class="br" style="position:relative;width:46px;height:46px;flex:none">${G('cerrar')}</div></div>`;
 const I = (n) => `kit/${n}.png`;
 const COL = { bien: '#7fb383', aviso: '#e2aa4c', mal: '#d9583a', frio: '#86b4e6', calor: '#d39a55' };
 function med(k, v, est, { t = 44, nom = '', fl = '', quieto = false } = {}) {
@@ -207,18 +232,15 @@ if (E === 'normal') {
     h(`<div class="fix sombra" style="right:40px;bottom:18px;display:flex;gap:16px;font-size:15px;opacity:.85"><span>Ajustes</span><span>Ayuda</span><span>Decisiones</span><span>ES · EN · RU</span><span style="display:flex;gap:5px;align-items:center"><span class="k">Esc</span>Volver</span></div>`);
   } else {
     const ropaTab = E === 'ropa';
-    h(`<div class="fix" style="left:8px;right:62px;top:10px;overflow:hidden">${cab.replace('padding:0 6px', 'padding:0 4px;width:max-content')}</div>`);
-    h(`<div class="br" style="right:8px;top:6px;width:48px;height:48px">${G('cerrar')}</div>`);
-    h(`<div class="fix" style="left:10px;right:10px;top:66px;display:flex;gap:6px">${['Lo que llevas', 'Ropa'].map((t, i) => `<span class="boton-t ${(i === 1) === ropaTab ? 'prim' : 'sec'}" style="flex:1;padding:6px">${t}</span>`).join('')}</div>`);
-    if (!ropaTab) {
-      h(`<div class="tablero fino" style="left:6px;right:6px;top:110px;bottom:200px"><div class="dentro" style="padding:2px 4px">${llevas(66)}<div style="margin-top:12px">${pies(66).replace('repeat(3,66px)', 'repeat(4,66px)')}</div></div></div>`);
-      h(`<div class="tablero fino" style="left:6px;right:6px;bottom:6px;height:188px"><div class="dentro" style="padding:2px">${ficha('')}<p class="sub" style="font-size:14px;margin:8px 0 0">O toca otro hueco para llevarlo allí.</p></div></div>`);
-    } else {
-      h(`<div class="tablero fino" style="left:6px;right:6px;top:110px;bottom:6px"><div class="dentro" style="display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:start">
-        <div style="display:flex;flex-direction:column;gap:12px">${ropa(58).split('</small></div>').slice(0, 4).join('</small></div>')}</small></div></div>
-        <img src="retrato.png" style="width:100%;margin-top:30px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))">
-        <div style="display:flex;flex-direction:column;gap:12px">${ropa(58).split('</small></div>').slice(4, 8).join('</small></div>')}</small></div></div></div></div>`);
-    }
+    const sub = `<div style="display:flex;gap:6px">${['Lo que llevas', 'Ropa'].map((t, i) => `<span class="boton-t ${(i === 1) === ropaTab ? 'prim' : 'sec'}" style="flex:1;padding:6px">${t}</span>`).join('')}</div>`;
+    if (!ropaTab) h(`<div class="hubm">${cabMovil(0)}${sub}
+      <div class="tablero fino crece"><div class="dentro">${llevas(62)}<div style="margin-top:10px">${pies(62).replace('repeat(3,62px)', 'repeat(4,62px)')}</div></div></div>
+      <div class="tablero fino"><div class="dentro">${ficha('')}</div></div></div>`);
+    else h(`<div class="hubm">${cabMovil(0)}${sub}
+      <div class="tablero fino"><div class="dentro" style="display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:12px">${ropa(56).split('</small></div>').slice(0, 4).join('</small></div>')}</small></div></div>
+        <img src="retrato.png" style="width:100%;margin-top:24px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))">
+        <div style="display:flex;flex-direction:column;gap:12px">${ropa(56).split('</small></div>').slice(4, 8).join('</small></div>')}</small></div></div></div></div></div>`);
   }
 } else if (E === 'fabricar') {
   h(`<div class="fondo-menu"></div>`);
@@ -241,16 +263,15 @@ if (E === 'normal') {
         <div class="seccion" style="margin-top:14px">En marcha</div><div style="display:flex;gap:10px;align-items:center"><img src="${I('cordel')}" style="width:40px"><span style="flex:1">Cordel <small style="color:var(--gris)">· te quedan 12 s</small><div class="barra" style="margin-top:4px"><i style="width:60%"></i></div></span></div></div>
       <div>${ficha}</div></div></div>`);
   } else {
-    h(`<div class="fix" style="left:8px;right:62px;top:10px;overflow:hidden">${cab.replace('padding:0 6px', 'padding:0 4px;width:max-content')}</div>`);
-    h(`<div class="br" style="right:8px;top:6px;width:48px;height:48px">${G('cerrar')}</div>`);
-    h(`<div class="fix" style="left:10px;right:10px;top:66px;display:flex;gap:6px">${sitios.map(([t, g, n, d], i) => `<span class="boton-t ${i === 0 ? 'prim' : 'sec'}" style="flex:1;padding:6px 4px;font-size:15px;${d === 'lejos' ? 'opacity:.55' : ''}">${t.replace('Piedra de tallar', 'Piedra')}${n ? ` · ${n}` : ''}</span>`).join('')}</div>`);
-    h(`<div class="tablero fino" style="left:6px;right:6px;top:110px;bottom:330px"><div class="dentro"><div class="seccion">Puedes hacerlo ya</div><div class="rej" style="grid-template-columns:repeat(3,1fr)">${cartas.filter(c => c[3] === 'ya').map(c => carta(c)).join('')}</div>
-      <div class="seccion" style="margin-top:12px">Te falta poco</div><div class="rej" style="grid-template-columns:repeat(3,1fr)">${cartas.filter(c => c[3] !== 'ya').map(c => carta(c)).join('')}</div></div></div>`);
-    h(`<div class="tablero fino" style="left:6px;right:6px;bottom:6px;height:318px"><div class="dentro">${ficha}</div></div>`);
+    const sub = `<div style="display:flex;gap:6px">${sitios.map(([t, g, n, d], i) => `<span class="boton-t ${i === 0 ? 'prim' : 'sec'}" style="flex:1;padding:6px 4px;font-size:15px;${d === 'lejos' ? 'opacity:.55' : ''}">${t.replace('Piedra de tallar', 'Piedra')}${n ? ` · ${n}` : ''}</span>`).join('')}</div>`;
+    h(`<div class="hubm">${cabMovil(1)}${sub}
+      <div class="tablero fino crece"><div class="dentro"><div class="seccion">Puedes hacerlo ya</div><div class="rej" style="grid-template-columns:repeat(3,1fr)">${cartas.filter(c => c[3] === 'ya').map(c => carta(c)).join('')}</div>
+        <div class="seccion" style="margin-top:10px">Te falta poco</div><div class="rej" style="grid-template-columns:repeat(3,1fr)">${cartas.filter(c => c[3] !== 'ya').map(c => carta(c)).join('')}</div></div></div>
+      <div class="tablero fino"><div class="dentro">${ficha}</div></div></div>`);
   }
 } else if (E === 'construir') {
   h(`<div class="br" style="left:14px;top:12px;width:50px;height:50px">${G('menu')}</div>`);
-  h(`<div class="fix correa" style="${pc ? 'left:50%;transform:translateX(-50%)' : 'left:72px'};top:14px;display:flex;align-items:center;gap:10px;padding:0 4px"><span class="fell" style="color:var(--oro);font-size:18px">Construir</span><span class="sep" style="width:1px;height:18px;background:rgba(193,154,85,.6)"></span><span class="tab sel">Poner</span><span class="tab">Quitar</span>${pc ? '<span class="k">X</span><span class="sep" style="width:1px;height:18px;background:rgba(193,154,85,.6)"></span><span class="tab">Planta baja</span><span class="k">⇞</span>' : ''}</div>`);
+  h(`<div class="fix correa" style="${pc ? 'left:50%;transform:translateX(-50%)' : 'left:72px'};top:14px;display:flex;align-items:center;gap:10px;padding:0 18px"><span class="fell" style="color:var(--oro);font-size:18px">Construir</span><span class="sep" style="width:1px;height:18px;background:rgba(193,154,85,.6)"></span><span class="tab sel">Poner</span><span class="tab">Quitar</span>${pc ? '<span class="k">X</span><span class="sep" style="width:1px;height:18px;background:rgba(193,154,85,.6)"></span><span class="tab">Planta baja</span><span class="k">Re Pág</span>' : ''}</div>`);
   if (!pc) h(`<div class="br" style="right:8px;top:64px;width:46px;height:46px">${G('cerrar')}</div>`);
   const fx = pc ? 520 : 196, fy = pc ? 428 : 450;
   h(`<div class="fantasma" style="left:${fx}px;top:${fy}px;width:${pc ? 150 : 120}px;height:${pc ? 96 : 76}px"></div>`);
@@ -275,7 +296,7 @@ if (E === 'normal') {
   const cab = `<div class="tabs correa" style="padding:0 6px">${tabs.map((t, i) => `${i ? '<span class="sep"></span>' : ''}<span class="tab${i === 4 ? ' sel' : ''}">${t}</span>`).join('')}</div>`;
   const alm = [['tronco_delgado', 'Acopio de troncos', 12, 20], ['piedra', 'Pila de piedras', 18, 40], ['vara', 'Soporte de varas', 8, 30], ['junco', 'Almiar (juncos)', 0, 30]];
   const filaAlm = ([i, t, n, m]) => `<div style="display:flex;gap:10px;align-items:center;padding:4px 0"><img src="${I(i)}" style="width:44px;height:44px"><div style="flex:1">${t}<div class="barra" style="margin-top:4px"><i style="width:${100 * n / m}%"></i></div></div><b style="color:${n ? 'var(--claro)' : 'var(--gris)'};font-weight:600;min-width:52px;text-align:right">${n} <small style="color:var(--gris);font-weight:400">/ ${m}</small></b></div>`;
-  const cuerpo = `<div class="titulo"><img src="kit/g_mojon.png">Tierra de Hrafnsholt <span class="sub" style="font-size:15px">· comarca de Vestdal · 1,2 km²</span></div>
+  const cuerpo = `<div class="titulo"><img src="kit/g_mojon.png">Tierra de Hrafnsholt</div><div class="sub" style="margin:2px 0 0 40px">Comarca de Vestdal · 1,2 km²</div>
      <div class="seccion" style="margin-top:12px">Lo almacenado</div>${alm.map(filaAlm).join('')}
      <p class="sub" style="font-size:14px">La obra no coge de aquí sola: lo llevas tú.</p>
      <div class="seccion" style="margin-top:10px">Pueden construir aquí</div>
@@ -286,14 +307,12 @@ if (E === 'normal') {
     h(`<div class="fix" style="left:50%;top:22px;transform:translateX(-50%)">${cab}</div>`);
     h(`<div class="tablero" style="left:50%;transform:translateX(-50%);top:84px;width:560px"><div class="dentro">${cuerpo}</div></div>`);
   } else {
-    h(`<div class="fix" style="left:8px;right:62px;top:10px;overflow:hidden">${cab.replace('padding:0 6px', 'padding:0 4px;width:max-content')}</div>`);
-    h(`<div class="br" style="right:8px;top:6px;width:48px;height:48px">${G('cerrar')}</div>`);
-    h(`<div class="tablero fino" style="left:6px;right:6px;top:66px;bottom:6px"><div class="dentro">${cuerpo}</div></div>`);
+    h(`<div class="hubm">${cabMovil(4)}<div class="tablero fino"><div class="dentro">${cuerpo}</div></div></div>`);
   }
 } else if (E === 'hablar') {
   arriba({ chat: false }); necesidades(BIEN(pc ? 44 : 40)); manos();
   const F = ['Hola', 'Ven aquí', 'Espera', 'Mira esto', 'Gracias', 'Sí', 'No', '¡Ayuda!'];
-  h(`<div class="tablero fino" style="left:8px;top:70px;${pc ? 'width:340px' : 'right:8px'}"><div class="dentro">
+  h(`<div class="tablero fino" style="left:8px;top:84px;${pc ? 'width:340px' : 'right:8px'}"><div class="dentro">
      <div class="sombra" style="margin-bottom:8px;font-size:16.5px"><b style="color:var(--aviso);font-weight:600">Ingrid:</b> ven a la orilla, hay juncos</div>
      <div class="frases">${F.map((f, i) => `<span class="frase placa">${pc ? `<b>${i + 1}</b>` : ''}${f}</span>`).join('')}</div>
      <div class="placa" style="margin-top:8px;padding:8px 10px;color:var(--gris);font-style:italic;display:flex;justify-content:space-between">Escribir…${pc ? '<span class="k">↵</span>' : ''}</div>

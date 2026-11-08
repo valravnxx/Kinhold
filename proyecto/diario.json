@@ -5309,6 +5309,21 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-07T18:43:47+01:00",
+  "fin": "2026-11-08T10:09:58+01:00",
+  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v153)",
+  "hito": "interfaz",
+  "hecho": [
+   "La barra de abajo, nueva: tus dos manos con la imagen de lo que llevas en cada una (1 y 2) y su botón de soltar; el hombro solo cuando cargas algo, y entonces las manos se apagan; el hueco del cinto con su arma (C; tócalo para cogerla con la mano libre); y la carga en una raya debajo. Fuera la línea «En la mano».",
+   "El kit de la interfaz, renderizado en Blender y publicado en docs/recursos/interfaz-v1: los huecos de cuero, el marco y el tablero de roble, los botones y medallones de latón y hierro, y los iconos repujados en latón (soltar, al hombro, a las manos).",
+   "Las imágenes de las cosas, otra vez sacadas de sus modelos (docs/recursos/iconos-v8; las de antes no se tocan): con luz de contra y de contorno para que lo oscuro se lea sobre el cuero, y las hachas encuadradas por la cabeza.",
+   "En el móvil, la barra empieza a la derecha del joystick, sin tocarlo, y con huecos más pequeños; el aviso de confirmar y el estado del combate suben para no quedar debajo de ella."
+  ],
+  "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea) después de unir main: todo bien menos «la web» (la página no estaba regenerada tras unir; regenerada, pasa) y el combate con lag simulado de la lógica, que pasa repetido aquí (81/81). Antes, «la demo en el mundo» falló una vez por 3,6 ms (un fotograma de 63,6 ms en la nube) y pasó repetida. La prueba nueva de la barra (con MUTAR_BARRA=1 falla) y la de las imágenes y el kit (447/447; con MUTAR=6 falla). Capturas de cerca de la barra en PC y móvil (con las manos llenas, con algo al hombro y sin nada), miradas ampliadas.",
+  "capturas": "capturas/demo-v153",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-07T19:39:26+01:00",
   "fin": "2026-11-07T21:10:07+01:00",
   "titulo": "P4: beber del río (chat con valravnx)",
@@ -5439,6 +5454,21 @@
   "estado": "fallo"
  },
  {
+  "inicio": "2026-11-08T07:15:00+00:00",
+  "fin": "2026-11-08T12:13:20+00:00",
+  "titulo": "P3: la casa humilde, entera, con el andamio (carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "valravnx la levantó entera a mano en el juego, en solitario y sin arcón, con el andamio para subir al tejado: aprobada así.",
+   "El recorrido de jugador (paso 16) hace lo mismo: cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro y el de la puerta; el banco de tronco y 3 cuerdas; la puerta de varas; un andamio junto a la casa, desde el que pone el tejado de juncos; y luego desmonta el andamio.",
+   "La prueba de construcción mira la casa de cerca en PC y en el móvil.",
+   "Regla nueva (valravnx, 8 nov): lo que valravnx ya ha probado a mano se aprueba sin pasar baterías largas de pruebas."
+  ],
+  "pruebas": "Probado a mano por valravnx. Recorrido aquí: 158 bien, 0 mal (antes de unir main).",
+  "capturas": "capturas/casa-humilde-8nov",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-08T07:50:13+00:00",
   "fin": "2026-11-08T08:01:44+00:00",
   "titulo": "Arreglo urgente: sacar de un almacenaje lo que te cabe (demo v149)",
@@ -5499,6 +5529,38 @@
   ],
   "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea): todo bien salvo la web, por traducciones que faltaban en main (la tarea de los colgaderos); tras unir main, web, mapa del rey y construcción en la nube, bien, y otra vez tras unir la v151, el mapa del rey y las zonas aquí. Prueba nueva de las zonas tomadas: con MUTAR=2 (lógica) y MUTAR=5 (navegador) falla",
   "capturas": "capturas/demo-v152",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T11:50:47+00:00",
+  "fin": "2026-11-08T13:02:24+00:00",
+  "titulo": "Pruebas rápidas: lo esencial y lo que toca cada cambio (chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Revisión de las pruebas (valravnx, 8 nov): desde el 1 nov, la mediana de una sesión era de 102 minutos (117 sesiones), y la batería entera en la nube, unos 85 minutos (42 grupos), a veces dos veces por sesión.",
+   "Medido en la nube: la lógica tardaba 43 minutos, 35 de ellos el recorrido de jugador (andando a paso de jugador y esperando entre hachazos); las otras 96 pruebas de node, unos 6. Los grupos de navegador más lentos: el mapa del mundo (44), el personaje (38), el perfil gráfico en el juego (30), el panel del admin (21) y la construcción (19). Además, la limpieza de ramas tardaba 31 minutos al final de cada ejecución, ocupando una de las 20 máquinas y gastando el límite de llamadas a GitHub.",
+   "Ahora, cada cambio pasa solo lo esencial (la lógica, el recorrido de jugador, la demo única y la web) y los grupos de lo que toca: herramientas/grupos_pruebas.mjs sabe qué archivos cubre cada grupo y pruebas_nube.mjs lo mira solo; lo que no sabe, se nombra (--mas). La batería entera (--todo), solo al llevar un hito a revisión o si valravnx la pide. Al unir main no se repite, salvo que se toque código a mano.",
+   "El recorrido de jugador, con el reloj acelerado (8 veces): el servidor corre en el mismo proceso y ve lo mismo que antes; solo se acorta la espera de verdad. Y en su propia máquina, a la vez que la lógica.",
+   "La limpieza de ramas lee la hora del nombre de cada rama (una llamada por ejecución, no por rama): unos segundos.",
+   "De paso: la prueba de recolección y el recorrido estaban rotos en main desde que los juncos dan de 1 a 3 haces; arreglados.",
+   "CLAUDE.md, paso 6, con la regla nueva."
+  ],
+  "pruebas": "Modo rápido en la nube sobre esta rama: lógica, recorrido, demo única y web, todo bien en 10 minutos (antes, la batería entera, unos 85). Recorrido aquí con el reloj acelerado: 158 de 158 (con la casa humilde); con MUTAR=1 falla. La prueba de qué grupos pasa cada cambio, bien; con MUTAR=1 falla",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T10:26:05+00:00",
+  "fin": "2026-11-08T13:15:36+00:00",
+  "titulo": "P4b: la barra de abajo y el kit de la interfaz, unidos a main (demo v153; carril A)",
+  "hito": "interfaz",
+  "hecho": [
+   "La rama del chat con la barra de abajo y el kit de la interfaz estaba terminada pero sin unir a main; la v150 ya era la de los muros de barro, así que sale como v153 (la v151 y la v152 las publicaron mientras tanto los colgaderos y el mapa con las zonas tomadas).",
+   "Al unir, la rama borraba las imágenes de docs/recursos/iconos-v6, que usan versiones ya publicadas (v146 y v147): se quedan.",
+   "Los colgaderos (v151) habían sacado sus imágenes con la luz de antes (iconos-v9): ahora todas se sacan otra vez con la luz de contra de la v8 en docs/recursos/iconos-v10, con los dos colgaderos; las demás salen idénticas a las de la v8.",
+   "Las capturas de la barra pasan de capturas/demo-v150 a capturas/demo-v153, y se añaden las traducciones de la entrada del diario de esa tarea, que se habían perdido al unir."
+  ],
+  "pruebas": "Batería entera en la nube dos veces (43 grupos, sin las de en línea), la segunda con los colgaderos unidos: todo bien salvo la lógica, que fallaba en main por los juncos de 1 a 3 haces (la recolección y el recorrido aún esperaban 1); arreglado aquí y también en main a la vez, la lógica pasa en la nube. Las imágenes de las cosas 453/453. Al unir el mapa con las zonas tomadas y las pruebas rápidas, sin choques en el código: no se repite nada (regla nueva del 8 nov).",
+  "capturas": "capturas/demo-v153",
   "estado": "ok"
  }
 ]
