@@ -237,6 +237,9 @@ try:
           const pon = (tipo, dx, dz, deposito, sufijo = '') => l.push({ id: tipo + ':mirar' + sufijo, tipo, x: p.x + dx, z: p.z + dz, autor: p.autor, deposito });
           pon('soporte_varas', 3.5, -4, { vara: 20 }); pon('almiar', -3.5, -4.5, { paja: 18, junco: 5 }); pon('hoyo_barro', 0, -5, { barro: 12 }); pon('cesto', 2, 3.5, { fibra: 12, silex: 6, cordel: 2, bayas: 4 });
           if (desde) { pon('almiar', -7, -4.5, { junco: 6 }, 'b'); pon('soporte_varas', 7, -4, {}, 'b'); }
+          // los de mirar se quedan aunque el servidor vuelva a mandar las estaciones (las de verdad, más estos)
+          K.__mirar = l.filter(e => e.id.includes(':mirar'));
+          if (!K.estacionesV.__poner) { K.estacionesV.__poner = K.estacionesV.poner; K.estacionesV.poner = lista => K.estacionesV.__poner([...(lista || []).filter(e => !String(e.id).includes(':mirar')), ...(K.__mirar || [])]); }
           K.estacionesV.poner(l); })"""
         A.evaluate(f"{NUEVOS}({K}, true)")
         for t in ['soporte_varas', 'almiar', 'hoyo_barro', 'cesto']:
@@ -271,16 +274,16 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()")
         B.evaluate(f"{NUEVOS}({K}, false)")
         B.add_style_tag(content='#materiales { visibility: hidden !important; }')
+        comprobar('en el móvil, el almiar y el cesto se ven igual', esperar(B, f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0", 8000))
         encuadre(B, 'almiar', 7.0, 0.35, 0.4, 1.4, 1.4); B.wait_for_timeout(2500)
-        comprobar('en el móvil, el almiar y el cesto se ven igual', B.evaluate(f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0"))
         captura(B, f'{SALIDA}/movil_almiar.png')
         encuadre(B, 'cesto', 2.8, 0.75, 0.3, 0.6, 0.5); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cesto.png')
-        B.evaluate(f"{K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.endsWith(':mirar')))")
+        B.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')))")
 
         print('Desmontarla, desde Desmontar (el dueño, en PC)')
         pl = pila_servidor(json.load(open(OBJETOS)), yo)
-        A.evaluate(f"{K}.estacionesV.poner({K}.objetosRed ? Object.values({K}.fabCliente.estaciones).filter(e => !e.id.endsWith(':mirar')) : [])")
+        A.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner({K}.objetosRed ? Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')) : [])")
         mirar(A, 'pila_piedras', 4.0, 0.6)
         A.evaluate(f"{K}.cambiarModo('desmontar')"); A.wait_for_timeout(1500)
         pt = A.evaluate(f"{K}.proyectar({pl['x']}, {K}.alturaSuelo({pl['x']}, {pl['z']}) + 0.25, {pl['z']})")
