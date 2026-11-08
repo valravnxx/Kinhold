@@ -1,6 +1,6 @@
 {
  "A": {
-  "inicio": "2026-11-08T07:17:15+00:00",
+  "inicio": "2026-11-08T08:30:30+00:00",
   "tarea": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
   "hito": "crafting",
   "rama": "trabajo/20261108-0523"
@@ -11,12 +11,6 @@
   "tarea": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
   "hito": "interfaz",
   "rama": "trabajo/20261107-1845-interfaz"
- },
- "chat:trabajo/20261108-0730-zarzo": {
-  "inicio": "2026-11-08T07:30:19+00:00",
-  "tarea": "Muros de zarzo y barro con puerta y con ventana (valravnx, 8 nov: «debemos tener el full set de barro»), como los de troncos; la puerta de varas encaja en su hueco",
-  "hito": "crafting",
-  "rama": "trabajo/20261108-0730-zarzo"
  },
  "chat:trabajo/20261108-0840-desbrozar": {
   "inicio": "2026-11-08T08:36:41+01:00",
@@ -29,5 +23,11 @@
   "tarea": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
   "hito": "crafting",
   "rama": "trabajo/20261108-0808-colgaderos"
+ },
+ "chat:trabajo/20261108-0925-mapa-mojones": {
+  "inicio": "2026-11-08T09:21:40+00:00",
+  "tarea": "El mapa del rey con las zonas ya tomadas (valravnx, 8 nov): cada zona con un mojón sale del color de su dueño, uno distinto para cada uno, y las de quien te ha invitado a construir, del mismo color que la tuya; lo dice el servidor a todos (sin nombres), y se ve igual en PC y en el móvil",
+  "hito": "supervivencia",
+  "rama": "trabajo/20261108-0925-mapa-mojones"
  }
 }
