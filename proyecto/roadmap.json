@@ -1460,9 +1460,9 @@
     },
     {
      "nombre": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T08:08:57+00:00",
-     "rama": "trabajo/20261108-0808-colgaderos"
+     "fin": "2026-11-08T11:16:32+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -3503,6 +3503,13 @@
      "archivo": "jugar/demo/v150.html",
      "capturas": "capturas/demo-v150",
      "notas": "El juego completo de muros de zarzo y barro: además del liso, con puerta y con ventana, como los de troncos"
+    },
+    {
+     "v": "v151",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v151.html",
+     "capturas": "capturas/demo-v151",
+     "notas": "v151: dos almacenajes nuevos de dentro, colgados en el muro: el colgadero de herramientas (cada una colgada por la cabeza entre dos varas) y el de mochilas (cada cosa de su estaquilla). Al ponerlos, el marco se pega al muro más cercano, mirando a la habitación; lo que llevas a la espalda, vacío, se cuelga tal cual."
     }
    ]
   },
