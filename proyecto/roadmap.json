@@ -1369,9 +1369,10 @@
     },
     {
      "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T05:24:06+00:00",
-     "rama": "trabajo/20261108-0523"
+     "rama": "trabajo/20261108-0523",
+     "fin": "2026-11-08T12:13:20+00:00"
     },
     {
      "nombre": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
@@ -1561,9 +1562,9 @@
     },
     {
      "nombre": "El mapa del rey con las zonas ya tomadas (valravnx, 8 nov): cada zona con un mojón sale del color de su dueño, uno distinto para cada uno, y las de quien te ha invitado a construir, del mismo color que la tuya; lo dice el servidor a todos (sin nombres), y se ve igual en PC y en el móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T09:21:40+00:00",
-     "rama": "trabajo/20261108-0925-mapa-mojones"
+     "fin": "2026-11-08T11:44:57+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
@@ -1723,6 +1724,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T20:42:58+00:00",
      "fin": "2026-11-07T23:15:38+00:00"
+    },
+    {
+     "nombre": "Pruebas rápidas (valravnx, 8 nov: «solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas»): cada cambio pasa solo lo esencial y los grupos de lo que toca; la batería entera, al llevar un hito a revisión. El recorrido de jugador, con el reloj acelerado; fuera de las máquinas de pruebas lo que no prueba nada",
+     "estado": "hecho",
+     "inicio": "2026-11-08T11:50:47+00:00",
+     "fin": "2026-11-08T13:02:24+00:00"
     }
    ]
   },
@@ -3510,6 +3517,13 @@
      "archivo": "jugar/demo/v151.html",
      "capturas": "capturas/demo-v151",
      "notas": "v151: dos almacenajes nuevos de dentro, colgados en el muro: el colgadero de herramientas (cada una colgada por la cabeza entre dos varas) y el de mochilas (cada cosa de su estaquilla). Al ponerlos, el marco se pega al muro más cercano, mirando a la habitación; lo que llevas a la espalda, vacío, se cuelga tal cual."
+    },
+    {
+     "v": "v152",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v152.html",
+     "capturas": "capturas/demo-v152",
+     "notas": "El mapa del rey enseña las zonas ya tomadas por un mojón (valravnx, 8 nov): cada dueño de un color apagado, distinto de los demás, con su mojón; las de quien te ha invitado a construir, del color de la tuya y, de cerca, «Te han invitado». Sin nombres."
     }
    ]
   },

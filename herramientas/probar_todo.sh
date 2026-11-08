@@ -5,7 +5,7 @@
 #      bash herramientas/probar_todo.sh --grupo <g>      solo ese grupo (lo usa la nube: .github/workflows/pruebas.yml)
 #      bash herramientas/probar_todo.sh --grupos         la lista de grupos, en JSON
 # Grupos: cada «Navegador: …» es el suyo (lo de antes del paréntesis); «Web de progreso» va con «Navegador: web»;
-# lo demás, en «logica». Lo que empieza por «Construir» va en todos (tarda segundos). Un paso nuevo se añade como
+# el recorrido de jugador, en «recorrido» (8 nov: en su máquina, a la vez que la lógica); lo demás, en «logica». Lo que empieza por «Construir» va en todos (tarda segundos). Un paso nuevo se añade como
 # siempre y cae solo en su grupo. Lo normal es pasarlo en la nube: node herramientas/pruebas_nube.mjs
 cd "$(dirname "$0")/.." || exit 1
 GRUPO=""; LISTAR=""; [ "$1" = "--grupo" ] && GRUPO="$2"; [ "$1" = "--grupos" ] && LISTAR=1
@@ -13,7 +13,7 @@ C=/tmp/kinhold_capturas; [ -n "$LISTAR" ] || { rm -rf "$C"; mkdir -p "$C/salida"
 fallo=0; grupos=()
 grupo_de() {
   local n="$1"
-  case "$n" in Construir*) echo "construir"; return;; "Web de progreso") echo "web"; return;; Navegador:*) ;; *) echo "logica"; return;; esac
+  case "$n" in Construir*) echo "construir"; return;; "Web de progreso") echo "web"; return;; "Recorrido de jugador"*) echo "recorrido"; return;; Navegador:*) ;; *) echo "logica"; return;; esac
   n="${n#Navegador: }"; n="${n%%(*}"
   echo "$n" | sed 's/á/a/g; s/é/e/g; s/í/i/g; s/ó/o/g; s/ú/u/g; s/ñ/n/g' | tr 'A-Z' 'a-z' | sed 's/[^a-z0-9]\{1,\}/-/g; s/^-//; s/-$//'
 }
@@ -87,6 +87,7 @@ paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, espe
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
+paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs
 paso "Las zonas en el mapa del rey y tu tierra" node pruebas/prueba_mapa_zonas.mjs
 paso "Las zonas del rey: veta marcada, ciudad y salida no se reclaman" node pruebas/prueba_zonas_rey.mjs
 paso "Mapa del rey: costa del juego, nombres, ciudad y ríos" node pruebas/prueba_mapa_rey.mjs

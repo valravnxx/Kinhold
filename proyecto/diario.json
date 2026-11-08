@@ -5454,6 +5454,21 @@
   "estado": "fallo"
  },
  {
+  "inicio": "2026-11-08T07:15:00+00:00",
+  "fin": "2026-11-08T12:13:20+00:00",
+  "titulo": "P3: la casa humilde, entera, con el andamio (carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "valravnx la levantó entera a mano en el juego, en solitario y sin arcón, con el andamio para subir al tejado: aprobada así.",
+   "El recorrido de jugador (paso 16) hace lo mismo: cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro y el de la puerta; el banco de tronco y 3 cuerdas; la puerta de varas; un andamio junto a la casa, desde el que pone el tejado de juncos; y luego desmonta el andamio.",
+   "La prueba de construcción mira la casa de cerca en PC y en el móvil.",
+   "Regla nueva (valravnx, 8 nov): lo que valravnx ya ha probado a mano se aprueba sin pasar baterías largas de pruebas."
+  ],
+  "pruebas": "Probado a mano por valravnx. Recorrido aquí: 158 bien, 0 mal (antes de unir main).",
+  "capturas": "capturas/casa-humilde-8nov",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-08T07:50:13+00:00",
   "fin": "2026-11-08T08:01:44+00:00",
   "titulo": "Arreglo urgente: sacar de un almacenaje lo que te cabe (demo v149)",
@@ -5498,6 +5513,39 @@
   ],
   "pruebas": "En la nube, la batería entera sobre la rama (43 grupos): bien salvo la pestaña de almacenajes (lista de la prueba al día), la web (faltaba una traducción) y un fotograma lento en la demo en el mundo; repetidos tras unir main: lógica de construcción, panel de fabricar, almacenajes, colgaderos (nueva, rota a propósito con MUTAR=1), web, demo en el mundo y demo única, bien. En lógica falla a veces «lo que no se puede se rechaza al que lo manda» de la prueba de combate en el servidor: aquí, 2 de 6 en main y 2 de 6 en la rama; no toca nada de esto.",
   "capturas": "capturas/demo-v151",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T09:21:40+00:00",
+  "fin": "2026-11-08T11:44:57+00:00",
+  "titulo": "El mapa del rey con las zonas tomadas por los mojones (demo v152; chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "En el mapa del rey salen las zonas ya tomadas por un mojón (valravnx, 8 nov), cada una entera con su mojón: cada dueño, de un color apagado distinto de los demás (azul pizarra, musgo, morado, verde azulado, pardo, gris, rosa viejo y verde oscuro), lejos del rojo de la tuya y del oro del rey.",
+   "Las de quien te ha invitado a construir salen del color de la tuya, con el borde rojo y, de cerca, «Te han invitado» bajo su mojón. Sin nombres: el mapa no dice de quién es cada una.",
+   "El color de cada dueño es el mismo para todos los que miran: sale de su autor y, si choca con otro, se coge el siguiente libre (por orden de autor). Con más de ocho dueños, alguno se repite.",
+   "Los mojones y los invitados ya los mandaba el servidor a todos; el mapa los lee del mundo. Cada zona se calcula una vez.",
+   "La cama ligada pasa a ser de dos maneras, juntas (valravnx, 8 nov): el refugio de ramas, para cuando aún no tienes casa, y la cama de juncos, en la casa; ligable en tu tierra o en una donde te han invitado. Queda pendiente en este hito."
+  ],
+  "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea): todo bien salvo la web, por traducciones que faltaban en main (la tarea de los colgaderos); tras unir main, web, mapa del rey y construcción en la nube, bien, y otra vez tras unir la v151, el mapa del rey y las zonas aquí. Prueba nueva de las zonas tomadas: con MUTAR=2 (lógica) y MUTAR=5 (navegador) falla",
+  "capturas": "capturas/demo-v152",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T11:50:47+00:00",
+  "fin": "2026-11-08T13:02:24+00:00",
+  "titulo": "Pruebas rápidas: lo esencial y lo que toca cada cambio (chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Revisión de las pruebas (valravnx, 8 nov): desde el 1 nov, la mediana de una sesión era de 102 minutos (117 sesiones), y la batería entera en la nube, unos 85 minutos (42 grupos), a veces dos veces por sesión.",
+   "Medido en la nube: la lógica tardaba 43 minutos, 35 de ellos el recorrido de jugador (andando a paso de jugador y esperando entre hachazos); las otras 96 pruebas de node, unos 6. Los grupos de navegador más lentos: el mapa del mundo (44), el personaje (38), el perfil gráfico en el juego (30), el panel del admin (21) y la construcción (19). Además, la limpieza de ramas tardaba 31 minutos al final de cada ejecución, ocupando una de las 20 máquinas y gastando el límite de llamadas a GitHub.",
+   "Ahora, cada cambio pasa solo lo esencial (la lógica, el recorrido de jugador, la demo única y la web) y los grupos de lo que toca: herramientas/grupos_pruebas.mjs sabe qué archivos cubre cada grupo y pruebas_nube.mjs lo mira solo; lo que no sabe, se nombra (--mas). La batería entera (--todo), solo al llevar un hito a revisión o si valravnx la pide. Al unir main no se repite, salvo que se toque código a mano.",
+   "El recorrido de jugador, con el reloj acelerado (8 veces): el servidor corre en el mismo proceso y ve lo mismo que antes; solo se acorta la espera de verdad. Y en su propia máquina, a la vez que la lógica.",
+   "La limpieza de ramas lee la hora del nombre de cada rama (una llamada por ejecución, no por rama): unos segundos.",
+   "De paso: la prueba de recolección y el recorrido estaban rotos en main desde que los juncos dan de 1 a 3 haces; arreglados.",
+   "CLAUDE.md, paso 6, con la regla nueva."
+  ],
+  "pruebas": "Modo rápido en la nube sobre esta rama: lógica, recorrido, demo única y web, todo bien en 10 minutos (antes, la batería entera, unos 85). Recorrido aquí con el reloj acelerado: 158 de 158 (con la casa humilde); con MUTAR=1 falla. La prueba de qué grupos pasa cada cambio, bien; con MUTAR=1 falla",
   "estado": "ok"
  }
 ]

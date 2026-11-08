@@ -7,7 +7,9 @@
 # Y las zonas (valravnx, 4 nov): con tu mojón puesto, tu tierra (la zona entera) sale de color con su mojón, y al
 # acercar el mapa salen los lindes de las zonas de cada comarca, sin tirones; y las cuatro zonas del rey, de oro viejo.
 # MUTAR=1: la marca del jugador, 3 km al este de donde está: tiene que fallar. MUTAR=2: sin lindes de zonas. MUTAR=3: los
-# nombres de las comarcas siempre a la vista. MUTAR=4: sin las zonas del rey.
+# nombres de las comarcas siempre a la vista. MUTAR=4: sin las zonas del rey. MUTAR=5: sin las zonas tomadas por los demás.
+# Las zonas tomadas (valravnx, 8 nov): dos mojones más, de otros dos dueños (uno te ha invitado a construir): sus zonas
+# salen de color, la del que te invita del color de la tuya y con «Te han invitado».
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 
@@ -51,6 +53,7 @@ with sync_playwright() as p:
         if MUTAR == '2': ctx.add_init_script('window.__mutarZonasMapa = true')
         if MUTAR == '3': ctx.add_init_script('window.__mutarNombresMapa = true')
         if MUTAR == '4': ctx.add_init_script('window.__mutarZonasRey = true')
+        if MUTAR == '5': ctx.add_init_script('window.__mutarTomadasMapa = true')
         pg = ctx.new_page()
         err = []
         pg.on('pageerror', lambda e: err.append(str(e)))
@@ -73,6 +76,11 @@ with sync_playwright() as p:
         # tu mojón, a tu lado: tu tierra es la zona entera
         r = pg.evaluate(f"(() => {{ const k = {K}; k.accion({{ tipo: 'rellenar', cantidad: 20 }}); k.llevarPara('mojon', 'mojon'); return k.accion({{ tipo: 'mojon', x: k.pj.x + 2, z: k.pj.z + 1 }}); }})()")
         comprobar('pones tu mojón', r['ok'], r.get('motivo', ''))
+        # los mojones de otros dos (los manda el servidor a todos: aquí, puestos en el mundo a mano), a 2,2 km al este y al
+        # oeste del tuyo; la del este te ha invitado a construir
+        pg.evaluate(f"""(() => {{ const k = {K}, m = k.miMojon, mu = k.mundo;
+          mu.mojones['prueba-vecina'] = {{ x: m.x + 2200, z: m.z }}; mu.mojones['prueba-otro'] = {{ x: m.x - 2200, z: m.z + 300 }};
+          mu.invitados['prueba-vecina'] = [k.yo]; }})()""")
         # el botón «Mapa», a la vista y dentro de la pantalla
         caja = pg.evaluate("(() => { const b = document.getElementById('btnMapa'); if (!b || b.hidden) return null; const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })()")
         comprobar('el botón «Mapa» se ve y cabe en la pantalla', caja is not None and caja[0] >= 0 and caja[2] <= vista['width'] and caja[1] >= 0, str(caja))
@@ -135,6 +143,17 @@ with sync_playwright() as p:
         except Exception: pass
         pg.wait_for_timeout(300)
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_zonas.png')
+        # las zonas tomadas por los demás: cada una con su mojón; la de quien te invita, del color de la tuya
+        z = pg.evaluate(f'{K}.mapaRey.zonas'); tom = z.get('tomadas') or []
+        inv = [o for o in tom if o['invita']]; otros = [o for o in tom if not o['invita']]
+        comprobar('salen las zonas tomadas por los otros dos mojones, cada una con su mojón', len(tom) == 2 and all(o['mojon'] for o in tom), str(tom))
+        comprobar('la de quien te ha invitado, del color de la tuya; la del otro, de otro color', len(inv) == 1 and inv[0]['rgb'] == [196, 58, 34] and len(otros) == 1 and otros[0]['rgb'] != [196, 58, 34], str(tom))
+        # de cerca, la de quien te invita, con «Te han invitado»
+        pg.evaluate(f"(() => {{ const k = {K}, mj = k.miMojon, sx = k.mundoJ.salida; k.mapaRey.centrarEn((mj.x + sx.x + 1100) / 1000, (mj.z + sx.z) / 1000, 6); }})()")
+        try: pg.wait_for_function(f'{K}.mapaRey.zonas.pendientes === 0', timeout=60000)
+        except Exception: pass
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_tomadas.png')
         # la ciudad del rey, de cerca
         pg.evaluate(f"""(() => {{ const m = {K}.mapaRey; m.zoom(1, 0, 0); const v = m.vista, c = m.kmAPant(217.558, 52.73);
           m.zoom(1, 0, 0); }})()""")

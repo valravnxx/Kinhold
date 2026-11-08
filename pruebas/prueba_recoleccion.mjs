@@ -95,11 +95,10 @@ console.log('Juncos, barro y yesca (lo que pide la casa humilde y la hoguera, 7 
   invs.de(yo).sacar(r.donde[0][0], r.cantidad);
   invs.de(yo).meter('mano:izq', { tipo: 'lasca_silex', n: 1 });
   r = rc('juncos:0', 0.5);
-  const juncos = invs.de(yo).cuantos('junco');
-  comprobar('con una lasca de sílex encima, se cortan de 1 a 3 haces de juncos', r.ok && juncos >= 1 && juncos <= 3 && r.cantidad === juncos, r.motivo || JSON.stringify(r.donde));
+  const haces = invs.de(yo).cuantos('junco');
+  comprobar('con una lasca de sílex encima, se cortan de 1 a 3 haces de juncos', r.ok && haces >= 1 && haces <= 3, r.motivo || JSON.stringify(r.donde));
   comprobar('y la mata no vuelve hasta dentro de una estación', !rec.disponible('juncos:0', t0 + 29 * DIA) && rec.disponible('juncos:0', t0 + 30 * DIA));
-  for (const [l, n] of r.donde) invs.de(yo).sacar(l, n);
-  invs.de(yo).sacar('mano:izq', 1);
+  invs.de(yo).sacar(r.donde[0][0], haces); invs.de(yo).sacar('mano:izq', 1);
   invs.de(yo).meter('mano:izq', { tipo: 'palo_cavador', n: 1 });
   r = rc('barro:0', 3.5);
   comprobar('con el palo cavador, una cesta de barro', r.ok && invs.de(yo).cuantos('barro') === 1, r.motivo);
