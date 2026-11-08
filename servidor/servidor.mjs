@@ -143,6 +143,7 @@ import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNece
 import { puestasDe, abrigo as abrigoDe } from '../src/logica/prendas.js';
 import { horaDe } from '../src/logica/cielo.js';
 import { calorEn } from '../src/logica/fuego.js';
+import { Dormidos, DESCONECTADO } from '../src/logica/dormidos.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -176,7 +177,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now() } = {}) {
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {} } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
@@ -405,6 +406,34 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
   // Strandvang, tierras del rey: ahí no se hiere a otro jugador (tierras: en(x, z) de src/logica/tierras_rey.js)
   const combate = new CombateServidor({ semilla, tierras: tierras || null });
+  // Desconectarse (GDD, apartado 6; src/logica/dormidos.js): quien se va se queda dormido en el mundo, donde estaba, y los
+  // demás lo ven tumbado con su símbolo de desconectado (su presencia sigue, con la animación DESCONECTADO). En su tierra
+  // (o en la de quien le ha invitado), protegido enseguida, y a su cama ligada si la tiene; fuera, su luchador sigue en
+  // el combate unos minutos (atacable; más si peleó en el último minuto) y luego se aparta (ya no se le puede hacer nada)
+  // y, con cama, pasa a ella. Al volver con su ficha, se despierta donde duerme. Decisiones provisionales: las
+  // necesidades no avanzan mientras duerme desconectado (como antes); al reiniciar el servidor no queda nadie dormido
+  // a la vista (lo que se guarda es dónde estaba: posiciones.json).
+  const dormidos = new Dormidos(tiemposDormido);
+  const ultimaPelea = new Map();   // autor → hora (ms) de su último golpe o flecha dada o recibida
+  // su presencia, tumbado y desconectado donde dice d (a los demás les llega con el tic de la presencia)
+  const presenciaDormida = (autor, d) => {
+    const previo = presencia.ultimo.get(autor);
+    presencia.ultimo.set(autor, { autor, t: Math.max(reloj(), previo ? previo.t + 1 : 0), x: d.x, y: d.y, z: d.z, giro: d.giro, anim: DESCONECTADO });
+    presencia.cambiados.add(autor);
+  };
+  // se acaba su tiempo atacable: fuera del combate (como al cortarse, pero se guarda mientras duerma) y, con cama, a ella
+  const revisarDormidos = (ahora = Date.now()) => {
+    for (const f of dormidos.revisar(ahora)) {
+      ponerAlDia();
+      const L = combate.apartar(f.autor);
+      if (L) apartados.set(f.autor, { L, hasta: Infinity });
+      if (f.cama) {
+        presenciaDormida(f.autor, f.d);
+        posiciones.set(f.autor, { x: f.d.x, y: f.d.y, z: f.d.z, giro: f.d.giro }); posicionesCambiadas = true;
+        registrar(`${f.autor} pasa dormido a su cama`);
+      }
+    }
+  };
   // el duelo con lo que llevas (7 nov): lo que le protege es la ropa que tiene puesta en su inventario del servidor
   const vestirLuchador = (autor) => combate.vestir(autor, puestasDe(objetos.invs.de(autor).lugares));
   const t0 = reloj();
@@ -413,6 +442,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const repartirCombate = () => {
     const eventos = combate.sacarEventos();
     if (eventos.length) for (const ws of clientes.keys()) enviar(ws, { tipo: 'combate', eventos });
+    // quién ha peleado (un golpe o una flecha dada o recibida): si se desconecta en el minuto siguiente, más tiempo atacable
+    for (const e of eventos) if (e.objetivo && (e.tipo === 'golpe' || e.tipo === 'flecha')) { const t = Date.now(); ultimaPelea.set(e.autor, t); ultimaPelea.set(e.objetivo, t); }
     const nuevas = combate.registro.entradas.filter(e => e.n > escritas);
     if (nuevas.length) { appendFileSync(archivoCombate, nuevas.map(e => JSON.stringify(e)).join('\n') + '\n'); escritas = nuevas[nuevas.length - 1].n; }
   };
@@ -499,6 +530,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     guardarPosiciones();
     try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
     try { guardarAbandono(); } catch (e) { registrar(`no se pudo guardar abandono.json: ${e && e.message}`); }
+    revisarDormidos();
     const ahora = reloj();
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
     // lo soltado fuera de las tierras desaparece pasada su hora
@@ -567,6 +599,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     if (caducada) seguridad({ que: 'ficha_caducada', origen });
     registrar(`${vuelve ? 'vuelve' : 'entra'} ${autor}`);
     apuntarVisto(autor);
+    // dormido en el mundo: se despierta donde duerme (lo que manda su navegador desde ahí sigue a su presencia)
+    { const d = dormidos.despertar(autor); if (d) { presencia.quitar(autor); posiciones.set(autor, { x: d.x, y: d.y, z: d.z, giro: d.giro }); posicionesCambiadas = true; } }
     ponerAlDia();
     if (!combate.luchadores[autor]) {
       const ap = apartados.get(autor);
@@ -637,6 +671,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           recienLlegado.delete(autor);
         }
         // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
+        if (msg.anim === DESCONECTADO) msg.anim = 'dormir';   // (desconectado solo lo pone el servidor)
         const rec = presencia.recibir(autor, msg, reloj(), { admin: esAdmin(autor), vel: (modosDe(autor).velocidad || 1) * velocidadNecesidades(necesidadesDe(autor)) });   // (rendido, no corre; helado, más lento)
         if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
         if (rec.recortado) anotarRecorte(autor, rec.recortado);
@@ -1044,8 +1079,26 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
-      aspectos.delete(autor); presencia.quitar(autor); recienLlegado.delete(autor); vista.quitar(autor);
+      recienLlegado.delete(autor); vista.quitar(autor);
       ponerAlDia();
+      // se queda dormido en el mundo, donde el servidor lo tiene (si ha llegado a estar en él)
+      const p = presencia.ultimo.get(autor), ahora = Date.now();
+      if (p && !cuentas.sinConfirmar(autor) && (!terreno || posiciones.has(autor))) {
+        const idCama = objetos.fab.camaDe(autor), c = idCama ? objetos.fab.estaciones[idCama] : null;
+        const cama = c ? { x: c.x, y: terreno ? terreno.suelo(c.x, c.z) : p.y, z: c.z } : null;
+        const d = dormidos.dormir(autor, p, { ahora, enTierra: !!mundo.tierraDe(p.x, p.z) && mundo.dentroDeTierra(p.x, p.z, autor), ultimaPelea: ultimaPelea.get(autor) ?? null, cama });
+        presenciaDormida(autor, d);
+        if (d.enCama) { posiciones.set(autor, { x: d.x, y: d.y, z: d.z, giro: d.giro }); posicionesCambiadas = true; guardarPosiciones(); }
+        const L = combate.luchadores[autor];
+        if (d.hasta > ahora && L) {
+          // atacable donde está: su luchador sigue, quieto y con el arma guardada
+          L.bloquear(false); if (L.accion === 'preparando') L.fintar(); L.sacada = false;
+          combate.colocar(autor, d.x, d.z, d.giro);
+        } else { const A = combate.apartar(autor); if (A) apartados.set(autor, { L: A, hasta: Infinity }); }
+        registrar(`sale ${autor}: dormido ${d.enCama ? 'en su cama' : 'donde estaba'}, ${d.hasta > ahora ? `atacable ${Math.round((d.hasta - ahora) / 60000)} min` : 'protegido'}`);
+        return;
+      }
+      aspectos.delete(autor); presencia.quitar(autor);
       const L = combate.apartar(autor);
       if (L) apartados.set(autor, { L, hasta: reloj() + gracia });
       registrar(`sale ${autor}`);
@@ -1054,7 +1107,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, abandono, revisarTierras, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, abandono, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
