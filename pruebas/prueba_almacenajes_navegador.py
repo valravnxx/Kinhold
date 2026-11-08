@@ -236,7 +236,7 @@ try:
         print('El soporte de varas, el almiar, el hoyo de barro y el cesto (8 nov), llenos y vacíos (solo para mirarlos)')
         NUEVOS = """((K, desde) => { const p = Object.values(K.fabCliente.estaciones).find(e => e.tipo === 'pila_piedras'), l = Object.values(K.fabCliente.estaciones).filter(e => !e.id.endsWith(':mirar')).map(e => ({ ...e }));
           const pon = (tipo, dx, dz, deposito, sufijo = '') => l.push({ id: tipo + ':mirar' + sufijo, tipo, x: p.x + dx, z: p.z + dz, autor: p.autor, deposito });
-          pon('soporte_varas', 3.5, -4, { vara: 20 }); pon('almiar', -3.5, -4.5, { paja: 18, junco: 5 }); pon('hoyo_barro', 0, -5, { barro: 12 }); pon('cesto', 2, 3.5, { fibra: 12, silex: 6, cordel: 2, bayas: 4 });
+          pon('soporte_varas', 3.5, -4, { vara: 20 }); pon('almiar', -3.5, -4.5, { paja: 18, junco: 5 }); pon('hoyo_barro', 0.5, 8, { barro: 12 }); pon('cesto', 2, 3.5, { fibra: 12, silex: 6, cordel: 2, bayas: 4 });
           if (desde) { pon('almiar', -7, -4.5, { junco: 6 }, 'b'); pon('soporte_varas', 7, -4, {}, 'b'); }
           // los de mirar se quedan aunque el servidor vuelva a mandar las estaciones (las de verdad, más estos)
           K.__mirar = l.filter(e => e.id.includes(':mirar'));
@@ -248,7 +248,7 @@ try:
         A.add_style_tag(content='#materiales { visibility: hidden !important; }')   # (cuenta también los de mirar)
         for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 3.8, 0.38, 0.6, 1.2, -1.8, 0, 'soporte_varas_lleno'), ('soporte_varas', 3.8, 0.38, 0.6, 1.2, -1.8, 1, 'soporte_varas_vacio'),
                 ('almiar', 6.5, 0.32, 0.4, 0.9, 2.0, 0, 'almiar_lleno'), ('almiar', 5.5, 0.3, 0.4, 0.8, 1.6, 1, 'almiar_juncos'),
-                ('hoyo_barro', 3.0, 0.6, 0.3, 0.9, -1.6, 0, 'hoyo_barro_lleno'), ('cesto', 2.4, 0.6, 0.3, 0.6, -1.2, 0, 'cesto_lleno')]:
+                ('hoyo_barro', 3.2, 0.7, 0.3, 0.9, -1.4, 0, 'hoyo_barro_lleno'), ('cesto', 2.4, 0.6, 0.3, 0.6, -1.2, 0, 'cesto_lleno')]:
             encuadre(A, t, dist, pitch, yaw, lado, atras, cual); A.wait_for_timeout(2200)
             captura(A, f'{SALIDA}/PC_{nombre}.png')
         # el almiar solo con juncos (de pie, en cono) y el soporte vacío, junto a los llenos
