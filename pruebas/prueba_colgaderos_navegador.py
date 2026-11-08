@@ -110,10 +110,9 @@ with sync_playwright() as p:
         comprobar(f'{nombre}: se dibuja lo colgado', deposito_dibujado(pg, 'colgadero_herramientas') >= 8 and deposito_dibujado(pg, 'colgadero_mochilas') >= 3,
                   f"{deposito_dibujado(pg, 'colgadero_herramientas')} {deposito_dibujado(pg, 'colgadero_mochilas')}")
         # de cerca: de pie delante de cada uno, mirándolo (en el móvil, un poco más lejos: la pantalla es estrecha)
-        a = 0.5 if movil else 0
-        mirar(pg, OX + 1.9 + a * 3.2, 1.45, OZ + 3.0, math.pi / 2, 0.08)
+        mirar(pg, OX + (5.5 if movil else 1.9), 1.45, OZ + 3.0, math.pi / 2, 0.08)
         pg.screenshot(path=f'{SALIDA}/{nombre}_colgadero_herramientas.png')
-        mirar(pg, OX + 3.0, 1.4, OZ + 4.1 - a * 3.2, math.pi, 0.06)
+        mirar(pg, OX + 3.0, 1.4, OZ + (0.5 if movil else 4.1), math.pi, 0.06)
         pg.screenshot(path=f'{SALIDA}/{nombre}_colgadero_mochilas.png')
         mirar(pg, OX + 5.5, 2.2, OZ + 0.9, math.atan2(0.75, -0.66), 0.25)
         pg.screenshot(path=f'{SALIDA}/{nombre}_casa_colgaderos.png')
