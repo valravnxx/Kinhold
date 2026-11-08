@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2482 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2988 KB
+
+== Construir demo única
+      3107 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4215 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2886 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2477 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2999 KB
+dist/kinhold_trozos.html 2491 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: combate en el mundo
+  OK   móvil: la rosa de parar, a la derecha, para por la derecha — {'accion': 'libre', 'linea': 'estocada', 'finta': False, 'carga': 0, 'bloq': True, 'lb': 'derecha'}
+  OK   sin errores en consola (móvil) — []
+
+Resultado: 1 fallos: móvil: nada tapa nada (rosas, botones, aliento, joystick, menú, aviso)
+!! FALLA: python3 pruebas/prueba_combate_mundo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/combate_mundo
+
+HAY FALLOS
+tardó 294 s
