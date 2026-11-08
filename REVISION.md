@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (07:30 UTC) — en la sesión de chat con valravnx: el juego completo de muros de barro
+valravnx: «te vas a dedicar a algo mejor, ves que de pared de barro solo hay la pared lisa y para poner una puerta tienes que poner de troncos? eso queda feo! debemos tener el full set de barro tambien».
+→ Tarea del chat en P3 («De nada a una casa»): el muro de zarzo y barro con puerta y con ventana, como los de troncos (la puerta de varas encaja en su hueco), con el estilo del muro de zarzo, en el menú de construir y con su origen en la prueba de dónde sale cada cosa.
+
 ### 8 nov 2026 (07:15 UTC) — en la sesión del carril A: la casa humilde, el tejado con andamio
 valravnx (al aviso de que el recorrido no llegaba al tejado de la casa humilde sin escalera ni cuerda): «lo he hecho ya en survival solo.. puedes montar el tronco sin problema y hacer el andamio».
 → El recorrido de jugador (paso 16) sigue el mismo camino: el banco de tronco y sus cuerdas, un andamio junto a la casa (8 varas y 2 cuerdas), sube a él con las varas y los juncos y levanta desde arriba el tejado de juncos; luego la puerta de varas con su cuerda. Sigue la misma tarea, en su rama.

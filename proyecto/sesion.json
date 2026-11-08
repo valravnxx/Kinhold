@@ -11,5 +11,11 @@
   "tarea": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
   "hito": "interfaz",
   "rama": "trabajo/20261107-1845-interfaz"
+ },
+ "chat:trabajo/20261108-0730-zarzo": {
+  "inicio": "2026-11-08T07:30:19+00:00",
+  "tarea": "Muros de zarzo y barro con puerta y con ventana (valravnx, 8 nov: «debemos tener el full set de barro»), como los de troncos; la puerta de varas encaja en su hueco",
+  "hito": "crafting",
+  "rama": "trabajo/20261108-0730-zarzo"
  }
 }
