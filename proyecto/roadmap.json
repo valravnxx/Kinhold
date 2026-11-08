@@ -1514,7 +1514,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La cama ligada: el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; cuenta como cama), como obra con su modelo (estilo v5); ligarla (una por personaje, por el servidor) y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme",
+     "nombre": "La cama ligada, de dos maneras (valravnx, 8 nov: «ambas viables»): el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; para cuando aún no tienes casa) y la cama de juncos (juncos del río atados con cordel de fibra, dentro de la casa; un lecho de los de la época), cada una como obra con su modelo (estilo v5). Ligar una (una por personaje, por el servidor), en tu tierra o en una donde te han invitado a construir (para vivir en pareja o en grupo), y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme; luego, una cama de juncos en su casa, y la liga",
      "estado": "pendiente"
     },
     {
@@ -1558,6 +1558,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T17:12:22+01:00",
      "fin": "2026-11-07T17:19:57+01:00"
+    },
+    {
+     "nombre": "El mapa del rey con las zonas ya tomadas (valravnx, 8 nov): cada zona con un mojón sale del color de su dueño, uno distinto para cada uno, y las de quien te ha invitado a construir, del mismo color que la tuya; lo dice el servidor a todos (sin nombres), y se ve igual en PC y en el móvil",
+     "estado": "en_curso",
+     "inicio": "2026-11-08T09:21:40+00:00",
+     "rama": "trabajo/20261108-0925-mapa-mojones"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."

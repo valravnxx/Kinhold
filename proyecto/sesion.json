@@ -29,5 +29,11 @@
   "tarea": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
   "hito": "crafting",
   "rama": "trabajo/20261108-0808-colgaderos"
+ },
+ "chat:trabajo/20261108-0925-mapa-mojones": {
+  "inicio": "2026-11-08T09:21:40+00:00",
+  "tarea": "El mapa del rey con las zonas ya tomadas (valravnx, 8 nov): cada zona con un mojón sale del color de su dueño, uno distinto para cada uno, y las de quien te ha invitado a construir, del mismo color que la tuya; lo dice el servidor a todos (sin nombres), y se ve igual en PC y en el móvil",
+  "hito": "supervivencia",
+  "rama": "trabajo/20261108-0925-mapa-mojones"
  }
 }
