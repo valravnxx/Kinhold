@@ -1,0 +1,34 @@
+Sin zonas (el círculo de 20 m)
+  OK   antes de quitarlo se sabe lo que se perdería: 1 construcción, 1 pieza, 1 mueble — {"c":1,"p":1,"m":1}
+  OK   quien no tiene mojón no tiene nada que perder (null)
+  OK   sin mojón no se puede quitar — No tienes mojón.
+  OK   la acción va con autor y sin datos de más que importen
+  OK   dice lo perdido: 1 construcción, 1 pieza, 1 mueble — {"construcciones":1,"piezas":1,"muebles":1}
+  OK   Ana ya no tiene mojón
+  OK   su cimiento y su mesa ya no están — 1 construcciones, 0 muebles
+  OK   no se devuelve material (quien quiera el 75 % lo desmonta antes) — 606 piedras (antes 606)
+  OK   lo de Bruno sigue: su mojón y su cimiento — 1 construcciones
+  OK   Bruno deja de ser invitado de Ana
+  OK   la tierra queda libre
+  OK   quitarlo dos veces no se puede — No tienes mojón.
+  OK   Ana vuelve a poner su mojón (reposiciona), sin espera
+  OK   y construye en su tierra nueva
+  OK   rehecho desde el registro da el mismo mundo
+Con zonas (tu tierra es la zona entera)
+  OK   antes de quitarlo se sabe lo que se perdería: 1 construcción, 1 pieza, 1 mueble — {"c":1,"p":1,"m":1}
+  OK   quien no tiene mojón no tiene nada que perder (null)
+  OK   sin mojón no se puede quitar — No tienes mojón.
+  OK   la acción va con autor y sin datos de más que importen
+  OK   dice lo perdido: 1 construcción, 1 pieza, 1 mueble — {"construcciones":1,"piezas":1,"muebles":1}
+  OK   Ana ya no tiene mojón
+  OK   su cimiento y su mesa ya no están — 1 construcciones, 0 muebles
+  OK   no se devuelve material (quien quiera el 75 % lo desmonta antes) — 606 piedras (antes 606)
+  OK   lo de Bruno sigue: su mojón y su cimiento — 1 construcciones
+  OK   Bruno deja de ser invitado de Ana
+  OK   la tierra queda libre
+  OK   quitarlo dos veces no se puede — No tienes mojón.
+  OK   Ana vuelve a poner su mojón (reposiciona), sin espera
+  OK   y construye en su tierra nueva
+  OK   rehecho desde el registro da el mismo mundo
+
+30 bien, 0 mal
