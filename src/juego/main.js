@@ -2618,8 +2618,12 @@ function pintarAccion() {
   if (ahora >= accionHasta) {
     accionHasta = ahora + 150;
     accionVista = ocultar ? null : accionPrincipal();
-    // la lista: lo demás que hay al alcance (lo mismo que el clic derecho), sin repetir la acción de Usar
-    accionOps = accionVista ? opcionesUsar().filter(o => o.texto !== accionVista.texto).slice(0, 3) : [];
+    // la lista: lo demás que hay al alcance (lo mismo que el clic derecho), sin repetir la acción de Usar. Solo cuando se
+    // pide (valravnx, 8 nov: «salen solos, siendo un caos… toggle con alt o click derecho, pero no todo el rato»): Alt en
+    // PC y mantener pulsado el botón de acción en el móvil la abren y la cierran; sin pedirla, la etiqueta dice que hay más
+    const otras = accionVista ? opcionesUsar().filter(o => o.texto !== accionVista.texto) : [];
+    accionOps = estado.verLista ? otras.slice(0, 3) : [];
+    accionVista && (accionVista.hayMas = !estado.verLista && otras.length > 0);
     pintarBotonAccion(btn, accionVista);
     pintarLista(lista, accionVista, accionOps);
   }
@@ -2636,12 +2640,13 @@ function pintarAccion() {
   const rc = renderer.domElement.getBoundingClientRect();
   if (vProy.z >= 1 || Math.abs(vProy.x) > 1.1 || Math.abs(vProy.y) > 1.1) { etq.hidden = true; lista.hidden = true; return; }
   const sx = rc.left + (vProy.x + 1) / 2 * rc.width, sy = rc.top + (1 - vProy.y) / 2 * rc.height;
-  const clave = [a.texto, a.sub, a.barra, a.apagada, Math.round((a.prog || 0) * 20)].join('|');
+  const clave = [a.texto, a.sub, a.barra, a.apagada, a.hayMas, Math.round((a.prog || 0) * 20)].join('|');
   if (etq.dataset.clave !== clave) {
     etq.dataset.clave = clave;
     const L = 2 * Math.PI * 8;
     const prog = a.prog ? `<svg class="prog" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/><circle cx="10" cy="10" r="8" fill="none" stroke="#f0c46e" stroke-width="3" stroke-dasharray="${L * a.prog} ${L}"/></svg>` : '';
-    etq.innerHTML = `<div class="etq placa"><div class="lin">${estado.esTactil ? '' : '<span class="k">F</span>'}<span>${esc(a.texto)}</span>${prog}</div>`
+    const mas = a.hayMas ? `<span class="mas">${estado.esTactil ? '' : '<span class="k">Alt</span>'}${esc(tr('más'))}</span>` : '';
+    etq.innerHTML = `<div class="etq placa"><div class="lin">${estado.esTactil ? '' : '<span class="k">F</span>'}<span>${esc(a.texto)}</span>${prog}${mas}</div>`
       + (a.sub ? `<small>${esc(a.sub)}</small>` : '') + (a.barra !== undefined ? `<div class="barra"><i style="width:${Math.round(a.barra * 100)}%"></i></div>` : '') + '</div>';
     etq.classList.toggle('apagada', !!a.apagada);
   }
@@ -2712,7 +2717,19 @@ $('btnGirar').onclick = girar;
 $('btnColocar').onclick = colocar;
 $('btnSube').onclick = () => cambiarPlanta(1);
 $('btnBaja').onclick = () => cambiarPlanta(-1);
-$('btnUsar').onclick = () => { cerrarMenuUsar(); usar(); };
+$('btnUsar').onclick = () => { if (estado.listaPorToque) { estado.listaPorToque = false; return; } cerrarMenuUsar(); usar(); };
+// la lista de lo demás que hay al alcance, solo cuando se pide: Alt en PC; mantener pulsado el botón de acción en el móvil
+function alternarLista() { estado.verLista = !estado.verLista; accionHasta = 0; }
+addEventListener('keydown', (e) => {
+  if (e.key !== 'Alt' || e.repeat || e.ctrlKey || e.metaKey || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+  e.preventDefault(); alternarLista();
+});
+addEventListener('keyup', (e) => { if (e.key === 'Alt') e.preventDefault(); });   // (que el navegador no se vaya a su menú)
+{
+  let t = null;
+  $('btnUsar').addEventListener('pointerdown', () => { clearTimeout(t); t = setTimeout(() => { estado.listaPorToque = true; alternarLista(); }, 450); });
+  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) $('btnUsar').addEventListener(ev, () => clearTimeout(t));
+}
 // se cierra al pulsar fuera, con Escape o al alejarse
 addEventListener('pointerdown', (e) => { if (!menuUsar.hidden && !menuUsar.contains(e.target)) cerrarMenuUsar(); });
 addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarMenuUsar(); });
