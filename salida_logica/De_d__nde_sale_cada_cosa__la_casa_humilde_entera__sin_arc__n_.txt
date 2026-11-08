@@ -1,0 +1,20 @@
+Se puede tener, sin arcón: antorcha, arpon, azada, barro, bayas, cesta_recoleccion, cordel, cubo, cuerda, cuerda_trenzada, fardo, fibra, hacha_piedra, hoz_silex, junco, lanza_endurecida, lasca_silex, lena, lenero, mayal, pala_madera, palo_cavador, piedra, rama, rastra, setas, silex, taladro_fuego, trampa_lazo, tronco_corto, tronco_delgado, tronco_largo, vara, yesca
+
+La casa humilde
+  OK    cimiento: alguna pieza se hace solo con lo que se consigue — cim_piedra
+  OK    postes: alguna pieza se hace solo con lo que se consigue — poste
+  OK    muros: alguna pieza se hace solo con lo que se consigue — muro_tronco, muro_zarzo
+  OK    tejado: alguna pieza se hace solo con lo que se consigue — tejado_juncos
+  OK    puerta: alguna pieza se hace solo con lo que se consigue — puerta_varas
+
+Lo que el juego enseña ya
+  OK    «piel» sale de algún sitio o tiene su tarea viva — lo piden receta honda, receta odre · pendiente: de la caza o del despiece (no hay animales aún) (tarea «Origen de la piel, el mimbre, la resina y la corteza»)
+  OK    «corteza» sale de algún sitio o tiene su tarea viva — lo piden receta yesca_corteza · pendiente: de los árboles (aún no) (tarea «Origen de la piel, el mimbre, la resina y la corteza»)
+  OK    «resina» sale de algún sitio o tiene su tarea viva — lo piden receta antorcha_resina · pendiente: de los pinos, sangrados (aún no) (tarea «Origen de la piel, el mimbre, la resina y la corteza»)
+  OK    «mimbre» sale de algún sitio o tiene su tarea viva — lo piden receta cesta_recoleccion, receta cesto_pescador, receta nasa · pendiente: de las mimbreras de la ribera (no las hay aún) (tarea «Origen de la piel, el mimbre, la resina y la corteza»)
+  OK    «piel», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «mimbre», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «resina», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «corteza», en PENDIENTES, de verdad aún no sale de ningún sitio
+
+13 bien, 0 mal
