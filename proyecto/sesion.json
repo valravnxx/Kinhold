@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-08T05:24:06+00:00",
-  "tarea": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
-  "hito": "crafting",
-  "rama": "trabajo/20261108-0523"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261107-1845-interfaz": {
   "inicio": "2026-11-07T18:43:47+01:00",
