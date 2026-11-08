@@ -6,8 +6,8 @@
 // Cada bot va pasando por tres fases, de FASE segundos cada una, en este orden: andar (pasea cerca del mojón),
 // construir (pone el marco de un cimiento de piedra o de troncos, le lleva el material y trabaja en él hasta terminarlo) y
 // pelear (se acerca a su pareja y, con el arma sacada, se tiran golpes cargados por cuatro lados y paran por un lado). Los bots van
-// por parejas (0 y 1, 2 y 3…) con la misma fase, para que se encuentren al pelear. Un bot fuera de combate
-// vuelve a empezar sano al acabar la pelea.
+// por parejas (0 y 1, 2 y 3…) con la misma fase, para que se encuentren al pelear. Un bot que cae en la pelea
+// muere (src/logica/muerte.js) y vuelve a su salida; si no, vuelve a empezar sano al acabar la pelea.
 //
 // Decisiones provisionales (para la medición, sin efecto en el juego):
 // - Cada bot pone su mojón donde empieza (un mojón por personaje desde el 4 nov) y construye en su tierra; las parejas
@@ -148,6 +148,8 @@ export class Bot {
           if (ev.objetivo === this.yo && ev.resultado === 'herida') this.m.heridasRecibidas++;
         }
         break;
+      // ha muerto (src/logica/muerte.js): vuelve donde le dice el servidor (su salida) y anda desde allí
+      case 'muerte': if (msg.posicion) { this.x = msg.posicion.x; this.z = msg.posicion.z; this.destino = null; this.m.muertes = (this.m.muertes || 0) + 1; } break;
       case 'combate_rechazo': this.m.rechazos++; break;
       case 'error': this.m.errores++; break;
     }
