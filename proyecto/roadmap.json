@@ -1362,7 +1362,9 @@
     },
     {
      "nombre": "Más almacenajes: soporte de varas, almiar (paja y juncos), hoyo de barro y cesto (lo pequeño)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T02:23:02+00:00",
+     "rama": "trabajo/20261108-0223"
     },
     {
      "nombre": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
