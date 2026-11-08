@@ -11,11 +11,5 @@
   "tarea": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
   "hito": "interfaz",
   "rama": "trabajo/20261107-1845-interfaz"
- },
- "chat:trabajo/20261107-2126-bayas": {
-  "inicio": "2026-11-07T21:26:16+01:00",
-  "tarea": "Comer: bayas y setas del bosque (documento de sistemas, apartado 3: se recogen con las manos, según la estación) para el primer hambre, con su modelo (estilo v5) en la mata y en el suelo; comer desde el equipo, por el servidor. Recorrido: con hambre, el jugador recoge bayas y se las come",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261107-2126-bayas"
  }
 }
