@@ -31,6 +31,9 @@ import { limpiarDeposito, limpiarObra, ESTACIONES } from '../logica/fabricacion.
 import { estadoFuego } from '../logica/fuego.js';
 import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
+import { loteEnMano, loteEspalda } from './llevado.js';
+import { modeloHacha } from './personaje.js';
+import { modeloHachaPiedra } from './modelos_objetos.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const mallas = L => {
@@ -238,8 +241,49 @@ function cesto(id) {
   return mallas(L);
 }
 
+// ---------- los colgaderos (valravnx, 8 nov): de dentro, colgados en la cara de un muro ----------
+// En su sistema: el muro en z = 0 (la estación se pone pegada a su cara, src/logica/construccion.js, muroCercano) y la
+// habitación hacia +Z. Como se hacía en las casas de entonces: varas descortezadas atadas con cordel y sujetas al muro
+// con estaquillas de madera (tacos hincados entre los troncos o en el barro), sin clavos ni tablas.
+const CUERO_COLG = 0x7a5a3e, CORDEL_COLG = 0xb8a27a;
+const atadura = (L, x, y, z, r, eje) => L.add(new THREE.TorusGeometry(r, 0.007, 4, 10), CORDEL_COLG, x, y, z, eje === 'x' ? { y: Math.PI / 2 } : eje === 'z' ? null : { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
+const taco = (L, x, y) => { L.add(cil(0.016, 0.016, 0.05, 7), 'maderaOsc', x, y, 0.025, { x: Math.PI / 2 }, { tex: 'veta', sinSuelo: true });
+  L.add(new THREE.CircleGeometry(0.016, 7), 'corte', x, y, 0.0505, null, { sinSuelo: true }); };
+// El de herramientas: dos listones de vara de pie contra el muro y, arriba, dos varas tumbadas, una pegada al muro y
+// otra delante, separadas por dos tacos: el mango cae por la ranura y la cabeza se queda encima (como los colgaderos
+// de herramientas de siempre). Abajo, otra vara contra el muro para que los mangos no bailen.
+const COLG_H = { ancho: 0.78, barra: 1.42, abajo: 1.0, atras: 0.035, delante: 0.12, hueco: 0.165 };
+function colgaderoHerramientas(id) {
+  const L = new Lote({ rangoSuelo: 0.1, variacion: 0.07 }), { ancho, barra, abajo, atras, delante } = COLG_H, xl = ancho - 0.05;
+  for (const s of [-1, 1]) {
+    const x = s * xl + (az(id, s) - 0.5) * 0.02;
+    varaEntre(L, new THREE.Vector3(x, abajo - 0.12, 0.028), new THREE.Vector3(x, barra + 0.12, 0.028), 0.022);    // el listón de pie
+    taco(L, x, barra + 0.07); taco(L, x, abajo - 0.07);                                                          // sujeto al muro
+    L.add(cil(0.02, 0.02, delante - atras, 7), 'maderaOsc', x, barra, (atras + delante) / 2, { x: Math.PI / 2 }, { tex: 'veta', sinSuelo: true }); // el taco que separa las dos varas
+    atadura(L, x, barra, atras + 0.004, 0.03, 'z'); atadura(L, x, barra, delante, 0.028, 'x'); atadura(L, x, abajo, 0.03, 0.03, 'z');
+  }
+  for (const [z, y] of [[atras, barra], [delante, barra + 0.004], [atras, abajo]])
+    varaEntre(L, new THREE.Vector3(-ancho, y, z), new THREE.Vector3(ancho, y + (az(id, z * 100 + y) - 0.5) * 0.008, z), 0.021);
+  return mallas(L);
+}
+// El de mochilas: un riel de vara gruesa partida por la mitad (la cara plana contra el muro), sujeto con dos tacos, y
+// cuatro estaquillas inclinadas hacia arriba, de las que se cuelga cada cosa por su correa.
+const COLG_M = { ancho: 0.78, alto: 1.56, sitios: [-0.6, -0.2, 0.2, 0.6] };
+function colgaderoMochilas(id) {
+  const L = new Lote({ rangoSuelo: 0.1, variacion: 0.07 }), { ancho, alto, sitios } = COLG_M;
+  L.add(new THREE.CylinderGeometry(0.045, 0.045, ancho * 2, 10, 1, false, -Math.PI / 2, Math.PI), 'madera', 0, alto, 0.002, { z: Math.PI / 2 }, { tex: 'veta', sinSuelo: true, escala: new THREE.Vector3(1, 1, 0.75) }); // medio tronco, lo plano contra el muro
+  for (const s of [-1, 1]) { const x = s * (ancho - 0.1); L.add(cil(0.014, 0.014, 0.012, 7), 'maderaOsc', x, alto + 0.012, 0.034, { x: Math.PI / 2 }, { tex: 'veta', sinSuelo: true }); }
+  sitios.forEach((x, i) => {
+    const e = 0.42 + (az(id, i) - 0.5) * 0.06, largo = 0.17, y0 = alto - 0.005;
+    const m = new THREE.Matrix4().makeRotationX(Math.PI / 2 - e);
+    L.add(cil(0.011, 0.016, largo, 7), 'maderaOsc', x, y0 + Math.sin(e) * largo / 2, 0.03 + Math.cos(e) * largo / 2, m, { tex: 'veta', sinSuelo: true });
+    L.add(new THREE.SphereGeometry(0.013, 7, 5), 'maderaOsc', x, y0 + Math.sin(e) * largo, 0.03 + Math.cos(e) * largo, null, { sinSuelo: true });
+  });
+  return mallas(L);
+}
+
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
-  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto };
+  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -384,7 +428,60 @@ function llenoCesto(dep, id) {
   });
   return mallas(L);
 }
-const LLENO = { acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto };
+//  - los colgaderos: cada herramienta colgada por la cabeza en la ranura de las dos varas, de canto contra el muro y
+//    una al lado de otra; cada mochila (o leñero, fardo, cesta…) de su estaquilla, por una correa de cuero.
+function herramientaSuelta(t) {
+  if (t === 'hacha_piedra') return modeloHachaPiedra();
+  if (t === 'hacha_mano' || t === 'hacha_hierro') return modeloHacha();
+  return mallas(loteEnMano(t));
+}
+// pone o en x con su lado delgado contra el muro (de canto) y lo sube o lo baja hasta que su punto más alto quede en y
+function colgarEn(o, x, y, z, giro = 0) {
+  const g = new THREE.Group(); g.add(o);
+  o.updateMatrixWorld(true);
+  let caja = new THREE.Box3().setFromObject(o), t = caja.getSize(new THREE.Vector3());
+  if (t.z > t.x) { o.rotation.y += Math.PI / 2; o.updateMatrixWorld(true); caja = new THREE.Box3().setFromObject(o); }
+  o.rotation.z += giro; o.updateMatrixWorld(true); caja = new THREE.Box3().setFromObject(o);
+  const c = caja.getCenter(new THREE.Vector3());
+  o.position.set(x - c.x, y - caja.max.y, z - c.z);
+  return g;
+}
+function llenoHerramientas(dep, id) {
+  const g = new THREE.Group(), { barra, atras, delante, hueco } = COLG_H, lista = [];
+  for (const [t, n] of Object.entries(dep)) for (let k = 0; k < n; k++) lista.push(t);
+  lista.slice(0, ESTACIONES.colgadero_herramientas.cabe).forEach((t, i) => {
+    const x = (i - 3.5) * hueco, o = herramientaSuelta(t);
+    g.add(colgarEn(o, x, barra + 0.09, (atras + delante) / 2, (az(id, i) - 0.5) * 0.04));
+  });
+  return g;
+}
+function llenoMochilas(dep, id) {
+  const g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.6, variacion: 0.05 }), { alto, sitios } = COLG_M, lista = [];
+  for (const [t, n] of Object.entries(dep)) for (let k = 0; k < n; k++) lista.push(t);
+  lista.slice(0, sitios.length).forEach((t, i) => {
+    const x = sitios[i], { L: E } = loteEspalda(t, {}), o = mallas(E);
+    o.updateMatrixWorld(true);
+    let caja = new THREE.Box3().setFromObject(o);
+    // lo largo de lado a lado (el fardo enrollado), de pie: que no pise al de al lado
+    if (caja.max.x - caja.min.x > 0.4) { o.rotation.z = Math.PI / 2; o.updateMatrixWorld(true); caja = new THREE.Box3().setFromObject(o); }
+    const arriba = alto - 0.05;
+    o.position.set(x - (caja.min.x + caja.max.x) / 2, arriba - caja.max.y, 0.012 - caja.min.z);
+    o.rotation.z += (az(id, i + 9) - 0.5) * 0.05;
+    g.add(o);
+    // la correa: de la cosa a la estaquilla, en lazo
+    const yp = alto + 0.05, zp = 0.15;
+    for (const s of [-1, 1]) varaCorrea(L, new THREE.Vector3(x + s * 0.05, arriba - 0.01, 0.045), new THREE.Vector3(x + s * 0.01, yp, zp));
+    L.add(new THREE.TorusGeometry(0.02, 0.006, 4, 10, Math.PI), CUERO_COLG, x, yp + 0.004, zp, { y: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  });
+  if (L.piezas.length) g.add(mallas(L));
+  return g;
+}
+function varaCorrea(L, a, b) {
+  const d = new THREE.Vector3().subVectors(b, a), q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
+  const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), c = a.clone().addScaledVector(d, 0.5);
+  L.add(new THREE.BoxGeometry(0.02, d.length(), 0.004), CUERO_COLG, c.x, c.y, c.z, m, { tex: 'liso', sinSuelo: true });
+}
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -434,13 +531,14 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45 }[tipo] || 0.7, alto = 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
     const [x1, z1] = pies[i], [x2, z2] = pies[(i + 1) % 4], k = 1 - 0.08 * h / alto;
     g.add(vara(new THREE.Vector3(x1 * k, h, z1 * k), new THREE.Vector3(x2 * k, h - 0.02, z2 * k), 0.006, MAT_ATADURA));
   }
+  if (ESTACIONES[tipo] && ESTACIONES[tipo].muro) g.position.z = r + 0.05; // lo colgado: el armazón, delante del muro
   g.name = 'armazon';
   return g;
 }

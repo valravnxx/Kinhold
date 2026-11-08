@@ -83,9 +83,10 @@ export class ObjetosServidor {
   // terreno: el mundo que conoce el servidor (crearTerreno), o null. puedeTocar(autor, x, z) → { ok, motivo? }: si puede
   // poner algo ahí (en tierra de otro, solo su dueño y sus invitados; Construccion.puedeTocar).
   // bajoTecho(x, z): si ese sitio está bajo techo (Construccion.bajoTecho; los puestos de trabajo: la hoguera, solo fuera).
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false } = {}) {
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null } = {}) {
     this.puedeTocar = puedeTocar;
     this.bajoTecho = bajoTecho;
+    this.alMuro = alMuro;  // lo que va colgado en un muro: Construccion.muroCercano
     this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
@@ -133,7 +134,7 @@ export class ObjetosServidor {
         const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
-          : ejecutarFabricacion(this.fab, this.invs, this.registro, fa, ahora, this.suelo, (x, z) => this.enTierras(a.autor, x, z), (x, z) => this.bajoTecho(x, z));
+          : ejecutarFabricacion(this.fab, this.invs, this.registro, fa, ahora, this.suelo, (x, z) => this.enTierras(a.autor, x, z), (x, z) => this.bajoTecho(x, z), (x, z) => this.alMuro(x, z));
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo

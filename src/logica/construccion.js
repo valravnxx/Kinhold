@@ -63,6 +63,8 @@ export function trabajoSubida(planta, personas, conVaras, conPolea = false, clas
 }
 
 const HUECOS_ARISTA = new Set(['e', 'b', 'g', 'p', 'q', 'w']);
+// Lo colgado en un muro: a cuánto del eje del muro queda su cara (los de troncos, ~0,14 m de radio) y de las esquinas.
+export const MURO_CARA = { muro_zarzo: 0.1, muro_entramado: 0.11, muro_tabla: 0.05, otro: 0.17 }, MURO_MARGEN = 0.8;
 
 export function clave(hueco, i, j, k, d) {
   return HUECOS_ARISTA.has(hueco) ? `${hueco}:${i},${j},${k},${d}` : `${hueco}:${i},${j},${k}`;
@@ -714,6 +716,35 @@ export class Mundo {
       for (let k = 1; k <= MAX_PLANTA + 1; k++) for (const h of ['f', 'r']) { const p = c.piezas.get(clave(h, i, j, k)); if (p && !p.obra) return true; }
     }
     return false;
+  }
+
+  // El muro terminado de planta baja más cercano a (x, z), para colgar en él lo que va en la pared (los colgaderos de
+  // mochilas y de herramientas, src/logica/fabricacion.js). Solo muros llenos (sin puerta ni ventana) y a menos de
+  // hasta m de su eje. Devuelve el sitio pegado a su cara, del lado de (x, z) y a margen de las esquinas, y el giro
+  // que deja el +Z local mirando fuera del muro (hacia la habitación): { x, z, giro, dist }; o null.
+  muroCercano(x, z, hasta = 1, margen = MURO_MARGEN) {
+    if (!Number.isFinite(x) || !Number.isFinite(z)) return null;
+    let mejor = null;
+    for (const c of this.construcciones.values()) {
+      const l = mundoALocal(c, x, z);
+      for (const p of c.piezas.values()) {
+        if (p.hueco !== 'e' || p.k !== 0 || p.obra) continue;
+        const def = PIEZAS[p.tipo];
+        if (!def || def.conPuerta || def.conVentana) continue;
+        // a lo largo del muro (t) y de través (s), en su casilla
+        const t = p.d === 0 ? l.lx - p.i * MODULO : l.lz - p.j * MODULO, s = p.d === 0 ? l.lz - p.j * MODULO : l.lx - p.i * MODULO;
+        if (t < -0.2 || t > MODULO + 0.2) continue;
+        const dist = Math.abs(s);
+        if (dist > hasta || (mejor && dist >= mejor.dist)) continue;
+        const tt = Math.min(MODULO - margen, Math.max(margen, t)), sg = s < 0 ? -1 : 1, off = sg * (MURO_CARA[p.tipo] ?? MURO_CARA.otro);
+        const lx = p.d === 0 ? p.i * MODULO + tt : p.i * MODULO + off, lz = p.d === 0 ? p.j * MODULO + off : p.j * MODULO + tt;
+        const nlx = p.d === 0 ? 0 : sg, nlz = p.d === 0 ? sg : 0;
+        const co = Math.cos(c.rot), si = Math.sin(c.rot), w = localAMundo(c, lx, lz);
+        const nx = nlx * co + nlz * si, nz = -nlx * si + nlz * co;
+        mejor = { x: redondo(w.x), z: redondo(w.z), giro: redondo(Math.atan2(nx, nz)), dist };
+      }
+    }
+    return mejor;
   }
 
   // ---------- Decoración libre ----------
