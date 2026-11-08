@@ -1,0 +1,38 @@
+PC: el refugio de ramas y la cama de juncos
+  OK   PC: su mojón (su tierra)
+  OK   PC: la casa de 3×3 con muros y tejado — {"fallos": [], "n": 30}
+  OK   PC: en construir, la pestaña «Camas» con el refugio de ramas y la cama de juncos — Refugio de ramas
+12 rama · 4 cordel de fibra · solo fuera
+Cama de juncos
+8 haz de juncos · 2 cordel de fibra · solo dentro de la casa
+  OK   PC: el menú no se sale de lado
+  OK   PC: el refugio, dentro de la casa no — {"ok": false, "motivo": "Refugio de ramas: solo fuera, no bajo techo.", "x": 5.5, "z": 0}
+  OK   PC: la cama de juncos, fuera no — {"ok": false, "motivo": "Cama de juncos: solo dentro de la casa.", "x": 13, "z": 0}
+  OK   PC: el refugio fuera y la cama dentro, sí — [{"ok": true, "motivo": "", "x": 13, "z": 0}, {"ok": true, "motivo": "", "x": 5.6, "z": 0.20000000000000018}]
+  OK   PC: con Usar delante del refugio, lo liga — Refugio de ramas: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.
+  OK   PC: otra vez Usar: duerme en él, tumbado sobre su lecho (al fondo del refugio) — {"d": true, "j": true, "modo": "tumbarse", "x": 13, "z": -0.45} Duermes. Muévete para levantarte.
+  OK   PC: tumbado del todo, con la de dormir (los brazos a lo largo del cuerpo) — dormido
+  OK   PC: al moverse se levanta — {"d": false, "modo": "levantarse"}
+  OK   PC: dormido en la cama de juncos, encima del colchón y con la de dormir — y 0.21999999999895306 · dormido · {'tumbarse': 0, 'dormido': 1, 'levantarse': 0, 'quieto': 0}
+  OK   PC: liga la cama de juncos y el refugio deja de ser su cama — [["refugio_ramas", 0], ["cama_juncos", 1]] Cama de juncos: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.
+  OK   PC: sin errores en la consola — []
+movil: el refugio de ramas y la cama de juncos
+  OK   movil: su mojón (su tierra)
+  OK   movil: la casa de 3×3 con muros y tejado — {"fallos": [], "n": 30}
+  OK   movil: en construir, la pestaña «Camas» con el refugio de ramas y la cama de juncos — Refugio de ramas
+12 rama · 4 cordel de fibra · solo fuera
+Cama de juncos
+8 haz de juncos · 2 cordel de fibra · solo dentro de la casa
+  OK   movil: el menú no se sale de lado
+  OK   movil: el refugio, dentro de la casa no — {"ok": false, "motivo": "Refugio de ramas: solo fuera, no bajo techo.", "x": 5.5, "z": 0}
+  OK   movil: la cama de juncos, fuera no — {"ok": false, "motivo": "Cama de juncos: solo dentro de la casa.", "x": 13, "z": 0}
+  OK   movil: el refugio fuera y la cama dentro, sí — [{"ok": true, "motivo": "", "x": 13, "z": 0}, {"ok": true, "motivo": "", "x": 5.6, "z": 0.20000000000000018}]
+  OK   movil: con Usar delante del refugio, lo liga — Refugio de ramas: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.
+  OK   movil: otra vez Usar: duerme en él, tumbado sobre su lecho (al fondo del refugio) — {"d": true, "j": true, "modo": "tumbarse", "x": 13, "z": -0.45} Duermes. Muévete para levantarte.
+  OK   movil: tumbado del todo, con la de dormir (los brazos a lo largo del cuerpo) — dormido
+  OK   movil: al moverse se levanta — {"d": false, "modo": "levantarse"}
+  OK   movil: dormido en la cama de juncos, encima del colchón y con la de dormir — y 0.22 · dormido · {'tumbarse': 0, 'dormido': 1, 'levantarse': 0, 'quieto': 0}
+  OK   movil: liga la cama de juncos y el refugio deja de ser su cama — [["refugio_ramas", 0], ["cama_juncos", 1]] Cama de juncos: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.
+  OK   movil: sin errores en la consola — []
+
+TODO CORRECTO
