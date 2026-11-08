@@ -197,17 +197,18 @@ with sync_playwright() as p:
     comprobar('y vuelve a bajar', ev(f"{K}.pj.k") == 0)
 
     print('PC: el juego completo de barro (valravnx, 8 nov: «debemos tener el full set de barro»)')
-    # un cimiento con sus cuatro muros de zarzo: con puerta (y la puerta de varas en su hueco), con ventana y lisos
-    for t, x, z in [('cim_piedra', -11, 9), ('muro_zarzo_puerta', -11, 8), ('puerta_varas', -11, 8), ('muro_zarzo_ventana', -12, 9), ('muro_zarzo', -10, 9), ('muro_zarzo', -11, 10)]:
+    # un cimiento con sus cuatro muros de zarzo: con puerta (y la puerta de varas en su hueco), con ventana y lisos, apartado
+    for t, x, z in [('cim_piedra', -17, 3), ('muro_zarzo_puerta', -17, 2), ('puerta_varas', -17, 2), ('muro_zarzo_ventana', -16, 3), ('muro_zarzo', -18, 3), ('muro_zarzo', -17, 4)]:
         v = poner('pieza', t, x, z)
         comprobar(f'{t} puesto desde el menú', bool(v) and v['ok'], json.dumps(v, ensure_ascii=False))
     zp = ev(f"""(() => {{ const c = {K}.mundo.construcciones.find(c => [...c.piezas.values()].some(p => p.tipo === 'muro_zarzo_puerta')); if (!c) return null;
       const t = [...c.piezas.values()].map(p => p.tipo + (p.obra ? '*' : '')).sort(); return t.join(); }})()""")
-    comprobar('la puerta de varas encaja en el hueco del muro de zarzo, y todo terminado', zp == 'cim_piedra,muro_zarzo,muro_zarzo,muro_zarzo_puerta,muro_zarzo_ventana,puerta_varas', str(zp))
-    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-10.2; {K}.pj.z=5.6; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.45; {K}.cam.pitch=0.25; {K}.cam.dist=5")
+    # (se une a la rejilla del cobertizo de al lado: basta con que estén las suyas y nada a medias)
+    comprobar('la puerta de varas encaja en el hueco del muro de zarzo, y todo terminado', bool(zp) and all(t in zp.split(',') for t in ['muro_zarzo_puerta', 'muro_zarzo_ventana', 'puerta_varas']) and '*' not in zp, str(zp))
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-15.4; {K}.pj.z=-1.4; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.3; {K}.cam.dist=7")
     esperar(pg, 1200)
     pg.screenshot(path=f'{SALIDA}/02z_zarzo_puerta_y_ventana.png')
-    ev(f"{K}.pj.x=-11; {K}.pj.z=6.4; {K}.cam.yaw=Math.PI+0.1; {K}.cam.pitch=0.15; {K}.cam.dist=3.2")
+    ev(f"{K}.pj.x=-16.6; {K}.pj.z=-0.2; {K}.cam.yaw=Math.PI+0.2; {K}.cam.pitch=0.2; {K}.cam.dist=3.6")
     esperar(pg, 1200)
     pg.screenshot(path=f'{SALIDA}/02z_zarzo_puerta_de_cerca.png')
 
