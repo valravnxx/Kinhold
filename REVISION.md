@@ -4,6 +4,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ---
 
+### 8 nov 2026 (09:18 UTC) — valravnx, en la sesión del carril A: cama de juncos, el mapa de los mojones y la cama en tierra de otro
+valravnx: «podemos hacer una cama de juncos? o no existian en la epoca? por ahora estamos sin manera de tener cama en el earlygame, que es lo mas importante, quiza con juncos y fibra podría haber una, luego, otra cosa que vas a hacer, primero es ver que zonas del mapa están tomadas ya por mojones con colores diferentes, y luego que salgan del mismo color al tuyo las que te han dado permiso de construcción, y poder poner tu cama de respawn en una que te hayan dado permiso de construcción para vivir en pareja o grupo».
+Lo que pide, en orden:
+1. **Cama de juncos** para el principio del juego, con juncos y fibra (cordel), que sirva de cama ligada (donde reapareces). Respuesta en la sesión: sí es de la época (lechos de juncos, de brezo o de helechos en el suelo, atados o en un jergón; la paja necesita cereal, que aún no hay).
+2. **El mapa del rey enseña las zonas ya tomadas por mojones**, cada dueño de un color distinto.
+3. **Las zonas donde te han invitado a construir salen del mismo color que la tuya.**
+4. **La cama ligada se puede poner en una tierra donde te han invitado**, para vivir en pareja o en grupo.
+
 ## Procesado
 
 ### 8 nov 2026 (08:08 UTC) — por el chat: colgaderos de mochilas y de herramientas
