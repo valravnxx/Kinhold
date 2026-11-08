@@ -7,13 +7,35 @@
 // casilla de la rejilla, de la mitad de un lado a la mitad de otro). Salen segmentos en km, que el mapa traza nítidos a
 // cualquier zoom. Una tesela son unas 10.000 muestras; se hacen a pasos (paso(presupuesto)) para no parar el juego.
 // Tu zona: una máscara de muestras (1 = tuya) alrededor de tu mojón, que el mapa pinta de color, y su borde. Las zonas
-// del rey, igual, cada una alrededor de su sitio.
+// del rey, igual, cada una alrededor de su sitio. Y las zonas ya tomadas por un mojón (valravnx, 8 nov), cada una en la
+// suya, hechas una vez por zona (tomadas).
 // Sin three.js ni DOM: se prueba en Node (pruebas/prueba_mapa_zonas.mjs).
 
 export const TESELA = 4;        // km de lado de cada tesela de lindes
 export const PASO = 40;         // m entre muestras de los lindes
 export const PASO_TIERRA = 25;  // m entre muestras de tu zona
 export const RADIO_TIERRA = 2600;   // m alrededor del mojón en que se busca tu zona (una zona mide como mucho unos 2 km)
+
+// Los colores de las tierras de los demás: apagados, lejos del rojo de la tuya y del oro del rey
+export const COLORES_TIERRAS = [[52, 96, 128], [74, 112, 58], [104, 74, 122], [38, 112, 108], [122, 92, 58], [88, 88, 104], [128, 78, 96], [60, 84, 46]];
+export const ROJO_TIERRA = [196, 58, 34];
+// el color que prefiere la tierra de un dueño (sale de su autor)
+export function colorDeDueno(dueno) {
+  let h = 2166136261;
+  for (const c of String(dueno)) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  return h % COLORES_TIERRAS.length;
+}
+// los colores de todos los dueños con mojón (el mundo entero, el mismo para todos los que miran): cada uno, el suyo si
+// está libre y si no el siguiente libre, por orden de autor; con más dueños que colores, alguno se repite
+export function coloresDeDuenos(duenos) {
+  const out = new Map(), usados = new Set();
+  for (const d of [...new Set(duenos)].sort()) {
+    let k = colorDeDueno(d);
+    if (usados.size < COLORES_TIERRAS.length) while (usados.has(k)) k = (k + 1) % COLORES_TIERRAS.length;
+    usados.add(k); out.set(d, COLORES_TIERRAS[k]);
+  }
+  return out;
+}
 
 // La etiqueta de cada sitio: el id de su zona, o -1 en el mar sin zona.
 const etiquetaDe = (comarcas) => (x, z) => { const zz = comarcas.zonaEn(x, z); return zz && zz.comarca >= 0 ? zz.id : -1; };
@@ -87,6 +109,20 @@ export function crearZonasMapa(comarcas) {
     return out;
   }
 
+  // las zonas tomadas por un mojón (valravnx, 8 nov: «ver que zonas del mapa están tomadas ya por mojones con colores
+  // diferentes»): lista de { x, z (el mojón, en m del mundo), dueno, tuya }; cada zona, en su máscara, hecha una vez
+  const tomadasHechas = new Map();   // id de la zona → máscara (o null)
+  function hacerTomadas(lista, radio = RADIO_TIERRA) {
+    const out = [];
+    for (const t of lista || []) {
+      const zona = et(t.x, t.z);
+      if (zona < 0) continue;
+      if (!tomadasHechas.has(zona)) tomadasHechas.set(zona, hacerMascara(t.x, t.z, radio));
+      const m = tomadasHechas.get(zona); if (m) out.push({ ...m, dueno: t.dueno, tuya: !!t.tuya, invita: !!t.invita, mx: t.x, mz: t.z });
+    }
+    return out;
+  }
+
   return {
     // los segmentos de una tesela ya hecha, o null (y la pide)
     tesela(tx, ty) {
@@ -118,8 +154,9 @@ export function crearZonasMapa(comarcas) {
     get hechas() { return teselas.size; },
     tierra: hacerTierra,
     rey: hacerRey,
+    tomadas: hacerTomadas,
     // lo que es tierra (x, z en km): desde entonces, los lindes y tu zona no se pintan en el agua
-    ponerTierra(f) { esTierra = f; teselas.clear(); tierra = null; reyHechas.clear(); },
+    ponerTierra(f) { esTierra = f; teselas.clear(); tierra = null; reyHechas.clear(); tomadasHechas.clear(); },
     etiqueta: et,
   };
 }

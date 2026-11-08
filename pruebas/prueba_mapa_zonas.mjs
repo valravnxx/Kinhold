@@ -1,6 +1,8 @@
 // Pruebas de las zonas en el mapa del rey (src/juego/mapa_zonas.js): los lindes sacados de muestras y tu tierra, la
 // zona entera de tu mojón (valravnx, 4 nov). Ejecutar: node pruebas/prueba_mapa_zonas.mjs
-// Con MUTAR=1 tu tierra se busca demasiado cerca del mojón (se queda cortada): debe FALLAR.
+// Y las zonas tomadas por los demás mojones (valravnx, 8 nov), cada dueño de un color.
+// Con MUTAR=1 tu tierra se busca demasiado cerca del mojón (se queda cortada): debe FALLAR. Con MUTAR=2, todos los
+// dueños del mismo color: también.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearComarcas, zonasDeEscena } from '../src/logica/comarcas.js';
 import { SALIDA, SALIDAS } from '../src/logica/whitholm.js';
@@ -80,6 +82,26 @@ const zonas = Z.crearZonasMapa(comarcas);
   const z3 = Z.crearZonasMapa(comarcas), a1 = z3.tierra(SALIDA.x, SALIDA.z), a2 = z3.tierra(SALIDA.x + 1, SALIDA.z);
   comprobar('mientras no cambies de zona, se hace una vez', a1 === a2);
   comprobar('en alta mar no hay tierra', z3.tierra(-50000, -50000) === null);
+}
+
+console.log('Las zonas tomadas por los demás mojones, cada dueño de su color (valravnx, 8 nov)');
+{
+  const z4 = Z.crearZonasMapa(comarcas);
+  const [a, b, c] = SALIDAS.slice(0, 3);
+  const lista = [{ x: a[0], z: a[1], dueno: 'ana' }, { x: b[0], z: b[1], dueno: 'beto', invita: true }, { x: c[0], z: c[1], dueno: 'yo', tuya: true }, { x: a[0] + 1, z: a[1], dueno: 'ana' }];
+  const t = z4.tomadas(lista);
+  comprobar('cada mojón da su zona entera, con su dueño y si te invita', t.length === 4 && t[0].dueno === 'ana' && !t[0].invita && t[1].invita && t[2].tuya && t[0].zona === z4.etiqueta(a[0], a[1]), t.map(o => `${o.dueno}:${o.zona}`).join(' '));
+  comprobar('la máscara de una zona se hace una vez (dos mojones en la misma zona, la misma)', t[0].mascara === t[3].mascara);
+  comprobar('en alta mar, nada', z4.tomadas([{ x: -50000, z: -50000, dueno: 'nadie' }]).length === 0);
+  const duenos = ['ana', 'beto', 'carla', 'dani', 'eva', 'fede', 'gala', 'hugo'];
+  let col = Z.coloresDeDuenos(duenos);
+  if (process.env.MUTAR === '2') col = new Map(duenos.map(d => [d, Z.COLORES_TIERRAS[0]]));
+  comprobar('ocho dueños, ocho colores distintos', new Set([...col.values()].map(c => c.join())).size === 8);
+  const otra = Z.coloresDeDuenos([...duenos].reverse());
+  comprobar('el mismo color para cada dueño, se mire como se mire (no depende del orden)', duenos.every(d => otra.get(d) === col.get(d)) || process.env.MUTAR === '2');
+  const rojo = Z.ROJO_TIERRA, lejos = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+  comprobar('ninguno se confunde con el rojo de tu tierra ni con el oro del rey', Z.COLORES_TIERRAS.every(c => lejos(c, rojo) > 80 && lejos(c, [190, 140, 40]) > 60));
+  comprobar('con más dueños que colores, cada uno tiene uno', Z.coloresDeDuenos([...duenos, 'iris', 'juan']).size === 10);
 }
 
 console.log(`\n${bien} bien, ${mal} mal`);

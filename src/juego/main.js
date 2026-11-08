@@ -2457,6 +2457,10 @@ const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: coma
   posicion: () => ({ x: pj.x + mundoJ.salida.x, z: pj.z + mundoJ.salida.z, rot: pj.rot }),
   // tu tierra (la zona entera de tu mojón): dónde está tu mojón, en m del mundo
   tuTierra: () => { const m = miMojon(); return m ? { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z } : null; },
+  // las tierras de los demás (valravnx, 8 nov): cada mojón del mundo (los mojones y los invitados son de todos: los
+  // manda el servidor a cada uno), y si su dueño te ha invitado a construir
+  tomadas: () => { const yo = yoAutor(); return Object.entries(mundo.mojones)
+    .map(([a, m]) => ({ x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z, dueno: a, tuya: a === yo, invita: a !== yo && mundo.invitadosDe(a).includes(yo) })); },
   zonasRey: zonasRey ? zonasRey.lista : [],   // las zonas del rey, de oro viejo
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
