@@ -11,11 +11,5 @@
   "tarea": "Desbrozar matorrales y arbustos (valravnx, 8 nov): con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos del mundo se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación, como los árboles talados. El arbusto de bayas, igual: se pierden sus bayas. Recorrido: el jugador desbroza un matorral y se lleva sus ramas",
   "hito": "crafting",
   "rama": "trabajo/20261108-0840-desbrozar"
- },
- "chat:trabajo/20261108-0925-mapa-mojones": {
-  "inicio": "2026-11-08T09:21:40+00:00",
-  "tarea": "El mapa del rey con las zonas ya tomadas (valravnx, 8 nov): cada zona con un mojón sale del color de su dueño, uno distinto para cada uno, y las de quien te ha invitado a construir, del mismo color que la tuya; lo dice el servidor a todos (sin nombres), y se ve igual en PC y en el móvil",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261108-0925-mapa-mojones"
  }
 }

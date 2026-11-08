@@ -5484,5 +5484,21 @@
   "pruebas": "En la nube, la batería entera sobre la rama (43 grupos): bien salvo la pestaña de almacenajes (lista de la prueba al día), la web (faltaba una traducción) y un fotograma lento en la demo en el mundo; repetidos tras unir main: lógica de construcción, panel de fabricar, almacenajes, colgaderos (nueva, rota a propósito con MUTAR=1), web, demo en el mundo y demo única, bien. En lógica falla a veces «lo que no se puede se rechaza al que lo manda» de la prueba de combate en el servidor: aquí, 2 de 6 en main y 2 de 6 en la rama; no toca nada de esto.",
   "capturas": "capturas/demo-v151",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T09:21:40+00:00",
+  "fin": "2026-11-08T11:44:57+00:00",
+  "titulo": "El mapa del rey con las zonas tomadas por los mojones (demo v152; chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "En el mapa del rey salen las zonas ya tomadas por un mojón (valravnx, 8 nov), cada una entera con su mojón: cada dueño, de un color apagado distinto de los demás (azul pizarra, musgo, morado, verde azulado, pardo, gris, rosa viejo y verde oscuro), lejos del rojo de la tuya y del oro del rey.",
+   "Las de quien te ha invitado a construir salen del color de la tuya, con el borde rojo y, de cerca, «Te han invitado» bajo su mojón. Sin nombres: el mapa no dice de quién es cada una.",
+   "El color de cada dueño es el mismo para todos los que miran: sale de su autor y, si choca con otro, se coge el siguiente libre (por orden de autor). Con más de ocho dueños, alguno se repite.",
+   "Los mojones y los invitados ya los mandaba el servidor a todos; el mapa los lee del mundo. Cada zona se calcula una vez.",
+   "La cama ligada pasa a ser de dos maneras, juntas (valravnx, 8 nov): el refugio de ramas, para cuando aún no tienes casa, y la cama de juncos, en la casa; ligable en tu tierra o en una donde te han invitado. Queda pendiente en este hito."
+  ],
+  "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea): todo bien salvo la web, por traducciones que faltaban en main (la tarea de los colgaderos); tras unir main, web, mapa del rey y construcción en la nube, bien, y otra vez tras unir la v151, el mapa del rey y las zonas aquí. Prueba nueva de las zonas tomadas: con MUTAR=2 (lógica) y MUTAR=5 (navegador) falla",
+  "capturas": "capturas/demo-v152",
+  "estado": "ok"
  }
 ]
