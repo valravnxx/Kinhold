@@ -5311,7 +5311,7 @@
  {
   "inicio": "2026-11-07T18:43:47+01:00",
   "fin": "2026-11-08T10:09:58+01:00",
-  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v152)",
+  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v153)",
   "hito": "interfaz",
   "hecho": [
    "La barra de abajo, nueva: tus dos manos con la imagen de lo que llevas en cada una (1 y 2) y su botón de soltar; el hombro solo cuando cargas algo, y entonces las manos se apagan; el hueco del cinto con su arma (C; tócalo para cogerla con la mano libre); y la carga en una raya debajo. Fuera la línea «En la mano».",
@@ -5320,7 +5320,7 @@
    "En el móvil, la barra empieza a la derecha del joystick, sin tocarlo, y con huecos más pequeños; el aviso de confirmar y el estado del combate suben para no quedar debajo de ella."
   ],
   "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea) después de unir main: todo bien menos «la web» (la página no estaba regenerada tras unir; regenerada, pasa) y el combate con lag simulado de la lógica, que pasa repetido aquí (81/81). Antes, «la demo en el mundo» falló una vez por 3,6 ms (un fotograma de 63,6 ms en la nube) y pasó repetida. La prueba nueva de la barra (con MUTAR_BARRA=1 falla) y la de las imágenes y el kit (447/447; con MUTAR=6 falla). Capturas de cerca de la barra en PC y móvil (con las manos llenas, con algo al hombro y sin nada), miradas ampliadas.",
-  "capturas": "capturas/demo-v152",
+  "capturas": "capturas/demo-v153",
   "estado": "ok"
  },
  {
@@ -5546,6 +5546,21 @@
    "CLAUDE.md, paso 6, con la regla nueva."
   ],
   "pruebas": "Modo rápido en la nube sobre esta rama: lógica, recorrido, demo única y web, todo bien en 10 minutos (antes, la batería entera, unos 85). Recorrido aquí con el reloj acelerado: 158 de 158 (con la casa humilde); con MUTAR=1 falla. La prueba de qué grupos pasa cada cambio, bien; con MUTAR=1 falla",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T10:26:05+00:00",
+  "fin": "2026-11-08T13:15:36+00:00",
+  "titulo": "P4b: la barra de abajo y el kit de la interfaz, unidos a main (demo v153; carril A)",
+  "hito": "interfaz",
+  "hecho": [
+   "La rama del chat con la barra de abajo y el kit de la interfaz estaba terminada pero sin unir a main; la v150 ya era la de los muros de barro, así que sale como v153 (la v151 y la v152 las publicaron mientras tanto los colgaderos y el mapa con las zonas tomadas).",
+   "Al unir, la rama borraba las imágenes de docs/recursos/iconos-v6, que usan versiones ya publicadas (v146 y v147): se quedan.",
+   "Los colgaderos (v151) habían sacado sus imágenes con la luz de antes (iconos-v9): ahora todas se sacan otra vez con la luz de contra de la v8 en docs/recursos/iconos-v10, con los dos colgaderos; las demás salen idénticas a las de la v8.",
+   "Las capturas de la barra pasan de capturas/demo-v150 a capturas/demo-v153, y se añaden las traducciones de la entrada del diario de esa tarea, que se habían perdido al unir."
+  ],
+  "pruebas": "Batería entera en la nube dos veces (43 grupos, sin las de en línea), la segunda con los colgaderos unidos: todo bien salvo la lógica, que fallaba en main por los juncos de 1 a 3 haces (la recolección y el recorrido aún esperaban 1); arreglado aquí y también en main a la vez, la lógica pasa en la nube. Las imágenes de las cosas 453/453. Al unir el mapa con las zonas tomadas y las pruebas rápidas, sin choques en el código: no se repite nada (regla nueva del 8 nov).",
+  "capturas": "capturas/demo-v153",
   "estado": "ok"
  }
 ]
