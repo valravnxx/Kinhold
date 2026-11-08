@@ -1457,6 +1457,12 @@
      "estado": "hecho",
      "inicio": "2026-11-08T07:50:13+00:00",
      "fin": "2026-11-08T08:01:44+00:00"
+    },
+    {
+     "nombre": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
+     "estado": "en_curso",
+     "inicio": "2026-11-08T08:08:57+00:00",
+     "rama": "trabajo/20261108-0808-colgaderos"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
