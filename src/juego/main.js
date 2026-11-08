@@ -2633,7 +2633,7 @@ function pintarBotonAccion(btn, a) {
   // el verbo, corto: lo de antes de los dos puntos («Coger del suelo: 2 × Rama» → «Coger del suelo»)
   verbo.textContent = a ? a.texto.split(/[:(]/)[0].trim() : tr('Usar');
   btn.setAttribute('aria-label', a ? a.texto : tr('Usar'));
-  prog.hidden = !(a && a.prog);
+  prog.toggleAttribute('hidden', !(a && a.prog));   // (un svg no tiene .hidden)
   if (a && a.prog) lleno.setAttribute('stroke-dasharray', `${2 * Math.PI * 51 * a.prog} 400`);
 }
 function pintarLista(lista, a, ops) {
