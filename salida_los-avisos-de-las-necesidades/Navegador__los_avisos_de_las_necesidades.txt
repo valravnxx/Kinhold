@@ -1,0 +1,26 @@
+  OK   PC: sin necesidades, ningún círculo
+  OK   PC: con sed 50, hambre 30 y cansancio 80 salen la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   PC: el del cansancio, en fuerte (desde 75); cada uno con su color — [['sed', False, '#3f7fd0'], ['cansancio', True, '#9a958c']]
+  OK   PC: los círculos no tapan ningún botón y caben en la pantalla — [[1122, 312, 1162, 352], [1120.996826171875, 358.9967956542969, 1163.003173828125, 401.0032043457031]]
+  OK   PC: al pulsar la sed, su ficha: cómo estás, qué te pasa y cómo se quita (beber del río) — Sed · 50%Aún aguantas; al máximo te cansarás el doble y si sigues sin beber, al rato mueres.Bebe agua de un río o de un lago: «Usar» en la orilla.
+  OK   PC: la ficha cabe en la pantalla — [854, 306, 1114, 465.34375]
+  OK   PC: se cierra al pulsar fuera
+  OK   PC: con las cuatro, los cuatro círculos
+  OK   PC: rendido no corre (a paso de andar); descansado, sí — rendido 3.60, descansado 6.00, andando 3.60 m/s
+  OK   PC: helado, anda más despacio — 2.88 contra 3.60 m/s
+  OK   PC: en la salida no hay agua al lado
+  OK   PC: hay una orilla cerca de la salida — {'x': 319.5997502295783, 'z': 416.5105036528985}
+  OK   PC: junto al agua, con sed, «Usar» bebe: la sed baja — 40
+  OK   PC: sin errores en la página
+  OK   móvil: sin necesidades, ningún círculo
+  OK   móvil: con sed 50, hambre 30 y cansancio 80 salen la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   móvil: el del cansancio, en fuerte (desde 75); cada uno con su color — [['sed', False, '#3f7fd0'], ['cansancio', True, '#9a958c']]
+  OK   móvil: los círculos no tapan ningún botón y caben en la pantalla — [[302, 366, 338, 402], [341.9283447265625, 363.9283447265625, 382.0716552734375, 404.0716552734375]]
+  OK   móvil: al pulsar la sed, su ficha: cómo estás, qué te pasa y cómo se quita (beber del río) — Sed · 50%Aún aguantas; al máximo te cansarás el doble y si sigues sin beber, al rato mueres.Bebe agua de un río o de un lago: «Usar» en la orilla.
+  OK   móvil: la ficha cabe en la pantalla — [120, 410, 380, 569.34375]
+  OK   móvil: se cierra al pulsar fuera
+  OK   móvil: con las cuatro, los cuatro círculos
+  OK   móvil: sin errores en la página
+  OK   en inglés, la ficha sale en inglés — Thirst · 60%You can still hold on; at the maximum you will tire twice as fast and if you still do not drink, after a while you die.Drink water from a river or a lake: «Use» on the bank.
+
+Todo correcto
