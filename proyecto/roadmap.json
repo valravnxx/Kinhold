@@ -1430,9 +1430,9 @@
     },
     {
      "nombre": "Origen de la piel, el mimbre, la resina y la corteza (lo piden recetas de este tramo y aún no salen de ningún sitio: honda, odre, cestas, nasa, yesca de corteza, antorcha con resina; pruebas/prueba_origenes.mjs): sacarlos del mundo o quitar esas recetas del tramo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T16:54:16+00:00",
-     "rama": "trabajo/20261108-1654"
+     "fin": "2026-11-08T18:20:29+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -3680,6 +3680,13 @@
      "archivo": "jugar/demo/v158.html",
      "capturas": "capturas/demo-v158",
      "notas": "v158: la acción, a la vista (estudio de la interfaz del 7 nov). Lo que haría Usar sale escrito sobre la cosa que tienes delante, con un aro dorado en el suelo bajo ella: «Desbrozar: matorral», «Coger del suelo: 2 × Rama», «Talar el árbol». En PC se hace con la F; si hay varias cosas al alcance, al lado sale la lista (la de Usar, marcada) y un clic en otra la hace. La obra dice lo que le falta («Tronco delgado: 2 de 4» y una barra), y mientras se tala o se desbroza un aro se va llenando. En el móvil, un botón de acción grande junto al pulgar con la imagen de la cosa y el verbo debajo, y Fabricar y Construir en arco a su lado. Fuera los botones Mover, Desmontar y Usar de la derecha: Construir queda abajo (B), y Desmontar y Terminar salen solo mientras construyes."
+    },
+    {
+     "v": "v159",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v159.html",
+     "capturas": "capturas/demo-v159",
+     "notas": "De dónde salen el mimbre (mimbreras de la ribera, con la lasca), la corteza (descortezar un árbol en pie) y la resina (sangrar un pino o un abeto); la honda y el odre, fuera hasta que haya caza"
     }
    ]
   },
