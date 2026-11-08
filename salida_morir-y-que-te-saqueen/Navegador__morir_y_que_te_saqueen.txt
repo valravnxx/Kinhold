@@ -1,0 +1,22 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: tu jugador muere de sed, y el aviso lo dice — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:1:jugador:b6f01a19", "x": 0, "z": 0, "hasta": 1794181682874}, "t": 1794181664219, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  OK   pc: vuelve a su sitio de salida (sin cama) — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:1:jugador:b6f01a19", "x": 0, "z": 0, "hasta": 1794181682874}, "t": 1794181664219, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  FALLA pc: el cuerpo del otro se queda donde cayó — []
+  FALLA pc: tumbado — null
+  OK   pc: y él ya no está ahí (ha vuelto a su salida) — [0, 0]
+  OK   pc: lo suyo que queda, en el suelo a su lado (la mitad: una de sus dos prendas) — ["pantalon_lino"]
+  OK   pc: pasado su tiempo, el cuerpo se va
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: tu jugador muere de sed, y el aviso lo dice — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:3:jugador:960120dd", "x": 0, "z": 0, "hasta": 1794181813899}, "t": 1794181794719, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  OK   movil: vuelve a su sitio de salida (sin cama) — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:3:jugador:960120dd", "x": 0, "z": 0, "hasta": 1794181813899}, "t": 1794181794719, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  FALLA movil: el cuerpo del otro se queda donde cayó — []
+  FALLA movil: tumbado — null
+  OK   movil: y él ya no está ahí (ha vuelto a su salida) — [0, 0]
+  OK   movil: lo suyo que queda, en el suelo a su lado (la mitad: una de sus dos prendas) — ["camisa_lino"]
+  OK   movil: pasado su tiempo, el cuerpo se va
+  OK   movil: sin errores en la página
+
+4 fallos: pc: el cuerpo del otro se queda donde cayó; pc: tumbado; movil: el cuerpo del otro se queda donde cayó; movil: tumbado
