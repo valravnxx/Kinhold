@@ -38,7 +38,7 @@ const cuenta = {}; for (const p of todos) cuenta[p.tipo] = (cuenta[p.tipo] || 0)
 console.log('  en la muestra de la isla:', JSON.stringify(cuenta));
 // (los juncos y el barro solo salen en la orilla: se miran junto a un río, en el 4)
 const DE_ORILLA = ['juncos', 'barro'];
-comprobar('en la isla salen todos los tipos (menos los de la orilla)', Object.keys(RECOLECTABLES).every(t => DE_ORILLA.includes(t) || cuenta[t] > 0), JSON.stringify(cuenta));
+comprobar('en la isla salen todos los tipos (menos los de la orilla y el matorral, que sale de la vegetación)', Object.keys(RECOLECTABLES).every(t => DE_ORILLA.includes(t) || !RECOLECTABLES[t].donde.length || cuenta[t] > 0), JSON.stringify(cuenta));
 
 // 2) cada punto, en su sitio (se vuelve a mirar el terreno, sin fiarse de las zonas que trae)
 const malos = { zona: [], agua: [], arbol: [], nombre: [] };
