@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-08T15:24:55+00:00",
-  "tarea": "Mazo de piedra y romper rocas (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo»): el mazo de piedra (1 piedra, 1 rama y 2 cordel, con las manos), con su modelo (estilo v5); con él se rompen las rocas medianas del mundo (hasta 1 m, aproximadamente) en muchos golpes según su tamaño, por el servidor y con su autor: cansa y da de 6 a 25 piedras sueltas según el tamaño; la roca desaparece, deja cascotes y vuelve a salir pasados unos meses reales (las grandes y los afloramientos, solo con hierro: la cantera de N2). Recorrido: el jugador hace el mazo, rompe una roca y se lleva sus piedras",
-  "hito": "crafting",
-  "rama": "trabajo/20261108-1524"
- },
+ "A": null,
  "B": {
   "inicio": "2026-11-08T16:59:03+01:00",
   "tarea": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
