@@ -4,7 +4,8 @@
 #     en el móvil, el botón de acción grande;
 #   - junto a un matorral, con el hacha, la etiqueta «Desbrozar» sobre él (con la F en PC) y un aro en el suelo bajo él;
 #     en el móvil, el botón de acción dice el verbo;
-#   - con unas ramas en el suelo al lado, lo primero es cogerlas, y la lista enseña también desbrozar; tocar esa fila lo hace;
+#   - con unas ramas en el suelo al lado, lo primero es cogerlas; la lista no sale sola (la etiqueta dice «más») y, con Alt
+#     en PC o manteniendo pulsado el botón de acción en el móvil, enseña también desbrozar; tocar esa fila lo hace;
 #   - construyendo, ni etiqueta ni aro, y se ven Terminar y Desmontar; sin errores en la página.
 # Rota a propósito (8 nov): con el aro siempre escondido, falla.
 # Uso: python3 pruebas/prueba_accion_navegador.py <html> <carpeta_capturas>
@@ -120,9 +121,20 @@ def recorrido(pg, nombre, pref, tactil):
     pg.evaluate(f"{K}.inventario.coger('rama', 2, 'mano:izq')"); pg.evaluate(f"{K}.soltarAlSuelo('mano:izq')")
     a = esperar_accion(pg, 'Coger del suelo')
     pg.wait_for_timeout(600)
+    # la lista no sale sola (valravnx, 8 nov): la etiqueta dice que hay más, y se abre con Alt (PC) o manteniendo pulsado
+    # el botón de acción (móvil)
+    comprobar(f'{nombre}: la lista no sale sola; la etiqueta dice que hay más', not pg.evaluate(VISIBLE, '#accionLista') and 'más' in (pg.evaluate(ETQ) or {}).get('txt', ''), str(pg.evaluate(ETQ)))
+    pg.screenshot(path=f'{SALIDA}/{pref}_2_sin_lista.png', timeout=180000)
+    if tactil:
+        pg.evaluate("document.getElementById('btnUsar').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerType: 'touch' }))")
+        pg.wait_for_timeout(900)
+        pg.evaluate("(() => { const b = document.getElementById('btnUsar'); b.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerType: 'touch' })); b.click(); })()")
+    else:
+        pg.keyboard.press('Alt')
+    pg.wait_for_timeout(600)
     filas = pg.evaluate("[...document.querySelectorAll('#accionLista button')].map(b => ({ t: b.innerText, sel: b.classList.contains('sel') }))")
     comprobar(f'{nombre}: con unas ramas en el suelo, lo primero es cogerlas', bool(a) and 'Coger del suelo' in a['texto'], str(a))
-    comprobar(f'{nombre}: y la lista enseña también desbrozar', pg.evaluate(VISIBLE, '#accionLista') and len(filas) >= 2 and filas[0]['sel'] and any('Desbrozar' in f['t'] for f in filas[1:]), str(filas))
+    comprobar(f'{nombre}: ' + ('manteniendo pulsado el botón de acción' if tactil else 'con Alt') + ', la lista enseña también desbrozar', pg.evaluate(VISIBLE, '#accionLista') and len(filas) >= 2 and filas[0]['sel'] and any('Desbrozar' in f['t'] for f in filas[1:]), str(filas))
     pg.screenshot(path=f'{SALIDA}/{pref}_2_lista.png', timeout=180000)
     # un toque (o clic) en la fila de desbrozar lo hace
     pg.evaluate("[...document.querySelectorAll('#accionLista button')].find(b => /Desbrozar/.test(b.innerText)).click()")
