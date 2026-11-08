@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2428 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2933 KB
+
+== Construir demo única
+      2866 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4122 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2832 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2422 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2942 KB
+dist/kinhold_trozos.html 2437 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el hogar
+    at eval (eval at evaluate (:311:30), <anonymous>:2:178)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+!! FALLA: python3 pruebas/prueba_hogar_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/hogar
+
+HAY FALLOS
+tardó 13 s
