@@ -8,7 +8,7 @@
 //   Sílex              — zonas calizas, ríos — recoger — 1 nódulo        (P) — lento
 //   Fibra (ortiga, hierba larga) — claros, riberas — arrancar — 2–4 fibra cruda (P) — una estación
 // Y lo que pide la casa humilde y la hoguera (tarea «Materiales del tramo que no tenían origen», 7 nov):
-//   Juncos             — riberas (y la orilla) — cuchillo — cortar — 1 haz de juncos (M) — una estación
+//   Juncos             — riberas (y la orilla) — cuchillo — cortar — 1 a 3 haces de juncos (M; valravnx, 8 nov) — una estación
 //   Barro              — la orilla de los ríos — palo cavador o pala — cavar — 1 cesta de barro (M) — inagotable
 //   Yesca              — hongos yesqueros en los tocones viejos del bosque — manos — 1–2 yesca (P) — una estación
 // Y para comer (P4): bayas (los arbustos del bosque y los claros) y setas (el suelo del bosque), 3–6 cada vez.
@@ -49,7 +49,7 @@ export const RECOLECTABLES = {
   silex:        { nombre: 'Sílex', donde: ['caliza', 'rio', 'claro'], con: 'manos', accion: 'recoger', da: 'silex', min: 1, max: 1, vuelve: TIEMPOS.semanas },
   ortiga:       { nombre: 'Ortigas', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   hierba_larga: { nombre: 'Hierba larga', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
-  juncos:       { nombre: 'Juncos', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'junco', min: 1, max: 1, vuelve: TIEMPOS.estacion },
+  juncos:       { nombre: 'Juncos', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'junco', min: 1, max: 3, vuelve: TIEMPOS.estacion },
   barro:        { nombre: 'Barro de la orilla', donde: ['rio', 'ribera'], con: 'cavar', accion: 'cavar', da: 'barro', min: 1, max: 1, vuelve: 0 },
   yesquero:     { nombre: 'Hongos yesqueros', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'yesca', min: 1, max: 2, vuelve: TIEMPOS.estacion },
   // (P4) lo que se come sin cazar (documento de sistemas, apartado 3: «Bayas, setas, frutos secos — bosque (según

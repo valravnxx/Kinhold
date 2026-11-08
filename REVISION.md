@@ -6,6 +6,41 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (12:05 UTC) — valravnx, en la sesión: revisión completa de las baterías de prueba
+valravnx: «hazme una revisión completa de las baterías de prueba, no puede ser que la media de tiempo de cada pequeña mejora sea de tantas horas, hay que quitar toda la prueba que no sea imprescindible y hacer de las actualizaciones algo mucho mas rapido, porque cada vez es peor, solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas».
+→ Cambia la regla de las pruebas de CLAUDE.md (antes: «todas, siempre»). Tarea en «Orden», la lleva el chat (rama trabajo/20261108-1205-pruebas-rapidas).
+
+### 8 nov 2026 (09:18 UTC) — valravnx, en la sesión del carril A: cama de juncos, el mapa de los mojones y la cama en tierra de otro
+valravnx: «podemos hacer una cama de juncos? o no existian en la epoca? por ahora estamos sin manera de tener cama en el earlygame, que es lo mas importante, quiza con juncos y fibra podría haber una, luego, otra cosa que vas a hacer, primero es ver que zonas del mapa están tomadas ya por mojones con colores diferentes, y luego que salgan del mismo color al tuyo las que te han dado permiso de construcción, y poder poner tu cama de respawn en una que te hayan dado permiso de construcción para vivir en pareja o grupo».
+Lo que pide, en orden:
+1. **Cama de juncos** para el principio del juego, con juncos y fibra (cordel), que sirva de cama ligada (donde reapareces). Respuesta en la sesión: sí es de la época (lechos de juncos, de brezo o de helechos en el suelo, atados o en un jergón; la paja necesita cereal, que aún no hay).
+2. **El mapa del rey enseña las zonas ya tomadas por mojones**, cada dueño de un color distinto.
+3. **Las zonas donde te han invitado a construir salen del mismo color que la tuya.**
+4. **La cama ligada se puede poner en una tierra donde te han invitado**, para vivir en pareja o en grupo.
+valravnx, 09:25 UTC: «ambas viables, el refugio es bueno para cuando aun no tienes casa, pero añade lo de la cama de juncos al planning para que haga ambas juntas, y mientras haz lo del mapa que te he dicho».
+→ En P4 («Un primer día con sentido»), la tarea de la cama ligada pasa a ser de dos maneras, juntas: el refugio de ramas (sin casa) y la cama de juncos (en la casa), ligables en tu tierra o en una donde te han invitado.
+→ Tarea nueva en P4, la lleva el chat (rama trabajo/20261108-0925-mapa-mojones): el mapa del rey con las zonas tomadas, un color por dueño, y las de quien te invita, de tu color.
+
+### 8 nov 2026 (08:08 UTC) — por el chat: colgaderos de mochilas y de herramientas
+valravnx: «ahora añadido al tema de lo de acopio de materiales vas a hacer dos nuevos para interior: acopio de mochilas colgable a pared y el de herramientas, busca sus diseños mejores posibles y hazlos, así lo dejamos todo bien ordenadito en la base».
+→ Tarea en P3 («De nada a una casa»), la lleva el chat: el colgadero de mochilas y el de herramientas, de dentro y colgados en un muro.
+
+### 8 nov 2026 (07:50 UTC) — por el chat: arreglo urgente, sacar de un almacenaje
+valravnx (con captura del almiar: 12 juncos guardados, «No te cabe: no tienes sitio libre»): «al tener una pila grande en un almacenaje y no caberte en las manos, te dice que no en vez de darte la cantidad que sí puedes llevar, quedándose ahí bloqueado para siempre; haz métodos para recoger la cantidad que se quiera, por ejemplo con clic derecho… pruebas mínimas, que sea rápido».
+→ Tarea en P3 («De nada a una casa»), la lleva el chat: sacar lo que te cabe (no todo o nada) y elegir cuánto con el clic derecho (o dejando pulsado en el móvil).
+
+### 8 nov 2026 (07:30 UTC) — por el chat: romper rocas y desbrozar arbustos
+valravnx: «ahora mismo los arbustos y las rocas que hay por el mapa no se pueden interactuar con ellos de ninguna manera… cuándo, en qué punto es viable, por ejemplo, romper una roca para conseguir mucha cantidad de piedras… imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo… Y los arbustos… si te molestan o te hacen falta ramas, pues los puedas destruir con un hacha… la piedra quizá haría falta un material un poco mejor que un martillo de piedra, o que necesite muchos golpes». Estudio: no había nada apuntado (los matorrales y las rocas sueltas son solo decorado; la cantera con pico de hierro es N2, en hitos congelados). Respuestas: el mazo de piedra ya, con muchos golpes, para las rocas medianas (las grandes, con hierro); vuelven las dos (la roca, pasados unos meses reales; el matorral, en una estación); desbrozar «ahora, cuando acabes esto comienzas a añadir lo dicho».
+→ Al GDD (apartado 8) y al documento de sistemas (apartado 3 y recetas N0), con sus traducciones. Dos tareas nuevas en P3 («De nada a una casa»), antes del recorrido entero: desbrozar matorrales y arbustos con el hacha de piedra, y el mazo de piedra para romper rocas. Las lleva el chat, empezando por desbrozar.
+
+### 8 nov 2026 (07:30 UTC) — en la sesión de chat con valravnx: el juego completo de muros de barro
+valravnx: «te vas a dedicar a algo mejor, ves que de pared de barro solo hay la pared lisa y para poner una puerta tienes que poner de troncos? eso queda feo! debemos tener el full set de barro tambien».
+→ Tarea del chat en P3 («De nada a una casa»): el muro de zarzo y barro con puerta y con ventana, como los de troncos (la puerta de varas encaja en su hueco), con el estilo del muro de zarzo, en el menú de construir y con su origen en la prueba de dónde sale cada cosa.
+
+### 8 nov 2026 (07:15 UTC) — en la sesión del carril A: la casa humilde, el tejado con andamio
+valravnx (al aviso de que el recorrido no llegaba al tejado de la casa humilde sin escalera ni cuerda): «lo he hecho ya en survival solo.. puedes montar el tronco sin problema y hacer el andamio».
+→ El recorrido de jugador (paso 16) sigue el mismo camino: el banco de tronco y sus cuerdas, un andamio junto a la casa (8 varas y 2 cuerdas), sube a él con las varas y los juncos y levanta desde arriba el tejado de juncos; luego la puerta de varas con su cuerda. Sigue la misma tarea, en su rama.
+
 ### 7 nov 2026 (20:42 UTC) — en la sesión de chat con valravnx: los puestos y los almacenajes, sin girar y sin desmontar
 valravnx (con una captura junto a su casa: el tocón de trabajo y los acopios de troncos): «error encontrado: tanto crafting tables y acopios nuevos no se ponen en la dirección de rotación que los has puesto, y no se pueden desmontar de ninguna manera».
 → Tarea del chat en el hito «Orden»: los puestos de trabajo y los almacenajes guardan el giro con que se ponen (el servidor lo apunta; hoy salen girados al azar por su nombre), y se desmontan terminados desde Construir → Quitar, como las piezas (el 75 % del material y lo que guardan, al suelo a su lado; en tu tierra o en la de quien te invita).

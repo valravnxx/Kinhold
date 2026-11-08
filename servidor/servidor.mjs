@@ -294,6 +294,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     arconPruebas, terreno,
     puedeTocar: (a, x, z) => mundo.puedeTocar(x, z, a),   // las estaciones de fabricar, en tierra de otro solo si te ha invitado
     bajoTecho: (x, z) => mundo.bajoTecho(x, z),           // los puestos de trabajo: la hoguera, solo fuera
+    alMuro: (x, z) => mundo.muroCercano(x, z, 0.5),       // los colgaderos, pegados a un muro
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }

@@ -38,7 +38,8 @@ const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'
 // cómo se nombra cada estación en una frase («encima de la piedra de tallar»)
 const LA_ESTACION = { piedra_tallar: () => tr('la piedra de tallar'), hoguera: () => tr('la hoguera'), banco_tronco: () => tr('el banco de trabajo de tronco'),
   acopio_troncos: () => tr('el acopio de troncos'), pila_piedras: () => tr('la pila de piedras'), lenera: () => tr('la leñera'),
-  soporte_varas: () => tr('el soporte de varas'), almiar: () => tr('el almiar'), hoyo_barro: () => tr('el hoyo de barro'), cesto: () => tr('el cesto') };
+  soporte_varas: () => tr('el soporte de varas'), almiar: () => tr('el almiar'), hoyo_barro: () => tr('el hoyo de barro'), cesto: () => tr('el cesto'),
+  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas') };
 const laEstacion = t => LA_ESTACION[t] ? LA_ESTACION[t]() : tr(ESTACIONES[t].nombre).toLowerCase();
 const MANO_SVG = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17V8.5a1.8 1.8 0 0 1 3.6 0V15M13.6 15V6.3a1.8 1.8 0 0 1 3.6 0V15M17.2 15V7.5a1.8 1.8 0 0 1 3.6 0V16M20.8 16v-4a1.8 1.8 0 0 1 3.6 0v7c0 5-3.4 9-8.4 9-3.4 0-5.4-1.6-7-4.2l-3-5a1.9 1.9 0 0 1 3.1-2.1L10 19"/></svg>';
 const TODO_SVG = '<svg viewBox="0 0 32 32" fill="currentColor"><rect x="5" y="5" width="9" height="9" rx="2"/><rect x="18" y="5" width="9" height="9" rx="2"/><rect x="5" y="18" width="9" height="9" rx="2"/><rect x="18" y="18" width="9" height="9" rx="2"/></svg>';
@@ -58,6 +59,7 @@ export function carpetaIconos() {
 export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posicion, hacer, alAbrir = () => {} }) {
   let abierto = false, firma = '', aviso = { txt: '', error: false };
   let pestana = 'manos', sel = null, estacionActiva = null, fichaMovil = false;
+  let cuanto = null; // { estacion, objeto, n }: elegir cuánto sacar (clic derecho o dejar pulsado; valravnx, 8 nov)
   // lo encargado: manos y cada estación → [{ receta, fin }] (fin con la hora de este navegador)
   let encargos = { manos: [], estaciones: {} };
   const base = carpetaIconos();
@@ -106,7 +108,12 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     }
     return res;
   }
-  const SITIO_CORTO = r => r.startsWith('mano:') ? tr('mano') : r.startsWith('cintura') ? tr('cinto') : r.startsWith('espalda') ? tr('mochila') : tr('hombro');
+  // lo que llevas a la espalda, vacío, se cuelga tal cual en el colgadero de mochilas
+  const deLaEspalda = (inv, tipo) => {
+    const c = inv.lugares.espalda;
+    return c && ESTACIONES[tipo].muro && ESTACIONES[tipo].guarda && guardaTipo(tipo, c.tipo) && !(c.dentro && c.dentro.some(Boolean)) ? [{ ruta: 'espalda', tipo: c.tipo, n: c.n }] : [];
+  };
+  const SITIO_CORTO = r => r.startsWith('mano:') ? tr('mano') : r === 'espalda' ? tr('espalda') : r.startsWith('cintura') ? tr('cinto') : r.startsWith('espalda') ? tr('mochila') : tr('hombro');
 
   // ---------- cartas ----------
   function carta(x) {
@@ -179,17 +186,22 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
   // ---------- la estación de al lado: lo que tiene encima y lo que llevas ----------
   function pintarMesa(e, inv) {
     const est = ESTACIONES[e.tipo], dep = e.deposito || {}, hay = totalDeposito(dep), max = cabeEn(e.tipo), alm = esAlmacen(e.tipo);
-    const encima = Object.entries(dep).map(([t, n]) => `<button class="fab-hueco fab-coger" data-dep="${esc(t)}" data-estacion="${esc(e.id)}" data-objeto="${esc(t)}" title="${esc(tr(alm ? 'Sacar' : 'Coger') + ': ' + nombre(t))}">${icono(t)}<b class="fab-num">${n}</b><span class="fab-hueco-nom">${esc(nombre(t))}</span></button>`).join('');
+    const encima = Object.entries(dep).map(([t, n]) => `<button class="fab-hueco fab-coger" data-dep="${esc(t)}" data-estacion="${esc(e.id)}" data-objeto="${esc(t)}" title="${esc(tr(alm ? 'Sacar' : 'Coger') + ': ' + nombre(t) + ' · ' + tr('clic derecho o dejar pulsado: elegir cuánto'))}">${icono(t)}<b class="fab-num">${n}</b><span class="fab-hueco-nom">${esc(nombre(t))}</span></button>`).join('');
     const vacios = Math.max(0, 5 - Object.keys(dep).length);
     const guarda = alm ? yLista(est.guarda.map(t => nombre(t).toLowerCase())) : '';
     const lleva = hay >= max ? `<p class="fab-gris">${esc(tr('No cabe nada más.'))}</p>`
-      : dejables(inv).filter(x => guardaTipo(e.tipo, x.tipo)).map(x => `<button class="fab-hueco fab-dejar" data-estacion="${esc(e.id)}" data-de="${esc(x.ruta)}" title="${esc(tr(alm ? 'Guardar aquí' : 'Dejar') + ': ' + nombre(x.tipo))}">${icono(x.tipo)}<b class="fab-num">${x.n}</b><i class="fab-de">${esc(SITIO_CORTO(x.ruta))}</i><span class="fab-hueco-nom">${esc(nombre(x.tipo))}</span></button>`).join('')
+      : [...dejables(inv), ...deLaEspalda(inv, e.tipo)].filter(x => guardaTipo(e.tipo, x.tipo)).map(x => `<button class="fab-hueco fab-dejar" data-estacion="${esc(e.id)}" data-de="${esc(x.ruta)}" title="${esc(tr(alm ? 'Guardar aquí' : 'Dejar') + ': ' + nombre(x.tipo))}">${icono(x.tipo)}<b class="fab-num">${x.n}</b><i class="fab-de">${esc(SITIO_CORTO(x.ruta))}</i><span class="fab-hueco-nom">${esc(nombre(x.tipo))}</span></button>`).join('')
       || `<p class="fab-gris">${esc(alm ? tr('No llevas nada que se guarde aquí ({c}).', { c: guarda }) : tr('No llevas nada que dejar.'))}</p>`;
     const titulo = alm ? tr('Guardado en {e}', { e: laEstacion(e.tipo) }) : tr('Encima de {e}', { e: laEstacion(e.tipo) });
     const cuenta = alm ? tr('{n} de {m} · toca para sacar', { n: hay, m: max }) : tr('{n} de {m} · toca para coger', { n: hay, m: max });
     const nada = alm ? tr('Vacío: aquí se guarda {c}.', { c: guarda }) : tr('No hay nada: deja aquí lo que piden sus recetas.');
+    const q = cuanto && cuanto.estacion === e.id && dep[cuanto.objeto] ? cuanto : null;
+    if (q) q.n = Math.max(1, Math.min(q.n, dep[q.objeto]));
+    const elegir = q ? `<div class="fab-cuanto">${icono(q.objeto)}<span>${esc(tr(alm ? 'Sacar' : 'Coger') + ': ' + nombre(q.objeto))}</span>
+      <button class="fab-btn2 fab-cuanto-mas" data-d="-10">−10</button><button class="fab-btn2 fab-cuanto-mas" data-d="-1">−1</button><b class="fab-cuanto-n">${q.n}</b><button class="fab-btn2 fab-cuanto-mas" data-d="1">+1</button><button class="fab-btn2 fab-cuanto-mas" data-d="10">+10</button>
+      <button class="fab-btn fab-cuanto-ok">${esc(tr(alm ? 'Sacar {n}' : 'Coger {n}', { n: q.n }))}</button><button class="fab-btn2 fab-cuanto-cerrar" aria-label="✕">✕</button></div>` : '';
     return `<section class="fab-sec-dep" data-estacion="${esc(e.id)}"><div class="fab-bandeja"><div class="fab-bt"><b>${esc(titulo)}</b><span>${esc(cuenta)}</span></div>
-      <div class="fab-huecos">${encima || `<p class="fab-gris">${esc(nada)}</p>`}${encima ? '<span class="fab-hueco fab-vacio"></span>'.repeat(vacios) : ''}</div></div>
+      <div class="fab-huecos">${encima || `<p class="fab-gris">${esc(nada)}</p>`}${encima ? '<span class="fab-hueco fab-vacio"></span>'.repeat(vacios) : ''}</div>${elegir}</div>
       <div class="fab-bandeja"><div class="fab-bt"><b>${esc(tr('Lo que llevas'))}</b><span>${esc(alm ? tr('toca para guardar') : tr('toca para dejar'))}</span></div><div class="fab-huecos">${lleva}</div></div></section>`;
   }
 
@@ -271,6 +283,25 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     });
   }
 
+  // Elegir cuánto sacar: clic derecho en PC, dejar pulsado en el móvil (valravnx, 8 nov).
+  let pulsadoLargo = false, temporizador = 0;
+  const abrirCuanto = (b) => {
+    const e = fab.estaciones[b.dataset.estacion], hay = e && e.deposito ? e.deposito[b.dataset.objeto] || 0 : 0;
+    if (!hay) return;
+    cuanto = { estacion: b.dataset.estacion, objeto: b.dataset.objeto, n: Math.max(1, Math.min(inventario().cabenCuantos(b.dataset.objeto, hay), hay)) };
+    firma = ''; pintar();
+  };
+  panel.addEventListener('contextmenu', (ev) => {
+    const b = ev.target.closest('.fab-coger'); if (!b || !panel.contains(b)) return;
+    ev.preventDefault(); abrirCuanto(b);
+  });
+  panel.addEventListener('pointerdown', (ev) => {
+    const b = ev.target.closest('.fab-coger'); if (!b || ev.pointerType === 'mouse') return;
+    clearTimeout(temporizador); pulsadoLargo = false;
+    temporizador = setTimeout(() => { pulsadoLargo = true; abrirCuanto(b); }, 500);
+  });
+  for (const t of ['pointerup', 'pointercancel', 'pointerleave']) panel.addEventListener(t, () => clearTimeout(temporizador));
+
   panel.addEventListener('click', (ev) => {
     const b = ev.target.closest('button') || ev.target.closest('.fab-velo'); if (!b || !panel.contains(b)) return;
     const p = lugar();
@@ -302,15 +333,23 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
       });
       return;
     }
-    if (b.classList.contains('fab-dejar') || b.classList.contains('fab-coger')) {
-      const dejar = b.classList.contains('fab-dejar'), estacion = b.dataset.estacion;
+    if (b.classList.contains('fab-cuanto-cerrar')) { cuanto = null; firma = ''; pintar(); return; }
+    if (b.classList.contains('fab-cuanto-mas')) { if (cuanto) { cuanto.n = Math.max(1, cuanto.n + Number(b.dataset.d)); firma = ''; pintar(); } return; }
+    if (b.classList.contains('fab-coger') && pulsadoLargo) { pulsadoLargo = false; return; } // el clic que sigue a dejar pulsado
+    if (b.classList.contains('fab-dejar') || b.classList.contains('fab-coger') || b.classList.contains('fab-cuanto-ok')) {
+      const dejar = b.classList.contains('fab-dejar'), elegido = b.classList.contains('fab-cuanto-ok') && cuanto;
+      if (b.classList.contains('fab-cuanto-ok') && !elegido) return;
+      const estacion = elegido ? cuanto.estacion : b.dataset.estacion;
       b.disabled = true;
-      const accion = dejar ? { tipo: 'depositar_estacion', estacion, de: b.dataset.de, x: p.x, z: p.z } : { tipo: 'retirar_estacion', estacion, objeto: b.dataset.objeto, x: p.x, z: p.z };
+      const accion = dejar ? { tipo: 'depositar_estacion', estacion, de: b.dataset.de, x: p.x, z: p.z }
+        : { tipo: 'retirar_estacion', estacion, objeto: elegido ? cuanto.objeto : b.dataset.objeto, ...(elegido ? { cantidad: cuanto.n } : {}), x: p.x, z: p.z };
+      if (elegido) cuanto = null;
       hacer(accion, (r) => {
         if (!r.ok) { decir(tr(r.motivo), true); return; }
         const que = Object.entries(r.dejado || r.cogido || {}).map(([t, n]) => `${n} × ${nombre(t)}`).join(', ');
         const alm = fab.estaciones[estacion] && esAlmacen(fab.estaciones[estacion].tipo);
-        firma = ''; decir(tr(alm ? (dejar ? 'Guardas: {d}.' : 'Sacas: {d}.') : dejar ? 'Dejas en la estación: {d}.' : 'Coges de la estación: {d}.', { d: que }));
+        const resto = r.noCabia ? ' ' + tr('No te cabe más: quedan {n} ahí.', { n: r.noCabia }) : '';
+        firma = ''; decir(tr(alm ? (dejar ? 'Guardas: {d}.' : 'Sacas: {d}.') : dejar ? 'Dejas en la estación: {d}.' : 'Coges de la estación: {d}.', { d: que }) + resto);
       });
       return;
     }
