@@ -1,0 +1,5 @@
+FALLO: «est_refugio_ramas» está en el índice y dice si tiene su modelo
+FALLO: existe la imagen de «est_refugio_ramas» (docs/recursos/iconos-v11/est_refugio_ramas.webp)
+FALLO: «est_cama_juncos» está en el índice y dice si tiene su modelo
+FALLO: existe la imagen de «est_cama_juncos» (docs/recursos/iconos-v11/est_cama_juncos.webp)
+456 bien, 4 fallos · 96 imágenes que enseña el panel, 22 aún sin su modelo
