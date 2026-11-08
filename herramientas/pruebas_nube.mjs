@@ -6,8 +6,9 @@
 // ha fallado. Sale con error si algo falla.
 // Uso: node herramientas/pruebas_nube.mjs                       lo esencial y los grupos de lo que toca la rama
 //      node herramientas/pruebas_nube.mjs --mas cavar           eso y además esos grupos
+//      node herramientas/pruebas_nube.mjs --sin la-rastra       el revisor, sin esos (no importan ya para este cambio)
 //      node herramientas/pruebas_nube.mjs cavar web             solo esos grupos (bash herramientas/probar_todo.sh --grupos)
-//      node herramientas/pruebas_nube.mjs --todo                la batería entera (al llevar un hito a revisión)
+//      node herramientas/pruebas_nube.mjs --todo                la batería entera (solo si valravnx la pide)
 //      SIN_TRAER=1 node herramientas/pruebas_nube.mjs           sin traer capturas
 //      SOLO_NUBE=1 node herramientas/pruebas_nube.mjs           sin mirar el PC de valravnx
 // Lo lanza la subida de una rama nube-pedido/<id>/<grupos> (la nube) o pc-pedido/<id>/<grupos> (su PC); esas ramas y las
@@ -16,7 +17,7 @@
 import { execFileSync } from 'child_process';
 import { mkdirSync, rmSync, readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import { ESENCIALES, gruposPara, pruebasDeGrupos } from './grupos_pruebas.mjs';
+import { porQue, pruebasDeGrupos } from './grupos_pruebas.mjs';
 
 const REPO = 'valravnxx/Kinhold';
 const C = '/tmp/kinhold_capturas';
@@ -52,12 +53,15 @@ const todos = JSON.parse(sh('bash', ['herramientas/probar_todo.sh', '--grupos'])
 // valravnx, 31 oct: «no hagas las pruebas de en línea de ningún tipo» (las de dos páginas y un servidor: jugar, duelo,
 // volver donde lo dejaste, lo que llevas en línea). Sin nombrarlas no se lanzan; nombradas a mano, sí.
 const EN_LINEA = (g) => /en-linea|volver-donde/.test(g);
-// Qué se pasa (valravnx, 8 nov: «solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas»;
-// herramientas/grupos_pruebas.mjs): sin nada, lo esencial y los grupos de lo que toca la rama (lo cambiado desde main);
+// Qué se pasa (valravnx, 8 nov: «si no es inmediatamente importante, no se hace»; herramientas/grupos_pruebas.mjs):
+// sin nada, el revisor: solo los grupos que pide lo que cambia la rama (lo cambiado desde main), cada uno con su porqué;
 // --mas <grupos>, eso y además esos; <grupos>, solo esos (para repetir lo que falló); --todo, la batería entera (al
 // llevar un hito a revisión).
 const args = process.argv.slice(2), TODO = args.includes('--todo'), MAS = args.includes('--mas');
-const nombrados = args.filter(a => !a.startsWith('--'));
+// --sin <grupos>: los que el revisor pide pero la sesión ve que no importan ya para lo exacto del cambio (se dice por
+// qué en el diario)
+const iSin = args.indexOf('--sin'), sin = iSin >= 0 ? args.slice(iSin + 1).filter(a => !a.startsWith('--')) : [];
+const nombrados = (iSin >= 0 ? args.slice(0, iSin) : args).filter(a => !a.startsWith('--'));
 let pedidos;
 if (TODO) {
   pedidos = todos.filter(g => !EN_LINEA(g));
@@ -70,8 +74,13 @@ else {
   const archivos = sh('git', ['diff', '--name-only', base, 'HEAD']).split('\n').filter(Boolean);
   const grupoDe = (n) => sh('bash', ['-c', `source <(sed -n '/^grupo_de()/,/^}/p' herramientas/probar_todo.sh); grupo_de "$1"`, '_', n]);
   const pruebas = pruebasDeGrupos(readFileSync('herramientas/probar_todo.sh', 'utf8'), grupoDe);
-  pedidos = gruposPara(archivos, { todos, pruebas, nombrados }).filter(g => !EN_LINEA(g) || nombrados.includes(g));
-  console.log(`Lo esencial (${ESENCIALES.join(', ')}) y lo de lo tocado (${archivos.length} archivos cambiados desde main)${nombrados.length ? ' y lo nombrado' : ''}; la batería entera, con --todo`);
+  const revisor = porQue(archivos, { todos, pruebas, nombrados });
+  pedidos = [...revisor.keys()].filter(g => (!EN_LINEA(g) || nombrados.includes(g)) && !sin.includes(g));
+  if (sin.length) console.log(`Fuera, por la sesión: ${sin.join(', ')}`);
+  // el revisor (valravnx, 8 nov: «si no es inmediatamente importante, no se hace»): qué se pasa y qué lo pide
+  console.log(`Revisor: ${archivos.length} archivos cambiados desde main; se pasa solo lo que piden${pedidos.length ? ':' : ': nada'}`);
+  for (const g of pedidos) console.log(`  ${g} ← ${revisor.get(g).slice(0, 3).join(', ')}${revisor.get(g).length > 3 ? ` y ${revisor.get(g).length - 3} más` : ''}`);
+  if (!pedidos.length) { console.log('Nada que pasar en la nube (las traducciones y la web, con construir_web.mjs aquí). Si hace falta un grupo, nómbralo con --mas.'); process.exit(0); }
 }
 const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica' && g !== 'recorrido');   // (lo de node, siempre a la nube)
 const aNube = pedidos.filter(g => !alPC.includes(g));

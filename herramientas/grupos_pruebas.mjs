@@ -2,21 +2,26 @@
 // imprescindible y hacer de las actualizaciones algo mucho más rápido… solo verificar lo esencial, no pasar mil pruebas
 // para cosas pequeñas»).
 //
-// Antes, cada cambio pasaba la batería entera (42 grupos, unos 85 minutos en la nube, y otra vez al unir main). Ahora:
-//   - ESENCIALES, siempre: la lógica (las pruebas de node), el recorrido de jugador (en su propia máquina, a la vez),
-//     que la demo arranca y se juega, y la web.
-//   - más los grupos de lo que toca el cambio: los de cada archivo cambiado según TOCA (abajo) y los de cada archivo de
-//     prueba cambiado (el de su paso en probar_todo.sh);
-//   - más los que se nombren a mano (lo que se ha tocado y la tabla no sabe: por ejemplo, un cambio en
-//     src/juego/main.js que es del panel de fabricar → «panel-de-fabricacion»).
-// La batería entera, solo al llevar un hito a revisión (o si valravnx lo pide): pruebas_nube.mjs --todo.
+// El revisor (valravnx, 8 nov, después: «solo añade un revisor de cuán importante es cada prueba para lo exacto que se
+// haga, si no es inmediatamente importante, no se hace, hay que priorizar el progreso»): no hay pruebas «de siempre».
+// Cada grupo se pasa solo si lo pide un archivo que cambia el cambio, y el revisor dice cuál (porQue):
+//   - los de cada archivo cambiado según TOCA (abajo) y los de cada archivo de prueba cambiado (su paso en
+//     probar_todo.sh); la lógica y el recorrido, solo si cambia la lógica o el servidor; la demo única, solo si cambia
+//     lo que la arranca;
+//   - más los que se nombren a mano, con su porqué (lo que la tabla no sabe: un cambio en src/juego/main.js que es del
+//     panel de fabricar → «panel-de-fabricacion»).
+// Sin nada que lo pida, no se pasa nada en la nube. Las traducciones y la web las comprueba construir_web.mjs aquí, en
+// segundos. La batería entera (--todo), solo si valravnx la pide.
 // Sin three.js ni red: lo usa herramientas/pruebas_nube.mjs y se prueba con node herramientas/grupos_pruebas.mjs.
 
-export const ESENCIALES = ['logica', 'recorrido', 'demo-unica', 'web'];
+export const ESENCIALES = [];   // (8 nov: ninguna de siempre; cada una, solo si la pide lo cambiado)
 
 // grupo → archivos (expresiones sobre la ruta) que, si cambian, piden ese grupo. Lo de todo el juego (main.js,
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
 export const TOCA = {
+  'logica': [/^src\/logica\//, /^src\/combate\/logica\.js$/, /^servidor\//, /^pruebas\/prueba_(?!recorrido)[^/]*\.mjs$/],
+  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia)\.js$/, /^servidor\/servidor\.mjs$/, /^pruebas\/prueba_recorrido\.mjs$/],
+  'demo-unica': [/^src\/demo\//, /^src\/plantilla\.html$/, /^construir_demo\.mjs$/, /^src\/mundo\/(cliente|conexion|mundo_juego)\.js$/],
   'construccion': [/^src\/logica\/(construccion|piezas|obras_red)\.js$/, /^src\/mundo\/modelos\.js$/],
   'quitar-el-mojon': [/^src\/logica\/(construccion|abandono)\.js$/],
   'posprocesado-y-perfiles-graficos': [/^src\/posprocesado\//, /^construir_posprocesado\.mjs$/],
@@ -72,16 +77,19 @@ export function pruebasDeGrupos(textoProbarTodo, grupoDe) {
   return out;
 }
 
-// los grupos que pide un cambio: los esenciales, los de lo tocado y los nombrados (solo los que existen)
-export function gruposPara(archivos, { todos, pruebas = {}, nombrados = [] }) {
-  const out = new Set(ESENCIALES.filter(g => todos.includes(g)));
+// el revisor: cada grupo que pide el cambio, con los archivos que lo piden (o «nombrado a mano»); solo los que existen
+export function porQue(archivos, { todos, pruebas = {}, nombrados = [] }) {
+  const out = new Map(ESENCIALES.filter(g => todos.includes(g)).map(g => [g, ['de siempre']]));
+  const pide = (g, por) => { if (!out.has(g)) out.set(g, []); if (!out.get(g).includes(por)) out.get(g).push(por); };
   for (const f of archivos) {
-    for (const [g, l] of Object.entries(TOCA)) if (l.some(r => r.test(f))) out.add(g);
-    for (const [g, l] of Object.entries(pruebas)) if (l.includes(f)) out.add(g);
+    for (const [g, l] of Object.entries(TOCA)) if (l.some(r => r.test(f))) pide(g, f);
+    for (const [g, l] of Object.entries(pruebas)) if (l.includes(f)) pide(g, f);
   }
-  for (const g of nombrados) out.add(g);
-  return todos.filter(g => out.has(g));
+  for (const g of nombrados) pide(g, 'nombrado a mano');
+  return new Map(todos.filter(g => out.has(g)).map(g => [g, out.get(g)]));
 }
+// los grupos que pide un cambio (los del revisor)
+export const gruposPara = (archivos, o) => [...porQue(archivos, o).keys()];
 
 // prueba: node herramientas/grupos_pruebas.mjs (con MUTAR=1, sin los esenciales: tiene que fallar)
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -90,16 +98,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const todos = JSON.parse(execFileSync('bash', ['herramientas/probar_todo.sh', '--grupos'], { encoding: 'utf8' }));
   const grupoDe = (n) => execFileSync('bash', ['-c', `source <(sed -n '/^grupo_de()/,/^}/p' herramientas/probar_todo.sh); grupo_de "$1"`, '_', n], { encoding: 'utf8' }).trim();
   const pruebas = pruebasDeGrupos(readFileSync('herramientas/probar_todo.sh', 'utf8'), grupoDe);
-  if (process.env.MUTAR === '1') ESENCIALES.length = 0;
+  if (process.env.MUTAR === '1') ESENCIALES.push('logica', 'demo-unica');   // (rota a propósito: pruebas de siempre)
   let mal = 0;
   const ver = (n, c, d = '') => { console.log(`  ${c ? 'OK  ' : 'FALLA'} ${n}${d ? ' — ' + d : ''}`); if (!c) mal++; };
-  const sinNada = gruposPara([], { todos, pruebas });
-  ver('sin cambios de código, solo los esenciales (lógica, recorrido, la demo y la web)', [...sinNada].sort().join() === 'demo-unica,logica,recorrido,web', sinNada.join(', '));
+  const sinNada = gruposPara(['proyecto/diario.json', 'docs/index.html', 'src/idiomas/en.json'], { todos, pruebas });
+  ver('sin cambios de código (diario, web, traducciones), nada en la nube', sinNada.length === 0, sinNada.join(', '));
   const mapa = gruposPara(['src/juego/mapa_rey.js', 'pruebas/prueba_mapa_rey_navegador.py'], { todos, pruebas });
-  ver('tocar el mapa del rey pide su grupo y los esenciales, nada más', mapa.length === 5 && mapa.includes('mapa-del-rey'), mapa.join(', '));
+  ver('tocar el mapa del rey pide solo su grupo', mapa.join() === 'mapa-del-rey', mapa.join(', '));
+  const fuego = porQue(['src/logica/fuego.js'], { todos, pruebas });
+  ver('tocar la lógica del fuego pide la lógica, el recorrido y la hoguera, y dice por qué', [...fuego.keys()].sort().join() === 'la-hoguera,logica,recorrido' && fuego.get('la-hoguera')[0] === 'src/logica/fuego.js', JSON.stringify([...fuego]));
   const prueba = gruposPara(['pruebas/prueba_hoguera_navegador.py'], { todos, pruebas });
-  ver('tocar el archivo de prueba de un grupo pide ese grupo', prueba.includes('la-hoguera'), prueba.join(', '));
-  ver('lo nombrado a mano entra', gruposPara([], { todos, pruebas, nombrados: ['cavar'] }).includes('cavar'));
+  ver('tocar el archivo de prueba de un grupo pide ese grupo', prueba.join() === 'la-hoguera', prueba.join(', '));
+  ver('lo nombrado a mano entra', gruposPara([], { todos, pruebas, nombrados: ['cavar'] }).join() === 'cavar');
   const sobran = Object.keys(TOCA).filter(g => !todos.includes(g));
   ver('la tabla solo nombra grupos que existen', !sobran.length, sobran.join(', '));
   const sinPrueba = todos.filter(g => g !== 'logica' && g !== 'recorrido' && !pruebas[g]);

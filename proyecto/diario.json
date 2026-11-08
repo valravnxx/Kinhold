@@ -5579,5 +5579,19 @@
   "pruebas": "En la nube, lo esencial y lo tocado (9 grupos): todo bien; desbrozar en la lógica y el servidor 27/27, en el navegador en PC y en móvil, y su paso del recorrido. No comprobado en esta sesión: que la prueba nueva falle al romperla a propósito.",
   "capturas": "capturas/demo-v154",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T13:49:31+00:00",
+  "fin": "2026-11-08T13:51:15+00:00",
+  "titulo": "El revisor de las pruebas: solo lo que pide el cambio (chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Ya no hay pruebas de siempre (valravnx, 8 nov: «si no es inmediatamente importante, no se hace»): pruebas_nube.mjs mira lo cambiado desde main y pasa solo los grupos que pide un archivo cambiado, y dice qué archivo pide cada uno. Sin código cambiado, nada en la nube.",
+   "La lógica y el recorrido, solo si cambia la lógica o el servidor; la demo única, solo si cambia lo que la arranca; las traducciones y la web, con construir_web.mjs aquí, en segundos.",
+   "La sesión puede quitar lo que el revisor pide y no importa para lo exacto del cambio (--sin), con el porqué en el diario. Fuera también la batería entera al llevar un hito a revisión: solo si valravnx la pide.",
+   "Con el cambio de desbrozar (demo v154), el revisor habría pedido 7 grupos de 44 en vez de la batería entera."
+  ],
+  "pruebas": "La prueba del revisor (qué grupos pide cada cambio), bien; con MUTAR=1 falla. Este cambio no toca código del juego: el revisor no pide nada en la nube",
+  "estado": "ok"
  }
 ]
