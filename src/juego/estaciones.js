@@ -16,6 +16,9 @@
 //    hoyo de barro (cavado y bordeado de piedras) y el cesto (de juncos trenzados): las varas tumbadas en la horquilla,
 //    la paja en montón alrededor del palo y los juncos de pie apoyados en él, el barro llenando el hoyo y lo pequeño
 //    subiendo dentro del cesto.
+//  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
+//    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
+//    almohada de juncos).
 // Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
 // de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
 // círculo de piedras. Cada tipo, su montón.
@@ -317,8 +320,104 @@ function colgaderoMochilas(id) {
   return mallas(L);
 }
 
+
+// ---------- las camas (P4, la cama ligada; valravnx, 8 nov) ----------
+// El refugio de ramas (un tejadillo «a un agua», como los de los leñadores y carboneros): dos postes de vara con
+// horquilla delante, un travesaño encima y las ramas apoyadas en él hasta el suelo de atrás, con una capa de ramaje
+// verde por debajo de las de fuera (la que tapa); los lados, cerrados con ramas de pie; dentro, un lecho de ramaje
+// seco. Lo largo, en X; la boca, hacia +Z.
+const REFUGIO = { x: 1.05, delante: 0.38, atras: -1.0, alto: 1.18 };
+const alturaRefugio = z => REFUGIO.alto * (z - REFUGIO.atras) / (REFUGIO.delante - REFUGIO.atras);
+function refugioRamas(id) {
+  const L = new Lote({ rangoSuelo: 0.15, variacion: 0.08 }), { x: X, delante: Zd, atras: Za, alto: H } = REFUGIO;
+  for (const sx of [-1, 1]) { // los postes, con su horquilla arriba
+    const x = sx * X + (az(id, sx) - 0.5) * 0.04;
+    varaEntre(L, new THREE.Vector3(x, -0.12, Zd), new THREE.Vector3(x, H + 0.06, Zd + 0.02), 0.036);
+    varaEntre(L, new THREE.Vector3(x, H - 0.1, Zd + 0.01), new THREE.Vector3(x + sx * 0.09, H + 0.16, Zd + 0.03), 0.018);
+  }
+  varaEntre(L, new THREE.Vector3(-X - 0.18, H + 0.03, Zd), new THREE.Vector3(X + 0.2, H + 0.04, Zd + 0.01), 0.03); // el travesaño
+  // la capa de ramaje: una manta de hojas a lo largo de la pendiente, algo abultada y con el borde de abajo desigual
+  const largo = Math.hypot(H, Zd - Za) + 0.1, pendiente = Math.atan2(H, Zd - Za);
+  const manta = new THREE.BoxGeometry(2 * X + 0.1, 0.05, largo, 14, 1, 8), p = manta.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    const k = `${v.x.toFixed(2)},${v.z.toFixed(2)}`;
+    p.setY(i, v.y + (az(id, 'm' + k) - 0.5) * 0.07);
+    if (v.z < -largo / 2 + 0.01) p.setZ(i, v.z - az(id, 'b' + k) * 0.12);     // el borde de abajo, en flecos
+    if (Math.abs(v.x) > X) p.setX(i, v.x + Math.sign(v.x) * az(id, 'l' + k) * 0.08);
+  }
+  manta.computeVertexNormals();
+  const zc = (Zd + Za) / 2, yc = H / 2;
+  L.add(manta, 'hoja', 0, yc + 0.02, zc, { x: -pendiente }, { sinSuelo: true });
+  // las ramas de fuera, sujetando la manta: del travesaño al suelo de atrás
+  for (let i = 0; i < 22; i++) {
+    const x = -X + 0.04 + i * (2 * X - 0.08) / 21 + (az(id, i) - 0.5) * 0.05, r = 0.016 + az(id, i + 40) * 0.012;
+    varaEntre(L, new THREE.Vector3(x, H + 0.11, Zd + 0.04 + az(id, i + 80) * 0.05), new THREE.Vector3(x + (az(id, i + 9) - 0.5) * 0.14, 0.0, Za - 0.1 - az(id, i + 20) * 0.1), r);
+  }
+  // matas de ramaje sueltas encima (las puntas con hoja que asoman)
+  for (let i = 0; i < 12; i++) {
+    const u = 0.15 + az(id, i + 100) * 0.7, x = -X + 0.15 + az(id, i + 120) * (2 * X - 0.3), z = Za + u * (Zd - Za), y = alturaRefugio(z) + 0.09;
+    L.add(piedraIrregular(0.16, 1, id + 'r' + i, 0.35), i % 2 ? 'hoja' : 'hojaClara', x, y, z, { x: -pendiente, y: az(id, i + 140) * 6 }, { escala: new THREE.Vector3(1.3, 0.35, 0.9), sinSuelo: true });
+  }
+  for (const sx of [-1, 1]) for (let i = 0; i < 8; i++) { // los lados: ramas de pie, apoyadas en el tejadillo
+    const z = Za + 0.1 + i * (Zd - Za - 0.2) / 7, y = alturaRefugio(z);
+    varaEntre(L, new THREE.Vector3(sx * (X + 0.16), -0.04, z + (az(id, i + sx * 7) - 0.5) * 0.08), new THREE.Vector3(sx * (X + 0.02), y + 0.04, z), 0.015 + az(id, i + 50) * 0.008);
+  }
+  // el lecho de dentro: ramaje seco amontonado en una capa baja, con ramitas por encima
+  const lecho = new THREE.BoxGeometry(2 * X - 0.3, 0.07, 0.9, 10, 1, 6), q = lecho.attributes.position;
+  for (let i = 0; i < q.count; i++) { v.fromBufferAttribute(q, i); if (v.y > 0) q.setY(i, v.y + (az(id, `l${v.x.toFixed(2)},${v.z.toFixed(2)}`) - 0.5) * 0.04); }
+  lecho.computeVertexNormals();
+  L.add(lecho, 0x7d6f48, 0, 0.035, Za + 0.55, null, { tex: 'paja', sinSuelo: true });
+  for (let i = 0; i < 14; i++) {
+    const x = -X + 0.25 + az(id, i + 200) * (2 * X - 0.5), z = Za + 0.15 + az(id, i + 220) * 0.8, g = az(id, i + 240) * 6, l = 0.35 + az(id, i + 260) * 0.3;
+    varaEntre(L, new THREE.Vector3(x - Math.cos(g) * l / 2, 0.075, z - Math.sin(g) * l / 2), new THREE.Vector3(x + Math.cos(g) * l / 2, 0.08, z + Math.sin(g) * l / 2), 0.008);
+  }
+  return mallas(L);
+}
+// La cama de juncos (dentro de la casa): un colchón de juncos tumbados a lo largo (un lecho espeso, abultado), con un
+// rollo de juncos atados en cada lado largo y cordel de lado a lado de trecho en trecho; a la cabecera, un haz enrollado
+// de almohada. 1,9 × 0,8 m.
+const CAMA_J = { x: 0.95, z: 0.4, alto: 0.09 };
+const JUNCO_C = 0x7f8a4c, JUNCO_SECO = 0x9a9560, CORDEL_C = 0x9c8a60;
+function camaJuncos(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 }), { x: X, z: Z, alto: A } = CAMA_J;
+  // el colchón: una losa de juncos con la cara de arriba abultada (los vértices de arriba suben o bajan un poco)
+  const losa = new THREE.BoxGeometry(2 * X - 0.06, A, 2 * Z - 0.1, 12, 1, 6), p = losa.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    if (v.y > 0) p.setY(i, v.y + (az(id, `${v.x.toFixed(2)},${v.z.toFixed(2)}`) - 0.5) * 0.025 + Math.cos(v.z / Z * 1.4) * 0.012);
+  }
+  losa.computeVertexNormals();
+  L.add(losa, JUNCO_C, 0, A / 2, 0, null, { tex: 'paja', sinSuelo: true });
+  // los juncos de encima, sueltos a lo largo (la textura de cerca)
+  for (let i = 0; i < 40; i++) {
+    const z = -Z + 0.08 + az(id, i) * (2 * Z - 0.16), largo = 1.2 + az(id, i + 50) * 0.6, dx = (az(id, i + 90) - 0.5) * (2 * X - largo);
+    L.add(cil(0.006, 0.008, largo, 5), i % 3 ? JUNCO_C : JUNCO_SECO, dx, A + 0.012, z, { z: Math.PI / 2, y: (az(id, i + 130) - 0.5) * 0.06 }, { tex: 'paja', sinSuelo: true });
+  }
+  // los dos rollos de los lados largos: un haz de juncos atado
+  for (const sz of [-1, 1]) {
+    const z = sz * (Z - 0.045);
+    L.add(cil(0.05, 0.05, 2 * X, 9), JUNCO_SECO, 0, 0.05, z, { z: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
+    for (let i = 0; i < 10; i++) { const a = i * 0.63; L.add(cil(0.008, 0.01, 2 * X - az(id, i + sz * 20) * 0.1, 5), JUNCO_C, (az(id, i + 200 + sz) - 0.5) * 0.05, 0.05 + Math.sin(a) * 0.045, z + Math.cos(a) * 0.045, { z: Math.PI / 2 }, { tex: 'paja', sinSuelo: true }); }
+  }
+  for (const fx of [-0.66, -0.22, 0.22, 0.66]) { // las ataduras: cordel de lado a lado por encima, y una vuelta a cada rollo
+    const x = fx * X + (az(id, fx * 10) - 0.5) * 0.04;
+    L.add(cil(0.007, 0.007, 2 * Z - 0.08, 4), CORDEL_C, x, A + 0.022, 0, { x: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+    for (const sz of [-1, 1]) L.add(new THREE.TorusGeometry(0.056, 0.007, 4, 12), CORDEL_C, x, 0.05, sz * (Z - 0.045), { y: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  }
+  // la almohada: un haz de juncos más grueso, atravesado a la cabecera (-X), atado por dos sitios
+  const xa = -X + 0.17;
+  L.add(cil(0.075, 0.075, 2 * Z - 0.14, 10), JUNCO_SECO, xa, A + 0.06, 0, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
+  for (let i = 0; i < 12; i++) { const a = i * 0.52; L.add(cil(0.009, 0.011, 2 * Z - 0.1, 5), JUNCO_C, xa + Math.cos(a) * 0.072, A + 0.06 + Math.sin(a) * 0.072, (az(id, i + 300) - 0.5) * 0.04, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true }); }
+  for (const fz of [-0.55, 0.55]) L.add(new THREE.TorusGeometry(0.08, 0.008, 4, 12), CORDEL_C, xa, A + 0.06, fz * Z, null, { tex: 'liso', sinSuelo: true });
+  return mallas(L);
+}
+// Dónde se tumba quien duerme en cada cama (en sus ejes: a lo largo de X, con la cabeza hacia -X) y a qué altura del
+// suelo queda el cuerpo: en el refugio, sobre el lecho de ramaje (al fondo); en la cama de juncos, encima del colchón.
+export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
-  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas };
+  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -568,7 +667,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -658,6 +757,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (Number.isFinite(e.y)) n.y = e.y;
       if (Number.isFinite(e.giro)) n.giro = e.giro;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
+      if (Array.isArray(e.ligadas)) n.ligadas = e.ligadas.filter(a => typeof a === 'string');   // las camas: quién la tiene ligada
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)
       if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: (e.fuego.encendida || e.fuego.brasas) && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,
         combustible: Math.max(0, Number(e.fuego.combustible) || 0), cenizas: !!e.fuego.cenizas, ...(e.fuego.brasas ? { brasas: true } : {}) };

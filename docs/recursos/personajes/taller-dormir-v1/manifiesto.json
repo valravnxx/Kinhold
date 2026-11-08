@@ -1,0 +1,22 @@
+{
+ "mh_hombre_extra": {
+  "kb": 129,
+  "kb_antes": 941,
+  "sha256": "87ec7e692f11c52c45e8ff4629ea101bb191885b1aacff9d324d9ad74689bcdc",
+  "clips": [
+   "IdleToLay",
+   "LayToIdle",
+   "Lay_Loop"
+  ]
+ },
+ "mh_mujer_extra": {
+  "kb": 129,
+  "kb_antes": 943,
+  "sha256": "884ed3ca602aad5afd6bcac91e73d1628256a28a580a4b74609dcfc839cd3e40",
+  "clips": [
+   "IdleToLay",
+   "LayToIdle",
+   "Lay_Loop"
+  ]
+ }
+}

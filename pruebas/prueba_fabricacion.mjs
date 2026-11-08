@@ -5,7 +5,7 @@
 // Con MUTAR=2 la pila de piedras guarda de todo y se pone fuera de tu tierra: las de los almacenajes deben FALLAR.
 // Con MUTAR=3 los puestos no guardan su giro y lo terminado no se desmonta (como antes del 7 nov): las de desmontar deben FALLAR.
 // las pruebas deben FALLAR.
-import { ESTACIONES, RECETAS, USOS, Fabricacion, ejecutarFabricacion, sueloCerca, cuentas, SITIO_DE_RUTA, estacionesDeUso, ALCANCE_ESTACION, ALCANCE_SUELO,
+import { ESTACIONES, RECETAS, USOS, CAMAS, Fabricacion, ejecutarFabricacion, sueloCerca, cuentas, SITIO_DE_RUTA, estacionesDeUso, ALCANCE_ESTACION, ALCANCE_SUELO,
   COLA_ESTACION, VERSION_FABRICACION, migrarFabricacion, DEPOSITO_MAX, cuentasEstacion, MAX_RATO_ESTACION, ALMACENAJES, cabeEn, limpiarDeposito } from '../src/logica/fabricacion.js';
 import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
@@ -14,6 +14,11 @@ import { Mundo, clave } from '../src/logica/construccion.js';
 import { MODULO } from '../src/logica/piezas.js';
 
 if (process.env.MUTAR === '1') { delete RECETAS.hacha_piedra.gasta.cordel; RECETAS.hacha_piedra.s = 0; ESTACIONES.hoguera.uso = 'tallar'; ESTACIONES.hoguera.donde = 'ambos'; ESTACIONES.banco_tronco.trabajo = 0; }
+// Con MUTAR=4 las camas se ligan sin estar en una tierra y se duerme en cualquiera: las de las camas deben FALLAR.
+if (process.env.MUTAR === '4') {
+  const ligar = Fabricacion.prototype.ligarCama; Fabricacion.prototype.ligarCama = function (a, e, p) { return ligar.call(this, a, e, p, true); };
+  const dormir = Fabricacion.prototype.dormir; Fabricacion.prototype.dormir = function (a, e, p) { const c = this.estaciones[e]; if (c) c.ligadas = [...(c.ligadas || []), a]; return dormir.call(this, a, e, p); };
+}
 if (process.env.MUTAR === '2') { delete ESTACIONES.pila_piedras.guarda; delete ESTACIONES.pila_piedras.tierra; }
 if (process.env.MUTAR === '3') {
   const colocar = Fabricacion.prototype.colocar; Fabricacion.prototype.colocar = function (a, t, x, z, d, y, en) { return colocar.call(this, a, t, x, z, d, y, en); };
@@ -62,7 +67,7 @@ console.log('Lo que dice el documento de sistemas (apartados 7 y 8)');
   comprobar('banco de tronco: 2 troncos cortos y herramienta de piedra; da el banco', E.banco_tronco.uso === 'banco' && igual(E.banco_tronco.coste, { tronco_corto: 2 }) && E.banco_tronco.requiere.includes('hacha_piedra'));
   comprobar('por uso, no por nivel: ni las estaciones ni las recetas llevan nivel', Object.values(E).every(e => !('nivel' in e)) && Object.values(RECETAS).every(r => !('nivel' in r) && !('donde' in r)));
   comprobar('los usos: con las manos, al fuego (hoguera y hogar), piedra de tallar y banco de tronco', igual(Object.keys(USOS), ['manos', 'fuego', 'tallar', 'banco']) && igual(USOS.fuego.estaciones, ['hoguera', 'hogar']));
-  comprobar('cada estación da un uso que la nombra (o es un almacenaje, sin recetas), y dice cómo se nombra en una frase', Object.entries(E).every(([t, e]) => (e.uso === 'almacen' ? !Object.values(RECETAS).some(r => r.uso === 'almacen') : USOS[e.uso] && USOS[e.uso].estaciones.includes(t)) && /^una? /.test(e.un)));
+  comprobar('cada estación da un uso que la nombra (o es un almacenaje o una cama, sin recetas), y dice cómo se nombra en una frase', Object.entries(E).every(([t, e]) => (e.uso === 'almacen' || e.uso === 'cama' ? !Object.values(RECETAS).some(r => r.uso === e.uso) : USOS[e.uso] && USOS[e.uso].estaciones.includes(t)) && /^una? /.test(e.un)));
   comprobar('cada estación de los usos existe (el hogar, también, 8 nov)', igual(Object.values(USOS).flatMap(u => u.estaciones).filter(t => !E[t]), []) && igual(estacionesDeUso('fuego'), ['hoguera', 'hogar']));
   const R = RECETAS;
   comprobar('cordel: 3 fibra cruda, con las manos', R.cordel.uso === 'manos' && igual(R.cordel.gasta, { fibra: 3 }));
@@ -560,6 +565,59 @@ console.log('Acciones con autor');
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'depositar_estacion', estacion: id, de: ana.rutasCon('rama')[0], x: 0, z: 0 }, T0, suelo);
   r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'retirar_estacion', estacion: id, objeto: 'rama', x: 0, z: 0 }, T0, suelo);
   comprobar('y lo que se vuelve a coger', r.ok && ana.cuantos('rama') === 1 && igual(reg.entradas[reg.entradas.length - 1].resultado, { estacion: id, cogido: { rama: 1 } }), r.motivo);
+}
+
+// ---------------- Las camas (P4, la cama ligada; valravnx, 8 nov) ----------------
+{
+  const fab = new Fabricacion(), E = ESTACIONES, T0 = 1e6;
+  comprobar('dos camas: el refugio de ramas (fuera) y la cama de juncos (dentro), sin recetas ni nada que guardar',
+    CAMAS.join() === 'refugio_ramas,cama_juncos' && E.refugio_ramas.donde === 'fuera' && E.cama_juncos.donde === 'dentro' && !Object.values(RECETAS).some(r => r.uso === 'cama'));
+  comprobar('el refugio, de 12 ramas y 4 cordel; la cama, de juncos y cordel (todo sale del mundo)',
+    E.refugio_ramas.coste.rama === 12 && E.refugio_ramas.coste.cordel === 4 && Object.keys(E.cama_juncos.coste).sort().join() === 'cordel,junco');
+  const sube = (tipo, x, dentro, autor = 'ana') => {
+    const i = jugador(); for (const [t, n] of Object.entries(E[tipo].coste)) i.meterDonde(t, n);
+    const c = fab.colocar(autor, tipo, x, 0, dentro, null, true); if (!c.ok) throw new Error(c.motivo);
+    fab.entregarEstacion(autor, c.id, { x, z: 0 }, i, null, T0);
+    for (let k = 0; k < 20 && fab.estaciones[c.id].obra; k++) fab.trabajarEstacion(autor, c.id, MAX_RATO_ESTACION, { x, z: 0 }, i);
+    return c.id;
+  };
+  comprobar('el refugio no va bajo techo y la cama no va fuera', !fab.colocar('ana', 'refugio_ramas', 0, 0, true, null, true).ok && !fab.colocar('ana', 'cama_juncos', 0, 0, false, null, true).ok);
+  const fuera = fab.colocar('ana', 'refugio_ramas', 0, 0, false, null, false);
+  comprobar('ni fuera de una tierra', !fuera.ok && /tu tierra/.test(fuera.motivo || ''), fuera.motivo);
+  const marco = fab.colocar('ana', 'refugio_ramas', 5, 0, false, null, true);
+  let r = fab.ligarCama('ana', marco.id, { x: 5, z: 0 }, true);
+  comprobar('a medias no se liga', !r.ok && /a medias/.test(r.motivo || ''), r.motivo);
+  const ref = sube('refugio_ramas', 10, false), cama = sube('cama_juncos', 20, true);
+  comprobar('se levantan con su coste', !fab.estaciones[ref].obra && !fab.estaciones[cama].obra);
+  r = fab.dormir('ana', ref, { x: 10, z: 0 });
+  comprobar('sin ligarla no se duerme en ella', !r.ok && /ligada/.test(r.motivo || ''), r.motivo);
+  r = fab.ligarCama('ana', ref, { x: 10, z: 0 }, false);
+  comprobar('en tierra de nadie no se liga', !r.ok && /tu tierra/.test(r.motivo || ''), r.motivo);
+  r = fab.ligarCama('ana', ref, { x: 30, z: 0 }, true);
+  comprobar('de lejos, tampoco', !r.ok && /lejos/.test(r.motivo || ''), r.motivo);
+  r = fab.ligarCama('ana', ref, { x: 10, z: 0 }, true);
+  comprobar('ligada (en tu tierra o en la de quien te invita)', r.ok && fab.camaDe('ana') === ref, r.motivo);
+  r = fab.dormir('ana', ref, { x: 10, z: 0 });
+  comprobar('y se duerme en ella', r.ok && r.dormir, r.motivo);
+  r = fab.ligarCama('ana', cama, { x: 20, z: 0 }, true);
+  comprobar('una por personaje: al ligar la cama de juncos, el refugio deja de ser la suya', r.ok && fab.camaDe('ana') === cama && !fab.estaciones[ref].ligadas, r.motivo);
+  r = fab.dormir('ana', ref, { x: 10, z: 0 });
+  comprobar('y en el refugio ya no duerme', !r.ok, r.motivo);
+  r = fab.ligarCama('bea', cama, { x: 20, z: 0 }, true);
+  comprobar('la pareja puede ligar la misma cama', r.ok && fab.camaDe('bea') === cama && fab.camaDe('ana') === cama, r.motivo);
+  const otra = new Fabricacion().importar(JSON.parse(JSON.stringify(fab.exportar())));
+  comprobar('lo ligado se guarda y se vuelve a leer', otra.camaDe('ana') === cama && otra.camaDe('bea') === cama);
+  const datos = fab.exportar(); datos.estaciones.find(e => e.id === ref).ligadas = ['x', 7, 'x', ''];
+  comprobar('lo guardado raro se limpia', JSON.stringify(new Fabricacion().importar(datos).estaciones[ref].ligadas) === '["x"]');
+  const piedra = fab.colocar('ana', 'piedra_tallar', 25, 0, false, null, true);
+  r = fab.ligarCama('ana', piedra.id, { x: 25, z: 0 }, true);
+  comprobar('lo que no es cama no se liga', !r.ok && /no es una cama/.test(r.motivo || ''), r.motivo);
+  const invs = new Inventarios(), reg = new RegistroAcciones();
+  r = ejecutarFabricacion(fab, invs, reg, { autor: 'cai', tipo: 'ligar_cama', estacion: cama, x: 20, z: 0 }, T0, null, () => true);
+  comprobar('con autor, ligar y dormir quedan en el registro', r.ok && reg.entradas[0].resultado.ligada
+    && ejecutarFabricacion(fab, invs, reg, { autor: 'cai', tipo: 'dormir', estacion: cama, x: 20, z: 0 }, T0).ok && reg.entradas[1].resultado.dormir);
+  r = ejecutarFabricacion(fab, invs, reg, { autor: 'cai', tipo: 'ligar_cama', estacion: ref, x: 10, z: 0 }, T0, null, () => false);
+  comprobar('y la tierra la dice el servidor (enTierras)', !r.ok, r.motivo);
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);

@@ -9,6 +9,7 @@
 // MUTAR=1: el servidor no las avanza (sed y hambre quietas); MUTAR=2: el cansancio sale de lo que dice el navegador
 // (su «anim»), no de lo que corre de verdad; MUTAR=3: rendido sin llegar al máximo (el servidor no recorta). Las tres
 // deben FALLAR. MUTAR=4: se bebe en cualquier sitio (sin mirar si hay agua); MUTAR=5: se come sin gastar lo que llevas. Tienen que FALLAR.
+// MUTAR=6: dormir no descansa más que estar quieto: tiene que FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
@@ -43,6 +44,8 @@ console.log('La lógica');
   comprobar('y baja cuando el sitio no lo pide', g.frio < 5, g.frio.toFixed(1));
   const corre = avanzar(nuevas(), 10, { velocidad: 6 }), anda = avanzar({ ...nuevas(), cansancio: 50 }, 10, { velocidad: 1.5 }), quieto = avanzar({ ...nuevas(), cansancio: 50 }, 10);
   comprobar('correr cansa (10 s, 5 puntos)', Math.abs(corre.cansancio - 10 * RITMOS.correr) < 1e-9, corre.cansancio.toFixed(2));
+  const dormido = avanzar({ ...nuevas(), cansancio: 50 }, 10, { durmiendo: MUTAR !== '6' });
+  comprobar('durmiendo en la cama ligada se descansa mucho más que quieto (rendido, en poco más de un minuto)', dormido.cansancio < quieto.cansancio - 10 && Math.abs(50 - dormido.cansancio - 10 * RITMOS.dormir) < 1e-9, dormido.cansancio.toFixed(1));
   comprobar('quieto se descansa más que andando', quieto.cansancio < anda.cansancio && anda.cansancio < 50, `${quieto.cansancio.toFixed(1)} y ${anda.cansancio.toFixed(1)}`);
   const carga = avanzar(nuevas(), 10, { velocidad: 1.5, kilos: 12 });
   comprobar('andar con un tronco (12 kg) al hombro cansa', carga.cansancio > 0, carga.cansancio.toFixed(2));

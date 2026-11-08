@@ -41,6 +41,7 @@ export const TOCA = {
   'el-hogar': [/^src\/logica\/fuego\.js$/, /^src\/juego\/estaciones\.js$/],
   'los-almacenajes-de-la-base': [/^src\/juego\/estaciones\.js$/],
   'los-colgaderos-de-mochilas-y-de-herramientas': [/^src\/juego\/estaciones\.js$/],
+  'la-cama-ligada': [/^src\/juego\/estaciones\.js$/, /^src\/logica\/fabricacion\.js$/, /^src\/juego\/personaje\.js$/],
   'panel-de-inventario': [/^src\/juego\/(panel_inventario|retrato|iconos_ropa)\.js$/, /^src\/logica\/inventario\.js$/],
   'lo-que-llevas-se-ve-puesto': [/^src\/(logica|juego)\/llevado\.js$/, /^src\/logica\/prendas\.js$/],
   'objetos-en-el-suelo': [/^src\/(logica|juego)\/suelo\.js$/],

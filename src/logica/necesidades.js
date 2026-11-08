@@ -17,6 +17,7 @@
 //     unos 10 minutos en llegar; quién lo pide lo trae la tarea del frío (hasta entonces, el servidor pide 0);
 //   - el cansancio: correr (más de 4 m/s) 0,5 por segundo, con carga suelta en las manos o al hombro más; cada golpe de
 //     hacha 1,5, cada rato de obra 2, fabricar 0,5, recoger 0,3, desbrozar 2 (los golpes de una vez), cada golpe de mazo a una roca 1,5; quieto baja 0,4 por segundo y andando 0,1;
+//     durmiendo en tu cama ligada (8 nov), 1,5 por segundo;
 //   - al máximo, las heridas se curan despacio (efectos.curacionLenta); y se muere de sed y de hambre (valravnx, 7 nov:
 //     «no es survival si no hay que sobrevivir»; GDD, apartado 6): eso llega con la tarea de morir de P4;
 //   - el calor (también en el GDD) queda para después del hito, como los cinco estados de más.
@@ -33,6 +34,7 @@ export const RITMOS = {
   correr: 0.5, velocidadCorrer: 4,
   carga: 0.03,                  // por segundo y kg sueltos, moviéndose
   quieto: 0.4, andando: 0.1,
+  dormir: 1.5,                  // durmiendo en tu cama ligada, por segundo: rendido del todo, unos 70 s (provisional)
 };
 export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5 };
 
@@ -51,7 +53,7 @@ const alMaximo = (n) => n.hambre >= MAXIMO || n.sed >= MAXIMO || n.frio >= MAXIM
 
 // dt segundos con lo que está haciendo: velocidad (m/s, medida por el servidor), kilos (sueltos en las manos o al
 // hombro) y frioObjetivo (0–100). Devuelve las necesidades nuevas (no toca las de entrada).
-export function avanzar(n, dt, { velocidad = 0, kilos = 0, frioObjetivo = 0 } = {}) {
+export function avanzar(n, dt, { velocidad = 0, kilos = 0, frioObjetivo = 0, durmiendo = false } = {}) {
   if (!(dt > 0)) return { ...n };
   const m = { ...n };
   m.hambre = recorta(n.hambre + RITMOS.hambre * dt);
@@ -63,7 +65,7 @@ export function avanzar(n, dt, { velocidad = 0, kilos = 0, frioObjetivo = 0 } = 
   let c = 0;
   if (velocidad > RITMOS.velocidadCorrer) c += RITMOS.correr * k;
   if (velocidad > 0.3 && kilos > 0) c += RITMOS.carga * kilos * k;
-  if (c === 0) c = -(velocidad > 0.3 ? RITMOS.andando : RITMOS.quieto) / k;
+  if (c === 0) c = -(durmiendo ? RITMOS.dormir : velocidad > 0.3 ? RITMOS.andando : RITMOS.quieto) / k;
   m.cansancio = recorta(n.cansancio + c * dt);
   return m;
 }

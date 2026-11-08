@@ -133,9 +133,6 @@
   "hacha_piedra": {
    "propio": true
   },
-  "mazo_piedra": {
-   "propio": true
-  },
   "hacha_hierro": {
    "propio": false
   },
@@ -284,6 +281,12 @@
    "propio": true
   },
   "est_colgadero_herramientas": {
+   "propio": true
+  },
+  "est_refugio_ramas": {
+   "propio": true
+  },
+  "est_cama_juncos": {
    "propio": true
   }
  }
