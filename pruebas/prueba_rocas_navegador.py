@@ -50,7 +50,7 @@ def esperar(pg, ms=2500):
     pg.wait_for_timeout(1500)
 
 # una roca mediana en pie sin árboles a menos de 4 m ni nada que se recoja o se desbroce al lado
-ROCA = f"""(() => {{ const k = {K}, d = k.decorado; const l = d.rocasCerca(k.pj.x, k.pj.z, 60).filter(r => !d.obstaculos.some(o => o.arbol && Math.hypot(o.x - r.x, o.z - r.z) < 4) && !k.recoleccion.puntos.some(p => Math.hypot(p.x - r.x, p.z - r.z) < 3) && !(d.matasCerca(r.x, r.z, 2.5).length));
+ROCA = f"""(() => {{ const k = {K}, d = k.decorado; const l = d.rocasCerca(k.pj.x, k.pj.z, 60).filter(r => !d.obstaculos.some(o => o.arbol && Math.hypot(o.x - r.x, o.z - r.z) < 4) && !k.recoleccion.puntos.some(p => Math.hypot(p.x - r.x, p.z - r.z) < 3) && !(d.matasCerca(r.x, r.z, 2.5).length)).sort((a, b) => a.tam - b.tam);   // (la más chica: menos golpes, que sin tarjeta gráfica tardan)
   return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z, tam: l[0].tam }} : null; }})()"""
 def buscar_roca(pg):
     for dx, dz in [(0, 0), (60, 0), (0, 60), (-60, 0), (0, -60), (120, 0), (0, 120), (-120, 0), (0, -120)]:
@@ -101,7 +101,7 @@ def recorrido(pg, nombre, pref):
     pg.keyboard.press('f'); pg.wait_for_timeout(1500)
     comprobar(f'{nombre}: con el mazo, Usar se pone a romperla (a golpes, como al talar)', pg.evaluate(ROMPIENDO))
     pg.screenshot(path=f'{SALIDA}/{pref}_3_rompiendo.png', timeout=180000)
-    try: pg.wait_for_function(f'!({ROMPIENDO})', timeout=400000)   # (sin tarjeta gráfica, cada golpe tarda)
+    try: pg.wait_for_function(f'!({ROMPIENDO})', timeout=900000)   # (sin tarjeta gráfica, cada golpe tarda)
     except Exception: pass
     esperar(pg, 2000)
     piedras = pg.evaluate(EN_SUELO, xz + ['piedra'])
