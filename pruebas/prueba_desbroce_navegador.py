@@ -96,7 +96,7 @@ def recorrido(pg, nombre, pref):
     golpeando = pg.evaluate(f'!!({K}.estado.talando && {K}.estado.talando.desbroce)')
     pg.screenshot(path=f'{SALIDA}/{pref}_2_desbrozando.png', timeout=180000)
     comprobar(f'{nombre}: con el hacha, Usar se pone a desbrozar (a golpes, como al talar)', golpeando)
-    try: pg.wait_for_function(f'!({K}.estado.talando && {K}.estado.talando.desbroce)', timeout=30000)
+    try: pg.wait_for_function(f'!({K}.estado.talando && {K}.estado.talando.desbroce)', timeout=150000)   # (sin tarjeta gráfica, en PC, cada golpe tarda unos segundos)
     except Exception: pass
     pg.wait_for_timeout(2500)
     ramas, varas = pg.evaluate(EN_SUELO, xz + ['rama']), pg.evaluate(EN_SUELO, xz + ['vara'])
@@ -112,13 +112,21 @@ def recorrido(pg, nombre, pref):
     pg.wait_for_timeout(1500)
     comprobar(f'{nombre}: al recargar la página sigue desbrozado', not pg.evaluate(EN_MALLA, xz))
     # el arbusto de bayas
-    b = pg.evaluate(f"(() => {{ const k = {K}; const l = k.recoleccion.arbustosCerca(k.pj.x, k.pj.z, 200); return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z }} : null; }})()")
+    b = None
+    for dx, dz in [(0, 0), (60, 0), (0, 60), (-60, 0), (0, -60), (120, 0), (0, 120), (-120, 0), (0, -120), (180, 0)]:
+        if (dx, dz) != (0, 0):
+            pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); }}', [dx, dz])
+            pg.wait_for_timeout(2000)
+            try: pg.wait_for_function(f'{K}.recoleccion.listo', timeout=120000)
+            except Exception: pass
+        b = pg.evaluate(f"(() => {{ const k = {K}; const l = k.recoleccion.arbustosCerca(k.pj.x, k.pj.z, 200); return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z }} : null; }})()")
+        if b: break
     if b:
         ir(pg, b)
         VIS = f"(id) => {{ const k = {K}, rec = k.recoleccion, lista = rec.puntos.filter(p => p.tipo === 'bayas'), i = lista.findIndex(p => p.id === id), m = new k.camara.matrixWorld.constructor(); const r = {{}}; rec.grupo.children.filter(c => c.name.startsWith('recoger_bayas')).forEach(c => {{ c.getMatrixAt(i, m); r[c.name] = Math.abs(m.determinant()) > 1e-9; }}); return r; }}"
         antes = pg.evaluate(VIS, b['id'])
         pg.evaluate(f"(b) => {K}.empezarDesbroce({{ ...b, tipo: 'bayas' }})", b)
-        try: pg.wait_for_function(f'!({K}.estado.talando && {K}.estado.talando.desbroce)', timeout=30000)
+        try: pg.wait_for_function(f'!({K}.estado.talando && {K}.estado.talando.desbroce)', timeout=150000)   # (sin tarjeta gráfica, en PC, cada golpe tarda unos segundos)
         except Exception: pass
         pg.wait_for_timeout(1500)
         despues = pg.evaluate(VIS, b['id'])
