@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2500 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3006 KB
+
+== Construir demo única
+      3155 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4240 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2904 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2495 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3017 KB
+dist/kinhold_trozos.html 2509 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v163 (morir y que te saqueen); v163: morir y que te saqueen. Se muere también de sed y de hambre: con la sed o el hambre al máximo pierdes sangre poco a poco y, sin beber ni comer, te mueres (unos 20 minutos de sed y 40 de hambre). Mueras como mueras (de sed, de hambre, en el combate o ahogado), vuelves sano a tu cama ligada o, sin ella, a tu sitio de salida. Tu cuerpo se queda tumbado donde caíste una hora, con la mitad de lo que llevabas en el suelo a su lado, que cualquiera puede coger; la otra mitad se rompe, y cuál lo elige el servidor al azar. Lo lleva el servidor.; v163, provisional: la mitad se cuenta por unidades (cada piedra de una pila, cada prenda, cada herramienta y cada contenedor, vacío); lo que queda cae alrededor del cuerpo como lo soltado (fuera de una tierra se va a la hora, como el cuerpo; en una tierra, y los troncos y las piedras, se quedan); al volver, la sed y el hambre no pasan de 60 y vuelves descansado; mientras la sed o el hambre están al máximo la sangre no se recupera; ahogarte lo dice tu navegador y el servidor mira que estés en el agua honda; si el servidor se reinicia, los cuerpos se van (lo que cayó al suelo, no); quien empezó antes de esta versión vuelve, sin cama, a la salida más cercana a donde murió.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 271 s
