@@ -5403,5 +5403,22 @@
   "pruebas": "Batería entera en la nube tres veces (al unir main, que traía la rastra como v144, los puestos como v145 y las bayas como v146): la última, los 42 grupos, todo correcto, sin las de en línea. Antes, la hoguera y entrar con la cuenta fallaron una vez cada una por cosas que no tocan esto (la pantalla de la cuenta y el sitio que apunta el servidor) y salieron bien al repetirlas. Tala 63/63 (rompiéndola a propósito, la boca falla 6), recorrido de jugador 112/112 con el paso 9 nuevo. Capturas de la tala en PC y móvil, miradas: el árbol cae hacia el que tala, que lo tiene encima (el daño, con su tarea). No comprobado: los avisos de la boca vistos en pantalla (la prueba del navegador da los golpes por la lógica, sin el aviso).",
   "capturas": "capturas/demo-v147",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T02:22:14+00:00",
+  "fin": "2026-11-08T05:11:49+00:00",
+  "titulo": "P3: más almacenajes (soporte de varas, almiar, hoyo de barro y cesto)",
+  "hito": "crafting",
+  "hecho": [
+   "Los cuatro almacenajes que faltaban del documento de sistemas, en la pestaña «Almacenajes» de Construir: el soporte de varas, el almiar (paja y juncos), el hoyo de barro y el cesto (lo pequeño). Como los otros tres, se levantan como obra, solo en tu tierra o en la de quien te invita, guardan solo lo suyo y la obra no coge de ellos sola.",
+   "Con su modelo (estilo v5) y lleno con lo guardado: las varas tumbadas en dos caballetes en aspa; la paja en montón alrededor del palo hincado y los haces de juncos al pie (sin paja, de pie y apoyados en el palo); el barro húmedo llenando el hoyo bordeado de piedras; y lo pequeño subiendo dentro del cesto de juncos cosidos en espiral.",
+   "El hoyo de barro se cava: hay que llevar el palo cavador para levantarlo (no se gasta).",
+   "Sus imágenes para los paneles, sacadas de los modelos (docs/recursos/iconos-v7; las de la v6 no se tocan).",
+   "Recorrido de jugador, paso 15: vuelve a por las varas del árbol que taló, levanta un almiar en su tierra con dos de ellas y guarda en él el haz de juncos que llevaba en el fardo, y lo vuelve a sacar.",
+   "Decisiones provisionales (registro de la demo y aquí): el soporte de varas, 4 varas y 24 varas, dentro o fuera; el almiar, 2 varas y 24 haces de paja y juncos, fuera; el hoyo de barro, 6 piedras y el palo cavador, 16 cestas de barro, fuera; el cesto, 3 haces de juncos y 30 de lo pequeño (sílex y lascas, fibra, yesca, cordel, cuerda, resina, bayas, setas, frutos secos y hierbas), dentro o fuera."
+  ],
+  "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea): todo bien menos «la demo en el mundo», que falló dos veces por 5 ms (un fotograma de 64,8 ms al saltar 700 m, en una máquina de la nube más lenta: el mapa tardó 3,5 s en vez de 2,1 s); en main pasó y, repetida sola en esta rama, también. Después de los últimos cambios de los modelos, otra vez almacenajes, fabricación, inventario, hoguera y lógica (con el recorrido de jugador y el paso 15): bien. Fabricación 162/162 (con MUTAR=2 falla), imágenes 433/433. Capturas de los cuatro almacenajes, llenos, en PC y móvil, miradas de cerca. No comprobado: el panel de guardar y sacar abierto con uno de los nuevos (es el mismo panel que el de la pila).",
+  "capturas": "capturas/demo-v148",
+  "estado": "ok"
  }
 ]
