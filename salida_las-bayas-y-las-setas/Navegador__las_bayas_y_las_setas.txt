@@ -1,0 +1,22 @@
+  OK   PC: hay arbustos de bayas en el mundo (cerca de la salida) — {'id': 'bayas:2160935,309885', 'x': 93.47, 'z': -11.46, 'n': 1}
+  OK   PC: se ven el arbusto y sus bayas — {'recoger_bayas_planta': True, 'recoger_bayas': True}
+  OK   PC: de cerca, las bayas se ven (rojo de baya en el arbusto) — 677 px
+  OK   PC: al cogerlas van a lo que llevas (de 3 a 6) — 6
+  OK   PC: las bayas desaparecen del arbusto y el arbusto se queda — {'recoger_bayas_planta': True, 'recoger_bayas': False}
+  OK   PC: en la captura ya no hay rojo de baya — 677 → 0 px
+  OK   PC: con hambre, «Usar» se come una: el hambre baja y queda una menos — hambre 55, bayas 6 → 5
+  OK   PC: hay setas en el mundo (cerca de la salida) — {'id': 'setas:2161841,310511', 'x': 184.06, 'z': 51.05, 'n': 1}
+  OK   PC: las setas se ven y al cogerlas desaparecen enteras — {'recoger_setas': True} → {'recoger_setas': False}, 4 setas
+  OK   PC: sin errores en la página
+  OK   móvil: hay arbustos de bayas en el mundo (cerca de la salida) — {'id': 'bayas:2161418,310170', 'x': 141.77, 'z': 16.98, 'n': 3}
+  OK   móvil: se ven el arbusto y sus bayas — {'recoger_bayas_planta': True, 'recoger_bayas': True}
+  OK   móvil: de cerca, las bayas se ven (rojo de baya en el arbusto) — 527 px
+  OK   móvil: al cogerlas van a lo que llevas (de 3 a 6) — 6
+  OK   móvil: las bayas desaparecen del arbusto y el arbusto se queda — {'recoger_bayas_planta': True, 'recoger_bayas': False}
+  OK   móvil: en la captura ya no hay rojo de baya — 527 → 0 px
+  OK   móvil: con hambre, «Usar» se come una: el hambre baja y queda una menos — hambre 55, bayas 6 → 5
+  OK   móvil: hay setas en el mundo (cerca de la salida) — {'id': 'setas:2161841,310511', 'x': 184.06, 'z': 51.05, 'n': 1}
+  OK   móvil: las setas se ven y al cogerlas desaparecen enteras — {'recoger_setas': True} → {'recoger_setas': False}, 4 setas
+  OK   móvil: sin errores en la página
+
+Todo correcto
