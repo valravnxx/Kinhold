@@ -41,7 +41,7 @@ import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -268,6 +268,7 @@ if (decorado.paso) {
   decorado.alIrse = (ids) => talaV.quitar(ids);
   // los matorrales desbrozados no se dibujan (desbrozar, 8 nov): lo que se sabe de ellos lo lleva la recolección
   decorado.mataEnPie = (id) => recoleccion.mataEnPie(id);
+  decorado.rocaEnPie = (id) => recoleccion.rocaEnPie(id);   // (y las rocas rotas con el mazo, 8 nov: cascotes)
   if (decorado.rehacer) decorado.rehacer();   // (lo desbrozado que ya se sabía, sin servidor: lo guardado en el navegador)
 }
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
@@ -1515,6 +1516,8 @@ function usar() {
   if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) { beber(); return; }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { empezarTala(arbolCercano()); return; }
+  // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
+  if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { empezarRotura(rocaCercana()); return; }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
   if (!it && hachaEnMano(inventario()) && troncoCercano()) { empezarTroceo(troncoCercano()); return; }
   // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
@@ -1589,6 +1592,8 @@ function opcionesUsar() {
   if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
   if (pj.k === 0) {
     const tronco = troncoCercano();
+    const rq = rocaCercana();
+    if (rq) ops.push({ texto: tr('Romper la roca'), pos: rq, alto: 0.6, hacer: () => empezarRotura(rq) });
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     for (const op of opcionesRastra()) ops.push(op);
     for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
@@ -2088,6 +2093,7 @@ function golpeTala() {
   const a = estado.talando;
   if (a.troceo) { golpeTroceo(a.troceo); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
+  if (a.rotura) { golpeRotura(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
     objetosRed.mandar({ tipo: 'talar', arbol: a.id, x: pj.x, z: pj.z, ax: a.x, az: a.z, edad: a.edad || edadDeEscala(a.escala) }, (r) => {
@@ -2141,6 +2147,36 @@ function golpeDesbroce(a) {
   if (objetosRed) { objetosRed.mandar({ tipo: 'desbrozar', punto: o.id, x: pj.x, z: pj.z, px: o.x, pz: o.z, clase: o.tipo }, fin); return; }
   const r = recoleccion.desbrozar(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z, sueloObjetos.suelo);
   if (r.ok) { sueloObjetos.guardar(); sueloObjetos.refrescar(); if (o.tipo === 'matorral' && decorado.rehacer) decorado.rehacer(); }
+  fin(r);
+}
+
+// Romper rocas (valravnx, 8 nov; src/logica/recoleccion.js): la roca mediana más cercana (de la vegetación, con su
+// nombre por su sitio), en la planta baja. Con el mazo de piedra en la mano, un golpe cada poco, cada uno una acción del
+// servidor (cansa); al último, la roca se rompe, deja sus piedras sueltas en el suelo donde estaba y unos cascotes.
+function rocaCercana() {
+  if (pj.k !== 0 || !decorado.rocasCerca) return null;
+  const e = decorado.rocasCerca(pj.x, pj.z, 1.2)[0];
+  return e ? { id: e.id, x: e.x, z: e.z, tam: e.tam } : null;
+}
+function empezarRotura(o) {
+  if (!mazoEnMano(inventario())) { mostrarAviso(tr(QUE_PIDE.romper), true); return; }
+  estado.talando = { rotura: o, x: o.x, z: o.z }; estado.golpeEn = 0.45;
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(tr('Rompes la roca.'));
+}
+function golpeRotura(a) {
+  estado.golpeEn = RITMO_TALA;
+  const o = a.rotura;
+  const fin = (r) => {
+    if (estado.talando !== a) return;   // ya ha dejado de golpear
+    if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (!r.rota) { mostrarAviso(r.faltan === 1 ? tr('Rompes la roca: falta 1 golpe.') : tr('Rompes la roca: faltan {n} golpes.', { n: r.faltan })); return; }
+    estado.talando = null;
+    mostrarAviso(tr('¡La roca se parte! Deja {n} piedras en el suelo.', { n: r.cantidad }));
+  };
+  if (objetosRed) { objetosRed.mandar({ tipo: 'romper', punto: o.id, x: pj.x, z: pj.z, px: o.x, pz: o.z, clase: 'roca', tam: o.tam }, fin); return; }
+  const r = recoleccion.romper(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z, sueloObjetos.suelo);
+  if (r.ok && r.rota) { sueloObjetos.guardar(); sueloObjetos.refrescar(); if (decorado.rehacer) decorado.rehacer(); }
   fin(r);
 }
 
@@ -2382,7 +2418,7 @@ function paso() {
   talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z) || !!miRastra() || (!!desbrozableCercano() && !!conQueDesbroza(inventario())))));
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z) || !!miRastra() || (!!desbrozableCercano() && !!conQueDesbroza(inventario())) || (!!mazoEnMano(inventario()) && !!rocaCercana()))));
 
   moverGente(dt);
   moverFuegos();
@@ -2549,7 +2585,7 @@ function vestir() {
   // en línea, los demás lo ven igual: se vuelve a mandar el aspecto si ha cambiado lo que se ve
   if (huella !== vestidoVisto) { vestidoVisto = huella; if (enLinea && enLinea.mandarAspecto) enLinea.mandarAspecto(); }
   // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
-  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo]);
+  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo] || inventario().lugares[l]?.tipo === 'mazo_piedra');
   // lo demás que llevas (cinturón y lo que cuelga, espalda, hombro y manos) se ve puesto (src/juego/llevado.js); en
   // línea, a los demás se lo cuenta el servidor con tu aspecto, sacado de su inventario
   jugador.ponerLlevado(llevadoDe(inventario().lugares));
@@ -2855,6 +2891,7 @@ window.__kinhold = {
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
   beber, aguaAlLado, comer,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
+  rocaCercana, empezarRotura,   // romper rocas (8 nov)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado

@@ -33,7 +33,7 @@ import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
 import { modeloHacha } from './personaje.js';
-import { modeloHachaPiedra } from './modelos_objetos.js';
+import { modeloHachaPiedra, modeloMazoPiedra } from './modelos_objetos.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const mallas = L => {
@@ -467,6 +467,7 @@ function llenoCesto(dep, id) {
 //    una al lado de otra; cada mochila (o leñero, fardo, cesta…) de su estaquilla, por una correa de cuero.
 function herramientaSuelta(t) {
   if (t === 'hacha_piedra') return modeloHachaPiedra();
+  if (t === 'mazo_piedra') return modeloMazoPiedra();
   if (t === 'hacha_mano' || t === 'hacha_hierro') return modeloHacha();
   return mallas(loteEnMano(t));
 }

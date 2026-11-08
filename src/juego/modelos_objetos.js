@@ -293,6 +293,31 @@ export function loteHachaPiedra() {
   for (const dy of [-0.025, 0.025]) L.add(new THREE.TorusGeometry(0.022, 0.005, 4, 10), CUERO_OSC, 0, y + dy, 0.005, { x: Math.PI / 2 + dy * 8 }, { tex: 'liso' });
   return L;
 }
+// El mazo de piedra (valravnx, 8 nov: para romper las rocas medianas): un canto de río gordo y alargado, cruzado en la
+// punta de un mango de rama que se abre en horquilla para abrazarlo, y atado con vueltas de cordel en cruz por encima y
+// por debajo de la piedra. Mismo sistema que el hacha (el mango a lo largo de +Y, la mano en el origen, la piedra
+// cruzada a lo largo de Z): así sirve para la mano, el cinturón, el suelo y su imagen.
+export function modeloMazoPiedra() { return mallas(loteMazoPiedra()); }
+export function loteMazoPiedra() {
+  const L = new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -100 });
+  // el mango: una rama algo torcida, con la corteza, más gorda hacia la piedra; el pomo, el muñón de una ramita
+  L.add(tubo([v3(0, -0.12, 0), v3(0.004, 0.08, -0.003), v3(-0.003, 0.3, 0.004), v3(0, 0.43, 0)], 0.019, 7), 'corteza', 0, 0, 0, null, { tex: 'corteza' });
+  L.add(new THREE.SphereGeometry(0.022, 8, 5), 'corteza', 0, -0.12, 0, null, { escala: v3(1, 0.8, 1), tex: 'corteza' });
+  L.add(new THREE.CircleGeometry(0.019, 8), 'corte', 0, -0.135, 0, { x: Math.PI / 2 }, { tex: 'veta', sinSuelo: true });
+  // la horquilla: dos brazos que suben por los lados de la piedra
+  const y = 0.5;
+  for (const sx of [-1, 1]) L.add(tubo([v3(sx * 0.004, 0.42, 0), v3(sx * 0.045, y - 0.035, 0), v3(sx * 0.054, y + 0.01, 0), v3(sx * 0.042, y + 0.06, 0)], 0.009, 6), 'corteza', 0, 0, 0, null, { tex: 'corteza', sinSuelo: true });
+  // la piedra: un canto alargado y algo aplastado, cruzado (a lo largo de Z, hacia donde golpea), con las puntas más
+  // claras de los golpes
+  L.add(new THREE.IcosahedronGeometry(0.06, 2), 'piedraOsc', 0, y + 0.01, 0, { x: 0.06, y: 0.04 }, { escala: v3(0.74, 0.82, 1.9), tex: 'piedra' });
+  for (const sz of [-1, 1]) L.add(new THREE.IcosahedronGeometry(0.026, 1), 0x8f8a80, 0, y + 0.012, sz * 0.098, null, { escala: v3(1, 1.05, 0.45), plano: true, sinSuelo: true });
+  // las ataduras: dos vueltas de cordel que abrazan la piedra y los brazos de la horquilla, a cada lado del mango
+  for (const sz of [-1, 1]) for (const d of [0, 0.011]) L.add(new THREE.TorusGeometry(0.056, 0.0045, 4, 16), CORDEL, 0, y + 0.01, sz * (0.03 + d), null, { escala: v3(1.02, 0.95, 1), tex: 'liso', sinSuelo: true });
+  // y el cordel, de vueltas por el cuello del mango
+  for (const dy of [0, 0.014, 0.028]) L.add(new THREE.TorusGeometry(0.021, 0.0042, 4, 12), CORDEL, 0, 0.405 + dy, 0, { x: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  return L;
+}
+function mazoPiedraSuelo(n, id) { const g = new THREE.Group(), h = modeloMazoPiedra(); h.rotation.set(Math.PI / 2, 0, az(id, 3) * 6); h.position.y = 0.045; g.add(h); return g; }
 // El taladro de fuego de arco (7 nov; el documento de sistemas lo nombra para encender la hoguera): el arco (una rama
 // curvada con el cordel tenso de punta a punta), el huso (un palo recto con la punta tostada), la tabla con las
 // muescas negras de otras veces y la piedra de apoyo con su hoyuelo. Todo tumbado en el suelo.
@@ -379,6 +404,6 @@ function bandolera(n, id) {
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, taladro_fuego: taladroFuego,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

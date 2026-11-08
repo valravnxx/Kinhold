@@ -2396,5 +2396,22 @@
  "Ya está en brasas.": "Он уже на углях.",
  "No está en brasas.": "Он не на углях.",
  "Está en brasas: avívalo.": "Он на углях: раздуй его.",
- "Está en brasas: avívalo para que vuelva la llama.": "Он на углях: раздуй его, чтобы вернулось пламя."
+ "Está en brasas: avívalo para que vuelva la llama.": "Он на углях: раздуй его, чтобы вернулось пламя.",
+ "v156: el mazo de piedra y romper rocas (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo»). El mazo se hace con las manos con 1 piedra, 1 rama y 2 cordeles: un canto alargado cruzado en la horquilla de una rama y atado con cordel. Con él en la mano, junto a una roca mediana del mundo (hasta 1,1 m), Usar la rompe a golpes, con el mismo gesto que al talar; cada golpe va por el servidor, con su autor, y cansa. Al último golpe la roca se parte: deja sus piedras sueltas en el suelo donde estaba y un corro de cascotes, y todos lo ven igual. Las grandes y los afloramientos no se rompen con el mazo: hará falta hierro.": "v156: каменная кувалда и раскалывание камней (valravnx, 8 нояб.: «представь, что строишь замок, бегая вокруг и роясь среди камешков на земле»). Кувалда делается руками из 1 камня, 1 ветки и 2 шнуров: продолговатый булыжник, вставленный поперёк в развилку ветки и обвязанный шнуром. С ней в руке, рядом со средним камнем мира (до 1,1 м), «Использовать» раскалывает его ударами, тем же движением, что и при рубке; каждый удар идёт через сервер, с автором, и утомляет. С последним ударом камень раскалывается: оставляет свои отдельные камни на земле, где он был, и кольцо обломков, и все видят это одинаково. Большие камни и выходы породы кувалдой не раскалываются: понадобится железо.",
+ "v156, provisional: la medida de una roca es el ancho que ocupa (2,2 veces su tamaño); se rompen de 0,66 m (las más chicas del campo) a 1,1 m, con 8 a 30 golpes y de 6 a 25 piedras, según la medida. Vuelve a salir pasados 3 meses reales. Los cantos del río no se rompen (son pequeños). El mazo pesa 2,5 kg, se lleva en una mano como el hacha y se cuelga del cinto como ella; hacerlo con las manos lleva 45 s.": "v156, временно: размер камня — это ширина, которую он занимает (2,2 его величины); раскалываются камни от 0,66 м (самые маленькие в поле) до 1,1 м, за 8–30 ударов, и дают от 6 до 25 камней, в зависимости от размера. Камень появляется снова через 3 реальных месяца. Речная галька не раскалывается (она мелкая). Кувалда весит 2,5 кг, носится в одной руке, как топор, и вешается на пояс, как он; руками она делается за 45 с.",
+ "Demo única · v156 (el mazo de piedra y romper rocas)": "Единая демо · v156 (каменная кувалда и раскалывание камней)",
+ "Mazo de piedra": "Каменная кувалда",
+ "Eso no se recoge: se rompe con un mazo.": "Это не собирают: это раскалывают кувалдой.",
+ "Ahí no hay ninguna roca.": "Там нет никакого камня.",
+ "Esa roca es demasiado grande para el mazo: hace falta hierro.": "Этот камень слишком велик для кувалды: нужно железо.",
+ "Esa roca ya está rota: solo quedan cascotes.": "Этот камень уже расколот: остались только обломки.",
+ "Con algo al hombro no puedes romper la roca.": "С чем-то на плече нельзя раскалывать камень.",
+ "Aquí no se pueden romper rocas.": "Здесь нельзя раскалывать камни.",
+ "Romper la roca": "Расколоть камень",
+ "Rompes la roca.": "Ты раскалываешь камень.",
+ "Rompes la roca: falta 1 golpe.": "Ты раскалываешь камень: остался 1 удар.",
+ "Rompes la roca: faltan {n} golpes.": "Ты раскалываешь камень: осталось ударов: {n}.",
+ "¡La roca se parte! Deja {n} piedras en el suelo.": "Камень раскалывается! Он оставляет на земле камней: {n}.",
+ "Necesitas un mazo de piedra en la mano para romper la roca.": "Чтобы расколоть камень, нужна каменная кувалда в руке.",
+ "Rompe las rocas medianas en piedras sueltas (las grandes, solo con hierro).": "Раскалывает средние камни на отдельные камни (большие — только железом)."
 }

@@ -28,7 +28,7 @@ import { loteHachaPiedra, piezasArcoTaladro, piezasHuso } from './modelos_objeto
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
-const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro']);
+const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);   // (el mazo, por el cinto como el hacha)
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -100 });
 const azar = (s) => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };

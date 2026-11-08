@@ -9,7 +9,7 @@ import { cil } from '../mundo/decorado.js';
 import { crearPersonajeMH } from '../personajes/makehuman.js';
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
 import { crearLlevado } from './llevado.js';
-import { loteHachaPiedra } from './modelos_objetos.js';
+import { loteHachaPiedra, loteMazoPiedra } from './modelos_objetos.js';
 
 // Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
 // le da aquí y pone el suyo. Sin cámara, todos enteros. `forzar`: un nivel fijo para todos (pruebas y capturas).
@@ -168,6 +168,8 @@ export const MODELOS_HERRAMIENTA = { hacha: modeloHacha, pico: modeloPico };
 // El hacha de cada tipo (7 nov): la de piedra, con su cabeza de piedra atada (src/juego/modelos_objetos.js); las demás,
 // la de hierro (el hacha de hierro aún no tiene modelo propio). Mismo sistema: mango en +Y, mano en el origen, filo a +Z.
 export function modeloHachaDe(tipo) {
+  // (el mazo de piedra, 8 nov, se lleva y se usa como el hacha: con el mismo gesto, contra la roca)
+  if (tipo === 'mazo_piedra' && !globalThis.__sinModelosManos) { const g = deMano(loteMazoPiedra()); g.name = 'mazo_piedra'; return g; }
   if (tipo !== 'hacha_piedra' || globalThis.__sinModelosManos /* solo para comprobar que la prueba falla */) return modeloHacha();
   const g = deMano(loteHachaPiedra()); g.name = 'hacha_piedra';
   return g;
@@ -176,7 +178,7 @@ export function modeloHachaDe(tipo) {
 // Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
 // `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
 // `ropa`: { tintes, hechuras } de lo que lleva puesto (src/logica/hechura.js: vestidoDe); sin ella, los de siempre.
-const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro']);
+const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
   const muneco = crearMuneco();

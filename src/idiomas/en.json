@@ -2396,5 +2396,22 @@
  "Ya está en brasas.": "It is already on embers.",
  "No está en brasas.": "It is not on embers.",
  "Está en brasas: avívalo.": "It is on embers: revive it.",
- "Está en brasas: avívalo para que vuelva la llama.": "It is on embers: revive it to bring the flame back."
+ "Está en brasas: avívalo para que vuelva la llama.": "It is on embers: revive it to bring the flame back.",
+ "v156: el mazo de piedra y romper rocas (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo»). El mazo se hace con las manos con 1 piedra, 1 rama y 2 cordeles: un canto alargado cruzado en la horquilla de una rama y atado con cordel. Con él en la mano, junto a una roca mediana del mundo (hasta 1,1 m), Usar la rompe a golpes, con el mismo gesto que al talar; cada golpe va por el servidor, con su autor, y cansa. Al último golpe la roca se parte: deja sus piedras sueltas en el suelo donde estaba y un corro de cascotes, y todos lo ven igual. Las grandes y los afloramientos no se rompen con el mazo: hará falta hierro.": "v156: the stone maul and breaking rocks (valravnx, 8 Nov: «imagine building a castle running around, rummaging among little stones on the ground»). The maul is made by hand with 1 stone, 1 branch and 2 cords: an elongated cobble set across the fork of a branch and bound with cord. With it in your hand, next to a medium rock of the world (up to 1.1 m), Use breaks it with blows, with the same gesture as felling; each blow goes through the server, with its author, and tires you. At the last blow the rock splits: it leaves its loose stones on the ground where it was and a ring of rubble, and everyone sees it the same. Large rocks and outcrops are not broken with the maul: iron will be needed.",
+ "Demo única · v156 (el mazo de piedra y romper rocas)": "Single demo · v156 (the stone maul and breaking rocks)",
+ "Mazo de piedra": "Stone maul",
+ "Eso no se recoge: se rompe con un mazo.": "That is not picked up: it is broken with a maul.",
+ "Ahí no hay ninguna roca.": "There is no rock there.",
+ "Esa roca es demasiado grande para el mazo: hace falta hierro.": "That rock is too big for the maul: iron is needed.",
+ "Esa roca ya está rota: solo quedan cascotes.": "That rock is already broken: only rubble is left.",
+ "Con algo al hombro no puedes romper la roca.": "With something on your shoulder you cannot break the rock.",
+ "Aquí no se pueden romper rocas.": "Rocks cannot be broken here.",
+ "Romper la roca": "Break the rock",
+ "Rompes la roca.": "You break the rock.",
+ "Rompes la roca: falta 1 golpe.": "You break the rock: 1 blow left.",
+ "Rompes la roca: faltan {n} golpes.": "You break the rock: {n} blows left.",
+ "¡La roca se parte! Deja {n} piedras en el suelo.": "The rock splits! It leaves {n} stones on the ground.",
+ "Necesitas un mazo de piedra en la mano para romper la roca.": "You need a stone maul in your hand to break the rock.",
+ "Rompe las rocas medianas en piedras sueltas (las grandes, solo con hierro).": "Breaks medium rocks into loose stones (large ones, only with iron).",
+ "v156, provisional: la medida de una roca es el ancho que ocupa (2,2 veces su tamaño); se rompen de 0,66 m (las más chicas del campo) a 1,1 m, con 8 a 30 golpes y de 6 a 25 piedras, según la medida. Vuelve a salir pasados 3 meses reales. Los cantos del río no se rompen (son pequeños). El mazo pesa 2,5 kg, se lleva en una mano como el hacha y se cuelga del cinto como ella; hacerlo con las manos lleva 45 s.": "v156, provisional: the size of a rock is the width it takes up (2.2 times its size); rocks from 0.66 m (the smallest in the fields) to 1.1 m are broken, with 8 to 30 blows and from 6 to 25 stones, depending on the size. It appears again after 3 real months. River cobbles are not broken (they are small). The maul weighs 2.5 kg, is carried in one hand like the axe and hangs from the belt like it; making it by hand takes 45 s."
 }
