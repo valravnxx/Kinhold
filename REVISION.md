@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (12:13 UTC) — en la sesión del carril A: lo probado a mano se aprueba
+valravnx: «porque te tiras 4h haciendo testeos de algo que te he confirmado yo que he testeado a mano? NUNCA HAGAS ESO. solo aprueba y listo».
+→ Regla nueva en CLAUDE.md. La casa humilde queda hecha (él la levantó entera a mano con el andamio) y se une sin más pruebas.
+
 ### 8 nov 2026 (12:05 UTC) — valravnx, en la sesión: revisión completa de las baterías de prueba
 valravnx: «hazme una revisión completa de las baterías de prueba, no puede ser que la media de tiempo de cada pequeña mejora sea de tantas horas, hay que quitar toda la prueba que no sea imprescindible y hacer de las actualizaciones algo mucho mas rapido, porque cada vez es peor, solo verificar lo esencial, no pasar mil pruebas para cosas pequeñas».
 → Cambia la regla de las pruebas de CLAUDE.md (antes: «todas, siempre»). Tarea en «Orden», la lleva el chat (rama trabajo/20261108-1205-pruebas-rapidas).

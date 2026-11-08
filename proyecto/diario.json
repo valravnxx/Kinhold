@@ -5500,5 +5500,20 @@
   "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea): todo bien salvo la web, por traducciones que faltaban en main (la tarea de los colgaderos); tras unir main, web, mapa del rey y construcción en la nube, bien, y otra vez tras unir la v151, el mapa del rey y las zonas aquí. Prueba nueva de las zonas tomadas: con MUTAR=2 (lógica) y MUTAR=5 (navegador) falla",
   "capturas": "capturas/demo-v152",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T07:15:00+00:00",
+  "fin": "2026-11-08T12:13:20+00:00",
+  "titulo": "P3: la casa humilde, entera, con el andamio (carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "valravnx la levantó entera a mano en el juego, en solitario y sin arcón, con el andamio para subir al tejado: aprobada así.",
+   "El recorrido de jugador (paso 16) hace lo mismo: cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro y el de la puerta; el banco de tronco y 3 cuerdas; la puerta de varas; un andamio junto a la casa, desde el que pone el tejado de juncos; y luego desmonta el andamio.",
+   "La prueba de construcción mira la casa de cerca en PC y en el móvil.",
+   "Regla nueva (valravnx, 8 nov): lo que valravnx ya ha probado a mano se aprueba sin pasar baterías largas de pruebas."
+  ],
+  "pruebas": "Probado a mano por valravnx. Recorrido aquí: 158 bien, 0 mal (antes de unir main).",
+  "capturas": "capturas/casa-humilde-8nov",
+  "estado": "ok"
  }
 ]

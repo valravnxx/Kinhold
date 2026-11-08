@@ -104,6 +104,7 @@ Las horas son reales (`date -Iseconds`), nunca estimadas. Las tareas guardan tam
 ## Reglas de valravnx
 
 - **El repositorio y la web son públicos: nunca se escribe el nombre real del dev.** En el diario, el roadmap, el código, las pruebas, los commits y los textos del juego se le llama «valravnx» (o «el dev»). Tampoco otros datos personales suyos.
+- **Lo que valravnx ya ha probado a mano, se aprueba y listo** (valravnx, 8 nov: «porque te tiras 4h haciendo testeos de algo que te he confirmado yo que he testeado a mano? NUNCA HAGAS ESO. solo aprueba y listo»): nada de baterías largas para confirmarlo; se cierra con lo que haya.
 - **Comprobar todo antes de afirmarlo.** Nada de memoria ni de suposiciones. Si algo no se ha podido comprobar, decirlo en el diario ("no comprobado: …").
 - **No sobrecomplicar sus sistemas.** Implementar lo que dice el GDD a la escala que lo dice; nada de capas extra.
 - Lo que el GDD no decide: tomar una decisión provisional sencilla, anotarla en el registro de decisiones del prototipo (`registro.js`) y en el diario. Si es importante o difícil de deshacer, no decidir: añadirla a `decisiones_pendientes` y pasar la tarea a `espera_decision`.
