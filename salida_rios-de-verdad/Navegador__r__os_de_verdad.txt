@@ -1,0 +1,32 @@
+Vista pc arroyo
+  decorado: {"centro": {"x": 103.14871974476793, "z": -80.0145743167181}, "pendientes": 0, "cuenta": {"arboles": 119, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 108, "haya": 0, "fresno": 11, "encina": 0}, "jovenes": 70, "hierba": 4464, "flores": 212, "matas": 42, "piedras": 539, "trozos": 228, "puestas": 3, "ms": 1019}, "pj": [103.14871974476793, -80.0145743167181]}
+  OK   arroyo: hay agua en el río (de 6.4 m de ancho) — {"hondo": 0.5740290886390333, "superficie": -3.763328342385403, "dx": 0.09639630005024308, "dz": 0.2840911004178474}
+  OK   arroyo: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   arroyo: sin errores en la página
+Vista pc rio
+  decorado: {"centro": {"x": -8113.824316240995, "z": 1153.9724062624243}, "pendientes": 0, "cuenta": {"arboles": 80, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 59, "haya": 0, "fresno": 21, "encina": 0}, "jovenes": 60, "hierba": 4210, "flores": 197, "matas": 26, "piedras": 971, "trozos": 182, "puestas": 3, "ms": 968}, "pj": [-8113.824316240995, 1153.9724062624243]}
+  OK   rio: hay agua en el río (de 14.3 m de ancho) — {"hondo": 2.1832548388408313, "superficie": -6.022478727934505, "dx": 0.844360260850406, "dz": 0.15446423827763983}
+  OK   rio: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   rio: sin errores en la página
+Vista pc union
+  decorado: {"centro": {"x": 1416.1695310116966, "z": 85.27829639837137}, "pendientes": 0, "cuenta": {"arboles": 82, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 21, "haya": 0, "fresno": 61, "encina": 0}, "jovenes": 73, "hierba": 4726, "flores": 223, "matas": 25, "piedras": 1161, "trozos": 169, "puestas": 3, "ms": 811}, "pj": [1416.1695310116966, 85.27829639837137]}
+  OK   union: hay agua en el río (de 8.3 m de ancho) — {"hondo": 2.1309767553571106, "superficie": 23.588316275842843, "dx": 0.819646329852889, "dz": 0.7501049351742984}
+  OK   union: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   union: sin errores en la página
+Vista movil arroyo
+  decorado: {"centro": {"x": 103.14871974476793, "z": -80.0145743167181}, "pendientes": 0, "cuenta": {"arboles": 51, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 51, "haya": 0, "fresno": 0, "encina": 0}, "jovenes": 31, "hierba": 1823, "flores": 88, "matas": 16, "piedras": 277, "trozos": 111, "puestas": 3, "ms": 521}, "pj": [103.14871974476793, -80.0145743167181]}
+  OK   arroyo: hay agua en el río (de 6.4 m de ancho) — {"hondo": 0.5740290886390333, "superficie": -3.763328342385403, "dx": 0.09639630005024308, "dz": 0.2840911004178474}
+  OK   arroyo: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   arroyo: sin errores en la página
+Vista movil rio
+  decorado: {"centro": {"x": -8113.824316240995, "z": 1153.9724062624243}, "pendientes": 0, "cuenta": {"arboles": 31, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 23, "haya": 0, "fresno": 8, "encina": 0}, "jovenes": 25, "hierba": 1854, "flores": 76, "matas": 13, "piedras": 602, "trozos": 90, "puestas": 3, "ms": 520}, "pj": [-8113.824316240995, 1153.9724062624243]}
+  OK   rio: hay agua en el río (de 14.3 m de ancho) — {"hondo": 2.1832548388408313, "superficie": -6.022478727934505, "dx": 0.844360260850406, "dz": 0.15446423827763983}
+  OK   rio: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   rio: sin errores en la página
+Vista movil union
+  decorado: {"centro": {"x": 1416.1695310116966, "z": 85.27829639837137}, "pendientes": 0, "cuenta": {"arboles": 32, "especies": {"abeto": 0, "pino": 0, "abedul": 0, "roble": 5, "haya": 0, "fresno": 27, "encina": 0}, "jovenes": 28, "hierba": 2189, "flores": 100, "matas": 7, "piedras": 712, "trozos": 81, "puestas": 3, "ms": 433}, "pj": [1416.1695310116966, 85.27829639837137]}
+  OK   union: hay agua en el río (de 8.3 m de ancho) — {"hondo": 2.1309767553571106, "superficie": 23.588316275842843, "dx": 0.819646329852889, "dz": 0.7501049351742984}
+  OK   union: el agua va seguida por el cauce, 60 m arriba y abajo (nada de agua a ratos) — 120 de 120 · secos en []
+  OK   union: sin errores en la página
+
+Todo bien
