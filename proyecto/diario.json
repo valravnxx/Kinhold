@@ -5322,5 +5322,51 @@
   "pruebas": "Batería entera en la nube correcta (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea",
   "capturas": "capturas/demo-v143",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T19:23:34+00:00",
+  "fin": "2026-11-07T20:28:41+00:00",
+  "titulo": "La base que parecía borrada al morir en el río: no se perdió nada; causa encontrada y tema cerrado (carril A)",
+  "hito": "orden",
+  "hecho": [
+   "No se perdió nada: al recargar, la base de valravnx volvió entera. El mundo del servidor estaba bien.",
+   "Causa: al ahogarte vuelves a la salida; al teletransportarte con el admin, el servidor aún recibe algún estado desde la salida, la regla de que volver a la salida es libre le cree, y los siguientes desde la base se recortan a 8 m/s. Como lo de alrededor se manda según dónde cree el servidor que estás, no llegaba nada de la base; el mojón sí, porque va a todos. Comprobado con la lógica de presencia.",
+   "valravnx lo cierra: solo pasa al teletransportarse con el admin, un jugador nunca lo ve. No se cambia nada del juego.",
+   "Lo que se hizo antes de saberlo (una herramienta que revisa el mundo guardado del servidor y un aviso al arrancar) queda en la rama trabajo/20261107-1925, sin unir a main."
+  ],
+  "pruebas": "Sin cambios en el juego: no hace falta la batería. Lo de la rama: su prueba, 11/11",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T19:00:43+00:00",
+  "fin": "2026-11-07T21:36:30+00:00",
+  "titulo": "P3: troncos delgados y varas en la rastra, y juncos en el fardo",
+  "hito": "crafting",
+  "hecho": [
+   "Estudio pedido por valravnx en la sesión: hoy el tronco delgado solo iba al hombro, de uno en uno, y los juncos solo en las manos; propuesta de llevarlos en la rastra y en el fardo. valravnx: «metelo ya».",
+   "La rastra lleva también troncos delgados (hasta 5, 75 kg: va igual de despacio que con 3 cortos) y varas (hasta 12), con su modelo: los troncos a lo largo sobre los travesaños y las varas en un haz. El tronco largo sigue fuera (es cosa de carro).",
+   "El fardo atado admite juncos y mimbre, con la paja y la fibra; con plantas se ve como haces de tallos atados a la espalda.",
+   "Recorrido de jugador, paso 14: hace dos cordeles, se ata un fardo, se lo echa a la espalda y mete en él el haz de juncos que cortó en la orilla, con las manos libres."
+  ],
+  "pruebas": "Batería entera en la nube dos veces (antes y después de unir main, que traía beber del río como v143): todo correcto, con el recorrido de jugador (paso 14) y la rastra en el navegador (troncos delgados, varas y el fardo con juncos). La primera vez, la web falló por la traducción de la tarea nueva, añadida y repetida: bien. Rastra 47/47 (con MUTAR=1 falla), inventario 137/137. No comprobado: el fardo con juncos visto en el móvil (la prueba de la rastra lo mira solo en PC).",
+  "capturas": "capturas/demo-v144",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T20:42:58+00:00",
+  "fin": "2026-11-07T23:15:38+00:00",
+  "titulo": "Los puestos y los almacenajes, con el giro que les das y desmontables (demo v145; chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Arreglo de lo que vio valravnx: los puestos de trabajo y los almacenajes salían girados al azar (por su nombre) y, terminados, no había manera de quitarlos.",
+   "Ahora se ponen con el giro que les das (Girar o R): el servidor lo guarda y los demás los ven igual. Los de antes se quedan como estaban.",
+   "Se desmontan en Desmontar (X), apuntándolos: el 75 % de su material, como las piezas (GDD), y lo que guardaban, entero, al suelo a su lado; un marco a medio hacer, lo entregado entero. Solo el dueño de la tierra y sus invitados.",
+   "Provisional: no se desmonta una hoguera mientras arde, ni un puesto con encargos a medias.",
+   "Capturas de cerca de la pila de piedras girada y elegida para desmontar (PC) y vista desde el móvil."
+  ],
+  "pruebas": "Batería entera en la nube, 41 de 41 (94 min); después de unir main, otra vez fabricación, hoguera, almacenajes y rastra en la nube, y lógica y recorrido de jugador aquí (111/111). La prueba de fabricación, 153/153 (con MUTAR=3, 4 fallan)",
+  "capturas": "capturas/demo-v145",
+  "estado": "ok"
  }
 ]

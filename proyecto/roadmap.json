@@ -1426,9 +1426,10 @@
     },
     {
      "nombre": "Llevar más de una vez (valravnx, 7 nov): la rastra lleva también troncos delgados (5) y varas (12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T19:00:43+00:00",
-     "rama": "trabajo/20261107-1900-rastra"
+     "rama": "trabajo/20261107-1900-rastra",
+     "fin": "2026-11-07T21:36:30+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -1583,13 +1584,15 @@
    "id": "talar",
    "num": "P5",
    "nombre": "Talar de verdad",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "jugable": "El árbol cae por física hacia la boca que le cortas, con un crujido de aviso, y hiere a quien esté debajo.",
    "nota": "Revisión del 1 nov con valravnx: aprobado: caída sobre el tocón con la física de un tronco que gira; el daño lo decide el servidor con su autor.",
    "tareas": [
     {
      "nombre": "Hacia dónde cae: la boca que se corta (el lado desde el que talas); sin boca, hacia donde se inclina o cuesta abajo. Lógica pura, con pruebas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-07T21:24:48+00:00",
+     "rama": "trabajo/20261107-2124"
     },
     {
      "nombre": "La caída: gira sobre el tocón con la aceleración de la gravedad, choca con el suelo, rebota un poco y se asienta según el terreno; si da con otro árbol o una obra, se queda apoyado o se desvía. Todos la ven igual (sale de la dirección y el momento)",
@@ -1645,9 +1648,9 @@
     },
     {
      "nombre": "Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba",
-     "estado": "en_curso",
-     "inicio": "2026-11-07T19:25:06+00:00",
-     "rama": "trabajo/20261107-1925"
+     "estado": "hecho",
+     "inicio": "2026-11-07T19:23:34+00:00",
+     "fin": "2026-11-07T20:28:41+00:00"
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
@@ -1674,6 +1677,12 @@
      "estado": "hecho",
      "inicio": "2026-11-04T12:43:17+01:00",
      "fin": "2026-11-04T12:45:39+01:00"
+    },
+    {
+     "nombre": "Arreglo (valravnx, 7 nov): los puestos de trabajo y los almacenajes guardan el giro con que se ponen, y se desmontan terminados desde Construir (el 75 % del material y lo que guardan, al suelo a su lado)",
+     "estado": "hecho",
+     "inicio": "2026-11-07T20:42:58+00:00",
+     "fin": "2026-11-07T23:15:38+00:00"
     }
    ]
   },
@@ -3405,6 +3414,20 @@
      "archivo": "jugar/demo/v143.html",
      "capturas": "capturas/demo-v143",
      "notas": "Beber del río con las manos"
+    },
+    {
+     "v": "v144",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v144.html",
+     "capturas": "capturas/demo-v144",
+     "notas": "Llevar más de una vez: la rastra lleva también troncos delgados (hasta 5) y varas (hasta 12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda."
+    },
+    {
+     "v": "v145",
+     "fecha": "2026-11-07",
+     "archivo": "jugar/demo/v145.html",
+     "capturas": "capturas/demo-v145",
+     "notas": "Los puestos de trabajo y los almacenajes se ponen con el giro que les das y se desmontan terminados (el 75 % del material y lo que guardan, al suelo)"
     }
    ]
   },

@@ -74,6 +74,24 @@ console.log('Engancharla y soltarla');
   comprobar('cada uno arrastra una sola', !r.ok && /Ya arrastras/.test(r.motivo));
 }
 
+console.log('Troncos delgados y varas (valravnx, 7 nov: «metelo ya»)');
+{
+  const m = nuevo(), inv = m.invs.de('ana');
+  inv.lugares.hombro = { tipo: 'tronco_delgado', n: 1 };
+  let r = hacer(m, { autor: 'ana', tipo: 'cargar_rastra', objeto: m.id, x: 1, z: 0, de: 'hombro' });
+  comprobar('el tronco delgado del hombro va a la rastra', r.ok && r.lleva === 1 && !inv.lugares.hombro, r.motivo);
+  const pila = m.suelo.dejar({ tipo: 'tronco_delgado', n: 6 }, 1.5, 0, T0, 'ana', false);
+  r = hacer(m, { autor: 'ana', tipo: 'cargar_rastra', objeto: m.id, x: 1, z: 0, suelo: pila.id });
+  comprobar('de una pila del suelo, hasta 5 troncos delgados', r.ok && r.lleva === 5 && CABE_RASTRA.tronco_delgado === 5 && m.suelo.porId(pila.id, T0).cosa.n === 2, `${r.lleva} ${r.motivo || ''}`);
+  comprobar('con 5 troncos delgados (75 kg) va igual de despacio que con 3 cortos', Math.abs(factor({ tipo: 'tronco_delgado', n: 5 }) - VEL_LLENA) < 1e-9, `${factor({ tipo: 'tronco_delgado', n: 5 })}`);
+  const m2 = nuevo(), varas = m2.suelo.dejar({ tipo: 'vara', n: 14 }, 1.5, 0, T0, 'ana', false);
+  r = hacer(m2, { autor: 'ana', tipo: 'cargar_rastra', objeto: m2.id, x: 1, z: 0, suelo: varas.id });
+  comprobar('y hasta 12 varas, que también pesan (frena algo)', r.ok && r.lleva === 12 && factor({ tipo: 'vara', n: 12 }) < VEL_VACIA, `${r.lleva} ${factor({ tipo: 'vara', n: 12 })} ${r.motivo || ''}`);
+  const m3 = nuevo(), largo = m3.suelo.dejar({ tipo: 'tronco_largo', n: 1 }, 1.5, 0, T0, 'ana', false);
+  r = hacer(m3, { autor: 'ana', tipo: 'cargar_rastra', objeto: m3.id, x: 1, z: 0, suelo: largo.id });
+  comprobar('el tronco largo, no (es cosa de carro)', !r.ok && /solo van/.test(r.motivo), r.motivo);
+}
+
 console.log('Cargarla y descargarla');
 {
   const m = nuevo(), inv = m.invs.de('ana');

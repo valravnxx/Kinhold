@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-11-07T19:25:06+00:00",
-  "tarea": "Arreglo (valravnx, 7 nov, muy importante): al morir en el río se le borró todo lo de su base (la casa, lo del suelo y las estaciones). Averiguar si se pierde en el servidor o solo no le llega al navegador al volver, arreglarlo y dejar su prueba",
-  "hito": "orden",
-  "rama": "trabajo/20261107-1925"
+  "inicio": "2026-11-07T21:24:48+00:00",
+  "tarea": "Hacia dónde cae: la boca que se corta (el lado desde el que talas); sin boca, hacia donde se inclina o cuesta abajo. Lógica pura, con pruebas",
+  "hito": "talar",
+  "rama": "trabajo/20261107-2124"
  },
  "B": null,
  "chat:trabajo/20261107-1845-interfaz": {
@@ -11,12 +11,6 @@
   "tarea": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
   "hito": "interfaz",
   "rama": "trabajo/20261107-1845-interfaz"
- },
- "chat:trabajo/20261107-1900-rastra": {
-  "inicio": "2026-11-07T19:00:43+00:00",
-  "tarea": "Llevar más de una vez (valravnx, 7 nov): la rastra lleva también troncos delgados (5) y varas (12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra",
-  "hito": "crafting",
-  "rama": "trabajo/20261107-1900-rastra"
  },
  "chat:trabajo/20261107-2126-bayas": {
   "inicio": "2026-11-07T21:26:16+01:00",

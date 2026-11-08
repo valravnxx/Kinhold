@@ -24,7 +24,7 @@
 // para las mochilas y lo de hombro (anotadas en el diario; se ajustan al probar):
 //  - Leñero: 2 huecos grandes y 4 medianos, solo leña y troncos cortos (hasta 2 troncos cortos y 12 de leña, o 18 de leña).
 //  - Cesta de recolección: 6 huecos pequeños para bayas, setas, hierbas, frutos secos y huevos (60 unidades).
-//  - Fardo atado: 4 huecos medianos para pieles, telas, fibras y paja.
+//  - Fardo atado: 4 huecos medianos para pieles, telas, fibras y paja; y juncos y mimbre (valravnx, 7 nov).
 //  - Zurrón de piel (mixto, poco): 2 medianos y 2 pequeños. Mochila de bastidor (mixto, más): 4 medianos y 4 pequeños.
 //  - Porta-piedras: 4 huecos medianos para piedras (12). El bloque de piedra en bruto es enorme: rastra o carro.
 //  - Caja de herramientas de espalda: 4 huecos medianos, solo herramientas. Carcaj: 2 huecos de flechas o virotes (20).
@@ -125,7 +125,7 @@ export const CATALOGO = {
   // mochilas y bastidores de función única (espalda)
   lenero: { nombre: 'Leñero', tam: 'G', lugar: 'espalda', huecos: [...hs('G', 2), ...hs('M', 4)], admite: ['lena', 'tronco_corto'] },
   cesta_recoleccion: { nombre: 'Cesta de recolección', tam: 'G', lugar: 'espalda', huecos: hs('P', 6), admite: ['bayas', 'setas', 'hierbas', 'frutos_secos', 'huevo'] },
-  fardo: { nombre: 'Fardo atado', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['piel', 'tela', 'fibra', 'paja'] },
+  fardo: { nombre: 'Fardo atado', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['piel', 'tela', 'fibra', 'paja', 'junco', 'mimbre'] }, // los juncos y el mimbre, con la paja (valravnx, 7 nov)
   zurron: { nombre: 'Zurrón de piel', tam: 'G', lugar: 'espalda', huecos: [...hs('M', 2), ...hs('P', 2)] },
   mochila_bastidor: { nombre: 'Mochila de bastidor', tam: 'G', lugar: 'espalda', huecos: [...hs('M', 4), ...hs('P', 4)] },
   porta_piedras: { nombre: 'Porta-piedras', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['piedra'] },

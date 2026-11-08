@@ -747,7 +747,7 @@ function evaluarColocacion() {
   if (sel.clase === 'puesto') {
     // un puesto de trabajo (P3): se pone el marco a tu lado; la hoguera, solo fuera (no bajo techo)
     const y = estado.puntero.ySuperficie || 0;
-    fantasma.position.set(x, y, z); fantasma.rotation.set(0, 0, 0);
+    fantasma.position.set(x, y, z); fantasma.rotation.set(0, estado.rotDeco || 0, 0);   // con el giro que se le da (Girar), el que se guarda
     let v = fabCliente.puedeColocar(sel.tipo, x, z, mundo.bajoTecho(x, z));
     if (v.ok && Math.hypot(x - pj.x, z - pj.z) > PONER_PUESTO) v = { ok: false, motivo: 'Acércate: el marco se pone a tu lado.' };
     if (v.ok && pj.k > 0) v = { ok: false, motivo: 'Los puestos de trabajo van en la planta baja.' };
@@ -812,7 +812,7 @@ function colocar() {
   if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
   if (ca.tipo === 'puesto') { // por la fabricación (en línea, el servidor): el marco, sin gastar nada
     const tipo = estado.sel.tipo;
-    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y) }, (r) => {
+    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y), giro: +(estado.rotDeco || 0).toFixed(3) }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
       mostrarAviso(tr('Marco puesto: llévale {c} y trabaja en él (Usar).', { c: Object.entries(ESTACIONES[tipo].coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }));
     });
@@ -853,6 +853,19 @@ function evaluarDesmontaje(hit) {
     mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
     return;
   }
+  if (obj.userData.estacion) {
+    // un puesto o un almacenaje (valravnx, 7 nov: que se desmonten): terminado, el 75 % y lo que guarda, al suelo
+    const e = fabCliente.estaciones[obj.userData.estacion];
+    if (!e || !ESTACIONES[e.tipo]) { mostrarAviso(''); return; }
+    const tocar = mundo.puedeTocar(e.x, e.z, yoAutor());
+    if (!tocar.ok) { mostrarAviso(tr(tocar.motivo), true); return; }
+    if (Math.hypot(e.x - pj.x, e.z - pj.z) > USAR_ESTACION) { mostrarAviso(tr('Acércate para desmontarlo.'), true); return; }
+    resaltar(obj, 'naranja');
+    estado.pendienteDesmontar = { estacion: e.id };
+    const n = tr(ESTACIONES[e.tipo].nombre);
+    mostrarAviso(e.obra ? tr('{e}: quitas el marco y lo entregado cae al suelo.', { e: n }) : tr('{e}: recuperas el 75 % del material, y lo que guarda cae al suelo.', { e: n }));
+    return;
+  }
   if (obj.userData.deco) {
     resaltar(obj, 'naranja');
     estado.pendienteDesmontar = { deco: obj.userData.deco };
@@ -878,6 +891,15 @@ function evaluarDesmontaje(hit) {
 function confirmarDesmontaje() {
   const pd = estado.pendienteDesmontar;
   if (!pd) return;
+  if (pd.estacion) {
+    estado.pendienteDesmontar = null; limpiarResaltado(); $('confirmar').hidden = true;
+    hacerFabricacion({ tipo: 'desmontar_estacion', estacion: pd.estacion, x: pj.x, z: pj.z }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ');
+      mostrarAviso(r.quitada ? tr('Marco quitado: lo que tenía, en el suelo.') : `${t('desmontado')}${dev ? ': ' + dev : ''}`);
+    });
+    return;
+  }
   let r;
   if (pd.mojon) r = accion({ tipo: 'quitar_mojon' });
   else if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
@@ -959,6 +981,16 @@ function piezaBajo(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
   const objs = registroMallas.filter(m => m.obj.visible).map(m => m.obj).concat(mallasMojon);
   const hits = rr.intersectObjects(objs, true).filter(h => h.object.visible && h.object.userData.ref && h.object.userData.ref.visible);
+  // y los puestos y almacenajes (src/juego/estaciones.js: un grupo por cada uno, con su id), en planta baja
+  if (pj.k === 0) {
+    for (const h of rr.intersectObjects(estacionesV.grupo.children, true)) {
+      let o = h.object; while (o && o.parent !== estacionesV.grupo) o = o.parent;
+      if (!o || !o.userData.id) continue;
+      o.userData.estacion = o.userData.id; h.object.userData.ref = o;
+      hits.push(h); break;
+    }
+    hits.sort((a, b) => a.distance - b.distance);
+  }
   return hits[0] || null;
 }
 
