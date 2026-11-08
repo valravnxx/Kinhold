@@ -15,6 +15,8 @@
 //   { tipo: 'talar', arbol, x, z, ax, az, edad }  — un golpe de hacha a un árbol (src/logica/tala.js); lo que deja cae al suelo
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
+//   { tipo: 'romper', punto, x, z, px, pz, clase: 'roca', tam } — un golpe de mazo a una roca del mundo (ídem); al último,
+//     sus piedras al suelo donde estaba
 //   { tipo: 'desbrozar', punto, x, z, px, pz, clase } — desbrozar un matorral o un arbusto de bayas (ídem): ramas y alguna
 //     vara, al suelo donde estaba
 //   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js),
@@ -35,6 +37,8 @@
 //     fuego); { tipo: 'echar_fuego', estacion, objeto: 'rama' | 'lena', x, z } — echarle una (src/logica/fuego.js); { tipo: 'brasas_fuego', estacion, x, z } — dejar el hogar en
 //     brasas (encender_fuego lo aviva). En
 //     tierra de otro, solo su dueño y sus invitados
+//   { tipo: 'ligar_cama', estacion, x, z } — ligar esa cama (una por personaje; en tu tierra o en la de quien te ha
+//     invitado); { tipo: 'dormir', estacion, x, z } — dormir en tu cama ligada (lo que hace lo lleva el servidor)
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
@@ -63,10 +67,10 @@ import { Suelo, ejecutarSuelo } from './suelo.js';
 import { RegistroAcciones } from './acciones.js';
 import { Tala, ejecutarTala, idArbol, DA, ALCANCE_TALA } from './tala.js';
 import { Troceo, ejecutarTroceo } from './troceo.js';
-import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
+import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER, idRoca } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
-import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, ESTACIONES } from './fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, DE_LA_CAMA, ESTACIONES } from './fabricacion.js';
 import { estadoFuego } from './fuego.js';
 
 export const TOLERANCIA = 3; // m
@@ -75,7 +79,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'desbrozar', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -94,7 +98,7 @@ export class ObjetosServidor {
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
     this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
-    this.recoleccion = new Recoleccion([]);
+    this.recoleccion = new Recoleccion([]); this.recoleccion.entre = ENTRE_GOLPES_RED;
     this.posicion = posicion;
     this.enTierras = enTierras;
     this.arconPruebas = arconPruebas;
@@ -126,15 +130,15 @@ export class ObjetosServidor {
       } else if (a.tipo === 'trocear') {
         r = ejecutarTroceo(this.troceo, this.invs, this.registro, a, ahora, this.enTierras);
         suelo = !!(r.ok && r.termina);
-      } else if (a.tipo === 'recoger' || a.tipo === 'desbrozar') {
+      } else if (a.tipo === 'recoger' || a.tipo === 'desbrozar' || a.tipo === 'romper') {
         const fallo = this.conocerPunto(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora, this.suelo);
-        suelo = !!(r.ok && a.tipo === 'desbrozar');
+        suelo = !!(r.ok && (a.tipo === 'desbrozar' || r.rota));
       } else if (DE_FABRICAR.has(a.tipo)) {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él
         const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
-        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || DEL_FUEGO.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
+        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
         const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
@@ -142,7 +146,7 @@ export class ObjetosServidor {
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
-        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
+        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado' && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
@@ -182,13 +186,14 @@ export class ObjetosServidor {
     if (this.terreno) {
       const t = this.terreno.punto(a.punto, num(a.px) ? a.px : a.x, num(a.pz) ? a.pz : a.z);
       if (!t) return 'Ahí no hay nada que recoger.';
-      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_RECOGER + TOLERANCIA) return 'Está demasiado lejos.';
+      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_RECOGER + (t.tipo === 'roca' ? 1 : 0) + TOLERANCIA) return 'Está demasiado lejos.';
       const q = { ...t }; this.recoleccion.puntos.push(q); this.recoleccion.porId.set(q.id, q);
       return null;
     }
     if (!txt(a.punto) || !num(a.px) || !num(a.pz) || !Object.hasOwn(RECOLECTABLES, a.clase) || !a.punto.startsWith(a.clase + ':')) return 'Datos no válidos.';
-    if (Math.hypot(a.px - p.x, a.pz - p.z) > ALCANCE_RECOGER + TOLERANCIA) return 'Está demasiado lejos.';
-    const q = { id: a.punto, tipo: a.clase, x: Math.round(a.px * 100) / 100, z: Math.round(a.pz * 100) / 100 };
+    if (a.clase === 'roca' && (!num(a.tam) || a.tam <= 0 || a.tam > 3 || idRoca(a.px, a.pz) !== a.punto)) return 'Datos no válidos.';
+    if (Math.hypot(a.px - p.x, a.pz - p.z) > ALCANCE_RECOGER + (a.clase === 'roca' ? 1 : 0) + TOLERANCIA) return 'Está demasiado lejos.';
+    const q = { id: a.punto, tipo: a.clase, x: Math.round(a.px * 100) / 100, z: Math.round(a.pz * 100) / 100, ...(a.clase === 'roca' ? { tam: Math.round(a.tam * 1000) / 1000 } : {}) };
     this.recoleccion.puntos.push(q); this.recoleccion.porId.set(q.id, q);
     return null;
   }
@@ -237,7 +242,8 @@ export class ObjetosServidor {
     const fuego = f => { const st = estadoFuego(f, ahora); return { encendida: st.encendida, ...(st.brasas ? { brasas: true } : {}), queda: +st.queda.toFixed(1), combustible: st.combustible, cenizas: st.cenizas }; };
     return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
       .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito }, ...(e.fuego ? { fuego: fuego(e.fuego) } : {}),
-        ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}) }));
+        ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}),
+        ...(e.ligadas ? { ligadas: [...e.ligadas] } : {}) }));   // las camas: quién la tiene ligada (cada navegador mira si es la suya)
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {
@@ -282,7 +288,9 @@ export class ObjetosServidor {
     this.troceo.importar(datos.troceo, ahora);
     let puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
     if (this.terreno) puntos = puntos.map(q => this.terreno.punto(q.id, q.x, q.z)).filter(Boolean);
-    this.recoleccion = new Recoleccion(puntos.map(q => ({ id: q.id, tipo: q.tipo, x: q.x, z: q.z }))).importar(datos.recoleccion);
+    // (las rocas, con su tamaño: sin él no se sabe cuántos golpes piden)
+    if (!this.terreno) puntos = puntos.filter(q => q.tipo !== 'roca' || (num(q.tam) && q.tam > 0));
+    this.recoleccion = new Recoleccion(puntos.map(q => ({ id: q.id, tipo: q.tipo, x: q.x, z: q.z, ...(q.tipo === 'roca' ? { tam: q.tam } : {}) }))).importar(datos.recoleccion); this.recoleccion.entre = ENTRE_GOLPES_RED;
     return this;
   }
 }

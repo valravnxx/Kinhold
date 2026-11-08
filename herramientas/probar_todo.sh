@@ -45,6 +45,7 @@ paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio"
 paso "El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento" node pruebas/prueba_cielo.mjs
 paso "Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor" node pruebas/prueba_necesidades.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
+paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
 paso "Sin llanos pelados a ras del mar tierra adentro" node pruebas/prueba_llanos.mjs
@@ -134,6 +135,7 @@ paso "Navegador: los avisos de las necesidades" python3 pruebas/prueba_avisos_na
 paso "Navegador: las bayas y las setas" python3 pruebas/prueba_bayas_navegador.py dist/kinhold_demo.html "$C/bayas"
 paso "Navegador: desbrozar matorrales y arbustos" python3 pruebas/prueba_desbroce_navegador.py dist/kinhold_demo.html "$C/desbroce"
 paso "Navegador: la acción a la vista (etiqueta, aro, lista y botón de acción)" python3 pruebas/prueba_accion_navegador.py dist/kinhold_demo.html "$C/accion"
+paso "Navegador: el mazo de piedra y romper rocas" python3 pruebas/prueba_rocas_navegador.py dist/kinhold_demo.html "$C/rocas"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
@@ -145,6 +147,7 @@ paso "Navegador: la hoguera" python3 pruebas/prueba_hoguera_navegador.py dist/ki
 paso "Navegador: los almacenajes de la base" python3 pruebas/prueba_almacenajes_navegador.py dist/kinhold_demo.html "$C/almacenajes"
 paso "Navegador: los colgaderos de mochilas y de herramientas" python3 pruebas/prueba_colgaderos_navegador.py dist/kinhold_demo.html "$C/colgaderos"
 paso "Navegador: el hogar" python3 pruebas/prueba_hogar_navegador.py dist/kinhold_demo.html "$C/hogar"
+paso "Navegador: la cama ligada" python3 pruebas/prueba_camas_navegador.py dist/kinhold_demo.html "$C/camas"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html "$C/inventario"
 paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_demo.html "$C/suelo"

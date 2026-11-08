@@ -11,7 +11,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { prepararRenderer } from '../../src/mundo/ambiente.js';
 import { materialTex } from '../../src/mundo/estilos.js';
 import { modeloDe } from '../../src/juego/suelo.js';
-import { MODELO_OBJETO, modeloHachaPiedra } from '../../src/juego/modelos_objetos.js';
+import { MODELO_OBJETO, modeloHachaPiedra, modeloMazoPiedra } from '../../src/juego/modelos_objetos.js';
 import { MODELO_ESTACION, modeloDeposito } from '../../src/juego/estaciones.js';
 import { ESTACIONES } from '../../src/logica/fabricacion.js';
 import { modeloHacha } from '../../src/juego/personaje.js';
@@ -40,7 +40,7 @@ const mallas = L => {
 };
 // lo de la mano, tumbado en diagonal y de frente; las herramientas largas (y las hachas: si no, a 60 px eran un palo),
 // encuadradas por la cabeza
-const LARGAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
+const LARGAS = new Set(['hacha_mano', 'hacha_piedra', 'mazo_piedra', 'hacha_hierro', 'antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
 const enDiagonal = (o, t) => { const g = new THREE.Group(); o.rotation.z = -Math.PI / 4; g.add(o); g.userData.plano = true; g.userData.larga = LARGAS.has(t); return g; };
 const deMano = t => enDiagonal(mallas(loteEnMano(t)), t);
 // lo de la espalda, con algo dentro para que se vea para qué es
@@ -62,6 +62,7 @@ const PROVISIONAL = new Set(['hacha_hierro']); // hoy, el modelo del hacha de ma
 const fuentes = {};
 for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
   if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
+  else if (t === 'mazo_piedra') fuentes[t] = { propio: true, hacer: () => { const m = modeloMazoPiedra(); m.rotation.y = Math.PI / 2; const g = new THREE.Group(); g.add(m); return enDiagonal(g, t); } };   // (de lado: la piedra cruzada)
   else if (Object.hasOwn(MODELO_OBJETO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, 3)) : delSuelo(t, 3) };
   else if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, SUELO[t])) : delSuelo(t, SUELO[t]) };
   else if (HACHAS.includes(t)) fuentes[t] = { propio: !PROVISIONAL.has(t), hacer: () => enDiagonal(modeloHacha(), t) };

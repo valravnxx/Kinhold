@@ -20,7 +20,9 @@ shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3']:
     o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
     if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
-for c in ['interfaz-v1', 'iconos-v11', 'fuentes']:   # (la acción se ve con su imagen y su letra)
+import re
+ICONOS = re.search(r"CARPETA_ICONOS = 'recursos/([^/']+)/'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()).group(1)
+for c in ['interfaz-v1', ICONOS, 'fuentes']:   # (la acción se ve con su imagen y su letra)
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/{c}'), f'{sitio}/recursos/{c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass

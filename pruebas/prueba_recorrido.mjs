@@ -11,7 +11,8 @@
 // levanta una pila de piedras y, con las varas del árbol, un almiar en su tierra, y guarda en ellos.
 // Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas; lejos del agua no puede beber, y en la
 // orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come. Y desbroza un matorral
-// con el hacha de piedra (8 nov) y se lleva sus ramas.
+// con el hacha de piedra (8 nov) y se lleva sus ramas. Y su cama ligada (8 nov): un refugio de ramas en su tierra, que
+// liga y en el que duerme, y luego una cama de juncos en su casa, que liga.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -36,13 +37,13 @@ import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacion.js';
 import { idArbol } from '../src/logica/tala.js';
-import { idMata } from '../src/logica/recoleccion.js';
+import { idMata, idRoca, rompible, golpesRoca, piedrasRoca } from '../src/logica/recoleccion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 import { ESTACIONES } from '../src/logica/fabricacion.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
-import { avisos, AVISO, hayAguaCerca } from '../src/logica/necesidades.js';
+import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -1049,6 +1050,70 @@ try {
     }
   }
 
+  // P3, el mazo de piedra y romper rocas (valravnx, 8 nov): con las manos se hace un mazo (1 piedra, 1 rama de las del
+  // matorral y 2 cordeles de fibra que arranca), va a la roca mediana más cercana (de las de la vegetación, como las ve el
+  // navegador), la rompe a golpes de mazo, cada golpe por el servidor, y se lleva las piedras que deja
+  {
+    const so = (t) => s.objetos.suelo.objetos.filter(o => o.cosa.tipo === t), yo = J.bienvenida.autor;
+    const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
+    const vaciarManos = async () => { for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z }); };
+    const sitio = { ...J.pos };
+    await vaciarManos();   // (las ramas del matorral y el hacha, a sus pies: de ahí también se fabrica)
+    const aqui = { x0: O.x + sitio.x - 150, z0: O.z + sitio.z - 150, x1: O.x + sitio.x + 150, z1: O.z + sitio.z + 150 };
+    const pts = recogidaEn(T.paisaje, T.alt, T.semilla, aqui).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }))
+      .filter(p => s.objetos.recoleccion.disponible(p.id, Date.now()) || !s.objetos.recoleccion.porId.has(p.id));
+    // una piedra suelta (si no tiene ya una a mano)
+    if (!so('piedra').some(o => Math.hypot(o.x - sitio.x, o.z - sitio.z) < 1.5)) {
+      const pd = cerca(pts.filter(p => p.tipo === 'piedra'), sitio);
+      let r = { ok: false };
+      for (let k = 0; k < pd.length && !r.ok && k < 6; k++) r = await recoger(pd[k]);
+      await J.andar(sitio.x, sitio.z); await vaciarManos();
+      comprobar('recoge una piedra suelta y la deja con lo demás', r.ok, r.motivo);
+    }
+    // dos cordeles: 3 de fibra cada uno
+    const fib = cerca(pts.filter(p => p.tipo === 'ortiga' || p.tipo === 'hierba_larga'), sitio);
+    let hechos = 0, k = 0;
+    for (let v = 0; v < 2; v++) {
+      while (J.cuantos('fibra') < 3 && k < fib.length && k < 12) await recoger(fib[k++]);
+      await J.andar(sitio.x, sitio.z);
+      if (J.cuantos('fibra') > 3) { const rf = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
+      const r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+      adelantar();
+      const rr = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+      if (r.ok && rr.ok) hechos++;
+      await vaciarManos();
+    }
+    comprobar('arranca fibra y hace dos cordeles', hechos === 2, `${hechos}`);
+    let r = await J.objeto({ tipo: 'fabricar', receta: 'mazo_piedra', x: J.pos.x, z: J.pos.z });
+    adelantar();
+    const rm = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    comprobar('con las manos se hace el mazo de piedra (1 piedra, 1 rama y 2 cordeles, de lo que tiene a sus pies)', r.ok && rm.ok && J.cuantos('mazo_piedra') === 1, `${r.motivo || ''} ${rm.motivo || ''}`);
+    // la roca mediana más cercana, como la ve el navegador (sin los cantos del río ni las grandes)
+    const R = 150, v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + sitio.x - R, z0: O.z + sitio.z - R, x1: O.x + sitio.x + R, z1: O.z + sitio.z + R });
+    const rocas = cerca(v.piedras.filter(e => !e.canto && rompible(e.tam)).map(e => ({ x: e.x - O.x, z: e.z - O.z, tam: e.tam })).filter(e => Math.hypot(e.x, e.z - 2) >= 3), sitio);
+    comprobar('hay una roca mediana a menos de 150 m', rocas.length > 0, `${rocas.length}`);
+    const roca = rocas[0];
+    if (roca && J.cuantos('mazo_piedra') === 1) {
+      const id = idRoca(roca.x, roca.z), px = r2(roca.x), pz = r2(roca.z);
+      await J.andar(roca.x + roca.tam * 1.1 + 0.5, roca.z);
+      const golpe = () => J.objeto({ tipo: 'romper', punto: id, x: J.pos.x, z: J.pos.z, px, pz, clase: 'roca', tam: roca.tam });
+      let g = 0; const c0 = J.nec ? J.nec.cansancio : 0;
+      do { r = await golpe(); g++; if (r.ok && !r.datos?.rota) await pausa(650); } while (r.ok && !r.datos?.rota && g < 60);
+      const caidas = so('piedra').filter(o => Math.hypot(o.x - roca.x, o.z - roca.z) < 0.5);
+      const np = caidas.reduce((n, o) => n + o.cosa.n, 0);
+      comprobar('rompe la roca a golpes de mazo, cada golpe por el servidor (más golpes cuanto más grande)', r.ok && r.datos?.rota && g === golpesRoca(roca.tam), `${r.motivo || ''} ${g} golpes de ${golpesRoca(roca.tam)}`);
+      comprobar('y deja sus piedras sueltas donde estaba (de 6 a 25, según su tamaño)', np === piedrasRoca(roca.tam), `${np} de ${piedrasRoca(roca.tam)}`);
+      comprobar('la roca queda rota (en lo que reparte el servidor)', !!s.objetos.recoleccionVisible().estado[id]?.quitado);
+      await pausa(300);
+      comprobar('romper cansa (o ya llega al máximo, tras todo el día)', J.nec && (J.nec.cansancio > c0 || c0 >= 99), `${c0} → ${J.nec && J.nec.cansancio}`);
+      r = await golpe();
+      comprobar('otra vez, no: solo quedan cascotes', !r.ok, r.motivo);
+      const antes = J.cuantos('piedra');
+      if (caidas[0]) r = await J.objeto({ tipo: 'coger_suelo', objeto: caidas[0].id, x: J.pos.x, z: J.pos.z });
+      comprobar('y se lleva las piedras que le caben', J.cuantos('piedra') > antes, `${r.motivo || ''} ${antes} → ${J.cuantos('piedra')}`);
+    }
+  }
+
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
   // hambre (la sed, más), sin que nadie se las haya puesto: le llegan solas del servidor
   // (la sed, que bebió en el río, vuelve a subir desde ahí)
@@ -1057,6 +1122,118 @@ try {
   // hora del día (la sed sube a 40 en 24 minutos), aún ninguno; la prueba de navegador de los avisos mira cómo se ven
   const susAvisos = avisos(J.nec).map(a => a.que).filter(q => q !== 'cansancio');
   comprobar('sus avisos salen de lo que manda el servidor: con la sed y el hambre por debajo de 40, aún ninguno de los dos', J.nec.sed < AVISO ? susAvisos.length === 0 : susAvisos.includes('sed'), `${JSON.stringify(J.nec)} → ${susAvisos.join(',') || 'ninguno'}`);
+
+  // P4, la cama ligada (valravnx, 8 nov: «ambas viables»): un refugio de ramas fuera, en su tierra (12 ramas del bosque
+  // y 4 cordeles de fibra), lo liga y duerme en él (el cansancio baja deprisa); luego va al río a por juncos, hace una
+  // cama de juncos dentro de su casa (8 haces y 2 cordeles) y la liga: el refugio deja de ser su cama
+  console.log('17. La cama ligada: un refugio de ramas en su tierra, lo liga y duerme; luego una cama de juncos en su casa, y la liga');
+  {
+    const yo = J.bienvenida.autor, manos = ['mano:der', 'mano:izq'];
+    const enMano = () => manos.map(l => J.inv && J.inv.lugares[l] ? `${J.inv.lugares[l].tipo}×${J.inv.lugares[l].n}` : '–').join(' ');
+    const soltarManos = async () => { for (const l of manos) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z }); };
+    const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
+    const mj = s.mundo.mojonDe(yo), C = { x: r2(mj.x + 10), z: r2(mj.z - 10) };
+    const alrededor = (p, d) => recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - d, z0: O.z + p.z - d, x1: O.x + p.x + d, z1: O.z + p.z + d })
+      .map(q => ({ id: q.id, tipo: q.tipo, x: r2(q.x - O.x), z: r2(q.z - O.z) }));
+    const probados = new Set();
+    const libres = (lista, tipos) => cerca(lista.filter(q => tipos.includes(q.tipo) && !probados.has(q.id)), J.pos);   // (lo ya recogido lo dice el servidor al intentarlo)
+    const enPila = (tipo, p) => s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === tipo && Math.hypot(o.x - p.x, o.z - p.z) < 1).reduce((n, o) => n + o.cosa.n, 0);
+    // lo que lleva, a la pila (a sus pies, en p)
+    const aLaPila = async (p) => { await J.andar(p.x, p.z); await soltarManos(); };
+    // n cordeles a la pila de p: fibra de las plantas de alrededor (3 por cordel), con las manos, uno a uno
+    const cordelesA = async (p, n) => {
+      const plantas = alrededor(p, 150);
+      for (let k = 0; k < n + 3 && enPila('cordel', p) < n; k++) {
+        for (const q of libres(plantas, ['ortiga', 'hierba_larga'])) { if (J.cuantos('fibra') >= 3) break; probados.add(q.id); await recoger(q); }
+        const rc = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+        if (!rc.ok) continue;
+        adelantar(); await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+        const sobra = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra');
+        if (sobra) await J.objeto({ tipo: 'soltar_suelo', de: sobra, x: J.pos.x, z: J.pos.z });
+        await J.andar(p.x, p.z);
+        const lc = manos.find(l => J.inv.lugares[l]?.tipo === 'cordel');
+        if (lc) await J.objeto({ tipo: 'soltar_suelo', de: lc, x: J.pos.x, z: J.pos.z });
+        else { const so = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'cordel' && Math.hypot(o.x - p.x, o.z - p.z) > 1), J.pos)[0]; if (so) { await J.andar(so.x + 0.3, so.z); await J.objeto({ tipo: 'coger_suelo', objeto: so.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z }); await J.andar(p.x, p.z); await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); } }
+      }
+      return enPila('cordel', p);
+    };
+
+    // 17a. el refugio de ramas, fuera de la casa y en su tierra
+    const S = { x: r2(C.x + 7), z: C.z };
+    comprobar('el sitio del refugio es de su tierra y está fuera (no bajo techo)', s.mundo.dentroDeTierra(S.x, S.z, yo) && !s.mundo.bajoTecho(S.x, S.z), JSON.stringify(S));
+    await aLaPila(S);
+    const bosque = alrededor(S, 150);
+    for (let v = 0; v < 12 && enPila('rama', S) < 12; v++) {
+      for (const q of libres(bosque, ['ramas'])) { if (J.cuantos('rama') >= 6 || enPila('rama', S) + J.cuantos('rama') >= 12) break; probados.add(q.id); await recoger(q); }
+      await aLaPila(S);
+    }
+    comprobar('recoge 12 ramas caídas del bosque y las amontona en el sitio (en viajes de 6, las que le caben en las manos)', enPila('rama', S) >= 12, `${enPila('rama', S)} ramas · ${libres(bosque, ['ramas']).length} sin probar`);
+    const nc = await cordelesA(S, 4);
+    comprobar('y se hace 4 cordeles con la fibra de las plantas de alrededor', nc >= 4, `${nc} cordeles · ${enMano()}`);
+    await J.andar(S.x, S.z);
+    let r = await ponerPuesto('refugio_ramas', S.x + 1.2, S.z);
+    const refugio = r.id;
+    comprobar('pone el marco del refugio, le lleva las ramas y los cordeles del suelo de al lado y lo levanta', r.ok && r.datos?.terminada && !s.objetos.fab.estaciones[refugio]?.obra, r.motivo || JSON.stringify(r.entrega?.datos));
+    r = await J.objeto({ tipo: 'dormir', estacion: refugio, x: J.pos.x, z: J.pos.z });
+    comprobar('sin ligarlo, no duerme en él', !r.ok && /ligada/.test(r.motivo || ''), r.motivo);
+    r = await J.objeto({ tipo: 'ligar_cama', estacion: refugio, x: J.pos.x, z: J.pos.z });
+    comprobar('lo liga: ya es su cama (donde reaparecerá)', r.ok && s.objetos.fab.camaDe(yo) === refugio, r.motivo);
+    comprobar('y lo que reparte el servidor de las estaciones dice que es la suya (el navegador lo mira para dormir)', (s.objetos.estacionesVisibles().find(e => e.id === refugio)?.ligadas || []).includes(yo));
+    J.estar(S.x, S.z); await pausa(1500);
+    const c0 = J.nec.cansancio;
+    r = await J.objeto({ tipo: 'dormir', estacion: refugio, x: J.pos.x, z: J.pos.z });
+    // tumbado en el refugio: el navegador dice «dormir» en su estado (como la demo mientras duerme)
+    const fr = s.objetos.fab.estaciones[refugio];
+    for (let k = 0; k < 10; k++) { J.pos = { x: fr.x, z: fr.z }; J.ws.send(JSON.stringify({ tipo: 'estado', x: fr.x, y: T.suelo(fr.x, fr.z), z: fr.z, giro: 0, anim: 'dormir' })); await pausa(500); }
+    // (con la sed, el hambre o el frío al máximo se descansa a la mitad: src/logica/necesidades.js)
+    const k = ['hambre', 'sed', 'frio'].some(q => J.nec[q] >= 100) ? 2 : 1, espera = Math.max(0, c0 - 0.8 * 5 * RITMOS.dormir / k);
+    comprobar('duerme en él y el cansancio baja deprisa (en 5 s, casi lo que dice dormir; quieto bajaría 4 veces menos)', r.ok && J.nec.cansancio <= espera && RITMOS.dormir >= 3 * RITMOS.quieto, `${r.motivo || ''} cansancio ${c0} → ${J.nec.cansancio} (como mucho ${espera.toFixed(2)})`);
+
+    // 17b. la cama de juncos, dentro de su casa: los juncos, del río (con la lasca; a las manos y al fardo)
+    let rio = null;
+    for (let d = 0; d < 3000 && !rio; d += 25) for (let k = 0; k < 96; k++) {
+      const x = Math.cos(k / 96 * 2 * Math.PI) * d, z = Math.sin(k / 96 * 2 * Math.PI) * d, X = x + O.x, Z = z + O.z;
+      const { dm, ancho } = T.paisaje.rioCerca(X, Z, T.paisaje.riosEn(X - 20, Z - 20, X + 20, Z + 20));
+      if (dm - ancho / 2 < 4 && T.alt(X, Z) > 0.5) { rio = { x, z }; break; }
+    }
+    await J.andar(S.x - 1, S.z);   // se levanta (al moverse deja de dormir)
+    if (!J.cuantos('lasca_silex')) {
+      const l = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex'), J.pos)[0];
+      if (l) { await J.andar(l.x + 0.3, l.z); await soltarManos(); await J.objeto({ tipo: 'coger_suelo', objeto: l.id, cantidad: 1, a: J.inv.lugares.cintura?.huecos || J.inv.lugares.cintura ? 'cintura/0' : 'mano:der', x: J.pos.x, z: J.pos.z }); }
+    }
+    comprobar('lleva su lasca de sílex para cortar juncos', J.cuantos('lasca_silex') >= 1, enMano());
+    const ribera = alrededor(rio, 500);   // (los juncos de al lado ya los cortó para el tejado: vuelven en una estación)
+    await J.andar(rio.x, rio.z);
+    const enFardo = () => (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
+    for (const q of libres(ribera, ['juncos'])) {
+      if (J.cuantos('junco') >= 8) break;
+      probados.add(q.id);
+      const c = await recoger(q);
+      if (!c.ok) continue;
+      // al fardo lo que quepa (a la espalda; 3 haces por hueco)
+      const lj = manos.find(l => J.inv.lugares[l]?.tipo === 'junco');
+      const hueco = [0, 1, 2, 3].find(n => J.inv.lugares.espalda?.tipo === 'fardo' && (!J.inv.lugares.espalda.dentro?.[n] || (J.inv.lugares.espalda.dentro[n].tipo === 'junco' && J.inv.lugares.espalda.dentro[n].n < 3)));
+      if (lj && hueco !== undefined) await J.objeto({ tipo: 'mover', de: lj, a: `espalda/${hueco}` });
+    }
+    comprobar('corta al menos 8 haces de juncos en el río (en las manos y en el fardo)', J.cuantos('junco') >= 8, `${J.cuantos('junco')} haces · en el fardo ${enFardo()} · ${enMano()}`);
+    const D = { x: r2(C.x - 0.4), z: C.z };   // dentro de la casa
+    comprobar('dentro de su casa está bajo techo', s.mundo.bajoTecho(D.x, D.z));
+    await J.andar(D.x, D.z);
+    await soltarManos();
+    for (let n = 0; n < 4; n++) { const c = J.inv.lugares.espalda?.dentro?.[n]; if (c && c.tipo === 'junco') { await J.objeto({ tipo: 'mover', de: `espalda/${n}`, a: 'mano:der' }); await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); } }
+    comprobar('deja los juncos en el suelo de su casa', enPila('junco', D) >= 8, `${enPila('junco', D)} · ${enMano()}`);
+    const nc2 = await cordelesA(D, 2);
+    comprobar('y le trae 2 cordeles de fibra', nc2 >= 2, `${nc2} cordeles`);
+    await J.andar(D.x, D.z);
+    r = await ponerPuesto('cama_juncos', r2(C.x + 0.5), C.z);
+    const cama = r.id;
+    comprobar('pone dentro la cama de juncos y la levanta con lo que hay en el suelo', r.ok && !s.objetos.fab.estaciones[cama]?.obra, r.motivo || JSON.stringify(r.entrega?.datos));
+    r = await J.objeto({ tipo: 'ligar_cama', estacion: cama, x: J.pos.x, z: J.pos.z });
+    comprobar('la liga: ya es su cama, y el refugio deja de serlo (una por personaje)', r.ok && s.objetos.fab.camaDe(yo) === cama && !s.objetos.fab.estaciones[refugio].ligadas, r.motivo);
+    r = await J.objeto({ tipo: 'dormir', estacion: cama, x: J.pos.x, z: J.pos.z });
+    comprobar('y duerme en ella', r.ok, r.motivo);
+    await J.andar(D.x - 0.8, D.z);
+  }
 
   // lo que sale de aquí, en la salida (para quien lo lea en la nube)
   console.log(`\nTodavía no se puede (sin el arcón): ${Object.entries(TODAVIA_NO).map(([k, v]) => `${k} — ${v}`).join('; ')}`);

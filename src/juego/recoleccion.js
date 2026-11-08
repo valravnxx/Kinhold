@@ -363,7 +363,8 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     // lo recogido que manda el servidor (de todos los puntos, estén o no cerca). Devuelve si ha cambiado lo desbrozado
     // de algún matorral (entonces la vegetación tiene que rehacer sus matas)
     importar(datos) {
-      const matas = () => JSON.stringify(Object.entries(rec.estado).filter(([k]) => k.startsWith('matorral:')));
+      // (y las rocas rotas con el mazo, 8 nov: lo que dibuja también la vegetación; sus golpes a medias no cuentan)
+      const matas = () => JSON.stringify(Object.entries(rec.estado).filter(([k, e]) => k.startsWith('matorral:') || (k.startsWith('roca:') && e.quitado)));
       const antes = matas(); rec.importar(datos, { todo: true }); refrescar();
       return matas() !== antes;
     },
@@ -373,6 +374,16 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
         .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
     },
     mataEnPie: (id, ahora = Date.now()) => rec.enPie(id, ahora),
+    // Romper rocas (8 nov): si una roca (por su nombre) sigue en pie, lo que lleva dado, y sin servidor (las pruebas), un
+    // golpe de mazo aquí, con sus piedras al suelo de la página; la roca se da a conocer
+    rocaEnPie: (id, ahora = Date.now()) => rec.enPie(id, ahora),
+    progresoRoca: (id) => rec.progresoRoca(id),
+    romper(invs, registro, autor, roca, x, z, suelo, ahora = Date.now()) {
+      rec.anadir([{ id: roca.id, tipo: 'roca', x: roca.x, z: roca.z, tam: roca.tam }]);
+      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'romper', punto: roca.id, x, z }, ahora, suelo);
+      if (r.ok && almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO);
+      return r;
+    },
     // sin servidor (las pruebas): desbrozar aquí, con lo cortado al suelo de la página; el matorral se da a conocer
     desbrozar(invs, registro, autor, punto, x, z, suelo, ahora = Date.now()) {
       if (punto.tipo === 'matorral') rec.anadir([{ id: punto.id, tipo: 'matorral', x: punto.x, z: punto.z }]);
