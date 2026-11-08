@@ -5311,7 +5311,7 @@
  {
   "inicio": "2026-11-07T18:43:47+01:00",
   "fin": "2026-11-08T10:09:58+01:00",
-  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v150)",
+  "titulo": "P4b: la barra de abajo y el kit de la interfaz (demo v151)",
   "hito": "interfaz",
   "hecho": [
    "La barra de abajo, nueva: tus dos manos con la imagen de lo que llevas en cada una (1 y 2) y su botón de soltar; el hombro solo cuando cargas algo, y entonces las manos se apagan; el hueco del cinto con su arma (C; tócalo para cogerla con la mano libre); y la carga en una raya debajo. Fuera la línea «En la mano».",
@@ -5320,7 +5320,7 @@
    "En el móvil, la barra empieza a la derecha del joystick, sin tocarlo, y con huecos más pequeños; el aviso de confirmar y el estado del combate suben para no quedar debajo de ella."
   ],
   "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea) después de unir main: todo bien menos «la web» (la página no estaba regenerada tras unir; regenerada, pasa) y el combate con lag simulado de la lógica, que pasa repetido aquí (81/81). Antes, «la demo en el mundo» falló una vez por 3,6 ms (un fotograma de 63,6 ms en la nube) y pasó repetida. La prueba nueva de la barra (con MUTAR_BARRA=1 falla) y la de las imágenes y el kit (447/447; con MUTAR=6 falla). Capturas de cerca de la barra en PC y móvil (con las manos llenas, con algo al hombro y sin nada), miradas ampliadas.",
-  "capturas": "capturas/demo-v150",
+  "capturas": "capturas/demo-v151",
   "estado": "ok"
  },
  {
