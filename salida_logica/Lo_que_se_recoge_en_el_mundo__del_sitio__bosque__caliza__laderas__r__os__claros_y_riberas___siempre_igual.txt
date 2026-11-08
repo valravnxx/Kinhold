@@ -1,0 +1,26 @@
+  en la muestra de la isla: {"piedra":352,"hierba_larga":107,"ramas":527,"bayas":89,"setas":63,"yesquero":87,"silex":220,"ortiga":58}
+  OK   en la isla salen todos los tipos (menos los de la orilla) — {"piedra":352,"hierba_larga":107,"ramas":527,"bayas":89,"setas":63,"yesquero":87,"silex":220,"ortiga":58}
+  OK   cada punto sale en una zona suya del documento (1503 puntos)
+  OK   nada en el mar, en el agua ni en la nieve
+  OK   nada encima del sitio de un árbol
+  OK   el nombre de cada punto sale de su tipo y su sitio
+  OK   las densidades solo usan zonas del documento
+  OK   las ramas, todas en el bosque — 527
+  OK   el sílex, en la caliza o junto al río (o algo en el claro) — 220
+  OK   en el claro sale algo de piedra y de sílex sueltos — piedra 40, sílex 3
+  OK   menos que donde les toca (la densidad del claro, por debajo de la de cada zona suya) — {"piedra":0.03,"silex":0.01}
+  OK   alrededor de casi todos los sitios de la salida al azar hay piedra a menos de 120 m — 270 de 276
+  junto a un río: {"piedra":2,"barro":2,"silex":3,"juncos":1,"hierba_larga":1}
+  OK   junto a los ríos sale piedra, sílex y fibra — {"piedra":2,"barro":2,"silex":3,"juncos":1,"hierba_larga":1}
+  OK   y juncos y barro (lo que pide la casa humilde) — {"piedra":2,"barro":2,"silex":3,"juncos":1,"hierba_larga":1}
+  OK   alrededor de la salida común hay ramas, piedra, sílex y fibra — {"ramas":1177,"yesquero":170,"piedra":540,"hierba_larga":11,"bayas":129,"setas":145,"silex":241,"ortiga":11}
+  de 12 sitios de la salida al azar, sin cada cosa a menos de 500 m: {"ramas":0,"piedra":0,"silex":0,"fibra":0}
+  OK   en todos los sitios de salida hay fibra cerca
+  OK   repetir el mismo cuadro da lo mismo — 25
+  OK   cuatro trozos juntos dan lo mismo que su cuadro — 25 y 25
+  OK   ningún nombre repetido
+  OK   recoger un punto del mundo va bien
+  OK   al irse su trozo se guarda lo recogido, y al volver sigue recogido
+  un trozo de 32 m: 0.3 ms (en node, 128 puntos en 20 trozos)
+
+Todo bien
