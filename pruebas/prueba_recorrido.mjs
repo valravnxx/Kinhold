@@ -826,6 +826,7 @@ try {
     await soltarManos();   // el hacha, junto al banco: ya no tala más
     const fibras = alrededor(J.pos, 200);
     let cuerdas = 0, cordeles = 0;
+    const noTrenza = [];
     for (let q = 0; banco.ok && q < 3; q++) {
       // 9 de fibra de una vez (en una mano caben 10), y de vuelta al banco: 3 cordeles, que deja en él
       const plantas2 = () => cerca(libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga')), J.pos);
@@ -843,12 +844,12 @@ try {
       }
       const rq = await J.objeto({ tipo: 'fabricar', receta: 'cuerda', estacion: banco.id, x: J.pos.x, z: J.pos.z });
       adelantar();
-      const rr2 = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
-      if (rq.ok && rr2.ok) cuerdas++;
+      const rr2 = await J.objeto({ tipo: 'recoger_fabricado', estacion: banco.id, x: J.pos.x, z: J.pos.z });
+      if (rq.ok && rr2.ok) cuerdas++; else noTrenza.push(rq.motivo || rr2.motivo);
     }
     // recoge del suelo las cuerdas que dejó a sus pies (se apilan en una mano) y el hacha se queda junto al banco
     for (const o of enSuelo('cuerda', taller2, 2.5)) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: o.cosa.n, a: J.inv.lugares['mano:der'] && J.inv.lugares['mano:der'].tipo !== 'cuerda' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z });
-    comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()}`);
+    comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()} · ${noTrenza.join(' | ')}`);
 
     // 16g. el andamio, al lado de la casa (8 varas y 2 cuerdas), para subir a poner el tejado (valravnx, 8 nov: «lo he
     // hecho ya en survival solo… puedes montar el tronco sin problema y hacer el andamio»)
