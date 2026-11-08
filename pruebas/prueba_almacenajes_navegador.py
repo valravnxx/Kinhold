@@ -124,7 +124,8 @@ def mirar(pg, tipo, dist=3.2, pitch=0.5, yaw=0):
     pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === '{tipo}'); if (!e) return;
       Object.assign({K}.pj, {{ x: e.x + 0.6, z: e.z + 1.4, rot: Math.atan2(-0.6, -1.4) }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
 def encuadre(pg, tipo, dist, pitch, yaw, lado=1.1, atras=0.9, cual=0):
-    # para mirar uno de cerca sin que el personaje lo tape: el personaje un poco detrás y a un lado, y la cámara delante
+    # para mirar uno de cerca sin que el personaje lo tape: el personaje a un lado, detrás (atras > 0: el almacenaje entre
+    # la cámara y él) o delante (atras < 0: el almacenaje más allá, junto a él)
     pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).filter(x => x.tipo === '{tipo}')[{cual}]; if (!e) return;
       const s = Math.sin({yaw}), c = Math.cos({yaw});
       Object.assign({K}.pj, {{ x: e.x - s * {atras} + c * {lado}, z: e.z - c * {atras} - s * {lado}, rot: {yaw} + Math.PI }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
@@ -245,9 +246,9 @@ try:
         for t in ['soporte_varas', 'almiar', 'hoyo_barro', 'cesto']:
             comprobar(f'{t}: se dibuja con lo guardado', esperar(A, f"{DEPOSITO}('{t}') > 0", 5000), str(A.evaluate(f"{DEPOSITO}('{t}')")))
         A.add_style_tag(content='#materiales { visibility: hidden !important; }')   # (cuenta también los de mirar)
-        for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 4.4, 0.4, 0.6, 0.7, 1.4, 0, 'soporte_varas_lleno'), ('soporte_varas', 4.4, 0.4, 0.6, 0.7, 1.4, 1, 'soporte_varas_vacio'),
+        for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 3.8, 0.38, 0.6, 1.2, -1.8, 0, 'soporte_varas_lleno'), ('soporte_varas', 3.8, 0.38, 0.6, 1.2, -1.8, 1, 'soporte_varas_vacio'),
                 ('almiar', 6.5, 0.32, 0.4, 0.9, 2.0, 0, 'almiar_lleno'), ('almiar', 5.5, 0.3, 0.4, 0.8, 1.6, 1, 'almiar_juncos'),
-                ('hoyo_barro', 3.6, 0.75, 0.3, 0.5, 1.1, 0, 'hoyo_barro_lleno'), ('cesto', 2.6, 0.85, 0.3, 0.35, 0.7, 0, 'cesto_lleno')]:
+                ('hoyo_barro', 3.0, 0.6, 0.3, 0.9, -1.6, 0, 'hoyo_barro_lleno'), ('cesto', 2.4, 0.6, 0.3, 0.6, -1.2, 0, 'cesto_lleno')]:
             encuadre(A, t, dist, pitch, yaw, lado, atras, cual); A.wait_for_timeout(2200)
             captura(A, f'{SALIDA}/PC_{nombre}.png')
         # el almiar solo con juncos (de pie, en cono) y el soporte vacío, junto a los llenos
@@ -277,7 +278,7 @@ try:
         comprobar('en el móvil, el almiar y el cesto se ven igual', esperar(B, f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0", 8000))
         encuadre(B, 'almiar', 7.5, 0.35, 0.4, 0.7, 2.0); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_almiar.png')
-        encuadre(B, 'cesto', 2.8, 0.85, 0.3, 0.3, 0.7); B.wait_for_timeout(2000)
+        encuadre(B, 'cesto', 2.6, 0.6, 0.3, 0.5, -1.2); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cesto.png')
         B.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')))")
 
