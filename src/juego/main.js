@@ -2436,6 +2436,9 @@ function mostrarAviso(txt, error = false) {
   a.className = error ? 'error' : '';
   a.hidden = !txt;
   colocarAviso();
+  // (valravnx, 8 nov) los avisos se van solos a los 2 segundos: tapaban la pantalla y no se quitaban nunca
+  clearTimeout(mostrarAviso.t);
+  if (txt) mostrarAviso.t = setTimeout(() => { if (a.textContent === txt) a.hidden = true; }, 2000);
 }
 
 for (const b of document.querySelectorAll('#modos button')) b.onclick = () => cambiarModo(b.dataset.modo);
