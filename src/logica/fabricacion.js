@@ -465,18 +465,21 @@ export class Fabricacion {
     return { ok: true, estacion: e.id, dejado: { [tipo]: n } };
   }
 
-  // Coger de una estación lo depositado de un tipo (todo o cantidad): va a lo que llevas, donde quepa (todo o nada).
+  // Coger de una estación lo depositado de un tipo (todo o cantidad): va a lo que llevas, donde quepa. Si no cabe
+  // todo, coge lo que cabe (valravnx, 8 nov: con una pila grande en el almacén no se quedaba bloqueada para siempre).
   retirar(autor, estacion, tipo, cantidad, pos, inv) {
     const { e, motivo } = this.estacionAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
     if (typeof tipo !== 'string' || !Object.hasOwn(e.deposito, tipo)) return { ok: false, motivo: 'Eso no está en la estación.' };
-    const n = cantidad === undefined || cantidad === null ? e.deposito[tipo] : cantidad;
-    if (!Number.isInteger(n) || n < 1 || n > e.deposito[tipo]) return { ok: false, motivo: 'Cantidad no válida.' };
+    const pide = cantidad === undefined || cantidad === null ? e.deposito[tipo] : cantidad;
+    if (!Number.isInteger(pide) || pide < 1 || pide > e.deposito[tipo]) return { ok: false, motivo: 'Cantidad no válida.' };
+    const n = inv.cabenCuantos(tipo, pide);
+    if (n < 1) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
     const m = inv.meterDonde(tipo, n);
     if (!m.ok) return m;
     e.deposito[tipo] -= n;
     if (!e.deposito[tipo]) delete e.deposito[tipo];
-    return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde };
+    return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde, ...(n < pide ? { noCabia: pide - n } : {}) };
   }
 
   // ---------- el fuego (src/logica/fuego.js) ----------
