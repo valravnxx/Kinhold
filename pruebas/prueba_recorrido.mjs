@@ -732,7 +732,7 @@ try {
     console.log('16d. Vuelve al río a por el barro del muro de zarzo y los juncos que le faltan para el tejado');
     await soltarManos();
     await J.andar(rio.x, rio.z);
-    const ribera = alrededor(rio, 100);
+    const ribera = alrededor(rio, 200);
     // un cordel de cinturón, para llevar la lasca con las manos ocupadas
     for (const p of libres(ribera, 'ortiga').concat(libres(ribera, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await coger(p); }
     if (J.cuantos('fibra') > 3) { const rf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
@@ -760,16 +760,17 @@ try {
     await J.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J.pos.x, z: J.pos.z });   // el palo se queda en la orilla
     // los juncos, con la lasca del cinturón, al fardo
     let cortados = 0;
+    const noCorta = [];
     for (const p of libres(ribera, 'juncos')) {
       if (cortados >= 3) break;
       const c = await coger(p);
-      if (!c.ok) continue;
+      if (!c.ok) { noCorta.push(c.motivo); continue; }
       cortados++;
       const lj = manos.find(l => J.inv.lugares[l]?.tipo === 'junco');
       if (lj) { const hueco = [0, 1, 2, 3].find(n => !J.inv.lugares.espalda?.dentro?.[n] || (J.inv.lugares.espalda.dentro[n].tipo === 'junco' && J.inv.lugares.espalda.dentro[n].n < 3)); await J.objeto({ tipo: 'mover', de: lj, a: `espalda/${hueco}` }); }
     }
     const enFardo = (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
-    comprobar('corta 3 haces de juncos con la lasca del cinturón y los mete en el fardo', cortados === 3 && enFardo === 3, `${cortados} · en el fardo ${enFardo} · ${enMano()}`);
+    comprobar('corta 3 haces de juncos con la lasca del cinturón y los mete en el fardo', cortados === 3 && enFardo === 3, `${cortados} · en el fardo ${enFardo} · ${enMano()} · ${libres(ribera, 'juncos').length} sin probar · no corta: ${[...new Set(noCorta)].join(' | ')}`);
     const mb = enSuelo('barro', montonBarro, 2)[0];
     if (mb) await J.andar(mb.x + 0.4, mb.z);
     r = mb ? await J.objeto({ tipo: 'coger_suelo', objeto: mb.id, cantidad: 3, a: 'mano:izq', x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no está el barro' };
@@ -826,11 +827,13 @@ try {
     const fibras = alrededor(J.pos, 200);
     let cuerdas = 0, cordeles = 0;
     for (let q = 0; banco.ok && q < 3; q++) {
+      // 9 de fibra de una vez (en una mano caben 10), y de vuelta al banco: 3 cordeles, que deja en él
+      const plantas2 = () => cerca(libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga')), J.pos);
+      for (let k = 0; k < 20 && J.cuantos('fibra') < 9; k++) { const p = plantas2()[0]; if (!p) break; await coger(p); }
+      // junto al banco, la fibra (y la cuerda que ya tenga) a sus pies: con las manos se fabrica también de lo del suelo
+      await J.andar(taller2.x, taller2.z);
+      await soltarManos();
       for (let v = 0; v < 3; v++) {
-        for (const p of libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await coger(p); }
-        const rf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra');
-        if (J.cuantos('fibra') > 3) await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z });
-        await J.andar(taller2.x, taller2.z);
         const f = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
         adelantar();
         const g = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
@@ -843,6 +846,8 @@ try {
       const rr2 = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
       if (rq.ok && rr2.ok) cuerdas++;
     }
+    // recoge del suelo las cuerdas que dejó a sus pies (se apilan en una mano) y el hacha se queda junto al banco
+    for (const o of enSuelo('cuerda', taller2, 2.5)) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: o.cosa.n, a: J.inv.lugares['mano:der'] && J.inv.lugares['mano:der'].tipo !== 'cuerda' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z });
     comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()}`);
 
     // 16g. el andamio, al lado de la casa (8 varas y 2 cuerdas), para subir a poner el tejado (valravnx, 8 nov: «lo he

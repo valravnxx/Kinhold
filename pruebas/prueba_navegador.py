@@ -1118,25 +1118,6 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/05_barra_construccion_pc.png')
 
-    print('PC: la casa humilde, de una planta (la que levanta el recorrido de jugador), de cerca')
-    # cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro, el de la puerta con su puerta de
-    # varas y el tejado de juncos: lo mismo que levanta pruebas/prueba_recorrido.mjs (paso 16) sin arcón; aquí, para mirarla
-    HX, HZ = -5, -10   # en la tierra del mojón (-3, -6; 20 m), a más de 6 m de las otras obras
-    casa = [('cim_piedra', 0, 0, 0)] + [('poste', dx, dz, 0) for dx, dz in [(-1, -1), (1, -1), (1, 1), (-1, 1)]] + \
-        [('muro_tronco', -0.95, 0, 0), ('muro_tronco', 0.95, 0, 0), ('muro_zarzo', 0, 0.95, 0), ('muro_tronco_puerta', 0, -0.95, 0), ('puerta_varas', 0, -0.95, 0), ('tejado_juncos', 0, 0, 1)]
-    vs = [poner('pieza', t, HX + dx, HZ + dz, planta=k) for t, dx, dz, k in casa]
-    hecha = ev(f"""[...{K}.mundo.construcciones].filter(c => Math.hypot(c.ox + 1 - {HX}, c.oz + 1 - {HZ}) < 3).flatMap(c => [...c.piezas.values()]).filter(p => !p.obra).map(p => p.tipo).sort().join()""")
-    comprobar('la casa humilde: sus 11 piezas, puestas desde el menú y terminadas', all(v and v['ok'] for v in vs) and hecha == ','.join(sorted(t for t, *_ in casa)), hecha)
-    ev(f"{K}.cambiarModo('mover'); {K}.estado.planta=0; {K}.pj.x={HX + 1.6}; {K}.pj.z={HZ - 3.4}; {K}.pj.k=0; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.3; {K}.cam.dist=7")
-    esperar(pg, 900)
-    pg.screenshot(path=f'{SALIDA}/51_casa_humilde_delante.png')
-    ev(f"{K}.pj.x={HX - 1.4}; {K}.pj.z={HZ + 3.6}; {K}.cam.yaw=0.5; {K}.cam.pitch=0.35; {K}.cam.dist=7")
-    esperar(pg, 900)
-    pg.screenshot(path=f'{SALIDA}/52_casa_humilde_detras_zarzo.png')
-    ev(f"{K}.pj.x={HX + 0.4}; {K}.pj.z={HZ - 2.2}; {K}.cam.yaw=Math.PI+0.2; {K}.cam.pitch=0.2; {K}.cam.dist=3.6")
-    esperar(pg, 900)
-    pg.screenshot(path=f'{SALIDA}/53_casa_humilde_puerta_de_cerca.png')
-
     # memoria gráfica (valravnx: pantalla en blanco tras un rato construyendo, a más de 80 fps): rehacer las piezas no
     # deja mallas viejas ocupando la tarjeta gráfica
     if os.environ.get('MUTAR_FUGA'): ev('window.__sinLiberar = true')
@@ -1155,6 +1136,31 @@ with sync_playwright() as p:
         const a = o.instanceMatrix.array, e = i * 16; total++; if (Math.hypot(a[e], a[e + 1], a[e + 2]) > 1e-6) visibles++; }} }});
       return {{ total, visibles, ocultas: {K}.estado.plantasOcultas, matasOcultas: {K}.obstaculos.filter(o => o.oculto).length }}; }})()""")
     comprobar('al quitarlo todo, la hierba y las matas vuelven', vuelve['total'] > 3000 and vuelve['visibles'] == vuelve['total'] and vuelve['ocultas'] == 0 and vuelve['matasOcultas'] == 0, json.dumps(vuelve))
+    print('PC y móvil: la casa humilde, de una planta (la que levanta el recorrido de jugador), de cerca y sola')
+    # cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro, el de la puerta con su puerta de
+    # varas y el tejado de juncos: lo mismo que levanta pruebas/prueba_recorrido.mjs (paso 16) sin arcón; aquí, para
+    # mirarla, en el mundo vacío (después de quitarlo todo) para que no la tape nada
+    poner('mojon', 'mojon', -3, -6)
+    HX, HZ = 2, -2
+    casa = [('cim_piedra', 0, 0, 0)] + [('poste', dx, dz, 0) for dx, dz in [(-1, -1), (1, -1), (1, 1), (-1, 1)]] + \
+        [('muro_tronco', -0.95, 0, 0), ('muro_tronco', 0.95, 0, 0), ('muro_zarzo', 0, 0.95, 0), ('muro_tronco_puerta', 0, -0.95, 0), ('puerta_varas', 0, -0.95, 0), ('tejado_juncos', 0, 0, 1)]
+    vs = [poner('pieza', t, HX + dx, HZ + dz, planta=k) for t, dx, dz, k in casa]
+    hecha = ev(f"""[...{K}.mundo.construcciones].flatMap(c => [...c.piezas.values()]).filter(p => !p.obra).map(p => p.tipo).sort().join()""")
+    comprobar('la casa humilde: sus 11 piezas, puestas desde el menú y terminadas', all(v and v['ok'] for v in vs) and hecha == ','.join(sorted(t for t, *_ in casa)), hecha)
+    ev(f"{K}.cambiarModo('mover'); {K}.estado.planta=0; {K}.pj.x={HX + 1.6}; {K}.pj.z={HZ - 3.4}; {K}.pj.k=0; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.3; {K}.cam.dist=7")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/51_casa_humilde_delante.png')
+    ev(f"{K}.pj.x={HX - 1.4}; {K}.pj.z={HZ + 3.6}; {K}.cam.yaw=0.5; {K}.cam.pitch=0.35; {K}.cam.dist=7")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/52_casa_humilde_detras_zarzo.png')
+    ev(f"{K}.pj.x={HX + 0.4}; {K}.pj.z={HZ - 2.2}; {K}.cam.yaw=Math.PI+0.2; {K}.cam.pitch=0.2; {K}.cam.dist=3.6")
+    esperar(pg, 900)
+    pg.screenshot(path=f'{SALIDA}/53_casa_humilde_puerta_de_cerca.png')
+    pg.set_viewport_size({'width': 390, 'height': 844})
+    ev(f"{K}.pj.x={HX + 1.6}; {K}.pj.z={HZ - 4.4}; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.4; {K}.cam.dist=9")
+    esperar(pg, 1500)
+    pg.screenshot(path=f'{SALIDA}/54_casa_humilde_movil.png')
+    pg.set_viewport_size({'width': 1280, 'height': 800})
     pg.close()
 
     # ---------- Móvil ----------
@@ -1176,9 +1182,6 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=1; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.85; {K}.cam.dist=20")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06_movil_mover.png')
-    mv.evaluate(f"{K}.pj.x=-3.4; {K}.pj.z=-14.4; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.4; {K}.cam.dist=9")
-    mv.wait_for_timeout(1500)
-    mv.screenshot(path=f'{SALIDA}/06z_movil_casa_humilde.png')
     modo0 = mv.evaluate(f"{K}.estado.modo")
     mv.evaluate(f"{K}.cambiarModo('construir')"); mv.click('#pestanas button[data-cat="acceso"]'); mv.wait_for_timeout(500)
     mvis = mv.evaluate("[...document.querySelectorAll('#piezas button.pieza b')].map(b => b.textContent)")
