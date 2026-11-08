@@ -1524,9 +1524,9 @@
     },
     {
      "nombre": "La cama ligada, de dos maneras (valravnx, 8 nov: «ambas viables»): el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; para cuando aún no tienes casa) y la cama de juncos (juncos del río atados con cordel de fibra, dentro de la casa; un lecho de los de la época), cada una como obra con su modelo (estilo v5). Ligar una (una por personaje, por el servidor), en tu tierra o en una donde te han invitado a construir (para vivir en pareja o en grupo), y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme; luego, una cama de juncos en su casa, y la liga",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T15:28:48+01:00",
-     "rama": "trabajo/20261108-1530-cama"
+     "fin": "2026-11-08T17:35:38+01:00"
     },
     {
      "nombre": "Desconectarse (GDD, apartado 6): el personaje se queda dormido en el mundo con su símbolo encima; fuera de tu tierra, atacable unos minutos (5, o 15 si peleaste en el último minuto) y luego a salvo; en tu tierra, protegido. Si tiene cama, pasa a ella. Por el servidor",
@@ -3656,6 +3656,13 @@
      "archivo": "jugar/demo/v155.html",
      "capturas": "capturas/demo-v155",
      "notas": "El hogar, dentro de la casa: un puesto nuevo, solo bajo techo, de piedras y barro; el mismo fuego que la hoguera pero más duradero, que se deja en brasas y se aviva sin yesca. Por el servidor, con su autor."
+    },
+    {
+     "v": "v156",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v156.html",
+     "capturas": "capturas/demo-v156",
+     "notas": "La cama ligada: en Construir, una pestaña nueva «Camas» con el refugio de ramas (fuera, para cuando aún no tienes casa: 12 ramas y 4 cordeles) y la cama de juncos (dentro de la casa: 8 haces de juncos y 2 cordeles). Se levantan como obra; con Usar delante la ligas (una por personaje: es donde reaparecerás) y, ya tuya, duermes en ella: te tumbas y el cansancio baja deprisa; al moverte te levantas. También en la tierra de quien te ha invitado a construir, para vivir en pareja o en grupo."
     }
    ]
   },
