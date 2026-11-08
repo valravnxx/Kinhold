@@ -36,6 +36,7 @@ import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacio
 import { idArbol } from '../src/logica/tala.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS } from '../src/logica/piezas.js';
+import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { avisos, AVISO, hayAguaCerca } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
@@ -604,6 +605,267 @@ try {
     comprobar('y todos lo ven con sus juncos (lo que manda el servidor)', vista && vista.deposito.junco === 1, JSON.stringify(vista && vista.deposito));
     r = await J.objeto({ tipo: 'retirar_estacion', estacion: al, objeto: 'junco', cantidad: 1, x: J.pos.x, z: J.pos.z });
     comprobar('y lo vuelve a sacar cuando lo necesita', r.ok && J.cuantos('junco') === 1 && !P(al).deposito.junco, r.motivo);
+  }
+
+  console.log('16. La casa humilde entera, en su tierra y con lo que recoge: cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro, el de la puerta con su puerta de varas, y el tejado de juncos');
+  {
+    const yo = J.bienvenida.autor, P = id => s.objetos.fab.estaciones[id];
+    const mj = s.mundo.mojonDe(yo), C = { x: r2(mj.x + 10), z: r2(mj.z - 10) };
+    const manos = ['mano:der', 'mano:izq'];
+    const enMano = () => manos.map(l => J.inv && J.inv.lugares[l] ? `${J.inv.lugares[l].tipo}×${J.inv.lugares[l].n}` : '–').join(' ');
+    const soltarManos = async () => { for (const l of manos) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z }); };
+    const enSuelo = (tipo, p, d = 3) => cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === tipo && !o.arrastra && Math.hypot(o.x - p.x, o.z - p.z) < d), p);
+    const alrededor = (p, d) => recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - d, z0: O.z + p.z - d, x1: O.x + p.x + d, z1: O.z + p.z + d })
+      .map(q => ({ id: q.id, tipo: q.tipo, x: r2(q.x - O.x), z: r2(q.z - O.z) }));
+    const libres = (lista, tipo) => cerca(lista.filter(q => q.tipo === tipo && s.objetos.recoleccion.disponible(q.id, Date.now())), J.pos);
+    const aqui = alrededor(C, 120);
+    comprobar('el sitio de la casa es de su tierra', s.mundo.dentroDeTierra(C.x, C.z, yo), JSON.stringify(C));
+
+    // lo que trae en las manos (el haz de juncos del almiar), a un lado del sitio: será del tejado
+    await J.andar(C.x + 3, C.z);
+    await soltarManos();
+    const juncoGuardado = { x: J.pos.x, z: J.pos.z };
+
+    // las piezas de la casa: el sitio de cada una (local a la casa) y su clave, que da el servidor al ponerla
+    let casa = null;
+    const pieza = (tipo, dx, dz, k = 0) => ({ tipo, x: r2(C.x + dx), z: r2(C.z + dz), k });
+    const marco = async (pz) => {
+      await J.andar(C.x, C.z);
+      const r = await J.accion({ tipo: 'colocar', pieza: pz.tipo, x: pz.x, z: pz.z, k: pz.k, rot: 0, dir: 0, y: T.suelo(C.x, C.z) });
+      if (!casa && r.ok) casa = s.mundo.construcciones.at(-1);
+      const cand = s.mundo.candidata(pz.tipo, pz.x, pz.z, pz.k, 0, 0, T.suelo(C.x, C.z)).pieza;
+      pz.clave = claveDe(cand.hueco, cand.i, cand.j, cand.k, cand.d);
+      return r;
+    };
+    const obra = pz => casa?.piezas.get(pz.clave)?.obra;
+    const falta = (pz, m) => (PIEZAS[pz.tipo].coste[m] || 0) - ((obra(pz)?.entregado?.[m]) || 0);
+    const entregar = async (pz, m, n) => { await J.andar(C.x, C.z); return J.accion({ tipo: 'entregar', construccion: casa?.id, clave: pz.clave, material: m, cantidad: n }); };
+    const trabajar = async (pz) => {
+      await J.andar(C.x, C.z);
+      let t = { ok: true }, n = 0;
+      for (; n < 400 && t.ok && obra(pz); n++) t = await J.accion({ tipo: 'trabajar', construccion: casa.id, clave: pz.clave, segundos: 5 });
+      return { ok: !!casa?.piezas.get(pz.clave) && !obra(pz), motivo: t.motivo, n };
+    };
+    const terminada = pz => !!casa?.piezas.get(pz.clave) && !obra(pz);
+
+    // 16a. el cimiento: 8 piedras, en dos viajes (le caben 6 en las manos)
+    const cim = pieza('cim_piedra', 0, 0);
+    let r = await marco(cim);
+    comprobar('pone en su tierra el marco del cimiento de su casa', r.ok && !!obra(cim), r.motivo);
+    for (let viaje = 0; viaje < 3 && falta(cim, 'piedra') > 0; viaje++) {
+      const quiere = Math.min(6, falta(cim, 'piedra'));
+      for (const p of libres(aqui, 'piedra')) { if (J.cuantos('piedra') >= quiere) break; await recoger(p); }
+      await entregar(cim, 'piedra', J.cuantos('piedra'));
+    }
+    r = await trabajar(cim);
+    comprobar('le lleva sus 8 piedras sueltas, en dos viajes, y lo levanta', r.ok, `${r.motivo || ''} faltan ${falta(cim, 'piedra')}`);
+
+    // el hacha de piedra: la dejó en el suelo al echarse el tronco al hombro (paso 10)
+    const hacha = () => J.cuantos('hacha_piedra') > 0;
+    const cogerHacha = async () => {
+      if (hacha()) return true;
+      const h = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'hacha_piedra'), J.pos)[0];
+      if (!h) return false;
+      await J.andar(h.x + 0.5, h.z);
+      await soltarManos();
+      return (await J.objeto({ tipo: 'coger_suelo', objeto: h.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z })).ok;
+    };
+    comprobar('recoge su hacha de piedra del suelo', await cogerHacha(), enMano());
+
+    // talar el árbol (joven o adulto) más cercano que quede en pie; lo que deja, al suelo
+    const taladas = new Set(), tocones = [];
+    const talar = async (edad) => {
+      for (let intento = 0; intento < 6; intento++) {
+        const a = cerca(arboles.filter(e => e.edad === edad && !taladas.has(e.id) && Math.hypot(e.x - C.x, e.z - C.z) > 8), C)[0];
+        if (!a) return { ok: false, motivo: `no quedan árboles (${edad})` };
+        taladas.add(a.id);
+        if (!(await cogerHacha())) return { ok: false, motivo: 'sin hacha' };
+        await J.andar(a.x + 1, a.z);
+        let t, g = 0;
+        do { t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++; if (t.ok && !t.datos.cae) await pausa(550); } while (t.ok && !t.datos.cae && g < 80);
+        if (t.ok && t.datos.cae) { tocones.push(a); return { ok: true, a, golpes: g }; }
+      }
+      return { ok: false, motivo: 'ningún árbol cae' };
+    };
+    // un tronco delgado: tala un árbol joven, deja el hacha, se echa el tronco al hombro y se lo lleva a la pieza
+    const troncoA = async (pz) => {
+      const t = await talar('joven');
+      if (!t.ok) return t;
+      const tr = enSuelo('tronco_delgado', t.a, 5)[0];
+      if (!tr) return { ok: false, motivo: 'no ha dejado tronco' };
+      await soltarManos();   // con algo al hombro las manos no llevan nada: el hacha se queda en el suelo, junto al tocón
+      await J.andar(tr.x + 0.6, tr.z);
+      const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+      if (!c.ok) return c;
+      return entregar(pz, 'tronco', 1);
+    };
+
+    // 16b. los cuatro postes, en las esquinas: un árbol joven cada uno
+    const postes = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([dx, dz]) => pieza('poste', dx, dz));
+    let bien = 0, motivo = '';
+    for (const pz of postes) {
+      r = await marco(pz);
+      if (r.ok) r = await troncoA(pz);
+      if (r.ok) r = await trabajar(pz);
+      if (r.ok) bien++; else motivo = r.motivo;
+    }
+    comprobar('levanta los cuatro postes de las esquinas, con un tronco delgado cada uno, talado por él y traído al hombro', bien === 4 && postes.every(terminada), `${bien} · ${motivo}`);
+
+    // 16c. los muros de troncos (oeste y este, 4 troncos cada uno) y el de la puerta (sur, 3)
+    const muros = [pieza('muro_tronco', -0.95, 0), pieza('muro_tronco', 0.95, 0), pieza('muro_tronco_puerta', 0, -0.95)];
+    bien = 0; motivo = '';
+    for (const pz of muros) {
+      r = await marco(pz);
+      for (let v = 0; r.ok && v < 6 && falta(pz, 'tronco') > 0; v++) r = await troncoA(pz);
+      if (r.ok) r = await trabajar(pz);
+      if (r.ok) bien++; else motivo = r.motivo;
+    }
+    comprobar('levanta dos muros de troncos y el de la puerta: 11 troncos delgados más, de 11 árboles jóvenes, uno a uno al hombro', bien === 3 && muros.every(terminada), `${bien} · ${motivo}`);
+
+    // 16d. al río, a por el barro del muro de zarzo y los juncos del tejado
+    console.log('16d. Vuelve al río a por el barro del muro de zarzo y los juncos que le faltan para el tejado');
+    await soltarManos();
+    await J.andar(rio.x, rio.z);
+    const ribera = alrededor(rio, 100);
+    // un cordel de cinturón, para llevar la lasca con las manos ocupadas
+    for (const p of libres(ribera, 'ortiga').concat(libres(ribera, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await recoger(p); }
+    if (J.cuantos('fibra') > 3) { const rf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
+    r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+    adelantar();
+    const rr = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    const lc = manos.find(l => J.inv.lugares[l]?.tipo === 'cordel');
+    const rp = lc ? await J.objeto({ tipo: 'ponerse', de: lc }) : { ok: false, motivo: 'no tiene el cordel en la mano' };
+    comprobar('se hace un cordel y se lo ciñe a la cintura', r.ok && rr.ok && rp.ok && J.inv.lugares.cintura?.tipo === 'cordel', `${r.motivo || ''} ${rr.motivo || ''} ${rp.motivo || ''} ${enMano()}`);
+    const lasca = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex'), rio)[0];
+    if (lasca) await J.andar(lasca.x + 0.4, lasca.z);
+    r = lasca ? await J.objeto({ tipo: 'coger_suelo', objeto: lasca.id, cantidad: 1, a: 'cintura/0', x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no encuentra su lasca' };
+    comprobar('recoge su lasca de sílex de la orilla y la lleva en el cinturón', r.ok && J.inv.lugares.cintura?.dentro?.[0]?.tipo === 'lasca_silex', r.motivo);
+    const palo = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'palo_cavador'), rio)[0];
+    if (palo) await J.andar(palo.x + 0.4, palo.z);
+    r = palo ? await J.objeto({ tipo: 'coger_suelo', objeto: palo.id, cantidad: 1, a: 'mano:izq', x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no encuentra su palo cavador' };
+    comprobar('y su palo cavador, en la mano izquierda', r.ok && J.inv.lugares['mano:izq']?.tipo === 'palo_cavador', r.motivo);
+    const barro = libres(ribera, 'barro')[0];
+    let cavadas = 0;
+    for (let v = 0; v < 3; v++) if ((await recoger(barro)).ok) cavadas++;
+    const montonBarro = { x: J.pos.x, z: J.pos.z };
+    r = await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z });
+    if ((await recoger(barro)).ok) cavadas++;
+    comprobar('cava 4 cestas de barro (3 las deja a sus pies: con el palo en una mano, en la otra le caben 3)', cavadas === 4 && J.cuantos('barro') === 1, `${cavadas} · ${enMano()}`);
+    await J.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J.pos.x, z: J.pos.z });   // el palo se queda en la orilla
+    // los juncos, con la lasca del cinturón, al fardo
+    let cortados = 0;
+    for (const p of libres(ribera, 'juncos')) {
+      if (cortados >= 3) break;
+      const c = await recoger(p);
+      if (!c.ok) continue;
+      cortados++;
+      const lj = manos.find(l => J.inv.lugares[l]?.tipo === 'junco');
+      if (lj) { const hueco = [0, 1, 2, 3].find(n => !J.inv.lugares.espalda?.dentro?.[n] || (J.inv.lugares.espalda.dentro[n].tipo === 'junco' && J.inv.lugares.espalda.dentro[n].n < 3)); await J.objeto({ tipo: 'mover', de: lj, a: `espalda/${hueco}` }); }
+    }
+    const enFardo = (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
+    comprobar('corta 3 haces de juncos con la lasca del cinturón y los mete en el fardo', cortados === 3 && enFardo === 3, `${cortados} · en el fardo ${enFardo} · ${enMano()}`);
+    const mb = enSuelo('barro', montonBarro, 2)[0];
+    if (mb) await J.andar(mb.x + 0.4, mb.z);
+    r = mb ? await J.objeto({ tipo: 'coger_suelo', objeto: mb.id, cantidad: 3, a: 'mano:izq', x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no está el barro' };
+    comprobar('coge las 3 cestas de barro del suelo: lleva 4', r.ok && J.cuantos('barro') === 4, r.motivo || enMano());
+    const zarzo = pieza('muro_zarzo', 0, 0.95);
+    r = await marco(zarzo);
+    comprobar('de vuelta en su casa, pone el marco del muro de zarzo (norte)', r.ok && !!obra(zarzo), r.motivo);
+    r = await entregar(zarzo, 'barro', 4);
+    comprobar('y le lleva sus 4 cestas de barro', r.ok && falta(zarzo, 'barro') === 0 && J.cuantos('barro') === 0, r.motivo);
+
+    // 16e. las varas de los árboles talados: 4 del zarzo, 2 del tejado y 4 de la puerta
+    const varasPara = async (pz, n) => {
+      for (let v = 0; v < 6 && falta(pz, 'vara') > 0; v++) {
+        for (const a of tocones) {
+          if (J.cuantos('vara') >= Math.min(6, falta(pz, 'vara'))) break;
+          for (const o of enSuelo('vara', a, 5)) for (const l of manos) {
+            const quiere = Math.min(6, falta(pz, 'vara')) - J.cuantos('vara');
+            if (quiere <= 0) break;
+            if (J.inv.lugares[l] && J.inv.lugares[l].tipo !== 'vara') continue;
+            if (Math.hypot(o.x - J.pos.x, o.z - J.pos.z) > 1) await J.andar(o.x + 0.5, o.z);
+            const ya = J.inv.lugares[l]?.n || 0, hay = s.objetos.sueloVisible(Date.now()).find(x => x.id === o.id)?.cosa.n || 0;
+            if (Math.min(quiere, 3 - ya, hay) <= 0) continue;
+            await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(quiere, 3 - ya, s.objetos.sueloVisible(Date.now()).find(x => x.id === o.id)?.cosa.n || 0), a: l, x: J.pos.x, z: J.pos.z });
+          }
+        }
+        if (!J.cuantos('vara')) break;
+        await entregar(pz, 'vara', J.cuantos('vara'));
+      }
+      return falta(pz, 'vara') === 0;
+    };
+    await soltarManos();
+    r = await varasPara(zarzo);
+    const rz = r ? await trabajar(zarzo) : { ok: false };
+    comprobar('recoge 4 varas de los árboles que taló, se las lleva al zarzo y lo levanta', r && rz.ok, `${rz.motivo || ''} faltan ${falta(zarzo, 'vara')} varas`);
+
+    // 16f. el tejado de juncos, sobre los cuatro muros
+    const tejado = pieza('tejado_juncos', 0, 0, 1);
+    r = await marco(tejado);
+    comprobar('pone el marco del tejado de juncos encima de los muros', r.ok && !!obra(tejado), r.motivo);
+    r = await varasPara(tejado);
+    comprobar('le lleva 2 varas', r, `faltan ${falta(tejado, 'vara')}`);
+    const jg = enSuelo('junco', juncoGuardado, 2)[0];
+    if (jg) { await J.andar(jg.x + 0.4, jg.z); await J.objeto({ tipo: 'coger_suelo', objeto: jg.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z }); }
+    r = await entregar(tejado, 'junco', 4);
+    comprobar('y sus 4 haces de juncos: el del almiar y los 3 del fardo', r.ok && falta(tejado, 'junco') === 0 && J.cuantos('junco') === 0, `${r.motivo || ''} faltan ${falta(tejado, 'junco')}`);
+    r = await trabajar(tejado);
+    comprobar('lo trabaja desde dentro, desde el suelo: la casa ya tiene techo', r.ok && s.mundo.bajoTecho(C.x, C.z), r.motivo);
+
+    // 16g. la cuerda de la puerta: el banco de tronco (2 troncos cortos de un árbol adulto, tronzado) y 3 cordeles
+    console.log('16g. Para la cuerda de la puerta: tala un árbol adulto, lo tronza, levanta un banco de tronco y hace la cuerda');
+    const ad = await talar('adulto');
+    comprobar('tala un árbol adulto con su hacha de piedra (despacio)', ad.ok, `${ad.motivo || ''} ${ad.golpes || ''} golpes`);
+    const largo = ad.ok && enSuelo('tronco_largo', ad.a, 6)[0];
+    let golpes = 0, tz = { ok: false, motivo: 'no hay tronco largo' };
+    if (largo) {
+      await J.andar(largo.x + 0.5, largo.z + 0.5);
+      do { tz = await J.objeto({ tipo: 'trocear', objeto: largo.id, x: J.pos.x, z: J.pos.z }); golpes++; await pausa(850); } while (tz.ok && enSuelo('tronco_corto', largo, 4).length === 0 && golpes < 80);
+    }
+    const cortos = largo ? enSuelo('tronco_corto', largo, 4) : [];
+    comprobar('lo tronza a hachazos: le da 3 o 4 troncos cortos', cortos.length && cortos.reduce((t, o) => t + o.cosa.n, 0) >= 3, `${golpes} golpes · ${tz.motivo || ''}`);
+    if (cortos[0]) await J.andar(cortos[0].x + 0.6, cortos[0].z);
+    const banco = cortos[0] ? await ponerPuesto('banco_tronco', J.pos.x + 0.8, J.pos.z) : { ok: false, motivo: 'sin troncos cortos' };
+    comprobar('levanta allí un banco de tronco con 2 de ellos, con el hacha en la mano y la lasca en el cinturón', banco.ok && banco.datos.terminada, `${banco.motivo || ''} ${enMano()}`);
+    let cordeles = 0;
+    const fibras = alrededor(J.pos, 100);
+    for (let v = 0; banco.ok && v < 3; v++) {
+      for (const p of libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await recoger(p); }
+      if (J.cuantos('fibra') > 3) { const rf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
+      await J.andar(cortos[0].x + 0.6, cortos[0].z);
+      const f = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+      adelantar();
+      const g = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+      const lc2 = manos.find(l => J.inv.lugares[l]?.tipo === 'cordel');
+      const d = lc2 ? await J.objeto({ tipo: 'depositar_estacion', estacion: banco.id, de: lc2, x: J.pos.x, z: J.pos.z }) : { ok: false };
+      if (f.ok && g.ok && d.ok) cordeles++;
+    }
+    comprobar('hace 3 cordeles de fibra y los deja en el banco', cordeles === 3 && P(banco.id)?.deposito?.cordel === 3, `${cordeles} · ${JSON.stringify(P(banco.id)?.deposito)}`);
+    r = await J.objeto({ tipo: 'fabricar', receta: 'cuerda', estacion: banco.id, x: J.pos.x, z: J.pos.z });
+    adelantar();
+    const rc = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    comprobar('y en el banco los trenza en una cuerda', r.ok && rc.ok && J.cuantos('cuerda') === 1, `${r.motivo || ''} ${rc.motivo || ''} ${enMano()}`);
+
+    // 16h. la puerta de varas, en el hueco del muro de la puerta
+    const puerta = pieza('puerta_varas', 0, -0.95);
+    r = await marco(puerta);
+    comprobar('pone la puerta de varas en el hueco del muro de la puerta', r.ok && !!obra(puerta), r.motivo);
+    r = await entregar(puerta, 'cuerda', 1);
+    const rv = await varasPara(puerta);
+    comprobar('le lleva su cuerda y 4 varas', r.ok && rv && falta(puerta, 'cuerda') === 0, `${r.motivo || ''} faltan ${falta(puerta, 'vara')} varas`);
+    r = await trabajar(puerta);
+    comprobar('la levanta', r.ok, r.motivo);
+    r = await J.accion({ tipo: 'usar', construccion: casa?.id, clave: puerta.clave });
+    comprobar('y la abre con Usar', r.ok && casa.piezas.get(puerta.clave)?.abierta, r.motivo);
+
+    // 16i. la casa, entera: cerrada por los cuatro lados y techada, todo terminado
+    const todas = [cim, ...postes, ...muros, zarzo, tejado, puerta];
+    comprobar('la casa humilde, entera: cimiento, 4 postes, 4 muros (2 de troncos, 1 de zarzo y barro, 1 con puerta), puerta de varas y tejado de juncos, todo terminado',
+      todas.every(terminada) && casa.piezas.size === todas.length, `${todas.filter(terminada).length} de ${todas.length} · ${casa ? casa.piezas.size : 0} piezas`);
+    const lados = [...muros, zarzo], claves = new Set(lados.map(pz => pz.clave));
+    comprobar('cerrada: un muro terminado en cada uno de sus cuatro lados', claves.size === 4 && lados.every(pz => terminada(pz) && casa.piezas.get(pz.clave).hueco === 'e'), [...claves].join(' '));
+    comprobar('y techada: dentro está bajo techo; fuera, no', s.mundo.bajoTecho(C.x, C.z) && !s.mundo.bajoTecho(C.x + 4, C.z));
+    comprobar('es suya: todo lo pagó con lo que llevaba (sin arcón)', J.bienvenida.arcon === false && s.mundo.materiales.piedra === piedraArcon);
   }
   }
 
