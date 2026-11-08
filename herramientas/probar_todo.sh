@@ -46,6 +46,7 @@ paso "El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz
 paso "Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor" node pruebas/prueba_necesidades.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
+paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
 paso "Sin llanos pelados a ras del mar tierra adentro" node pruebas/prueba_llanos.mjs
@@ -135,6 +136,7 @@ paso "Navegador: los avisos de las necesidades" python3 pruebas/prueba_avisos_na
 paso "Navegador: las bayas y las setas" python3 pruebas/prueba_bayas_navegador.py dist/kinhold_demo.html "$C/bayas"
 paso "Navegador: desbrozar matorrales y arbustos" python3 pruebas/prueba_desbroce_navegador.py dist/kinhold_demo.html "$C/desbroce"
 paso "Navegador: el mazo de piedra y romper rocas" python3 pruebas/prueba_rocas_navegador.py dist/kinhold_demo.html "$C/rocas"
+paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_materiales_navegador.py dist/kinhold_demo.html "$C/materiales"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"

@@ -36,7 +36,7 @@ import { tmpdir } from 'os';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacion.js';
-import { idArbol } from '../src/logica/tala.js';
+import { idArbol, CONIFERAS } from '../src/logica/tala.js';
 import { idMata, idRoca, rompible, golpesRoca, piedrasRoca } from '../src/logica/recoleccion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
@@ -67,7 +67,9 @@ function comprobar(nombre, cond, detalle = '') {
 }
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
-const TODAVIA_NO = {};   // hoy, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
+const TODAVIA_NO = {   // (8 nov) lo que el recorrido no hace, con el porqué
+  'la resina': 'los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs',
+};   // (antes, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
 
 const T = terrenoWhitholm();
 if (MUTAR) { const punto = T.punto.bind(T); T.punto = (id, x, z) => (id.startsWith('piedra:') ? null : punto(id, x, z)); }
@@ -1112,6 +1114,41 @@ try {
       if (caidas[0]) r = await J.objeto({ tipo: 'coger_suelo', objeto: caidas[0].id, x: J.pos.x, z: J.pos.z });
       comprobar('y se lleva las piedras que le caben', J.cuantos('piedra') > antes, `${r.motivo || ''} ${antes} → ${J.cuantos('piedra')}`);
     }
+  }
+
+  // P3, el mimbre y la corteza (8 nov): con su lasca de sílex corta las varas de la mimbrera más cercana de la ribera y
+  // descorteza un árbol en pie (la resina, en TODAVIA_NO: los pinos quedan lejos)
+  {
+    const vaciar = async () => { for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l] && J.inv.lugares[l].tipo !== 'lasca_silex') await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z }); };
+    await vaciar();
+    if (!J.cuantos('lasca_silex')) {
+      const l = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex'), J.pos)[0];
+      if (l) { await J.andar(l.x + 0.3, l.z); await J.objeto({ tipo: 'coger_suelo', objeto: l.id, x: J.pos.x, z: J.pos.z }); }
+    }
+    comprobar('lleva su lasca de sílex', J.cuantos('lasca_silex') >= 1);
+    // el río más cercano (como en el paso 11), y las mimbreras de su ribera
+    let rio = null;
+    for (let r = 0; r < 3000 && !rio; r += 25) for (let k = 0; k < 96; k++) {
+      const x = J.pos.x + Math.cos(k / 96 * 2 * Math.PI) * r, z = J.pos.z + Math.sin(k / 96 * 2 * Math.PI) * r, X = x + O.x, Z = z + O.z;
+      const { dm, ancho } = T.paisaje.rioCerca(X, Z, T.paisaje.riosEn(X - 20, Z - 20, X + 20, Z + 20));
+      if (dm - ancho / 2 < 4 && T.alt(X, Z) > 0.5) { rio = { x, z, r }; break; }
+    }
+    const R = 150, aqui = rio && { x0: O.x + rio.x - R, z0: O.z + rio.z - R, x1: O.x + rio.x + R, z1: O.z + rio.z + R };
+    const mimbres = rio ? cerca(recogidaEn(T.paisaje, T.alt, T.semilla, aqui).filter(p => p.tipo === 'mimbre').map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) })), rio) : [];
+    comprobar('en la ribera del río más cercano hay mimbreras', mimbres.length > 0, rio ? `río a ${rio.r} m; ${mimbres.length} mimbreras` : 'sin río');
+    if (mimbres[0]) {
+      const r = await recoger(mimbres[0]);
+      comprobar('corta con la lasca las varas de la mimbrera: un haz de mimbre', r.ok && J.cuantos('mimbre') === 1, r.motivo);
+      await vaciar();
+    }
+    const v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + J.pos.x - 60, z0: O.z + J.pos.z - 60, x1: O.x + J.pos.x + 60, z1: O.z + J.pos.z + 60 });
+    const arbol = cerca(v.arboles.map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.edad, especie: e.especie })).filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES && s.objetos.tala.enPie(idArbol(e.x, e.z), Date.now())), J.pos)[0];
+    if (arbol) {
+      await J.andar(arbol.x + 1, arbol.z);
+      const r = await J.objeto({ tipo: 'descortezar', arbol: idArbol(arbol.x, arbol.z), x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad, especie: arbol.especie });
+      comprobar(`descorteza un ${arbol.especie} en pie: de 1 a 2 cortezas`, r.ok && J.cuantos('corteza') >= 1 && J.cuantos('corteza') <= 2, r.motivo);
+      comprobar('y un roble o un haya no se sangra (no da resina)', CONIFERAS.has(arbol.especie) || !(await J.objeto({ tipo: 'sangrar', arbol: idArbol(arbol.x, arbol.z), x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad, especie: arbol.especie })).ok);
+    } else comprobar('hay un árbol en pie cerca', false);
   }
 
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de
