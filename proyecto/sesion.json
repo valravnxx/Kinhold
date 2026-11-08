@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-08T21:24:35+00:00",
-  "tarea": "Desconectarse (GDD, apartado 6): el personaje se queda dormido en el mundo con su símbolo encima; fuera de tu tierra, atacable unos minutos (5, o 15 si peleaste en el último minuto) y luego a salvo; en tu tierra, protegido. Si tiene cama, pasa a ella. Por el servidor",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261108-2124"
- },
+ "A": null,
  "B": null
 }

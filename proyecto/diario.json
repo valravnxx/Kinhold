@@ -5726,5 +5726,26 @@
   "pruebas": "En la nube: lógica (bien, con lo nuevo de pruebas/prueba_necesidades.mjs, roto a propósito tres veces —sentado no descansa, el servidor no mira si está sentado, el combate no cansa—: falla), recorrido de jugador (bien), los avisos de las necesidades (bien, ahora también se sienta con el botón y con Z; roto a propósito sin la animación), la cama ligada, la demo única y los recursos de personaje (bien). Combate en el mundo falla en el móvil («nada tapa nada»: las rosas del combate pisan Usar y Construir), igual en main: no es de este cambio. El grupo del personaje no había terminado al publicar (no comprobado)",
   "capturas": "capturas/demo-v161",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T21:22:02+00:00",
+  "fin": "2026-11-08T22:24:07+00:00",
+  "titulo": "P4: dormido en el mundo al desconectarse",
+  "hito": "supervivencia",
+  "hecho": [
+   "Al salir del juego, o si se corta la conexión, tu personaje no desaparece: se queda dormido en el mundo donde estaba, y los demás lo ven tumbado con el símbolo de desconectado encima (una luna menguante en un disco oscuro)",
+   "En tu tierra (o en la de quien te ha invitado a construir) está protegido desde el primer momento y, si tienes cama ligada, pasa a ella",
+   "Fuera de tu tierra se le puede atacar donde está durante 5 minutos, o 15 si dio o recibió un golpe o una flecha en el último minuto; luego ya no se le puede hacer nada y, si tiene cama ligada, pasa a ella",
+   "Al volver con tu ficha despiertas donde duermes (en la cama, si pasaste a ella), con tus heridas como estaban",
+   "Lo lleva el servidor (src/logica/dormidos.js, lógica pura): un navegador no se puede hacer pasar por desconectado",
+   "Recorrido de jugador: al final sale del juego en su casa, queda dormido y protegido en su cama de juncos, y al volver despierta en ella",
+   "Decisiones provisionales en el registro de la demo (v162): mientras duermes desconectado, las necesidades no cambian; si el servidor se reinicia, nadie queda dormido a la vista (se guarda dónde estaba cada uno)",
+   "Las pruebas de presencia, combate y bots ya no esperan que quien se va desaparezca, sino que se quede dormido",
+   "Aún mal: sin tarjeta gráfica, la captura del PC lo pilla a medio tumbarse; el símbolo sale sobre todos los que duermen desconectados, también lejos (no se esconde con la distancia)",
+   "No comprobado: que un golpe de verdad apunte la pelea (la prueba la pone a mano); se apunta con cada golpe o flecha que da en alguien"
+  ],
+  "pruebas": "Revisor en la nube: lógica (todas las de dormidos, conexiones, presencia, combate, bots y necesidades bien; una vez falló suelta «lo que no se puede se rechaza al que lo manda» del combate en el servidor, que pasa 3 de 3 aquí y pasó en la primera vuelta: se anota), recorrido 214/214 (sale del juego en su casa y vuelve en su cama) y navegador «dormido al desconectarse» en PC y móvil; prueba nueva rota a propósito (MUTAR=1) en lógica y navegador",
+  "capturas": "capturas/demo-v162",
+  "estado": "ok"
  }
 ]
