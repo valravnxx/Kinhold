@@ -71,6 +71,7 @@ with sync_playwright() as p:
     fuera = [n for n in guardadas if n in vistas]
     comprobar('lo de niveles posteriores no sale en el menú', not fuera, ', '.join(fuera))
     comprobar('lo de la casa humilde sí sale', all(n in vistas for n in ['Muro de troncos', 'Tejado de juncos', 'Escalera de mano', 'Andamio', 'Taburete']))
+    comprobar('el juego completo de barro: el muro de zarzo liso, con puerta y con ventana (valravnx, 8 nov)', all(n in vistas for n in ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana']))
     pg.click('#pestanas button[data-cat="base"]')
 
     print('PC: cabaña completa')
@@ -194,6 +195,22 @@ with sync_playwright() as p:
     esperar(pg, 600)
     ev(f"{K}.llevar(); {K}.usar()")
     comprobar('y vuelve a bajar', ev(f"{K}.pj.k") == 0)
+
+    print('PC: el juego completo de barro (valravnx, 8 nov: «debemos tener el full set de barro»)')
+    # un cimiento con sus cuatro muros de zarzo: con puerta (y la puerta de varas en su hueco), con ventana y lisos, apartado
+    for t, x, z in [('cim_piedra', -17, 3), ('muro_zarzo_puerta', -17, 2), ('puerta_varas', -17, 2), ('muro_zarzo_ventana', -16, 3), ('muro_zarzo', -18, 3), ('muro_zarzo', -17, 4)]:
+        v = poner('pieza', t, x, z)
+        comprobar(f'{t} puesto desde el menú', bool(v) and v['ok'], json.dumps(v, ensure_ascii=False))
+    zp = ev(f"""(() => {{ const c = {K}.mundo.construcciones.find(c => [...c.piezas.values()].some(p => p.tipo === 'muro_zarzo_puerta')); if (!c) return null;
+      const t = [...c.piezas.values()].map(p => p.tipo + (p.obra ? '*' : '')).sort(); return t.join(); }})()""")
+    # (se une a la rejilla del cobertizo de al lado: basta con que estén las suyas y nada a medias)
+    comprobar('la puerta de varas encaja en el hueco del muro de zarzo, y todo terminado', bool(zp) and all(t in zp.split(',') for t in ['muro_zarzo_puerta', 'muro_zarzo_ventana', 'puerta_varas']) and '*' not in zp, str(zp))
+    ev(f"{K}.cambiarModo('mover'); {K}.pj.x=-15.4; {K}.pj.z=-1.4; {K}.pj.k=0; {K}.pj.y=0; {K}.pj.rot=0; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.3; {K}.cam.dist=7")
+    esperar(pg, 1200)
+    pg.screenshot(path=f'{SALIDA}/02z_zarzo_puerta_y_ventana.png')
+    ev(f"{K}.pj.x=-16.6; {K}.pj.z=-0.2; {K}.cam.yaw=Math.PI+0.2; {K}.cam.pitch=0.2; {K}.cam.dist=3.6")
+    esperar(pg, 1200)
+    pg.screenshot(path=f'{SALIDA}/02z_zarzo_puerta_de_cerca.png')
 
     print('PC: rechazo por carga')
     poner('pieza', 'cim_piedra', 13, 1)
