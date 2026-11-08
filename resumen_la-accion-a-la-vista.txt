@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2475 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2981 KB
+
+== Construir demo única
+      3090 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4206 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2878 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2469 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2991 KB
+dist/kinhold_trozos.html 2483 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la acción a la vista (etiqueta, aro, lista y botón de acción)
+  OK   móvil: y se ven Terminar y Desmontar
+  OK   móvil: sin errores en la página
+
+TODO BIEN
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 93 s
