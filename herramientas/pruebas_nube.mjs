@@ -73,7 +73,7 @@ else {
   pedidos = gruposPara(archivos, { todos, pruebas, nombrados }).filter(g => !EN_LINEA(g) || nombrados.includes(g));
   console.log(`Lo esencial (${ESENCIALES.join(', ')}) y lo de lo tocado (${archivos.length} archivos cambiados desde main)${nombrados.length ? ' y lo nombrado' : ''}; la batería entera, con --todo`);
 }
-const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica');
+const alPC = process.env.SOLO_NUBE ? [] : pedidos.filter(g => g !== 'logica' && g !== 'recorrido');   // (lo de node, siempre a la nube)
 const aNube = pedidos.filter(g => !alPC.includes(g));
 console.log(`Pruebas de ${rama} (${sha.slice(0, 7)}): ${pedidos.join(', ')}`);
 

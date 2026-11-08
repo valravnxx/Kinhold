@@ -3,8 +3,8 @@
 // para cosas pequeñas»).
 //
 // Antes, cada cambio pasaba la batería entera (42 grupos, unos 85 minutos en la nube, y otra vez al unir main). Ahora:
-//   - ESENCIALES, siempre: la lógica (todas las pruebas de node, con el recorrido de jugador), que la demo arranca y se
-//     juega, y la web.
+//   - ESENCIALES, siempre: la lógica (las pruebas de node), el recorrido de jugador (en su propia máquina, a la vez),
+//     que la demo arranca y se juega, y la web.
 //   - más los grupos de lo que toca el cambio: los de cada archivo cambiado según TOCA (abajo) y los de cada archivo de
 //     prueba cambiado (el de su paso en probar_todo.sh);
 //   - más los que se nombren a mano (lo que se ha tocado y la tabla no sabe: por ejemplo, un cambio en
@@ -12,7 +12,7 @@
 // La batería entera, solo al llevar un hito a revisión (o si valravnx lo pide): pruebas_nube.mjs --todo.
 // Sin three.js ni red: lo usa herramientas/pruebas_nube.mjs y se prueba con node herramientas/grupos_pruebas.mjs.
 
-export const ESENCIALES = ['logica', 'demo-unica', 'web'];
+export const ESENCIALES = ['logica', 'recorrido', 'demo-unica', 'web'];
 
 // grupo → archivos (expresiones sobre la ruta) que, si cambian, piden ese grupo. Lo de todo el juego (main.js,
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
@@ -94,15 +94,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   let mal = 0;
   const ver = (n, c, d = '') => { console.log(`  ${c ? 'OK  ' : 'FALLA'} ${n}${d ? ' — ' + d : ''}`); if (!c) mal++; };
   const sinNada = gruposPara([], { todos, pruebas });
-  ver('sin cambios de código, solo los esenciales (lógica, la demo y la web)', sinNada.join() === 'logica,demo-unica,web' || sinNada.sort().join() === ['demo-unica', 'logica', 'web'].join(), sinNada.join(', '));
+  ver('sin cambios de código, solo los esenciales (lógica, recorrido, la demo y la web)', [...sinNada].sort().join() === 'demo-unica,logica,recorrido,web', sinNada.join(', '));
   const mapa = gruposPara(['src/juego/mapa_rey.js', 'pruebas/prueba_mapa_rey_navegador.py'], { todos, pruebas });
-  ver('tocar el mapa del rey pide su grupo y los esenciales, nada más', mapa.length === 4 && mapa.includes('mapa-del-rey'), mapa.join(', '));
+  ver('tocar el mapa del rey pide su grupo y los esenciales, nada más', mapa.length === 5 && mapa.includes('mapa-del-rey'), mapa.join(', '));
   const prueba = gruposPara(['pruebas/prueba_hoguera_navegador.py'], { todos, pruebas });
   ver('tocar el archivo de prueba de un grupo pide ese grupo', prueba.includes('la-hoguera'), prueba.join(', '));
   ver('lo nombrado a mano entra', gruposPara([], { todos, pruebas, nombrados: ['cavar'] }).includes('cavar'));
   const sobran = Object.keys(TOCA).filter(g => !todos.includes(g));
   ver('la tabla solo nombra grupos que existen', !sobran.length, sobran.join(', '));
-  const sinPrueba = todos.filter(g => g !== 'logica' && !pruebas[g]);
+  const sinPrueba = todos.filter(g => g !== 'logica' && g !== 'recorrido' && !pruebas[g]);
   ver('cada grupo de navegador tiene su archivo de prueba', !sinPrueba.length, sinPrueba.join(', '));
   console.log(mal ? `\n${mal} mal` : '\nTodo bien');
   process.exit(mal ? 1 : 0);
