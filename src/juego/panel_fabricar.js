@@ -113,7 +113,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const c = inv.lugares.espalda;
     return c && ESTACIONES[tipo].muro && ESTACIONES[tipo].guarda && guardaTipo(tipo, c.tipo) && !(c.dentro && c.dentro.some(Boolean)) ? [{ ruta: 'espalda', tipo: c.tipo, n: c.n }] : [];
   };
-  const SITIO_CORTO = r => r.startsWith('mano:') ? tr('mano') : r === 'espalda' ? tr('a la espalda') : r.startsWith('cintura') ? tr('cinto') : r.startsWith('espalda') ? tr('mochila') : tr('hombro');
+  const SITIO_CORTO = r => r.startsWith('mano:') ? tr('mano') : r === 'espalda' ? tr('espalda') : r.startsWith('cintura') ? tr('cinto') : r.startsWith('espalda') ? tr('mochila') : tr('hombro');
 
   // ---------- cartas ----------
   function carta(x) {

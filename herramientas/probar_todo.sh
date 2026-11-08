@@ -139,6 +139,7 @@ paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py d
 paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html "$C/fabricar"
 paso "Navegador: la hoguera" python3 pruebas/prueba_hoguera_navegador.py dist/kinhold_demo.html "$C/hoguera"
 paso "Navegador: los almacenajes de la base" python3 pruebas/prueba_almacenajes_navegador.py dist/kinhold_demo.html "$C/almacenajes"
+paso "Navegador: los colgaderos de mochilas y de herramientas" python3 pruebas/prueba_colgaderos_navegador.py dist/kinhold_demo.html "$C/colgaderos"
 paso "Navegador: panel de inventario" python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html "$C/inventario"
 paso "Navegador: lo que llevas se ve puesto" python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html "$C/llevado"
 paso "Navegador: objetos en el suelo" python3 pruebas/prueba_suelo_navegador.py dist/kinhold_demo.html "$C/suelo"
