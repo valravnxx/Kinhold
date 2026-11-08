@@ -1436,7 +1436,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T18:25:23+00:00",
+     "rama": "trabajo/20261108-1825"
     },
     {
      "nombre": "El inventario pasa a ser «Equipo» (valravnx, 7 nov): con las imágenes de cada cosa y el estilo del panel de fabricar, y sobre todo, lo que llevas puesto se puede quitar, a las manos o al suelo",
