@@ -245,9 +245,9 @@ try:
         for t in ['soporte_varas', 'almiar', 'hoyo_barro', 'cesto']:
             comprobar(f'{t}: se dibuja con lo guardado', esperar(A, f"{DEPOSITO}('{t}') > 0", 5000), str(A.evaluate(f"{DEPOSITO}('{t}')")))
         A.add_style_tag(content='#materiales { visibility: hidden !important; }')   # (cuenta también los de mirar)
-        for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 4.2, 0.35, 0.6, 1.3, 0.9, 0, 'soporte_varas_lleno'), ('soporte_varas', 4.2, 0.35, 0.6, 1.3, 0.9, 1, 'soporte_varas_vacio'),
-                ('almiar', 6.0, 0.3, 0.4, 1.8, 1.4, 0, 'almiar_lleno'), ('almiar', 5.0, 0.3, 0.4, 1.6, 1.0, 1, 'almiar_juncos'),
-                ('hoyo_barro', 3.2, 0.7, 0.3, 1.0, 0.8, 0, 'hoyo_barro_lleno'), ('cesto', 2.4, 0.75, 0.3, 0.7, 0.5, 0, 'cesto_lleno')]:
+        for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 4.4, 0.4, 0.6, 0.7, 1.4, 0, 'soporte_varas_lleno'), ('soporte_varas', 4.4, 0.4, 0.6, 0.7, 1.4, 1, 'soporte_varas_vacio'),
+                ('almiar', 6.5, 0.32, 0.4, 0.9, 2.0, 0, 'almiar_lleno'), ('almiar', 5.5, 0.3, 0.4, 0.8, 1.6, 1, 'almiar_juncos'),
+                ('hoyo_barro', 3.6, 0.75, 0.3, 0.5, 1.1, 0, 'hoyo_barro_lleno'), ('cesto', 2.6, 0.85, 0.3, 0.35, 0.7, 0, 'cesto_lleno')]:
             encuadre(A, t, dist, pitch, yaw, lado, atras, cual); A.wait_for_timeout(2200)
             captura(A, f'{SALIDA}/PC_{nombre}.png')
         # el almiar solo con juncos (de pie, en cono) y el soporte vacío, junto a los llenos
@@ -275,9 +275,9 @@ try:
         B.evaluate(f"{NUEVOS}({K}, false)")
         B.add_style_tag(content='#materiales { visibility: hidden !important; }')
         comprobar('en el móvil, el almiar y el cesto se ven igual', esperar(B, f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0", 8000))
-        encuadre(B, 'almiar', 7.0, 0.35, 0.4, 1.4, 1.4); B.wait_for_timeout(2500)
+        encuadre(B, 'almiar', 7.5, 0.35, 0.4, 0.7, 2.0); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_almiar.png')
-        encuadre(B, 'cesto', 2.8, 0.75, 0.3, 0.6, 0.5); B.wait_for_timeout(2000)
+        encuadre(B, 'cesto', 2.8, 0.85, 0.3, 0.3, 0.7); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cesto.png')
         B.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')))")
 

@@ -203,7 +203,7 @@ function soporteVaras(id) {
     for (const sz of [-1, 1]) varaEntre(L, new THREE.Vector3(x, -0.08, sz * abre), new THREE.Vector3(x + sz * 0.02, cruce + 0.32, -sz * abre * 0.55), 0.024);
     L.add(new THREE.TorusGeometry(0.03, 0.009, 5, 10), 0xb8a27a, x, cruce, 0, { y: Math.PI / 2 }, { tex: 'paja', sinSuelo: true }); // la atadura
   }
-  varaEntre(L, new THREE.Vector3(-X, 0.05, -abre * 0.9), new THREE.Vector3(X, 0.05, abre * 0.9), 0.022); // la riostra, en diagonal
+  varaEntre(L, new THREE.Vector3(-X - 0.06, cruce - 0.22, 0), new THREE.Vector3(X + 0.06, cruce - 0.21, 0), 0.02); // el travesaño que los une, bajo el cruce
   return mallas(L);
 }
 // El almiar: el palo hincado (una vara alta) sobre un lecho de dos varas cruzadas, para que la paja no toque la tierra.
@@ -372,11 +372,16 @@ function llenoCesto(dep, id) {
   const total = tipos.reduce((a, [, n]) => a + n, 0), f = Math.min(1, total / ESTACIONES.cesto.cabe), { r0, r1, alto } = CESTO;
   const y = 0.04 + (alto - 0.08) * f, r = r0 + (r1 - r0) * (y / alto) - 0.012;
   L.add(new THREE.CircleGeometry(r, 22), COLOR_PEQUENO[tipos[0][0]] || 'lino', 0, y, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'tejido' });
-  let i = 0;
-  for (const [t, n] of tipos) for (let k = 0; k < Math.min(7, n + 1); k++, i++) {
-    const a = i * 2.39996 + az(id, i), d = r * 0.85 * Math.sqrt((i + 0.5) / 26), tam = 0.022 + 0.012 * az(id, i + 50);
-    L.add(piedraIrregular(tam, 0, id + 'p' + i, 0.3), COLOR_PEQUENO[t] || 'lino', Math.cos(a) * Math.min(d, r - 0.03), y + tam * 0.3, Math.sin(a) * Math.min(d, r - 0.03), { y: az(id, i + 9) * 6 }, { escala: new THREE.Vector3(1.3, 0.6, 1), plano: true, sinSuelo: true });
-  }
+  // cada cosa, en su rincón y mezclada por los bordes: muchos trocitos pequeños y desiguales (más de lo que más hay)
+  const piezas = [];
+  for (const [t, n] of tipos) for (let k = 0; k < Math.min(18, 4 + n); k++) piezas.push(t);
+  const total2 = piezas.length;
+  piezas.forEach((t, i) => {
+    const a = i * 2.39996 + (az(id, i) - 0.5) * 0.5, d = Math.min(r - 0.02, r * 0.95 * Math.sqrt((i + 0.5) / total2)), tam = 0.011 + 0.011 * az(id, i + 50);
+    const fino = t === 'fibra' || t === 'cordel' || t === 'cuerda' || t === 'hierbas';
+    L.add(piedraIrregular(tam, 1, id + 'p' + i, 0.35), COLOR_PEQUENO[t] || 'lino', Math.cos(a) * d, y + tam * 0.25, Math.sin(a) * d, { y: az(id, i + 9) * 6, x: (az(id, i + 70) - 0.5) * 0.6 },
+      { escala: fino ? new THREE.Vector3(3.2, 0.45, 0.7) : new THREE.Vector3(1.2, 0.7, 1), sinSuelo: true });
+  });
   return mallas(L);
 }
 const LLENO = { acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto };
