@@ -1376,7 +1376,9 @@
     },
     {
      "nombre": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T14:24:18+00:00",
+     "rama": "trabajo/20261108-1423"
     },
     {
      "nombre": "El banco de tronco (2 troncos cortos y el hacha): la entrada al tier 1, con sus recetas de madera (tablas, mangos, cestas, la cuerda buena)",
