@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-08T07:16:52+00:00",
+  "tarea": "El frío: sube de noche (el ciclo de día y noche de la v137), según el bioma y la ropa que llevas puesta (cada prenda abriga), y baja bajo techo y junto al fuego (la hoguera y el hogar de P3 calientan en un radio). Recorrido: de noche y sin fuego sube el frío; junto a la hoguera baja",
+  "hito": "supervivencia",
+  "rama": "trabajo/20261108-0523"
+ },
  "B": null,
  "chat:trabajo/20261107-1845-interfaz": {
   "inicio": "2026-11-07T18:43:47+01:00",
