@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2475 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2981 KB
+
+== Construir demo única
+      3090 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4207 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2878 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2469 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2991 KB
+dist/kinhold_trozos.html 2483 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v160 (el frío); v160: el frío. Lo lleva el servidor para cada uno: sube de noche, según la temperatura del sitio (el bioma a su altura: en las tierras altas y frías, también de día) y lo que llevas puesto (cada prenda abriga lo suyo por cada parte del cuerpo que cubre); bajo techo, la mitad, y junto a una hoguera o un hogar encendidos, nada. Va subiendo o bajando poco a poco (unos 10 minutos en llegar). Con lo del principio, la camisa y el pantalón de lino, en la salida de día no hay frío y de noche sale su aviso.; v160, provisional: 4 puntos de frío por cada grado de temperatura media bajo 16 °C (hasta 60), la noche suma 50 (entera de 20 a 4; al anochecer y al amanecer, poco a poco), cada punto de abrigo de la ropa quita 4 (la camisa y el pantalón de lino, 7 puntos: 28), bajo techo la mitad, y a 2 m o menos de un fuego encendido no hay frío (de 2 a 4 m vuelve poco a poco). La estación y la lluvia aún no cuentan: no hay estaciones ni tiempo en el mundo hasta P11.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 216 s
