@@ -9,10 +9,14 @@
 #   - los efectos: con el cansancio al máximo no se corre (Mayúsculas + W: a paso de andar), sin él sí; con el frío al
 #     máximo se anda más despacio (torpe);
 #   - beber del río: en la salida no hay agua al lado; en una orilla, con sed, «Usar» bebe y la sed baja;
+#   - descansar sentado (8 nov): la ficha del cansancio lleva el botón «Sentarte a descansar»; al pulsarlo se sienta
+#     (con su animación, en el suelo) y su estado dice «sentado»; el botón pasa a «Levantarte»; al moverse se levanta.
+#     En el PC, también con Z. Capturas del personaje sentado, de cerca, en PC y móvil;
 #   - en inglés, la ficha sale en inglés;
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_avisos_navegador.py <html> <carpeta_capturas>
 # MUTAR=1: los avisos no se pintan nunca: tiene que fallar. MUTAR=2: rendido se sigue corriendo: tiene que fallar.
+# MUTAR=3: sin la animación de sentarse (como si no hubiera cargado): tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, json
 from playwright.sync_api import sync_playwright
 
@@ -96,6 +100,38 @@ def recorrido(pg, nombre, pref, movil):
     poner(pg, {'sed': 85, 'hambre': 60, 'frio': 45, 'cansancio': 100})
     pg.screenshot(path=f'{SALIDA}/{pref}_2_cuatro.png', timeout=180000)
     comprobar(f'{nombre}: con las cuatro, los cuatro círculos', pg.evaluate(f'{K}.avisosNec.visibles.length') == 4)
+    # descansar sentado (8 nov): el botón de la ficha del cansancio
+    if MUTAR == '3': pg.evaluate(f'(() => {{ const a = {K}.jugador.mh && {K}.jugador.mh.acciones; if (a) delete a.sentado; }})()')
+    pg.click('#avisosNec .aviso-nec[data-que="cansancio"]'); pg.wait_for_timeout(400)
+    boton = pg.evaluate("(() => { const b = document.querySelector('#fichaNec .sentarse'); return b ? b.textContent : null; })()")
+    comprobar(f'{nombre}: la ficha del cansancio lleva el botón para sentarse', bool(boton) and 'Sentarte' in boton, str(boton))
+    rb = rect(pg, '#fichaNec .sentarse'); rf = rect(pg, '#fichaNec')
+    comprobar(f'{nombre}: el botón cabe dentro de la ficha y la ficha en la pantalla', bool(rb) and bool(rf) and rb[0] >= rf[0] and rb[2] <= rf[2] and rb[3] <= rf[3] and rf[3] <= H and rf[0] >= 0 and rf[2] <= W, f'{rb} en {rf}')
+    pg.click('#fichaNec .sentarse'); pg.wait_for_timeout(300)
+    pg.evaluate(f"(() => {{ const m = {K}.jugador.mh; if (m) m.mezclador.update(2); }})()"); pg.wait_for_timeout(1500)
+    st = pg.evaluate(f"({{ s: !!{K}.estado.sentado, modo: {K}.jugador.modo, boton: (document.querySelector('#fichaNec .sentarse') || {{}}).textContent || '' }})")
+    comprobar(f'{nombre}: al pulsarlo se sienta, con su animación (en el suelo), y el botón pasa a «Levantarte»', st['s'] and st['modo'] == 'sentado' and 'Levantarte' in st['boton'], json.dumps(st, ensure_ascii=False))
+    pg.screenshot(path=f'{SALIDA}/{pref}_4_sentado_ficha.png', timeout=180000)
+    pg.mouse.click(W * 0.3, H * 0.6) if not movil else pg.evaluate("document.getElementById('fichaNec').hidden = true")
+    pj = pg.evaluate(f'(() => {{ const k = {K}; return {{ x: k.pj.x, y: k.pj.y, z: k.pj.z, r: k.pj.rot }}; }})()')
+    import math
+    d = 2.6 if movil else 2.2
+    cx, cz = pj['x'] + math.sin(pj['r'] + 0.9) * d, pj['z'] + math.cos(pj['r'] + 0.9) * d
+    pg.evaluate(f"(() => {{ const K = {K}; Object.assign(K.camLibre, {{ activa: true, x: {cx}, y: {pj['y'] + 1.15}, z: {cz} }}); K.cam.yaw = {math.atan2(cx - pj['x'], cz - pj['z'])}; K.cam.pitch = 0.3; }})()")
+    pg.wait_for_timeout(2500)
+    pg.screenshot(path=f'{SALIDA}/{pref}_5_sentado_cerca.png', timeout=180000)
+    pg.evaluate(f'{K}.camLibre.activa = false')
+    if not movil:
+        pg.keyboard.down('w'); pg.wait_for_timeout(500); pg.keyboard.up('w'); pg.wait_for_timeout(500)
+        comprobar(f'{nombre}: al moverse se levanta', not pg.evaluate(f'!!{K}.estado.sentado') and pg.evaluate(f'{K}.jugador.modo') != 'sentado')
+        pg.keyboard.press('z'); pg.wait_for_timeout(300)
+        comprobar(f'{nombre}: con Z se sienta otra vez, y con Z se levanta', pg.evaluate(f'!!{K}.estado.sentado'))
+        pg.keyboard.press('z'); pg.wait_for_timeout(300)
+        comprobar(f'{nombre}: (levantado)', not pg.evaluate(f'!!{K}.estado.sentado'))
+    else:
+        pg.evaluate("window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyW' }))"); pg.wait_for_timeout(400)
+        pg.evaluate("window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyW' }))"); pg.wait_for_timeout(300)
+        comprobar(f'{nombre}: al moverse se levanta', not pg.evaluate(f'!!{K}.estado.sentado'))
     if not movil:
         # los efectos: rendido no corre; descansado sí; helado, más despacio
         v_rendido = velocidad(pg, ['Shift', 'w'])
