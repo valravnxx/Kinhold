@@ -5643,5 +5643,22 @@
   "pruebas": "Revisor en la nube: lógica, recoger del suelo y de las plantas, panel de fabricación, lo que llevas se ve puesto, avisos de las necesidades y demo única, correctos; el mazo y romper rocas (prueba nueva), correcta en PC y móvil a la tercera (la primera, el mazo no se veía en la mano porque la prueba no volvía a vestir al personaje; la segunda, en PC no le dio tiempo a romper una roca grande sin tarjeta gráfica: ahora rompe la más chica). Recorrido, aquí: 186 bien y 1 mal (romper cansa: el cansancio ya estaba al máximo tras todo el día); esa comprobación se cambió para ese caso y no se volvió a pasar entero. Fuera, por la sesión: el recorrido en la nube (pasado aquí), las bayas, el bosque de lejos, el hogar, los almacenajes, los colgaderos y el panel de inventario (lo cambiado en sus archivos no toca lo suyo). Al unir main (la cama ligada, v156, que también hizo iconos-v12: por eso estas imágenes van en v13), a mano solo un comentario de necesidades.js; pasadas aquí las de lógica de necesidades, desbrozar, fabricación, rocas e iconos, correctas. No comprobado: la prueba de navegador rota a propósito (MUTAR) en la nube. Lo que aún se ve flojo: el mazo en la mano, visto por detrás, enseña la piedra de punta; los cascotes son pequeños y quedan bajo el montón de piedras.",
   "capturas": "capturas/demo-v157",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T16:59:03+01:00",
+  "fin": "2026-11-08T19:02:36+01:00",
+  "titulo": "Interfaz: la acción, a la vista (demo v158)",
+  "hito": "interfaz",
+  "hecho": [
+   "Lo que haría Usar sale escrito sobre la cosa que tienes delante («Desbrozar: matorral», «Coger del suelo: 2 × Rama», «Talar el árbol», «Romper la roca», «Dormir»), con un aro dorado en el suelo bajo ella; en PC, con la tecla F al lado.",
+   "Con varias cosas al alcance, al lado sale la lista (lo de Usar, marcado); un clic o un toque en otra fila la hace.",
+   "La obra dice lo que le falta («Tronco delgado: 2 de 4», con una barra); al talar, desbrozar o romper una roca, un aro se va llenando con los golpes.",
+   "En el móvil, un botón de acción grande junto al pulgar con la imagen de la cosa y el verbo debajo, y Fabricar y Construir en arco a su lado; la lista, encima.",
+   "Fuera los botones Mover, Desmontar y Usar de la derecha: en PC, Construir queda abajo (B) y Desmontar (X) y Terminar (Esc) salen solo mientras construyes, encima de la barra de piezas.",
+   "Decisión provisional (en el registro): talar y desbrozar siguen solos una vez empezados; el aro solo enseña cuánto falta."
+  ],
+  "pruebas": "Prueba nueva de navegador «la acción a la vista» (PC y móvil, rota a propósito una vez) y demo única, bien; construcción, bien en la nube (sobre 67ff438, antes de unir main: la unión solo tocó a mano qué hace Usar con rocas y camas); el mazo y romper rocas y la cama ligada, en la nube",
+  "capturas": "capturas/demo-v158",
+  "estado": "ok"
  }
 ]

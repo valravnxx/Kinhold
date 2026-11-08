@@ -1597,9 +1597,10 @@
     },
     {
      "nombre": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T16:59:03+01:00",
-     "rama": "trabajo/20261108-1659"
+     "rama": "trabajo/20261108-1659",
+     "fin": "2026-11-08T19:02:36+01:00"
     },
     {
      "nombre": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
@@ -3672,6 +3673,13 @@
      "archivo": "jugar/demo/v157.html",
      "capturas": "capturas/demo-v157",
      "notas": "El mazo de piedra (1 piedra, 1 rama y 2 cordeles, con las manos) y romper con él las rocas medianas del mundo, a golpes por el servidor: dejan sus piedras sueltas y unos cascotes"
+    },
+    {
+     "v": "v158",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v158.html",
+     "capturas": "capturas/demo-v158",
+     "notas": "v158: la acción, a la vista (estudio de la interfaz del 7 nov). Lo que haría Usar sale escrito sobre la cosa que tienes delante, con un aro dorado en el suelo bajo ella: «Desbrozar: matorral», «Coger del suelo: 2 × Rama», «Talar el árbol». En PC se hace con la F; si hay varias cosas al alcance, al lado sale la lista (la de Usar, marcada) y un clic en otra la hace. La obra dice lo que le falta («Tronco delgado: 2 de 4» y una barra), y mientras se tala o se desbroza un aro se va llenando. En el móvil, un botón de acción grande junto al pulgar con la imagen de la cosa y el verbo debajo, y Fabricar y Construir en arco a su lado. Fuera los botones Mover, Desmontar y Usar de la derecha: Construir queda abajo (B), y Desmontar y Terminar salen solo mientras construyes."
     }
    ]
   },

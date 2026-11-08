@@ -135,6 +135,7 @@ paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py d
 paso "Navegador: los avisos de las necesidades" python3 pruebas/prueba_avisos_navegador.py dist/kinhold_demo.html "$C/avisos"
 paso "Navegador: las bayas y las setas" python3 pruebas/prueba_bayas_navegador.py dist/kinhold_demo.html "$C/bayas"
 paso "Navegador: desbrozar matorrales y arbustos" python3 pruebas/prueba_desbroce_navegador.py dist/kinhold_demo.html "$C/desbroce"
+paso "Navegador: la acción a la vista (etiqueta, aro, lista y botón de acción)" python3 pruebas/prueba_accion_navegador.py dist/kinhold_demo.html "$C/accion"
 paso "Navegador: el mazo de piedra y romper rocas" python3 pruebas/prueba_rocas_navegador.py dist/kinhold_demo.html "$C/rocas"
 paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_materiales_navegador.py dist/kinhold_demo.html "$C/materiales"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"

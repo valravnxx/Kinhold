@@ -1531,65 +1531,102 @@ function quitarPuesto(e) {
     mostrarAviso(r.ok ? tr('Marco quitado: lo que tenía, en el suelo.') : tr(r.motivo), !r.ok);
   });
 }
-function usar() {
+// La acción según lo que tienes delante (estudio de la interfaz del 7 nov, octava versión; tarea de P4b): lo que haría
+// Usar ahora, sin hacerlo, con su verbo, la imagen de la cosa y dónde está (para el aro del suelo y la etiqueta, y para
+// el botón de acción del móvil). Sigue el mismo orden que Usar ha tenido siempre; usar() hace lo que sale de aquí.
+// Devuelve { texto, icono (un objeto del catálogo, una estación «est_…» o un glifo del kit «g_…»), pos, y?, alto?,
+// hacer, sub? (una línea más: lo que le falta a la obra), barra? (0–1), prog? (0–1, lo que llevas talado), apagada? }
+const ICONO_RECOGER = (rc) => RECOLECTABLES[rc.tipo].da || rc.tipo;
+function hachaQueLlevas() { const h = hachaEnMano(inventario()); return h ? h.tipo : 'hacha_piedra'; }
+function progresoGolpes(a) { return a && a.prog && a.prog.total ? Math.min(1, a.prog.hechos / a.prog.total) : 0; }
+function accionObra(o) {
+  const { c, p } = o, def = PIEZAS[p.tipo];
+  const faltan = mundo.faltaEntregar(p).filter(f => !hayQueSubir(p, f.m));
+  const A = { texto: tr('Obra: {p}', { p: tr(def.nombre) }), icono: 'g_construir', pos: centroMundo(c, p), y: oyDe(c) + p.k * ALTURA, alto: 1.2, hacer: () => usarObra(o) };
+  const f = faltan[0];
+  if (f) {
+    const total = (def.coste && def.coste[f.m]) || f.n, puestos = Math.max(0, total - f.n);
+    A.sub = tr('{m}: {e} de {t}', { m: tr(MATERIALES[f.m]), e: puestos, t: total }) + (faltan.length > 1 ? ' · ' + tr('y más') : '');
+    A.barra = total ? puestos / total : 0;
+  } else A.sub = tr('Con todo: a trabajar');
+  return A;
+}
+function accionPrincipal() {
+  const A = (texto, icono, pos, hacer, extra = {}) => ({ texto, icono, pos, hacer, ...extra });
   const ob = obraCercana();
   const it = interactivoCercano();
+  const yo = { x: pj.x, z: pj.z };
   // al pie de un andamio, con la obra más arriba que tú, Usar sube al andamio (desde allí se le lleva el material)
   const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
-  if (ob && !subirAndamio) { usarObra(ob); return; }
+  if (ob && !subirAndamio) return accionObra(ob);
   // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
-  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) { beber(); return; }
+  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
-  if (!it && hachaEnMano(inventario()) && arbolCercano()) { empezarTala(arbolCercano()); return; }
+  if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
-  if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { empezarRotura(rocaCercana()); return; }
+  if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
-  if (!it && hachaEnMano(inventario()) && troncoCercano()) { empezarTroceo(troncoCercano()); return; }
+  if (!it && hachaEnMano(inventario()) && troncoCercano()) { const t0 = troncoCercano(); return A(tr('Trocear: {c}', { c: tr(CATALOGO[t0.cosa.tipo].nombre) }), t0.cosa.tipo, t0, () => empezarTroceo(t0), { alto: 0.4 }); }
   // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
   // carga, y si no, se engancha (se descarga y se carga del suelo desde el menú del clic derecho)
-  if (!it && pj.k === 0 && miRastra()) { soltarRastra(); return; }
+  if (!it && pj.k === 0 && miRastra()) { const m = miRastra(); return A(tr(segun(m, 'Soltar la rastra', 'Aparcar la carretilla')), m.cosa.tipo, sitiosRastra[m.id] || yo, soltarRastra, { alto: 0.4 }); }
   if (!it && pj.k === 0 && rastraCercana()) {
-    const de = paraCargar(rastraCercana().cosa.tipo);
-    if (de) cargarRastra(rastraCercana(), { de }); else engancharRastra(rastraCercana());
-    return;
+    const o = rastraCercana(), de = paraCargar(o.cosa.tipo);
+    if (de) return A(tr(segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), inventario().lugares[de].tipo, o, () => cargarRastra(o, { de }), { alto: 0.4 });
+    return A(tr(segun(o, 'Arrastrar la rastra ({c})', 'Empujar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), o.cosa.tipo, o, () => engancharRastra(o), { alto: 0.4 });
   }
   // delante de una estación de fabricar, Usar abre el panel en su pestaña, con lo que tiene encima (estudio del panel,
   // valravnx, 6 nov)
-  if (!it && pj.k === 0 && estacionParaUsar() && estacionParaUsar().obra) { usarPuesto(estacionParaUsar()); return; }
+  const est = !it && pj.k === 0 ? estacionParaUsar() : null;
+  if (est && est.obra) return A(tr('Obra: {p}', { p: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => usarPuesto(est), { alto: 0.6 });
   // delante de una cama terminada: ligarla si no es la tuya; si lo es, dormir en ella
-  if (!it && pj.k === 0 && estacionParaUsar() && esCama(estacionParaUsar().tipo)) { const c = estacionParaUsar(); if (esMiCama(c)) dormir(c); else ligarCama(c); return; }
-  if (!it && pj.k === 0 && estacionParaUsar() && panelFabricar) { panelFabricar.abrirEstacion(estacionParaUsar().id); return; }
+  if (est && esCama(est.tipo)) return esMiCama(est) ? A(tr('Dormir: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => dormir(est), { alto: 0.6 })
+    : A(tr('Ligar tu cama: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => ligarCama(est), { alto: 0.6 });
+  if (est && panelFabricar) return A(tr(esAlmacen(est.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => panelFabricar.abrirEstacion(est.id), { alto: 0.6 });
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
     const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
-    if (so) { cogerDelSuelo(so); return; }
+    if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);
-    if (rc) { recoger(rc); return; }
+    if (rc) return A(verboRecoger(rc), ICONO_RECOGER(rc), rc, () => recoger(rc), { alto: 0.6 });
     // junto a un matorral o un arbusto de bayas (ya sin bayas), con un hacha o una lasca encima, se desbroza (8 nov)
-    const db = desbrozableCercano();
-    if (db && conQueDesbroza(inventario())) { empezarDesbroce(db); return; }
+    const db = desbrozableCercano(), con = conQueDesbroza(inventario());
+    if (db && con) return A(tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), con, db, () => empezarDesbroce(db), { alto: 0.8, prog: estado.talando && estado.talando.desbroce && estado.talando.desbroce.id === db.id ? estado.talando.dados / estado.talando.golpes : 0 });
   }
   if (!it) {
     // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
     const a = arbolCercano();
     if (a) {
+      // sin hacha en la mano, lo que da el árbol en pie (8 nov): su resina si ya está, la corteza o sangrarlo
       if (!hachaEnMano(inventario())) {
-        // sin hacha en la mano, lo que da el árbol en pie (8 nov): su resina si ya está, la corteza o sangrarlo
-        const u = talaV.usos(a), inv = inventario(), con = l => l.some(t => inv.cuantos(t) > 0);
-        if (u.resina === 'lista') { usarArbol(a, 'sangrar'); return; }
-        if (u.descortezar && con(DESCORTEZAR_CON)) { usarArbol(a, 'descortezar'); return; }
-        if (u.sangrar && con(SANGRAR_CON)) { usarArbol(a, 'sangrar'); return; }
-        mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true); return;
+        const u = talaV.usos(a), inv = inventario(), con = l => l.find(t => inv.cuantos(t) > 0);
+        if (u.resina === 'lista') return A(tr('Coger la resina'), 'resina', a, () => usarArbol(a, 'sangrar'), { alto: 1.2 });
+        if (u.descortezar && con(DESCORTEZAR_CON)) return A(tr('Descortezar el árbol'), con(DESCORTEZAR_CON), a, () => usarArbol(a, 'descortezar'), { alto: 1.4 });
+        if (u.sangrar && con(SANGRAR_CON)) return A(tr('Sangrar el árbol (resina)'), con(SANGRAR_CON), a, () => usarArbol(a, 'sangrar'), { alto: 1.2 });
       }
-      empezarTala(a); return;
+      return A(tr('Talar el árbol'), 'hacha_piedra', a, () => mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true), { alto: 3, apagada: true, sub: tr('Necesitas un hacha en la mano para talar.') });
     }
-    if (aguaAlLado()) { beber(); return; }   // junto al agua, sin otra cosa que usar, se bebe
+    if (aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });   // junto al agua, sin otra cosa que usar, se bebe
     // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
-    if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { comer(comidaQueLlevas()[0]); return; }
-    mostrarAviso(t('nadaQueUsar')); return;
+    if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { const c = comidaQueLlevas()[0]; return A(tr('Comer: {c}', { c: tr(CATALOGO[c].nombre).toLowerCase() }), c, yo, () => comer(c), { alto: 1.2 }); }
+    return null;
   }
-  usarInteractivo(it);
+  return A(textoInteractivo(it), it.tipo === 'fuego' ? 'est_hogar' : 'g_colocar', posInteractivo(it).pos, () => usarInteractivo(it), { y: posInteractivo(it).y, alto: 1 });
 }
+function usar() {
+  const a = accionPrincipal();
+  if (!a) { mostrarAviso(t('nadaQueUsar')); return; }
+  a.hacer();
+}
+// los juncos se cortan y el barro se cava (con su herramienta: src/logica/recoleccion.js); lo demás, se recoge
+const verboRecoger = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
+function textoInteractivo(it) {
+  const p = it.p, n = tr(PIEZAS[p.tipo].nombre);
+  return it.tipo === 'fuego' ? (p.apagado ? tr('Encender: {p}', { p: n }) : tr('Apagar: {p}', { p: n }))
+    : it.tipo === 'puerta' ? (p.abierta ? tr('Cerrar: {p}', { p: n }) : tr('Abrir: {p}', { p: n }))
+    : (p.k === pj.k && !(adarveDeEscalera(it.c, p, false) && pj.k !== 0) ? tr('Subir: {p}', { p: n }) : tr('Bajar: {p}', { p: n }));
+}
+function posInteractivo(it) { const cl = centroLocal(it.p); return { pos: localAMundo(it.c, cl.lx, cl.lz), y: oyDe(it.c) + it.p.k * ALTURA }; }
 // Clic derecho en lo que quieras usar (valravnx, 31 oct: «poder hacer clic derecho y seleccionar qué quieres usar si
 // es que hay varias opciones en la zona… clicando con clic derecho en lo que quieras usar: pilla lo que toques y muy
 // cercanos»). En el móvil, dejando el dedo quieto encima. Sale un menú, junto al puntero, con lo que está al alcance
@@ -1598,14 +1635,7 @@ function usar() {
 function opcionesUsar() {
   const ops = [], nombrePieza = p => tr(PIEZAS[p.tipo].nombre);
   for (const o of obrasCercanas()) ops.push({ texto: tr('Obra: {p}', { p: nombrePieza(o.p) }), pos: centroMundo(o.c, o.p), y: oyDe(o.c) + o.p.k * ALTURA, hacer: () => usarObra(o) });
-  for (const it of interactivosCercanos()) {
-    const p = it.p, n = nombrePieza(p);
-    const texto = it.tipo === 'fuego' ? (p.apagado ? tr('Encender: {p}', { p: n }) : tr('Apagar: {p}', { p: n }))
-      : it.tipo === 'puerta' ? (p.abierta ? tr('Cerrar: {p}', { p: n }) : tr('Abrir: {p}', { p: n }))
-      : (p.k === pj.k && !(adarveDeEscalera(it.c, p, false) && pj.k !== 0) ? tr('Subir: {p}', { p: n }) : tr('Bajar: {p}', { p: n }));
-    const cl = centroLocal(p);
-    ops.push({ texto, pos: localAMundo(it.c, cl.lx, cl.lz), y: oyDe(it.c) + p.k * ALTURA, hacer: () => usarInteractivo(it) });
-  }
+  for (const it of interactivosCercanos()) { const q = posInteractivo(it); ops.push({ texto: textoInteractivo(it), pos: q.pos, y: q.y, hacer: () => usarInteractivo(it) }); }
   for (const e of Object.values(fabCliente.estaciones)) if (ESTACIONES[e.tipo] && pj.k === 0 && Math.hypot(e.x - pj.x, e.z - pj.z) <= USAR_ESTACION) {
     if (e.obra) {
       ops.push({ texto: tr('Obra: {p}', { p: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarPuesto(e) });
@@ -1642,9 +1672,7 @@ function opcionesUsar() {
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     for (const op of opcionesRastra()) ops.push(op);
     for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
-    // los juncos se cortan y el barro se cava (con su herramienta: src/logica/recoleccion.js); lo demás, se recoge
-    const verbo = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
-    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verbo(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
+    for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verboRecoger(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
     const db = desbrozableCercano();
     if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
   }
@@ -2167,6 +2195,8 @@ function golpeTala() {
   avisoTala(a, r);
 }
 function avisoTala(a, r) {
+  // lo que llevas talado, para el aro de la acción (el primer golpe dice cuántos faltan)
+  if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
   // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
   if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
@@ -2229,6 +2259,7 @@ function golpeRotura(a) {
   const fin = (r) => {
     if (estado.talando !== a) return;   // ya ha dejado de golpear
     if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }   // (el aro de la acción)
     if (!r.rota) { mostrarAviso(r.faltan === 1 ? tr('Rompes la roca: falta 1 golpe.') : tr('Rompes la roca: faltan {n} golpes.', { n: r.faltan })); return; }
     estado.talando = null;
     mostrarAviso(tr('¡La roca se parte! Deja {n} piedras en el suelo.', { n: r.cantidad }));
@@ -2478,7 +2509,7 @@ function paso() {
   talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z) || !!miRastra() || (!!desbrozableCercano() && !!conQueDesbroza(inventario())) || (!!mazoEnMano(inventario()) && !!rocaCercana()))));
+  pintarAccion();
 
   moverGente(dt);
   moverFuegos();
@@ -2561,6 +2592,97 @@ function pintarMateriales() {
 }
 let ultimoMateriales = 0;
 
+// ---------------- La acción, a la vista (estudio de la interfaz del 7 nov) ----------------
+// Cada poco (no en cada fotograma: mira todo lo de alrededor) se mira qué haría Usar y qué más hay al alcance; en cada
+// fotograma se coloca la etiqueta sobre la cosa y el aro en el suelo bajo ella. En PC, la tecla F; con varias cosas, la
+// lista (clic en una para hacerla). En el móvil, el botón de acción grande lleva la imagen de la cosa y el verbo.
+document.body.classList.toggle('tactil-ui', !!estado.esTactil);
+const aroAccion = new THREE.Group();
+{
+  const mat = (o) => new THREE.MeshBasicMaterial({ color: 0xf0c46e, transparent: true, opacity: o, depthWrite: false, side: THREE.DoubleSide });
+  const filo = new THREE.Mesh(new THREE.RingGeometry(0.47, 0.5, 48), mat(0.9));
+  const halo = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.56, 48), mat(0.14));
+  for (const m of [halo, filo]) { m.rotation.x = -Math.PI / 2; m.renderOrder = 3; aroAccion.add(m); }
+  aroAccion.visible = false;
+  escena.add(aroAccion);
+}
+const RADIO_ARO = { arbol: 1.1, obra: 1.0, est: 0.85 };
+let accionVista = null, accionOps = [], accionHasta = 0;
+const vProy = new THREE.Vector3();
+const urlIcono = (ic) => !ic ? '' : ic.startsWith('g_') ? '../../' + CARPETA_INTERFAZ + ic + '.webp' : carpetaIconos() + ic + '.webp';
+function pintarAccion() {
+  const ahora = performance.now();
+  const etq = $('accionEtq'), lista = $('accionLista'), btn = $('btnUsar');
+  const ocultar = estado.modo !== 'mover' || document.body.classList.contains('combate') || !menuUsar.hidden
+    || (panelFabricar && panelFabricar.abierto && estado.esTactil) || (panelInventario && panelInventario.abierto && estado.esTactil);
+  if (ahora >= accionHasta) {
+    accionHasta = ahora + 150;
+    accionVista = ocultar ? null : accionPrincipal();
+    // la lista: lo demás que hay al alcance (lo mismo que el clic derecho), sin repetir la acción de Usar
+    accionOps = accionVista ? opcionesUsar().filter(o => o.texto !== accionVista.texto).slice(0, 3) : [];
+    pintarBotonAccion(btn, accionVista);
+    pintarLista(lista, accionVista, accionOps);
+  }
+  const a = accionVista;
+  btn.classList.toggle('activo', !!a && !a.apagada);
+  if (!a) { etq.hidden = true; lista.hidden = true; aroAccion.visible = false; return; }
+  const y0 = a.y ?? sueloEn(a.pos.x, a.pos.z);
+  // el aro, en el suelo bajo la cosa (algo más grande para un árbol, una obra o una estación)
+  const r = a.icono === 'g_construir' ? RADIO_ARO.obra : (a.alto || 0) >= 3 ? RADIO_ARO.arbol : String(a.icono).startsWith('est_') ? RADIO_ARO.est : (a.alto || 0) <= 0.4 ? 0.42 : 0.6;
+  aroAccion.visible = !(a.pos.x === pj.x && a.pos.z === pj.z); // (lo que va contigo, como comer, no lleva aro)
+  aroAccion.position.set(a.pos.x, y0 + 0.04, a.pos.z); aroAccion.scale.setScalar(r / 0.5);
+  // la etiqueta, sobre la cosa (si está delante de la cámara)
+  vProy.set(a.pos.x, y0 + Math.min(a.alto ?? 1, 2.2) + 0.15, a.pos.z).project(camara);
+  const rc = renderer.domElement.getBoundingClientRect();
+  if (vProy.z >= 1 || Math.abs(vProy.x) > 1.1 || Math.abs(vProy.y) > 1.1) { etq.hidden = true; lista.hidden = true; return; }
+  const sx = rc.left + (vProy.x + 1) / 2 * rc.width, sy = rc.top + (1 - vProy.y) / 2 * rc.height;
+  const clave = [a.texto, a.sub, a.barra, a.apagada, Math.round((a.prog || 0) * 20)].join('|');
+  if (etq.dataset.clave !== clave) {
+    etq.dataset.clave = clave;
+    const L = 2 * Math.PI * 8;
+    const prog = a.prog ? `<svg class="prog" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/><circle cx="10" cy="10" r="8" fill="none" stroke="#f0c46e" stroke-width="3" stroke-dasharray="${L * a.prog} ${L}"/></svg>` : '';
+    etq.innerHTML = `<div class="etq placa"><div class="lin">${estado.esTactil ? '' : '<span class="k">F</span>'}<span>${esc(a.texto)}</span>${prog}</div>`
+      + (a.sub ? `<small>${esc(a.sub)}</small>` : '') + (a.barra !== undefined ? `<div class="barra"><i style="width:${Math.round(a.barra * 100)}%"></i></div>` : '') + '</div>';
+    etq.classList.toggle('apagada', !!a.apagada);
+  }
+  etq.hidden = false;
+  // (que no se salga por los lados)
+  const ancho = etq.offsetWidth / 2 + 8;
+  etq.style.left = Math.max(ancho, Math.min(innerWidth - ancho, sx)) + 'px';
+  etq.style.top = Math.max(etq.offsetHeight + 8, sy - 10) + 'px';
+  if (!lista.hidden && !estado.esTactil) { lista.style.left = Math.min(innerWidth - lista.offsetWidth - 10, sx + ancho - 4) + 'px'; lista.style.top = Math.max(60, sy - etq.offsetHeight - 10) + 'px'; }
+}
+const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+function pintarBotonAccion(btn, a) {
+  const img = btn.querySelector('.ic'), verbo = btn.querySelector('.verbo'), lleno = btn.querySelector('.lleno'), prog = btn.querySelector('.prog');
+  if (!img) return;
+  const ic = a ? a.icono : 'g_colocar', src = window.__sinImagenes ? '' : urlIcono(ic);
+  if (img.getAttribute('src') !== src) { if (src) img.setAttribute('src', src); else img.removeAttribute('src'); }
+  img.classList.toggle('g', String(ic).startsWith('g_'));
+  // el verbo, corto: lo de antes de los dos puntos («Coger del suelo: 2 × Rama» → «Coger del suelo»)
+  verbo.textContent = a ? a.texto.split(/[:(]/)[0].trim() : tr('Usar');
+  btn.setAttribute('aria-label', a ? a.texto : tr('Usar'));
+  prog.toggleAttribute('hidden', !(a && a.prog));   // (un svg no tiene .hidden)
+  if (a && a.prog) lleno.setAttribute('stroke-dasharray', `${2 * Math.PI * 51 * a.prog} 400`);
+}
+function pintarLista(lista, a, ops) {
+  if (!a || !ops.length) { lista.hidden = true; lista.innerHTML = ''; return; }
+  const clave = [a.texto, ...ops.map(o => o.texto)].join('|');
+  lista.hidden = false;
+  if (lista.dataset.clave === clave) return;
+  lista.dataset.clave = clave;
+  lista.innerHTML = '';
+  const fila = (texto, icono, hacer, sel) => {
+    const b = document.createElement('button');
+    b.className = 'placa' + (sel ? ' sel' : '');
+    b.innerHTML = `${icono && !window.__sinImagenes ? `<img src="${urlIcono(icono)}" alt="" onerror="this.style.visibility='hidden'">` : '<img alt="" style="visibility:hidden">'}<span>${esc(texto)}</span>${sel && !estado.esTactil ? '<span class="k">F</span>' : ''}`;
+    b.onclick = (e) => { e.stopPropagation(); hacer(); accionHasta = 0; };
+    lista.appendChild(b);
+  };
+  fila(a.texto, a.icono, a.hacer, true);
+  for (const o of ops) fila(o.texto, null, o.hacer, false);
+}
+
 function actualizarUI() {
   pintarMateriales();
   for (const b of document.querySelectorAll('#modos button')) b.classList.toggle('sel', b.dataset.modo === estado.modo);
@@ -2569,6 +2691,7 @@ function actualizarUI() {
   $('btnGirar').hidden = estado.modo !== 'construir';
   $('controlPlanta').hidden = estado.modo !== 'construir';
   document.body.classList.toggle('construyendo', estado.modo === 'construir');
+  document.body.classList.toggle('desmontando', estado.modo === 'desmontar');
   $('planta').textContent = `${t('planta')} ${estado.planta}`;
   if (!miMojon() && estado.modo !== 'construir') mostrarAviso(t('consejoMojon'));
 }
@@ -2952,6 +3075,7 @@ window.__kinhold = {
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
   beber, aguaAlLado, comer,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
+  get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)
   usarArbol,   // la corteza y la resina (8 nov)
   pintarTodoInventario,   // (pruebas: lo que llevas, otra vez en el panel y puesto, tras cambiarlo a mano)

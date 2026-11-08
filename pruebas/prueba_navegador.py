@@ -594,10 +594,10 @@ with sync_playwright() as p:
     puerta1 = ev(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false")
     piedras1 = ev(f"{K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === 'piedra').length")
     comprobar('elegir «Coger del suelo» coge la piedra y no toca la puerta; el menú se cierra', piedras1 == piedras0 - 1 and puerta1 == puerta0 and ev(f"{K}.menuUsar()") is None, f'piedras {piedras0} → {piedras1}, puerta {puerta0} → {puerta1}')
-    pg.click('#btnUsar')
+    pg.keyboard.press('f')   # (en PC, Usar es la F: ya no hay botón a la derecha)
     esperar(pg, 400)
     comprobar('Usar a secas sigue haciendo lo de siempre (abre la puerta)', ev(f"[...{K}.mundo.construcciones[0].piezas.values()].find(p => p.tipo === 'puerta_varas').abierta || false") != puerta1)
-    pg.click('#btnUsar')
+    pg.keyboard.press('f')
 
     print('PC: remate de tejado (esquinas): casa en L con limatesa y limahoya')
     # lejos de lo demás, dentro de la tierra (mojón en -3,-6, radio 20): ala de 3×2 y ala de 2×1 que sale de su punta
@@ -1274,7 +1274,7 @@ with sync_playwright() as p:
     mv.wait_for_timeout(900)
     comprobar('móvil: Colocar pone el marco de la obra', mv.evaluate(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].some(p => p.tipo === 'cim_tronco' && p.obra)"))
     mv.screenshot(path=f'{SALIDA}/07d_movil_obra.png')
-    mv.click('#modos button[data-modo=mover]', no_wait_after=True)
+    mv.evaluate(f"{K}.cambiarModo('mover')")   # (ya en mover: Terminar solo se ve construyendo)
     mv.evaluate(f"{K}.pj.x=2; {K}.pj.z=-2.5; {K}.pj.k=0; {K}.pj.rot=Math.PI*0.8; {K}.cam.yaw=Math.PI*0.95; {K}.cam.pitch=0.3; {K}.cam.dist=4.5")
     mv.wait_for_timeout(1200)
     mv.screenshot(path=f'{SALIDA}/07b_movil_personaje_de_cerca.png')
