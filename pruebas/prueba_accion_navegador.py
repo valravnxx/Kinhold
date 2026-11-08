@@ -6,6 +6,7 @@
 #     en el móvil, el botón de acción dice el verbo;
 #   - con unas ramas en el suelo al lado, lo primero es cogerlas, y la lista enseña también desbrozar; tocar esa fila lo hace;
 #   - construyendo, ni etiqueta ni aro, y se ven Terminar y Desmontar; sin errores en la página.
+# Rota a propósito (8 nov): con el aro siempre escondido, falla.
 # Uso: python3 pruebas/prueba_accion_navegador.py <html> <carpeta_capturas>
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
