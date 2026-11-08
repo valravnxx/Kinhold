@@ -80,7 +80,7 @@ console.log('Recoger con autor: va al inventario por huecos');
 console.log('Juncos, barro y yesca (lo que pide la casa humilde y la hoguera, 7 nov)');
 {
   const R = RECOLECTABLES;
-  comprobar('juncos: riberas y orilla, con cuchillo, se cortan, 1 haz mediano, una estación', R.juncos.donde.join() === 'rio,ribera' && R.juncos.con === 'cuchillo' && R.juncos.accion === 'cortar' && R.juncos.da === 'junco' && R.juncos.max === 1 && CATALOGO.junco.tam === 'M' && R.juncos.vuelve === 30 * DIA);
+  comprobar('juncos: riberas y orilla, con cuchillo, se cortan, de 1 a 3 haces medianos (valravnx, 8 nov), una estación', R.juncos.donde.join() === 'rio,ribera' && R.juncos.con === 'cuchillo' && R.juncos.accion === 'cortar' && R.juncos.da === 'junco' && R.juncos.min === 1 && R.juncos.max === 3 && CATALOGO.junco.tam === 'M' && R.juncos.vuelve === 30 * DIA);
   comprobar('barro: la orilla, se cava con palo o pala, 1 cesta mediana, inagotable', R.barro.donde.includes('rio') && R.barro.con === 'cavar' && R.barro.da === 'barro' && CATALOGO.barro.tam === 'M' && R.barro.vuelve === 0);
   comprobar('hongos yesqueros: en el bosque, con las manos, 1–2 de yesca pequeña', R.yesquero.donde.join() === 'bosque' && R.yesquero.con === 'manos' && R.yesquero.da === 'yesca' && R.yesquero.min === 1 && R.yesquero.max === 2 && CATALOGO.yesca.tam === 'P');
   const pts = [{ id: 'juncos:0', tipo: 'juncos', x: 0, z: 0 }, { id: 'barro:0', tipo: 'barro', x: 3, z: 0 }, { id: 'yesquero:0', tipo: 'yesquero', x: 6, z: 0 }];
@@ -95,9 +95,11 @@ console.log('Juncos, barro y yesca (lo que pide la casa humilde y la hoguera, 7 
   invs.de(yo).sacar(r.donde[0][0], r.cantidad);
   invs.de(yo).meter('mano:izq', { tipo: 'lasca_silex', n: 1 });
   r = rc('juncos:0', 0.5);
-  comprobar('con una lasca de sílex encima, se corta un haz de juncos', r.ok && invs.de(yo).cuantos('junco') === 1, r.motivo || JSON.stringify(r.donde));
+  const juncos = invs.de(yo).cuantos('junco');
+  comprobar('con una lasca de sílex encima, se cortan de 1 a 3 haces de juncos', r.ok && juncos >= 1 && juncos <= 3 && r.cantidad === juncos, r.motivo || JSON.stringify(r.donde));
   comprobar('y la mata no vuelve hasta dentro de una estación', !rec.disponible('juncos:0', t0 + 29 * DIA) && rec.disponible('juncos:0', t0 + 30 * DIA));
-  invs.de(yo).sacar(r.donde[0][0], 1); invs.de(yo).sacar('mano:izq', 1);
+  for (const [l, n] of r.donde) invs.de(yo).sacar(l, n);
+  invs.de(yo).sacar('mano:izq', 1);
   invs.de(yo).meter('mano:izq', { tipo: 'palo_cavador', n: 1 });
   r = rc('barro:0', 3.5);
   comprobar('con el palo cavador, una cesta de barro', r.ok && invs.de(yo).cuantos('barro') === 1, r.motivo);

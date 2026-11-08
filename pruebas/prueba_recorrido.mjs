@@ -438,7 +438,7 @@ try {
     r = await J.objeto({ tipo: 'recoger_fabricado', estacion: pt.id, x: J.pos.x, z: J.pos.z });
     comprobar('y la coge: lleva un cuchillo de sílex', r.ok && J.cuantos('lasca_silex') === 1, r.motivo || enMano());
     r = await recoger(de('juncos')[0]);
-    comprobar('con la lasca, corta un haz de juncos', r.ok && J.cuantos('junco') === 1, r.motivo || enMano());
+    comprobar('con la lasca, corta de 1 a 3 haces de juncos (valravnx, 8 nov)', r.ok && J.cuantos('junco') >= 1 && J.cuantos('junco') <= 3, r.motivo || enMano());
     await aSusPies('junco');
     r = await recoger(de('yesquero')[0]);
     comprobar('y coge yesca de los hongos yesqueros de un tocón, con las manos', r.ok && J.cuantos('yesca') >= 1, r.motivo || enMano());
