@@ -851,9 +851,20 @@ try {
     for (const o of enSuelo('cuerda', taller2, 2.5)) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: o.cosa.n, a: J.inv.lugares['mano:der'] && J.inv.lugares['mano:der'].tipo !== 'cuerda' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z });
     comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()} · ${noTrenza.join(' | ')}`);
 
-    // 16g. el andamio, al lado de la casa (8 varas y 2 cuerdas), para subir a poner el tejado (valravnx, 8 nov: «lo he
+    // 16g. la puerta de varas, en el hueco del muro de la puerta: una de las cuerdas y 4 varas
+    const puerta = pieza('puerta_varas', 0, -0.95);
+    r = await marco(puerta);
+    comprobar('pone la puerta de varas en el hueco del muro de la puerta', r.ok && !!obra(puerta), r.motivo);
+    r = await entregar(puerta, 'cuerda', 1);
+    const rv = await varasPara(puerta);
+    comprobar('le lleva su cuerda y 4 varas', r.ok && rv && falta(puerta, 'cuerda') === 0, `${r.motivo || ''} faltan ${falta(puerta, 'vara')} varas`);
+    r = await trabajar(puerta);
+    comprobar('la levanta', r.ok, r.motivo);
+    r = await J.accion({ tipo: 'usar', construccion: casa?.id, clave: puerta.clave });
+    comprobar('y la abre con Usar', r.ok && casa.piezas.get(puerta.clave)?.abierta, r.motivo);
+    // 16h. el andamio, al lado de la casa (8 varas y 2 cuerdas), para subir a poner el tejado (valravnx, 8 nov: «lo he
     // hecho ya en survival solo… puedes montar el tronco sin problema y hacer el andamio»)
-    console.log('16g. Levanta un andamio junto a la casa, sube a él con las varas y los juncos y pone desde arriba el tejado de juncos');
+    console.log('16h. Levanta un andamio junto a la casa, sube a él con las varas y los juncos y pone desde arriba el tejado de juncos');
     const andamio = pieza('andamio', 2, 0);
     r = await marco(andamio);
     comprobar('pone el marco de un andamio junto a la casa (al este)', r.ok && !!obra(andamio), r.motivo);
@@ -892,17 +903,6 @@ try {
     for (let h = 10; h >= 0; h--) { J.ws.send(JSON.stringify({ tipo: 'estado', x: A.x, y: T.suelo(A.x, A.z) + (arriba - T.suelo(A.x, A.z)) * h / 10, z: A.z, giro: 0, anim: 'andar' })); await pausa(120); }
     J.estar(A.x, A.z); await pausa(300);
 
-    // 16h. la puerta de varas, en el hueco del muro de la puerta
-    const puerta = pieza('puerta_varas', 0, -0.95);
-    r = await marco(puerta);
-    comprobar('baja y pone la puerta de varas en el hueco del muro de la puerta', r.ok && !!obra(puerta), r.motivo);
-    r = await entregar(puerta, 'cuerda', 1);
-    const rv = await varasPara(puerta);
-    comprobar('le lleva su cuerda y 4 varas', r.ok && rv && falta(puerta, 'cuerda') === 0, `${r.motivo || ''} faltan ${falta(puerta, 'vara')} varas`);
-    r = await trabajar(puerta);
-    comprobar('la levanta', r.ok, r.motivo);
-    r = await J.accion({ tipo: 'usar', construccion: casa?.id, clave: puerta.clave });
-    comprobar('y la abre con Usar', r.ok && casa.piezas.get(puerta.clave)?.abierta, r.motivo);
     // el andamio ya no hace falta: lo desmonta (vuelve el 75 % de lo que costó, a lo que lleva o a sus pies)
     await soltarManos();
     r = await J.accion({ tipo: 'desmontar', construccion: casa.id, clave: andamio.clave });
