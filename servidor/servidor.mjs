@@ -600,7 +600,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     registrar(`${vuelve ? 'vuelve' : 'entra'} ${autor}`);
     apuntarVisto(autor);
     // dormido en el mundo: se despierta donde duerme (lo que manda su navegador desde ahí sigue a su presencia)
-    { const d = dormidos.despertar(autor); if (d) { presencia.quitar(autor); posiciones.set(autor, { x: d.x, y: d.y, z: d.z, giro: d.giro }); posicionesCambiadas = true; } }
+    if (dormidos.despertar(autor)) presencia.quitar(autor);   // (dónde duerme ya es su posición: posiciones)
     ponerAlDia();
     if (!combate.luchadores[autor]) {
       const ap = apartados.get(autor);

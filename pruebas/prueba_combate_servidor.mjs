@@ -438,10 +438,10 @@ try {
   comprobar('al quitarse la camisa, el combate lo sabe y el otro lo ve', mismas(b) && s.combate.luchadores[b].puestas.length === antes - 1
     && !s.combate.luchadores[b].puestas.includes('camisa_lino') && fb && Array.isArray(fb.prendas) && !fb.prendas.includes('camisa_lino'), (fb?.prendas || []).join(', '));
 
-  // al irse, su luchador se quita
+  // al irse fuera de su tierra, se queda dormido y atacable unos minutos: su luchador sigue (GDD, apartado 6)
   B.ws.close();
   await pausa(300);
-  comprobar('al irse un jugador, su luchador sale del combate', !s.combate.luchadores[b]);
+  comprobar('al irse un jugador fuera de su tierra, su luchador sigue en el combate (dormido, atacable unos minutos)', !!s.combate.luchadores[b] && s.dormidos.atacable(b, Date.now()));
   A.ws.close();
 } catch (e) {
   comprobar('la prueba con el servidor termina', false, e.message);

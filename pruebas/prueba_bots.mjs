@@ -87,7 +87,7 @@ try {
 
   await E.parar(); E = null;
   await pausa(300);
-  comprobar('al pararlos se van todos del servidor', s.clientes.size === 0 && s.presencia.todos().length === 0, `${s.clientes.size} conexiones`);
+  comprobar('al pararlos se van todos del servidor (y se quedan dormidos en el mundo)', s.clientes.size === 0 && s.presencia.todos().every(e => e.anim === 'desconectado'), `${s.clientes.size} conexiones`);
 } catch (e) {
   mal++; console.log('  FALLA la prueba no ha podido seguir: ' + (e && e.stack || e));
 } finally {

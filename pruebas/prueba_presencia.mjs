@@ -169,10 +169,11 @@ try {
   const vistosC = C.presencia.ver(ahora()).map(j => j.autor).sort();
   comprobar('el que llega después ve dónde están los demás', vistosC.join() === [A.autor, B.autor].sort().join(), vistosC.join(', '));
 
-  // A se va
+  // A se va: se queda dormido en el mundo, donde estaba (GDD, apartado 6; src/logica/dormidos.js)
   A.ws.close();
   await pausa(600);
-  comprobar('cuando A se va, desaparece de B y de C', B.presencia.ver(ahora()).length === 0 && C.presencia.ver(ahora()).every(j => j.autor !== A.autor));
+  const dormidoA = (V) => { const j = V.presencia.ver(ahora()).find(j => j.autor === A.autor); return !!j && j.anim === 'desconectado'; };
+  comprobar('cuando A se va, B y C lo siguen viendo, dormido (desconectado) donde estaba', dormidoA(B) && dormidoA(C) && !B.recibidos.some(m => m.tipo === 'sale'));
   B.ws.close(); C.ws.close();
   await s.cerrar();
 } catch (e) {
