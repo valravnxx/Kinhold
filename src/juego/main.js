@@ -2392,9 +2392,10 @@ function alMorir(m) {
   Object.assign(pj, { x: p.x, y: p.y, z: p.z, k: 0, vel: 0, rot: Number.isFinite(p.giro) ? p.giro : pj.rot });
   if (combate.activo) combate.guardar();
   enLinea.mandarEstado({ x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: 'quieto' });
-  ultimaMuerte = { motivo: m.motivo, enCama: !!m.enCama, cuerpo: m.cuerpo || null, t: Date.now() };
   const que = MUERTES[m.motivo] ? tr(MUERTES[m.motivo]) : tr('Has muerto: {m}.', { m: tr(m.motivo || 'Desangrado') });
-  mostrarAviso(que + ' ' + (m.enCama ? tr('Vuelves a tu cama. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora.') : tr('Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora.')), true);
+  const aviso = que + ' ' + (m.enCama ? tr('Vuelves a tu cama. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora.') : tr('Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora.'));
+  ultimaMuerte = { motivo: m.motivo, enCama: !!m.enCama, cuerpo: m.cuerpo || null, t: Date.now(), aviso };
+  mostrarAviso(aviso, true);
 }
 let ultimaMuerte = null;
 
@@ -3146,6 +3147,7 @@ window.__kinhold = {
   nado,
   // la última vez que has muerto (P4; src/logica/muerte.js): de qué, si a tu cama, y tu cuerpo
   get ultimaMuerte() { return ultimaMuerte; },
+  enLineaRemotos: () => (enLinea ? enLinea.remotos : new Map()),   // (pruebas: los demás y los cuerpos, como se dibujan)
   // un paso de alguien que anda por el suelo del mundo (el rival de práctica)
   andarHasta,
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar

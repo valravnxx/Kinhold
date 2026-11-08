@@ -178,6 +178,7 @@ paso "Navegador: tierras del rey" python3 pruebas/prueba_tierras_rey_navegador.p
 paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
 paso "Navegador: el chat de texto" python3 pruebas/prueba_charla_navegador.py dist/kinhold_demo.html "$C/charla"
 paso "Navegador: dormido al desconectarse" python3 pruebas/prueba_desconectado_navegador.py dist/kinhold_demo.html "$C/desconectado"
+paso "Navegador: morir y que te saqueen" python3 pruebas/prueba_muerte_navegador.py dist/kinhold_demo.html "$C/muerte"
 paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"

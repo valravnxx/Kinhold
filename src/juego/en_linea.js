@@ -141,7 +141,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       // lo que lleva (no hace falta vestirlo de nuevo: solo se rehace lo que se ve encima)
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       const desconectado = e.anim === DESCONECTADO;   // dormido en el mundo al desconectarse: tumbado, con su símbolo
-      r.j.durmiendo = e.anim === 'dormir' || desconectado || e.anim === MUERTO;   // dormido en su cama (P4): tumbado; y el cuerpo de quien ha muerto
+      r.j.durmiendo = e.anim === 'dormir' || desconectado || (e.anim === MUERTO && !window.__mutarMuerto);   // dormido en su cama (P4): tumbado; y el cuerpo de quien ha muerto
       if (desconectado && !r.simbolo && !window.__mutarDesconectado) { r.simbolo = simboloDesconectado(e.autor); escena.add(r.simbolo); }
       if (!desconectado && r.simbolo) { escena.remove(r.simbolo); r.simbolo = null; }
       if (r.simbolo) r.simbolo.position.set(e.x, e.y + 1.25, e.z);   // (por encima del cuerpo tumbado y también mientras se tumba)

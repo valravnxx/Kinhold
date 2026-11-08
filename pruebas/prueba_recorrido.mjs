@@ -14,7 +14,8 @@
 // con el hacha de piedra (8 nov) y se lleva sus ramas. Y su cama ligada (8 nov): un refugio de ramas en su tierra, que
 // liga y en el que duerme, y luego una cama de juncos en su casa, que liga. Y el frío (8 nov): de noche, lejos de la
 // hoguera, le sube, y junto a ella le baja. Y el cansancio (8 nov): después de talar y cargar los troncos de los muros,
-// se sienta a descansar y el cansancio baja más deprisa que de pie.
+// se sienta a descansar y el cansancio baja más deprisa que de pie. Y morir (8 nov): sale del juego en su casa y vuelve;
+// fuera se olvida de beber y se muere de sed; vuelve a su cama y recupera lo suyo de su cuerpo.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -47,6 +48,7 @@ import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
+import { despojar, MOTIVOS } from '../src/logica/muerte.js';
 import { msDeHora } from '../src/logica/cielo.js';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -1314,6 +1316,37 @@ try {
     const J2 = await cliente(puerto, ficha);
     const pv = J2.bienvenida.posicion;
     comprobar('al volver, es él y despierta en su cama', J2.bienvenida.autor === yo && !s.dormidos.esta(yo) && !!pv && Math.hypot(pv.x - enCama.x, pv.z - enCama.z) < 0.01, JSON.stringify(pv));
+
+    // 18. Morir y que te saqueen (P4; src/logica/muerte.js): sale de casa y se olvida de beber; con la sed al máximo
+    // pierde sangre y se muere de sed. Vuelve a su cama; su cuerpo queda donde cayó con la mitad de lo que llevaba, y
+    // va a por ello. (Para no esperar los 20 minutos de la sed: la sed a tope y la sangre casi agotada, ya en el servidor.)
+    console.log('18. Muere de sed: vuelve a su cama y recupera lo suyo del cuerpo');
+    J2.pos = { x: pv.x, z: pv.z };
+    await J2.andar(D.x - 0.8, D.z); await J2.andar(D.x - 6, D.z);
+    const llevaba = despojar(Inventario.importarJugador(s.objetos.inventarioDe(yo))).reduce((t, c) => t + c.n, 0);
+    const sueloAntes = new Set(s.objetos.suelo.objetos.map(o => o.id));
+    s.necesidades.set(yo, { ...s.necesidades.get(yo), sed: 100 });
+    s.combate.luchadores[yo].sangre = 0.3;
+    const muerte = await J2.esperar(m => m.tipo === 'muerte', 20000).catch(() => null);
+    comprobar('sin beber, se muere de sed (lo decide el servidor)', !!muerte && muerte.motivo === MOTIVOS.sed, JSON.stringify(muerte && muerte.motivo));
+    comprobar('y vuelve a su cama ligada, sano', !!muerte && muerte.enCama && Math.hypot(muerte.posicion.x - enCama.x, muerte.posicion.z - enCama.z) < 0.01 && s.combate.luchadores[yo].sangre === 100, JSON.stringify(muerte && muerte.posicion));
+    const cuerpo = s.cuerpos.todos().find(c => c.autor === yo);
+    comprobar('su cuerpo queda donde cayó', !!cuerpo && Math.hypot(cuerpo.x - (D.x - 6), cuerpo.z - D.z) < 0.5, JSON.stringify(cuerpo && [cuerpo.x, cuerpo.z]));
+    const suyos = s.objetos.suelo.objetos.filter(o => !sueloAntes.has(o.id) && o.autor === yo);
+    const quedan = suyos.reduce((t, o) => t + o.cosa.n, 0);
+    comprobar('con la mitad de lo que llevaba alrededor (la otra mitad se rompe)', quedan === Math.floor(llevaba / 2) || quedan === Math.ceil(llevaba / 2), `${quedan} de ${llevaba}`);
+    // vuelve a por ello: de la cama al cuerpo, y lo coge (lo que cabe, donde quepa)
+    J2.pos = { x: muerte.posicion.x, z: muerte.posicion.z };
+    await J2.andar(D.x - 0.8, D.z); await J2.andar(cuerpo.x + 0.4, cuerpo.z);
+    let cogidos = 0;
+    const huecos = ['ropa:interior', 'ropa:piernas', 'ropa:abrigo', 'ropa:exterior', 'ropa:sobre', 'ropa:cabeza', 'ropa:guantes', 'ropa:pies', 'espalda', 'cintura', 'hombro', 'mano:der', 'mano:izq'];
+    for (const o of suyos) {
+      for (const a of huecos) {
+        const rr = await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J2.pos.x, z: J2.pos.z, a });
+        if (rr.ok) { cogidos++; break; }
+      }
+    }
+    comprobar('recupera lo suyo del cuerpo', cogidos > 0 && cogidos >= Math.min(suyos.length, 2), `${cogidos} de ${suyos.length} montones`);
     J2.ws.close();
   }
 
