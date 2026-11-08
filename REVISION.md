@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (07:15 UTC) — en la sesión del carril A: la casa humilde, el tejado con andamio
+valravnx (al aviso de que el recorrido no llegaba al tejado de la casa humilde sin escalera ni cuerda): «lo he hecho ya en survival solo.. puedes montar el tronco sin problema y hacer el andamio».
+→ El recorrido de jugador (paso 16) sigue el mismo camino: el banco de tronco y sus cuerdas, un andamio junto a la casa (8 varas y 2 cuerdas), sube a él con las varas y los juncos y levanta desde arriba el tejado de juncos; luego la puerta de varas con su cuerda. Sigue la misma tarea, en su rama.
+
 ### 7 nov 2026 (20:42 UTC) — en la sesión de chat con valravnx: los puestos y los almacenajes, sin girar y sin desmontar
 valravnx (con una captura junto a su casa: el tocón de trabajo y los acopios de troncos): «error encontrado: tanto crafting tables y acopios nuevos no se ponen en la dirección de rotación que los has puesto, y no se pueden desmontar de ninguna manera».
 → Tarea del chat en el hito «Orden»: los puestos de trabajo y los almacenajes guardan el giro con que se ponen (el servidor lo apunta; hoy salen girados al azar por su nombre), y se desmontan terminados desde Construir → Quitar, como las piezas (el 75 % del material y lo que guardan, al suelo a su lado; en tu tierra o en la de quien te invita).
