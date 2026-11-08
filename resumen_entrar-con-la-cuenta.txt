@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2374 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2878 KB
+
+== Construir demo única
+      2762 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4028 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2778 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2369 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2888 KB
+dist/kinhold_trozos.html 2383 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: entrar con la cuenta
+  OK   movil: con el código mal, lo dice — El código no es correcto.
+  OK   movil: con el bueno, entra con el personaje de la cuenta — jugador:debb58a0
+  OK   movil: sin errores en la página
+Fallos: 1
+!! FALLA: python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/cuenta
+
+HAY FALLOS
+tardó 801 s
