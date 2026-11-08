@@ -26,13 +26,13 @@ for o in bpy.data.objects:
     if o.type == 'MESH':
         base = o.name.replace('hombre_', '', 1)
         o.hide_render = base not in VER
-        A = ((.16, .3, .62), .9, 1.25); P = ((.72, .4, .27), .75, .82); TINTE = {'capa_tunica': A, 'capa_tunica_falda': A, 'capa_tunica_mangas': A, 'capa_calzas': ((.3, .2, .12), .5, .9), 'piel': P, 'orejas': P, 'pies': P}
+        A = ((.16, .3, .62), .9, 1.25); P = ((.86, .56, .43), 1.0, 1.0); TINTE = {'capa_tunica': A, 'capa_tunica_falda': A, 'capa_tunica_mangas': A, 'capa_calzas': ((.3, .2, .12), .5, .9), 'piel': P, 'orejas': P, 'pies': P}
         if base in TINTE:
             for m in o.data.materials:
                 nt = m.node_tree; bsdf = nt.nodes.get('Principled BSDF')
                 lk = [l for l in nt.links if l.to_socket == bsdf.inputs['Base Color']]
                 col, fac, val = TINTE[base]
-                mx = nt.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'COLOR'; mx.inputs['Factor'].default_value = fac
+                mx = nt.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'MULTIPLY' if base in ('piel', 'orejas', 'pies') else 'COLOR'; mx.inputs['Factor'].default_value = fac
                 mx.inputs['B'].default_value = col + (1,)
                 if lk: nt.links.new(lk[0].from_socket, mx.inputs['A']); nt.links.remove(lk[0])
                 else: mx.inputs['A'].default_value = tuple(bsdf.inputs['Base Color'].default_value)
@@ -69,7 +69,7 @@ luz('relleno', (2.2, -2.0, .2), 60, 2.5, (.75, .85, 1))
 luz('canto', (.8, 2.4, 1.2), 300, 1.2, (1, .85, .6))
 w = bpy.data.worlds.new('w'); sc.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[1].default_value = .15
 sc.render.engine = 'CYCLES'; sc.cycles.samples = 64; sc.cycles.use_denoising = True
-sc.render.film_transparent = True; sc.view_settings.view_transform = 'AgX'
+sc.render.film_transparent = True; sc.view_settings.view_transform = 'Standard'; sc.view_settings.exposure = -0.35
 sc.render.resolution_x = 360; sc.render.resolution_y = 720
 sc.render.filepath = SAL
 bpy.ops.render.render(write_still=True); print('hecho')

@@ -23,7 +23,9 @@ import { conectarEnLinea } from './en_linea.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
-import { montarPanelFabricar } from './panel_fabricar.js';
+import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
+import { svgPrenda } from './iconos_ropa.js';
+import { CARPETA_INTERFAZ } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION } from './estaciones.js';
 import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn } from '../logica/fuego.js';
@@ -2513,34 +2515,60 @@ const combate = crearCombateMundo({
   andarHasta: window.__mutarPelea ? (x0, z0, x1, z1) => ({ x: x1, z: z1 }) : andarHasta,
   puedeLuchar: () => window.__mutarPelea || nado.modo !== 'nadar',
 });
-// Lo que llevas en las manos y al hombro no está en el panel (valravnx, 29 oct): se coge del mundo y se suelta al mundo.
-// Mientras no se vea en el personaje (tarea del hito 2), una línea abajo dice qué llevas, cada cosa con «Soltar» (al
-// suelo, a tus pies).
+// Lo que llevas, abajo (estudio de la interfaz del 7 nov, octava versión; valravnx: «aplica por ahora»): tus dos manos,
+// cada una con la imagen de lo que tiene (o vacía), el hombro solo si llevas algo en él, y el cinto con lo primero que
+// cuelga de él (tocarlo: a una mano libre). En cada cosa, un botón para soltarla al suelo (a tus pies) y, en lo que se
+// lleva al hombro (el tronco), otro para pasarla al hombro o a las manos. Debajo, una raya con lo cargado que vas.
+// Las imágenes son las del panel de equipo (sacadas de los modelos del juego; la ropa, dibujada con su tinte) y los
+// huecos y botones, los del kit renderizado (recursos/interfaz-v1/). El nombre va también en texto (para lectores de
+// pantalla y en el título). Arrastrar la rastra o empujar la carretilla sale aparte, con su botón.
 function pintarLlevas() {
-  const inv = inventario(), nom = c => tr(CATALOGO[c.tipo].nombre) + (c.n > 1 ? ' ×' + c.n : '');
-  const partes = [];
-  const manos = ['mano:der', 'mano:izq'].filter(l => inv.lugares[l]);
-  // el tronco corto se lleva con las dos manos o al hombro: un botón lo pasa de un sitio al otro
-  const cambio = l => {
-    const c = inv.lugares[l]; if (!c || !CATALOGO[c.tipo].hombro || CATALOGO[c.tipo].lugar) return '';
-    return l === 'hombro' ? `<button data-amanos="1">${tr('A las manos')}</button>` : `<button data-alhombro="${l}">${tr('Al hombro')}</button>`;
+  const inv = inventario(), kit = '../../' + CARPETA_INTERFAZ;
+  const nombre = c => tr(CATALOGO[c.tipo].nombre) + (c.n > 1 ? ' ×' + c.n : '');
+  const imagen = c => window.__sinImagenes ? '' : PRENDAS[c.tipo] ? svgPrenda(c.tipo, c) : `<img src="${carpetaIconos()}${c.tipo}.webp" alt="" onerror="this.style.visibility='hidden'">`;
+  const hombroCambia = l => { const c = inv.lugares[l]; return !!c && !!CATALOGO[c.tipo].hombro && !CATALOGO[c.tipo].lugar; };
+  const alHombro = !!inv.lugares.hombro;
+  const hueco = (l, et, clase = '') => {
+    const c = inv.lugares[l], bloq = !c && l.startsWith('mano:') && (inv.manoBloqueada(l) || alHombro);
+    if (!c) return `<div class="hu ${clase}${bloq ? ' apagada' : ''}" title="${tr(et)}"></div>`;
+    const cambio = hombroCambia(l) ? (l === 'hombro'
+      ? `<button data-amanos="1" title="${tr('A las manos')}"><img src="${kit}g_amanos.webp" alt=""><span class="sr">${tr('A las manos')}</span></button>`
+      : `<button data-alhombro="${l}" title="${tr('Al hombro')}"><img src="${kit}g_alhombro.webp" alt=""><span class="sr">${tr('Al hombro')}</span></button>`) : '';
+    return `<div class="hu ${clase}${l === 'hombro' ? ' sel' : ''}" title="${tr(et)}: ${nombre(c)}">${imagen(c)}${c.n > 1 ? `<span class="n">${c.n}</span>` : ''}
+      <span class="sr">${tr(et)}: ${nombre(c)}</span>${cambio}<button data-soltar="${l}" title="${tr('Soltar')}"><img src="${kit}g_soltar.webp" alt=""><span class="sr">${tr('Soltar')}</span></button></div>`;
   };
-  const grupo = (et, l) => `<span class="llevo"><span>${et}</span><b>${nom(inv.lugares[l])}</b>${cambio(l)}<button data-soltar="${l}">${tr('Soltar')}</button></span>`;
-  for (const l of manos) partes.push(grupo(tr('En la mano:'), l));
-  if (inv.lugares.hombro) partes.push(grupo(tr('Al hombro:'), 'hombro'));
+  const partes = [hueco('mano:der', 'En la mano derecha'), hueco('mano:izq', 'En la mano izquierda')];
+  if (alHombro) partes.push('<i class="sep"></i>', hueco('hombro', 'Al hombro', 'hombro'));
+  // del cinto, lo primero que cuelga (una herramienta o un arma antes que lo demás)
+  const delCinto = inv.huecosCintura().map(x => ({ ruta: x.ruta, c: inv.buscar(x.ruta).cosa })).filter(x => x.c);
+  const cin = delCinto.find(x => !CATALOGO[x.c.tipo].recurso) || delCinto[0];
+  if (cin) partes.push('<i class="sep"></i>', `<div class="hu cinto" data-cinto="${cin.ruta}" title="${tr('Al cinto')}: ${nombre(cin.c)} · ${tr('tócalo para cogerlo con la mano')}">${imagen(cin.c)}${cin.c.n > 1 ? `<span class="n">${cin.c.n}</span>` : ''}<span class="sr">${tr('Al cinto')}: ${nombre(cin.c)}</span></div>`);
   const ra = miRastra();
   if (ra && esCarr(ra)) partes.push(`<span class="llevo"><span>${tr('Empujas:')}</span><b>${tr('Carretilla')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Aparcar')}</button></span>`);
   else if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
-  $('llevas').hidden = !partes.length;
-  $('llevas').innerHTML = partes.join('<i></i>');
+  const f = Math.min(1, inv.lleno().fraccion);
+  partes.push(`<span class="carga" title="${tr('Carga: {c}%', { c: Math.round(f * 100) })}"><i style="width:${Math.round(f * 100)}%"></i></span>`);
+  $('llevas').hidden = false;
+  $('llevas').innerHTML = partes.join('');
 }
 $('llevas').onclick = (e) => {
   const h = e.target.closest('[data-alhombro]'), m = e.target.closest('[data-amanos]');
   if (h || m) { cambiarHombro(h ? h.dataset.alhombro : null); return; }
   if (e.target.closest('[data-soltarrastra]')) { soltarRastra(); return; }
+  const ci = e.target.closest('[data-cinto]');
+  if (ci) { cogerDelCinto(ci.dataset.cinto); return; }
   const b = e.target.closest('[data-soltar]'); if (!b) return;
   soltarAlSuelo(b.dataset.soltar);
 };
+// Lo del cinto, a una mano libre (tocando su hueco abajo).
+function cogerDelCinto(ruta) {
+  const inv = inventario(), libre = ['mano:der', 'mano:izq'].find(m => !inv.lugares[m] && !inv.manoBloqueada(m));
+  if (!libre) { mostrarAviso(tr('Llevas las manos ocupadas: suelta lo que llevas.'), true); return; }
+  const r = accionInventario({ tipo: 'mover', de: ruta, a: libre });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  if (almacen) guardarInventarios(almacen, inventarios);
+  pintarLlevas(); vestir(); panelInventario.pintar();
+}
 // Pasar el tronco corto de las manos al hombro (de: la mano donde está) o del hombro a las manos (de: null).
 function cambiarHombro(de) {
   const r = de ? accionInventario({ tipo: 'ponerse', de }) : accionInventario({ tipo: 'quitarse', lugar: 'hombro', a: 'mano:der' });
