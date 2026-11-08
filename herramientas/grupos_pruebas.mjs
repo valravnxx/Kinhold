@@ -65,6 +65,7 @@ export const TOCA = {
   'tierras-del-rey': [/^src\/logica\/(tierras_rey|zonas_rey)\.js$/],
   'panel-del-admin': [/^src\/juego\/panel_admin\.js$/, /^src\/logica\/admin\.js$/],
   'el-chat-de-texto': [/^src\/(logica|juego)\/charla\.js$/],
+  'dormido-al-desconectarse': [/^src\/logica\/dormidos\.js$/, /^src\/juego\/en_linea\.js$/, /^pruebas\/prueba_desconectado_navegador\.py$/],
   'entrar-con-la-cuenta': [/^src\/mundo\/(pantalla_cuenta|eleccion|conexion)\.js$/, /^src\/logica\/(cuentas|correo|fichas)\.js$/],
   'web': [/^herramientas\/(construir_web\.mjs|plantilla_web\.html)$/],
 };

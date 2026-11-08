@@ -1,7 +1,9 @@
 // Kinhold — «Jugar en línea» en la construcción (hito 1f): la conexión con el servidor, el mundo compartido
 // (src/logica/en_linea.js) y los demás jugadores, dibujados con su personaje del taller (cuerpo y ropa que eligieron).
 // La dirección del servidor: src/mundo/direccion_servidor.js (la de Hetzner, o la de ?servidor=).
+import * as THREE from 'three';
 import { MundoEnLinea } from '../logica/en_linea.js';
+import { DESCONECTADO } from '../logica/dormidos.js';
 import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
@@ -63,7 +65,27 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
 
   function quitar(autor) {
     const r = remotos.get(autor);
-    if (r) { escena.remove(r.j.raiz); quitarCombate(r); remotos.delete(autor); }
+    if (r) { escena.remove(r.j.raiz); if (r.simbolo) escena.remove(r.simbolo); quitarCombate(r); remotos.delete(autor); }
+  }
+  // el símbolo de desconectado (GDD, apartado 6): una luna menguante sobre quien duerme desconectado (src/logica/dormidos.js)
+  let texturaSimbolo = null;
+  function simboloDesconectado() {
+    if (!texturaSimbolo) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d');
+      g.fillStyle = 'rgba(36,30,24,0.82)'; g.beginPath(); g.arc(64, 64, 58, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = 'rgba(241,232,216,0.35)'; g.lineWidth = 4; g.stroke();
+      // la luna: un círculo claro al que se le quita otro desplazado
+      g.fillStyle = '#e3cf9f'; g.beginPath(); g.arc(58, 66, 32, 0, Math.PI * 2); g.fill();
+      g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(76, 54, 28, 0, Math.PI * 2); g.fill();
+      g.globalCompositeOperation = 'source-over';
+      g.fillStyle = 'rgba(241,232,216,0.85)'; g.font = 'bold 30px Georgia, serif'; g.textAlign = 'center'; g.fillText('z', 88, 50);
+      texturaSimbolo = new THREE.CanvasTexture(c); texturaSimbolo.colorSpace = THREE.SRGBColorSpace;
+    }
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaSimbolo, transparent: true, depthWrite: false, fog: false }));
+    sp.scale.set(0.42, 0.42, 1); sp.renderOrder = 5;
+    sp.userData.simboloDesconectado = true;
+    return sp;
   }
   function quitarCombate(r) {
     if (!r.comb) return;
@@ -115,7 +137,11 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       r.j.raiz.rotation.y = e.giro;
       // lo que lleva (no hace falta vestirlo de nuevo: solo se rehace lo que se ve encima)
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
-      r.j.durmiendo = e.anim === 'dormir';   // dormido en su cama (P4): tumbado
+      const desconectado = e.anim === DESCONECTADO;   // dormido en el mundo al desconectarse: tumbado, con su símbolo
+      r.j.durmiendo = e.anim === 'dormir' || desconectado;   // dormido en su cama (P4): tumbado
+      if (desconectado && !r.simbolo && !window.__mutarDesconectado) { r.simbolo = simboloDesconectado(); escena.add(r.simbolo); }
+      if (!desconectado && r.simbolo) { escena.remove(r.simbolo); r.simbolo = null; }
+      if (r.simbolo) r.simbolo.position.set(e.x, e.y + 0.95, e.z);
       r.j.sentado = e.anim === 'sentado';    // sentado a descansar (P4, 8 nov)
       r.j.animar(r.vel > 0.3 ? r.vel : 0, dt, e.anim === 'talar');
       const f = fotos.get(e.autor);
