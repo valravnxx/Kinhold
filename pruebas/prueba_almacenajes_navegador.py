@@ -150,8 +150,8 @@ try:
         print('Levanta una pila de piedras desde «Almacenajes»')
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"almacenajes\"]').click()"); A.wait_for_timeout(300)
         lista = A.evaluate("[...document.querySelectorAll('#piezas .pieza b')].map(b => b.textContent)")
-        comprobar('la pestaña «Almacenajes»: los siete (acopio de troncos, pila de piedras, leñera, soporte de varas, almiar, hoyo de barro y cesto), y no los puestos de trabajo',
-                  lista == ['Acopio de troncos', 'Pila de piedras', 'Leñera', 'Soporte de varas', 'Almiar', 'Hoyo de barro', 'Cesto'], str(lista))
+        comprobar('la pestaña «Almacenajes»: los siete (acopio de troncos, pila de piedras, leñera, soporte de varas, almiar, hoyo de barro y cesto) y los dos colgaderos (8 nov), y no los puestos de trabajo',
+                  lista == ['Acopio de troncos', 'Pila de piedras', 'Leñera', 'Soporte de varas', 'Almiar', 'Hoyo de barro', 'Colgadero de mochilas', 'Colgadero de herramientas', 'Cesto'], str(lista))
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(200)
         lista2 = A.evaluate("[...document.querySelectorAll('#piezas .pieza b')].map(b => b.textContent)")
         comprobar('y en «Puestos de trabajo» no salen', 'Pila de piedras' not in lista2 and 'Hoguera' in lista2, str(lista2))
