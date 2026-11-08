@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lo que viene después de la casa</title>
+<style>
+:root{--fondo:#f6f1e7;--tinta:#2a241c;--suave:#6c6152;--acento:#9a6a1c;--linea:#e1d6c2;--caja:#fffaf0;--bien:#3f6b32;--mal:#9b3a2a}
+@media (prefers-color-scheme:dark){:root{--fondo:#1d1914;--tinta:#efe6d6;--suave:#b5a890;--acento:#e0aa4a;--linea:#3a3127;--caja:#262019;--bien:#8fc27a;--mal:#e08a76}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 60px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2}
+h1{font-size:32px;margin:0 0 6px}
+h2{font-size:24px;margin:40px 0 10px;padding-top:10px;border-top:1px solid var(--linea)}
+h3{font-size:19px;margin:24px 0 8px}
+.sub{color:var(--suave);margin:0 0 22px}
+.resumen{background:var(--caja);border:1px solid var(--linea);border-left:4px solid var(--acento);border-radius:10px;padding:14px 18px}
+.resumen ol{margin:6px 0 0;padding-left:22px}
+.tw{overflow-x:auto;margin:10px 0 18px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:640px}
+th,td{border-bottom:1px solid var(--linea);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--suave)}
+.caja{background:var(--caja);border:1px solid var(--linea);border-radius:10px;padding:12px 16px;margin:12px 0}
+.si{color:var(--bien);font-weight:600}.no{color:var(--mal);font-weight:600}
+.nota{color:var(--suave);font-size:14.5px}
+code{font-size:14px}
+li{margin:3px 0}
+</style></head><body><main>
+<h1>Lo que viene después de la casa</h1>
+<p class="sub">Estudio para valravnx, 8 nov 2026. Hoy un jugador llega al banco de tronco, sus acopios y una casa humilde de juncos, y ahí se acaba lo que puede hacer. Esto mira qué toca después, en qué orden y por qué, para planificar los siguientes hitos. No cambia nada del juego: es una propuesta.</p>
+
+<div class="resumen">
+<b>En corto</b>
+<ol>
+<li><b>El primer hito nuevo: los animales del mundo y el caballo.</b> Junta lo que pide P4 (las liebres) con lo que más se nota al jugar: el mapa es enorme y a pie no se llega a ningún sitio. Un caballo salvaje que se doma, se monta a pelo con una cabezada de cuerda, se ata a un poste y come hierba donde está atado. Sin cría ni herraduras todavía.</li>
+<li><b>Después, el hierro y las tablas.</b> Es lo que más contenido abre de golpe: ya hay 18 piezas de construcción de nivel 2 hechas (suelos, muros y escaleras de tablas, tejado de teja, contraventanas…) que el juego esconde porque las tablas, los clavos y el hierro no salen de ningún sitio. Y da el hacha de hierro, la sierra, el pico y los clavos.</li>
+<li><b>Luego, el año y los campos</b> (estaciones del año, sembrar, cosechar, trillar): da la paja (el tejado de paja ya existe y está escondido), el lino para tela y la comida que se guarda.</li>
+<li><b>Entre medias, los oficios del asentamiento</b> (secadero, curtido, horno de barro, carbonera, huso): cosas pequeñas que dan el cuero para la silla del caballo, el carbón para el hierro y el pan.</li>
+<li><b>La ganadería y la cría</b> (gallinas, cabras, ovejas, criar caballos), al final: piden los campos (heno, grano), los cercados y el año.</li>
+</ol>
+</div>
+
+<h2>1. Dónde se para hoy un jugador</h2>
+<p>Lo que se puede hacer partiendo de nada (comprobado en el código y en el recorrido de jugador, que lo hace entero sin arcón):</p>
+<ul>
+<li>Recoger ramas, piedra, sílex, fibra, juncos, barro, yesca, bayas y setas; desbrozar matorrales.</li>
+<li>Tallar herramientas de piedra (lasca, hacha), hacer cordel y cuerda, el palo cavador, el taladro de fuego, el leñero, la rastra, el fardo.</li>
+<li>Talar árboles jóvenes (tronco delgado y varas); los adultos con hacha de piedra cuestan muchísimo (56 golpes).</li>
+<li>Levantar la hoguera, la piedra de tallar, el banco de tronco y siete almacenajes.</li>
+<li>Construir la casa humilde: cimiento de piedra, postes, muros de troncos o de zarzo con barro, puerta de varas y tejado de juncos.</li>
+<li>Beber del río y comer bayas y setas.</li>
+</ul>
+<p>Y lo que <b>ya está en el juego pero escondido</b>, porque falta de dónde sacar su material:</p>
+<div class="tw"><table>
+<tr><th>Escondido</th><th>Le falta</th><th>Lo daría</th></tr>
+<tr><td>18 piezas de nivel 2: suelo, muros (liso, con puerta, con ventana) y escalera de tablas, tejado de teja, contraventana, trampilla, chimenea, adarve…</td><td>tabla, clavo, hierro, teja</td><td>el hierro y la sierra (tablas, clavos), el horno cerámico (teja)</td></tr>
+<tr><td>Tejado de paja, almiar lleno de paja</td><td>paja</td><td>los campos (la paja sale del cereal)</td></tr>
+<tr><td>Cestas, cesto de pescador, nasa (banco de tronco)</td><td>mimbre (las de juncos sí se hacen)</td><td>las mimbreras de la ribera</td></tr>
+<tr><td>Honda, odre, zurrón, chaleco</td><td>piel, cuero</td><td>la caza y el curtido</td></tr>
+<tr><td>Hacha de hierro, cintos de cuero y de anillas</td><td>hierro, cuero</td><td>el hierro, el curtido</td></tr>
+<tr><td>Azada, hoz de sílex, mayal (ya se fabrican en el banco)</td><td>no sirven para nada: no hay campos</td><td>los campos</td></tr>
+</table></div>
+<p>Es decir: buena parte del «siguiente tramo» ya está construida a falta de su origen. Eso abarata mucho lo que viene.</p>
+
+<h2>2. El movimiento: el problema que más se nota</h2>
+<p>Lo medido en el código (<code>src/juego/main.js</code> y <code>src/logica/nado.js</code>):</p>
+<ul>
+<li>Andando, 3,6 m/s. Corriendo, 6 m/s durante 40 s, y luego 20 s andando para recuperar el aguante. Y correr sube el cansancio de P4 (0,5 por segundo): rendido, solo se anda, más despacio.</li>
+<li>Whitholm mide unos 61 × 63 km. Cruzarla andando son unas 4,7 horas reales; alternando carrera y paso, unas 3,3 horas, sin contar el cansancio, la sed (que llega al máximo en una hora) ni los ríos que hay que nadar.</li>
+<li>Una zona (tu tierra) mide aproximadamente 1,1 km de lado: cruzarla andando son unos 5 minutos.</li>
+</ul>
+<p>Para la vida de cada día (tu tierra, el río, el bosque de al lado) andar basta. Para todo lo demás (ir a la ciudad del rey, a la veta de hierro de la sierra, a otra comarca, a ver a tu pareja si ha empezado lejos) no. <b>Tienes razón: el caballo no es un lujo de la Baja Edad Media, es lo que hace usable un mapa de este tamaño.</b> Los juegos del género que lo dejan para muy tarde lo hacen con mapas mucho más pequeños.</p>
+
+<h2>3. Las cinco opciones, una por una</h2>
+<div class="tw"><table>
+<tr><th>Opción</th><th>Qué le da al jugador</th><th>Qué necesita antes</th><th>Lo difícil</th></tr>
+<tr><td><b>A. Animales del mundo y caza mayor</b></td><td>Corzos, ciervos y jabalíes que pastan y huyen; cazarlos y despiezarlos (carne, piel, hueso, tendón, grasa). La piel es el origen que falta para la honda, el odre y el curtido.</td><td>Las liebres de P4 (el primer animal: su IA en el servidor, que todos ven igual).</td><td>Los modelos y animaciones de los animales con el estilo v5 (no hay ninguno aún). La IA en el servidor para muchos animales.</td></tr>
+<tr><td><b>B. El caballo</b></td><td>Moverse por el mapa (2–3 veces más rápido que a pie), y luego cargar (alforjas) y tirar (carro).</td><td>Lo de A (un animal en el servidor). Para montar a pelo, solo una cabezada de cuerda (ya hay cuerda).</td><td>El modelo y sus animaciones (paso, trote, galope), el jinete sentado, y que el servidor acepte la velocidad montado sin dejar trampas.</td></tr>
+<tr><td><b>C. Hierro y tablas</b></td><td>Hacha de hierro (los árboles adultos), sierra (tablas), pico (cantera), clavos, herraduras; abre las 18 piezas de nivel 2 escondidas.</td><td>Carbón (carbonera, de leña), mineral (hierro de pantano con pala y criba, o la veta de la sierra), barro y piedras.</td><td>La cadena es larga (mineral → horno de reducción → lupia → fragua → barra → herramienta). Bien pensada, es lo que da «oficio».</td></tr>
+<tr><td><b>D. El año y los campos</b></td><td>Sembrar, cuidar y cosechar: grano (pan), paja (tejado de paja), lino (hilo y tela para ropa), legumbres. Comida que se guarda.</td><td>Las estaciones del año en el juego (hoy no hay: solo día y noche). La azada, la hoz y el mayal ya existen.</td><td>El calendario (un mes real por estación, ya decidido en sistemas) y lo que cambia con él. Que los campos se vean bien a escala.</td></tr>
+<tr><td><b>E. Oficios del asentamiento</b></td><td>Secadero (carne seca, heno), raspador y cubas de curtido (cuero), horno de barro (pan), carbonera (carbón), huso (hilo).</td><td>Piel (A), corteza de roble, grano (D) según cuál.</td><td>Poco: son puestos de trabajo como los que ya hay. Cada uno es pequeño.</td></tr>
+</table></div>
+<p class="nota">La ganadería y la cría (gallinas, cabras, ovejas, cerdos, criar caballos) queda fuera de estas cinco a propósito: necesita los campos (heno y grano para comer), los cercados y el año (las crías tardan estaciones). Va después.</p>
+
+<h2>4. El caballo, a fondo</h2>
+<h3>Cuándo, en la historia</h3>
+<p>El caballo de silla y de carga está en toda la Edad Media, también en la Alta. Los estribos llegan a Europa hacia el año 700 y las herraduras se conocen desde el siglo V, pero no se generalizan hasta mucho después (las de bordes ondulados son del siglo X). Así que <b>montar a pelo o con una silla sencilla, sin herrar, es lo propio de la época temprana</b>, y encaja con empezar con un caballo salvaje y una cabezada de cuerda.</p>
+<h3>Lo que haría, a la escala justa (sin sobrecomplicar)</h3>
+<ul>
+<li><b>Caballos salvajes</b> en manadas pequeñas en praderas y brezales, que huyen como los demás animales (GDD: «caballos domables»).</li>
+<li><b>Domarlo:</b> acercarte despacio (si corres, huye), echarle la cabezada de cuerda y aguantar unos segundos mientras se resiste. Si te tira, se escapa. Una vez domado es tuyo (su dueño lo guarda el servidor).</li>
+<li><b>Montarlo a pelo:</b> paso, trote y galope. El galope gasta el aguante del caballo; al paso se recupera. Con él no se pelea al principio (eso es el hito de combate a caballo).</li>
+<li><b>Atarlo:</b> a un poste o a una estaca con la cuerda. Atado, come la hierba de alrededor y bebe si hay agua cerca; si lo dejas suelto, se va alejando poco a poco.</li>
+<li><b>Cuidarlo, simple:</b> hambre y sed como las tuyas (las de P4, la misma lógica). Sin comer no muere (sistemas: los animales no mueren por descuido): se pone débil y va más lento hasta que come.</li>
+<li><b>Después</b>, con el cuero: la silla y las alforjas (carga). Con el hierro: las herraduras. Con los campos: el heno y el grano. Con la ganadería: la cuadra y la cría. Cada cosa en su hito, cuando exista.</li>
+</ul>
+<h3>Lo que hay que resolver antes de prometerlo</h3>
+<ul>
+<li><b>El arte.</b> No hay ningún animal en el juego. Hay paquetes libres CC0 de animales animados de bajo poligonaje (por ejemplo, uno de Quaternius con vaca, caballos, cerdo y otros, en FBX, OBJ y Blend), pero no he comprobado si sus animaciones están completas (en su página hay quien dice que solo trae algunas) ni si se ven como el estilo v5. Es lo primero que hay que probar, como se hizo con los personajes: buscar, ponerlo junto a la v5 y que lo veas.</li>
+<li><b>El jinete.</b> Hace falta la postura de ir montado (en el paquete de animaciones de los personajes no la he buscado aún: no comprobado).</li>
+<li><b>El servidor.</b> Hoy limita lo que puede andar cada jugador por su velocidad (presencia). Montado, ese límite tiene que ser el del caballo, y el servidor tiene que saber que vas montado, para que nadie corra a 10 m/s a pie.</li>
+<li><b>Las velocidades.</b> Los personajes ya van más rápidos que en la vida real (3,6 m/s andando, cuando una persona anda a 1,4). Propongo, para ajustar jugando: paso 4 m/s, trote 7 y galope 11 con un aguante de un minuto o dos. Así el caballo cruza la isla en algo más de una hora y media, la mitad que a pie.</li>
+</ul>
+
+<h2>5. El orden que propongo, y por qué</h2>
+<div class="tw"><table>
+<tr><th>#</th><th>Hito</th><th>Lo que deja hecho</th><th>Por qué aquí</th></tr>
+<tr><td>P8</td><td><b>Animales del mundo y el caballo</b></td><td>Animales que pastan y huyen (corzo, ciervo, jabalí, y la liebre de P4), caza mayor y despiece (piel, hueso, tendón, grasa); caballos salvajes que se doman, se montan a pelo, se atan y comen y beben.</td><td>Lo que más se nota al jugar (el movimiento) y lo que necesita P4. La IA de animales es la misma para la caza y para el caballo: se hace una vez.</td></tr>
+<tr><td>P9</td><td><b>Oficios del asentamiento</b></td><td>Secadero, raspador y cubas de curtido (cuero con corteza de roble), carbonera, huso; la silla de montar y las alforjas; el origen del mimbre, la resina y la corteza.</td><td>Pequeño y rápido. Da el cuero (silla, zurrón, cintos) y el carbón que pide el hierro.</td></tr>
+<tr><td>P10</td><td><b>Hierro y tablas</b></td><td>Hierro de pantano (pala y criba), horno de reducción, fragua y yunque; hacha de hierro, sierra, pico, clavos, herraduras; tablas en el banco con la sierra; las 18 piezas de nivel 2 a la vista; romper rocas grandes y cantera.</td><td>Lo que más abre de golpe, con contenido ya hecho. Es el salto de «unas maderitas» a una casa de verdad, de dos plantas.</td></tr>
+<tr><td>P11</td><td><b>El año y los campos</b></td><td>Las estaciones del año (un mes real cada una); semillas silvestres; parcelas con la azada; sembrar, crecer por fases, cosechar con la hoz; trillar con el mayal; paja, grano, lino, legumbres; horno de barro y pan.</td><td>Necesita el calendario, que toca a todo (cosechas, frío, más adelante la nieve). Mejor cuando el resto esté asentado.</td></tr>
+<tr><td>P12</td><td><b>Ganadería y cría</b></td><td>Cercados y cuadra; gallinas, cabras y ovejas; heno; criar caballos con sus rasgos.</td><td>Necesita los campos (comida) y el año (las crías tardan estaciones).</td></tr>
+</table></div>
+<p><b>Lo alternativo que también tiene sentido:</b> poner el hierro (P10) antes que el caballo. Si lo que más pesa es que la gente tenga «algo más que maderitas», el hierro abre más cosas. Si lo que más pesa es que el mapa se pueda recorrer, el caballo. Yo pondría el caballo primero porque comparte trabajo con P4 (las liebres) y porque el hierro pide ir a la veta de la sierra, que a pie está lejísimos.</p>
+<p class="nota">Los hitos congelados que ya existen y tocan esto («Fauna y caza», «Caballos», «Granja y estaciones del año», «Combate a caballo y a distancia», «Economía y NPCs») están vacíos o casi. La propuesta es descongelar y rellenar «Fauna y caza» + «Caballos» como P8, «Granja» como P11/P12, y dejar el combate a caballo y la economía congelados.</p>
+
+<h2>6. Lo que tienes que decidir tú</h2>
+<ol>
+<li><b>El orden</b>: caballo primero (P8) o hierro primero.</li>
+<li><b>El caballo temprano</b>: salvaje y domado (como dice el GDD), montado a pelo al principio, sin cría ni herraduras hasta sus hitos. ¿De acuerdo, o lo quieres comprado en la ciudad del rey?</li>
+<li><b>Las estaciones del año</b>: ya decidido que son un mes real cada una. ¿Al principio solo afectan a los cultivos (y al frío de P4), o también cambian el mundo (hojas, nieve)?</li>
+<li><b>El arte de los animales</b>: buscar un paquete libre y adaptarlo al estilo v5 (como los personajes), o hacerlos en el taller con Blender. Antes de decidirlo, una prueba con capturas para que lo veas.</li>
+</ol>
+
+<h2>Fuentes</h2>
+<ul class="nota">
+<li><a href="https://timemaps.com/blog/stirrups/">TimeMaps — Stirrups</a> (los estribos llegan a Europa hacia el 700).</li>
+<li><a href="https://ojs.zrc-sazu.si/av/article/view/7857">Arheološki vestnik — The charm of medieval horseshoes</a> (herraduras desde el siglo V; las onduladas, del X).</li>
+<li><a href="https://raiderking.com/medieval-dynasty-how-to-get-a-horse/">Cómo se consigue el caballo en un juego medieval de supervivencia del género</a> (allí, tras construir una cuadra con tablas y paja y comprarlo; aquí se propone antes y salvaje).</li>
+<li><a href="https://quaternius.itch.io/lowpoly-animated-animals">Quaternius — Lowpoly Animated Animals</a> (CC0, FBX/OBJ/Blend; sin comprobar sus animaciones).</li>
+<li>Del proyecto: <code>diseno/gdd.html</code> (apartados 8, 9, 14 y 15), <code>diseno/sistemas.html</code> (apartados 2 a 7 y 10), <code>proyecto/roadmap.json</code>, <code>src/logica/piezas.js</code> (las piezas de nivel 2 y <code>MATERIALES_POSTERIORES</code>), <code>src/juego/main.js</code> y <code>src/logica/nado.js</code> (velocidades y aguante), <code>src/logica/whitholm.js</code> (el tamaño de la isla).</li>
+</ul>
+</main></body></html>
