@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (08:08 UTC) — por el chat: colgaderos de mochilas y de herramientas
+valravnx: «ahora añadido al tema de lo de acopio de materiales vas a hacer dos nuevos para interior: acopio de mochilas colgable a pared y el de herramientas, busca sus diseños mejores posibles y hazlos, así lo dejamos todo bien ordenadito en la base».
+→ Tarea en P3 («De nada a una casa»), la lleva el chat: el colgadero de mochilas y el de herramientas, de dentro y colgados en un muro.
+
+### 8 nov 2026 (07:50 UTC) — por el chat: arreglo urgente, sacar de un almacenaje
+valravnx (con captura del almiar: 12 juncos guardados, «No te cabe: no tienes sitio libre»): «al tener una pila grande en un almacenaje y no caberte en las manos, te dice que no en vez de darte la cantidad que sí puedes llevar, quedándose ahí bloqueado para siempre; haz métodos para recoger la cantidad que se quiera, por ejemplo con clic derecho… pruebas mínimas, que sea rápido».
+→ Tarea en P3 («De nada a una casa»), la lleva el chat: sacar lo que te cabe (no todo o nada) y elegir cuánto con el clic derecho (o dejando pulsado en el móvil).
+
 ### 8 nov 2026 (07:30 UTC) — por el chat: romper rocas y desbrozar arbustos
 valravnx: «ahora mismo los arbustos y las rocas que hay por el mapa no se pueden interactuar con ellos de ninguna manera… cuándo, en qué punto es viable, por ejemplo, romper una roca para conseguir mucha cantidad de piedras… imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo… Y los arbustos… si te molestan o te hacen falta ramas, pues los puedas destruir con un hacha… la piedra quizá haría falta un material un poco mejor que un martillo de piedra, o que necesite muchos golpes». Estudio: no había nada apuntado (los matorrales y las rocas sueltas son solo decorado; la cantera con pico de hierro es N2, en hitos congelados). Respuestas: el mazo de piedra ya, con muchos golpes, para las rocas medianas (las grandes, con hierro); vuelven las dos (la roca, pasados unos meses reales; el matorral, en una estación); desbrozar «ahora, cuando acabes esto comienzas a añadir lo dicho».
 → Al GDD (apartado 8) y al documento de sistemas (apartado 3 y recetas N0), con sus traducciones. Dos tareas nuevas en P3 («De nada a una casa»), antes del recorrido entero: desbrozar matorrales y arbustos con el hacha de piedra, y el mazo de piedra para romper rocas. Las lleva el chat, empezando por desbrozar.

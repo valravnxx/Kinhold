@@ -1,6 +1,6 @@
 {
  "A": {
-  "inicio": "2026-11-08T07:17:15+00:00",
+  "inicio": "2026-11-08T08:30:30+00:00",
   "tarea": "La casa humilde, de una planta: cimiento de piedra, postes y muros de tronco delgado, muro de zarzo con barro, tejado de juncos (con su remate) y puerta de varas, con el estilo v5 y pagada con lo que llevas; el recorrido de jugador la levanta entera, cerrada y techada, sin arcón",
   "hito": "crafting",
   "rama": "trabajo/20261108-0523"
@@ -23,5 +23,11 @@
   "tarea": "Desbrozar matorrales y arbustos (valravnx, 8 nov): con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos del mundo se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación, como los árboles talados. El arbusto de bayas, igual: se pierden sus bayas. Recorrido: el jugador desbroza un matorral y se lleva sus ramas",
   "hito": "crafting",
   "rama": "trabajo/20261108-0840-desbrozar"
+ },
+ "chat:trabajo/20261108-0808-colgaderos": {
+  "inicio": "2026-11-08T08:08:57+00:00",
+  "tarea": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
+  "hito": "crafting",
+  "rama": "trabajo/20261108-0808-colgaderos"
  }
 }

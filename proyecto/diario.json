@@ -5437,5 +5437,19 @@
   "pruebas": "Recorrido aquí: falla en el tejado (sin escalera). En la nube, la prueba de construcción falló por la casa fuera de la tierra (arreglado en la rama); la batería entera no se esperó.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-08T07:50:13+00:00",
+  "fin": "2026-11-08T08:01:44+00:00",
+  "titulo": "Arreglo urgente: sacar de un almacenaje lo que te cabe (demo v149)",
+  "hito": "crafting",
+  "hecho": [
+   "Al sacar de un almacenaje o de una estación una pila que no te cabe entera, ahora sacas lo que te cabe y el resto se queda ahí (antes era todo o nada y la pila se quedaba bloqueada: valravnx, 8 nov, con 12 juncos en el almiar).",
+   "Con el clic derecho en PC, o dejando pulsado en el móvil, se abre debajo una fila para elegir cuánto sacar (−10, −1, +1, +10 y Sacar); empieza en lo que te cabe.",
+   "El servidor hace lo mismo (la misma lógica pura) y avisa de cuántos quedan ahí."
+  ],
+  "pruebas": "Pruebas mínimas, como pidió valravnx para este arreglo urgente: fabricación (con una prueba nueva, rota a propósito una vez), objetos en el servidor 71/71 e idiomas, aquí; el grupo de lógica aquí, bien salvo la copia de seguridad (falta rsync en esta máquina, no tiene que ver). No comprobado: la fila de elegir cuánto en captura ni en la nube.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

@@ -1451,6 +1451,18 @@
      "estado": "en_curso",
      "inicio": "2026-11-08T07:30:19+00:00",
      "rama": "trabajo/20261108-0730-zarzo"
+    },
+    {
+     "nombre": "Arreglo urgente (valravnx, 8 nov): sacar de un almacenaje lo que te cabe, no todo o nada; y elegir cuánto con el clic derecho (o dejando pulsado en el móvil)",
+     "estado": "hecho",
+     "inicio": "2026-11-08T07:50:13+00:00",
+     "fin": "2026-11-08T08:01:44+00:00"
+    },
+    {
+     "nombre": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
+     "estado": "en_curso",
+     "inicio": "2026-11-08T08:08:57+00:00",
+     "rama": "trabajo/20261108-0808-colgaderos"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -3471,6 +3483,13 @@
      "archivo": "jugar/demo/v148.html",
      "capturas": "capturas/demo-v148",
      "notas": "Más almacenajes de la base: el soporte de varas, el almiar (paja y juncos), el hoyo de barro y el cesto (lo pequeño), cada uno con su modelo y lleno con lo que guarda"
+    },
+    {
+     "v": "v149",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v149.html",
+     "capturas": null,
+     "notas": "v149, arreglo urgente: al sacar de un almacenaje o de una estación una pila que no te cabe entera, ahora sacas lo que te cabe y el resto se queda (antes decía «No te cabe» y la pila se quedaba bloqueada). Con el clic derecho (o dejando pulsado en el móvil) eliges cuánto sacar."
     }
    ]
   },
