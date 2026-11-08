@@ -652,13 +652,16 @@ try {
     const cim = pieza('cim_piedra', 0, 0);
     let r = await marco(cim);
     comprobar('pone en su tierra el marco del cimiento de su casa', r.ok && !!obra(cim), r.motivo);
+    const noCoge = [];
+    let entregas = [];
     for (let viaje = 0; viaje < 3 && falta(cim, 'piedra') > 0; viaje++) {
       const quiere = Math.min(6, falta(cim, 'piedra'));
-      for (const p of libres(aqui, 'piedra')) { if (J.cuantos('piedra') >= quiere) break; await recoger(p); }
-      await entregar(cim, 'piedra', J.cuantos('piedra'));
+      for (const p of libres(aqui, 'piedra').slice(0, 12)) { if (J.cuantos('piedra') >= quiere) break; const c = await recoger(p); if (!c.ok) noCoge.push(c.motivo); }
+      const e = await entregar(cim, 'piedra', J.cuantos('piedra'));
+      entregas.push(e.ok ? 'ok' : e.motivo);
     }
     r = await trabajar(cim);
-    comprobar('le lleva sus 8 piedras sueltas, en dos viajes, y lo levanta', r.ok, `${r.motivo || ''} faltan ${falta(cim, 'piedra')}`);
+    comprobar('le lleva sus 8 piedras sueltas, en dos viajes, y lo levanta', r.ok, `${r.motivo || ''} faltan ${falta(cim, 'piedra')} · ${libres(aqui, 'piedra').length} piedras libres · no coge: ${[...new Set(noCoge)].join(' | ')} · entregas: ${entregas.join(' | ')} · ${enMano()} · ${JSON.stringify(J.nec)}`);
 
     // el hacha de piedra: la dejó en el suelo al echarse el tronco al hombro (paso 10)
     const hacha = () => J.cuantos('hacha_piedra') > 0;

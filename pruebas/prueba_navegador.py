@@ -1121,7 +1121,7 @@ with sync_playwright() as p:
     print('PC: la casa humilde, de una planta (la que levanta el recorrido de jugador), de cerca')
     # cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro, el de la puerta con su puerta de
     # varas y el tejado de juncos: lo mismo que levanta pruebas/prueba_recorrido.mjs (paso 16) sin arcón; aquí, para mirarla
-    HX, HZ = 24, 24
+    HX, HZ = -5, -10   # en la tierra del mojón (-3, -6; 20 m), a más de 6 m de las otras obras
     casa = [('cim_piedra', 0, 0, 0)] + [('poste', dx, dz, 0) for dx, dz in [(-1, -1), (1, -1), (1, 1), (-1, 1)]] + \
         [('muro_tronco', -0.95, 0, 0), ('muro_tronco', 0.95, 0, 0), ('muro_zarzo', 0, 0.95, 0), ('muro_tronco_puerta', 0, -0.95, 0), ('puerta_varas', 0, -0.95, 0), ('tejado_juncos', 0, 0, 1)]
     vs = [poner('pieza', t, HX + dx, HZ + dz, planta=k) for t, dx, dz, k in casa]
@@ -1176,7 +1176,7 @@ with sync_playwright() as p:
     mv.evaluate(f"{K}.pj.x=1; {K}.pj.z=-4; {K}.cam.yaw=Math.PI+0.5; {K}.cam.pitch=0.85; {K}.cam.dist=20")
     mv.wait_for_timeout(900)
     mv.screenshot(path=f'{SALIDA}/06_movil_mover.png')
-    mv.evaluate(f"{K}.pj.x=25.6; {K}.pj.z=20.6; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.4; {K}.cam.dist=9")
+    mv.evaluate(f"{K}.pj.x=-3.4; {K}.pj.z=-14.4; {K}.cam.yaw=Math.PI+0.55; {K}.cam.pitch=0.4; {K}.cam.dist=9")
     mv.wait_for_timeout(1500)
     mv.screenshot(path=f'{SALIDA}/06z_movil_casa_humilde.png')
     modo0 = mv.evaluate(f"{K}.estado.modo")
