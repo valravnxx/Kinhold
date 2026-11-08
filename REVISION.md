@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (14:23 UTC) — por el chat: qué viene después de la casa
+valravnx: «¿Qué es lo siguiente que una persona debería hacer en su siguiente tier? … tenemos herramientas para plantar … pero no está el sistema puesto de plantar … empezar a trabajar el tema de animales para ya poder poner la caza y los caballos … el caballo … te da movimiento, y ahora mismo el mapa es gigantesco y el movimiento es muy lento … Hazme una valoración completa de lo siguiente … y vamos a empezar a planificarlo para ya preparar los hitos».
+→ Estudio en diseno/estudios/siguiente_tramo.html (sin cambios en el juego ni en el roadmap): lo que hay y lo escondido por falta de origen, el movimiento medido, cinco opciones y un orden propuesto (P8 animales del mundo y el caballo, P9 oficios del asentamiento, P10 hierro y tablas, P11 el año y los campos, P12 ganadería y cría). Esperan sus decisiones para pasar los hitos al roadmap.
+Respuestas (8 nov, 14:40 UTC): el caballo primero; el primer caballo, salvaje y a pelo; las estaciones cambian también el mundo (hojas, nieve); el arte de los animales, probar las dos maneras (paquete libre CC0 adaptado y taller con Blender).
+→ Al GDD (apartados 14 y 15, con traducciones). En el roadmap, detrás de los hitos vivos: P8 «Animales del mundo y el caballo» (desglosado en 11 tareas, empezando por la prueba del arte), P9 «Oficios del asentamiento», P10 «Hierro y tablas», P11 «El año y los campos» y P12 «Ganadería y cría» (cada uno empieza por planificarse). Los hitos congelados «Fauna y caza», «Granja y estaciones del año» y «Caballos» quedan dentro de estos.
+
 ### 8 nov 2026 (14:17 UTC) — por el chat: repaso y limpieza del roadmap
 valravnx: «hay en roadmap por hacer el banco de tronco, pero ya está integrado, porque? hay que revisar y limpiar cosas de roadmap». Sobre el hito de gráficos (todas sus tareas hechas y aún en curso): «Darlo por hecho».
 → Repasadas en el código las tareas sin hacer de los hitos vivos. Cerradas por estar ya hechas: el banco de tronco (puesto con sus recetas de N1, y el recorrido lo levanta) y el recorrido de nada a la casa humilde cerrada y techada (paso 16 del recorrido). El hito «Perfiles gráficos y posprocesado», hecho. Corregido el tamaño de main.js en su tarea (casi 3.000 líneas). Lo demás sigue sin hacer de verdad.
