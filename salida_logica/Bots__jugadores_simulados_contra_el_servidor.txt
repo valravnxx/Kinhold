@@ -1,0 +1,24 @@
+Entran
+  OK   entran los 6 bots, cada uno con su autor del servidor — jugador:8f5314a6 jugador:b20be12b jugador:e2e5bc14 jugador:e8064a61 jugador:0e133c33 jugador:77776ded
+  OK   cada uno pone su mojón (un mojón por personaje; sin él no se construye) — 6 mojones
+Construyen
+  OK   el servidor tiene el estado de todos — 6 presentes
+  OK   mientras construyen, trabajan o van a la obra — talar talar talar talar talar talar
+  OK   levantan obras en el mundo del servidor — 6 obras terminadas
+  OK   cada obra lleva el trabajo de su bot (autor del servidor) — 6 bots con obra
+  OK   la copia del mundo de los bots es igual que la del servidor — 12 y 12 piezas
+Pelean
+  OK   cada bot se pone frente a su pareja — 1.15 m, 1.46 m, 1.42 m
+  OK   el servidor resuelve golpes entre ellos, con su autor — 16 golpes
+  OK   hay golpes que hieren y golpes parados o fallados — herida, parada
+Andan
+  OK   al andar se mueven por la tierra del mojón — 5 se han movido
+Lo medido
+  {"porBotYSegundo":{"mensajesEnviados":11.6,"bytesEnviados":972,"mensajesRecibidos":29.8,"bytesRecibidos":18163},"latenciaAccionMs":{"p50":1.9,"p95":5.1,"max":7},"motivos":{"Ese hueco ya está ocupado.":1}}
+  OK   mandan unos 10 estados por segundo (como la demo) y poco más — 11.6 mensajes/s por bot
+  OK   el servidor no les manda ningún error — 0 errores
+  OK   ninguno se queda sin respuesta ni es echado — 0 0 0 0 0 0
+  OK   lo medido cuenta lo que se manda y se recibe
+  OK   al pararlos se van todos del servidor — 0 conexiones
+
+16 correctas, 0 fallos
