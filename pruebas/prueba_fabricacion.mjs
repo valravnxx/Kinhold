@@ -333,12 +333,14 @@ console.log('Depositar en las estaciones y volver a coger');
 console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y leñera (revisión del 1 nov)');
 {
   const E = ESTACIONES;
-  comprobar('los siete del documento de sistemas, sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja y juncos; barro; lo pequeño)',
-    igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera', 'soporte_varas', 'almiar', 'hoyo_barro', 'cesto'])
+  comprobar('los siete del documento de sistemas y los dos colgaderos (8 nov), sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja y juncos; barro; lo de la espalda; las herramientas; lo pequeño)',
+    igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera', 'soporte_varas', 'almiar', 'hoyo_barro', 'colgadero_mochilas', 'colgadero_herramientas', 'cesto'])
+    && E.colgadero_mochilas.guarda.includes('lenero') && E.colgadero_mochilas.guarda.every(t => CATALOGO[t].lugar === 'espalda')
+    && E.colgadero_herramientas.guarda.includes('hacha_piedra') && E.colgadero_herramientas.guarda.every(t => CATALOGO[t].herramienta)
     && igual(E.soporte_varas.guarda, ['vara']) && igual(E.almiar.guarda, ['paja', 'junco']) && igual(E.hoyo_barro.guarda, ['barro'])
     && ['silex', 'fibra', 'cordel', 'yesca'].every(t => E.cesto.guarda.includes(t)) && E.cesto.guarda.every(t => CATALOGO[t] && CATALOGO[t].tam === 'P')
     && E.acopio_troncos.guarda.includes('tronco_delgado') && igual(E.pila_piedras.guarda, ['piedra']) && igual(E.lenera.guarda, ['lena', 'rama']) && !Object.values(RECETAS).some(r => r.uso === 'almacen'));
-  comprobar('su coste sale del mundo (varas, piedras, ramas y juncos)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama', 'junco'].includes(m))));
+  comprobar('su coste sale del mundo (varas, piedras, ramas y juncos; y el cordel de fibra de los colgaderos)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama', 'junco', 'cordel'].includes(m))));
   comprobar('el almiar y el hoyo de barro, solo fuera; el soporte de varas y el cesto, dentro o fuera', E.almiar.donde === 'fuera' && E.hoyo_barro.donde === 'fuera' && E.soporte_varas.donde === 'ambos' && E.cesto.donde === 'ambos');
   const fab = new Fabricacion();
   let r = fab.colocar('ana', 'pila_piedras', 0, 0, false, null, false);
@@ -406,6 +408,52 @@ console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y le
     const q = jugador(); q.lugares['mano:der'] = { tipo: 'barro', n: 1 }; q.lugares['mano:izq'] = { tipo: 'junco', n: 1 };
     const rb = fab.depositar('ana', c.id, 'mano:der', undefined, { x: 30, z: 0 }, q), rm = fab.depositar('ana', c.id, 'mano:izq', undefined, { x: 30, z: 0 }, q);
     comprobar('y guarda el barro, no los juncos', rb.ok && fab.estaciones[c.id].deposito.barro === 1 && !rm.ok, `${rb.motivo || ''} ${rm.motivo || ''}`); }
+  // los colgaderos (valravnx, 8 nov): de dentro y colgados en un muro
+  {
+    const sube = (tipo, x) => {
+      const i = jugador(); for (const [t, n] of Object.entries(E[tipo].coste)) i.meterDonde(t, n);
+      const c = fab.colocar('ana', tipo, x, 0, true, null, true); if (!c.ok) throw new Error(c.motivo);
+      fab.entregarEstacion('ana', c.id, { x, z: 0 }, i, null, T0);
+      for (let k = 0; k < 10 && fab.estaciones[c.id].obra; k++) fab.trabajarEstacion('ana', c.id, MAX_RATO_ESTACION, { x, z: 0 }, i);
+      return c.id;
+    };
+    comprobar('los colgaderos, solo dentro', !fab.colocar('ana', 'colgadero_mochilas', 40, 0, false, null, true).ok && !fab.colocar('ana', 'colgadero_herramientas', 40, 0, false, null, true).ok);
+    const cm = sube('colgadero_mochilas', 40), ch = sube('colgadero_herramientas', 45);
+    comprobar('se levantan con su coste (varas, ramas y cordel; varas y cordel)', !fab.estaciones[cm].obra && !fab.estaciones[ch].obra);
+    // la mochila que llevas a la espalda, vacía, se cuelga tal cual; llena, no
+    const q = Inventario.inicial(); q.lugares.espalda = { tipo: 'lenero', n: 1, dentro: [] };
+    r = fab.depositar('ana', cm, 'espalda', undefined, { x: 40, z: 0 }, q);
+    comprobar('el leñero vacío, de la espalda al colgadero', r.ok && !q.lugares.espalda && fab.estaciones[cm].deposito.lenero === 1, r.motivo);
+    const ll = Inventario.inicial(); ll.lugares.espalda = { tipo: 'porta_piedras', n: 1, dentro: [{ tipo: 'piedra', n: 2 }] };
+    r = fab.depositar('ana', cm, 'espalda', undefined, { x: 40, z: 0 }, ll);
+    comprobar('con algo dentro, no: vacíalo antes', !r.ok && /Vacíalo/.test(r.motivo || '') && ll.lugares.espalda, r.motivo);
+    q.lugares['mano:der'] = { tipo: 'piedra', n: 1 };
+    r = fab.depositar('ana', cm, 'mano:der', undefined, { x: 40, z: 0 }, q);
+    comprobar('el colgadero de mochilas no guarda piedras', !r.ok && /solo guarda/.test(r.motivo || ''), r.motivo);
+    r = fab.retirar('ana', cm, 'lenero', 1, { x: 40, z: 0 }, q);
+    comprobar('al descolgarlo, a la espalda si está libre', r.ok && q.lugares.espalda && q.lugares.espalda.tipo === 'lenero' && !fab.estaciones[cm].deposito.lenero, r.motivo);
+    // las herramientas
+    const h = jugador(); h.lugares['mano:der'] = { tipo: 'hacha_piedra', n: 1 }; h.lugares['mano:izq'] = { tipo: 'rama', n: 1 };
+    const rh = fab.depositar('ana', ch, 'mano:der', undefined, { x: 45, z: 0 }, h), rr = fab.depositar('ana', ch, 'mano:izq', undefined, { x: 45, z: 0 }, h);
+    comprobar('el colgadero de herramientas guarda el hacha y no la rama', rh.ok && fab.estaciones[ch].deposito.hacha_piedra === 1 && !rr.ok, `${rh.motivo || ''} ${rr.motivo || ''}`);
+    comprobar(`le caben ${cabeEn('colgadero_herramientas')} herramientas y ${cabeEn('colgadero_mochilas')} mochilas`, cabeEn('colgadero_herramientas') === 8 && cabeEn('colgadero_mochilas') === 4);
+    // el muro: el servidor pega el colgadero a la cara de un muro lleno, mirando a la habitación; sin muro, no se pone
+    const m = new Mundo(), cons = { ox: 100, oz: 0, rot: 0, piezas: new Map() };
+    const muro = (tipo, i, j, d, obra = false) => cons.piezas.set(clave('e', i, j, 0, d), { tipo, hueco: 'e', i, j, k: 0, d, ...(obra ? { obra: {} } : {}) });
+    muro('muro_tronco', 0, 0, 0); muro('muro_tronco_puerta', 0, 1, 0); muro('muro_tronco', 2, 0, 1, true);
+    m.construcciones = new Map([[1, cons]]);
+    const a = m.muroCercano(101, 0.4, 1);
+    comprobar('muroCercano: pegado a la cara del muro, del lado de dentro, mirando a +Z', a && Math.abs(a.x - 101) < 1e-6 && Math.abs(a.z - 0.17) < 1e-6 && Math.abs(a.giro) < 1e-6, JSON.stringify(a));
+    const b = m.muroCercano(100.1, -0.3, 1);
+    comprobar('del otro lado mira al otro lado, y lejos de la esquina', b && Math.abs(b.z + 0.17) < 1e-6 && Math.abs(Math.abs(b.giro) - Math.PI) < 1e-3 && b.x >= 100.8 - 1e-6, JSON.stringify(b));
+    comprobar('ni en un muro con puerta ni en uno en obras', !m.muroCercano(101, 2.3, 0.5) && !m.muroCercano(104.2, 1, 0.5));
+    const invs = new Inventarios(), reg = new RegistroAcciones();
+    const alMuro = (x, z) => m.muroCercano(x, z, 0.5);
+    r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'colocar_estacion', estacion: 'colgadero_herramientas', x: 101.2, z: 0.17 }, T0, null, () => true, () => true, alMuro);
+    comprobar('en línea: junto al muro se pone, pegado y girado', r.ok && fab.estaciones[r.id].z === 0.17 && fab.estaciones[r.id].giro === 0, r.motivo);
+    r = ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'colocar_estacion', estacion: 'colgadero_herramientas', x: 101, z: 1.2 }, T0, null, () => true, () => true, alMuro);
+    comprobar('en medio del cuarto, no', !r.ok && /muro/.test(r.motivo || ''), r.motivo);
+  }
 }
 
 console.log('De qué sitio sale cada cosa: la mano, el cinturón o el suelo');

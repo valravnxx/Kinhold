@@ -25,7 +25,7 @@ import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OB
 import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar } from './panel_fabricar.js';
 import { crearEstaciones, MODELO_ESTACION } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen } from '../logica/fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, MOTIVO_MURO } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
@@ -721,7 +721,7 @@ function evaluarColocacion() {
   prepararFantasma();
   estado.candidato = null;
   if (estado.modo !== 'construir' || !estado.puntero || !fantasma) { if (fantasma) fantasma.visible = false; mostrarAviso(''); return; }
-  const { x, z } = estado.puntero;
+  let { x, z } = estado.puntero;
   const sel = estado.sel;
   fantasma.visible = true;
   if (sel.clase === 'mojon') {
@@ -747,8 +747,12 @@ function evaluarColocacion() {
   if (sel.clase === 'puesto') {
     // un puesto de trabajo (P3): se pone el marco a tu lado; la hoguera, solo fuera (no bajo techo)
     const y = estado.puntero.ySuperficie || 0;
-    fantasma.position.set(x, y, z); fantasma.rotation.set(0, estado.rotDeco || 0, 0);   // con el giro que se le da (Girar), el que se guarda
+    // lo que va colgado (los colgaderos): se pega a la cara del muro más cercano, mirando a la habitación
+    const muro = ESTACIONES[sel.tipo].muro ? mundo.muroCercano(x, z, 1) : null;
+    if (muro) { x = muro.x; z = muro.z; }
+    fantasma.position.set(x, y, z); fantasma.rotation.set(0, muro ? muro.giro : estado.rotDeco || 0, 0);   // con el giro que se le da (Girar), el que se guarda
     let v = fabCliente.puedeColocar(sel.tipo, x, z, mundo.bajoTecho(x, z));
+    if (v.ok && ESTACIONES[sel.tipo].muro && !muro) v = { ok: false, motivo: MOTIVO_MURO(ESTACIONES[sel.tipo].nombre) };
     if (v.ok && Math.hypot(x - pj.x, z - pj.z) > PONER_PUESTO) v = { ok: false, motivo: 'Acércate: el marco se pone a tu lado.' };
     if (v.ok && pj.k > 0) v = { ok: false, motivo: 'Los puestos de trabajo van en la planta baja.' };
     if (v.ok) v = mundo.puedeTocar(x, z, yoAutor());
@@ -757,7 +761,7 @@ function evaluarColocacion() {
     pintarFantasma(v.ok);
     const e = ESTACIONES[sel.tipo];
     mostrarAviso(v.ok ? tr('{e}: pon el marco y llévale {c}.', { e: tr(e.nombre), c: Object.entries(e.coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }) : tr(v.motivo), !v.ok);
-    estado.candidato = { tipo: 'puesto', x, y, z, v };
+    estado.candidato = { tipo: 'puesto', x, y, z, v, giro: muro ? muro.giro : null };
     return;
   }
   if (sel.clase === 'deco') {
@@ -812,7 +816,7 @@ function colocar() {
   if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
   if (ca.tipo === 'puesto') { // por la fabricación (en línea, el servidor): el marco, sin gastar nada
     const tipo = estado.sel.tipo;
-    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y), giro: +(estado.rotDeco || 0).toFixed(3) }, (r) => {
+    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y), giro: +(ca.giro ?? estado.rotDeco ?? 0).toFixed(3) }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
       mostrarAviso(tr('Marco puesto: llévale {c} y trabaja en él (Usar).', { c: Object.entries(ESTACIONES[tipo].coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }));
     });
@@ -2557,7 +2561,7 @@ function pintarTodoInventario() { pintarLlevas(); vestir(); panelInventario.pint
 // sin él, la hace la lógica aquí mismo.
 function hacerFabricacion(a, fin) {
   if (objetosRed) { objetosRed.mandar(a, fin); return; }
-  const r = ejecutarFabricacion(fabCliente, inventarios, registroAcciones, { ...a, autor: AUTOR_LOCAL }, Date.now(), sueloObjetos.suelo, (x, z) => !!mundo.tierraDe(x, z), (x, z) => mundo.bajoTecho(x, z));
+  const r = ejecutarFabricacion(fabCliente, inventarios, registroAcciones, { ...a, autor: AUTOR_LOCAL }, Date.now(), sueloObjetos.suelo, (x, z) => !!mundo.tierraDe(x, z), (x, z) => mundo.bajoTecho(x, z), (x, z) => mundo.muroCercano(x, z, 0.5));
   if (r.ok) { if (almacen) guardarInventarios(almacen, inventarios); sueloObjetos.refrescar(); estacionesV.refrescar(); pintarLlevas(); vestir(); panelInventario.pintar(); }
   fin(r.ok ? { ...r, estacion: r.estacion || r.id || null } : r);
 }
