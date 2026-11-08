@@ -5562,5 +5562,22 @@
   "pruebas": "Batería entera en la nube dos veces (43 grupos, sin las de en línea), la segunda con los colgaderos unidos: todo bien salvo la lógica, que fallaba en main por los juncos de 1 a 3 haces (la recolección y el recorrido aún esperaban 1); arreglado aquí y también en main a la vez, la lógica pasa en la nube. Las imágenes de las cosas 453/453. Al unir el mapa con las zonas tomadas y las pruebas rápidas, sin choques en el código: no se repite nada (regla nueva del 8 nov).",
   "capturas": "capturas/demo-v153",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T13:23:55+00:00",
+  "fin": "2026-11-08T13:37:33+00:00",
+  "titulo": "Desbrozar matorrales y arbustos (demo v154; carril A)",
+  "hito": "crafting",
+  "hecho": [
+   "Los matorrales y los arbustos del mundo se desbrozan con el hacha de piedra en pocos golpes (con la lasca de sílex, el doble de golpes), por el servidor y con su autor en el registro: caen al suelo de 2 a 4 ramas y como mucho una vara, y la mata rebrota en una estación.",
+   "El arbusto de bayas, igual: si se desbroza, se pierden sus bayas, y vuelven con él al rebrotar.",
+   "Sin hacha ni lasca, con algo al hombro o lejos, no se desbroza; desbrozar cansa como un rato de obra; lo quitado se guarda y el servidor lo reparte a los demás jugadores.",
+   "En el juego, con Usar o desde el menú, con los golpes como al talar; la mata desaparece de la vista y deja de estorbar.",
+   "El recorrido de jugador desbroza un matorral con el hacha de piedra y encuentra sus ramas en el suelo.",
+   "La sesión retomó la rama que el chat dejó a medias por la mañana y la unió a main sin choques."
+  ],
+  "pruebas": "En la nube, lo esencial y lo tocado (9 grupos): todo bien; desbrozar en la lógica y el servidor 27/27, en el navegador en PC y en móvil, y su paso del recorrido. No comprobado en esta sesión: que la prueba nueva falle al romperla a propósito.",
+  "capturas": "capturas/demo-v154",
+  "estado": "ok"
  }
 ]

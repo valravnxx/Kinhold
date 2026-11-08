@@ -1384,9 +1384,9 @@
     },
     {
      "nombre": "Desbrozar matorrales y arbustos (valravnx, 8 nov): con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos del mundo se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación, como los árboles talados. El arbusto de bayas, igual: se pierden sus bayas. Recorrido: el jugador desbroza un matorral y se lleva sus ramas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T08:36:41+01:00",
-     "rama": "trabajo/20261108-0840-desbrozar"
+     "fin": "2026-11-08T13:37:11+00:00"
     },
     {
      "nombre": "Mazo de piedra y romper rocas (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando entre piedrecitas del suelo»): el mazo de piedra (1 piedra, 1 rama y 2 cordel, con las manos), con su modelo (estilo v5); con él se rompen las rocas medianas del mundo (hasta 1 m, aproximadamente) en muchos golpes según su tamaño, por el servidor y con su autor: cansa y da de 6 a 25 piedras sueltas según el tamaño; la roca desaparece, deja cascotes y vuelve a salir pasados unos meses reales (las grandes y los afloramientos, solo con hierro: la cantera de N2). Recorrido: el jugador hace el mazo, rompe una roca y se lleva sus piedras",
@@ -3531,6 +3531,13 @@
      "archivo": "jugar/demo/v153.html",
      "capturas": "capturas/demo-v153",
      "notas": "La barra de abajo, nueva (primera tarea de la interfaz): tus dos manos con la imagen de lo que llevas, el hombro solo cuando cargas algo (y entonces las manos, apagadas), el cinto con su arma (tócalo para cogerla con la mano) y la carga en una raya. Los huecos y los botones, con el kit de la interfaz: cuero, roble, latón y hierro renderizados, y los iconos repujados. Las imágenes de las cosas, otra vez sacadas con luz de contra y contorno."
+    },
+    {
+     "v": "v154",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v154.html",
+     "capturas": "capturas/demo-v154",
+     "notas": "Desbrozar: con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación. El arbusto de bayas pierde sus bayas."
     }
    ]
   },

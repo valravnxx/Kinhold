@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-08T13:23:55+00:00",
-  "tarea": "Desbrozar matorrales y arbustos (valravnx, 8 nov): con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos del mundo se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación, como los árboles talados. El arbusto de bayas, igual: se pierden sus bayas. Recorrido: el jugador desbroza un matorral y se lleva sus ramas",
-  "hito": "crafting",
-  "rama": "trabajo/20261108-0840-desbrozar"
- },
+ "A": null,
  "B": null
 }
