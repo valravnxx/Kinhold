@@ -82,6 +82,7 @@ body.construyendo #llevas{display:none}
 #modos button.sel{box-shadow:inset 0 0 0 1px rgba(255,225,160,.95),0 0 0 2px #c19a55}
 #modos [data-modo=mover],#modos [data-modo=desmontar]{display:none}
 body.construyendo #modos [data-modo],body.desmontando #modos [data-modo]{display:flex}
+body.construyendo:not(.tactil-ui) #modos{bottom:calc(118px + env(safe-area-inset-bottom,0px))} /* encima de la barra de piezas */
 #acciones button{min-width:96px}
 body:not(.tactil-ui) #btnUsar{display:none}
 #btnUsar .ic,#btnUsar .verbo,#btnUsar .prog{display:none}
@@ -306,6 +307,10 @@ body.construyendo #pomo{left:25px;top:25px}
   body.tactil-ui:not(.construyendo):not(.desmontando) #menu #btnFabricar{left:auto;right:calc(128px + env(safe-area-inset-right,0px));bottom:calc(154px + env(safe-area-inset-bottom,0px));width:56px;height:56px;min-width:0;padding:0;border:0;border-radius:50%;font-size:0;background:url(../../recursos/interfaz-v1/g_fabricar.webp) center/52% no-repeat,url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
   body.tactil-ui #modos{right:calc(10px + env(safe-area-inset-right,0px));bottom:auto;top:120px;flex-direction:column;align-items:flex-end}
   body.tactil-ui #modos .k{display:none}
+  /* la lista, en el móvil: encima del arco del pulgar, a la derecha (no junto a la cosa: ahí la tapa el dedo) */
+  body.tactil-ui #accionLista{left:auto!important;top:auto!important;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(338px + env(safe-area-inset-bottom,0px));min-width:0;max-width:calc(100vw - 120px)}
+  body.tactil-ui #accionLista button{font-size:16px;padding:3px 12px 3px 4px}
+  body.tactil-ui #accionLista button img{width:32px;height:32px}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir]{position:fixed;right:calc(42px + env(safe-area-inset-right,0px));top:auto;bottom:calc(272px + env(safe-area-inset-bottom,0px));width:56px;height:56px;padding:0;justify-content:center;border-radius:50%;background:url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;box-shadow:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] img{width:52%;height:52%}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] .nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}

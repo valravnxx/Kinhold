@@ -2396,5 +2396,12 @@
  "Ya está en brasas.": "It is already on embers.",
  "No está en brasas.": "It is not on embers.",
  "Está en brasas: avívalo.": "It is on embers: revive it.",
- "Está en brasas: avívalo para que vuelva la llama.": "It is on embers: revive it to bring the flame back."
+ "Está en brasas: avívalo para que vuelva la llama.": "It is on embers: revive it to bring the flame back.",
+ "{m}: {e} de {t}": "{m}: {e} of {t}",
+ "y más": "and more",
+ "Con todo: a trabajar": "All there: get to work",
+ "Terminar": "Finish",
+ "v156: la acción, a la vista (estudio de la interfaz del 7 nov). Lo que haría Usar sale escrito sobre la cosa que tienes delante, con un aro dorado en el suelo bajo ella: «Desbrozar: matorral», «Coger del suelo: 2 × Rama», «Talar el árbol». En PC se hace con la F; si hay varias cosas al alcance, al lado sale la lista (la de Usar, marcada) y un clic en otra la hace. La obra dice lo que le falta («Tronco delgado: 2 de 4» y una barra), y mientras se tala o se desbroza un aro se va llenando. En el móvil, un botón de acción grande junto al pulgar con la imagen de la cosa y el verbo debajo, y Fabricar y Construir en arco a su lado. Fuera los botones Mover, Desmontar y Usar de la derecha: Construir queda abajo (B), y Desmontar y Terminar salen solo mientras construyes.": "v156: the action, in sight (interface study of 7 Nov). What Use would do is written above the thing in front of you, with a golden ring on the ground beneath it: «Clear: thicket», «Pick up: 2 × Branch», «Fell the tree». On PC it is done with F; if several things are within reach, the list appears beside it (the Use one, marked) and a click on another does that one. The building site says what it still needs («Thin log: 2 of 4» and a bar), and while felling or clearing a ring fills up. On mobile, a large action button by the thumb with the picture of the thing and the verb below, and Craft and Build in an arc beside it. Gone are the Move, Dismantle and Use buttons on the right: Build stays at the bottom (B), and Dismantle and Finish only show while you build.",
+ "v156, provisional: talar y desbrozar siguen solos una vez empezados (no hace falta mantener la tecla); el aro solo enseña cuánto falta.": "v156, provisional: felling and clearing carry on by themselves once started (no need to hold the key); the ring only shows how much is left.",
+ "Demo única · v156 (la acción, a la vista)": "Single demo · v156 (the action, in sight)"
 }

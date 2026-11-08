@@ -2396,5 +2396,12 @@
  "Ya está en brasas.": "Он уже на углях.",
  "No está en brasas.": "Он не на углях.",
  "Está en brasas: avívalo.": "Он на углях: раздуй его.",
- "Está en brasas: avívalo para que vuelva la llama.": "Он на углях: раздуй его, чтобы вернулось пламя."
+ "Está en brasas: avívalo para que vuelva la llama.": "Он на углях: раздуй его, чтобы вернулось пламя.",
+ "{m}: {e} de {t}": "{m}: {e} из {t}",
+ "y más": "и ещё",
+ "Con todo: a trabajar": "Всё на месте: за работу",
+ "Terminar": "Готово",
+ "v156: la acción, a la vista (estudio de la interfaz del 7 nov). Lo que haría Usar sale escrito sobre la cosa que tienes delante, con un aro dorado en el suelo bajo ella: «Desbrozar: matorral», «Coger del suelo: 2 × Rama», «Talar el árbol». En PC se hace con la F; si hay varias cosas al alcance, al lado sale la lista (la de Usar, marcada) y un clic en otra la hace. La obra dice lo que le falta («Tronco delgado: 2 de 4» y una barra), y mientras se tala o se desbroza un aro se va llenando. En el móvil, un botón de acción grande junto al pulgar con la imagen de la cosa y el verbo debajo, y Fabricar y Construir en arco a su lado. Fuera los botones Mover, Desmontar y Usar de la derecha: Construir queda abajo (B), y Desmontar y Terminar salen solo mientras construyes.": "v156: действие на виду (этюд интерфейса от 7 ноября). То, что сделает «Использовать», написано над предметом перед вами, а под ним на земле — золотое кольцо: «Расчистить: заросли», «Поднять: 2 × Ветка», «Срубить дерево». На ПК — клавиша F; если в досягаемости несколько вещей, рядом появляется список (действие «Использовать» отмечено), и щелчок по другому выполняет его. Стройка говорит, чего ей не хватает («Тонкое бревно: 2 из 4» и полоска), а пока рубите или расчищаете, заполняется кольцо. На телефоне — большая кнопка действия у большого пальца с картинкой предмета и глаголом под ней, а рядом дугой — «Изготовить» и «Строить». Убраны кнопки «Двигаться», «Разобрать» и «Использовать» справа: «Строить» остаётся внизу (B), а «Разобрать» и «Готово» появляются только во время строительства.",
+ "v156, provisional: talar y desbrozar siguen solos una vez empezados (no hace falta mantener la tecla); el aro solo enseña cuánto falta.": "v156, предварительно: рубка и расчистка продолжаются сами, раз начавшись (клавишу держать не нужно); кольцо лишь показывает, сколько осталось.",
+ "Demo única · v156 (la acción, a la vista)": "Единая демо · v156 (действие на виду)"
 }

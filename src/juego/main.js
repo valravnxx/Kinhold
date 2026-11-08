@@ -2499,8 +2499,8 @@ document.body.classList.toggle('tactil-ui', !!estado.esTactil);
 const aroAccion = new THREE.Group();
 {
   const mat = (o) => new THREE.MeshBasicMaterial({ color: 0xf0c46e, transparent: true, opacity: o, depthWrite: false, side: THREE.DoubleSide });
-  const filo = new THREE.Mesh(new THREE.RingGeometry(0.46, 0.5, 48), mat(0.95));
-  const halo = new THREE.Mesh(new THREE.RingGeometry(0.36, 0.62, 48), mat(0.22));
+  const filo = new THREE.Mesh(new THREE.RingGeometry(0.47, 0.5, 48), mat(0.9));
+  const halo = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.56, 48), mat(0.14));
   for (const m of [halo, filo]) { m.rotation.x = -Math.PI / 2; m.renderOrder = 3; aroAccion.add(m); }
   aroAccion.visible = false;
   escena.add(aroAccion);
@@ -2527,7 +2527,7 @@ function pintarAccion() {
   if (!a) { etq.hidden = true; lista.hidden = true; aroAccion.visible = false; return; }
   const y0 = a.y ?? sueloEn(a.pos.x, a.pos.z);
   // el aro, en el suelo bajo la cosa (algo más grande para un árbol, una obra o una estación)
-  const r = a.icono === 'g_construir' ? RADIO_ARO.obra : (a.alto || 0) >= 3 ? RADIO_ARO.arbol : String(a.icono).startsWith('est_') ? RADIO_ARO.est : 0.6;
+  const r = a.icono === 'g_construir' ? RADIO_ARO.obra : (a.alto || 0) >= 3 ? RADIO_ARO.arbol : String(a.icono).startsWith('est_') ? RADIO_ARO.est : (a.alto || 0) <= 0.4 ? 0.42 : 0.6;
   aroAccion.visible = !(a.pos.x === pj.x && a.pos.z === pj.z); // (lo que va contigo, como comer, no lleva aro)
   aroAccion.position.set(a.pos.x, y0 + 0.04, a.pos.z); aroAccion.scale.setScalar(r / 0.5);
   // la etiqueta, sobre la cosa (si está delante de la cámara)
@@ -2974,6 +2974,7 @@ window.__kinhold = {
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
   beber, aguaAlLado, comer,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
+  get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
