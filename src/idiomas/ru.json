@@ -2374,5 +2374,22 @@
  "Desbrozar: {c}": "Расчистить: {c}",
  "Desbrozas: {c}.": "Вы расчищаете: {c}.",
  "Desbrozado: caen {n} ramas y una vara.": "Расчищено: падают {n} веток и жердь.",
- "Desbrozado: caen {n} ramas.": "Расчищено: падают {n} веток."
+ "Desbrozado: caen {n} ramas.": "Расчищено: падают {n} веток.",
+ "{e}: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.": "{e}: теперь это твоя постель. Здесь ты будешь возрождаться и здесь можешь спать.",
+ "Duermes. Muévete para levantarte.": "Ты спишь. Двинься, чтобы встать.",
+ "Ligar tu cama: {e}": "Сделать своей постелью: {e}",
+ "Dormir: {e}": "Спать: {e}",
+ "Camas": "Постели",
+ "Refugio de ramas": "Шалаш из веток",
+ "Cama de juncos": "Постель из камыша",
+ "Un tejadillo de ramas apoyado en un travesaño, con un lecho de ramas debajo: para dormir cuando aún no tienes casa": "Навес из веток на перекладине, с подстилкой из веток внизу: чтобы спать, пока у тебя ещё нет дома",
+ "Un lecho de haces de juncos atados con cordel, dentro de la casa": "Ложе из связок камыша, перевязанных бечёвкой, внутри дома",
+ "La cama va en tu tierra (o en la de quien te invita).": "Постель ставится на твоей земле (или на земле того, кто тебя пригласил).",
+ "Eso no es una cama.": "Это не постель.",
+ "Aún está a medias: termínala primero.": "Она ещё не достроена: сначала закончи её.",
+ "La cama ligada va en tu tierra o en la de quien te ha invitado a construir.": "Твоя постель должна быть на твоей земле или на земле того, кто пригласил тебя строить.",
+ "Ya es tu cama ligada.": "Это уже твоя постель.",
+ "Solo se duerme en tu cama ligada: lígala primero.": "Спать можно только в своей постели: сначала сделай её своей.",
+ "Refugio de ramas: solo fuera, no bajo techo.": "Шалаш из веток: только снаружи, не под крышей.",
+ "Cama de juncos: solo dentro de la casa.": "Постель из камыша: только внутри дома."
 }

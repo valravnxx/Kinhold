@@ -2374,5 +2374,22 @@
  "Desbrozar: {c}": "Clear: {c}",
  "Desbrozas: {c}.": "You clear: {c}.",
  "Desbrozado: caen {n} ramas y una vara.": "Cleared: {n} branches and a rod fall.",
- "Desbrozado: caen {n} ramas.": "Cleared: {n} branches fall."
+ "Desbrozado: caen {n} ramas.": "Cleared: {n} branches fall.",
+ "{e}: ya es tu cama. Aquí reaparecerás, y aquí puedes dormir.": "{e}: this is your bed now. You will respawn here, and you can sleep here.",
+ "Duermes. Muévete para levantarte.": "You are asleep. Move to get up.",
+ "Ligar tu cama: {e}": "Bind your bed: {e}",
+ "Dormir: {e}": "Sleep: {e}",
+ "Camas": "Beds",
+ "Refugio de ramas": "Branch shelter",
+ "Cama de juncos": "Rush bed",
+ "Un tejadillo de ramas apoyado en un travesaño, con un lecho de ramas debajo: para dormir cuando aún no tienes casa": "A lean-to of branches resting on a crossbar, with a bed of branches underneath: for sleeping before you have a house",
+ "Un lecho de haces de juncos atados con cordel, dentro de la casa": "A bed of rush bundles tied with cord, inside the house",
+ "La cama va en tu tierra (o en la de quien te invita).": "The bed goes on your land (or on the land of whoever invites you).",
+ "Eso no es una cama.": "That is not a bed.",
+ "Aún está a medias: termínala primero.": "It is still half-built: finish it first.",
+ "La cama ligada va en tu tierra o en la de quien te ha invitado a construir.": "Your bound bed goes on your land or on the land of whoever has invited you to build.",
+ "Ya es tu cama ligada.": "It is already your bound bed.",
+ "Solo se duerme en tu cama ligada: lígala primero.": "You can only sleep in your bound bed: bind it first.",
+ "Refugio de ramas: solo fuera, no bajo techo.": "Branch shelter: outside only, not under a roof.",
+ "Cama de juncos: solo dentro de la casa.": "Rush bed: only inside the house."
 }

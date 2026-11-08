@@ -435,6 +435,10 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // las necesidades de los conectados: el tiempo, lo que corren (la distancia que el servidor les ha visto andar desde
   // el tic anterior) y lo que cargan suelto
   const antesNec = new Map();   // autor → { x, z, t }
+  // quién duerme en su cama ligada (P4; src/logica/fabricacion.js, dormir): autor → { x, z, t } de la cama. Se despierta
+  // cuando su presencia deja de decir «dormir» (pasado 1,5 s, lo que tarda en llegar), al alejarse de la cama (más de
+  // 2,5 m) o al irse; mientras duerme, el cansancio baja deprisa (src/logica/necesidades.js)
+  const durmiendo = new Map();
   const ticNecesidades = setInterval(() => {
     const t = reloj();
     for (const [ws, a] of clientes) {
@@ -444,8 +448,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;
       if (e) antesNec.set(a, { x: e.x, z: e.z, t }); else antesNec.set(a, { x: 0, z: 0, t });
       if (!(dt > 0)) continue;
-      const inv = objetos.invs.de(a);
-      necesidades.set(a, avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: 0 }));
+      const inv = objetos.invs.de(a), d = durmiendo.get(a);
+      if (d && (!e || Math.hypot(e.x - d.x, e.z - d.z) > 2.5 || (t - d.t > 1500 && e.anim !== 'dormir'))) durmiendo.delete(a);
+      necesidades.set(a, avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: 0, durmiendo: durmiendo.has(a) }));
       necesidadesCambiadas = true;
       enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(a)) });
     }
@@ -930,6 +935,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
         if (r.ok) repartirLlevado(autor);
         if (r.ok) cansar(autor, msg.accion.tipo);   // talar, trocear, fabricar y recoger cansan (src/logica/necesidades.js)
+        // dormir en la cama ligada: hasta que se mueva de donde se tumbó (el tic de las necesidades)
+        if (r.ok && msg.accion.tipo === 'dormir') { const c = objetos.fab.estaciones[msg.accion.estacion]; if (c) durmiendo.set(autor, { x: c.x, z: c.z, t: reloj() }); }
         // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
         // lo talado y lo recogido, solo lo de su trozo y solo a quien lo tiene alrededor (el autor siempre)
         const aSuTrozo = (sitio, hacer) => {
@@ -999,7 +1006,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
-      antesNec.delete(autor); ultimoTrago.delete(autor);
+      antesNec.delete(autor); ultimoTrago.delete(autor); durmiendo.delete(autor);
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }

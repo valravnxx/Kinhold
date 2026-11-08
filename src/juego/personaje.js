@@ -216,6 +216,11 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       if (m === 'quieto') m = 'hombroQuieto';
       else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
     }
+    // dormir en la cama ligada (P4): se tumba (y se queda tumbado) y, al despertar, se levanta (taller-dormir-v1)
+    if (j.durmiendo && j.mh.acciones.tumbarse) m = 'tumbarse';
+    else if (j.modo === 'tumbarse' && j.mh.acciones.levantarse) { m = 'levantarse'; j.levantaHasta = performance.now() + j.mh.acciones.levantarse.getClip().duration * 1000; }
+    else if (j.modo === 'levantarse' && performance.now() < (j.levantaHasta || 0)) m = 'levantarse';
+    if (m === 'tumbarse' || m === 'levantarse') { ritmo = 1; const a = j.mh.acciones[m]; if (a.loop !== THREE.LoopOnce) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } }
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
     if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)
     j.mh.acciones[m].timeScale = ritmo;

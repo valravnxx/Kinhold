@@ -16,6 +16,9 @@
 //    hoyo de barro (cavado y bordeado de piedras) y el cesto (de juncos trenzados): las varas tumbadas en la horquilla,
 //    la paja en montón alrededor del palo y los juncos de pie apoyados en él, el barro llenando el hoyo y lo pequeño
 //    subiendo dentro del cesto.
+//  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
+//    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
+//    almohada de juncos).
 // Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
 // de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
 // círculo de piedras. Cada tipo, su montón.
@@ -282,8 +285,73 @@ function colgaderoMochilas(id) {
   return mallas(L);
 }
 
+
+// ---------- las camas (P4, la cama ligada; valravnx, 8 nov) ----------
+// El refugio de ramas (un tejadillo «a un agua», como los de los leñadores y carboneros): dos postes de vara con
+// horquilla delante, un travesaño encima y las ramas apoyadas en él hasta el suelo de atrás, tapadas con ramaje verde;
+// los lados, cerrados con ramas de pie; dentro, un lecho de ramaje seco. Lo largo, en X; la boca, hacia +Z.
+const REFUGIO = { x: 1.05, delante: 0.38, atras: -1.0, alto: 1.18 };
+const alturaRefugio = z => REFUGIO.alto * (z - REFUGIO.atras) / (REFUGIO.delante - REFUGIO.atras);
+function refugioRamas(id) {
+  const L = new Lote({ rangoSuelo: 0.15, variacion: 0.08 }), { x: X, delante: Zd, atras: Za, alto: H } = REFUGIO;
+  for (const sx of [-1, 1]) { // los postes, con su horquilla arriba
+    const x = sx * X + (az(id, sx) - 0.5) * 0.04;
+    varaEntre(L, new THREE.Vector3(x, -0.12, Zd), new THREE.Vector3(x, H + 0.06, Zd + 0.02), 0.036);
+    varaEntre(L, new THREE.Vector3(x, H - 0.1, Zd + 0.01), new THREE.Vector3(x + sx * 0.09, H + 0.16, Zd + 0.03), 0.018);
+  }
+  varaEntre(L, new THREE.Vector3(-X - 0.18, H + 0.03, Zd), new THREE.Vector3(X + 0.2, H + 0.04, Zd + 0.01), 0.03); // el travesaño
+  const pendiente = Math.atan2(H, Zd - Za);
+  for (let i = 0; i < 26; i++) { // las ramas del tejadillo, del travesaño al suelo de atrás
+    const x = -X + 0.02 + i * (2 * X - 0.04) / 25 + (az(id, i) - 0.5) * 0.04, r = 0.017 + az(id, i + 40) * 0.012;
+    varaEntre(L, new THREE.Vector3(x, H + 0.06, Zd + 0.06 + az(id, i + 80) * 0.05), new THREE.Vector3(x + (az(id, i + 9) - 0.5) * 0.12, -0.02, Za - 0.08 - az(id, i + 20) * 0.1), r);
+  }
+  for (const sx of [-1, 1]) for (let i = 0; i < 7; i++) { // los lados: ramas de pie, apoyadas en la primera del tejadillo
+    const z = Za + 0.12 + i * (Zd - Za - 0.2) / 6, y = alturaRefugio(z);
+    varaEntre(L, new THREE.Vector3(sx * (X + 0.14), -0.04, z + (az(id, i + sx * 7) - 0.5) * 0.08), new THREE.Vector3(sx * (X - 0.02), y, z), 0.015 + az(id, i + 50) * 0.008);
+  }
+  for (let i = 0; i < 22; i++) { // el ramaje verde encima, en matas aplastadas a lo largo de la pendiente
+    const u = (i % 5 + 0.5 + (az(id, i + 100) - 0.5) * 0.6) / 5, v = (Math.floor(i / 5) + 0.5 + (az(id, i + 120) - 0.5) * 0.5) / 4.4;
+    const x = -X + 0.1 + v * (2 * X - 0.2), z = Za + 0.05 + u * (Zd - Za - 0.1), y = alturaRefugio(z) + 0.07;
+    L.add(piedraIrregular(0.3, 1, id + 'r' + i, 0.3), i % 3 ? 'hoja' : 'hojaOsc', x, y, z, { x: pendiente, y: (az(id, i + 140) - 0.5) * 0.6 }, { escala: new THREE.Vector3(1.15, 0.22, 0.85), sinSuelo: true });
+  }
+  for (let i = 0; i < 9; i++) { // el lecho de dentro: ramaje seco, bajo y aplastado
+    const x = -X + 0.3 + (i % 3) * (2 * X - 0.6) / 2 + (az(id, i + 160) - 0.5) * 0.15, z = Za + 0.35 + Math.floor(i / 3) * 0.32;
+    L.add(piedraIrregular(0.3, 1, id + 'l' + i, 0.25), i % 2 ? 0x7d6f48 : 0x8a7a50, x, 0.04, z, { y: az(id, i + 180) * 6 }, { escala: new THREE.Vector3(1.2, 0.16, 0.8), tex: 'paja', sinSuelo: true });
+  }
+  return mallas(L);
+}
+// La cama de juncos (dentro de la casa): un lecho de juncos tumbados a lo largo, en tres capas, ceñido por dos varas a
+// los lados y atado con cordel de trecho en trecho; a la cabecera, un haz enrollado de almohada. 1,9 × 0,8 m.
+const CAMA_J = { x: 0.95, z: 0.4 };
+const JUNCO_C = 0x7f8a4c, JUNCO_SECO = 0x9a9560, CORDEL_C = 0x9c8a60;
+function camaJuncos(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 }), { x: X, z: Z } = CAMA_J;
+  for (const sz of [-1, 1]) varaEntre(L, new THREE.Vector3(-X - 0.05, 0.035, sz * (Z + 0.02)), new THREE.Vector3(X + 0.05, 0.035, sz * (Z + 0.02) + (az(id, sz) - 0.5) * 0.03), 0.034);
+  const r = 0.0085;
+  for (let capa = 0; capa < 3; capa++) {
+    const n = 44 - capa * 4;
+    for (let i = 0; i < n; i++) {
+      const z = -Z + 0.02 + (i + (capa % 2) * 0.5) * (2 * Z - 0.04) / n, y = 0.012 + capa * 0.016 + Math.sin(Math.PI * (z + Z) / (2 * Z)) * 0.02 * capa;
+      const dx = (az(id, capa * 100 + i) - 0.5) * 0.12, largo = 2 * X - 0.04 - az(id, capa * 100 + i + 50) * 0.12;
+      L.add(cil(r * 0.8, r, largo, 5), (i + capa) % 4 ? JUNCO_C : JUNCO_SECO, dx, y + r, z, { z: Math.PI / 2, y: (az(id, capa * 100 + i + 70) - 0.5) * 0.03 }, { tex: 'paja', sinSuelo: true });
+    }
+  }
+  for (const fx of [-0.62, -0.2, 0.22, 0.64]) { // las ataduras de cordel, de lado a lado por encima
+    const x = fx * X + (az(id, fx * 10) - 0.5) * 0.04;
+    L.add(cil(0.006, 0.006, 2 * Z + 0.1, 4), CORDEL_C, x, 0.088, 0, { x: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+    for (const sz of [-1, 1]) L.add(new THREE.TorusGeometry(0.04, 0.006, 4, 10), CORDEL_C, x, 0.045, sz * (Z + 0.02), { y: Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  }
+  // la almohada: un haz de juncos más corto, atravesado a la cabecera (-X)
+  for (let i = 0; i < 26; i++) {
+    const a = i * 2.399, d = 0.07 * Math.sqrt((i + 0.5) / 26);
+    L.add(cil(r * 0.8, r, 2 * Z - 0.1, 5), i % 3 ? JUNCO_C : JUNCO_SECO, -X + 0.16 + Math.cos(a) * d, 0.13 + Math.sin(a) * d * 0.7, (az(id, i + 300) - 0.5) * 0.06, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
+  }
+  for (const fz of [-0.55, 0.55]) L.add(new THREE.TorusGeometry(0.075, 0.006, 4, 12), CORDEL_C, -X + 0.16, 0.13, fz * Z, null, { tex: 'liso', sinSuelo: true });
+  return mallas(L);
+}
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
-  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas };
+  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -531,7 +599,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {

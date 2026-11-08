@@ -34,6 +34,8 @@
 //   { tipo: 'encender_fuego', estacion, x, z } — encender la hoguera (1 yesca de lo que llevas; llevar el taladro de
 //     fuego); { tipo: 'echar_fuego', estacion, objeto: 'rama' | 'lena', x, z } — echarle una (src/logica/fuego.js). En
 //     tierra de otro, solo su dueño y sus invitados
+//   { tipo: 'ligar_cama', estacion, x, z } — ligar esa cama (una por personaje; en tu tierra o en la de quien te ha
+//     invitado); { tipo: 'dormir', estacion, x, z } — dormir en tu cama ligada (lo que hace lo lleva el servidor)
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
@@ -65,7 +67,7 @@ import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
-import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, ESTACIONES } from './fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, DE_LA_CAMA, ESTACIONES } from './fabricacion.js';
 import { estadoFuego } from './fuego.js';
 
 export const TOLERANCIA = 3; // m
@@ -133,7 +135,7 @@ export class ObjetosServidor {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él
         const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
-        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || DEL_FUEGO.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
+        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
         const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
@@ -141,7 +143,7 @@ export class ObjetosServidor {
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
-        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
+        estaciones = !!r.ok && a.tipo !== 'recoger_fabricado' && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
