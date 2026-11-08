@@ -5692,5 +5692,21 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal; el recorrido de jugador, 154 bien y 0 mal hasta el hogar (se cortó a los 500 s, al llevarle las piedras al hogar; no comprobado aquí el resto, que salió entero en la v159, 208 bien y 0 mal, sin cambios de código desde entonces)",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T19:25:15+00:00",
+  "fin": "2026-11-08T20:04:08+00:00",
+  "titulo": "P4: el frío (la noche, el bioma, la ropa, el techo y el fuego)",
+  "hito": "supervivencia",
+  "hecho": [
+   "El frío que pide cada sitio, en la lógica pura (src/logica/necesidades.js, frioDelSitio): la temperatura media del bioma a su altura, la noche (entera de 20 a 4, poco a poco al anochecer y al amanecer), el abrigo de lo puesto (cada prenda, por cada parte del cuerpo que cubre), la mitad bajo techo y nada a 2 m o menos de un fuego encendido",
+   "El servidor lo calcula para cada jugador cada segundo, con la hora del cielo, la temperatura del paisaje donde está, su ropa, el techo de las construcciones y el calor de las hogueras y los hogares; el frío va hacia ahí en unos 10 minutos",
+   "Con lo del principio, en la salida (unos 9 °C), de día no hay frío y de noche llega a 50 (sale su aviso); en la taiga, también de día. La estación y la lluvia aún no cuentan (llegan con P11)",
+   "Recorrido de jugador: en el paso de la hoguera se hace de noche; a 9 m le sube el frío y junto a la hoguera encendida le baja",
+   "Decisiones provisionales en el registro de la demo (v160) y en el diario: 4 puntos por grado bajo 16 °C (hasta 60), 50 la noche, 4 menos por punto de abrigo, la mitad bajo techo"
+  ],
+  "pruebas": "En la nube: lógica (todo bien, con el frío nuevo de pruebas/prueba_necesidades.mjs, roto a propósito sin mirar el fuego y sin mirar la noche: falla), recorrido de jugador (210 bien, 0 mal) y demo única (bien). Fuera, por la sesión: la prueba de navegador de los avisos (sin servidor: los avisos no cambian). La primera vuelta falló solo por las traducciones al ruso del registro, ya puestas",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
