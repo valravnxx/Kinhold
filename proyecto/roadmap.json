@@ -1448,9 +1448,9 @@
     },
     {
      "nombre": "Muros de zarzo y barro con puerta y con ventana (valravnx, 8 nov: «debemos tener el full set de barro»), como los de troncos; la puerta de varas encaja en su hueco",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T07:30:19+00:00",
-     "rama": "trabajo/20261108-0730-zarzo"
+     "fin": "2026-11-08T10:08:59+00:00"
     },
     {
      "nombre": "Arreglo urgente (valravnx, 8 nov): sacar de un almacenaje lo que te cabe, no todo o nada; y elegir cuánto con el clic derecho (o dejando pulsado en el móvil)",
@@ -1580,7 +1580,7 @@
      "nombre": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
      "estado": "en_curso",
      "inicio": "2026-11-07T18:43:47+01:00",
-     "rama": "trabajo/20261107-1845-interfaz"
+     "rama": "trabajo/20261108-1025"
     },
     {
      "nombre": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
@@ -3496,6 +3496,13 @@
      "archivo": "jugar/demo/v149.html",
      "capturas": null,
      "notas": "v149, arreglo urgente: al sacar de un almacenaje o de una estación una pila que no te cabe entera, ahora sacas lo que te cabe y el resto se queda (antes decía «No te cabe» y la pila se quedaba bloqueada). Con el clic derecho (o dejando pulsado en el móvil) eliges cuánto sacar."
+    },
+    {
+     "v": "v150",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v150.html",
+     "capturas": "capturas/demo-v150",
+     "notas": "El juego completo de muros de zarzo y barro: además del liso, con puerta y con ventana, como los de troncos"
     }
    ]
   },

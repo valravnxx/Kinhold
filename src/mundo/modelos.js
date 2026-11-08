@@ -131,13 +131,55 @@ function muroTroncos(opc = {}) {
   }
   return deLote(L);
 }
-// Zarzo y barro: varas entretejidas entre estacas, tapadas con barro (las estacas asoman)
-function muroZarzo() {
+// Zarzo y barro: varas entretejidas entre estacas, tapadas con barro (las estacas asoman). Con puerta o con ventana
+// (valravnx, 8 nov: el juego completo de barro), el barro rodea el hueco y lo enmarcan dos estacas más gruesas, con un
+// dintel de vara (y un alféizar en la ventana); la estaca del medio se corta en el hueco.
+const BARRO = 0x8c7356;
+const RAYAS_BARRO = (v) => 0.94 + 0.06 * Math.sin(v.x * 3.1 + v.y * 2.3);
+function muroZarzo(opc = {}) {
   const L = loteMuro();
-  const BARRO = 0x8c7356;
-  L.add(cajaR(MODULO, ALTURA, 0.16, 0.05), BARRO, 0, ALTURA / 2, 0, null, { tex: 'piedra', rayas: (v) => 0.94 + 0.06 * Math.sin(v.x * 3.1 + v.y * 2.3) });
-  for (const x of [-0.93, 0, 0.93]) L.add(cil(0.085, 0.095, ALTURA - 0.12, 8), 'corteza', x, ALTURA / 2, 0); // estacas, asoman del barro
-  for (const s of [-1, 1]) L.add(cajaR(MODULO, 0.12, 0.2, 0.03), 'maderaOsc', 0, s > 0 ? ALTURA - 0.06 : 0.06, 0); // durmiente y carrera
+  const S = MODULO / 2, H = ALTURA, c = 'maderaOsc';
+  const estaca = (x, y0, y1) => { if (y1 - y0 > 0.05) L.add(cil(0.085, 0.095, y1 - y0, 8), 'corteza', x, (y0 + y1) / 2, 0); };
+  if (!opc.puerta && !opc.ventana) {
+    L.add(cajaR(MODULO, H, 0.16, 0.05), BARRO, 0, H / 2, 0, null, { tex: 'piedra', rayas: RAYAS_BARRO });
+    for (const x of [-0.93, 0, 0.93]) estaca(x, 0.06, H - 0.06);
+    L.add(cajaR(MODULO, 0.12, 0.2, 0.03), c, 0, 0.06, 0);
+    L.add(cajaR(MODULO, 0.12, 0.2, 0.03), c, 0, H - 0.06, 0);
+    return deLote(L);
+  }
+  // el barro de una pieza, con el hueco recortado (sin juntas entre paños), del mismo grueso que el muro liso
+  const f = new THREE.Shape(), B = 0.015;   // B: lo que crece el bisel (el contorno se dibuja metido para que quede justo)
+  if (opc.puerta) {
+    const a = P.anchoPuerta / 2;
+    f.moveTo(-S + B, B); f.lineTo(-a - B, B); f.lineTo(-a - B, P.altoPuerta + B); f.lineTo(a + B, P.altoPuerta + B); f.lineTo(a + B, B); f.lineTo(S - B, B); f.lineTo(S - B, H - B); f.lineTo(-S + B, H - B); f.closePath();
+  } else {
+    const a = P.anchoVentana / 2;
+    f.moveTo(-S + B, B); f.lineTo(S - B, B); f.lineTo(S - B, H - B); f.lineTo(-S + B, H - B); f.closePath();
+    const h = new THREE.Path(); h.moveTo(-a - B, P.bajoVentana - B); h.lineTo(-a - B, P.altoVentana + B); h.lineTo(a + B, P.altoVentana + B); h.lineTo(a + B, P.bajoVentana - B); h.closePath();
+    f.holes.push(h);
+  }
+  const g = new THREE.ExtrudeGeometry(f, { depth: 0.12, bevelEnabled: true, bevelThickness: 0.02, bevelSize: B, bevelSegments: 1, curveSegments: 1 });
+  g.translate(0, 0, -0.06);
+  L.add(g, BARRO, 0, 0, 0, null, { tex: 'piedra', rayas: RAYAS_BARRO });
+  if (opc.puerta) {
+    const a = P.anchoPuerta / 2, ap = P.altoPuerta;
+    for (const x of [-0.93, 0.93]) estaca(x, 0.06, H - 0.06);
+    estaca(0, ap + 0.14, H - 0.06);
+    // el marco: dos estacas gruesas que asoman del barro y un dintel de vara encima del hueco
+    for (const s of [-1, 1]) L.add(cil(0.105, 0.115, ap + 0.12, 8), 'corteza', s * (a + 0.12), (ap + 0.12) / 2, 0);
+    L.add(cil(0.1, 0.1, P.anchoPuerta + 0.5, 8), 'corteza', 0, ap + 0.1, 0, { z: Math.PI / 2 });
+    const lado = S - a - 0.02;
+    for (const s of [-1, 1]) L.add(cajaR(lado, 0.12, 0.2, 0.03), c, s * (S - lado / 2), 0.06, 0);   // durmiente a los lados del hueco
+  } else {
+    const a = P.anchoVentana / 2, bv = P.bajoVentana, av = P.altoVentana, alto = av - bv;
+    for (const x of [-0.93, 0.93]) estaca(x, 0.06, H - 0.06);
+    estaca(0, 0.06, bv - 0.1); estaca(0, av + 0.1, H - 0.06);
+    for (const s of [-1, 1]) L.add(cil(0.1, 0.105, alto + 0.3, 8), 'corteza', s * (a + 0.11), bv + alto / 2, 0);   // marco de estacas
+    L.add(cajaR(P.anchoVentana + 0.36, 0.08, 0.26, 0.02), c, 0, bv - 0.03, 0);                                   // alféizar
+    L.add(cil(0.085, 0.085, P.anchoVentana + 0.44, 8), 'corteza', 0, av + 0.08, 0, { z: Math.PI / 2 });          // dintel de vara
+    L.add(cajaR(MODULO, 0.12, 0.2, 0.03), c, 0, 0.06, 0);
+  }
+  L.add(cajaR(MODULO, 0.12, 0.2, 0.03), c, 0, H - 0.06, 0);   // carrera
   return deLote(L);
 }
 // Entramado: armazón de vigas con relleno de barro encalado
@@ -689,12 +731,13 @@ function rellenoLiso(L, u0, u1, yBajo, arriba, plano, pos, color) {
 }
 // Lo que asoma del relleno liso, como en su muro: estacas del zarzo o postes del entramado, hasta el tejado
 function armazonRelleno(L, u0, u1, yBajo, arriba, plano, pos, muro) {
-  const us = muro === 'muro_zarzo' ? [-0.93, 0, 0.93] : [u0 + 0.09, (u0 + u1) / 2, u1 - 0.09];
+  const zarzo = muro.startsWith('muro_zarzo');
+  const us = zarzo ? [-0.93, 0, 0.93] : [u0 + 0.09, (u0 + u1) / 2, u1 - 0.09];
   for (const u of us) {
     const h = arriba(u) - yBajo - 0.03;
     if (h < 0.08) continue;
     const [x, z] = plano === 'z' ? [pos, u] : [u, pos];
-    if (muro === 'muro_zarzo') L.add(cil(0.085, 0.095, h, 8), 'corteza', x, yBajo + h / 2, z, null, { sinSuelo: true });
+    if (zarzo) L.add(cil(0.085, 0.095, h, 8), 'corteza', x, yBajo + h / 2, z, null, { sinSuelo: true });
     else L.add(cajaR(plano === 'z' ? 0.2 : 0.18, h, plano === 'z' ? 0.18 : 0.2, 0.03), 'maderaOsc', x, yBajo + h / 2, z, null, { sinSuelo: true });
   }
 }
@@ -1342,6 +1385,8 @@ export function modeloPieza(tipo, ctx) {
     case 'poste': return poste();
     case 'viga': return viga();
     case 'muro_zarzo': return muroZarzo();
+    case 'muro_zarzo_puerta': return muroZarzo({ puerta: true });
+    case 'muro_zarzo_ventana': return muroZarzo({ ventana: true });
     case 'muro_tronco': return muroTroncos();
     case 'muro_tronco_puerta': return muroTroncos({ puerta: true });
     case 'muro_tronco_ventana': return muroTroncos({ ventana: true });
@@ -1381,7 +1426,7 @@ export function modeloPieza(tipo, ctx) {
 // En el marco local del tramo de tejado (sube hacia +z; lados en x = ±1; borde alto en z = +1).
 // y = 0 es lo alto de la planta de los muros. 'arranque' en tramos. Como en la cabaña de la prueba v5, bajo el tejado
 // se cierra con tablas de pie (muros de troncos y de tablas); el zarzo con su barro y el entramado con su encalado.
-const RELLENO_LISO = { muro_zarzo: 0x8c7356, muro_entramado: 0xd3c6a6 };
+const RELLENO_LISO = { muro_zarzo: 0x8c7356, muro_zarzo_puerta: 0x8c7356, muro_zarzo_ventana: 0x8c7356, muro_entramado: 0xd3c6a6 };
 export function rellenoTejado(rel, arranque) {
   const S = MODULO / 2, sub = P.subidaTejado, L = loteMuro(), yBajo = -arranque * sub;
   let u0, u1, arriba, plano, pos;

@@ -53,6 +53,11 @@ export const PIEZAS = {
   viga:               { nombre: 'Viga', hueco: 'b', nivel: 1, peso: 60, cap: 1000, coste: { tronco: 1 }, cat: 'estructura' },
 
   muro_zarzo:         { nombre: 'Muro de zarzo y barro', hueco: 'e', nivel: 1, peso: 150, cap: 250, coste: { vara: 4, barro: 4 }, cat: 'muro' },
+  // Con puerta y con ventana (valravnx, 8 nov: «de pared de barro solo hay la pared lisa y para poner una puerta tienes
+  // que poner de troncos? eso queda feo! debemos tener el full set de barro»). Peso, carga y coste provisionales
+  // (sistemas no lo trae): en la proporción de los de troncos con puerta y con ventana; el hueco lleva su marco de varas.
+  muro_zarzo_puerta:  { nombre: 'Muro de zarzo y barro con puerta', hueco: 'e', nivel: 1, peso: 110, cap: 180, coste: { vara: 3, barro: 3 }, conPuerta: true, cat: 'muro' },
+  muro_zarzo_ventana: { nombre: 'Muro de zarzo y barro con ventana', hueco: 'e', nivel: 1, peso: 130, cap: 210, coste: { vara: 3, barro: 3 }, conVentana: true, cat: 'muro' },
   muro_tronco:        { nombre: 'Muro de troncos', hueco: 'e', nivel: 1, peso: 300, cap: 1200, coste: { tronco: 4 }, cat: 'muro' },
   muro_tronco_puerta: { nombre: 'Muro de troncos con puerta', hueco: 'e', nivel: 1, peso: 220, cap: 850, coste: { tronco: 3 }, conPuerta: true, cat: 'muro' },
   muro_tronco_ventana:{ nombre: 'Muro de troncos con ventana', hueco: 'e', nivel: 1, peso: 260, cap: 1000, coste: { tronco: 3 }, conVentana: true, cat: 'muro' },

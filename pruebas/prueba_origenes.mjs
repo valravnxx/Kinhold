@@ -29,6 +29,7 @@ const CASA_HUMILDE = {
   cimiento: ['cim_piedra'],
   postes: ['poste'],
   muros: ['muro_tronco', 'muro_zarzo'],
+  'muro con puerta': ['muro_tronco_puerta', 'muro_zarzo_puerta'],   // (8 nov: también de barro)
   tejado: ['tejado_juncos', 'tejado_paja'],
   puerta: ['puerta_varas'],
 };
