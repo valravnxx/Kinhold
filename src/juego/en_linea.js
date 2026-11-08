@@ -79,11 +79,11 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       g.fillStyle = '#e3cf9f'; g.beginPath(); g.arc(58, 66, 32, 0, Math.PI * 2); g.fill();
       g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(76, 54, 28, 0, Math.PI * 2); g.fill();
       g.globalCompositeOperation = 'source-over';
-      g.fillStyle = 'rgba(241,232,216,0.85)'; g.font = 'bold 30px Georgia, serif'; g.textAlign = 'center'; g.fillText('z', 88, 50);
+      g.fillStyle = 'rgba(241,232,216,0.9)'; g.font = 'bold 40px Georgia, serif'; g.textAlign = 'center'; g.fillText('z', 92, 52);
       texturaSimbolo = new THREE.CanvasTexture(c); texturaSimbolo.colorSpace = THREE.SRGBColorSpace;
     }
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaSimbolo, transparent: true, depthWrite: false, fog: false }));
-    sp.scale.set(0.42, 0.42, 1); sp.renderOrder = 5;
+    sp.scale.set(0.5, 0.5, 1); sp.renderOrder = 5;
     sp.userData.simboloDe = autor;   // (no «autor»: eso busca a su personaje)
     return sp;
   }
@@ -141,7 +141,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       r.j.durmiendo = e.anim === 'dormir' || desconectado;   // dormido en su cama (P4): tumbado
       if (desconectado && !r.simbolo && !window.__mutarDesconectado) { r.simbolo = simboloDesconectado(e.autor); escena.add(r.simbolo); }
       if (!desconectado && r.simbolo) { escena.remove(r.simbolo); r.simbolo = null; }
-      if (r.simbolo) r.simbolo.position.set(e.x, e.y + 0.95, e.z);
+      if (r.simbolo) r.simbolo.position.set(e.x, e.y + 1.25, e.z);   // (por encima del cuerpo tumbado y también mientras se tumba)
       r.j.sentado = e.anim === 'sentado';    // sentado a descansar (P4, 8 nov)
       r.j.animar(r.vel > 0.3 ? r.vel : 0, dt, e.anim === 'talar');
       const f = fotos.get(e.autor);

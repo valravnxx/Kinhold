@@ -74,7 +74,7 @@ try:
             listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.yo && !document.getElementById('pantallaCuenta')", 300000)
             comprobar(f'{nombre}: en línea', listo)
             visto = esperar(pg, f"{K}.escena.children.some(o => o.userData && o.userData.autor === {json.dumps(autor)})", 30000)
-            pg.evaluate(f"""(() => {{ const k = {K}, dx = {OTRO[0]} - k.pj.x, dz = {OTRO[1]} - k.pj.z; k.cam.yaw = Math.atan2(-dx, -dz); k.cam.pitch = 0.3; k.cam.dist = 5.5; }})()""")
+            pg.evaluate(f"""(() => {{ const k = {K}, dx = {OTRO[0]} - k.pj.x, dz = {OTRO[1]} - k.pj.z; k.cam.yaw = Math.atan2(-dx, -dz) + {0.25 if movil else 0.5}; k.cam.pitch = 0.35; k.cam.dist = 6.5; }})()""")
             pg.wait_for_timeout(1500)
             comprobar(f'{nombre}: mientras está, se le ve y sin símbolo', visto and pg.evaluate(SIMBOLO, autor) is None)
             captura(pg, f'{SALIDA}/{nombre}_conectado.png')
@@ -85,7 +85,7 @@ try:
             comprobar(f'{nombre}: al cortarse, el símbolo de desconectado sale encima de él', sale and s and abs(s[0] - OTRO[0]) < 0.3 and abs(s[2] - OTRO[1]) < 0.3 and s[3], str(s))
             sigue = pg.evaluate(f"{K}.escena.children.some(o => o.userData && o.userData.autor === {json.dumps(autor)})")
             comprobar(f'{nombre}: y no desaparece: se queda donde estaba', sigue)
-            pg.wait_for_timeout(4000)   # que se tumbe
+            pg.wait_for_timeout(25000)   # que se tumbe (sin tarjeta gráfica va a 1 fotograma por segundo, y la animación avanza poco en cada uno)
             captura(pg, f'{SALIDA}/{nombre}_desconectado.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()
