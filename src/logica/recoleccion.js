@@ -36,6 +36,19 @@
 //  - El barro es «inagotable»: el sitio no se agota (se cava una cesta cada vez, sin espera).
 //  - Lo recogido va a la mano o a los huecos donde quepa (junto a lo mismo primero); si no cabe entero, no se
 //    recoge y el punto sigue ahí.
+//
+// Y romper rocas con el mazo de piedra (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando
+// entre piedrecitas del suelo»): las rocas medianas del mundo (las piedras de la vegetación, src/logica/vegetacion.js,
+// sin los cantos del río; cada una es un punto «roca:…» por su sitio, idRoca) se rompen a golpes de mazo, por el
+// servidor y con su autor, cada golpe una acción que cansa. Al último golpe, la roca desaparece, deja sus piedras sueltas
+// en el suelo donde estaba (un montón: se coge del suelo) y unos cascotes, y vuelve a salir pasados unos meses reales.
+// Las grandes y los afloramientos, no: solo con hierro (la cantera, N2).
+// Decisiones provisionales (8 nov; el roadmap no fija los números):
+//  - La medida de una roca es el ancho de su obstáculo (2,2 × su tamaño en la vegetación). Se rompe hasta 1,1 m.
+//  - Golpes y piedras van con la medida: de 0,66 m (la más chica del campo) a 1,1 m, de 8 a 30 golpes y de 6 a 25 piedras.
+//  - «Unos meses reales» son 3 meses (90 días).
+//  - El mazo, en una mano (en cualquiera de las dos), como el hacha; con algo al hombro, no.
+//  - Lo que llevan dado los golpes se queda en la roca hasta que se rompe.
 import { CATALOGO } from './inventario.js';
 
 const DIA = 24 * 3600 * 1000;
@@ -49,7 +62,7 @@ export const HERRAMIENTAS_RECOGER = {
 };
 // Con qué se desbroza más deprisa: los golpes que da el navegador antes de mandar la acción (decisión provisional).
 export const GOLPES_DESBROCE = { hacha_hierro: 2, hacha_mano: 2, hacha_piedra: 3, lasca_silex: 6, cuchillo: 5 };
-export const QUE_PIDE = { cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.' };
+export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.' };
 
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
@@ -69,7 +82,25 @@ export const RECOLECTABLES = {
   setas:        { nombre: 'Setas', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'setas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
   // los matorrales de la vegetación: no se recogen, se desbrozan (no salen en recogida_mundo: donde vacío)
   matorral:     { nombre: 'Matorral', donde: [], con: 'desbrozar', accion: 'desbrozar', da: 'rama', min: 2, max: 4, vuelve: TIEMPOS.estacion, soloDesbroce: true },
+  // las rocas medianas de la vegetación: no se recogen, se rompen con el mazo (ROMPER; no salen en recogida_mundo)
+  roca:         { nombre: 'Roca', donde: [], con: 'romper', accion: 'romper', da: 'piedra', min: 6, max: 25, vuelve: 90 * DIA, soloRomper: true },
 };
+// Romper rocas (8 nov): la medida (m) de una roca de tamaño tam en la vegetación, hasta cuál se rompe, y lo que pide.
+export const ROMPER = { medidaMin: 0.66, medidaMax: 1.1, golpes: [8, 30], piedras: [6, 25], vuelve: 90 * DIA };
+export const MAZOS = new Set(['mazo_piedra']);
+export const medidaRoca = tam => Math.round(2.2 * tam * 100) / 100;
+export const rompible = tam => Number.isFinite(tam) && tam > 0 && medidaRoca(tam) <= ROMPER.medidaMax + 1e-9;
+const parteRoca = tam => Math.min(1, Math.max(0, (medidaRoca(tam) - ROMPER.medidaMin) / (ROMPER.medidaMax - ROMPER.medidaMin)));
+export const golpesRoca = tam => Math.round(ROMPER.golpes[0] + (ROMPER.golpes[1] - ROMPER.golpes[0]) * parteRoca(tam));
+export const piedrasRoca = tam => Math.round(ROMPER.piedras[0] + (ROMPER.piedras[1] - ROMPER.piedras[0]) * parteRoca(tam));
+// El nombre fijo de una roca: su sitio en la escena (el mismo en el navegador y en el servidor con la misma semilla).
+export const idRoca = (x, z) => `roca:${Math.round(x * 10)},${Math.round(z * 10)}`;
+export const ENTRE_GOLPES_ROCA = 800;   // ms entre golpe y golpe del mismo autor (el servidor pide menos: la red los junta)
+// El mazo que lleva en las manos el inventario inv (la de la derecha primero): { ruta, tipo } o null.
+export function mazoEnMano(inv) {
+  for (const ruta of ['mano:der', 'mano:izq']) { const c = inv.lugares[ruta]; if (c && MAZOS.has(c.tipo)) return { ruta, tipo: c.tipo }; }
+  return null;
+}
 // Lo que se desbroza (y lo que da: ramas, y una vara con PROB_VARA). Decisión provisional (8 nov): una vara de cada dos
 // o tres matas, y en una estación vuelve a estar.
 export const DESBROZABLES = new Set(['matorral', 'bayas']);
@@ -129,7 +160,9 @@ export class Recoleccion {
   constructor(puntos) {
     this.puntos = puntos;
     this.porId = new Map(puntos.map(p => [p.id, p]));
-    this.estado = {}; // id → { vuelve (ms), veces }
+    this.estado = {}; // id → { vuelve (ms), veces, quitado?, golpes? (los que lleva dados una roca a medias) }
+    this.ultimoGolpe = {};  // autor → ms (no se guarda: solo frena los golpes de mazo demasiado seguidos)
+    this.entre = ENTRE_GOLPES_ROCA;
   }
   // En el mundo, los puntos llegan y se van con los trozos de alrededor del jugador (src/logica/recogida_mundo.js): lo
   // recogido de un punto que se va se guarda igual (en estado), y vuelve con él.
@@ -152,7 +185,7 @@ export class Recoleccion {
   faltaPara(id, ahora) { const e = this.estado[id]; return e ? Math.max(0, e.vuelve - ahora) : 0; }
   // Los puntos que hay ahora a menos de «dist» m de (x, z), del más cercano al más lejano.
   cercanos(x, z, ahora, dist = ALCANCE_RECOGER) {
-    return this.puntos.filter(p => !RECOLECTABLES[p.tipo].soloDesbroce && this.disponible(p.id, ahora) && Math.hypot(p.x - x, p.z - z) <= dist)
+    return this.puntos.filter(p => !RECOLECTABLES[p.tipo].soloDesbroce && !RECOLECTABLES[p.tipo].soloRomper && this.disponible(p.id, ahora) && Math.hypot(p.x - x, p.z - z) <= dist)
       .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
   }
   // Recoger el punto id estando en (x, z): lo recogido va al inventario inv por huecos (o a la ruta «a» si se da y cabe).
@@ -164,6 +197,7 @@ export class Recoleccion {
     if (inv.manoBloqueada('mano:der') || inv.manoBloqueada('mano:izq')) return { ok: false, motivo: 'Tienes las dos manos ocupadas.' };
     const d = RECOLECTABLES[p.tipo], veces = (this.estado[id] && this.estado[id].veces) || 0;
     if (d.soloDesbroce) return { ok: false, motivo: 'Eso no se recoge: se desbroza con un hacha.' };
+    if (d.soloRomper) return { ok: false, motivo: 'Eso no se recoge: se rompe con un mazo.' };
     if (!tieneCon(inv, p.tipo)) return { ok: false, motivo: QUE_PIDE[d.con] };
     const n = cantidadDe(p, veces);
     const r = inv.meterDonde(d.da, n, a);
@@ -190,6 +224,31 @@ export class Recoleccion {
     if (extra) deja.push({ tipo: D.extra, n: extra, x: Math.round((p.x + 0.4) * 100) / 100, z: Math.round((p.z + 0.25) * 100) / 100 });
     return { ok: true, objeto: D.da, cantidad: n, extra: extra ? { objeto: D.extra, cantidad: extra } : null, con, deja, vuelve: this.estado[id].vuelve };
   }
+  // Lo que llevan dado los golpes a la roca id (de 0 a 1).
+  progresoRoca(id) { const p = this.porId.get(id), e = this.estado[id]; return p && e && !e.quitado && e.golpes ? Math.min(1, e.golpes / golpesRoca(p.tam)) : 0; }
+  // Un golpe de mazo a la roca id estando en (x, z). Al último, devuelve lo que deja en el suelo (deja: [{ tipo, n, x, z }]).
+  romper(inv, id, x, z, ahora, autor) {
+    const p = this.porId.get(id);
+    if (!p || p.tipo !== 'roca') return { ok: false, motivo: 'Ahí no hay ninguna roca.' };
+    if (!rompible(p.tam)) return { ok: false, motivo: 'Esa roca es demasiado grande para el mazo: hace falta hierro.' };
+    if (!this.enPie(id, ahora)) return { ok: false, motivo: 'Esa roca ya está rota: solo quedan cascotes.' };
+    if (Math.hypot(p.x - x, p.z - z) > ALCANCE_RECOGER + medidaRoca(p.tam) / 2) return { ok: false, motivo: 'Está demasiado lejos.' };
+    if (inv.hombroCargado()) return { ok: false, motivo: 'Con algo al hombro no puedes romper la roca.' };
+    const m = mazoEnMano(inv);
+    if (!m) return { ok: false, motivo: QUE_PIDE.romper };
+    const ult = this.ultimoGolpe[autor];
+    if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
+    this.ultimoGolpe[autor] = ahora;
+    const antes = this.estado[id], veces = (antes && antes.veces) || 0;
+    const golpes = (antes && !antes.quitado && antes.golpes ? antes.golpes : 0) + 1, total = golpesRoca(p.tam);
+    if (golpes < total) {
+      this.estado[id] = { vuelve: 0, veces, golpes };
+      return { ok: true, rota: false, golpes, faltan: total - golpes, mazo: m.tipo };
+    }
+    const n = piedrasRoca(p.tam);
+    this.estado[id] = { vuelve: ahora + ROMPER.vuelve, veces: veces + 1, quitado: true };
+    return { ok: true, rota: true, golpes, faltan: 0, mazo: m.tipo, objeto: 'piedra', cantidad: n, deja: [{ tipo: 'piedra', n, x: p.x, z: p.z }], vuelve: this.estado[id].vuelve };
+  }
   exportar() { return { version: VERSION_RECOLECCION, estado: Object.fromEntries(Object.entries(this.estado).map(([k, v]) => [k, { ...v }])) }; }
   // Lo guardado de puntos que ya no existen se descarta; con { todo: true } se guarda también lo de los puntos que aún
   // no están (en el mundo, los de los trozos que no se han hecho).
@@ -199,7 +258,9 @@ export class Recoleccion {
     if (!d) return this;
     for (const [id, e] of Object.entries(d.estado)) {
       if ((!todo && !this.porId.has(id)) || !e || !Number.isFinite(e.vuelve)) continue;
-      this.estado[id] = { vuelve: e.vuelve, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : 1, ...(e.quitado === true ? { quitado: true } : {}) };
+      // (una roca a medias: vuelve 0, sin veces si es la primera, y los golpes que lleva)
+      const medias = Number.isInteger(e.golpes) && e.golpes > 0 && e.quitado !== true;
+      this.estado[id] = { vuelve: e.vuelve, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : (medias ? 0 : 1), ...(e.quitado === true ? { quitado: true } : {}), ...(medias ? { golpes: e.golpes } : {}) };
     }
     return this;
   }
@@ -235,17 +296,23 @@ export function ejecutarRecoleccion(rec, invs, registro, accion, ahora, suelo = 
   const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
   if (!a || typeof a !== 'object') r = { ok: false, motivo: 'Acción no válida.' };
   else if (!txt(a.autor)) r = { ok: false, motivo: 'Acción sin autor.' };
-  else if (a.tipo !== 'recoger' && a.tipo !== 'desbrozar') r = { ok: false, motivo: 'Acción desconocida.' };
+  else if (a.tipo !== 'recoger' && a.tipo !== 'desbrozar' && a.tipo !== 'romper') r = { ok: false, motivo: 'Acción desconocida.' };
   else if (!txt(a.punto) || !Number.isFinite(a.x) || !Number.isFinite(a.z) || (a.a !== undefined && !txt(a.a))) r = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
   else if (a.tipo === 'desbrozar' && !suelo) r = { ok: false, motivo: 'Aquí no se puede desbrozar.' };
+  else if (a.tipo === 'romper' && !suelo) r = { ok: false, motivo: 'Aquí no se pueden romper rocas.' };
+  else if (a.tipo === 'romper') {
+    r = rec.romper(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.autor);
+    if (r.ok && r.rota) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false).id);
+  }
   else if (a.tipo === 'desbrozar') {
     r = rec.desbrozar(invs.de(a.autor), a.punto, a.x, a.z, ahora);
     if (r.ok) r.objetos = r.deja.map((o, i) => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false, i * 1.3).id);
   } else r = rec.recoger(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.a);
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
-  if (r.ok) e.resultado = { objeto: r.objeto, cantidad: r.cantidad, ...(r.extra ? { extra: r.extra } : {}) };
+  if (r.ok) e.resultado = a.tipo === 'romper' ? (r.rota ? { rota: true, objeto: r.objeto, cantidad: r.cantidad } : { golpes: r.golpes })
+    : { objeto: r.objeto, cantidad: r.cantidad, ...(r.extra ? { extra: r.extra } : {}) };
   return r;
 }
 

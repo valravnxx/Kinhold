@@ -135,6 +135,9 @@ export const RECETAS = {
   fardo:             r('Fardo atado', 'manos', 'fardo', { cordel: 2 }, 15),
   arpon:             r('Arpón', 'manos', 'arpon', { rama: 1, lasca_silex: 1, cordel: 1 }, 30),
   odre:              r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30),
+  // el mazo de piedra (valravnx, 8 nov): una piedra gorda atada al extremo de una rama con cordel, con las manos; rompe
+  // las rocas medianas del mundo (src/logica/recoleccion.js). Tiempo, provisional (como el hacha, algo menos: no se talla)
+  mazo_piedra:       r('Mazo de piedra', 'manos', 'mazo_piedra', { piedra: 1, rama: 1, cordel: 2 }, 45),
   // la yesca, para encender el fuego (7 nov): de la fibra seca (frotada y deshecha) o de la corteza (raspada); la de
   // los hongos yesqueros se recoge tal cual (src/logica/recoleccion.js)
   yesca:             r('Yesca de fibra seca', 'manos', 'yesca', { fibra: 2 }, 15),
@@ -176,6 +179,7 @@ export const PARA = {
   yesca: 'Prende la chispa para encender la hoguera o el hogar.',
   yesca_corteza: 'Prende la chispa para encender la hoguera o el hogar.',
   lasca_silex: 'Corta fibra y juncos, despieza.',
+  mazo_piedra: 'Rompe las rocas medianas en piedras sueltas (las grandes, solo con hierro).',
   hacha_piedra: 'Tala árboles jóvenes (da un tronco delgado y varas); los adultos, muy despacio.',
   lanza_endurecida: 'Caza y defensa.',
   antorcha: 'Luz; dura un rato.',

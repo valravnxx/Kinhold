@@ -22,7 +22,7 @@ import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from './whithol
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetacion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
 import { idArbol } from './tala.js';
-import { idMata } from './recoleccion.js';
+import { idMata, idRoca, rompible } from './recoleccion.js';
 import { nivelar as conMarcas, marcasEn } from './nivelado.js';
 import { crearComarcas, zonasDeEscena } from './comarcas.js';
 import { crearZonasRey } from './zonas_rey.js';
@@ -66,6 +66,19 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
       if (Math.hypot(x, z - 2) < 3) continue;
       const id = idMata(x, z);
       m.set(id, { id, tipo: 'matorral', x: r2(x), z: r2(z) });
+    }
+    return m;
+  });
+  // las rocas que se rompen de un trozo (8 nov), como las tiene el navegador: en la escena, sin las del claro de la
+  // salida (3 m alrededor de (0, 2): src/mundo/vegetacion_mundo.js) ni los cantos del río, y solo las medianas
+  const rocasT = new Map();
+  const rocasDe = (i, j) => guardar(rocasT, i + ',' + j, () => {
+    const m = new Map();
+    for (const e of vegetacionTrozo(paisaje, alt, semilla, i, j).piedras) {
+      const x = e.x - O.x, z = e.z - O.z;
+      if (e.canto || !rompible(e.tam) || Math.hypot(x, z - 2) < 3) continue;
+      const id = idRoca(x, z);
+      m.set(id, { id, tipo: 'roca', x: r2(x), z: r2(z), tam: Math.round(e.tam * 1000) / 1000 });
     }
     return m;
   });
@@ -115,7 +128,7 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     // Lo mismo con un punto de recogida: { id, tipo, x, z } o null.
     punto(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;
-      return id.startsWith('matorral:') ? buscar(matasDe, LADO_VEG, id, x, z) : buscar(puntosDe, LADO_RECOGIDA, id, x, z);
+      return id.startsWith('matorral:') ? buscar(matasDe, LADO_VEG, id, x, z) : id.startsWith('roca:') ? buscar(rocasDe, LADO_VEG, id, x, z) : buscar(puntosDe, LADO_RECOGIDA, id, x, z);
     },
     // ¿Puede estar ahí un jugador? { x, y, z } de su presencia. Devuelve el motivo si no. La cuenta de admin (admin),
     // también fuera de la isla, en todo el continente (valravnx, 5 nov: «quiero poder explorar libre»).
