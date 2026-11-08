@@ -1,0 +1,43 @@
+Whitholm generado en 3730 ms
+Los árboles y los puntos del servidor son los del navegador
+  OK   cada árbol de cuatro cuadros de 100 m está en el servidor, con su sitio y su edad — 207 árboles (154 adultos), mal: 
+  OK   y cada punto de recogida, con su sitio y su clase — 117 puntos, mal: 
+  OK   un árbol que no está en el mundo no vale, aunque su nombre cuadre con su sitio
+  OK   ni un punto inventado
+  OK   ni uno de verdad dicho desde muy lejos (otro trozo)
+Dónde puede estar un jugador
+  OK   en la salida, a ras del suelo, sí — suelo 0.14
+  OK   fuera de la isla, no
+  OK   a más de 120 m sobre el suelo, no
+  OK   a más de 40 m bajo el suelo, no
+  OK   en lo alto de una casa (10 m), sí
+Las obras contra el terreno
+  OK   el mojón en tierra firme, sí
+  OK   en el mar, no — mar a 35700 m
+  OK   la planta baja a ras del suelo, sí
+  OK   a 3 m del suelo, no
+  OK   pero sí donde un cimiento o la brocha ha subido el suelo 3 m
+  OK   la brocha a 5 m del suelo, sí (arrastrada ladera arriba)
+  OK   a 50 m, no
+  OK   la decoración en una planta alta, sí; a 200 m o bajo tierra, no
+  OK   cada sitio de tierra es de una zona; la alta mar, de ninguna — 4500156 · null
+  OK   ninguna fuera de la isla
+En el servidor
+  OK   el servidor tiene al jugador donde dice (a ras del suelo)
+  OK   coge un hacha del arcón de pruebas
+  OK   talar un árbol que no está en el mundo (aunque su nombre cuadre) se rechaza — Ahí no hay ningún árbol.
+  OK   uno de verdad sí, y con la edad del servidor (adulto), no la que dice el navegador (joven) —  adulto
+  OK   un estado a 200 m sobre el suelo se rechaza y el servidor le sigue teniendo donde estaba — Ahí no se puede estar.
+  OK   el mojón en el mar se rechaza — Ahí no hay tierra firme.
+  OK   junto a la salida, no: es zona del rey (src/logica/zonas_rey.js) — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+  OK   y en tierra firme de la zona de al lado se pone —  en x = -440
+  OK   hay un sitio de su zona a 300 m o más del mojón, y otra zona al lado (no del rey) — {"lejosMio":{"x":-440,"z":292},"vecino":{"x":-440,"z":442}}
+  OK   otro jugador no puede poner su mojón en la zona de A — Esta zona ya es tierra de otro.
+  OK   A construye en su zona lejos del mojón
+  OK   pero no en la zona de al lado — Fuera de tu tierra.
+  OK   y el otro jugador pone el suyo en la de al lado
+  OK   una planta baja que empieza a 4 m del suelo se rechaza — Ese no es el suelo de ahí.
+  OK   lo que se guarda es solo lo cambiado: el árbol a medias, ni el falso ni ninguno más — 1 árboles, 0 puntos
+  OK   al volver a arrancar, lo guardado que no está en el mundo se descarta y lo de verdad sigue
+
+36 bien, 0 mal
