@@ -36,7 +36,7 @@ import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacion.js';
 import { idArbol } from '../src/logica/tala.js';
-import { idMata } from '../src/logica/recoleccion.js';
+import { idMata, idRoca, rompible, golpesRoca, piedrasRoca } from '../src/logica/recoleccion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 import { ESTACIONES } from '../src/logica/fabricacion.js';
@@ -1046,6 +1046,70 @@ try {
       const antes = J.cuantos('rama');
       for (const o of caidas) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J.pos.x, z: J.pos.z });
       comprobar('y se lleva las ramas', J.cuantos('rama') >= antes + nr, `${antes} → ${J.cuantos('rama')}`);
+    }
+  }
+
+  // P3, el mazo de piedra y romper rocas (valravnx, 8 nov): con las manos se hace un mazo (1 piedra, 1 rama de las del
+  // matorral y 2 cordeles de fibra que arranca), va a la roca mediana más cercana (de las de la vegetación, como las ve el
+  // navegador), la rompe a golpes de mazo, cada golpe por el servidor, y se lleva las piedras que deja
+  {
+    const so = (t) => s.objetos.suelo.objetos.filter(o => o.cosa.tipo === t), yo = J.bienvenida.autor;
+    const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
+    const vaciarManos = async () => { for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z }); };
+    const sitio = { ...J.pos };
+    await vaciarManos();   // (las ramas del matorral y el hacha, a sus pies: de ahí también se fabrica)
+    const aqui = { x0: O.x + sitio.x - 150, z0: O.z + sitio.z - 150, x1: O.x + sitio.x + 150, z1: O.z + sitio.z + 150 };
+    const pts = recogidaEn(T.paisaje, T.alt, T.semilla, aqui).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }))
+      .filter(p => s.objetos.recoleccion.disponible(p.id, Date.now()) || !s.objetos.recoleccion.porId.has(p.id));
+    // una piedra suelta (si no tiene ya una a mano)
+    if (!so('piedra').some(o => Math.hypot(o.x - sitio.x, o.z - sitio.z) < 1.5)) {
+      const pd = cerca(pts.filter(p => p.tipo === 'piedra'), sitio);
+      let r = { ok: false };
+      for (let k = 0; k < pd.length && !r.ok && k < 6; k++) r = await recoger(pd[k]);
+      await J.andar(sitio.x, sitio.z); await vaciarManos();
+      comprobar('recoge una piedra suelta y la deja con lo demás', r.ok, r.motivo);
+    }
+    // dos cordeles: 3 de fibra cada uno
+    const fib = cerca(pts.filter(p => p.tipo === 'ortiga' || p.tipo === 'hierba_larga'), sitio);
+    let hechos = 0, k = 0;
+    for (let v = 0; v < 2; v++) {
+      while (J.cuantos('fibra') < 3 && k < fib.length && k < 12) await recoger(fib[k++]);
+      await J.andar(sitio.x, sitio.z);
+      if (J.cuantos('fibra') > 3) { const rf = ['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
+      const r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+      adelantar();
+      const rr = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+      if (r.ok && rr.ok) hechos++;
+      await vaciarManos();
+    }
+    comprobar('arranca fibra y hace dos cordeles', hechos === 2, `${hechos}`);
+    let r = await J.objeto({ tipo: 'fabricar', receta: 'mazo_piedra', x: J.pos.x, z: J.pos.z });
+    adelantar();
+    const rm = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+    comprobar('con las manos se hace el mazo de piedra (1 piedra, 1 rama y 2 cordeles, de lo que tiene a sus pies)', r.ok && rm.ok && J.cuantos('mazo_piedra') === 1, `${r.motivo || ''} ${rm.motivo || ''}`);
+    // la roca mediana más cercana, como la ve el navegador (sin los cantos del río ni las grandes)
+    const R = 150, v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + sitio.x - R, z0: O.z + sitio.z - R, x1: O.x + sitio.x + R, z1: O.z + sitio.z + R });
+    const rocas = cerca(v.piedras.filter(e => !e.canto && rompible(e.tam)).map(e => ({ x: e.x - O.x, z: e.z - O.z, tam: e.tam })).filter(e => Math.hypot(e.x, e.z - 2) >= 3), sitio);
+    comprobar('hay una roca mediana a menos de 150 m', rocas.length > 0, `${rocas.length}`);
+    const roca = rocas[0];
+    if (roca && J.cuantos('mazo_piedra') === 1) {
+      const id = idRoca(roca.x, roca.z), px = r2(roca.x), pz = r2(roca.z);
+      await J.andar(roca.x + roca.tam * 1.1 + 0.5, roca.z);
+      const golpe = () => J.objeto({ tipo: 'romper', punto: id, x: J.pos.x, z: J.pos.z, px, pz, clase: 'roca', tam: roca.tam });
+      let g = 0; const c0 = J.nec ? J.nec.cansancio : 0;
+      do { r = await golpe(); g++; if (r.ok && !r.datos?.rota) await pausa(650); } while (r.ok && !r.datos?.rota && g < 60);
+      const caidas = so('piedra').filter(o => Math.hypot(o.x - roca.x, o.z - roca.z) < 0.5);
+      const np = caidas.reduce((n, o) => n + o.cosa.n, 0);
+      comprobar('rompe la roca a golpes de mazo, cada golpe por el servidor (más golpes cuanto más grande)', r.ok && r.datos?.rota && g === golpesRoca(roca.tam), `${r.motivo || ''} ${g} golpes de ${golpesRoca(roca.tam)}`);
+      comprobar('y deja sus piedras sueltas donde estaba (de 6 a 25, según su tamaño)', np === piedrasRoca(roca.tam), `${np} de ${piedrasRoca(roca.tam)}`);
+      comprobar('la roca queda rota (en lo que reparte el servidor)', !!s.objetos.recoleccionVisible().estado[id]?.quitado);
+      await pausa(300);
+      comprobar('romper cansa (o ya llega al máximo, tras todo el día)', J.nec && (J.nec.cansancio > c0 || c0 >= 99), `${c0} → ${J.nec && J.nec.cansancio}`);
+      r = await golpe();
+      comprobar('otra vez, no: solo quedan cascotes', !r.ok, r.motivo);
+      const antes = J.cuantos('piedra');
+      if (caidas[0]) r = await J.objeto({ tipo: 'coger_suelo', objeto: caidas[0].id, x: J.pos.x, z: J.pos.z });
+      comprobar('y se lleva las piedras que le caben', J.cuantos('piedra') > antes, `${r.motivo || ''} ${antes} → ${J.cuantos('piedra')}`);
     }
   }
 
