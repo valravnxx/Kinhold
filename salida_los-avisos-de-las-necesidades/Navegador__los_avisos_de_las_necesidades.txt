@@ -1,0 +1,59 @@
+  OK   PC: sin necesidades, ningún círculo
+  OK   PC: con sed 50, hambre 30 y cansancio 80 salen la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   PC: el del cansancio, en fuerte (desde 75); cada uno con su color — [['sed', False, '#3f7fd0'], ['cansancio', True, '#9a958c']]
+  OK   PC: los círculos no tapan ningún botón y caben en la pantalla — [[1122, 312, 1162, 352], [1121.52099609375, 359.5209655761719, 1162.47900390625, 400.4790344238281]]
+  OK   PC: al pulsar la sed, su ficha: cómo estás, qué te pasa y cómo se quita (beber del río) — Sed · 50%Aún aguantas; al máximo te cansarás el doble y si sigues sin beber, al rato mueres.Bebe agua de un río o de un lago: «Usar» en la orilla.
+  OK   PC: la ficha cabe en la pantalla — [854, 306, 1114, 465.34375]
+  OK   PC: se cierra al pulsar fuera
+  OK   PC: con las cuatro, los cuatro círculos
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_avisos_navegador.py", line 173, in <module>
+    recorrido(ctx.new_page(), nombre, pref, movil)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_avisos_navegador.py", line 105, in recorrido
+    pg.click('#avisosNec .aviso-nec[data-que="cansancio"]'); pg.wait_for_timeout(400)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#avisosNec .aviso-nec[data-que=\"cansancio\"]")
+    - locator resolved to <button data-que="cansancio" class="aviso-nec fuerte" title="Cansancio · 100%">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not stable
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not stable
+    - retrying click action
+      - waiting 100ms
+    8 × waiting for element to be visible, enabled and stable
+      - element is not stable
+    - retrying click action
+      - waiting 500ms
+
