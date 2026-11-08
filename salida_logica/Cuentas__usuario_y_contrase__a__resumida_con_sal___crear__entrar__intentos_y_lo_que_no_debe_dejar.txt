@@ -1,0 +1,154 @@
+Lógica pura
+  OK   usuario válido (con ñ y tilde)
+  OK   usuario demasiado corto
+  OK   usuario demasiado largo
+  OK   usuario con espacio o símbolos
+  OK   usuario que no es texto
+  OK   contraseña corta
+  OK   contraseña de 9 no; de 10, sí
+  OK   de las más usadas no: password123
+  OK   de las más usadas no: Contraseña123
+  OK   de las más usadas no: QWERTYUIOP
+  OK   de las más usadas no: 1q2w3e4r5t
+  OK   de las más usadas no: kinhold2026
+  OK   de las más usadas no: йцукенгшщз
+  OK   de las más usadas no: iloveyou123
+  OK   fácil de adivinar no: aaaaaaaaaaaa
+  OK   fácil de adivinar no: 0987654321
+  OK   fácil de adivinar no: abcdefghijk
+  OK   fácil de adivinar no: abcabcabcabc
+  OK   fácil de adivinar no: 1212121212
+  OK   la lista de las más usadas está guardada en el juego — 895
+  OK   IPv6: todo un bloque /64 cuenta como una dirección
+  OK   IPv4 (también escrita como IPv6) tal cual
+  OK   contraseña igual al usuario
+  OK   contraseña larga y buena
+  OK   petición rara no vale
+  OK   entrar sin contraseña no vale
+  OK   crear una cuenta
+  OK   lo guardado no lleva la contraseña
+  OK   usuario repetido (otras mayúsculas) no
+  OK   un personaje, una cuenta
+  OK   entrar (sin mirar mayúsculas) da su personaje
+  OK   contraseña mala y usuario que no existe: el mismo motivo
+  OK   con un usuario que no existe también se resume (tarda lo mismo)
+  OK   tras 5 fallos, ni con la buena — Demasiados intentos; prueba dentro de 15 min.
+  OK   pasada la espera, se puede entrar
+  OK   tras 20 fallos desde una dirección, esa dirección no; otra sí
+  OK   como mucho 3 altas por dirección en una hora — sí | sí | sí | Demasiadas cuentas nuevas desde aquí; prueba dentro de 53 min.
+  OK   entre una alta y otra desde la misma dirección, una espera que crece (1 min, luego 2…) — sí | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min. | sí | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min. | sí
+  OK   mil altas seguidas desde una dirección: solo la primera — 1
+  OK   doscientas desde direcciones distintas del mismo bloque IPv6: solo la primera — 1
+  OK   doscientas desde doscientas direcciones: como mucho 30 en una hora (y pasada, otra vez) — 30
+  OK   dos altas a la vez del mismo usuario: solo una
+  OK   las cuentas guardadas se cargan (y lo raro se descarta)
+Fichas de cada aparato
+  OK   las guardadas se cargan (las de antes, sin hora, cuentan desde que arranca)
+  OK   una ficha vale hasta que caduca
+  OK   al caducar lo dice (para el registro de seguridad)
+  OK   la de un personaje sin cuenta no caduca (es lo único que lo une a él)
+  OK   salir en todos los aparatos: ninguna de ese personaje vale
+  OK   al cargar, las de antes de salir en todos ya no valen; la de después, sí
+Resumen de la contraseña (scrypt con sal)
+  OK   sal distinta → resumen distinto
+  OK   el resumen no contiene la contraseña
+  OK   la misma contraseña con su sal da lo mismo; otra no
+  OK   el resumen es lento (más de 20 ms) — 183 ms en esta máquina
+Servidor
+  OK   al entrar sin cuenta, la bienvenida lo dice
+  OK   crear la cuenta con el personaje de la conexión — {"tipo":"cuenta","id":1,"que":"crear","ok":true,"usuario":"Leñadora","autor":"jugador:91c31e59","admin":false,"correo":{"correo":"c***@e***.com","verificado":false}}
+  OK   el mismo personaje no crea otra
+  OK   usuario repetido no
+  OK   usuario corto y contraseña corta no
+  OK   contraseña mala no
+  OK   entrar desde otro aparato da una ficha
+  OK   con esa ficha se vuelve a ser el mismo personaje
+  OK   la conexión vieja de ese personaje se cierra — 4001
+  OK   mensajes raros no tumban nada
+  OK   tras 5 contraseñas malas, ni con la buena — Demasiados intentos; prueba dentro de 15 min.
+  OK   cuentas.jsonl tiene la cuenta, con sal y resumen
+  OK   la contraseña no está en cuentas.jsonl
+  OK   ni en el registro del servidor
+  OK   tras reiniciar el servidor, se entra igual
+  OK   y la mala sigue sin valer
+  OK   y el usuario sigue cogido
+  OK   sin cuenta no hay sesión que cerrar
+  OK   salir en todos los aparatos: responde y cierra la conexión (4002) — {"tipo":"cuenta","id":1,"que":"salir_todos","ok":true} 4002
+  OK   después, ninguna ficha de ese personaje vale (vuelve sin cuenta, como uno nuevo)
+  OK   y con usuario y contraseña se vuelve a entrar
+  OK   tras reiniciar, las fichas de antes de salir siguen sin valer; la nueva sí
+  OK   crear cuentas en masa por el servidor: solo la primera (ni cambiando la dirección que dice el cliente) — sí | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min. | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min. | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min. | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min. | Demasiadas cuentas nuevas desde aquí; prueba dentro de 1 min.
+  OK   el registro de seguridad apunta altas, entradas, fallos y salidas — 32 líneas
+  OK   sin la contraseña ni las fichas
+  OK   una ficha recién dada vale
+  OK   pasada su vida, la ficha ya no vale (hay que volver a entrar)
+  OK   y se apunta en el registro de seguridad
+El correo de la cuenta
+  OK   correos que valen
+  OK   correos que no
+  OK   el correo se enseña a medias
+  OK   crear sin correo no vale
+  OK   un correo, una cuenta (sin mirar mayúsculas) — Ese correo ya es de otra cuenta.
+  OK   la cuenta nueva empieza sin confirmar
+  OK   una cuenta de antes, sin correo: sin confirmar
+  OK   añade su correo (no uno que no vale, ni el de otra cuenta)
+  OK   confirmarlo
+  OK   confirmado, ya no se cambia
+  OK   al cargar: el confirmado, confirmado; el que no, no
+  OK   al cambiar el correo sin confirmar, el de antes queda libre
+  OK   el código, de 6 cifras
+  OK   otro, no enseguida — Espera 59 s para pedir otro código.
+  OK   pasado el minuto, sí (y con ceros delante)
+  OK   el de antes ya no vale
+  OK   el nuevo, sí, y da el correo
+  OK   usado, ya no vale
+  OK   caduca
+  OK   tras 5 códigos mal, ni el bueno
+  OK   como mucho 5 códigos por hora a una cuenta y a un correo — 5 y 5
+  OK   sin la clave de Resend: el código, al registro (y el correo a medias)
+  OK   con la clave: a la API de Resend, con la clave y el código, desde playkinhold.com
+  OK   la clave no va al registro
+  OK   si Resend no lo manda, lo dice
+El correo en el servidor
+  OK   crear sin correo, no
+  OK   al crear la cuenta llega el código a su correo — {"tipo":"cuenta","id":2,"que":"crear","ok":true,"usuario":"Correa","autor":"jugador:c6b26247","admin":false,"correo":{"correo":"c***@e***.com","verificado":false}}
+  OK   el mismo correo para otra cuenta, no
+  OK   sin confirmar el correo, sus acciones y objetos no se atienden — [{"tipo":"resultado","id":77,"ok":false,"motivo":"Confirma tu correo para entrar en el mundo."},{"tipo":"resultado_objeto","id":78,"ok":false,"motivo":"Confirma tu correo para entrar en el mundo."}]
+  OK   ni sus movimientos llegan a los demás
+  OK   otro código, no enseguida — Espera 59 s para pedir otro código.
+  OK   un código mal, no
+  OK   con el bueno, confirmado
+  OK   confirmado, sus acciones ya se atienden (aunque esta no salga, no es por el correo) — [{"tipo":"resultado","id":79,"ok":false,"motivo":"Datos no válidos."}]
+  OK   una cuenta de antes entra sin correo: la bienvenida lo dice
+  OK   añade su correo (no el de otra cuenta) y le llega el código
+  OK   cambiar el correo enseguida, no (iría sin espera)
+  OK   sin cuenta no hay nada que confirmar
+  OK   el código no queda en cuentas.jsonl ni en el registro de seguridad
+  OK   el registro de seguridad apunta los códigos y la confirmación, con el correo a medias
+  OK   tras reiniciar: el confirmado sigue confirmado; el de antes sigue sin confirmar, con su correo nuevo
+Recuperar y cambiar la contraseña o el correo
+  OK   recuperar: la misma respuesta exista o no la cuenta, y el código solo va a la que existe — [{"tipo":"cuenta","id":1,"que":"recuperar","ok":true,"motivo":"Si hay una cuenta con ese usuario o correo, y su correo está confirmado, le llegará un código."},{"tipo":"cuenta","id":2,"que":"recuperar","ok":true,"motivo":"Si hay una cuenta con ese usuario o correo, y su correo está confirmado, le llegará un código."}]
+  OK   otro código enseguida, no (y la respuesta no lo delata)
+  OK   con el código mal, no
+  OK   una contraseña nueva fácil, no
+  OK   con el código bueno, contraseña nueva y una ficha de su personaje — {"tipo":"cuenta","id":6,"que":"restablecer","ok":true,"usuario":"Rosa","autor":"jugador:3f6aaa37","ficha":"a7600175813045c2a2f2bc0a3f1be189"}
+  OK   y se cierra la sesión en los demás aparatos — 4002
+  OK   la vieja ya no vale; la nueva sí
+  OK   el código no vale dos veces
+  OK   le llega el aviso de que ha cambiado la contraseña
+  OK   tras 5 códigos mal, ni el bueno vale — No hay ningún código pendiente; pide uno.
+  OK   sin el correo confirmado no llega código de recuperar
+  OK   cambiar la contraseña con la actual mal, no
+  OK   con la actual bien, cambia y esta conexión sigue, con una ficha nueva — {"tipo":"cuenta","id":2,"que":"cambiar_clave","ok":true,"usuario":"Rosa","autor":"jugador:3f6aaa37","ficha":"bf00c17e72f8406ab5eee0575f9cc490"}
+  OK   la ficha de antes (la de los demás aparatos) ya no vale
+  OK   con la ficha nueva vuelve a ser su personaje
+  OK   cambiar al correo de otra cuenta, no
+  OK   cambiar el correo con la contraseña mal, no
+  OK   con la contraseña bien, el código va al correo nuevo, y el de antes sigue mientras — {"tipo":"cuenta","id":3,"que":"cambiar_correo","ok":true,"pendiente":"r***@e***.com"}
+  OK   con el código, el correo cambia y al de antes le llega el aviso — {"tipo":"cuenta","id":4,"que":"verificar","ok":true,"cambiado":true,"admin":false,"correo":{"correo":"r***@e***.com","verificado":true}}
+  OK   el correo de antes queda libre
+  OK   ni las contraseñas ni los códigos quedan en claro
+  OK   el registro de seguridad apunta recuperar, restablecer y los cambios
+  OK   tras reiniciar: vale la última contraseña, el correo nuevo y las fichas cerradas siguen cerradas
+
+145 bien, 0 mal
