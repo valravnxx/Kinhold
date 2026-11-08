@@ -60,9 +60,10 @@ def sitio_con_todo():
     js = """import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from './src/logica/mapa.js';
 import { crearPaisaje } from './src/logica/paisaje.js'; import { alturaMundo, SALIDAS } from './src/logica/whitholm.js';
 import { recogidaEn } from './src/logica/recogida_mundo.js';
+const TIPOS = """ + json.dumps(TIPOS) + """;   // (las bayas y las setas, en su prueba)
 const m = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }), p = crearPaisaje(m), a = alturaMundo(p); let mejor = [0, 0];
 for (let k = 0; k < SALIDAS.length && mejor[0] < 5; k++) { const [x, z] = SALIDAS[k];
-  const n = new Set(recogidaEn(p, a, m.semilla, { x0: x - 50, z0: z - 50, x1: x + 50, z1: z + 50 }).filter(q => Math.hypot(q.x - x, q.z - z) < 30).map(q => q.tipo)).size; if (n > mejor[0]) mejor = [n, k]; }
+  const n = new Set(recogidaEn(p, a, m.semilla, { x0: x - 50, z0: z - 50, x1: x + 50, z1: z + 50 }).filter(q => Math.hypot(q.x - x, q.z - z) < 30 && TIPOS.includes(q.tipo)).map(q => q.tipo)).size; if (n > mejor[0]) mejor = [n, k]; }
 // para el móvil, la primera salida (otra que la de PC) con al menos 30 puntos a menos de 48 m: siempre la misma
 let km = -1;
 for (let k = 0; k < SALIDAS.length && km < 0; k++) { if (k === mejor[1]) continue; const [x, z] = SALIDAS[k];
@@ -74,7 +75,8 @@ TODO = sitio_con_todo()
 print('  sitio de salida con más tipos cerca:', TODO[:2], '· el del móvil:', TODO[2])
 
 DONDE = {'ramas': ['bosque'], 'piedra': ['rio', 'ladera', 'claro'], 'silex': ['caliza', 'rio', 'claro'], 'ortiga': ['claro', 'ribera'], 'hierba_larga': ['claro', 'ribera'],
-         'juncos': ['rio', 'ribera'], 'barro': ['rio', 'ribera'], 'yesquero': ['bosque']}
+         'juncos': ['rio', 'ribera'], 'barro': ['rio', 'ribera'], 'yesquero': ['bosque'],
+         'bayas': ['bosque', 'claro'], 'setas': ['bosque']}
 # la orilla del río más cercano a la salida común (unos 850 m al norte; en metros del mundo): juncos, barro y yesqueros
 ORILLA = (184590, 45420)
 CON = {'juncos': ('lasca_silex', 'cuchillo'), 'barro': ('palo_cavador', 'palo cavador'), 'yesquero': (None, None)}

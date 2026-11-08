@@ -139,7 +139,7 @@ import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, hayAguaCerca, TRAGO, ESPERA_TRAGO } from '../src/logica/necesidades.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, hayAguaCerca, TRAGO, ESPERA_TRAGO, NUTRE, comestible } from '../src/logica/necesidades.js';
 import { puestasDe } from '../src/logica/prendas.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
@@ -901,6 +901,19 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         if (!msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion)) return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
         // el autor lo pone el servidor, y la hora también
         const ahora = Date.now();
+        // comer (P4): una unidad de lo que llevas (src/logica/necesidades.js, NUTRE), de tu inventario, por el servidor
+        if (msg.accion.tipo === 'comer') {
+          const tipo = msg.accion.objeto, inv = objetos.invs.de(autor);
+          let r;
+          if (typeof tipo !== 'string' || !comestible(tipo)) r = { ok: false, motivo: 'Eso no se come.' };
+          else r = inv.gastar(tipo, 1);
+          if (r.ok) { necesidades.set(autor, saciarNecesidad(necesidadesDe(autor), 'hambre', NUTRE[tipo])); necesidadesCambiadas = true; guardarObjetos(); }
+          else if (r.motivo === 'No llevas tanto.') r.motivo = 'No llevas nada de eso.';
+          enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: { hambre: Math.round(necesidadesDe(autor).hambre * 100) / 100 } } : { motivo: r.motivo }) });
+          enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+          if (r.ok) { enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidadesDe(autor)) }); repartirLlevado(autor); }
+          return;
+        }
         // beber del río (P4): lo llevan las necesidades, no los objetos
         if (msg.accion.tipo === 'beber') {
           const r = beber(autor, ahora);

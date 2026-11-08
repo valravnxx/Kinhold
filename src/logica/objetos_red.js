@@ -89,7 +89,7 @@ export class ObjetosServidor {
     this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
-    this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED;
+    this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
     this.recoleccion = new Recoleccion([]);
     this.posicion = posicion;
     this.enTierras = enTierras;
@@ -152,6 +152,8 @@ export class ObjetosServidor {
     const entrada = this.registro.entradas[this.registro.entradas.length - 1];
     return { ...r, entrada, suelo, estaciones };
   }
+  // La altura del suelo del mundo, para que el árbol sin boca caiga cuesta abajo (src/logica/tala.js); sin terreno, nada.
+  alturaTala() { return this.terreno ? (x, z) => this.terreno.suelo(x, z) : null; }
   // El árbol que dice el navegador (decisión provisional, arriba): su nombre sale de su sitio, y tiene que estar al
   // alcance de donde el servidor tiene al autor. Devuelve el motivo si no vale.
   conocerArbol(a, p) {
@@ -230,7 +232,7 @@ export class ObjetosServidor {
     const fuego = f => { const st = estadoFuego(f, ahora); return { encendida: st.encendida, queda: +st.queda.toFixed(1), combustible: st.combustible, cenizas: st.cenizas }; };
     return Object.values(this.fab.estaciones).filter(e => !trozos || trozos.has(trozoDe(e.x, e.z)))
       .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito }, ...(e.fuego ? { fuego: fuego(e.fuego) } : {}),
-        ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}) }));
+        ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}) }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {
@@ -271,7 +273,7 @@ export class ObjetosServidor {
     let arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
     // con el terreno, solo los que de verdad están en el mundo, y como son en él (lo guardado antes lo decía el navegador)
     if (this.terreno) arboles = arboles.map(a => this.terreno.arbol(a.id, a.x, a.z)).filter(Boolean);
-    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED;
+    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
     this.troceo.importar(datos.troceo, ahora);
     let puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
     if (this.terreno) puntos = puntos.map(q => this.terreno.punto(q.id, q.x, q.z)).filter(Boolean);

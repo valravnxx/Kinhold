@@ -13,7 +13,7 @@ import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
-import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC } from '../logica/necesidades.js';
+import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
@@ -749,7 +749,7 @@ function evaluarColocacion() {
   if (sel.clase === 'puesto') {
     // un puesto de trabajo (P3): se pone el marco a tu lado; la hoguera, solo fuera (no bajo techo)
     const y = estado.puntero.ySuperficie || 0;
-    fantasma.position.set(x, y, z); fantasma.rotation.set(0, 0, 0);
+    fantasma.position.set(x, y, z); fantasma.rotation.set(0, estado.rotDeco || 0, 0);   // con el giro que se le da (Girar), el que se guarda
     let v = fabCliente.puedeColocar(sel.tipo, x, z, mundo.bajoTecho(x, z));
     if (v.ok && Math.hypot(x - pj.x, z - pj.z) > PONER_PUESTO) v = { ok: false, motivo: 'Acércate: el marco se pone a tu lado.' };
     if (v.ok && pj.k > 0) v = { ok: false, motivo: 'Los puestos de trabajo van en la planta baja.' };
@@ -814,7 +814,7 @@ function colocar() {
   if (!ca.v.ok) { mostrarAviso(tr(ca.v.motivo), true); return; }
   if (ca.tipo === 'puesto') { // por la fabricación (en línea, el servidor): el marco, sin gastar nada
     const tipo = estado.sel.tipo;
-    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y) }, (r) => {
+    hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y), giro: +(estado.rotDeco || 0).toFixed(3) }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
       mostrarAviso(tr('Marco puesto: llévale {c} y trabaja en él (Usar).', { c: Object.entries(ESTACIONES[tipo].coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }));
     });
@@ -855,6 +855,19 @@ function evaluarDesmontaje(hit) {
     mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
     return;
   }
+  if (obj.userData.estacion) {
+    // un puesto o un almacenaje (valravnx, 7 nov: que se desmonten): terminado, el 75 % y lo que guarda, al suelo
+    const e = fabCliente.estaciones[obj.userData.estacion];
+    if (!e || !ESTACIONES[e.tipo]) { mostrarAviso(''); return; }
+    const tocar = mundo.puedeTocar(e.x, e.z, yoAutor());
+    if (!tocar.ok) { mostrarAviso(tr(tocar.motivo), true); return; }
+    if (Math.hypot(e.x - pj.x, e.z - pj.z) > USAR_ESTACION) { mostrarAviso(tr('Acércate para desmontarlo.'), true); return; }
+    resaltar(obj, 'naranja');
+    estado.pendienteDesmontar = { estacion: e.id };
+    const n = tr(ESTACIONES[e.tipo].nombre);
+    mostrarAviso(e.obra ? tr('{e}: quitas el marco y lo entregado cae al suelo.', { e: n }) : tr('{e}: recuperas el 75 % del material, y lo que guarda cae al suelo.', { e: n }));
+    return;
+  }
   if (obj.userData.deco) {
     resaltar(obj, 'naranja');
     estado.pendienteDesmontar = { deco: obj.userData.deco };
@@ -880,6 +893,15 @@ function evaluarDesmontaje(hit) {
 function confirmarDesmontaje() {
   const pd = estado.pendienteDesmontar;
   if (!pd) return;
+  if (pd.estacion) {
+    estado.pendienteDesmontar = null; limpiarResaltado(); $('confirmar').hidden = true;
+    hacerFabricacion({ tipo: 'desmontar_estacion', estacion: pd.estacion, x: pj.x, z: pj.z }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      const dev = Object.entries(r.devuelto || {}).map(([m, n]) => `+${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ');
+      mostrarAviso(r.quitada ? tr('Marco quitado: lo que tenía, en el suelo.') : `${t('desmontado')}${dev ? ': ' + dev : ''}`);
+    });
+    return;
+  }
   let r;
   if (pd.mojon) r = accion({ tipo: 'quitar_mojon' });
   else if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
@@ -961,6 +983,16 @@ function piezaBajo(clientX, clientY) {
   const rr = rayoDesde(clientX, clientY);
   const objs = registroMallas.filter(m => m.obj.visible).map(m => m.obj).concat(mallasMojon);
   const hits = rr.intersectObjects(objs, true).filter(h => h.object.visible && h.object.userData.ref && h.object.userData.ref.visible);
+  // y los puestos y almacenajes (src/juego/estaciones.js: un grupo por cada uno, con su id), en planta baja
+  if (pj.k === 0) {
+    for (const h of rr.intersectObjects(estacionesV.grupo.children, true)) {
+      let o = h.object; while (o && o.parent !== estacionesV.grupo) o = o.parent;
+      if (!o || !o.userData.id) continue;
+      o.userData.estacion = o.userData.id; h.object.userData.ref = o;
+      hits.push(h); break;
+    }
+    hits.sort((a, b) => a.distance - b.distance);
+  }
   return hits[0] || null;
 }
 
@@ -1505,6 +1537,8 @@ function usar() {
       empezarTala(a); return;
     }
     if (aguaAlLado()) { beber(); return; }   // junto al agua, sin otra cosa que usar, se bebe
+    // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
+    if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { comer(comidaQueLlevas()[0]); return; }
     mostrarAviso(t('nadaQueUsar')); return;
   }
   usarInteractivo(it);
@@ -1550,6 +1584,8 @@ function opcionesUsar() {
     const verbo = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verbo(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
   }
+  // lo que llevas de comer (P4)
+  for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
   if (aguaAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
@@ -1666,6 +1702,22 @@ function beber() {
   if (!aguaAlLado()) { mostrarAviso(tr('Aquí no hay agua: busca un río, un lago o el mar.'), true); return; }
   if (necesidades) { necesidades = saciarNecesidad(necesidades, 'sed', TRAGO); avisosNec.pintar(necesidades); }
   mostrarAviso(tr('Bebes agua con las manos.'));
+}
+// Comer (P4): una unidad de lo que llevas (bayas, setas…). En línea, por el servidor; sin servidor (pruebas), aquí.
+const comidaQueLlevas = () => Object.keys(NUTRE).filter(t => inventario().cuantos(t) > 0);
+function comer(tipo) {
+  if (objetosRed) {
+    objetosRed.mandar({ tipo: 'comer', objeto: tipo }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Comes: {c}.', { c: tr(CATALOGO[tipo].nombre).toLowerCase() }));
+    });
+    return;
+  }
+  const r = inventario().gastar(tipo, 1);
+  if (!r.ok) { mostrarAviso(tr('No llevas nada de eso.'), true); return; }
+  if (necesidades) { necesidades = saciarNecesidad(necesidades, 'hambre', NUTRE[tipo]); avisosNec.pintar(necesidades); }
+  panelInventario.pintar(); pintarLlevas(); vestir();
+  mostrarAviso(tr('Comes: {c}.', { c: tr(CATALOGO[tipo].nombre).toLowerCase() }));
 }
 function recoger(punto) {
   if (objetosRed) { // en línea lo recoge el servidor (el punto, como lo ve este navegador: decisión provisional)
@@ -2035,6 +2087,8 @@ function golpeTala() {
   avisoTala(a, r);
 }
 function avisoTala(a, r) {
+  // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
+  if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
   estado.talando = null;
   const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);
@@ -2395,7 +2449,7 @@ $('btnConfirmar').onclick = confirmarDesmontaje;
 $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltado(); estado.pendienteDesmontar = null; mostrarAviso(''); };
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
-const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta),
+const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta), comer: (t) => comer(t), comestible,
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => (hayArcon() ? mundo.materiales : null), hayArcon,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con
@@ -2744,7 +2798,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
-  beber, aguaAlLado,
+  beber, aguaAlLado, comer,
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado

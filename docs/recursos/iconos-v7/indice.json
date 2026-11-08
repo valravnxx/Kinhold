@@ -20,10 +20,10 @@
    "propio": true
   },
   "bayas": {
-   "propio": false
+   "propio": true
   },
   "setas": {
-   "propio": false
+   "propio": true
   },
   "frutos_secos": {
    "propio": false
@@ -260,6 +260,18 @@
    "propio": true
   },
   "est_lenera": {
+   "propio": true
+  },
+  "est_soporte_varas": {
+   "propio": true
+  },
+  "est_almiar": {
+   "propio": true
+  },
+  "est_hoyo_barro": {
+   "propio": true
+  },
+  "est_cesto": {
    "propio": true
   }
  }

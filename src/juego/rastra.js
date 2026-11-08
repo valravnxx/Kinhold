@@ -86,6 +86,22 @@ export function modeloRastra(carga, id = 'r') {
         C.add(cil(r, r * 1.04, 0.9, 9), 'corteza', x, y, z, m);
         for (const s of [-1, 1]) C.add(new THREE.CircleGeometry(r * 0.97, 9), 'corte', x, y, z + s * 0.452, new THREE.Matrix4().makeRotationY(s > 0 ? 0 : Math.PI), { sinSuelo: true });
       });
+    } else if (carga.tipo === 'tronco_delgado') {  // a lo largo, tres abajo y dos encima, con la punta de atrás por fuera
+      const pos = [[-0.19, 0], [0, 0], [0.19, 0], [-0.095, 1], [0.095, 1]].slice(0, Math.min(5, carga.n));
+      pos.forEach(([x, fila], i) => {
+        const r = 0.09, largo = 2.6, y = yC + r + fila * r * 1.75, z = 0.75 + (az(id, 60 + i) - 0.5) * 0.15;
+        const m = new THREE.Matrix4().makeRotationY((az(id, 70 + i) - 0.5) * 0.05).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        C.add(cil(r, r * 1.04, largo, 9), 'corteza', x, y, z, m);
+        for (const s of [-1, 1]) C.add(new THREE.CircleGeometry(r * 0.97, 9), 'corte', x, y, z + s * (largo / 2 + 0.002), new THREE.Matrix4().makeRotationY(s > 0 ? 0 : Math.PI), { sinSuelo: true });
+      });
+    } else if (carga.tipo === 'vara') {  // un haz de varas a lo largo, en dos capas
+      const vis = Math.min(12, carga.n);
+      for (let i = 0; i < vis; i++) {
+        const fila = i < 7 ? 0 : 1, k = fila ? i - 7 : i, nf = fila ? 5 : 7, r = 0.018 + az(id, 90 + i) * 0.005;
+        const x = (k - (nf - 1) / 2) * 0.05, y = yC + r + fila * 0.034, z = 0.75 + (az(id, 100 + i) - 0.5) * 0.2;
+        const m = new THREE.Matrix4().makeRotationY((az(id, 110 + i) - 0.5) * 0.06).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        C.add(cil(r * 0.75, r, 1.6, 7), 'madera', x, y, z, m, { tex: 'veta' });
+      }
     } else if (carga.tipo === 'bloque_piedra') {
       C.add(new THREE.DodecahedronGeometry(0.34, 0), 'piedra', 0, yC + 0.2, 0.75, { y: az(id, 80) * 6, x: 0.3 }, { escala: new THREE.Vector3(1.15, 0.62, 1.4), plano: true });
     }

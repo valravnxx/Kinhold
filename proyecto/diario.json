@@ -5337,5 +5337,88 @@
   "pruebas": "Sin cambios en el juego: no hace falta la batería. Lo de la rama: su prueba, 11/11",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T19:00:43+00:00",
+  "fin": "2026-11-07T21:36:30+00:00",
+  "titulo": "P3: troncos delgados y varas en la rastra, y juncos en el fardo",
+  "hito": "crafting",
+  "hecho": [
+   "Estudio pedido por valravnx en la sesión: hoy el tronco delgado solo iba al hombro, de uno en uno, y los juncos solo en las manos; propuesta de llevarlos en la rastra y en el fardo. valravnx: «metelo ya».",
+   "La rastra lleva también troncos delgados (hasta 5, 75 kg: va igual de despacio que con 3 cortos) y varas (hasta 12), con su modelo: los troncos a lo largo sobre los travesaños y las varas en un haz. El tronco largo sigue fuera (es cosa de carro).",
+   "El fardo atado admite juncos y mimbre, con la paja y la fibra; con plantas se ve como haces de tallos atados a la espalda.",
+   "Recorrido de jugador, paso 14: hace dos cordeles, se ata un fardo, se lo echa a la espalda y mete en él el haz de juncos que cortó en la orilla, con las manos libres."
+  ],
+  "pruebas": "Batería entera en la nube dos veces (antes y después de unir main, que traía beber del río como v143): todo correcto, con el recorrido de jugador (paso 14) y la rastra en el navegador (troncos delgados, varas y el fardo con juncos). La primera vez, la web falló por la traducción de la tarea nueva, añadida y repetida: bien. Rastra 47/47 (con MUTAR=1 falla), inventario 137/137. No comprobado: el fardo con juncos visto en el móvil (la prueba de la rastra lo mira solo en PC).",
+  "capturas": "capturas/demo-v144",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T20:42:58+00:00",
+  "fin": "2026-11-07T23:15:38+00:00",
+  "titulo": "Los puestos y los almacenajes, con el giro que les das y desmontables (demo v145; chat con valravnx)",
+  "hito": "orden",
+  "hecho": [
+   "Arreglo de lo que vio valravnx: los puestos de trabajo y los almacenajes salían girados al azar (por su nombre) y, terminados, no había manera de quitarlos.",
+   "Ahora se ponen con el giro que les das (Girar o R): el servidor lo guarda y los demás los ven igual. Los de antes se quedan como estaban.",
+   "Se desmontan en Desmontar (X), apuntándolos: el 75 % de su material, como las piezas (GDD), y lo que guardaban, entero, al suelo a su lado; un marco a medio hacer, lo entregado entero. Solo el dueño de la tierra y sus invitados.",
+   "Provisional: no se desmonta una hoguera mientras arde, ni un puesto con encargos a medias.",
+   "Capturas de cerca de la pila de piedras girada y elegida para desmontar (PC) y vista desde el móvil."
+  ],
+  "pruebas": "Batería entera en la nube, 41 de 41 (94 min); después de unir main, otra vez fabricación, hoguera, almacenajes y rastra en la nube, y lógica y recorrido de jugador aquí (111/111). La prueba de fabricación, 153/153 (con MUTAR=3, 4 fallan)",
+  "capturas": "capturas/demo-v145",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T21:26:16+01:00",
+  "fin": "2026-11-08T02:02:27+01:00",
+  "titulo": "P4: comer bayas y setas (chat con valravnx)",
+  "hito": "supervivencia",
+  "hecho": [
+   "En el bosque y en los claros, arbustos de bayas (valravnx, 7 nov: «que los arbustos que tengan bayas se vean claramente, y al recolectarlas estas desaparezcan del mismo»): una mata redonda de 1,1 m, más grande que las de adorno, con cañas pardo rojizo y racimos de bayas rojas y negro moradas por toda la cara de fuera. Las bayas son otra malla: al cogerlas desaparecen y el arbusto se queda; vuelven con la estación.",
+   "En el bosque, corros de setas de pie gordo (de 9 a 22 cm, grandes para que se vean entre la hierba); al cogerlas se van enteras.",
+   "Con las manos, «Usar» coge de 3 a 6 bayas o setas. Comer, por el servidor y con su autor: «Comer uno» en el panel de lo que llevas, «Comer: bayas» en el menú del clic derecho y, con hambre, «Usar» come si no hay otra cosa al lado. Cada baya quita 5 de hambre y cada seta 7.",
+   "Las bayas y las setas, con su modelo en el suelo y su icono (iconos v6).",
+   "Las bayas de la mata, ligeras: unos 4600 triángulos por mata (la primera versión tenía 27 000; medido en la página).",
+   "Pruebas: prueba_necesidades (comer: sin bayas no, una baya baja el hambre 5 y gasta una, una piedra no se come); el recorrido de jugador busca un arbusto de bayas, las coge, ya no se pueden volver a coger y se come una; prueba nueva de navegador de las bayas y las setas en PC y móvil (se ven el arbusto y sus bayas, con rojo de baya en la captura; al cogerlas se van las bayas y queda el arbusto; con hambre, «Usar» come; las setas se van enteras), rota a propósito quitando «siempre» al arbusto: falla.",
+   "Decisión provisional (registro de la demo): lo que quita cada cosa; todas las setas son buenas (aún no hay venenosas); sin animación de comer. No comprobado en una tarjeta gráfica de verdad."
+  ],
+  "pruebas": "Batería entera en la nube correcta tras unir main (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea",
+  "capturas": "capturas/demo-v146",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T21:24:48+00:00",
+  "fin": "2026-11-08T02:01:51+00:00",
+  "titulo": "P5: hacia dónde cae el árbol (la boca que se le corta)",
+  "hito": "talar",
+  "hecho": [
+   "El árbol cae hacia la boca que le cortas, como al talar de verdad: los golpes del primer tercio la abren hacia donde está quien los da y, si vienen de un mismo lado, el árbol cae hacia ese lado, aunque el resto se corte por detrás desde cualquier sitio. Lógica pura (src/logica/tala.js), y lo decide el servidor.",
+   "El golpe que termina la boca lo dice en el aviso («La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.»), o que no la hay si los golpes venían de lados opuestos.",
+   "Sin boca, cae cuesta abajo (el servidor mide la cuesta en su terreno) y, en llano, hacia donde se inclina el árbol: un lado fijo por árbol, el mismo para todos.",
+   "Lo abierto de la boca se guarda con el árbol (si te vas y vuelves, sigue); lo guardado antes, sin boca, se lee igual.",
+   "Recorrido de jugador, paso 9: el árbol joven que tala cae hacia el lado desde el que lo tala.",
+   "Decisiones provisionales (registro de la demo y aquí): la boca, el primer tercio de los golpes; de un mismo lado si la media de sus direcciones es de 0,7 o más; la cuesta manda desde el 12 %; la inclinación aún no se ve en el modelo. La caída de física, el crujido y el daño van con sus tareas."
+  ],
+  "pruebas": "Batería entera en la nube tres veces (al unir main, que traía la rastra como v144, los puestos como v145 y las bayas como v146): la última, los 42 grupos, todo correcto, sin las de en línea. Antes, la hoguera y entrar con la cuenta fallaron una vez cada una por cosas que no tocan esto (la pantalla de la cuenta y el sitio que apunta el servidor) y salieron bien al repetirlas. Tala 63/63 (rompiéndola a propósito, la boca falla 6), recorrido de jugador 112/112 con el paso 9 nuevo. Capturas de la tala en PC y móvil, miradas: el árbol cae hacia el que tala, que lo tiene encima (el daño, con su tarea). No comprobado: los avisos de la boca vistos en pantalla (la prueba del navegador da los golpes por la lógica, sin el aviso).",
+  "capturas": "capturas/demo-v147",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T02:22:14+00:00",
+  "fin": "2026-11-08T05:11:49+00:00",
+  "titulo": "P3: más almacenajes (soporte de varas, almiar, hoyo de barro y cesto)",
+  "hito": "crafting",
+  "hecho": [
+   "Los cuatro almacenajes que faltaban del documento de sistemas, en la pestaña «Almacenajes» de Construir: el soporte de varas, el almiar (paja y juncos), el hoyo de barro y el cesto (lo pequeño). Como los otros tres, se levantan como obra, solo en tu tierra o en la de quien te invita, guardan solo lo suyo y la obra no coge de ellos sola.",
+   "Con su modelo (estilo v5) y lleno con lo guardado: las varas tumbadas en dos caballetes en aspa; la paja en montón alrededor del palo hincado y los haces de juncos al pie (sin paja, de pie y apoyados en el palo); el barro húmedo llenando el hoyo bordeado de piedras; y lo pequeño subiendo dentro del cesto de juncos cosidos en espiral.",
+   "El hoyo de barro se cava: hay que llevar el palo cavador para levantarlo (no se gasta).",
+   "Sus imágenes para los paneles, sacadas de los modelos (docs/recursos/iconos-v7; las de la v6 no se tocan).",
+   "Recorrido de jugador, paso 15: vuelve a por las varas del árbol que taló, levanta un almiar en su tierra con dos de ellas y guarda en él el haz de juncos que llevaba en el fardo, y lo vuelve a sacar.",
+   "Decisiones provisionales (registro de la demo y aquí): el soporte de varas, 4 varas y 24 varas, dentro o fuera; el almiar, 2 varas y 24 haces de paja y juncos, fuera; el hoyo de barro, 6 piedras y el palo cavador, 16 cestas de barro, fuera; el cesto, 3 haces de juncos y 30 de lo pequeño (sílex y lascas, fibra, yesca, cordel, cuerda, resina, bayas, setas, frutos secos y hierbas), dentro o fuera."
+  ],
+  "pruebas": "Batería entera en la nube (42 grupos, sin las de en línea): todo bien menos «la demo en el mundo», que falló dos veces por 5 ms (un fotograma de 64,8 ms al saltar 700 m, en una máquina de la nube más lenta: el mapa tardó 3,5 s en vez de 2,1 s); en main pasó y, repetida sola en esta rama, también. Después de los últimos cambios de los modelos, otra vez almacenajes, fabricación, inventario, hoguera y lógica (con el recorrido de jugador y el paso 15): bien. Fabricación 162/162 (con MUTAR=2 falla), imágenes 433/433. Capturas de los cuatro almacenajes, llenos, en PC y móvil, miradas de cerca. No comprobado: el panel de guardar y sacar abierto con uno de los nuevos (es el mismo panel que el de la pila).",
+  "capturas": "capturas/demo-v148",
+  "estado": "ok"
  }
 ]

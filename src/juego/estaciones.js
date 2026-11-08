@@ -12,6 +12,10 @@
 //  - los almacenajes (7 nov): el acopio de troncos (durmientes y dos pares de estacas de vara), la pila de piedras (un
 //    lecho de losas) y la leñera (tejadillo de ramas sobre cuatro postes); lo guardado se ve puesto como se guarda de
 //    verdad y llena el almacenaje hasta lo que le cabe (los troncos en filas, las piedras en montón, la leña apilada).
+//    Y (8 nov) el soporte de varas (dos caballetes en aspa), el almiar (el palo hincado sobre dos varas cruzadas), el
+//    hoyo de barro (cavado y bordeado de piedras) y el cesto (de juncos trenzados): las varas tumbadas en la horquilla,
+//    la paja en montón alrededor del palo y los juncos de pie apoyados en él, el barro llenando el hoyo y lo pequeño
+//    subiendo dentro del cesto.
 // Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
 // de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
 // círculo de piedras. Cada tipo, su montón.
@@ -189,7 +193,53 @@ function lenera(id) {
   return mallas(L);
 }
 
-export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera };
+// El soporte de varas: dos caballetes de varas cruzadas en aspa, atados en el cruce; las varas se tumban a lo largo de X
+// en la horquilla de arriba, sin tocar el suelo.
+const SOPORTE = { x: 0.6, cruce: 0.62, abre: 0.34 };
+function soporteVaras(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 }), { x: X, cruce, abre } = SOPORTE;
+  for (const sx of [-1, 1]) {
+    const x = sx * X + (az(id, sx) - 0.5) * 0.04;
+    for (const sz of [-1, 1]) varaEntre(L, new THREE.Vector3(x, -0.08, sz * abre), new THREE.Vector3(x + sz * 0.02, cruce + 0.32, -sz * abre * 0.55), 0.024);
+    L.add(new THREE.TorusGeometry(0.03, 0.009, 5, 10), 0xb8a27a, x, cruce, 0, { y: Math.PI / 2 }, { tex: 'paja', sinSuelo: true }); // la atadura
+  }
+  varaEntre(L, new THREE.Vector3(-X - 0.06, cruce - 0.22, 0), new THREE.Vector3(X + 0.06, cruce - 0.21, 0), 0.02); // el travesaño que los une, bajo el cruce
+  return mallas(L);
+}
+// El almiar: el palo hincado (una vara alta) sobre un lecho de dos varas cruzadas, para que la paja no toque la tierra.
+function almiar(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 });
+  varaEntre(L, new THREE.Vector3(0, -0.2, 0), new THREE.Vector3((az(id, 1) - 0.5) * 0.05, 1.95, (az(id, 2) - 0.5) * 0.05), 0.03);
+  for (const a of [0.3, 0.3 + Math.PI / 2]) varaEntre(L, new THREE.Vector3(Math.cos(a) * 0.75, 0.03, Math.sin(a) * 0.75), new THREE.Vector3(-Math.cos(a) * 0.75, 0.03, -Math.sin(a) * 0.75), 0.026);
+  return mallas(L);
+}
+// El hoyo de barro: un hoyo cavado (la tierra del corte, oscura) bordeado de seis piedras.
+const HOYO = 0.42;
+function hoyoBarro(id) {
+  const L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 });
+  L.add(new THREE.CircleGeometry(HOYO + 0.08, 16), 'tierraCorte', 0, 0.008, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' }); // la tierra sacada
+  L.add(new THREE.CircleGeometry(HOYO, 16), 'tierraCorteOsc', 0, 0.012, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' }); // el fondo
+  for (let i = 0; i < 6; i++) {
+    const a = i * Math.PI / 3 + (az(id, i) - 0.5) * 0.3;
+    L.add(piedraIrregular(0.13, 1, id + 'h' + i, 0.22), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * (HOYO + 0.1), 0.05, Math.sin(a) * (HOYO + 0.1), { y: az(id, i + 7) * 6 }, { escala: new THREE.Vector3(1.3, 0.6, 1), plano: true });
+  }
+  return mallas(L);
+}
+// El cesto: de juncos trenzados, redondo y algo más ancho de boca, con su borde enrollado.
+const CESTO = { r0: 0.22, r1: 0.27, alto: 0.3 };
+// en espiral, como se cosen los cestos de juncos: rollos de juncos uno encima de otro (y las puntadas, más claras)
+const trenza = v => 0.66 + 0.34 * Math.abs(Math.sin(v.y * 88)) - (Math.sin(Math.atan2(v.z, v.x) * 18 + v.y * 40) > 0.9 ? 0.14 : 0);
+function cesto(id) {
+  const L = new Lote({ rangoSuelo: 0.2, variacion: 0.05 }), { r0, r1, alto } = CESTO;
+  L.add(new THREE.CylinderGeometry(r1, r0, alto, 26, 24, true), 'junco', 0, alto / 2, 0, { y: az(id, 1) * 6 }, { tex: 'paja', rayas: trenza });
+  L.add(cil(r1 - 0.012, r0 - 0.012, alto - 0.01, 22, true), 'juncoOsc', 0, alto / 2 + 0.005, 0, null, { tex: 'paja', sinSuelo: true, escala: new THREE.Vector3(-1, 1, 1) }); // por dentro (en espejo: las caras miran adentro)
+  L.add(new THREE.CircleGeometry(r0, 22), 'juncoOsc', 0, 0.015, 0, { x: -Math.PI / 2 }, { tex: 'paja', sinSuelo: true }); // el fondo
+  L.add(new THREE.TorusGeometry(r1, 0.014, 5, 26), 'junco', 0, alto, 0, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true }); // el borde
+  return mallas(L);
+}
+
+export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
+  soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -245,7 +295,96 @@ function llenoLenera(dep, id) {
   }
   return g;
 }
-const LLENO = { acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera };
+//  - el soporte: las varas tumbadas en la horquilla de los caballetes, en filas que se abren hacia arriba (como la V).
+function llenoSoporte(dep, id) {
+  const L = new Lote({ rangoSuelo: 0.6, variacion: 0.07 }), r = 0.02, largo = 1.6;
+  let n = dep.vara || 0, fila = 0, i = 0;
+  while (n > 0) {
+    const cuantas = Math.min(n, 3 + fila), y = SOPORTE.cruce + 0.03 + fila * r * 1.8, ancho = (cuantas - 1) * r * 2.1;
+    for (let k = 0; k < cuantas; k++, i++) {
+      const z = -ancho / 2 + k * r * 2.1 + (fila % 2 ? r * 0.5 : 0), dx = (az(id, i) - 0.5) * 0.18, g = (az(id, i + 40) - 0.5) * 0.03;
+      varaEntre(L, new THREE.Vector3(dx - largo / 2, y, z - g), new THREE.Vector3(dx + largo / 2, y + (az(id, i + 80) - 0.5) * 0.01, z + g), r);
+    }
+    n -= cuantas; fila++;
+  }
+  return mallas(L);
+}
+//  - el almiar: la paja en un montón redondo alrededor del palo, que crece con lo que se le echa (de bulto, con la
+//    superficie desigual); los haces de juncos, tumbados en corro al pie del montón (o, sin paja, de pie y apoyados
+//    en el palo, en cono).
+function llenoAlmiar(dep, id) {
+  const g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.5, variacion: 0.08 }), cabe = ESTACIONES.almiar.cabe;
+  const paja = dep.paja || 0, junco = dep.junco || 0;
+  let radio = 0.12, alto = 0.3;
+  if (paja > 0) {
+    const f = Math.min(1, paja / cabe); radio = 0.4 + 0.5 * Math.sqrt(f); alto = 0.35 + 1.25 * Math.sqrt(f);
+    const perfil = [];
+    for (let k = 0; k <= 10; k++) { const u = k / 10; perfil.push(new THREE.Vector2(radio * Math.sqrt(Math.max(0, 1 - u * u * u)) * (1 - 0.15 * u) + 0.02, alto * u)); }
+    const geo = new THREE.LatheGeometry(perfil, 18), p = geo.attributes.position, v = new THREE.Vector3();
+    for (let k = 0; k < p.count; k++) { // bultos: los vértices que coinciden se mueven igual (sin grietas)
+      v.fromBufferAttribute(p, k);
+      const e = 1 + (az(id, `${Math.round(v.x * 40)},${Math.round(v.y * 40)},${Math.round(v.z * 40)}`) - 0.5) * 0.14 * Math.min(1, v.y / 0.1 + 0.2);
+      p.setXYZ(k, v.x * e, v.y, v.z * e);
+    }
+    geo.computeVertexNormals();
+    L.add(geo, 'paja', 0, 0.02, 0, { y: az(id, 3) * 6 }, { tex: 'paja' });
+    g.add(mallas(L));
+  }
+  const haz = modeloDe({ id: id + ':junco', cosa: { tipo: 'junco', n: 1 } });
+  haz.updateMatrixWorld(true);
+  const caja = new THREE.Box3().setFromObject(haz), largo = caja.max.x - caja.min.x, centro = caja.getCenter(new THREE.Vector3());
+  for (let h = 0; h < junco; h++) {
+    const g2 = new THREE.Group(), m = haz.clone(); m.position.sub(centro); g2.add(m); // el haz, centrado
+    if (paja > 0) { // con paja: los haces tumbados al pie del montón, en corro y unos sobre otros
+      const capa = Math.floor(h / 6), a = (h % 6) * Math.PI / 3 + capa * 0.5 + az(id, h) * 0.2, d = radio + 0.14;
+      g2.position.set(Math.cos(a) * d, 0.035 + capa * 0.05, Math.sin(a) * d); g2.rotation.y = -a + Math.PI / 2;
+    } else { // sin paja: de pie y apoyados en el palo, en cono (como se secan)
+      const a = h * 2.4 + az(id, h) * 0.3, arriba = 1.05;
+      const pie = new THREE.Vector3(Math.cos(a), 0, Math.sin(a)).multiplyScalar(Math.sqrt(Math.max(0.01, largo * largo - arriba * arriba)) * 0.97 + 0.04).setY(0.02);
+      const dir = new THREE.Vector3(-pie.x, arriba, -pie.z);
+      g2.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir.clone().normalize());
+      g2.position.copy(pie).addScaledVector(dir, 0.5);
+    }
+    g.add(g2);
+  }
+  return g;
+}
+const BARRO_HUMEDO = 0x6a5442; // el barro mojado, más oscuro que el seco
+//  - el hoyo: el barro llena el hoyo y, con mucho, hace un montón húmedo y liso encima, con algún terrón.
+function llenoHoyo(dep, id) {
+  const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 }), n = dep.barro || 0, f = Math.min(1, n / ESTACIONES.hoyo_barro.cabe);
+  if (n > 0) {
+    L.add(piedraIrregular(HOYO * 0.96, 2, id + 'barro', 0.05), BARRO_HUMEDO, 0, 0.01, 0, { y: az(id, 1) * 6 }, { escala: new THREE.Vector3(1, 0.04 + 0.5 * f, 1), sinSuelo: true, tex: 'piedra' });
+    for (let k = 0; k < Math.min(5, Math.ceil(n / 3)); k++) {
+      const a = k * 1.3 + az(id, k), d = HOYO * (0.2 + 0.5 * az(id, k + 9));
+      L.add(piedraIrregular(0.07 + 0.03 * az(id, k + 4), 1, id + 't' + k, 0.25), BARRO_HUMEDO, Math.cos(a) * d, 0.01 + (0.04 + 0.5 * f) * HOYO * 0.9, Math.sin(a) * d, null, { escala: new THREE.Vector3(1, 0.55, 1), sinSuelo: true, tex: 'piedra' });
+    }
+  }
+  return mallas(L);
+}
+//  - el cesto: lo de dentro sube con lo que se guarda (un lecho del color de lo que más hay) y encima asoma un poco
+//    de cada cosa: piedrecillas de sílex, mechones de fibra, bayas…, cada una de su color.
+const COLOR_PEQUENO = { silex: 'piedraOsc', lasca_silex: 'piedraOsc', fibra: 'lino', yesca: 'cortezaRoja', cordel: 'paja', cuerda: 'paja', resina: 0x9a6a2a, bayas: 0x5a2a36, setas: 0xb59a7a, frutos_secos: 'madera', hierbas: 'hoja' };
+function llenoCesto(dep, id) {
+  const tipos = Object.entries(dep).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
+  const L = new Lote({ rangoSuelo: 0.2, variacion: 0.1 });
+  if (!tipos.length) return mallas(L);
+  const total = tipos.reduce((a, [, n]) => a + n, 0), f = Math.min(1, total / ESTACIONES.cesto.cabe), { r0, r1, alto } = CESTO;
+  const y = 0.04 + (alto - 0.08) * f, r = r0 + (r1 - r0) * (y / alto) - 0.012;
+  L.add(new THREE.CircleGeometry(r, 22), COLOR_PEQUENO[tipos[0][0]] || 'lino', 0, y, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'tejido' });
+  // cada cosa, en su rincón y mezclada por los bordes: muchos trocitos pequeños y desiguales (más de lo que más hay)
+  const piezas = [];
+  for (const [t, n] of tipos) for (let k = 0; k < Math.min(18, 4 + n); k++) piezas.push(t);
+  const total2 = piezas.length;
+  piezas.forEach((t, i) => {
+    const a = i * 2.39996 + (az(id, i) - 0.5) * 0.5, d = Math.min(r - 0.02, r * 0.95 * Math.sqrt((i + 0.5) / total2)), tam = 0.011 + 0.011 * az(id, i + 50);
+    const fino = t === 'fibra' || t === 'cordel' || t === 'cuerda' || t === 'hierbas';
+    L.add(piedraIrregular(tam, 1, id + 'p' + i, 0.35), COLOR_PEQUENO[t] || 'lino', Math.cos(a) * d, y + tam * 0.25, Math.sin(a) * d, { y: az(id, i + 9) * 6, x: (az(id, i + 70) - 0.5) * 0.6 },
+      { escala: fino ? new THREE.Vector3(3.2, 0.45, 0.7) : new THREE.Vector3(1.2, 0.7, 1), sinSuelo: true });
+  });
+  return mallas(L);
+}
+const LLENO = { acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -295,7 +434,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0 }[tipo] || 0.7, alto = 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45 }[tipo] || 0.7, alto = 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -358,7 +497,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (!o) {
         o = new THREE.Group();
         const modelo = MODELO_ESTACION[e.tipo](e.id); modelo.name = 'modelo'; o.add(modelo);
-        o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = az(e.id, 7) * Math.PI * 2;
+        o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = Number.isFinite(e.giro) ? e.giro : az(e.id, 7) * Math.PI * 2;   // el giro con que se puso (7 nov); las de antes, al azar
         o.name = 'estacion_' + e.tipo; o.userData.id = e.id; o.userData.tipo = e.tipo;
         grupo.add(o); vistas.set(e.id, o);
       }
@@ -381,6 +520,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     for (const e of lista) if (e && typeof e.id === 'string' && Number.isFinite(e.x) && Number.isFinite(e.z)) {
       const n = nuevas[e.id] = { id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, cola: [], deposito: limpiarDeposito(e.deposito, e.tipo) };
       if (Number.isFinite(e.y)) n.y = e.y;
+      if (Number.isFinite(e.giro)) n.giro = e.giro;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)
       if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: e.fuego.encendida && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,

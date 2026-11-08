@@ -6,10 +6,14 @@
 # 4 piedras y la levanta. «Guardar y sacar» abre el panel con ella: lo guardado y lo que lleva que se guarda ahí (las
 # ramas, no); guarda piedras (en el servidor) y se ven puestas en montón; saca y vuelven a sus manos; y la llena. En el
 # móvil (390×844), el otro jugador la ve llena igual, con el menú (puede mirarla, pero es tierra de otro: no saca nada).
-# El acopio de troncos y la leñera se miran llenos de cerca (solo para mirarlos: se dibujan en este navegador; su
+# El acopio de troncos y la leñera (y, desde el 8 nov, el soporte de varas, el almiar, el hoyo de barro y el cesto) se
+# miran llenos de cerca (solo para mirarlos: se dibujan en este navegador; su
 # lógica y el servidor, en pruebas/prueba_fabricacion.mjs y pruebas/prueba_objetos_servidor.mjs).
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba los almacenajes en el juego; el recorrido
 # de jugador (pruebas/prueba_recorrido.mjs) levanta la pila y guarda en ella sin arcón, con lo que se recoge.
+# Con el giro que se le da al ponerla (Girar seis veces: 90°), el servidor la guarda y se dibuja así; y al final se
+# desmonta desde Desmontar (valravnx, 7 nov: «no se ponen en la dirección de rotación… y no se pueden desmontar»): el
+# 75 % de su material y lo que guardaba, al suelo.
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si se guardara solo en el navegador): falla.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
@@ -119,6 +123,12 @@ def coger(pg, objeto, n, a):
 def mirar(pg, tipo, dist=3.2, pitch=0.5, yaw=0):
     pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === '{tipo}'); if (!e) return;
       Object.assign({K}.pj, {{ x: e.x + 0.6, z: e.z + 1.4, rot: Math.atan2(-0.6, -1.4) }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
+def encuadre(pg, tipo, dist, pitch, yaw, lado=1.1, atras=0.9, cual=0):
+    # para mirar uno de cerca sin que el personaje lo tape: el personaje a un lado, detrás (atras > 0: el almacenaje entre
+    # la cámara y él) o delante (atras < 0: el almacenaje más allá, junto a él)
+    pg.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).filter(x => x.tipo === '{tipo}')[{cual}]; if (!e) return;
+      const s = Math.sin({yaw}), c = Math.cos({yaw});
+      Object.assign({K}.pj, {{ x: e.x - s * {atras} + c * {lado}, z: e.z - c * {atras} - s * {lado}, rot: {yaw} + Math.PI }}); {K}.cam.yaw = {yaw}; {K}.cam.dist = {dist}; {K}.cam.pitch = {pitch}; }})()""")
 DEPOSITO = "(t => { const o = window.__kinhold.escena.getObjectByName('estacion_' + t); const d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => { if (m.isMesh) n++; }); return n; })"
 PANEL = "document.getElementById('panelFabricar').innerText"
 
@@ -140,14 +150,19 @@ try:
         print('Levanta una pila de piedras desde «Almacenajes»')
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"almacenajes\"]').click()"); A.wait_for_timeout(300)
         lista = A.evaluate("[...document.querySelectorAll('#piezas .pieza b')].map(b => b.textContent)")
-        comprobar('la pestaña «Almacenajes»: acopio de troncos, pila de piedras y leñera (y no los puestos de trabajo)', lista == ['Acopio de troncos', 'Pila de piedras', 'Leñera'], str(lista))
+        comprobar('la pestaña «Almacenajes»: los siete (acopio de troncos, pila de piedras, leñera, soporte de varas, almiar, hoyo de barro y cesto), y no los puestos de trabajo',
+                  lista == ['Acopio de troncos', 'Pila de piedras', 'Leñera', 'Soporte de varas', 'Almiar', 'Hoyo de barro', 'Cesto'], str(lista))
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(200)
         lista2 = A.evaluate("[...document.querySelectorAll('#piezas .pieza b')].map(b => b.textContent)")
         comprobar('y en «Puestos de trabajo» no salen', 'Pila de piedras' not in lista2 and 'Hoguera' in lista2, str(lista2))
         A.evaluate(f"{K}.seleccionar('puesto', 'pila_piedras')")
         coger(A, 'piedra', 3, 'mano:der'); coger(A, 'piedra', 1, 'mano:izq')
         comprobar('el servidor le da 4 piedras (arcón de pruebas)', servidorDice(lambda d: cuantos(d, yo, 'piedra') == 4) is not None)
+        for _ in range(6): A.evaluate(f"{K}.girar()")
         A.evaluate(f"(() => {{ const x = {K}.pj.x + 1, z = {K}.pj.z + 0.2; {K}.apuntar(x, z, {K}.alturaSuelo(x, z)); {K}.colocar(); }})()")
+        d = servidorDice(lambda d: abs(((pila_servidor(d, yo) or {}).get('giro') or 0) - 1.571) < 0.002)
+        comprobar('el servidor guarda el giro con que se pone (Girar ×6: 90°)', d is not None, str(pila_servidor(json.load(open(OBJETOS)), yo)))
+        comprobar('y se dibuja con ese giro', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_pila_piedras'); return !!o && Math.abs(o.rotation.y - 1.571) < 0.002; }})()", 8000))
         comprobar('el servidor tiene el marco de la pila', servidorDice(lambda d: (pila_servidor(d, yo) or {}).get('obra') is not None) is not None, A.evaluate("document.getElementById('aviso').textContent"))
         A.evaluate(f"{K}.cambiarModo('mover')")
         esperar(A, f"Object.values({K}.fabCliente.estaciones).some(e => e.tipo === 'pila_piedras')", 8000)
@@ -218,6 +233,29 @@ try:
         mirar(A, 'lenera', 3.4, 0.35, 0.6); A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_lenera_llena.png')
 
+        print('El soporte de varas, el almiar, el hoyo de barro y el cesto (8 nov), llenos y vacíos (solo para mirarlos)')
+        NUEVOS = """((K, desde) => { const p = Object.values(K.fabCliente.estaciones).find(e => e.tipo === 'pila_piedras'), l = Object.values(K.fabCliente.estaciones).filter(e => !e.id.endsWith(':mirar')).map(e => ({ ...e }));
+          const pon = (tipo, dx, dz, deposito, sufijo = '') => l.push({ id: tipo + ':mirar' + sufijo, tipo, x: p.x + dx, z: p.z + dz, autor: p.autor, deposito });
+          pon('soporte_varas', 3.5, -4, { vara: 20 }); pon('almiar', -3.5, -4.5, { paja: 18, junco: 5 }); pon('hoyo_barro', 0.5, 8, { barro: 12 }); pon('cesto', 2, 3.5, { fibra: 12, silex: 6, cordel: 2, bayas: 4 });
+          if (desde) { pon('almiar', -7, -4.5, { junco: 6 }, 'b'); pon('soporte_varas', 7, -4, {}, 'b'); }
+          // los de mirar se quedan aunque el servidor vuelva a mandar las estaciones (las de verdad, más estos)
+          K.__mirar = l.filter(e => e.id.includes(':mirar'));
+          if (!K.estacionesV.__poner) { K.estacionesV.__poner = K.estacionesV.poner; K.estacionesV.poner = lista => K.estacionesV.__poner([...(lista || []).filter(e => !String(e.id).includes(':mirar')), ...(K.__mirar || [])]); }
+          K.estacionesV.poner(l); })"""
+        A.evaluate(f"{NUEVOS}({K}, true)")
+        for t in ['soporte_varas', 'almiar', 'hoyo_barro', 'cesto']:
+            comprobar(f'{t}: se dibuja con lo guardado', esperar(A, f"{DEPOSITO}('{t}') > 0", 5000), str(A.evaluate(f"{DEPOSITO}('{t}')")))
+        A.add_style_tag(content='#materiales { visibility: hidden !important; }')   # (cuenta también los de mirar)
+        for t, dist, pitch, yaw, lado, atras, cual, nombre in [('soporte_varas', 3.8, 0.38, 0.6, 1.2, -1.8, 0, 'soporte_varas_lleno'), ('soporte_varas', 3.8, 0.38, 0.6, 1.2, -1.8, 1, 'soporte_varas_vacio'),
+                ('almiar', 6.5, 0.32, 0.4, 0.9, 2.0, 0, 'almiar_lleno'), ('almiar', 5.5, 0.3, 0.4, 0.8, 1.6, 1, 'almiar_juncos'),
+                ('hoyo_barro', 3.2, 0.7, 0.3, 0.9, -1.4, 0, 'hoyo_barro_lleno'), ('cesto', 2.4, 0.6, 0.3, 0.6, -1.2, 0, 'cesto_lleno')]:
+            encuadre(A, t, dist, pitch, yaw, lado, atras, cual); A.wait_for_timeout(2200)
+            captura(A, f'{SALIDA}/PC_{nombre}.png')
+        # el almiar solo con juncos (de pie, en cono) y el soporte vacío, junto a los llenos
+        A.evaluate(f"""(() => {{ const e = Object.values({K}.fabCliente.estaciones).find(x => x.tipo === 'pila_piedras');
+          Object.assign({K}.pj, {{ x: e.x - 1.5, z: e.z + 2.5, rot: Math.atan2(0.2, 1) }}); {K}.cam.yaw = 0; {K}.cam.dist = 10; {K}.cam.pitch = 0.42; }})()"""); A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_almacenajes_nuevos.png')
+
         print('En el móvil, el otro jugador la ve llena; es tierra de otro')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         pl = pila_servidor(json.load(open(OBJETOS)), yo)
@@ -235,6 +273,33 @@ try:
         comprobar('pero no saca nada: es tierra de otro', esperar(B, "/tierra de otro/.test(document.querySelector('#panelFabricar .fab-aviso').textContent)", 6000) and ((pila_servidor(json.load(open(OBJETOS)), yo) or {}).get('deposito') or {}).get('piedra') == 40,
                   B.evaluate("document.querySelector('#panelFabricar .fab-aviso').textContent"))
         B.evaluate(f"{K}.panelFabricar.cerrar()")
+        B.evaluate(f"{NUEVOS}({K}, false)")
+        B.add_style_tag(content='#materiales { visibility: hidden !important; }')
+        comprobar('en el móvil, el almiar y el cesto se ven igual', esperar(B, f"{DEPOSITO}('almiar') > 0 && {DEPOSITO}('cesto') > 0", 8000))
+        encuadre(B, 'almiar', 6.5, 0.4, 0.4, 0.5, -2.2); B.wait_for_timeout(2500)
+        captura(B, f'{SALIDA}/movil_almiar.png')
+        encuadre(B, 'cesto', 2.6, 0.6, 0.3, 0.5, -1.2); B.wait_for_timeout(2000)
+        captura(B, f'{SALIDA}/movil_cesto.png')
+        B.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')))")
+
+        print('Desmontarla, desde Desmontar (el dueño, en PC)')
+        pl = pila_servidor(json.load(open(OBJETOS)), yo)
+        A.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner({K}.objetosRed ? Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')) : [])")
+        mirar(A, 'pila_piedras', 4.0, 0.6)
+        A.evaluate(f"{K}.cambiarModo('desmontar')"); A.wait_for_timeout(1500)
+        pt = A.evaluate(f"{K}.proyectar({pl['x']}, {K}.alturaSuelo({pl['x']}, {pl['z']}) + 0.25, {pl['z']})")
+        A.evaluate(f"{K}.elegirPieza({pt['x']}, {pt['y']})"); A.wait_for_timeout(300)
+        aviso = A.evaluate("document.getElementById('aviso').textContent")
+        comprobar('al apuntarla, la elige y dice que se recupera el 75 %', '75' in aviso and not A.evaluate("document.getElementById('confirmar').hidden"), aviso)
+        captura(A, f'{SALIDA}/PC_desmontar_pila.png')
+        A.evaluate(f"{K}.confirmarDesmontaje()")
+        def piedras_suelo(d):
+            return sum(o['cosa']['n'] for o in (d.get('suelo') or {}).get('objetos', []) if o.get('cosa', {}).get('tipo') == 'piedra')
+        d = servidorDice(lambda d: pila_servidor(d, yo) is None)
+        comprobar('desmontada en el servidor', d is not None, A.evaluate("document.getElementById('aviso').textContent"))
+        comprobar('y sus 40 piedras y 3 de su material (el 75 % de 4), en el suelo', d is not None and piedras_suelo(d) >= 43, str(piedras_suelo(d) if d else None))
+        comprobar('ya no se dibuja', esperar(A, f"!{K}.escena.getObjectByName('estacion_pila_piedras')", 8000))
+        A.evaluate(f"{K}.cambiarModo('mover')")
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]

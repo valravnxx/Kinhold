@@ -1,6 +1,6 @@
 # Prueba en navegador (Chromium sin pantalla): la tala en la construcción (hito de equipo).
-# Sin hacha no se tala; con el hacha de piedra en la mano, Usar junto a un árbol joven da golpes hasta que cae hacia el
-# lado contrario, queda el tocón, y en el suelo el tronco delgado y las varas, que se cogen con Usar (el tronco, también al
+# Sin hacha no se tala; con el hacha de piedra en la mano, Usar junto a un árbol joven da golpes hasta que cae hacia la
+# boca (el lado desde el que talas), queda el tocón, y en el suelo el tronco delgado y las varas, que se cogen con Usar (el tronco, también al
 # hombro). Se guarda al
 # recargar y, pasado su tiempo, el árbol vuelve a crecer. El adulto con hacha de piedra pide muchos golpes.
 # Capturas de cerca en PC (1280×800) y móvil (390×844).
