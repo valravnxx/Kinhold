@@ -1,0 +1,71 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   hay mapa del rey en el mundo de verdad
+  OK   el mapa se prepara solo en cuanto el mundo está listo (sin abrirlo) — {'msPintar': 2047, 'msMaxPaso': 25, 'avance': 1}
+  OK   sin tirones al prepararlo (ningún paso de más de 80 ms) — 25 ms el paso más largo, 2047 ms en total
+  OK   las 8 comarcas con su nombre, ríos, montes y árboles — {'etiquetas': 8, 'rios': 43, 'montes': 163, 'arboles': 1984}
+  OK   pones tu mojón
+  OK   el botón «Mapa» se ve y cabe en la pantalla — [755.171875, 10, 810.28125, 40.875]
+  OK   se abre (M)
+  OK   el mapa está pintado (papel, no en blanco) — {'opacos': 6400, 'media': 130.34265625}
+  OK   tu marca está donde estás — {'esperada': [868.1791044776121, 382.4945671641791], 'marca': {'x': 868.1791044776121, 'y': 382.4945671641791}}
+  OK   la marca te sigue si andas con el mapa abierto — {'esperada': [877.5402985074627, 376.64382089552237], 'marca': {'x': 877.5402985074627, 'y': 376.64382089552237}}
+  OK   «Dónde estoy» acerca el mapa y te pone en el centro — marca {'x': 640, 'y': 400}, zoom 3.0
+  OK   tu tierra sale en el mapa, con tu mojón — {'lindes': 31146, 'pendientes': 33, 'hechas': 44, 'tierra': {'zona': 5000178, 'x': 210002, 'z': 51005}, 'mojon': {'x': 640.0702089552242, 'y': 400.0351044776123}, 'desde': 28, 'nombres': 0.49253731343283597, 'rey': [{'id': 5900153, 'por': 'veta'}, {'id': 5100184, 'por': 'ciudad'}, {'id': 4500156, 'por': 'salida'}, {'id': 5600173, 'por': 'salida'}]}
+  OK   de cerca salen los lindes de las zonas (a pasos, todas las que se ven) — 13134 segmentos, 47 teselas, zoom 94 px/km
+  OK   de cerca no salen los nombres de las comarcas (tapaban tu tierra) — opacidad 0
+  OK   se acerca hasta 150 px por km (o 8 veces la isla, si es más) — 150 px/km, isla 11.7
+  OK   al acercar del todo, lo que estaba en el centro (tu mojón) sigue en el centro — {'x': 640.0000000000036, 'y': 399.9999999999991}
+  OK   y tu mojón queda en el centro, con «Tu tierra» — {'x': 640, 'y': 400}
+  OK   salen las cuatro zonas del rey (la gran veta, la ciudad con su salida, y las salidas de Lindholt y de Motdale) — [{'id': 5900153, 'por': 'veta'}, {'id': 5100184, 'por': 'ciudad'}, {'id': 4500156, 'por': 'salida'}, {'id': 5600173, 'por': 'salida'}]
+  OK   se cierra (Esc)
+  OK   M lo abre y lo vuelve a cerrar
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   hay mapa del rey en el mundo de verdad
+  OK   el mapa se prepara solo en cuanto el mundo está listo (sin abrirlo) — {'msPintar': 1998, 'msMaxPaso': 18, 'avance': 1}
+  OK   sin tirones al prepararlo (ningún paso de más de 80 ms) — 18 ms el paso más largo, 1998 ms en total
+  OK   las 8 comarcas con su nombre, ríos, montes y árboles — {'etiquetas': 8, 'rios': 43, 'montes': 163, 'arboles': 1984}
+  OK   pones tu mojón
+  OK   el botón «Mapa» se ve y cabe en la pantalla — [331.53125, 43.515625, 380, 71.03125]
+  OK   se abre (botón)
+  OK   el mapa está pintado (papel, no en blanco) — {'opacos': 6400, 'media': 118.21848958333334}
+  OK   tu marca está donde estás — {'esperada': [307.20000000000005, 413.39224615384614], 'marca': {'x': 307.20000000000005, 'y': 413.39224615384614}}
+  OK   la marca te sigue si andas con el mapa abierto — {'esperada': [311.803076923077, 410.51532307692304], 'marca': {'x': 311.803076923077, 'y': 410.51532307692304}}
+  OK   «Dónde estoy» acerca el mapa y te pone en el centro — marca {'x': 195, 'y': 422}, zoom 3.0
+  OK   tu tierra sale en el mapa, con tu mojón — {'lindes': 0, 'pendientes': 0, 'hechas': 0, 'tierra': {'zona': 5000178, 'x': 210002, 'z': 51005}, 'mojon': {'x': 195.0345230769235, 'y': 422.01726153846164}, 'desde': 28, 'nombres': 1, 'rey': [{'id': 5900153, 'por': 'veta'}, {'id': 5100184, 'por': 'ciudad'}, {'id': 4500156, 'por': 'salida'}, {'id': 5600173, 'por': 'salida'}]}
+  OK   de cerca salen los lindes de las zonas (a pasos, todas las que se ven) — 14028 segmentos, 18 teselas, zoom 46 px/km
+  OK   de cerca no salen los nombres de las comarcas (tapaban tu tierra) — opacidad 0
+  OK   se acerca hasta 150 px por km (o 8 veces la isla, si es más) — 150 px/km, isla 5.8
+  OK   al acercar del todo, lo que estaba en el centro (tu mojón) sigue en el centro — {'x': 195, 'y': 421.9999999999991}
+  OK   y tu mojón queda en el centro, con «Tu tierra» — {'x': 195, 'y': 422}
+  OK   salen las cuatro zonas del rey (la gran veta, la ciudad con su salida, y las salidas de Lindholt y de Motdale) — [{'id': 5900153, 'por': 'veta'}, {'id': 5100184, 'por': 'ciudad'}, {'id': 4500156, 'por': 'salida'}, {'id': 5600173, 'por': 'salida'}]
+  OK   se cierra (✕)
+  OK   sin errores en la página
+Vista pc_en
+  OK   la demo arranca sin error — None
+  OK   hay mapa del rey en el mundo de verdad
+  OK   el mapa se prepara solo en cuanto el mundo está listo (sin abrirlo) — {'msPintar': 2109, 'msMaxPaso': 18, 'avance': 1}
+  OK   sin tirones al prepararlo (ningún paso de más de 80 ms) — 18 ms el paso más largo, 2109 ms en total
+  OK   las 8 comarcas con su nombre, ríos, montes y árboles — {'etiquetas': 8, 'rios': 43, 'montes': 163, 'arboles': 1984}
+  OK   pones tu mojón
+  OK   el botón «Mapa» se ve y cabe en la pantalla — [795.046875, 10, 843.015625, 40.875]
+  OK   se abre (M)
+  OK   el mapa está pintado (papel, no en blanco) — {'opacos': 6400, 'media': 130.34265625}
+  OK   tu marca está donde estás — {'esperada': [868.1791044776121, 382.4945671641791], 'marca': {'x': 868.1791044776121, 'y': 382.4945671641791}}
+  OK   la marca te sigue si andas con el mapa abierto — {'esperada': [877.5402985074627, 376.64382089552237], 'marca': {'x': 877.5402985074627, 'y': 376.64382089552237}}
+  OK   «Dónde estoy» acerca el mapa y te pone en el centro — marca {'x': 640, 'y': 400}, zoom 3.0
+  OK   tu tierra sale en el mapa, con tu mojón — {'lindes': 30175, 'pendientes': 34, 'hechas': 43, 'tierra': {'zona': 5000178, 'x': 210002, 'z': 51005}, 'mojon': {'x': 640.0702089552242, 'y': 400.0351044776123}, 'desde': 28, 'nombres': 0.49253731343283597, 'rey': [{'id': 5900153, 'por': 'veta'}, {'id': 5100184, 'por': 'ciudad'}, {'id': 4500156, 'por': 'salida'}, {'id': 5600173, 'por': 'salida'}]}
+  OK   de cerca salen los lindes de las zonas (a pasos, todas las que se ven) — 13134 segmentos, 46 teselas, zoom 94 px/km
+  OK   de cerca no salen los nombres de las comarcas (tapaban tu tierra) — opacidad 0
+  OK   se acerca hasta 150 px por km (o 8 veces la isla, si es más) — 150 px/km, isla 11.7
+  OK   al acercar del todo, lo que estaba en el centro (tu mojón) sigue en el centro — {'x': 640.0000000000036, 'y': 399.9999999999991}
+  OK   y tu mojón queda en el centro, con «Tu tierra» — {'x': 640, 'y': 400}
+  OK   salen las cuatro zonas del rey (la gran veta, la ciudad con su salida, y las salidas de Lindholt y de Motdale) — [{'id': 5900153, 'por': 'veta'}, {'id': 5100184, 'por': 'ciudad'}, {'id': 4500156, 'por': 'salida'}, {'id': 5600173, 'por': 'salida'}]
+  OK   se cierra (Esc)
+  OK   M lo abre y lo vuelve a cerrar
+  OK   en inglés no falta ningún texto — []
+  OK   sin errores en la página
+
+Todo bien
