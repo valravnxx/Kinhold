@@ -28,7 +28,7 @@ import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
 import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
-import { estadoFuego, calorEn } from '../logica/fuego.js';
+import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
@@ -1497,7 +1497,7 @@ function pasoPuesto() {
 }
 function usarFuego(e, a) {
   hacerFabricacion({ ...a, estacion: e.id, x: pj.x, z: pj.z }, (r) => {
-    mostrarAviso(!r.ok ? tr(r.motivo) : a.tipo === 'encender_fuego' ? tr('La hoguera prende.') : tr('Echas al fuego: 1 {c}.', { c: tr(CATALOGO[a.objeto].nombre).toLowerCase() }), !r.ok);
+    mostrarAviso(!r.ok ? tr(r.motivo) : r.avivada ? tr('Avivas el fuego: vuelve la llama.') : a.tipo === 'encender_fuego' ? tr('El fuego prende.') : a.tipo === 'brasas_fuego' ? tr('Cubres el fuego con su ceniza: queda en brasas.') : tr('Echas al fuego: 1 {c}.', { c: tr(CATALOGO[a.objeto].nombre).toLowerCase() }), !r.ok);
   });
 }
 // La cama ligada (P4; src/logica/fabricacion.js): ligar la que tienes delante (una por personaje: la de antes deja de
@@ -1610,7 +1610,9 @@ function opcionesUsar() {
       // la hoguera: encenderla (con yesca y el taladro de fuego) y echarle una rama o una leña de lo que llevas
       if (ESTACIONES[e.tipo].fuego && e.fuego) {
         const st = estadoFuego(e.fuego, Date.now()), inv = inventario();
-        if (!st.encendida) ops.push({ texto: tr('Encender: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'encender_fuego' }) });
+        if (st.brasas) ops.push({ texto: tr('Avivar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'encender_fuego' }) });
+        else if (!st.encendida) ops.push({ texto: tr('Encender: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'encender_fuego' }) });
+        else if (COMO_FUEGO[e.tipo] && COMO_FUEGO[e.tipo].brasas) ops.push({ texto: tr('Dejar en brasas: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'brasas_fuego' }) });
         for (const t of ['rama', 'lena']) if (inv.cuantos(t)) ops.push({ texto: tr('Echar al fuego: 1 {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'echar_fuego', objeto: t }) });
       }
     }
@@ -2105,7 +2107,7 @@ function moverFuegos() {
     const c = cerca[i];
     if (!c || c.d > 25) { l.intensity = 0; return; }
     l.position.copy(c.p);
-    l.intensity = 7 * (0.86 + 0.08 * Math.sin(t * 9.1 + i) + 0.06 * Math.sin(t * 23.7 + i * 2));
+    l.intensity = 7 * (c.p.k ?? 1) * (0.86 + 0.08 * Math.sin(t * 9.1 + i) + 0.06 * Math.sin(t * 23.7 + i * 2));
   });
 }
 window.__fuegos = () => ({ chimeneas: chimeneas.length, hogueras: estacionesV.paso().length, luces: lucesFuego.length, encendidas: lucesFuego.filter(l => l.intensity > 0).length });

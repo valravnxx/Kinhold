@@ -1376,9 +1376,9 @@
     },
     {
      "nombre": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T14:24:18+00:00",
-     "rama": "trabajo/20261108-1423"
+     "fin": "2026-11-08T15:09:19+00:00"
     },
     {
      "nombre": "El banco de tronco (2 troncos cortos y el hacha): la entrada al tier 1, con sus recetas de madera (tablas, mangos, cestas, la cuerda buena)",
@@ -3645,6 +3645,13 @@
      "archivo": "jugar/demo/v154.html",
      "capturas": "capturas/demo-v154",
      "notas": "Desbrozar: con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación. El arbusto de bayas pierde sus bayas."
+    },
+    {
+     "v": "v155",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v155.html",
+     "capturas": "capturas/demo-v155",
+     "notas": "El hogar, dentro de la casa: un puesto nuevo, solo bajo techo, de piedras y barro; el mismo fuego que la hoguera pero más duradero, que se deja en brasas y se aviva sin yesca. Por el servidor, con su autor."
     }
    ]
   },

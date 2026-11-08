@@ -37,6 +37,7 @@ export const TOCA = {
   'la-carretilla': [/^src\/juego\/carretilla\.js$/],
   'panel-de-fabricacion': [/^src\/logica\/(fabricacion|iconos)\.js$/, /^src\/juego\/(panel_fabricar|estaciones)\.js$/],
   'la-hoguera': [/^src\/logica\/fuego\.js$/],
+  'el-hogar': [/^src\/logica\/fuego\.js$/, /^src\/juego\/estaciones\.js$/],
   'los-almacenajes-de-la-base': [/^src\/juego\/estaciones\.js$/],
   'los-colgaderos-de-mochilas-y-de-herramientas': [/^src\/juego\/estaciones\.js$/],
   'la-cama-ligada': [/^src\/juego\/estaciones\.js$/, /^src\/logica\/fabricacion\.js$/, /^src\/juego\/personaje\.js$/],
@@ -107,7 +108,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const mapa = gruposPara(['src/juego/mapa_rey.js', 'pruebas/prueba_mapa_rey_navegador.py'], { todos, pruebas });
   ver('tocar el mapa del rey pide solo su grupo', mapa.join() === 'mapa-del-rey', mapa.join(', '));
   const fuego = porQue(['src/logica/fuego.js'], { todos, pruebas });
-  ver('tocar la lógica del fuego pide la lógica, el recorrido y la hoguera, y dice por qué', [...fuego.keys()].sort().join() === 'la-hoguera,logica,recorrido' && fuego.get('la-hoguera')[0] === 'src/logica/fuego.js', JSON.stringify([...fuego]));
+  ver('tocar la lógica del fuego pide la lógica, el recorrido, la hoguera y el hogar, y dice por qué', [...fuego.keys()].sort().join() === 'el-hogar,la-hoguera,logica,recorrido' && fuego.get('la-hoguera')[0] === 'src/logica/fuego.js', JSON.stringify([...fuego]));
   const prueba = gruposPara(['pruebas/prueba_hoguera_navegador.py'], { todos, pruebas });
   ver('tocar el archivo de prueba de un grupo pide ese grupo', prueba.join() === 'la-hoguera', prueba.join(', '));
   ver('lo nombrado a mano entra', gruposPara([], { todos, pruebas, nombrados: ['cavar'] }).join() === 'cavar');

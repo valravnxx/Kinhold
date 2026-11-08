@@ -5593,5 +5593,22 @@
   ],
   "pruebas": "La prueba del revisor (qué grupos pide cada cambio), bien; con MUTAR=1 falla. Este cambio no toca código del juego: el revisor no pide nada en la nube",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-08T14:23:31+00:00",
+  "fin": "2026-11-08T15:09:19+00:00",
+  "titulo": "P3: el hogar, dentro de la casa (demo v155)",
+  "hito": "crafting",
+  "hecho": [
+   "El hogar es un puesto de trabajo nuevo, solo dentro de la casa: el hogar abierto de las casas humildes, en el suelo, con lecho de tierra pisada, losas y un bordillo de piedras (estilo v5). Se levanta como obra: 8 piedras, 2 cestas de barro y 20 s de trabajo (provisional, en el registro).",
+   "Hace lo mismo que la hoguera (lanza endurecida, antorchas; luz y calor), pero lo que se le echa arde 1,5 veces más y le caben 2 h de fuego (provisional).",
+   "Se deja en brasas: sin llama ni humo, poca luz y la mitad del calor, y lo que le queda arde 4 veces más despacio; desde las brasas se aviva sin yesca ni taladro. Con brasas no se fabrica ni se desmonta.",
+   "Todo por el servidor, con su autor (acción nueva «dejar en brasas»); todos lo ven igual. En Usar y en el panel: dejar en brasas y avivar.",
+   "Recorrido de jugador (paso 16j): con la casa hecha, levanta el hogar dentro con piedras de alrededor y barro del río, lo enciende, lo deja en brasas y lo aviva sin yesca.",
+   "Imágenes del panel en una carpeta nueva (iconos-v11) con la del hogar."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido (177/0), panel de fabricación, la hoguera y el hogar (prueba de navegador nueva, PC y móvil), correctos. Fuera, por la sesión: los almacenajes y los colgaderos (estaciones.js solo añade el hogar) y la demo única (solo cambia el texto del registro).",
+  "capturas": "capturas/demo-v155",
+  "estado": "ok"
  }
 ]

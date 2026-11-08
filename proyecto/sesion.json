@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-08T14:24:18+00:00",
-  "tarea": "El hogar, dentro de la casa: el mismo fuego que la hoguera pero fijo y más duradero (se puede dejar en brasas); luz y calor; más adelante, cocinar",
-  "hito": "crafting",
-  "rama": "trabajo/20261108-1423"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261108-1530-cama": {
   "inicio": "2026-11-08T15:28:48+01:00",
