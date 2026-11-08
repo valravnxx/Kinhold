@@ -1,0 +1,36 @@
+PC: la casa y los colgaderos
+  OK   PC: su mojón (la tierra para los almacenajes)
+  OK   PC: la casa de 3×3 con muros y tejado — {"fallos": [], "n": 30}
+  OK   PC: dentro, bajo techo
+  OK   PC: el de herramientas, cerca del muro, se pega a su cara mirando a la habitación — {"ok": true, "motivo": "", "x": 4.17, "z": 0, "giro": 1.571}
+  OK   PC: en medio del cuarto, no (y dice por qué) — {"ok": false, "motivo": "Colgadero de herramientas: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.", "x": 7, "z": 0, "giro": null}
+  OK   PC: por fuera del muro, no (solo dentro) — {"ok": false, "motivo": "Colgadero de herramientas: solo dentro de la casa.", "x": 3.83, "z": 0, "giro": -1.571}
+  OK   PC: en el muro de la puerta, no — {"ok": false, "motivo": "Colgadero de mochilas: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.", "x": 7, "z": -2.7, "giro": null}
+  OK   PC: el de mochilas, en el muro del fondo, girado hacia dentro — {"ok": true, "motivo": "", "x": 7, "z": 2.83, "giro": 3.142}
+  OK   PC: los dos puestos, guardados pegados al muro — [{"id": "colgadero_herramientas:1", "x": 4.17, "z": 0, "giro": 1.571}, {"id": "colgadero_mochilas:2", "x": 7, "z": 2.83, "giro": 3.142}]
+  OK   PC: se dibuja lo colgado — 17 7
+  OK   PC: llevas el leñero vacío a la espalda
+  OK   PC: en el panel, lo que llevas a la espalda (vacío) se puede colgar
+  OK   PC: el panel no se sale de lado
+  OK   PC: colgado (y ya no lo llevas) — {"porta_piedras": 1, "lenero": 1}
+  OK   PC: al sacarlo, vuelve a la espalda — Sacas: 1 × Leñero.
+  OK   PC: sin errores en la consola — []
+movil: la casa y los colgaderos
+  OK   movil: su mojón (la tierra para los almacenajes)
+  OK   movil: la casa de 3×3 con muros y tejado — {"fallos": [], "n": 30}
+  OK   movil: dentro, bajo techo
+  OK   movil: el de herramientas, cerca del muro, se pega a su cara mirando a la habitación — {"ok": true, "motivo": "", "x": 4.17, "z": 0, "giro": 1.571}
+  OK   movil: en medio del cuarto, no (y dice por qué) — {"ok": false, "motivo": "Colgadero de herramientas: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.", "x": 7, "z": 0, "giro": null}
+  OK   movil: por fuera del muro, no (solo dentro) — {"ok": false, "motivo": "Colgadero de herramientas: solo dentro de la casa.", "x": 3.83, "z": 0, "giro": -1.571}
+  OK   movil: en el muro de la puerta, no — {"ok": false, "motivo": "Colgadero de mochilas: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.", "x": 7, "z": -2.7, "giro": null}
+  OK   movil: el de mochilas, en el muro del fondo, girado hacia dentro — {"ok": true, "motivo": "", "x": 7, "z": 2.83, "giro": 3.142}
+  OK   movil: los dos puestos, guardados pegados al muro — [{"id": "colgadero_herramientas:1", "x": 4.17, "z": 0, "giro": 1.571}, {"id": "colgadero_mochilas:2", "x": 7, "z": 2.83, "giro": 3.142}]
+  OK   movil: se dibuja lo colgado — 17 7
+  OK   movil: llevas el leñero vacío a la espalda
+  OK   movil: en el panel, lo que llevas a la espalda (vacío) se puede colgar
+  OK   movil: el panel no se sale de lado
+  OK   movil: colgado (y ya no lo llevas) — {"porta_piedras": 1, "lenero": 1}
+  OK   movil: al sacarlo, vuelve a la espalda — Sacas: 1 × Leñero.
+  OK   movil: sin errores en la consola — []
+
+TODO CORRECTO
