@@ -1544,7 +1544,9 @@
     },
     {
      "nombre": "Morir y que te saqueen (GDD, apartado 6; documento de sistemas, apartado 10): se muere también de sed y de hambre (valravnx, 7 nov: «no es survival si no hay que sobrevivir»): a tope se pierde sangre poco a poco y, sin beber ni comer, se muere (unos 20 minutos de sed y 40 de hambre). Mueras como mueras (sed, hambre, combate, ahogado), reapareces en tu cama ligada o, sin ella, en tu sitio de salida; tu cuerpo queda en el suelo 1 hora real con la mitad de lo que llevabas, que cualquiera puede coger, y la otra mitad se rompe, elegida al azar por el servidor. Recorrido: el jugador muere, vuelve a su cama y recupera lo suyo del cuerpo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T23:22:36+00:00",
+     "rama": "trabajo/20261108-2322"
     },
     {
      "nombre": "Liebres en el mundo: salen en prados y bordes del bosque, pastan y huyen de quien se acerca (fauna realista, GDD apartado 14), con su modelo y su animación (antes, buscar uno libre CC0 o el mejor método; estilo v5 y capturas de cerca). Las mueve el servidor, para que los dos vean la misma. Recorrido: el jugador ve liebres y huyen al acercarse",
