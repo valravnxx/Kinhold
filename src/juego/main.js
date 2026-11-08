@@ -2892,6 +2892,7 @@ window.__kinhold = {
   beber, aguaAlLado, comer,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)
+  pintarTodoInventario,   // (pruebas: lo que llevas, otra vez en el panel y puesto, tras cambiarlo a mano)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado

@@ -89,7 +89,7 @@ def recorrido(pg, nombre, pref):
     comprobar(f'{nombre}: sin el mazo, Usar no la rompe', not pg.evaluate(ROMPIENDO) and pg.evaluate(EN_MALLA, xz + ['rocas']) == 1)
     rc = pg.evaluate(f'{K}.rocaCercana()')
     comprobar(f'{nombre}: es la roca que se rompe al lado', bool(rc) and rc['id'] == r['id'], str(rc))
-    res = pg.evaluate(f"{K}.inventario.coger('mazo_piedra', 1, 'mano:der')")
+    res = pg.evaluate(f"(() => {{ const r = {K}.inventario.coger('mazo_piedra', 1, 'mano:der'); {K}.pintarTodoInventario(); return r; }})()")
     comprobar(f'{nombre}: (el mazo de piedra en la mano)', res.get('ok'), str(res))
     esperar(pg, 1500)
     comprobar(f'{nombre}: el mazo se ve en la mano', pg.evaluate(f"(() => {{ let v = false; {K}.jugador.raiz.traverse(o => {{ if (o.name === 'mazo_piedra' && o.visible) v = true; }}); return v; }})()"))
