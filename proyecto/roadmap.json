@@ -1526,7 +1526,9 @@
     },
     {
      "nombre": "El cansancio y descansar: sube al trabajar, correr, cargar y combatir (el mismo cansancio que ya lleva el combate, no otro), y se descansa sentado (una acción nueva, con su animación) y durmiendo del todo. Recorrido: después de talar y cargar troncos, el jugador se sienta a descansar",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-08T20:26:33+00:00",
+     "rama": "trabajo/20261108-2026"
     },
     {
      "nombre": "La cama ligada, de dos maneras (valravnx, 8 nov: «ambas viables»): el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; para cuando aún no tienes casa) y la cama de juncos (juncos del río atados con cordel de fibra, dentro de la casa; un lecho de los de la época), cada una como obra con su modelo (estilo v5). Ligar una (una por personaje, por el servidor), en tu tierra o en una donde te han invitado a construir (para vivir en pareja o en grupo), y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme; luego, una cama de juncos en su casa, y la liga",
