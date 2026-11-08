@@ -1,0 +1,4 @@
+  FALLA PC: en la ribera del río del sur hay una mimbrera — None
+  FALLA móvil: en la ribera del río del sur hay una mimbrera — None
+
+FALLAN: PC: en la ribera del río del sur hay una mimbrera, móvil: en la ribera del río del sur hay una mimbrera
