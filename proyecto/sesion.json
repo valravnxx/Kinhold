@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-08T20:26:33+00:00",
-  "tarea": "El cansancio y descansar: sube al trabajar, correr, cargar y combatir (el mismo cansancio que ya lleva el combate, no otro), y se descansa sentado (una acción nueva, con su animación) y durmiendo del todo. Recorrido: después de talar y cargar troncos, el jugador se sienta a descansar",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261108-2026"
- },
+ "A": null,
  "B": null
 }
