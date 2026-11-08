@@ -44,6 +44,7 @@ paso "La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus
 paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio" node pruebas/prueba_perfiles_graficos.mjs
 paso "El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento" node pruebas/prueba_cielo.mjs
 paso "Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor" node pruebas/prueba_necesidades.mjs
+paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
 paso "Sin llanos pelados a ras del mar tierra adentro" node pruebas/prueba_llanos.mjs

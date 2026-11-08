@@ -22,6 +22,7 @@ import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from './whithol
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetacion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
 import { idArbol } from './tala.js';
+import { idMata } from './recoleccion.js';
 import { nivelar as conMarcas, marcasEn } from './nivelado.js';
 import { crearComarcas, zonasDeEscena } from './comarcas.js';
 import { crearZonasRey } from './zonas_rey.js';
@@ -52,6 +53,19 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
       if (Math.hypot(x, z - 2) < CLARO_ARBOLES) continue;
       const id = idArbol(x, z);
       m.set(id, { id, x: r2(x), z: r2(z), edad: e.edad });
+    }
+    return m;
+  });
+  // los matorrales de un trozo (desbrozar, 8 nov), como los tiene el navegador: en la escena, sin los del claro de la
+  // salida (3 m alrededor de (0, 2): src/mundo/vegetacion_mundo.js), cada uno con su nombre por su sitio
+  const matasT = new Map();
+  const matasDe = (i, j) => guardar(matasT, i + ',' + j, () => {
+    const m = new Map();
+    for (const e of vegetacionTrozo(paisaje, alt, semilla, i, j, true).matas) {
+      const x = e.x - O.x, z = e.z - O.z;
+      if (Math.hypot(x, z - 2) < 3) continue;
+      const id = idMata(x, z);
+      m.set(id, { id, tipo: 'matorral', x: r2(x), z: r2(z) });
     }
     return m;
   });
@@ -101,7 +115,7 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     // Lo mismo con un punto de recogida: { id, tipo, x, z } o null.
     punto(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;
-      return buscar(puntosDe, LADO_RECOGIDA, id, x, z);
+      return id.startsWith('matorral:') ? buscar(matasDe, LADO_VEG, id, x, z) : buscar(puntosDe, LADO_RECOGIDA, id, x, z);
     },
     // ¿Puede estar ahí un jugador? { x, y, z } de su presencia. Devuelve el motivo si no. La cuenta de admin (admin),
     // también fuera de la isla, en todo el continente (valravnx, 5 nov: «quiero poder explorar libre»).

@@ -16,7 +16,7 @@
 //   - el frío va hacia lo que pide el sitio (frioObjetivo: 0 de día, más de noche, según la ropa y el fuego) y tarda
 //     unos 10 minutos en llegar; quién lo pide lo trae la tarea del frío (hasta entonces, el servidor pide 0);
 //   - el cansancio: correr (más de 4 m/s) 0,5 por segundo, con carga suelta en las manos o al hombro más; cada golpe de
-//     hacha 1,5, cada rato de obra 2, fabricar 0,5, recoger 0,3; quieto baja 0,4 por segundo y andando 0,1;
+//     hacha 1,5, cada rato de obra 2, fabricar 0,5, recoger 0,3, desbrozar 2 (los golpes de una vez); quieto baja 0,4 por segundo y andando 0,1;
 //   - al máximo, las heridas se curan despacio (efectos.curacionLenta); y se muere de sed y de hambre (valravnx, 7 nov:
 //     «no es survival si no hay que sobrevivir»; GDD, apartado 6): eso llega con la tarea de morir de P4;
 //   - el calor (también en el GDD) queda para después del hito, como los cinco estados de más.
@@ -34,7 +34,7 @@ export const RITMOS = {
   carga: 0.03,                  // por segundo y kg sueltos, moviéndose
   quieto: 0.4, andando: 0.1,
 };
-export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3 };
+export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2 };
 
 const recorta = (v) => Math.min(MAXIMO, Math.max(0, v));
 export const nuevas = () => ({ hambre: 0, sed: 0, frio: 0, cansancio: 0 });

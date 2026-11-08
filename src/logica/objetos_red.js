@@ -15,6 +15,8 @@
 //   { tipo: 'talar', arbol, x, z, ax, az, edad }  — un golpe de hacha a un árbol (src/logica/tala.js); lo que deja cae al suelo
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
+//   { tipo: 'desbrozar', punto, x, z, px, pz, clase } — desbrozar un matorral o un arbusto de bayas (ídem): ramas y alguna
+//     vara, al suelo donde estaba
 //   { tipo: 'enganchar_rastra' | 'soltar_rastra' | 'cargar_rastra' | 'descargar_rastra', … } — la rastra (src/logica/rastra.js),
 //   y las mismas de la carretilla (empujar_carretilla, aparcar_carretilla, cargar_carretilla, descargar_carretilla);
 //     al soltarla, si el sitio que dice el navegador no vale, se deja detrás de donde el servidor tiene al autor
@@ -72,7 +74,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'desbrozar', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -122,9 +124,10 @@ export class ObjetosServidor {
       } else if (a.tipo === 'trocear') {
         r = ejecutarTroceo(this.troceo, this.invs, this.registro, a, ahora, this.enTierras);
         suelo = !!(r.ok && r.termina);
-      } else if (a.tipo === 'recoger') {
+      } else if (a.tipo === 'recoger' || a.tipo === 'desbrozar') {
         const fallo = this.conocerPunto(a, p);
-        r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora);
+        r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora, this.suelo);
+        suelo = !!(r.ok && a.tipo === 'desbrozar');
       } else if (DE_FABRICAR.has(a.tipo)) {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él

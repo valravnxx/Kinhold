@@ -938,7 +938,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }));
         if (r.suelo) repartirSuelo(ahora);
         if (r.estaciones) repartirEstaciones();
-        if (r.ok && msg.accion.tipo === 'recoger') aSuTrozo(objetos.sitioPunto(msg.accion.punto), (otro, solo) => enviar(otro, { tipo: 'recoleccion', estado: objetos.recoleccionVisible(solo) }));
+        if (r.ok && (msg.accion.tipo === 'recoger' || msg.accion.tipo === 'desbrozar')) aSuTrozo(objetos.sitioPunto(msg.accion.punto), (otro, solo) => enviar(otro, { tipo: 'recoleccion', estado: objetos.recoleccionVisible(solo) }));
         return;
       }
       if (!msg || msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))
