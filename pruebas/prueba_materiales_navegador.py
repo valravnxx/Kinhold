@@ -63,6 +63,8 @@ def recorrido(pg, nombre, pref):
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
     # la mimbrera
     ir(pg, MIMBRERA[0] + 3, MIMBRERA[1])
+    try: pg.wait_for_function(f"{K}.recoleccion.puntos.some(p => p.tipo === 'mimbre' && Math.hypot(p.x - ({MIMBRERA[0]}), p.z - ({MIMBRERA[1]})) < 3)", timeout=240000)
+    except Exception: pass
     m = pg.evaluate(f"(() => {{ const k = {K}, l = k.recoleccion.puntos.filter(p => p.tipo === 'mimbre').sort((a, b) => Math.hypot(a.x - {MIMBRERA[0]}, a.z - {MIMBRERA[1]}) - Math.hypot(b.x - {MIMBRERA[0]}, b.z - {MIMBRERA[1]})); return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z }} : null; }})()")
     comprobar(f'{nombre}: en la ribera del río del sur hay una mimbrera', bool(m) and abs(m['x'] - MIMBRERA[0]) < 3, str(m))
     if not m: return
@@ -92,6 +94,8 @@ def recorrido(pg, nombre, pref):
         comprobar(f'{nombre}: y ya no se ofrece descortezarlo', not pg.evaluate(f"{K}.talaV.usos({K}.arbolCercano()).descortezar"))
     # un pino: la resina
     ir(pg, *PINAR)
+    try: pg.wait_for_function(f"{K}.obstaculos.some(o => o.arbol && (o.especie === 'pino' || o.especie === 'abeto') && Math.hypot(o.x - {K}.pj.x, o.z - {K}.pj.z) < 60)", timeout=240000)
+    except Exception: pass
     p = pg.evaluate(f"(() => {{ const k = {K}; const l = k.obstaculos.filter(o => o.arbol && (o.especie === 'pino' || o.especie === 'abeto') && k.talaV.enPie(o)).sort((p, q) => Math.hypot(p.x - k.pj.x, p.z - k.pj.z) - Math.hypot(q.x - k.pj.x, q.z - k.pj.z)); return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z, r: l[0].r, especie: l[0].especie }} : null; }})()")
     comprobar(f'{nombre}: en el pinar hay pinos o abetos', bool(p), str(p))
     if p:

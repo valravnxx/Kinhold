@@ -36,8 +36,8 @@ const todos = [];
 for (const [x, z] of muestras) todos.push(...puntosDe({ x0: x, z0: z, x1: x + 64, z1: z + 64 }));
 const cuenta = {}; for (const p of todos) cuenta[p.tipo] = (cuenta[p.tipo] || 0) + 1;
 console.log('  en la muestra de la isla:', JSON.stringify(cuenta));
-// (los juncos y el barro solo salen en la orilla: se miran junto a un río, en el 4)
-const DE_ORILLA = ['juncos', 'barro'];
+// (los juncos, el barro y las mimbreras solo salen en la orilla y la ribera: se miran junto a un río, en el 4)
+const DE_ORILLA = ['juncos', 'barro', 'mimbre'];
 comprobar('en la isla salen todos los tipos (menos los de la orilla y el matorral, que sale de la vegetación)', Object.keys(RECOLECTABLES).every(t => DE_ORILLA.includes(t) || !RECOLECTABLES[t].donde.length || cuenta[t] > 0), JSON.stringify(cuenta));
 
 // 2) cada punto, en su sitio (se vuelve a mirar el terreno, sin fiarse de las zonas que trae)

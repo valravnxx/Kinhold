@@ -1142,7 +1142,7 @@ try {
       await vaciar();
     }
     const v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + J.pos.x - 60, z0: O.z + J.pos.z - 60, x1: O.x + J.pos.x + 60, z1: O.z + J.pos.z + 60 });
-    const arbol = cerca(v.arboles.map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.edad, especie: e.especie })).filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES && s.objetos.tala.enPie(idArbol(e.x, e.z), Date.now())), J.pos)[0];
+    const arbol = cerca(v.arboles.map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.edad, especie: e.especie })).filter(e => Math.hypot(e.x, e.z - 2) >= CLARO_ARBOLES && (!s.objetos.tala.porId.has(idArbol(e.x, e.z)) || s.objetos.tala.enPie(idArbol(e.x, e.z), Date.now()))), J.pos)[0];
     if (arbol) {
       await J.andar(arbol.x + 1, arbol.z);
       const r = await J.objeto({ tipo: 'descortezar', arbol: idArbol(arbol.x, arbol.z), x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad, especie: arbol.especie });
