@@ -617,7 +617,10 @@ try {
     const enSuelo = (tipo, p, d = 3) => cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === tipo && !o.arrastra && Math.hypot(o.x - p.x, o.z - p.z) < d), p);
     const alrededor = (p, d) => recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - d, z0: O.z + p.z - d, x1: O.x + p.x + d, z1: O.z + p.z + d })
       .map(q => ({ id: q.id, tipo: q.tipo, x: r2(q.x - O.x), z: r2(q.z - O.z) }));
-    const libres = (lista, tipo) => cerca(lista.filter(q => q.tipo === tipo && s.objetos.recoleccion.disponible(q.id, Date.now())), J.pos);
+    // lo que aún no ha intentado coger (el servidor solo sabe de lo que ya se ha recogido: lo demás, a la vista, se puede)
+    const probados = new Set();
+    const libres = (lista, tipo) => cerca(lista.filter(q => q.tipo === tipo && !probados.has(q.id)), J.pos);
+    const coger = async (p) => { probados.add(p.id); return recoger(p); };
     const aqui = alrededor(C, 120);
     comprobar('el sitio de la casa es de su tierra', s.mundo.dentroDeTierra(C.x, C.z, yo), JSON.stringify(C));
 
@@ -656,7 +659,7 @@ try {
     let entregas = [];
     for (let viaje = 0; viaje < 3 && falta(cim, 'piedra') > 0; viaje++) {
       const quiere = Math.min(6, falta(cim, 'piedra'));
-      for (const p of libres(aqui, 'piedra').slice(0, 12)) { if (J.cuantos('piedra') >= quiere) break; const c = await recoger(p); if (!c.ok) noCoge.push(c.motivo); }
+      for (const p of libres(aqui, 'piedra').slice(0, 12)) { if (J.cuantos('piedra') >= quiere) break; const c = await coger(p); if (!c.ok) noCoge.push(c.motivo); }
       const e = await entregar(cim, 'piedra', J.cuantos('piedra'));
       entregas.push(e.ok ? 'ok' : e.motivo);
     }
@@ -731,7 +734,7 @@ try {
     await J.andar(rio.x, rio.z);
     const ribera = alrededor(rio, 100);
     // un cordel de cinturón, para llevar la lasca con las manos ocupadas
-    for (const p of libres(ribera, 'ortiga').concat(libres(ribera, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await recoger(p); }
+    for (const p of libres(ribera, 'ortiga').concat(libres(ribera, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await coger(p); }
     if (J.cuantos('fibra') > 3) { const rf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
     r = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
     adelantar();
@@ -759,7 +762,7 @@ try {
     let cortados = 0;
     for (const p of libres(ribera, 'juncos')) {
       if (cortados >= 3) break;
-      const c = await recoger(p);
+      const c = await coger(p);
       if (!c.ok) continue;
       cortados++;
       const lj = manos.find(l => J.inv.lugares[l]?.tipo === 'junco');
@@ -833,7 +836,7 @@ try {
     let cordeles = 0;
     const fibras = alrededor(J.pos, 100);
     for (let v = 0; banco.ok && v < 3; v++) {
-      for (const p of libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await recoger(p); }
+      for (const p of libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga'))) { if (J.cuantos('fibra') >= 3) break; await coger(p); }
       if (J.cuantos('fibra') > 3) { const rf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra'); await J.objeto({ tipo: 'soltar_suelo', de: rf, cantidad: J.cuantos('fibra') - 3, x: J.pos.x, z: J.pos.z }); }
       await J.andar(cortos[0].x + 0.6, cortos[0].z);
       const f = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
