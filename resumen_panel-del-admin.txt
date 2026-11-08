@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2412 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2917 KB
+
+== Construir demo única
+      2790 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4092 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2816 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2407 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2926 KB
+dist/kinhold_trozos.html 2421 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: panel del admin
+  OK   en inglés: ningún texto sin traducir — []
+  OK   en inglés: el panel en inglés — Debug (admin)InfoMapModesChestConnected besides you: 1Click on the map to go there.2292dc671500, 900GoBringClose
+
+1 fallos
+!! FALLA: python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/admin
+
+HAY FALLOS
+tardó 594 s
