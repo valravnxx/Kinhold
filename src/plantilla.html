@@ -53,10 +53,51 @@ button:active{transform:scale(.97)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 body.construyendo #llevas{display:none}
 
-#modos{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
-#modos button,#acciones button{min-width:96px}
+/* La acción según lo que tienes delante (estudio de la interfaz del 7 nov): el verbo junto a la cosa, en una placa de
+   cuero (con su tecla en PC), y un aro dorado en el suelo bajo ella (en la escena, src/juego/main.js); con varias cosas
+   al alcance, la lista. En el móvil, además, el botón de acción grande con la imagen de la cosa y el verbo debajo, y
+   Fabricar y Construir en arco junto al pulgar. Construir, Desmontar y Terminar: con su tecla en PC, abajo a la
+   derecha; en el móvil, Construir en el arco y los otros dos solo mientras construyes. */
+#accionEtq,#accionLista{position:fixed;left:0;top:0;z-index:4;font:17px 'EB Garamond',Georgia,serif;color:#f1e6cf}
+#accionEtq{transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;white-space:nowrap}
+.placa{background:url(../../recursos/interfaz-v1/cuero.webp) center/cover #2a1a0e;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55),inset 0 0 18px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.55);border-radius:6px}
+#accionEtq .etq{position:relative;display:flex;flex-direction:column;gap:3px;padding:6px 13px;text-shadow:0 1px 1px #000,0 0 3px #000}
+#accionEtq .etq:after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:#2a1a0e;border-bottom:0}
+#accionEtq .lin{display:flex;align-items:center;gap:8px}
+#accionEtq small{color:#cdbb9a;font-size:14.5px;display:block}
+#accionEtq.apagada .lin{color:#bba98a}
+#accionEtq .barra{height:5px;border-radius:3px;background:rgba(0,0,0,.5);box-shadow:inset 0 0 0 1px rgba(193,154,85,.35)}
+#accionEtq .barra i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#a8792f,#efc777)}
+#accionEtq svg.prog{width:20px;height:20px;transform:rotate(-90deg)}
+.k{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:4px;background:linear-gradient(#625a50,#2b2520);color:#f1e6cf;font:600 12.5px 'EB Garamond',Georgia,serif;border:1px solid #8a7550;box-shadow:0 2px 0 #120d09;text-shadow:none;box-sizing:border-box}
+#accionLista{display:flex;flex-direction:column;gap:5px;min-width:230px}
+#accionLista button{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 6px;font:17px 'EB Garamond',Georgia,serif;color:#f1e6cf;text-align:left;min-width:0;border:0;text-shadow:0 1px 1px #000}
+#accionLista button img{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 1px #120b06) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+#accionLista button.sel{box-shadow:inset 0 0 0 1px rgba(255,225,160,.95),0 0 0 2px #c19a55,0 0 12px rgba(240,190,100,.45)}
+#accionLista button .k{margin-left:auto}
+#modos{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center}
+#modos button{display:flex;align-items:center;gap:6px;min-width:0;padding:6px 11px;font:16px 'EB Garamond',Georgia,serif;color:#f1e6cf;border:0;background:url(../../recursos/interfaz-v1/cuero.webp) center/cover #2a1a0e;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55),0 3px 8px rgba(0,0,0,.5);border-radius:6px;text-shadow:0 1px 1px #000}
+#modos button img{width:20px;height:20px}
+#modos button .k{order:-1}
+#modos button.sel{box-shadow:inset 0 0 0 1px rgba(255,225,160,.95),0 0 0 2px #c19a55}
+#modos [data-modo=mover],#modos [data-modo=desmontar]{display:none}
+body.construyendo #modos [data-modo],body.desmontando #modos [data-modo]{display:flex}
+body.construyendo:not(.tactil-ui) #modos{bottom:calc(118px + env(safe-area-inset-bottom,0px))} /* encima de la barra de piezas */
+#acciones button{min-width:96px}
+body:not(.tactil-ui) #btnUsar{display:none}
+#btnUsar .ic,#btnUsar .verbo,#btnUsar .prog{display:none}
 #acciones{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 #btnUsar.activo{background:var(--verde);color:#14240f;font-weight:600}
+/* en el móvil: el botón de acción del kit, con la cosa y el verbo debajo, y el aro que se llena al talar */
+body.tactil-ui:not(.construyendo):not(.desmontando) #btnUsar{position:fixed;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(150px + env(safe-area-inset-bottom,0px));width:96px;height:96px;min-width:0;padding:0;border:0;border-radius:50%;display:grid;place-items:center;background:url(../../recursos/interfaz-v1/accion.webp) center/contain no-repeat;filter:drop-shadow(0 5px 6px rgba(0,0,0,.6));font-size:0;z-index:5}
+body.tactil-ui:not(.construyendo):not(.desmontando) #btnUsar:active{transform:scale(.95)}
+body.tactil-ui #btnUsar .ic{display:block;width:58%;height:58%;object-fit:contain;filter:drop-shadow(0 0 1px #120b06) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+body.tactil-ui #btnUsar .ic.g{width:44%;height:44%}
+body.tactil-ui #btnUsar:not(.activo) .ic{opacity:.35}
+body.tactil-ui #btnUsar .verbo{display:block;position:absolute;top:100%;margin-top:3px;left:50%;transform:translateX(-50%);font:18px 'EB Garamond',Georgia,serif;color:#f1e6cf;white-space:nowrap;text-shadow:0 1px 1px #000,0 0 3px #000,0 0 10px rgba(0,0,0,.75)}
+body.tactil-ui #btnUsar .prog{display:block;position:absolute;inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px);transform:rotate(-90deg)}
+body.tactil-ui #btnUsar .prog[hidden]{display:none}
+body.tactil-ui.construyendo #btnUsar,body.tactil-ui.desmontando #btnUsar{display:none}
 #menuUsar{position:fixed;left:0;top:0;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:8px;max-width:min(300px,62vw);z-index:15}
 #menuUsar button{text-align:left;padding:8px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #controlPlanta{display:flex;gap:6px;align-items:center;background:var(--panel);border-radius:10px;padding:4px}
@@ -257,12 +298,22 @@ body.construyendo #pomo{left:25px;top:25px}
   #materiales{font-size:11.5px;max-width:58vw}
   #menu button{padding:5px 8px;font-size:11.5px}
   /* en el móvil, el idioma va en un desplegable (idioma.js) */
-  #modos{top:auto;bottom:auto;top:120px;transform:none}
-  #modos button,#acciones button{min-width:84px;padding:8px 10px}
+  #acciones button{min-width:84px;padding:8px 10px}
   /* «Fabricar», abajo a la izquierda a la altura de «Usar» (en la barra de arriba la alargaba una fila y tapaba el cielo) */
   #menu #btnFabricar{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));min-width:84px;padding:8px 10px;font-size:14px;z-index:5}
   body.construyendo #menu #btnFabricar{bottom:calc(290px + env(safe-area-inset-bottom,0px))}
   body.combate.tactil #menu #btnFabricar{display:none} /* con el arma en la mano, ahí va el aliento (src/juego/combate_mundo.js) */
+  /* en el móvil, Fabricar y Construir en arco junto al pulgar, en botones redondos del kit con su icono de latón */
+  body.tactil-ui:not(.construyendo):not(.desmontando) #menu #btnFabricar{left:auto;right:calc(128px + env(safe-area-inset-right,0px));bottom:calc(154px + env(safe-area-inset-bottom,0px));width:56px;height:56px;min-width:0;padding:0;border:0;border-radius:50%;font-size:0;background:url(../../recursos/interfaz-v1/g_fabricar.webp) center/52% no-repeat,url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
+  body.tactil-ui #modos{right:calc(10px + env(safe-area-inset-right,0px));bottom:auto;top:120px;flex-direction:column;align-items:flex-end}
+  body.tactil-ui #modos .k{display:none}
+  /* la lista, en el móvil: encima del arco del pulgar, a la derecha (no junto a la cosa: ahí la tapa el dedo) */
+  body.tactil-ui #accionLista{left:auto!important;top:auto!important;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(338px + env(safe-area-inset-bottom,0px));min-width:0;max-width:calc(100vw - 120px)}
+  body.tactil-ui #accionLista button{font-size:16px;padding:3px 12px 3px 4px}
+  body.tactil-ui #accionLista button img{width:32px;height:32px}
+  body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir]{position:fixed;right:calc(42px + env(safe-area-inset-right,0px));top:auto;bottom:calc(272px + env(safe-area-inset-bottom,0px));width:56px;height:56px;padding:0;justify-content:center;border-radius:50%;background:url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;box-shadow:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
+  body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] img{width:52%;height:52%}
+  body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] .nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .pieza{min-width:128px}
   /* en el móvil, fabricar y el equipo van a pantalla completa */
   #panelFabricar{inset:0;width:auto;max-width:none;max-height:none;height:100%;border-radius:0;border:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-areas:"cab" "nav" "centro" "pie";padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
@@ -335,16 +386,18 @@ body.construyendo #pomo{left:25px;top:25px}
 <div id="aviso" hidden></div>
 <div id="llevas" hidden></div>
 
+<div id="accionEtq" hidden></div>
+<div id="accionLista" hidden></div>
 <div id="modos">
-  <button data-modo="mover">Mover</button>
-  <button data-modo="construir">Construir</button>
-  <button data-modo="desmontar">Desmontar</button>
+  <button data-modo="construir"><img src="../../recursos/interfaz-v1/g_construir.webp" alt=""><span class="nom">Construir</span><span class="k">B</span></button>
+  <button data-modo="desmontar"><img src="../../recursos/interfaz-v1/g_quitar.webp" alt=""><span class="nom">Desmontar</span><span class="k">X</span></button>
+  <button data-modo="mover"><img src="../../recursos/interfaz-v1/g_cerrar.webp" alt=""><span class="nom">Terminar</span><span class="k">Esc</span></button>
 </div>
 <div id="acciones">
   <div id="controlPlanta"><button id="btnBaja">▼</button><span id="planta">Planta 0</span><button id="btnSube">▲</button></div>
   <button id="btnGirar">Girar</button>
   <button id="btnColocar" class="sel">Colocar</button>
-  <button id="btnUsar">Usar</button>
+  <button id="btnUsar"><img class="ic" alt=""><span class="verbo">Usar</span><svg class="prog" hidden viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="51" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="5"/><circle class="lleno" cx="55" cy="55" r="51" fill="none" stroke="#f0c46e" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 400"/></svg></button>
 </div>
 <div id="menuUsar" hidden></div>
 
