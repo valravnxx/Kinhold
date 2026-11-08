@@ -12,6 +12,9 @@
 // Las zonas (valravnx, 4 nov): al acercarlo salen los lindes de las zonas de cada comarca (src/juego/mapa_zonas.js, que
 // los saca a pasos en cuanto hacen falta) y, a cualquier zoom, tu tierra (la zona entera de tu mojón) de color, con su
 // borde y el mojón.
+// Las zonas tomadas (valravnx, 8 nov): las de los demás mojones, cada dueño de un color (apagado, el mismo para todos
+// los que miran: sale de su autor) con su mojón; las de quien te ha invitado a construir, del color de la tuya y, de
+// cerca, «Te han invitado». Sin nombres: el mapa no dice de quién es cada una.
 // El continente (valravnx, 5 nov: «en el panel de admin ponme el mapa de todo el continente… que quiero poder explorar
 // libre»): con una capa que lo pide (continente: true, la del panel del admin), el mapa es el del continente entero,
 // con menos detalle por km (se hace la primera vez que se abre así), y se acerca y se mueve por todo él.
@@ -19,7 +22,7 @@ import { pintarMapaRey, COMARCA_REY, cuadroContinente, PX_KM_CONTINENTE } from '
 import { CIUDAD_REY } from '../logica/whitholm.js';
 import { CONTINENTE, nombreRegion } from '../logica/mapa.js';
 import { tr } from '../idioma.js';
-import { crearZonasMapa } from './mapa_zonas.js';
+import { crearZonasMapa, coloresDeDuenos, ROJO_TIERRA } from './mapa_zonas.js';
 import { POR_QUE } from '../logica/zonas_rey.js';
 
 const TINTA = '#3a2a1e', PAPEL = '#ead8ae', ROJO = '#8c2a1e', AGUA = '#45677a', ORO = [190, 140, 40];
@@ -40,7 +43,7 @@ export const ZONAS_DESDE = 28, ZONAS_LLENO = 42;
 // (en el móvil, la isla entera es más pequeña y 8 veces se quedaba corto para ver tu zona).
 export const ZOOM_MAX_PX_KM = 150;
 
-export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => null, zonasRey = [], alAbrir = () => {}, esTactil = false }) {
+export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => null, tomadas = () => [], zonasRey = [], alAbrir = () => {}, esTactil = false }) {
   const est = document.createElement('style'); est.textContent = CSS; document.head.appendChild(est);
   const raiz = document.createElement('div'); raiz.id = 'mapaRey'; raiz.hidden = true;
   raiz.innerHTML = `<canvas></canvas><div class="mr-desplegando" hidden></div>
@@ -160,15 +163,19 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
       if (zonas.pendientes) trabajarZonas();
     }, 0);
   }
-  // la máscara de una zona (tu tierra, o una del rey), pintada en un lienzo de su color (una vez por máscara)
+  // la máscara de una zona (tu tierra, una del rey o una tomada), pintada en un lienzo de su color (una vez por máscara
+  // y color)
   const lienzos = new WeakMap();
-  function tierraDe(t, rgb = [196, 58, 34]) {
-    if (lienzos.has(t)) return lienzos.get(t);
+  function tierraDe(t, rgb = ROJO_TIERRA) {
+    let porColor = lienzos.get(t.mascara);
+    if (!porColor) { porColor = new Map(); lienzos.set(t.mascara, porColor); }
+    const k = rgb.join(',');
+    if (porColor.has(k)) return porColor.get(k);
     const c = document.createElement('canvas'); c.width = t.n; c.height = t.n;
     const g = c.getContext('2d'), img = g.createImageData(t.n, t.n);
     for (let k = 0; k < t.mascara.length; k++) if (t.mascara[k]) { img.data[k * 4] = rgb[0]; img.data[k * 4 + 1] = rgb[1]; img.data[k * 4 + 2] = rgb[2]; img.data[k * 4 + 3] = 255; }
     g.putImageData(img, 0, 0);
-    lienzos.set(t, c);
+    porColor.set(k, c);
     return c;
   }
 
@@ -234,13 +241,16 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     ctx.drawImage(fondo, ox, oy, aw, ah);
     const t = s / datos.pxKm;   // cuántos px de pantalla por px del fondo
     pliego = [ox, oy, ox + aw, oy + ah];
-    const tierra = miTierra(), rey = zonasDelRey();
+    const tierra = miTierra(), rey = zonasDelRey(), otras = zonasTomadas(tierra);
     for (const r of rey) tierraColor(r, ORO, 0.34);
+    for (const o of otras) tierraColor(o, o.rgb, o.invita ? 0.3 : 0.32);
     if (tierra) tierraColor(tierra);
     lineas(s); lindesZonas(s); for (const r of rey) tierraBorde(r, s, 'rgba(128,88,18,.95)', true);
+    for (const o of otras) tierraBorde(o, s, o.invita ? 'rgba(150,34,22,.95)' : `rgba(${o.rgb.map(c => Math.round(c * 0.7)).join(',')},.95)`);
     if (tierra) tierraBorde(tierra, s);
     rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); regiones(s);
     reyNombres(rey, s);
+    for (const o of otras) mojonOtro(o, s);
     if (tierra) mojon(s);
     marco(ox, oy, aw, ah, s);
     if (capa && capa.pintar) capa.pintar(ctx, { kmAPant, s, etiqueta });
@@ -303,6 +313,28 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     }
     ctx.stroke(); ctx.setLineDash([]);
   }
+  // las zonas tomadas por los demás mojones (valravnx, 8 nov; tomadas(): { x, z en m del mundo, dueno, invita }): cada
+  // una del color de su dueño (coloresDeDuenos, con la tuya contada para que salgan iguales para todos); las de quien te
+  // ha invitado, del tuyo. La tuya va aparte (miTierra), y si una cae en tu
+  // misma zona no se pinta dos veces
+  let tomadasVistas = [];
+  function zonasTomadas(tierra) {
+    tomadasVistas = [];
+    if (window.__mutarTomadasMapa) return [];   // (la prueba lo rompe a propósito: sin las zonas tomadas)
+    const todas = tomadas() || [], colores = coloresDeDuenos(todas.map(o => o.dueno));
+    const out = zonas.tomadas(todas.filter(o => !o.tuya)).filter(o => !tierra || o.zona !== tierra.zona)
+      .map(o => ({ ...o, rgb: o.invita ? ROJO_TIERRA : colores.get(o.dueno) }));
+    tomadasVistas = out.map(o => ({ zona: o.zona, invita: o.invita, rgb: o.rgb, mojon: null }));
+    return out;
+  }
+  // el mojón de una zona tomada, como el tuyo pero con el color de su dueño; de cerca, si te ha invitado, «Te han invitado»
+  function mojonOtro(o, s) {
+    const [x, y] = kmAPant(o.mx / 1000, o.mz / 1000), r = Math.max(5, Math.min(9, s * 0.18));
+    const v = tomadasVistas.find(t => t.zona === o.zona); if (v) v.mojon = { x, y };
+    const borde = o.invita ? ROJO : `rgb(${o.rgb.map(c => Math.round(c * 0.75)).join(',')})`;
+    piedra(x, y, r, borde);
+    if (o.invita && s >= ZONAS_DESDE) etiqueta(tr('Te han invitado'), x, y + r * 0.9 + 9, 12, 'italic 700', ROJO);
+  }
   // las zonas del rey (valravnx, 4 nov: la de la gran veta, la de la ciudad y la de la salida; src/logica/zonas_rey.js):
   // de oro viejo, con el borde a rayas y, de cerca, «Zona del rey» y por qué. No se reclaman; en ellas recoge cualquiera.
   let reyVistas = [];
@@ -326,13 +358,17 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     const m = tierraVista; if (!m) return;
     const [x, y] = kmAPant(m.x / 1000, m.z / 1000), r = Math.max(6, Math.min(11, s * 0.22));
     mojonVisto = { x, y };
+    piedra(x, y, r, ROJO);
+    if (s >= ZONAS_DESDE) etiqueta(tr('Tu tierra'), x, y + r * 0.9 + 9, 13, 'italic 700', ROJO);
+  }
+  // una piedra hincada, de perfil, con su cruz labrada y su sombra, con el borde del color dado
+  function piedra(x, y, r, color) {
     ctx.save(); ctx.lineJoin = 'round';
     ctx.fillStyle = 'rgba(70,50,34,.3)'; ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.28, 0, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.moveTo(x - r * 0.5, y); ctx.lineTo(x - r * 0.5, y - r * 1.5); ctx.quadraticCurveTo(x, y - r * 2.15, x + r * 0.5, y - r * 1.5); ctx.lineTo(x + r * 0.5, y); ctx.closePath();
-    ctx.fillStyle = '#d9c7a0'; ctx.fill(); ctx.lineWidth = Math.max(1.4, r / 5); ctx.strokeStyle = ROJO; ctx.stroke();
+    ctx.fillStyle = '#d9c7a0'; ctx.fill(); ctx.lineWidth = Math.max(1.4, r / 5); ctx.strokeStyle = color; ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x - r * 0.22, y - r * 1.1); ctx.lineTo(x + r * 0.22, y - r * 1.1); ctx.moveTo(x, y - r * 1.35); ctx.lineTo(x, y - r * 0.85); ctx.lineWidth = Math.max(1, r / 7); ctx.stroke();   // la cruz labrada
     ctx.restore();
-    if (s >= ZONAS_DESDE) etiqueta(tr('Tu tierra'), x, y + r * 0.9 + 9, 13, 'italic 700', ROJO);
   }
   function rios(s) {
     ctx.strokeStyle = AGUA; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
@@ -532,7 +568,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     get abierto() { return !raiz.hidden; }, get listo() { return !!datos; }, get datos() { return datos; },
     get vista() { return { ...vista }; }, get marca() { return marca; }, kmAPant,
     // las zonas: cuántos segmentos de lindes se han trazado en la última vez, cuántas teselas faltan y tu tierra
-    get zonas() { return { lindes: lindesVistos, pendientes: zonas.pendientes, hechas: zonas.hechas, tierra: tierraVista, mojon: mojonVisto, desde: ZONAS_DESDE, nombres: nombresVistos, rey: reyVistas }; },
+    get zonas() { return { lindes: lindesVistos, pendientes: zonas.pendientes, hechas: zonas.hechas, tierra: tierraVista, mojon: mojonVisto, desde: ZONAS_DESDE, nombres: nombresVistos, rey: reyVistas, tomadas: tomadasVistas }; },
     get medida() { return { msPintar: Math.round(msPintar), msMaxPaso: Math.round(msMaxPaso), avance: datos ? 1 : Math.round(avance * 100) / 100 }; },
   };
 }

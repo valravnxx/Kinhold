@@ -6,6 +6,17 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 8 nov 2026 (09:18 UTC) — valravnx, en la sesión del carril A: cama de juncos, el mapa de los mojones y la cama en tierra de otro
+valravnx: «podemos hacer una cama de juncos? o no existian en la epoca? por ahora estamos sin manera de tener cama en el earlygame, que es lo mas importante, quiza con juncos y fibra podría haber una, luego, otra cosa que vas a hacer, primero es ver que zonas del mapa están tomadas ya por mojones con colores diferentes, y luego que salgan del mismo color al tuyo las que te han dado permiso de construcción, y poder poner tu cama de respawn en una que te hayan dado permiso de construcción para vivir en pareja o grupo».
+Lo que pide, en orden:
+1. **Cama de juncos** para el principio del juego, con juncos y fibra (cordel), que sirva de cama ligada (donde reapareces). Respuesta en la sesión: sí es de la época (lechos de juncos, de brezo o de helechos en el suelo, atados o en un jergón; la paja necesita cereal, que aún no hay).
+2. **El mapa del rey enseña las zonas ya tomadas por mojones**, cada dueño de un color distinto.
+3. **Las zonas donde te han invitado a construir salen del mismo color que la tuya.**
+4. **La cama ligada se puede poner en una tierra donde te han invitado**, para vivir en pareja o en grupo.
+valravnx, 09:25 UTC: «ambas viables, el refugio es bueno para cuando aun no tienes casa, pero añade lo de la cama de juncos al planning para que haga ambas juntas, y mientras haz lo del mapa que te he dicho».
+→ En P4 («Un primer día con sentido»), la tarea de la cama ligada pasa a ser de dos maneras, juntas: el refugio de ramas (sin casa) y la cama de juncos (en la casa), ligables en tu tierra o en una donde te han invitado.
+→ Tarea nueva en P4, la lleva el chat (rama trabajo/20261108-0925-mapa-mojones): el mapa del rey con las zonas tomadas, un color por dueño, y las de quien te invita, de tu color.
+
 ### 8 nov 2026 (08:08 UTC) — por el chat: colgaderos de mochilas y de herramientas
 valravnx: «ahora añadido al tema de lo de acopio de materiales vas a hacer dos nuevos para interior: acopio de mochilas colgable a pared y el de herramientas, busca sus diseños mejores posibles y hazlos, así lo dejamos todo bien ordenadito en la base».
 → Tarea en P3 («De nada a una casa»), la lleva el chat: el colgadero de mochilas y el de herramientas, de dentro y colgados en un muro.

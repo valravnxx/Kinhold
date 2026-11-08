@@ -1448,9 +1448,9 @@
     },
     {
      "nombre": "Muros de zarzo y barro con puerta y con ventana (valravnx, 8 nov: «debemos tener el full set de barro»), como los de troncos; la puerta de varas encaja en su hueco",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T07:30:19+00:00",
-     "rama": "trabajo/20261108-0730-zarzo"
+     "fin": "2026-11-08T10:08:59+00:00"
     },
     {
      "nombre": "Arreglo urgente (valravnx, 8 nov): sacar de un almacenaje lo que te cabe, no todo o nada; y elegir cuánto con el clic derecho (o dejando pulsado en el móvil)",
@@ -1460,9 +1460,9 @@
     },
     {
      "nombre": "Dos almacenajes de dentro, colgados en el muro (valravnx, 8 nov): el colgadero de mochilas y el de herramientas, con el estilo v5, para dejar la base ordenada",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T08:08:57+00:00",
-     "rama": "trabajo/20261108-0808-colgaderos"
+     "fin": "2026-11-08T11:16:32+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
@@ -1514,7 +1514,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La cama ligada: el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; cuenta como cama), como obra con su modelo (estilo v5); ligarla (una por personaje, por el servidor) y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme",
+     "nombre": "La cama ligada, de dos maneras (valravnx, 8 nov: «ambas viables»): el refugio de ramas (12 ramas caídas del bosque y 4 cordel de fibra, en el suelo; para cuando aún no tienes casa) y la cama de juncos (juncos del río atados con cordel de fibra, dentro de la casa; un lecho de los de la época), cada una como obra con su modelo (estilo v5). Ligar una (una por personaje, por el servidor), en tu tierra o en una donde te han invitado a construir (para vivir en pareja o en grupo), y dormir en ella. La cama de paja no: la paja sale del cereal, que no hay en este tramo. Recorrido: el jugador hace un refugio de ramas en su tierra, lo liga y duerme; luego, una cama de juncos en su casa, y la liga",
      "estado": "pendiente"
     },
     {
@@ -1558,6 +1558,12 @@
      "estado": "hecho",
      "inicio": "2026-11-07T17:12:22+01:00",
      "fin": "2026-11-07T17:19:57+01:00"
+    },
+    {
+     "nombre": "El mapa del rey con las zonas ya tomadas (valravnx, 8 nov): cada zona con un mojón sale del color de su dueño, uno distinto para cada uno, y las de quien te ha invitado a construir, del mismo color que la tuya; lo dice el servidor a todos (sin nombres), y se ve igual en PC y en el móvil",
+     "estado": "hecho",
+     "inicio": "2026-11-08T09:21:40+00:00",
+     "fin": "2026-11-08T11:44:57+00:00"
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: después de la casa; se planifica al llegar, con lo que ya hay (la hoguera y el hogar calientan y cocinarán). Planificado el 7 nov (chat con valravnx): el día y la noche ya están (demo v137, hito de gráficos); el calor y los cinco estados de más (mojado, herida infectada, comida en mal estado, dolor y borracho) quedan para después de este hito, como dice el GDD."
@@ -1574,7 +1580,7 @@
      "nombre": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
      "estado": "en_curso",
      "inicio": "2026-11-07T18:43:47+01:00",
-     "rama": "trabajo/20261107-1845-interfaz"
+     "rama": "trabajo/20261108-1025"
     },
     {
      "nombre": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
@@ -3490,6 +3496,27 @@
      "archivo": "jugar/demo/v149.html",
      "capturas": null,
      "notas": "v149, arreglo urgente: al sacar de un almacenaje o de una estación una pila que no te cabe entera, ahora sacas lo que te cabe y el resto se queda (antes decía «No te cabe» y la pila se quedaba bloqueada). Con el clic derecho (o dejando pulsado en el móvil) eliges cuánto sacar."
+    },
+    {
+     "v": "v150",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v150.html",
+     "capturas": "capturas/demo-v150",
+     "notas": "El juego completo de muros de zarzo y barro: además del liso, con puerta y con ventana, como los de troncos"
+    },
+    {
+     "v": "v151",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v151.html",
+     "capturas": "capturas/demo-v151",
+     "notas": "v151: dos almacenajes nuevos de dentro, colgados en el muro: el colgadero de herramientas (cada una colgada por la cabeza entre dos varas) y el de mochilas (cada cosa de su estaquilla). Al ponerlos, el marco se pega al muro más cercano, mirando a la habitación; lo que llevas a la espalda, vacío, se cuelga tal cual."
+    },
+    {
+     "v": "v152",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v152.html",
+     "capturas": "capturas/demo-v152",
+     "notas": "El mapa del rey enseña las zonas ya tomadas por un mojón (valravnx, 8 nov): cada dueño de un color apagado, distinto de los demás, con su mojón; las de quien te ha invitado a construir, del color de la tuya y, de cerca, «Te han invitado». Sin nombres."
     }
    ]
   },

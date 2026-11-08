@@ -84,6 +84,9 @@ export const USOS = {
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
 // un: cómo se nombra en una frase. coste: lo que hay que llevarle a su obra. requiere: lleva al menos uno de estos al
 // trabajarla (no se gasta). uso: el que da. donde: 'fuera', 'dentro' o 'ambos'. trabajo: s de trabajo para levantarla.
+// lo que guardan los colgaderos: lo que va a la espalda (un contenedor) y las herramientas del catálogo
+const DE_ESPALDA = Object.keys(CATALOGO).filter(k => CATALOGO[k].lugar === 'espalda' && CATALOGO[k].huecos);
+const HERRAMIENTAS = Object.keys(CATALOGO).filter(k => CATALOGO[k].herramienta);
 export const ESTACIONES = {
   hoguera:       { nombre: 'Hoguera', un: 'una hoguera', uso: 'fuego', coste: { piedra: 6, rama: 4 }, donde: 'fuera', trabajo: 10, fuego: true, hace: 'Cocinar, calentarse, endurecer al fuego, antorchas' },
   piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, donde: 'ambos', trabajo: 5, hace: 'Herramientas de piedra y sílex' },
@@ -95,6 +98,10 @@ export const ESTACIONES = {
   soporte_varas:  { nombre: 'Soporte de varas', un: 'un soporte de varas', uso: 'almacen', coste: { vara: 4 }, donde: 'ambos', trabajo: 10, tierra: true, guarda: ['vara'], cabe: 24, hace: 'Guarda las varas, tumbadas en dos caballetes' },
   almiar:         { nombre: 'Almiar', un: 'un almiar', uso: 'almacen', coste: { vara: 2 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['paja', 'junco'], cabe: 24, hace: 'Guarda la paja y los juncos, en montón alrededor de un palo' },
   hoyo_barro:     { nombre: 'Hoyo de barro', un: 'un hoyo de barro', uso: 'almacen', coste: { piedra: 6 }, requiere: ['palo_cavador'], donde: 'fuera', trabajo: 20, tierra: true, guarda: ['barro'], cabe: 16, hace: 'Guarda el barro húmedo, en un hoyo cavado y bordeado de piedras' },
+  // los de dentro, colgados en un muro (muro: true; valravnx, 8 nov): lo que se lleva a la espalda, vacío, cada uno de
+  // su estaquilla; y las herramientas, colgadas por la cabeza entre dos varas
+  colgadero_mochilas:     { nombre: 'Colgadero de mochilas', un: 'un colgadero de mochilas', uso: 'almacen', coste: { vara: 2, rama: 4, cordel: 2 }, donde: 'dentro', muro: true, trabajo: 15, tierra: true, guarda: DE_ESPALDA, guardaTxt: 'lo que se lleva a la espalda (mochilas, leñero, fardo, cestas…), vacío', cabe: 4, hace: 'Cuelga en el muro lo que se lleva a la espalda, vacío: cada uno de su estaquilla' },
+  colgadero_herramientas: { nombre: 'Colgadero de herramientas', un: 'un colgadero de herramientas', uso: 'almacen', coste: { vara: 3, cordel: 2 }, donde: 'dentro', muro: true, trabajo: 15, tierra: true, guarda: HERRAMIENTAS, guardaTxt: 'las herramientas', cabe: 8, hace: 'Cuelga en el muro las herramientas, por la cabeza entre dos varas' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -103,6 +110,7 @@ export const ALMACENAJES = Object.keys(ESTACIONES).filter(esAlmacen);
 export const cabeEn = tipo => (Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].cabe) || DEPOSITO_MAX;
 // Si en una estación se puede dejar ese tipo (los almacenajes, solo lo suyo).
 export const guardaTipo = (tipo, t) => !Object.hasOwn(ESTACIONES, tipo) || !ESTACIONES[tipo].guarda || ESTACIONES[tipo].guarda.includes(t);
+export const MOTIVO_MURO = n => `${n}: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.`;
 export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
 // Las estaciones que existen de un uso (el hogar aún no), y cómo se nombran juntas («una hoguera o un hogar»).
 export const estacionesDeUso = uso => (USOS[uso] ? USOS[uso].estaciones : []).filter(t => Object.hasOwn(ESTACIONES, t));
@@ -450,7 +458,9 @@ export class Fabricacion {
     if (b.motivo || !b.cosa) return { ok: false, motivo: b.motivo || 'Ahí no hay nada.' };
     const c = b.cosa, d = inv.def(c);
     if (!d) return { ok: false, motivo: 'Objeto desconocido.' };
-    if (!de.includes('/') && !de.startsWith('mano:') && d.lugar) return { ok: false, motivo: 'Eso lo llevas puesto.' };
+    // lo que llevas a la espalda se cuelga directamente en el colgadero de mochilas
+    const deLaEspalda = de === 'espalda' && guardaTipo(e.tipo, c.tipo) && ESTACIONES[e.tipo].guarda;
+    if (!de.includes('/') && !de.startsWith('mano:') && d.lugar && !deLaEspalda) return { ok: false, motivo: 'Eso lo llevas puesto.' };
     if (c.dentro && c.dentro.some(Boolean)) return { ok: false, motivo: 'Vacíalo antes.' };
     if (c.hechura || c.tinte || c.carga) return { ok: false, motivo: 'Eso no se deja en una estación.' };
     const def = ESTACIONES[e.tipo];
@@ -473,10 +483,13 @@ export class Fabricacion {
     if (typeof tipo !== 'string' || !Object.hasOwn(e.deposito, tipo)) return { ok: false, motivo: 'Eso no está en la estación.' };
     const pide = cantidad === undefined || cantidad === null ? e.deposito[tipo] : cantidad;
     if (!Number.isInteger(pide) || pide < 1 || pide > e.deposito[tipo]) return { ok: false, motivo: 'Cantidad no válida.' };
-    const n = inv.cabenCuantos(tipo, pide);
+    // lo de la espalda, primero a la espalda si la tienes libre (te lo pones al descolgarlo)
+    const aEspalda = CATALOGO[tipo] && CATALOGO[tipo].lugar === 'espalda' && !inv.lugares.espalda && inv.meter('espalda', { tipo, n: 1 }).ok ? 1 : 0;
+    const n = aEspalda + (pide > aEspalda ? inv.cabenCuantos(tipo, pide - aEspalda) : 0);
     if (n < 1) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
-    const m = inv.meterDonde(tipo, n);
-    if (!m.ok) return m;
+    const m = n > aEspalda ? inv.meterDonde(tipo, n - aEspalda) : { ok: true, donde: [] };
+    if (!m.ok) { if (aEspalda) inv.sacar('espalda'); return m; }
+    if (aEspalda) m.donde.unshift(['espalda', 1]);
     e.deposito[tipo] -= n;
     if (!e.deposito[tipo]) delete e.deposito[tipo];
     return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde, ...(n < pide ? { noCabia: pide - n } : {}) };
@@ -670,7 +683,7 @@ export function migrarFabricacion(datos) {
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion', 'desmontar_estacion'];
 export const DEL_FUEGO = ['encender_fuego', 'echar_fuego'];
 export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO];
-export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false) {
+export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false, alMuro = () => null) {
   let res;
   const a = accion;
   const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64 && !(v in Object.prototype);
@@ -687,7 +700,13 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!Number.isFinite(ahora)) res = { ok: false, motivo: 'Sin hora.' };
   else {
     const inv = invs.de(a.autor), pos = { x: a.x, z: a.z };
-    if (a.tipo === 'colocar_estacion') res = fab.colocar(a.autor, a.estacion, a.x, a.z, !!bajoTecho(a.x, a.z), Number.isFinite(a.y) ? a.y : null, !!enTierras(a.x, a.z), Number.isFinite(a.giro) ? a.giro : null);
+    if (a.tipo === 'colocar_estacion') {
+      // lo que va colgado (muro: true): pegado a la cara de un muro lleno de la planta baja, mirando a la habitación
+      const m = tiene(ESTACIONES, a.estacion) && ESTACIONES[a.estacion].muro ? alMuro(a.x, a.z) : undefined;
+      if (m === null || (m && Math.hypot(m.x - a.x, m.z - a.z) > 0.15)) res = { ok: false, motivo: MOTIVO_MURO(ESTACIONES[a.estacion].nombre) };
+      else if (m) res = fab.colocar(a.autor, a.estacion, m.x, m.z, !!bajoTecho(m.x, m.z), Number.isFinite(a.y) ? a.y : null, !!enTierras(m.x, m.z), m.giro);
+      else res = fab.colocar(a.autor, a.estacion, a.x, a.z, !!bajoTecho(a.x, a.z), Number.isFinite(a.y) ? a.y : null, !!enTierras(a.x, a.z), Number.isFinite(a.giro) ? a.giro : null);
+    }
     else if (a.tipo === 'entregar_estacion') res = fab.entregarEstacion(a.autor, a.estacion, pos, inv, suelo, ahora);
     else if (a.tipo === 'trabajar_estacion') res = fab.trabajarEstacion(a.autor, a.estacion, a.segundos, pos, inv);
     else if (a.tipo === 'desmontar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.desmontarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }

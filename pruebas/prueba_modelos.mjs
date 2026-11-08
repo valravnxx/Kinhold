@@ -39,12 +39,12 @@ function hueco(tipo, x0, x1, y0, y1) {
   return dentro.slice(0, 4);
 }
 const a = P.anchoPuerta / 2;
-for (const t of ['muro_tronco_puerta', 'muro_tabla_puerta']) {
+for (const t of ['muro_tronco_puerta', 'muro_tabla_puerta', 'muro_zarzo_puerta']) {
   const d = hueco(t, -a, a, 0, P.altoPuerta);
   comprobar(`${PIEZAS[t].nombre}: hueco de puerta libre hasta ${P.altoPuerta} m`, d.length === 0, d.join(' '));
 }
 const v = P.anchoVentana / 2;
-for (const t of ['muro_tronco_ventana', 'muro_tabla_ventana']) {
+for (const t of ['muro_tronco_ventana', 'muro_tabla_ventana', 'muro_zarzo_ventana']) {
   const dv = hueco(t, -v, v, P.bajoVentana + 0.05, P.altoVentana);
   comprobar(`${PIEZAS[t].nombre}: hueco libre de ${P.bajoVentana} a ${P.altoVentana} m`, dv.length === 0, dv.join(' '));
 }
