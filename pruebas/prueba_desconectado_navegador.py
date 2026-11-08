@@ -30,15 +30,14 @@ servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs')
 servidor.stdout.readline()
 codigos = Codigos(servidor)
 
-OTRO = (3.0, -5.0)
-BOT = f"""import {{ WebSocket }} from 'ws';
+def bot_codigo(OTRO): return f"""import {{ WebSocket }} from 'ws';
 import {{ terrenoWhitholm }} from './src/logica/terreno_servidor.js';
 const y = terrenoWhitholm().suelo({OTRO[0]}, {OTRO[1]});
 const ws = new WebSocket('ws://127.0.0.1:{PUERTO}');
 ws.on('open', () => {{ setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {OTRO[0]}, y, z: {OTRO[1]}, giro: 0.6, anim: 'quieto' }})), 200); }});
 ws.on('message', (d) => {{ const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') console.log('yo ' + m.autor); }});"""
-def bot_nuevo():
-    b = subprocess.Popen(['node', '--input-type=module', '-e', BOT], cwd=RAIZ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+def bot_nuevo(OTRO):
+    b = subprocess.Popen(['node', '--input-type=module', '-e', bot_codigo(OTRO)], cwd=RAIZ, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return b, b.stdout.readline().strip()[3:]
 
 URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
@@ -54,14 +53,16 @@ def esperar(pg, cond, ms=30000):
 def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
-SIMBOLO = f"""() => {{ const s = {K}.escena.children.find(o => o.userData && o.userData.simboloDesconectado); return s ? [s.position.x, s.position.y, s.position.z, s.visible] : null; }}"""
+# el símbolo de desconectado de alguien: dónde está y si se ve (o null)
+SIMBOLO = f"""(autor) => {{ const s = {K}.escena.children.find(o => o.userData && o.userData.simboloDe === autor); return s ? [s.position.x, s.position.y, s.position.z, s.visible] : null; }}"""
+HAY_SIMBOLO = f"""(autor) => {K}.escena.children.some(o => o.userData && o.userData.simboloDe === autor)"""
 bots = []
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=ARGS)
-        for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
+        for nombre, vista, movil, OTRO in [('pc', {'width': 1280, 'height': 800}, False, (3.0, -5.0)), ('movil', {'width': 390, 'height': 844}, True, (-3.0, -5.0))]:
             print('Vista', nombre)
-            bot, autor = bot_nuevo(); bots.append(bot)
+            bot, autor = bot_nuevo(OTRO); bots.append(bot)
             ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
             if MUTAR: ctx.add_init_script('window.__mutarDesconectado = true')
             pg = ctx.new_page()
@@ -75,11 +76,12 @@ try:
             visto = esperar(pg, f"{K}.escena.children.some(o => o.userData && o.userData.autor === {json.dumps(autor)})", 30000)
             pg.evaluate(f"""(() => {{ const k = {K}, dx = {OTRO[0]} - k.pj.x, dz = {OTRO[1]} - k.pj.z; k.cam.yaw = Math.atan2(-dx, -dz); k.cam.pitch = 0.3; k.cam.dist = 5.5; }})()""")
             pg.wait_for_timeout(1500)
-            comprobar(f'{nombre}: mientras está, se le ve y sin símbolo', visto and pg.evaluate(SIMBOLO) is None)
+            comprobar(f'{nombre}: mientras está, se le ve y sin símbolo', visto and pg.evaluate(SIMBOLO, autor) is None)
             captura(pg, f'{SALIDA}/{nombre}_conectado.png')
             bot.kill(); bot.wait()
-            sale = esperar(pg, SIMBOLO.replace('return s ?', 'return !!s; //'), 20000)
-            s = pg.evaluate(SIMBOLO)
+            try: pg.wait_for_function(HAY_SIMBOLO, arg=autor, timeout=20000); sale = True
+            except Exception: sale = False
+            s = pg.evaluate(SIMBOLO, autor)
             comprobar(f'{nombre}: al cortarse, el símbolo de desconectado sale encima de él', sale and s and abs(s[0] - OTRO[0]) < 0.3 and abs(s[2] - OTRO[1]) < 0.3 and s[3], str(s))
             sigue = pg.evaluate(f"{K}.escena.children.some(o => o.userData && o.userData.autor === {json.dumps(autor)})")
             comprobar(f'{nombre}: y no desaparece: se queda donde estaba', sigue)

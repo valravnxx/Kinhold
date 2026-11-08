@@ -69,7 +69,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   }
   // el símbolo de desconectado (GDD, apartado 6): una luna menguante sobre quien duerme desconectado (src/logica/dormidos.js)
   let texturaSimbolo = null;
-  function simboloDesconectado() {
+  function simboloDesconectado(autor) {
     if (!texturaSimbolo) {
       const c = document.createElement('canvas'); c.width = c.height = 128;
       const g = c.getContext('2d');
@@ -84,7 +84,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     }
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaSimbolo, transparent: true, depthWrite: false, fog: false }));
     sp.scale.set(0.42, 0.42, 1); sp.renderOrder = 5;
-    sp.userData.simboloDesconectado = true;
+    sp.userData.simboloDe = autor;   // (no «autor»: eso busca a su personaje)
     return sp;
   }
   function quitarCombate(r) {
@@ -139,7 +139,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       const desconectado = e.anim === DESCONECTADO;   // dormido en el mundo al desconectarse: tumbado, con su símbolo
       r.j.durmiendo = e.anim === 'dormir' || desconectado;   // dormido en su cama (P4): tumbado
-      if (desconectado && !r.simbolo && !window.__mutarDesconectado) { r.simbolo = simboloDesconectado(); escena.add(r.simbolo); }
+      if (desconectado && !r.simbolo && !window.__mutarDesconectado) { r.simbolo = simboloDesconectado(e.autor); escena.add(r.simbolo); }
       if (!desconectado && r.simbolo) { escena.remove(r.simbolo); r.simbolo = null; }
       if (r.simbolo) r.simbolo.position.set(e.x, e.y + 0.95, e.z);
       r.j.sentado = e.anim === 'sentado';    // sentado a descansar (P4, 8 nov)
