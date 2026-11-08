@@ -331,6 +331,7 @@ try {
     let golpes = 0;
     do { r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); golpes++; if (r.ok && !r.datos.cae) await pausa(550); } while (r.ok && !r.datos.cae && golpes < 30);
     comprobar('lo tala a golpes (joven con piedra: 8) y cae', r.ok && r.datos.cae && golpes === 8, `${golpes} golpes · ${r.motivo || ''}`);
+    comprobar('cae hacia la boca que le ha abierto: el lado desde el que tala (al este del tronco)', r.datos?.por === 'boca' && Math.abs(r.datos.dir - Math.PI / 2) < 0.05, `dir ${r.datos?.dir}, por ${r.datos?.por}`);
     const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5);
     const tronco = deja.find(o => o.cosa.tipo === 'tronco_delgado'), varas = deja.find(o => o.cosa.tipo === 'vara');
     comprobar('y deja en el suelo un tronco delgado y de 2 a 4 varas (revisión del 1 nov)', !!tronco && !!varas && varas.cosa.n >= 2 && varas.cosa.n <= 4, deja.map(o => `${o.cosa.tipo}×${o.cosa.n}`).join(', '));

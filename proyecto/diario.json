@@ -5386,5 +5386,22 @@
   "pruebas": "Batería entera en la nube correcta tras unir main (lógica, con el recorrido de jugador, y todos los grupos de navegador, PC y móvil), sin las de en línea",
   "capturas": "capturas/demo-v146",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-07T21:24:48+00:00",
+  "fin": "2026-11-08T02:01:51+00:00",
+  "titulo": "P5: hacia dónde cae el árbol (la boca que se le corta)",
+  "hito": "talar",
+  "hecho": [
+   "El árbol cae hacia la boca que le cortas, como al talar de verdad: los golpes del primer tercio la abren hacia donde está quien los da y, si vienen de un mismo lado, el árbol cae hacia ese lado, aunque el resto se corte por detrás desde cualquier sitio. Lógica pura (src/logica/tala.js), y lo decide el servidor.",
+   "El golpe que termina la boca lo dice en el aviso («La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.»), o que no la hay si los golpes venían de lados opuestos.",
+   "Sin boca, cae cuesta abajo (el servidor mide la cuesta en su terreno) y, en llano, hacia donde se inclina el árbol: un lado fijo por árbol, el mismo para todos.",
+   "Lo abierto de la boca se guarda con el árbol (si te vas y vuelves, sigue); lo guardado antes, sin boca, se lee igual.",
+   "Recorrido de jugador, paso 9: el árbol joven que tala cae hacia el lado desde el que lo tala.",
+   "Decisiones provisionales (registro de la demo y aquí): la boca, el primer tercio de los golpes; de un mismo lado si la media de sus direcciones es de 0,7 o más; la cuesta manda desde el 12 %; la inclinación aún no se ve en el modelo. La caída de física, el crujido y el daño van con sus tareas."
+  ],
+  "pruebas": "Batería entera en la nube tres veces (al unir main, que traía la rastra como v144, los puestos como v145 y las bayas como v146): la última, los 42 grupos, todo correcto, sin las de en línea. Antes, la hoguera y entrar con la cuenta fallaron una vez cada una por cosas que no tocan esto (la pantalla de la cuenta y el sitio que apunta el servidor) y salieron bien al repetirlas. Tala 63/63 (rompiéndola a propósito, la boca falla 6), recorrido de jugador 112/112 con el paso 9 nuevo. Capturas de la tala en PC y móvil, miradas: el árbol cae hacia el que tala, que lo tiene encima (el daño, con su tarea). No comprobado: los avisos de la boca vistos en pantalla (la prueba del navegador da los golpes por la lógica, sin el aviso).",
+  "capturas": "capturas/demo-v147",
+  "estado": "ok"
  }
 ]
