@@ -1572,9 +1572,9 @@
    "tareas": [
     {
      "nombre": "El kit de la interfaz publicado y la barra de abajo (estudio de la interfaz, octava versión, aprobado de forma provisional el 7 nov): el cuero, el roble, el latón y el hierro renderizados en Blender y los iconos repujados en docs/recursos/interfaz-v1, y las imágenes de las cosas con luz de contra y contorno; abajo, tus dos manos con su imagen (1 y 2), el hombro solo si llevas algo (y entonces las manos apagadas), el hueco del cinto con su arma (C) y la carga en una raya; fuera la línea «En la mano»",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-07T18:43:47+01:00",
-     "rama": "trabajo/20261107-1845-interfaz"
+     "fin": "2026-11-08T10:09:58+01:00"
     },
     {
      "nombre": "La acción según lo que tienes delante: el verbo junto a la cosa (F) y un aro en el suelo bajo ella; con varias cosas, la lista; mantener para talar o trabajar llena un aro; la obra dice lo que le falta («Dejar el tronco en la obra · 2 de 4 troncos»). En el móvil, el botón de acción con la imagen y el verbo, y Fabricar y Construir en arco junto al pulgar. Fuera los botones Mover, Construir, Desmontar y Usar de la derecha",
@@ -3490,6 +3490,13 @@
      "archivo": "jugar/demo/v149.html",
      "capturas": null,
      "notas": "v149, arreglo urgente: al sacar de un almacenaje o de una estación una pila que no te cabe entera, ahora sacas lo que te cabe y el resto se queda (antes decía «No te cabe» y la pila se quedaba bloqueada). Con el clic derecho (o dejando pulsado en el móvil) eliges cuánto sacar."
+    },
+    {
+     "v": "v150",
+     "fecha": "2026-11-08",
+     "archivo": "jugar/demo/v150.html",
+     "capturas": "capturas/demo-v150",
+     "notas": "La barra de abajo, nueva (primera tarea de la interfaz): tus dos manos con la imagen de lo que llevas, el hombro solo cuando cargas algo (y entonces las manos, apagadas), el cinto con su arma (tócalo para cogerla con la mano) y la carga en una raya. Los huecos y los botones, con el kit de la interfaz: cuero, roble, latón y hierro renderizados, y los iconos repujados. Las imágenes de las cosas, otra vez sacadas con luz de contra y contorno."
     }
    ]
   },
