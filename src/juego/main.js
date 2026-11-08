@@ -26,7 +26,7 @@ import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ } from '../logica/iconos.js';
-import { crearEstaciones, MODELO_ESTACION } from './estaciones.js';
+import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
 import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
@@ -1513,10 +1513,10 @@ function dormir(e) {
   hacerFabricacion({ tipo: 'dormir', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
     estado.talando = null; estado.obrando = null; estado.obrandoPuesto = null;
-    // tumbado en el centro de la cama, a lo largo (el modelo va a lo largo de X: el cuerpo, con la cabeza a la cabecera)
-    const g = Number.isFinite(e.giro) ? e.giro : 0;
-    pj.x = e.x; pj.z = e.z; pj.rot = g + Math.PI / 2;
-    estado.durmiendo = { id: e.id };
+    // tumbado en su sitio de la cama, a lo largo (el modelo va a lo largo de X: el cuerpo, con la cabeza a la cabecera)
+    const g = Number.isFinite(e.giro) ? e.giro : 0, s = SITIO_DORMIR[e.tipo] || { x: 0, z: 0, y: 0 };
+    pj.x = e.x + s.x * Math.cos(g) + s.z * Math.sin(g); pj.z = e.z - s.x * Math.sin(g) + s.z * Math.cos(g); pj.rot = g + Math.PI / 2;
+    estado.durmiendo = { id: e.id, alto: s.y };
     jugador.durmiendo = true;
     mostrarAviso(tr('Duermes. Muévete para levantarte.'));
   });
@@ -2385,7 +2385,7 @@ function paso() {
   // (en el mar, subiendo y bajando con las olas)
   const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + (ag.mar ? alturaOla(pj.x, pj.z) : Math.sin(performance.now() / 600) * 0.04) : alturaSuelo();
   // (window.__mutarSuelo: solo para romper a propósito la prueba del mundo, los pies siguen el suelo muy despacio)
-  pj.y += (yObjetivo - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));
+  pj.y += (yObjetivo + (estado.durmiendo ? estado.durmiendo.alto : 0) - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));   // dormido, encima del lecho
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
   jugador.raiz.rotation.y = pj.rot;
   pasoObra(); pasoPuesto();

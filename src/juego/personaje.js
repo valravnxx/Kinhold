@@ -217,9 +217,11 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
     }
     // dormir en la cama ligada (P4): se tumba (y se queda tumbado) y, al despertar, se levanta (taller-dormir-v1)
-    if (j.durmiendo && j.mh.acciones.tumbarse) m = 'tumbarse';
-    else if (j.modo === 'tumbarse' && j.mh.acciones.levantarse) { m = 'levantarse'; j.levantaHasta = performance.now() + j.mh.acciones.levantarse.getClip().duration * 1000; }
+    // (tumbado del todo, la de dormir: los brazos a lo largo del cuerpo, no levantados como acaba la de tumbarse)
+    if (j.durmiendo && j.mh.acciones.tumbarse) m = j.modo === 'dormido' || (j.modo === 'tumbarse' && j.mh.acciones.dormido && j.mh.acciones.tumbarse.time >= j.mh.acciones.tumbarse.getClip().duration - 0.05) ? 'dormido' : 'tumbarse';
+    else if ((j.modo === 'tumbarse' || j.modo === 'dormido') && j.mh.acciones.levantarse) { m = 'levantarse'; j.levantaHasta = performance.now() + j.mh.acciones.levantarse.getClip().duration * 1000; }
     else if (j.modo === 'levantarse' && performance.now() < (j.levantaHasta || 0)) m = 'levantarse';
+    if (m === 'dormido') ritmo = 1;
     if (m === 'tumbarse' || m === 'levantarse') { ritmo = 1; const a = j.mh.acciones[m]; if (a.loop !== THREE.LoopOnce) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } }
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
     if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)

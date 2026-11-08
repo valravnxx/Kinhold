@@ -41,7 +41,7 @@ import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
-import { avisos, AVISO, hayAguaCerca } from '../src/logica/necesidades.js';
+import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -1006,7 +1006,7 @@ try {
     const alrededor = (p, d) => recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - d, z0: O.z + p.z - d, x1: O.x + p.x + d, z1: O.z + p.z + d })
       .map(q => ({ id: q.id, tipo: q.tipo, x: r2(q.x - O.x), z: r2(q.z - O.z) }));
     const probados = new Set();
-    const libres = (lista, tipos) => cerca(lista.filter(q => tipos.includes(q.tipo) && !probados.has(q.id) && s.objetos.recoleccion.disponible(q.id, Date.now())), J.pos);
+    const libres = (lista, tipos) => cerca(lista.filter(q => tipos.includes(q.tipo) && !probados.has(q.id)), J.pos);   // (lo ya recogido lo dice el servidor al intentarlo)
     const enPila = (tipo, p) => s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === tipo && Math.hypot(o.x - p.x, o.z - p.z) < 1).reduce((n, o) => n + o.cosa.n, 0);
     // lo que lleva, a la pila (a sus pies, en p)
     const aLaPila = async (p) => { await J.andar(p.x, p.z); await soltarManos(); };
@@ -1054,7 +1054,9 @@ try {
     // tumbado en el refugio: el navegador dice «dormir» en su estado (como la demo mientras duerme)
     const fr = s.objetos.fab.estaciones[refugio];
     for (let k = 0; k < 10; k++) { J.pos = { x: fr.x, z: fr.z }; J.ws.send(JSON.stringify({ tipo: 'estado', x: fr.x, y: T.suelo(fr.x, fr.z), z: fr.z, giro: 0, anim: 'dormir' })); await pausa(500); }
-    comprobar('duerme en él y el cansancio baja deprisa (más que quieto: 5 s, al menos 5 puntos o a 0)', r.ok && J.nec.cansancio <= Math.max(0, c0 - 5), `${r.motivo || ''} cansancio ${c0} → ${J.nec.cansancio}`);
+    // (con la sed, el hambre o el frío al máximo se descansa a la mitad: src/logica/necesidades.js)
+    const k = ['hambre', 'sed', 'frio'].some(q => J.nec[q] >= 100) ? 2 : 1, espera = Math.max(0, c0 - 0.8 * 5 * RITMOS.dormir / k);
+    comprobar('duerme en él y el cansancio baja deprisa (en 5 s, casi lo que dice dormir; quieto bajaría 4 veces menos)', r.ok && J.nec.cansancio <= espera && RITMOS.dormir >= 3 * RITMOS.quieto, `${r.motivo || ''} cansancio ${c0} → ${J.nec.cansancio} (como mucho ${espera.toFixed(2)})`);
 
     // 17b. la cama de juncos, dentro de su casa: los juncos, del río (con la lasca; a las manos y al fardo)
     let rio = null;
@@ -1069,7 +1071,7 @@ try {
       if (l) { await J.andar(l.x + 0.3, l.z); await soltarManos(); await J.objeto({ tipo: 'coger_suelo', objeto: l.id, cantidad: 1, a: J.inv.lugares.cintura?.huecos || J.inv.lugares.cintura ? 'cintura/0' : 'mano:der', x: J.pos.x, z: J.pos.z }); }
     }
     comprobar('lleva su lasca de sílex para cortar juncos', J.cuantos('lasca_silex') >= 1, enMano());
-    const ribera = alrededor(rio, 200);
+    const ribera = alrededor(rio, 500);   // (los juncos de al lado ya los cortó para el tejado: vuelven en una estación)
     await J.andar(rio.x, rio.z);
     const enFardo = () => (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
     for (const q of libres(ribera, ['juncos'])) {
