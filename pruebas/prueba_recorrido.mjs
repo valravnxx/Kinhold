@@ -13,7 +13,8 @@
 // orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come. Y desbroza un matorral
 // con el hacha de piedra (8 nov) y se lleva sus ramas. Y su cama ligada (8 nov): un refugio de ramas en su tierra, que
 // liga y en el que duerme, y luego una cama de juncos en su casa, que liga. Y el frío (8 nov): de noche, lejos de la
-// hoguera, le sube, y junto a ella le baja.
+// hoguera, le sube, y junto a ella le baja. Y el cansancio (8 nov): después de talar y cargar los troncos de los muros,
+// se sienta a descansar y el cansancio baja más deprisa que de pie.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -765,6 +766,22 @@ try {
       if (r.ok) bien++; else motivo = r.motivo;
     }
     comprobar('levanta dos muros de troncos y el de la puerta: 11 troncos delgados más, de 11 árboles jóvenes, uno a uno al hombro', bien === 3 && muros.every(terminada), `${bien} · ${motivo}`);
+
+    // P4, el cansancio (8 nov): después de talar y cargar los troncos, se sienta en el suelo a descansar (la demo dice
+    // «sentado» en su estado, Z o el botón de la ficha del cansancio); el cansancio baja más deprisa que de pie
+    console.log('16c2. Cansado de talar y cargar troncos, se sienta a descansar');
+    {
+      await soltarManos();
+      const cs = J.nec.cansancio;
+      comprobar('talar y cargar los troncos le ha cansado', cs > 5, `cansancio ${cs}`);
+      const sentado = (anim) => J.ws.send(JSON.stringify({ tipo: 'estado', x: J.pos.x, y: T.suelo(J.pos.x, J.pos.z), z: J.pos.z, giro: 0, anim }));
+      for (let k = 0; k < 3; k++) { sentado('sentado'); await pausa(500); }
+      const c0 = J.nec.cansancio;
+      for (let k = 0; k < 10; k++) { sentado('sentado'); await pausa(500); }
+      const k = ['hambre', 'sed', 'frio'].some(q => J.nec[q] >= 100) ? 2 : 1, espera = Math.max(0, c0 - 0.8 * 5 * RITMOS.sentado / k);
+      comprobar('sentado, el cansancio baja (en 5 s, casi lo que dice sentado: más del doble que de pie quieto)', J.nec.cansancio <= espera && RITMOS.sentado >= 2 * RITMOS.quieto, `cansancio ${c0} → ${J.nec.cansancio} (como mucho ${espera.toFixed(2)})`);
+      J.estar(J.pos.x, J.pos.z);   // se levanta
+    }
 
     // 16d. al río, a por el barro del muro de zarzo y los juncos del tejado
     console.log('16d. Vuelve al río a por el barro del muro de zarzo y los juncos que le faltan para el tejado');

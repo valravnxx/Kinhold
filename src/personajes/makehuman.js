@@ -226,9 +226,12 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   const carpetaCargas = typeof o.cargas === 'string' ? o.cargas : `${base}../taller-carga-v3/`;
   // y con ellas, tumbarse y levantarse para dormir (taller-dormir-v1, herramientas/taller/sacar_dormir.mjs; unos 117 KB)
   const carpetaDormir = `${base}../taller-dormir-v1/`;
-  const [g, gExtra, gCargas, gDormir] = await Promise.all([cargar(`${base}mh_${o.sexo}.glb`), o.extra ? cargar(`${carpetaExtra}mh_${o.sexo}_extra.glb`) : null,
+  // y sentarse en el suelo a descansar (P4, 8 nov; taller-sentarse-v1: Sitting_Idle_Loop de Quaternius; unos 32 KB)
+  const carpetaSentarse = `${base}../taller-sentarse-v1/`;
+  const [g, gExtra, gCargas, gDormir, gSentarse] = await Promise.all([cargar(`${base}mh_${o.sexo}.glb`), o.extra ? cargar(`${carpetaExtra}mh_${o.sexo}_extra.glb`) : null,
     o.cargas ? cargar(`${carpetaCargas}mh_${o.sexo}_extra.glb`).catch(e => { console.warn('Sin las animaciones de cargar:', e); return null; }) : null,
-    o.cargas && !o.extra ? cargar(`${carpetaDormir}mh_${o.sexo}_extra.glb`).catch(e => { console.warn('Sin las animaciones de dormir:', e); return null; }) : null]);
+    o.cargas && !o.extra ? cargar(`${carpetaDormir}mh_${o.sexo}_extra.glb`).catch(e => { console.warn('Sin las animaciones de dormir:', e); return null; }) : null,
+    o.cargas ? cargar(`${carpetaSentarse}mh_${o.sexo}_extra.glb`).catch(e => { console.warn('Sin la animación de sentarse:', e); return null; }) : null]);
   const raiz = new THREE.Group();
   const modelo = clone(g.scene);
   raiz.add(modelo);
@@ -319,7 +322,7 @@ export async function crearPersonajeMH(op = {}, base = 'recursos/personajes/tall
   for (const [id, nombre] of Object.entries(CLIPS)) if (acciones[nombre]) acciones[id] = acciones[nombre];
   // extra: las que se llaman igual que una básica (otra versión) van como «nombre_2», como en cargar.js
   const extra = {};
-  for (const clip of [...(gExtra ? gExtra.animations : []), ...(gCargas ? gCargas.animations : []), ...(gDormir ? gDormir.animations : [])]) {
+  for (const clip of [...(gExtra ? gExtra.animations : []), ...(gCargas ? gCargas.animations : []), ...(gDormir ? gDormir.animations : []), ...(gSentarse ? gSentarse.animations : [])]) {
     extra[clip.name] = acciones[clip.name] ? clip.name + '_2' : clip.name;
     acciones[extra[clip.name]] = mezclador.clipAction(clip);
   }

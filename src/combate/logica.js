@@ -352,7 +352,8 @@ export class Luchador {
       if (this.sangre <= 0) { this.sangre = 0; this.caer('Desangrado'); }
       else this.sanar(dt, s);
     }
-    if (this.accion === 'libre' && !this.bloqueando && !corriendo) this.cansancio = Math.max(0, this.cansancio - 12 * dt);
+    // (no por debajo de alientoMinimo: el cansancio de las necesidades, src/logica/necesidades.js; lo pone el servidor)
+    if (this.accion === 'libre' && !this.bloqueando && !corriendo) this.cansancio = Math.max(Math.min(this.cansancio, this.alientoMinimo || 0), this.cansancio - 12 * dt);
     else if (this.bloqueando) this.cansancio = Math.min(100, this.cansancio + 2 * dt); // mantener la parada cansa
     if (corriendo) this.cansancio = Math.min(100, this.cansancio + 8 * dt);
     if (this.bloqueando) this.tBloqueo += dt;

@@ -116,6 +116,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       // lo que lleva (no hace falta vestirlo de nuevo: solo se rehace lo que se ve encima)
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       r.j.durmiendo = e.anim === 'dormir';   // dormido en su cama (P4): tumbado
+      r.j.sentado = e.anim === 'sentado';    // sentado a descansar (P4, 8 nov)
       r.j.animar(r.vel > 0.3 ? r.vel : 0, dt, e.anim === 'talar');
       const f = fotos.get(e.autor);
       if (f && f.sacada) dibujarCombate(r, e, f, asp, dt); else quitarCombate(r);

@@ -139,7 +139,7 @@ import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, hayAguaCerca, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe } from '../src/logica/necesidades.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, delCombate, alientoMinimo, hayAguaCerca, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe } from '../src/logica/necesidades.js';
 import { puestasDe, abrigo as abrigoDe } from '../src/logica/prendas.js';
 import { horaDe } from '../src/logica/cielo.js';
 import { calorEn } from '../src/logica/fuego.js';
@@ -441,6 +441,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // cuando su presencia deja de decir «dormir» (pasado 1,5 s, lo que tarda en llegar), al alejarse de la cama (más de
   // 2,5 m) o al irse; mientras duerme, el cansancio baja deprisa (src/logica/necesidades.js)
   const durmiendo = new Map();
+  const alientoAntes = new Map();   // autor → el aliento (cansancio) de su luchador en el tic anterior de las necesidades
   // El frío que pide el sitio de cada uno (P4, 8 nov; src/logica/necesidades.js, frioDelSitio): la temperatura de su
   // bioma (la del paisaje, guardada mientras no se aleje 20 m), la noche (la hora del cielo: horaMundo, la real; las
   // pruebas la cambian), lo que lleva puesto, si está bajo techo y el calor de los fuegos encendidos a su lado. Sin
@@ -467,7 +468,21 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (!(dt > 0)) continue;
       const inv = objetos.invs.de(a), d = durmiendo.get(a);
       if (d && (!e || Math.hypot(e.x - d.x, e.z - d.z) > 2.5 || (t - d.t > 1500 && e.anim !== 'dormir'))) durmiendo.delete(a);
-      necesidades.set(a, avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: frioPedido(a, e, inv), durmiendo: durmiendo.has(a) }));
+      // sentado a descansar (8 nov): lo dice su presencia (anim «sentado») y no se mueve; descansa más deprisa que de pie
+      const sentado = !!e && e.anim === 'sentado' && velocidad < 0.3;
+      let n = avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: frioPedido(a, e, inv), durmiendo: durmiendo.has(a), sentado });
+      // el combate (8 nov; src/logica/necesidades.js, delCombate y alientoMinimo): lo que ha subido el aliento de su
+      // luchador desde el tic anterior cansa, y el aliento no baja de lo que pide este cansancio
+      const L = combate.luchadores[a];
+      if (L) {
+        const antes = alientoAntes.get(a);
+        if (Number.isFinite(antes) && L.cansancio > antes) n = delCombate(n, L.cansancio - antes);
+        const min = alientoMinimo(n);
+        L.alientoMinimo = min;   // al recuperarse en el combate, no baja de aquí (src/combate/logica.js)
+        if (L.cansancio < min) L.cansancio = min;
+        alientoAntes.set(a, L.cansancio);
+      }
+      necesidades.set(a, n);
       necesidadesCambiadas = true;
       enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(a)) });
     }
@@ -1025,7 +1040,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
-      antesNec.delete(autor); ultimoTrago.delete(autor); durmiendo.delete(autor); tempDe.delete(autor);
+      antesNec.delete(autor); ultimoTrago.delete(autor); durmiendo.delete(autor); tempDe.delete(autor); alientoAntes.delete(autor);
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }

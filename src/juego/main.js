@@ -171,7 +171,7 @@ const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2
 // reloj llega en la bienvenida: todos ven el mismo cielo); mueve el sol, la luna y las estrellas, y con ellos la luz
 let desfaseReloj = 0;
 let necesidades = null;
-const avisosNec = montarAvisos();   // sus círculos a la derecha (src/juego/avisos_necesidades.js)   // hambre, sed, frío y cansancio, como las manda el servidor (P4; src/logica/necesidades.js)
+const avisosNec = montarAvisos({ sentarse: () => sentarse(), sentado: () => !!estado.sentado });   // sus círculos a la derecha (src/juego/avisos_necesidades.js)   // hambre, sed, frío y cansancio, como las manda el servidor (P4; src/logica/necesidades.js)
 const cielo = crearCielo({ ambiente, reloj: () => Date.now() + desfaseReloj });
 cielo.paso();
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
@@ -1009,7 +1009,7 @@ function piezaBajo(clientX, clientY) {
 // (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
 // (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
 const TECLAS_FISICAS = {
-  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', KeyH: 'h', Space: ' ',
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', KeyH: 'h', KeyZ: 'z', Space: ' ',
   ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
   ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
   NumpadAdd: '+', NumpadSubtract: '-',
@@ -1031,6 +1031,7 @@ addEventListener('keydown', (e) => {
   if (k === 'pageup' || k === '+') cambiarPlanta(1);
   if (k === 'pagedown' || k === '-') cambiarPlanta(-1);
   if (k === 'f') usar();
+  if (k === 'z' && !e.repeat) sentarse();
   if (k === 'i') panelInventario.alternar();
   if (k === 'h' && panelFabricar) panelFabricar.alternar();
   if (k === 'm' && mapaRey) { if (panelAdmin && panelAdmin.abierto) panelAdmin.cerrar(); else mapaRey.alternar(); }
@@ -1525,6 +1526,26 @@ function dormir(e) {
 function despertar() {
   if (!estado.durmiendo) return;
   estado.durmiendo = null; jugador.durmiendo = false;
+}
+// Sentarse en el suelo a descansar (P4, 8 nov; src/logica/necesidades.js: sentado, el cansancio baja más deprisa que de
+// pie). Z en el PC, o el botón de la ficha del cansancio (el círculo gris). Lo dice la presencia (anim «sentado») y el
+// servidor lo mira; al moverte, te levantas. No con algo grande en las manos o al hombro, ni con el arma sacada, ni en
+// el agua, ni dormido.
+function sentarse() {
+  if (estado.sentado) { levantarse(); return; }
+  if (estado.durmiendo) return;
+  if (jugador.cargaDos || jugador.alHombro || jugador.arrastra || jugador.empuja) { mostrarAviso(tr('Suelta lo que llevas para sentarte.'), true); return; }
+  if (document.body.classList.contains('combate')) { mostrarAviso(tr('Guarda el arma para sentarte.'), true); return; }
+  if (nado.modo && nado.modo !== 'tierra') { mostrarAviso(tr('En el agua no puedes sentarte.'), true); return; }
+  estado.talando = null; estado.obrando = null; estado.obrandoPuesto = null;
+  estado.sentado = true; jugador.sentado = true;
+  mostrarAviso(tr('Te sientas a descansar. Muévete para levantarte.'));
+  avisosNec.pintar(necesidades);
+}
+function levantarse() {
+  if (!estado.sentado) return;
+  estado.sentado = false; jugador.sentado = false;
+  avisosNec.pintar(necesidades);
 }
 function quitarPuesto(e) {
   hacerFabricacion({ tipo: 'quitar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
@@ -2452,6 +2473,7 @@ function paso() {
   pintarAguante();
   if (mag > 0.05) {
     despertar();           // moverse te levanta de la cama
+    levantarse();          // y del suelo
     estado.talando = null; // moverse deja de talar
     if (estado.obrando || estado.obrandoPuesto) { estado.obrando = null; estado.obrandoPuesto = null; mostrarAviso(t('dejasObra')); } // y de construir
     const s = Math.sin(cam.yaw), co = Math.cos(cam.yaw);
@@ -2514,7 +2536,7 @@ function paso() {
   moverGente(dt);
   moverFuegos();
   if (charla) charla.paso();
-  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
+  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
   cielo.paso();

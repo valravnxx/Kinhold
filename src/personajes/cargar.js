@@ -40,6 +40,8 @@ export const CLIPS_EXTRA = {
   // y empujar la carretilla andando y quieto
   hombro: 'Hombro_Walk_Loop', hombroQuieto: 'Hombro_Idle_Loop', arrastrar: 'Drag_Walk_Loop',
   empujarCarretilla: 'Empujar_Walk_Loop', empujarQuieto: 'Empujar_Idle_Loop',
+  // sentado en el suelo a descansar (P4, 8 nov; taller-sentarse-v1, la de Quaternius pasada al taller)
+  sentado: 'Sitting_Idle_Loop',
 };
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder); // la v2 va comprimida con meshopt

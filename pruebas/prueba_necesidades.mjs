@@ -13,12 +13,17 @@
 // El frío (8 nov): lo que pide el sitio (bioma, noche, ropa, techo y fuego) y, con el servidor y el terreno, de noche y
 // lejos del fuego sube y junto a una hoguera encendida baja. MUTAR=7: el servidor no mira el fuego; MUTAR=8: no mira
 // la noche. Tienen que FALLAR.
+// Descansar sentado y el combate (8 nov): sentado se descansa más que de pie y menos que dormido; lo que sube el aliento
+// del combate cansa una décima parte, y el aliento no baja de 0,8 veces el cansancio. Con el servidor: sentado (su
+// presencia dice «sentado» y no se mueve) descansa más deprisa que quieto, y su luchador no recupera el aliento por
+// debajo de lo que pide su cansancio; lo que pelea, cansa. MUTAR=9: sentado no descansa más que de pie (lógica);
+// MUTAR=10: el servidor no mira si está sentado; MUTAR=11: el servidor no pasa el combate al cansancio. Tienen que FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
 import { abrigo } from '../src/logica/prendas.js';
@@ -51,6 +56,11 @@ console.log('La lógica');
   comprobar('correr cansa (10 s, 5 puntos)', Math.abs(corre.cansancio - 10 * RITMOS.correr) < 1e-9, corre.cansancio.toFixed(2));
   const dormido = avanzar({ ...nuevas(), cansancio: 50 }, 10, { durmiendo: MUTAR !== '6' });
   comprobar('durmiendo en la cama ligada se descansa mucho más que quieto (rendido, en poco más de un minuto)', dormido.cansancio < quieto.cansancio - 10 && Math.abs(50 - dormido.cansancio - 10 * RITMOS.dormir) < 1e-9, dormido.cansancio.toFixed(1));
+  const sentado = avanzar({ ...nuevas(), cansancio: 50 }, 10, { sentado: MUTAR !== '9' });
+  comprobar('sentado se descansa más que de pie quieto y menos que dormido', sentado.cansancio < quieto.cansancio - 4 && sentado.cansancio > dormido.cansancio && Math.abs(50 - sentado.cansancio - 10 * RITMOS.sentado) < 1e-9, sentado.cansancio.toFixed(1));
+  comprobar('sentado y corriendo a la vez (no puede ser), cansa como correr', avanzar(nuevas(), 10, { velocidad: 6, sentado: true }).cansancio === corre.cansancio);
+  comprobar('lo que sube el aliento del combate cansa una décima parte (40 de aliento, 4)', Math.abs(delCombate({ ...nuevas(), cansancio: 10 }, 40).cansancio - 14) < 1e-9 && delCombate(nuevas(), -5).cansancio === 0, delCombate({ ...nuevas(), cansancio: 10 }, 40).cansancio);
+  comprobar('el aliento no baja de 0,8 veces el cansancio (rendido: 80, sin golpe fuerte)', alientoMinimo({ ...nuevas(), cansancio: 100 }) === 80 && alientoMinimo(nuevas()) === 0 && COMBATE.suelo === 0.8);
   comprobar('quieto se descansa más que andando', quieto.cansancio < anda.cansancio && anda.cansancio < 50, `${quieto.cansancio.toFixed(1)} y ${anda.cansancio.toFixed(1)}`);
   const carga = avanzar(nuevas(), 10, { velocidad: 1.5, kilos: 12 });
   comprobar('andar con un tronco (12 kg) al hombro cansa', carga.cansancio > 0, carga.cansancio.toFixed(2));
@@ -103,13 +113,15 @@ console.log('Beber del río (la lógica)');
 
 console.log('Con el servidor de verdad');
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
-if (['1', '2', '4', '5', '7', '8'].includes(MUTAR)) {
+if (['1', '2', '4', '5', '7', '8', '10', '11'].includes(MUTAR)) {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('necesidades.set(a, avanzarNecesidades(', 'necesidades.set(a, ((n) => n)(')
     : MUTAR === '2' ? fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;")
     : MUTAR === '4' ? fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)')
     : MUTAR === '7' ? fuente.replace('calor: calorEn(cerca, e.x, e.z, ahora)', 'calor: 0')
     : MUTAR === '8' ? fuente.replace('noche: nocheDe(horaDe(horaMundo()).hora)', 'noche: 0')
+    : MUTAR === '10' ? fuente.replace("const sentado = !!e && e.anim === 'sentado' && velocidad < 0.3;", 'const sentado = false;')
+    : MUTAR === '11' ? fuente.replace('if (Number.isFinite(antes) && L.cansancio > antes) n = delCombate(n, L.cansancio - antes);', '')
     : fuente.replace('else r = inv.gastar(tipo, 1);', 'else r = { ok: true };');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_necesidades.mjs');
@@ -182,6 +194,31 @@ try {
     r = await pide(85, { tipo: 'comer', objeto: 'piedra' });
     comprobar('una piedra no se come', !r.ok && /no se come/.test(r.motivo || ''), r.motivo);
     comprobar('se comen las bayas y las setas', comestible('bayas') && comestible('setas') && !comestible('rama') && !comestible('toString'));
+  }
+
+  // descansar sentado y el combate (8 nov)
+  {
+    const yo = a.bienvenida.autor;
+    const durante = async (anim, ms) => { for (let t = 0; t < ms; t += 100) { a.estar(18, 0, anim); await pausa(100); } };
+    await durante('quieto', 400);
+    srv.necesidades.set(yo, { ...srv.necesidades.get(yo), cansancio: 60 });
+    await durante('quieto', 2000);
+    const dePie = 60 - a.ultima().cansancio;
+    srv.necesidades.set(yo, { ...srv.necesidades.get(yo), cansancio: 60 });
+    await durante('sentado', 2000);
+    const sentadoBaja = 60 - a.ultima().cansancio;
+    comprobar('sentado (lo dice su presencia y no se mueve) descansa más deprisa que de pie', sentadoBaja > dePie * 1.8 && dePie > 0, `en 2 s: de pie ${dePie.toFixed(2)}, sentado ${sentadoBaja.toFixed(2)}`);
+    const L = srv.combate.luchadores[yo];
+    srv.necesidades.set(yo, { ...srv.necesidades.get(yo), cansancio: 50 });
+    L.cansancio = 0;
+    await durante('quieto', 600);
+    const minAhora = 0.8 * srv.necesidades.get(yo).cansancio;
+    comprobar('con cansancio 50, su aliento de combate (a 0) sube a 0,8 veces el cansancio y no baja de ahí', L.cansancio >= minAhora - 0.5 && L.cansancio > 38 && L.cansancio <= 41, `${L.cansancio.toFixed(1)} (cansancio ${srv.necesidades.get(yo).cansancio.toFixed(1)})`);
+    const antesPelea = srv.necesidades.get(yo).cansancio;
+    L.cansancio = Math.min(100, L.cansancio + 50);   // lo que sube con unos golpes y paradas
+    await durante('quieto', 400);
+    const subio = srv.necesidades.get(yo).cansancio - antesPelea;
+    comprobar('lo que pelea (50 de aliento) cansa unos 5', subio > 4 && subio < 5.5, subio.toFixed(2));
   }
 
   // salir y volver con la ficha

@@ -17,7 +17,11 @@
 //     frioDelSitio (más abajo, 8 nov);
 //   - el cansancio: correr (más de 4 m/s) 0,5 por segundo, con carga suelta en las manos o al hombro más; cada golpe de
 //     hacha 1,5, cada rato de obra 2, fabricar 0,5, recoger 0,3, desbrozar 2 (los golpes de una vez), cada golpe de mazo a una roca 1,5; quieto baja 0,4 por segundo y andando 0,1;
-//     durmiendo en tu cama ligada (8 nov), 1,5 por segundo;
+//     durmiendo en tu cama ligada (8 nov), 1,5 por segundo; sentado en el suelo a descansar (8 nov), 1 por segundo;
+//   - el combate (8 nov: «el mismo cansancio que ya lleva el combate, no otro»): el aliento del combate
+//     (src/combate/logica.js, cansancio del luchador) sube y baja deprisa, golpe a golpe; de lo que sube, una décima
+//     parte pasa a este cansancio (COMBATE.paso), y el aliento no se recupera por debajo de 0,8 veces este cansancio
+//     (COMBATE.suelo: quien llega rendido a una pelea empieza sin aliento; rendido del todo, con 80, sin golpe fuerte);
 //   - al máximo, las heridas se curan despacio (efectos.curacionLenta); y se muere de sed y de hambre (valravnx, 7 nov:
 //     «no es survival si no hay que sobrevivir»; GDD, apartado 6): eso llega con la tarea de morir de P4;
 //   - el calor (también en el GDD) queda para después del hito, como los cinco estados de más.
@@ -35,7 +39,9 @@ export const RITMOS = {
   carga: 0.03,                  // por segundo y kg sueltos, moviéndose
   quieto: 0.4, andando: 0.1,
   dormir: 1.5,                  // durmiendo en tu cama ligada, por segundo: rendido del todo, unos 70 s (provisional)
+  sentado: 1,                   // sentado a descansar, por segundo: rendido del todo, unos 100 s (provisional)
 };
+export const COMBATE = { paso: 0.1, suelo: 0.8 };
 export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
 
 const recorta = (v) => Math.min(MAXIMO, Math.max(0, v));
@@ -53,7 +59,7 @@ const alMaximo = (n) => n.hambre >= MAXIMO || n.sed >= MAXIMO || n.frio >= MAXIM
 
 // dt segundos con lo que está haciendo: velocidad (m/s, medida por el servidor), kilos (sueltos en las manos o al
 // hombro) y frioObjetivo (0–100). Devuelve las necesidades nuevas (no toca las de entrada).
-export function avanzar(n, dt, { velocidad = 0, kilos = 0, frioObjetivo = 0, durmiendo = false } = {}) {
+export function avanzar(n, dt, { velocidad = 0, kilos = 0, frioObjetivo = 0, durmiendo = false, sentado = false } = {}) {
   if (!(dt > 0)) return { ...n };
   const m = { ...n };
   m.hambre = recorta(n.hambre + RITMOS.hambre * dt);
@@ -65,7 +71,7 @@ export function avanzar(n, dt, { velocidad = 0, kilos = 0, frioObjetivo = 0, dur
   let c = 0;
   if (velocidad > RITMOS.velocidadCorrer) c += RITMOS.correr * k;
   if (velocidad > 0.3 && kilos > 0) c += RITMOS.carga * kilos * k;
-  if (c === 0) c = -(durmiendo ? RITMOS.dormir : velocidad > 0.3 ? RITMOS.andando : RITMOS.quieto) / k;
+  if (c === 0) c = -(durmiendo ? RITMOS.dormir : velocidad > 0.3 ? RITMOS.andando : sentado ? RITMOS.sentado : RITMOS.quieto) / k;
   m.cansancio = recorta(n.cansancio + c * dt);
   return m;
 }
@@ -76,6 +82,14 @@ export function esfuerzo(n, tipo) {
   if (!e) return { ...n };
   return { ...n, cansancio: recorta(n.cansancio + e * (alMaximo(n) ? 2 : 1)) };
 }
+
+// el combate (8 nov): lo que ha subido el aliento del luchador (subida, de 0 a 100) cansa una décima parte
+export function delCombate(n, subida) {
+  if (!(subida > 0)) return { ...n };
+  return { ...n, cansancio: recorta(n.cansancio + COMBATE.paso * subida * (alMaximo(n) ? 2 : 1)) };
+}
+// lo menos que puede tener el aliento del combate con este cansancio (el cansancio del luchador no baja de aquí)
+export const alientoMinimo = (n) => COMBATE.suelo * recorta(n.cansancio || 0);
 
 // comer, beber, calentarse o descansar: baja «que» en «cuanto»
 export function saciar(n, que, cuanto) {

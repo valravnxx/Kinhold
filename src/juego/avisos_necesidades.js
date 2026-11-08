@@ -34,7 +34,8 @@ function queTePasa(que, n) {
   return e.cansancioRapido ? tr('Te cansas el doble (otra necesidad está al máximo).') : tr('Aún aguantas; al máximo te cansarás el doble y {m}.', { m: muere });
 }
 
-export function montarAvisos() {
+// op.sentarse(): sentarse o levantarse (P4, 8 nov); op.sentado(): si está sentado. La ficha del cansancio lleva su botón.
+export function montarAvisos(op = {}) {
   const estilo = document.createElement('style');
   estilo.textContent = `
 #avisosNec{position:fixed;right:calc(118px + env(safe-area-inset-right,0px));top:50%;transform:translateY(-88px);display:flex;flex-direction:column;gap:8px;z-index:6}
@@ -52,6 +53,8 @@ export function montarAvisos() {
 #fichaNec .nivel i{display:block;height:100%}
 #fichaNec p{margin:0 0 5px}
 #fichaNec .como{color:#d9a441}
+#fichaNec .sentarse{display:block;width:100%;margin-top:6px;padding:7px 10px;border-radius:7px;border:1px solid rgba(217,164,65,.55);background:rgba(217,164,65,.16);color:#f1e8d8;font:600 13.5px/1.2 system-ui,sans-serif;cursor:pointer}
+#fichaNec .sentarse kbd{font:11px system-ui,sans-serif;border:1px solid rgba(241,232,216,.4);border-radius:3px;padding:0 4px;margin-left:6px;opacity:.8}
 @media (max-width:640px){
   #avisosNec{flex-direction:row;transform:none;gap:6px}
   #avisosNec .aviso-nec{width:36px;height:36px}
@@ -77,7 +80,10 @@ export function montarAvisos() {
     if (!abierta || !actual) return;
     const k = abierta, v = Math.round(actual[k]);
     ficha.innerHTML = `<b>${tr(NOMBRE[k])} · ${v}%</b><div class="nivel"><i style="width:${v}%;background:${COLOR[k]}"></i></div>` +
-      `<p>${queTePasa(k, actual)}</p><p class="como">${tr(COMO[k])}</p>`;
+      `<p>${queTePasa(k, actual)}</p><p class="como">${tr(COMO[k])}</p>` +
+      (k === 'cansancio' && op.sentarse ? `<button class="sentarse">${op.sentado && op.sentado() ? tr('Levantarte') : tr('Sentarte a descansar')}${movil() ? '' : '<kbd>Z</kbd>'}</button>` : '');
+    const bs = ficha.querySelector('.sentarse');
+    if (bs) bs.onclick = (ev) => { ev.stopPropagation(); op.sentarse(); };
     const r = botones[k].getBoundingClientRect();
     // en el PC, a la izquierda del círculo; en el móvil, debajo de la fila
     const top = movil() ? r.bottom + 8 : r.top - 6;
