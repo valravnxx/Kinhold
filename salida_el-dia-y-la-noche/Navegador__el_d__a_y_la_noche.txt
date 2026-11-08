@@ -1,0 +1,32 @@
+  OK   PC: sin ?hora, las pruebas ven la luz «mañana» del estilo v5, quieta
+  OK   PC: a mediodía, el cielo claro — [196, 200, 193]
+  OK   PC: la luz que hace sombra viene del sol (al sur, a 48°) — [0, 0.743, 0.669, 2.2]
+  OK   PC: al ponerse, el disco del sol se ve donde está, más claro que el cielo de al lado — en 640,266: [253, 247, 231] contra [246, 216, 180]
+  OK   PC: y el cielo de al lado es cálido (rojo sobre azul) — [246, 216, 180]
+  OK   PC: de noche, la luna llena se ve donde está (un disco claro) — en 640,160: [236, 233, 226]
+  OK   PC: a medianoche, el cielo oscuro — [2, 6, 16]
+  OK   PC: con estrellas (puntos claros sueltos) — 276 estrellas en la franja (fondo 2)
+  OK   PC: con luna llena, el suelo oscuro pero se ve — 45 (de día 107)
+  OK   PC: con luna nueva, más oscuro, pero aún se ve — 27 (con luna llena 45)
+  OK   PC: de noche, el agua refleja un cielo oscuro — 0.006657170673343007
+  OK   PC: de día, claro — 0.6197242350627495
+  OK   PC: sin errores en la página
+  OK   móvil: sin ?hora, las pruebas ven la luz «mañana» del estilo v5, quieta
+  OK   móvil: a mediodía, el cielo claro — [216, 218, 214]
+  OK   móvil: la luz que hace sombra viene del sol (al sur, a 48°) — [0, 0.743, 0.669, 2.2]
+  OK   móvil: al ponerse, el disco del sol se ve donde está, más claro que el cielo de al lado — en 195,281: [253, 247, 231] contra [246, 216, 180]
+  OK   móvil: y el cielo de al lado es cálido (rojo sobre azul) — [246, 216, 180]
+  OK   móvil: de noche, la luna llena se ve donde está (un disco claro) — en 195,169: [237, 234, 227]
+  OK   móvil: a medianoche, el cielo oscuro — [1, 2, 15]
+  OK   móvil: con estrellas (puntos claros sueltos) — 41 estrellas en la franja (fondo 2)
+  OK   móvil: con luna llena, el suelo oscuro pero se ve — 45 (de día 107)
+  OK   móvil: con luna nueva, más oscuro, pero aún se ve — 27 (con luna llena 45)
+  OK   móvil: de noche, el agua refleja un cielo oscuro — 0.006657170673343007
+  OK   móvil: de día, claro — 0.6197242350627495
+  OK   móvil: sin errores en la página
+  OK   PC alto: el PC alto lleva el horizonte — pc-3
+  OK   PC alto: de noche, lo lejano y el cielo, oscuros (la bruma va al cielo de noche) — [9, 15, 23]
+  OK   PC alto: y con estrellas — 431 (fondo 2)
+  OK   PC alto: sin errores en la página
+
+Todo correcto
