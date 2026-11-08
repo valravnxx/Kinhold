@@ -45,6 +45,7 @@ paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio"
 paso "El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento" node pruebas/prueba_cielo.mjs
 paso "Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor" node pruebas/prueba_necesidades.mjs
 paso "Desconectarse: dormido en el mundo, atacable unos minutos fuera de tu tierra, en el servidor" node pruebas/prueba_dormidos.mjs
+paso "Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cuerpo con la mitad, y a tu cama" node pruebas/prueba_muerte.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs

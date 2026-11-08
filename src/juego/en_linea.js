@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { MundoEnLinea } from '../logica/en_linea.js';
 import { DESCONECTADO } from '../logica/dormidos.js';
+import { MUERTO } from '../logica/muerte.js';
 import { normalizarAspecto } from '../logica/aspecto.js';
 import { crearJugador } from './personaje.js';
 import { tr } from '../idioma.js';
@@ -29,6 +30,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const escuchas = new Set();   // lo que quiere ver los mensajes del panel del admin (src/juego/panel_admin.js)
   const escuchasSalida = new Set();   // y la respuesta a la salida que elige un personaje nuevo (src/juego/main.js)
   const escuchasDicho = new Set();    // y lo que dice alguien en el chat de texto (src/juego/charla.js)
+  const escuchasMuerte = new Set();   // y que has muerto (src/logica/muerte.js): dónde vuelves (src/juego/main.js)
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
@@ -39,6 +41,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (msg.tipo === 'admin') { for (const f of escuchas) f(msg); return; }
       if (msg.tipo === 'salida') { for (const f of escuchasSalida) f(msg); return; }
       if (msg.tipo === 'dicho') { for (const f of escuchasDicho) f(msg); return; }
+      if (msg.tipo === 'muerte') { for (const f of escuchasMuerte) f(msg); return; }
       // (si no vale lo dicho, el motivo, para que lo vea quien habla)
       if (msg.tipo === 'error' && (msg.motivo === MOTIVO_VACIO || msg.motivo === MOTIVO_DESPACIO)) for (const f of escuchasDicho) f({ tipo: 'dicho_error', motivo: msg.motivo });
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : []) {
@@ -138,7 +141,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       // lo que lleva (no hace falta vestirlo de nuevo: solo se rehace lo que se ve encima)
       if (r.j.ponerLlevado && r.llevado !== asp.llevado) { r.llevado = asp.llevado; r.j.ponerLlevado(asp.llevado || null); }
       const desconectado = e.anim === DESCONECTADO;   // dormido en el mundo al desconectarse: tumbado, con su símbolo
-      r.j.durmiendo = e.anim === 'dormir' || desconectado;   // dormido en su cama (P4): tumbado
+      r.j.durmiendo = e.anim === 'dormir' || desconectado || e.anim === MUERTO;   // dormido en su cama (P4): tumbado; y el cuerpo de quien ha muerto
       if (desconectado && !r.simbolo && !window.__mutarDesconectado) { r.simbolo = simboloDesconectado(e.autor); escena.add(r.simbolo); }
       if (!desconectado && r.simbolo) { escena.remove(r.simbolo); r.simbolo = null; }
       if (r.simbolo) r.simbolo.position.set(e.x, e.y + 1.25, e.z);   // (por encima del cuerpo tumbado y también mientras se tumba)
@@ -157,6 +160,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     // para el panel del admin: mandar al servidor y escuchar sus respuestas ({ tipo: 'admin' })
     enviar: (m) => cli.enviar(m), escuchar: (f) => { escuchas.add(f); return () => escuchas.delete(f); },
     escucharSalida: (f) => { escuchasSalida.add(f); return () => escuchasSalida.delete(f); },
+    escucharMuerte: (f) => { escuchasMuerte.add(f); return () => escuchasMuerte.delete(f); },
     // el chat de texto: decir algo (lo comprueba y lo reparte el servidor) y escuchar lo que se dice cerca
     decir: (texto) => cli.estado === 'conectado' && cli.enviar({ tipo: 'decir', texto }),
     escucharDicho: (f) => { escuchasDicho.add(f); return () => escuchasDicho.delete(f); },

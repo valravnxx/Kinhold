@@ -135,7 +135,7 @@ import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { VistaTrozos, trozoDe, LADO_RED, RADIO_RED } from '../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../src/logica/obras_red.js';
 import { ponerZonas } from '../src/logica/construccion.js';
-import { salidaInicio } from '../src/logica/whitholm.js';
+import { salidaInicio, SALIDAS_INICIO } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
@@ -144,6 +144,9 @@ import { puestasDe, abrigo as abrigoDe } from '../src/logica/prendas.js';
 import { horaDe } from '../src/logica/cielo.js';
 import { calorEn } from '../src/logica/fuego.js';
 import { Dormidos, DESCONECTADO } from '../src/logica/dormidos.js';
+import { Cuerpos, despojar, repartir, sitiosAlrededor, necesidadesAlVolver, reaparicion, sangrePerdida, motivoNecesidades, MOTIVOS, MUERTO, DURA_CUERPO } from '../src/logica/muerte.js';
+import { RECUPERAR_SANGRE } from '../src/combate/logica.js';
+import { NADO } from '../src/logica/nado.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -177,7 +180,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {} } = {}) {
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0 } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
@@ -187,6 +190,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const archivoObjetosReg = resolve(dirname(archivo), 'objetos.jsonl');
   const archivoPosiciones = resolve(dirname(archivo), 'posiciones.json');
   const archivoNecesidades = resolve(dirname(archivo), 'necesidades.json');
+  const archivoSalidas = resolve(dirname(archivo), 'salidas.json');   // la salida que eligió cada uno (a ella vuelve al morir sin cama)
   const archivoAdmin = resolve(dirname(archivo), 'admin.jsonl');
   // lo que se dice en el chat de texto: quién, qué y dónde (para moderar: la cuenta de admin lo puede revisar)
   const archivoCharla = resolve(dirname(archivo), 'charla.jsonl');
@@ -341,7 +345,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     catch (e) { registrar(`necesidades.json no válido, se empieza de cero: ${e && e.message}`); }
   }
   let necesidadesCambiadas = false;
-  const necesidadesDe = (a) => { let n = necesidades.get(a); if (!n) { n = necesidadesNuevas(); necesidades.set(a, n); } return n; };
+  const necesidadesDe = (a) => { let n = necesidades.get(a); if (!n) { n = { ...necesidadesNuevas(), sed: sedInicial }; necesidades.set(a, n); } return n; };   // (sedInicial: solo pruebas)
   const guardarNecesidades = () => {
     if (!necesidadesCambiadas) return;
     necesidadesCambiadas = false;
@@ -375,6 +379,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     const O = terreno.origen, x = s.x - O.x, z = s.z - O.z;
     const p = { x, y: terreno.suelo(x, z), z, giro: 0 };
     posiciones.set(autor, p); posicionesCambiadas = true;
+    salidas.set(autor, s.id); guardarSalidas();
     registrar(`${autor} empieza en ${s.nombre}`);
     try { guardarPosiciones(); } catch (e) { registrar(`no se pudo guardar posiciones.json: ${e && e.message}`); }
     return { ok: true, posicion: p };
@@ -434,10 +439,100 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       }
     }
   };
+  // Morir y que te saqueen (P4; GDD, apartado 6; src/logica/muerte.js). Se muere de sed y de hambre (el tic de las
+  // necesidades le quita sangre a su luchador), en el combate (su luchador cae) o ahogado (lo dice su navegador, con
+  // { tipo: 'morir', motivo: 'ahogado' }, y el servidor mira que esté en el agua honda). Mueras como mueras: tu cuerpo
+  // queda donde caíste 1 hora (lo ven todos: una presencia «cuerpo:…» tumbada con tu aspecto) y la mitad de lo que
+  // llevabas, al azar del servidor, cae a su alrededor (cualquiera puede cogerlo); la otra mitad se rompe. Tú vuelves
+  // sano a tu cama ligada o, sin ella, a tu sitio de salida, y tu navegador lo sabe con { tipo: 'muerte', … }.
+  const cuerpos = new Cuerpos(duraCuerpo);
+  const salidas = new Map();   // autor → id de la salida que eligió (src/logica/whitholm.js, SALIDAS_INICIO)
+  if (existsSync(archivoSalidas)) {
+    try { for (const [a, id] of Object.entries(JSON.parse(readFileSync(archivoSalidas, 'utf8')))) if (salidaInicio(id)) salidas.set(a, id); }
+    catch (e) { registrar(`salidas.json no válido, se empieza de cero: ${e && e.message}`); }
+  }
+  function guardarSalidas() {
+    try { writeFileSync(archivoSalidas + '.tmp', JSON.stringify(Object.fromEntries(salidas))); reemplazar(archivoSalidas + '.tmp', archivoSalidas); }
+    catch (e) { registrar(`no se pudo guardar salidas.json: ${e && e.message}`); }
+  }
+  // su sitio de salida (en la escena); quien empezó antes de que se apuntara, la más cercana a donde murió
+  const sitioSalida = (autor, cerca) => {
+    if (!terreno) return null;
+    const O = terreno.origen;
+    let s = salidaInicio(salidas.get(autor));
+    if (!s && cerca) s = SALIDAS_INICIO.reduce((m, q) => (Math.hypot(q.x - O.x - cerca.x, q.z - O.z - cerca.z) < Math.hypot(m.x - O.x - cerca.x, m.z - O.z - cerca.z) ? q : m));
+    if (!s) s = SALIDAS_INICIO[0];
+    const x = s.x - O.x, z = s.z - O.z;
+    return { x, y: terreno.suelo(x, z), z, giro: 0 };
+  };
+  const reaparecido = new Map();   // autor → { x, z, t }: hasta que su navegador mande un estado de allí
+  const morir = (autor, motivo, ahora = Date.now()) => {
+    const p = presencia.ultimo.get(autor);
+    if (!p || p.anim === MUERTO) return null;
+    const conectado = conexionDe.has(autor), dormido = dormidos.de(autor);
+    if (objetos.soltarAlSalir(autor, ahora)) { /* la rastra que arrastraba se queda donde estaba */ }
+    // el cuerpo, con su aspecto (lo que llevaba encima no: está en el suelo)
+    const cuerpo = cuerpos.dejar(autor, p, motivo, ahora);
+    const asp = aspectos.get(autor) || { sexo: 'hombre', capas: [] };
+    aspectos.set(cuerpo.id, { ...asp, llevado: null });
+    for (const ws of clientes.keys()) enviar(ws, { tipo: 'aspecto', autor: cuerpo.id, ...aspectos.get(cuerpo.id) });
+    presencia.ultimo.set(cuerpo.id, { autor: cuerpo.id, t: reloj(), x: p.x, y: p.y, z: p.z, giro: p.giro, anim: MUERTO });
+    presencia.cambiados.add(cuerpo.id);
+    // la mitad de lo que llevaba, al suelo alrededor; la otra mitad se rompe
+    const { quedan, rotas } = repartir(despojar(objetos.invs.de(autor)), Math.random);
+    sitiosAlrededor(p.x, p.z, quedan.length).forEach((q, i) => objetos.suelo.dejar(quedan[i], q.x, q.z, ahora, autor, !!mundo.tierraDe(q.x, q.z)));
+    const entrada = { autor, tipo: 'morir', motivo, x: p.x, z: p.z, cuerpo: cuerpo.id, quedan: quedan.map(c => [c.tipo, c.n]), rotas: rotas.map(c => [c.tipo, c.n]), ok: true, ahora };
+    try { appendFileSync(archivoObjetosReg, JSON.stringify(entrada) + '\n'); } catch (e) { registrar(`no se pudo apuntar la muerte: ${e && e.message}`); }
+    // dónde vuelve: su cama ligada o su sitio de salida
+    const idCama = objetos.fab.camaDe(autor), cm = idCama ? objetos.fab.estaciones[idCama] : null;
+    const r = reaparicion({ cama: cm ? { x: cm.x, y: terreno ? terreno.suelo(cm.x, cm.z) : p.y, z: cm.z, giro: p.giro } : null, salida: sitioSalida(autor, p), porDefecto: { x: 0, y: 0, z: 0, giro: 0 } });
+    const pos = { x: r.x, y: r.y, z: r.z, giro: r.giro || 0 };
+    necesidades.set(autor, necesidadesAlVolver(necesidadesDe(autor))); necesidadesCambiadas = true;
+    // sano: un luchador nuevo (con la misma arma de combate), y vestido con lo que le queda
+    const L = combate.luchadores[autor];
+    combate.quitar(autor);
+    const N = combate.entrar(autor, { arma: L ? L.arma : undefined, x: pos.x, z: pos.z, rot: pos.giro });
+    combate.pendientes.push({ tipo: 'reinicio', autor, t: combate.ms() });
+    vestirLuchador(autor);
+    alientoAntes.delete(autor); durmiendo.delete(autor); antesNec.delete(autor);
+    posiciones.set(autor, pos); posicionesCambiadas = true;
+    if (dormido) {
+      // dormido en el mundo (desconectado) y muerto: duerme ya en su cama o en su salida, protegido
+      Object.assign(dormido, { x: pos.x, y: pos.y, z: pos.z, giro: pos.giro, hasta: ahora, protegido: true, enCama: r.enCama });
+      presenciaDormida(autor, dormido);
+      const A = combate.apartar(autor); if (A) apartados.set(autor, { L: A, hasta: Infinity });
+    } else if (conectado) {
+      presencia.anclar(autor, pos, reloj());
+      presencia.ultimo.set(autor, { autor, t: reloj(), x: pos.x, y: pos.y, z: pos.z, giro: pos.giro, anim: 'quieto' }); presencia.cambiados.add(autor);
+      combate.colocar(autor, pos.x, pos.z, pos.giro);
+      reaparecido.set(autor, { x: pos.x, z: pos.z, t: reloj() });
+      const ws = conexionDe.get(autor);
+      enviar(ws, { tipo: 'muerte', motivo, posicion: pos, enCama: r.enCama, cuerpo: { id: cuerpo.id, x: cuerpo.x, z: cuerpo.z, hasta: cuerpo.hasta } });
+      enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+      enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(autor)) });
+      repartirLlevado(autor);
+    }
+    guardarObjetos(); repartirSuelo(ahora); repartirCombate();
+    try { guardarPosiciones(); } catch (e) { registrar(`no se pudo guardar posiciones.json: ${e && e.message}`); }
+    registrar(`muere ${autor} (${motivo}): vuelve ${r.enCama ? 'a su cama' : 'a su salida'}; en su cuerpo quedan ${quedan.reduce((s, c) => s + c.n, 0)}, se rompen ${rotas.reduce((s, c) => s + c.n, 0)}`);
+    return { cuerpo, posicion: pos, enCama: r.enCama, quedan, rotas, N };
+  };
+  // los que han caído en el combate (o sin sangre por la sed o el hambre): mueren
+  const revisarMuertes = () => {
+    for (const [a, L] of Object.entries(combate.luchadores)) if (L.fuera && (conexionDe.has(a) || dormidos.esta(a))) morir(a, L.motivoFuera || 'Desangrado');
+  };
+  // los cuerpos que ya llevan su hora: se van (los demás dejan de verlos)
+  const revisarCuerpos = (ahora = Date.now()) => {
+    for (const c of cuerpos.limpiar(ahora)) {
+      presencia.quitar(c.id); aspectos.delete(c.id);
+      for (const ws of clientes.keys()) enviar(ws, { tipo: 'sale', autor: c.id });
+    }
+  };
   // el duelo con lo que llevas (7 nov): lo que le protege es la ropa que tiene puesta en su inventario del servidor
   const vestirLuchador = (autor) => combate.vestir(autor, puestasDe(objetos.invs.de(autor).lugares));
   const t0 = reloj();
-  const ponerAlDia = () => combate.avanzarHasta((reloj() - t0) / 1000);
+  let muriendo = false;   // (morir no vuelve a mirar las muertes)
+  const ponerAlDia = () => { combate.avanzarHasta((reloj() - t0) / 1000); if (!muriendo) { muriendo = true; try { revisarMuertes(); } finally { muriendo = false; } } };
   let escritas = 0;
   const repartirCombate = () => {
     const eventos = combate.sacarEventos();
@@ -512,11 +607,21 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         L.alientoMinimo = min;   // al recuperarse en el combate, no baja de aquí (src/combate/logica.js)
         if (L.cansancio < min) L.cansancio = min;
         alientoAntes.set(a, L.cansancio);
+        // con la sed o el hambre al máximo (P4; src/logica/muerte.js): pierde sangre y no la recupera; sin sangre, muere
+        // (solo quien ya está en el mundo: con su presencia y, con el terreno, su salida elegida)
+        const pierde = e && (!terreno || posiciones.has(a)) && !cuentas.sinConfirmar(a) ? sangrePerdida(n, tiemposMuerte) : 0;
+        if (pierde > 0 && !L.fuera) {
+          const sangra = L.heridas.reduce((s, h) => s + h.sangrado, 0) > 0.05;   // (si nada sangra, su luchador la recuperaría)
+          L.sangre -= (pierde + (sangra ? 0 : RECUPERAR_SANGRE)) * Math.min(dt, 10);
+          if (L.sangre <= 0) { L.sangre = 0; L.caer(motivoNecesidades(n)); }
+        }
       }
       necesidades.set(a, n);
       necesidadesCambiadas = true;
       enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(a)) });
     }
+    ponerAlDia();   // (quien se ha quedado sin sangre, muere ya)
+    revisarCuerpos();
   }, ticoNecesidades);
 
   // latido: quien no ha contestado al ping anterior (ni mandado nada) se da por ido
@@ -663,6 +768,13 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           const ad = esAdmin(autor), e = validarEstado(msg, { admin: ad }), mal = e ? terreno.posicion(e, { admin: ad }) : null;
           if (mal) return enviar(ws, { tipo: 'error', motivo: mal });
         }
+        // recién muerto, lo que su navegador mandó antes de saberlo (desde donde murió) no cuenta: hasta el primero de
+        // donde ha vuelto (o 5 s)
+        const rp = reaparecido.get(autor);
+        if (rp) {
+          if (Number.isFinite(msg.x) && Number.isFinite(msg.z) && Math.hypot(msg.x - rp.x, msg.z - rp.z) > 3 && reloj() - rp.t < 5000) return;
+          reaparecido.delete(autor);
+        }
         // recién elegida la salida, los estados que el navegador mandó desde la común antes de saberlo no cuentan (si no,
         // moverían el ancla del movimiento sin trampas otra vez allí): hasta el primero junto a la salida elegida
         const ll = recienLlegado.get(autor);
@@ -685,6 +797,17 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           enviar(ws, { tipo: 'trozos', entran, tala: objetos.talaVisible(nuevos), recoleccion: objetos.recoleccionVisible(nuevos), suelo: objetos.sueloVisible(Date.now(), vista.trozosDe(autor)), estaciones: objetos.estacionesVisibles(vista.trozosDe(autor)) });
           enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
         }
+        return;
+      }
+      if (msg && msg.tipo === 'morir') {
+        // ahogado (src/logica/nado.js: lo lleva su navegador): el servidor mira que esté en el agua honda (sin terreno, las
+        // pruebas sin mundo, se fía); otros motivos no se aceptan (la sed, el hambre y el combate los ve el servidor solo)
+        const p = presencia.ultimo.get(autor);
+        if (msg.motivo !== 'ahogado' || !p) return enviar(ws, { tipo: 'error', motivo: 'No se puede.' });
+        const hondo = terreno ? terreno.aguaEn(p.x, p.z) : Infinity;
+        if (!(hondo >= NADO.hondoNadar)) return enviar(ws, { tipo: 'error', motivo: 'Aquí no te ahogas.' });
+        ponerAlDia();
+        morir(autor, MOTIVOS.ahogado);
         return;
       }
       if (msg && msg.tipo === 'obras') return enviar(ws, { tipo: 'obras', obras: obrasEnTrozos(mundo, vista.trozosDe(autor)) });
@@ -1075,7 +1198,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
-      antesNec.delete(autor); ultimoTrago.delete(autor); durmiendo.delete(autor); tempDe.delete(autor); alientoAntes.delete(autor);
+      antesNec.delete(autor); ultimoTrago.delete(autor); reaparecido.delete(autor); durmiendo.delete(autor); tempDe.delete(autor); alientoAntes.delete(autor);
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
@@ -1107,7 +1230,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, abandono, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
     cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
@@ -1132,6 +1255,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_SALIDA=comun: los nuevos empiezan en la salida común sin elegir, solo para las pruebas de navegador
   // que buscan lo de alrededor de ella. Nunca en el servidor de verdad (ahí cada personaje nuevo elige su salida).
   const salidaComun = process.env.KINHOLD_PRUEBAS_SALIDA === 'comun';
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun });
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}`));
+  // KINHOLD_PRUEBAS_MUERTE=rapida: los nuevos llegan con la sed al máximo y se mueren de sed en 3 s (y el cuerpo se va a
+  // los 20 s), solo para la prueba de navegador de morir. Nunca en el servidor de verdad.
+  const muerteRapida = process.env.KINHOLD_PRUEBAS_MUERTE === 'rapida';
+  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 20000 } : {}) });
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}${muerteRapida ? ' · AVISO: muerte rápida de sed (KINHOLD_PRUEBAS_MUERTE=rapida), solo para pruebas' : ''}`));
 }
