@@ -232,7 +232,7 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
   const mallas = [];
   for (const tipo of Object.keys(RECOLECTABLES)) {
     const lista = puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-    for (const { geo, mat, siempre } of mods[tipo]) {
+    for (const { geo, mat, siempre } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
       const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
       lista.forEach((p, i) => { o.position.set(p.x, altura(p.x, p.z) - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
       im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : ''); grupo.add(im);
@@ -240,7 +240,7 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
     }
   }
   let ocupado = () => false;
-  const visible = (p, ahora, siempre) => (siempre || rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z);
+  const visible = (p, ahora, siempre) => (siempre ? rec.enPie(p.id, ahora) : rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z);
   function refrescar(ahora = Date.now()) {
     for (const { im, lista, matrices, siempre } of mallas) {
       lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora, siempre) ? matrices[i] : CERO));
@@ -292,8 +292,8 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
   let mallas = [], ocupado = () => false, centro = null, cambio = false, ultimo = 0;
   const cuenta = { trozos: 0, puntos: 0, pendientes: 0, msMax: 0 };
   const tapado = (p) => obstaculos.some(q => !q.arbol && (q.x - p.x) ** 2 + (q.z - p.z) ** 2 < (q.r + 0.3) ** 2);
-  // (siempre: lo que queda aunque se haya recogido, como el arbusto de las bayas)
-  const visible = (p, ahora, siempre) => (siempre || rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z) && !p.tapado;
+  // (siempre: lo que queda aunque se haya recogido, como el arbusto de las bayas, mientras no se desbroce)
+  const visible = (p, ahora, siempre) => (siempre ? rec.enPie(p.id, ahora) : rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z) && !p.tapado;
 
   function hacer(i, j) {
     const lista = recogidaTrozo(pai, altW, semilla, i, j).map(p => ({ id: p.id, tipo: p.tipo, x: Math.round((p.x - O.x) * 100) / 100, z: Math.round((p.z - O.z) * 100) / 100, giro: p.giro, zonas: p.zonas }));
@@ -320,7 +320,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     for (const p of rec.puntos) { p.tapado = tapado(p); p.y = altura(p.x, p.z); }
     for (const tipo of Object.keys(RECOLECTABLES)) {
       const lista = rec.puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-      for (const { geo, mat, siempre } of mods[tipo]) {
+      for (const { geo, mat, siempre } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
         im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : ''); im.frustumCulled = false; grupo.add(im);
@@ -360,8 +360,26 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     despejar(fn) { ocupado = fn; cambio = true; },
     cercano(x, z, dist = 1.6, ahora = Date.now()) { return cercanos(x, z, dist, ahora)[0] || null; },
     cercanos,
-    // lo recogido que manda el servidor (de todos los puntos, estén o no cerca)
-    importar(datos) { rec.importar(datos, { todo: true }); refrescar(); },
+    // lo recogido que manda el servidor (de todos los puntos, estén o no cerca). Devuelve si ha cambiado lo desbrozado
+    // de algún matorral (entonces la vegetación tiene que rehacer sus matas)
+    importar(datos) {
+      const matas = () => JSON.stringify(Object.entries(rec.estado).filter(([k]) => k.startsWith('matorral:')));
+      const antes = matas(); rec.importar(datos, { todo: true }); refrescar();
+      return matas() !== antes;
+    },
+    // Desbrozar (8 nov): los arbustos de bayas en pie a menos de dist m; y si un matorral (por su nombre) sigue en pie
+    arbustosCerca(x, z, dist = 1.6, ahora = Date.now()) {
+      return rec.puntos.filter(p => p.tipo === 'bayas' && rec.enPie(p.id, ahora) && !ocupado(p.x, p.z) && !p.tapado && Math.hypot(p.x - x, p.z - z) <= dist)
+        .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
+    },
+    mataEnPie: (id, ahora = Date.now()) => rec.enPie(id, ahora),
+    // sin servidor (las pruebas): desbrozar aquí, con lo cortado al suelo de la página; el matorral se da a conocer
+    desbrozar(invs, registro, autor, punto, x, z, suelo, ahora = Date.now()) {
+      if (punto.tipo === 'matorral') rec.anadir([{ id: punto.id, tipo: 'matorral', x: punto.x, z: punto.z }]);
+      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'desbrozar', punto: punto.id, x, z }, ahora, suelo);
+      if (r.ok) { if (almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO); refrescar(ahora); }
+      return r;
+    },
     recoger(invs, registro, autor, punto, x, z, ahora = Date.now()) {
       const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora);
       if (r.ok) { if (almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO); refrescar(ahora); }

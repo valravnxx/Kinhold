@@ -39,7 +39,7 @@ import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -264,6 +264,9 @@ if (decorado.paso) {
   decorado.enPie = (o) => talaV.enPie(o);
   decorado.alLlegar = (lista) => talaV.anadir(lista);
   decorado.alIrse = (ids) => talaV.quitar(ids);
+  // los matorrales desbrozados no se dibujan (desbrozar, 8 nov): lo que se sabe de ellos lo lleva la recolección
+  decorado.mataEnPie = (id) => recoleccion.mataEnPie(id);
+  if (decorado.rehacer) decorado.rehacer();   // (lo desbrozado que ya se sabía, sin servidor: lo guardado en el navegador)
 }
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
 const troceo = new Troceo(sueloObjetos.suelo);
@@ -277,7 +280,7 @@ const estacionesV = crearEstaciones({ raiz: escena, altura: decorado.altura, fab
 let panelFabricar = null; // se monta más abajo, con el de inventario
 const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion, estacionesV,
   alEncargos: (d) => { if (panelFabricar) panelFabricar.ponerEncargos(d); },
-  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); if ((que === 'suelo' || que === 'estaciones') && panelFabricar) panelFabricar.pintar(); } }) : null;
+  alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); if ((que === 'suelo' || que === 'estaciones') && panelFabricar) panelFabricar.pintar(); if (que === 'matas' && decorado.rehacer) decorado.rehacer(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
 // personaje del taller propio (la carpeta, en src/mundo/eleccion.js)
@@ -1526,6 +1529,9 @@ function usar() {
     if (so) { cogerDelSuelo(so); return; }
     const rc = recoleccion.cercano(pj.x, pj.z);
     if (rc) { recoger(rc); return; }
+    // junto a un matorral o un arbusto de bayas (ya sin bayas), con un hacha o una lasca encima, se desbroza (8 nov)
+    const db = desbrozableCercano();
+    if (db && conQueDesbroza(inventario())) { empezarDesbroce(db); return; }
   }
   if (!it) {
     // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
@@ -1581,6 +1587,8 @@ function opcionesUsar() {
     // los juncos se cortan y el barro se cava (con su herramienta: src/logica/recoleccion.js); lo demás, se recoge
     const verbo = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verbo(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
+    const db = desbrozableCercano();
+    if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
   }
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
@@ -2071,6 +2079,7 @@ const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
 function golpeTala() {
   const a = estado.talando;
   if (a.troceo) { golpeTroceo(a.troceo); return; }
+  if (a.desbroce) { golpeDesbroce(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
     objetosRed.mandar({ tipo: 'talar', arbol: a.id, x: pj.x, z: pj.z, ax: a.x, az: a.z, edad: a.edad || edadDeEscala(a.escala) }, (r) => {
@@ -2092,6 +2101,39 @@ function avisoTala(a, r) {
   const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);
   const txt = menudo && menudo.tipo === 'vara' ? '¡El árbol cae! Deja {tronco} y {n} varas.' : '¡El árbol cae! Deja {tronco} y {n} ramas.';
   mostrarAviso(tr(txt, { tronco: tr(CATALOGO[tronco.tipo].nombre).toLowerCase(), n: menudo ? menudo.n : 0 }));
+}
+
+// Desbrozar (valravnx, 8 nov; src/logica/recoleccion.js): el matorral (de la vegetación) o el arbusto de bayas más
+// cercano, en la planta baja. Se dan unos golpes (más con la lasca que con el hacha: GOLPES_DESBROCE) y, al último, el
+// servidor lo quita y deja las ramas (y a veces una vara) en el suelo donde estaba.
+function desbrozableCercano() {
+  if (pj.k !== 0) return null;
+  const m = decorado.matasCerca ? decorado.matasCerca(pj.x, pj.z, 1.6)[0] : null;
+  const b = recoleccion.arbustosCerca ? recoleccion.arbustosCerca(pj.x, pj.z, 1.6)[0] : null;
+  const d = (o) => (o ? Math.hypot(o.x - pj.x, o.z - pj.z) : Infinity);
+  const o = d(m) <= d(b) ? m : b;
+  return o ? { id: o.id, tipo: o === m ? 'matorral' : 'bayas', x: o.x, z: o.z } : null;
+}
+function empezarDesbroce(o) {
+  const con = conQueDesbroza(inventario());
+  if (!con) { mostrarAviso(tr(QUE_PIDE.desbrozar), true); return; }
+  estado.talando = { desbroce: o, x: o.x, z: o.z, golpes: GOLPES_DESBROCE[con], dados: 0 }; estado.golpeEn = 0.45;
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(tr('Desbrozas: {c}.', { c: tr(RECOLECTABLES[o.tipo].nombre).toLowerCase() }));
+}
+function golpeDesbroce(a) {
+  estado.golpeEn = RITMO_TALA;
+  if (++a.dados < a.golpes) return;
+  estado.talando = null;
+  const o = a.desbroce;
+  const fin = (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    mostrarAviso(r.extra ? tr('Desbrozado: caen {n} ramas y una vara.', { n: r.cantidad }) : tr('Desbrozado: caen {n} ramas.', { n: r.cantidad }));
+  };
+  if (objetosRed) { objetosRed.mandar({ tipo: 'desbrozar', punto: o.id, x: pj.x, z: pj.z, px: o.x, pz: o.z, clase: o.tipo }, fin); return; }
+  const r = recoleccion.desbrozar(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z, sueloObjetos.suelo);
+  if (r.ok) { sueloObjetos.guardar(); sueloObjetos.refrescar(); if (o.tipo === 'matorral' && decorado.rehacer) decorado.rehacer(); }
+  fin(r);
 }
 
 // Tronzar y partir (src/logica/troceo.js): el tronco del suelo más cercano que se trocea, en la planta baja.
@@ -2332,7 +2374,7 @@ function paso() {
   talaV.paso(dt); // el árbol que cae y los que vuelven a crecer
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
-  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z) || !!miRastra())));
+  $('btnUsar').classList.toggle('activo', !!it || !!arbolCercano() || !!obraCercana() || (pj.k === 0 && (!!recoleccion.cercano(pj.x, pj.z) || !!sueloObjetos.cercano(pj.x, pj.z) || !!miRastra() || (!!desbrozableCercano() && !!conQueDesbroza(inventario())))));
 
   moverGente(dt);
   moverFuegos();
@@ -2771,6 +2813,7 @@ window.__kinhold = {
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
   beber, aguaAlLado, comer,
+  desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado

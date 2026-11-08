@@ -52,8 +52,8 @@ export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, r
   function ponerRecoleccion(datos, juntar = true) {
     const e = estadoDe(datos); if (!e) return;
     estadoRec = juntar ? { ...estadoRec, ...e } : { ...e };
-    recoleccion.importar({ ...datos, estado: estadoRec });
-    alCambiar('recoleccion');
+    const matas = recoleccion.importar({ ...datos, estado: estadoRec });
+    alCambiar(matas ? 'matas' : 'recoleccion');   // (matas: ha cambiado lo desbrozado de algún matorral)
   }
   function ponerEstaciones(lista) {
     if (!estacionesV || !Array.isArray(lista)) return;

@@ -9,7 +9,8 @@
 // va al río a por barro, juncos y yesca, se hace un taladro de fuego, y levanta y enciende una hoguera en la orilla;
 // levanta una pila de piedras y, con las varas del árbol, un almiar en su tierra, y guarda en ellos.
 // Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas; lejos del agua no puede beber, y en la
-// orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come.
+// orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come. Y desbroza un matorral
+// con el hacha de piedra (8 nov) y se lleva sus ramas.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -34,6 +35,7 @@ import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacion.js';
 import { idArbol } from '../src/logica/tala.js';
+import { idMata } from '../src/logica/recoleccion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
@@ -623,6 +625,36 @@ try {
     r = await J.objeto({ tipo: 'comer', objeto: 'bayas' });
     await pausa(300);
     comprobar('se come una: el hambre baja y le queda una menos', r.ok && J.nec.hambre < hambreAntes && J.cuantos('bayas') === n0 - 1, `${r.motivo || ''} hambre ${hambreAntes} → ${J.nec.hambre}, bayas ${n0} → ${J.cuantos('bayas')}`);
+  }
+
+  // P3, desbrozar (valravnx, 8 nov): vuelve a coger el hacha de piedra que dejó en el suelo, va al matorral más cercano
+  // (de los de la vegetación, como los ve el navegador), lo desbroza y se lleva las ramas que deja en el suelo
+  {
+    const so = (t) => s.objetos.suelo.objetos.filter(o => o.cosa.tipo === t);
+    // (las bayas que le quedan, al suelo: una mano para el hacha y otra para las ramas)
+    for (const l of ['mano:der', 'mano:izq']) if (J.inv.lugares[l]) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+    const hacha = cerca(so('hacha_piedra'), J.pos)[0];
+    comprobar('su hacha de piedra sigue en el suelo donde la dejó', !!hacha);
+    if (hacha) { await J.andar(hacha.x + 0.3, hacha.z); await J.objeto({ tipo: 'coger_suelo', objeto: hacha.id, x: J.pos.x, z: J.pos.z }); }
+    comprobar('y la vuelve a coger', J.cuantos('hacha_piedra') === 1);
+    const R = 60, v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + J.pos.x - R, z0: O.z + J.pos.z - R, x1: O.x + J.pos.x + R, z1: O.z + J.pos.z + R }, { x: O.x + J.pos.x, z: O.z + J.pos.z, r: R });
+    const matas = cerca(v.matas.map(e => ({ x: r2(e.x - O.x), z: r2(e.z - O.z) })).filter(e => Math.hypot(e.x, e.z - 2) >= 3), J.pos);
+    comprobar('hay un matorral a menos de 60 m', matas.length > 0, `${matas.length}`);
+    const m = matas[0], id = m && idMata(m.x, m.z);
+    if (m) {
+      await J.andar(m.x + 0.6, m.z);
+      const r0 = so('rama').filter(o => Math.hypot(o.x - m.x, o.z - m.z) < 1).reduce((n, o) => n + o.cosa.n, 0);
+      let r = await J.objeto({ tipo: 'desbrozar', punto: id, x: J.pos.x, z: J.pos.z, px: m.x, pz: m.z, clase: 'matorral' });
+      const caidas = so('rama').filter(o => Math.hypot(o.x - m.x, o.z - m.z) < 1);
+      const nr = caidas.reduce((n, o) => n + o.cosa.n, 0) - r0;
+      comprobar('desbroza el matorral con el hacha de piedra: caen de 2 a 4 ramas donde estaba', r.ok && nr >= 2 && nr <= 4, r.motivo || `${nr} ramas`);
+      comprobar('y el matorral queda quitado (en lo que reparte el servidor)', !!s.objetos.recoleccionVisible().estado[id]?.quitado);
+      r = await J.objeto({ tipo: 'desbrozar', punto: id, x: J.pos.x, z: J.pos.z, px: m.x, pz: m.z, clase: 'matorral' });
+      comprobar('otra vez, no: hasta que rebrote', !r.ok, r.motivo);
+      const antes = J.cuantos('rama');
+      for (const o of caidas) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J.pos.x, z: J.pos.z });
+      comprobar('y se lleva las ramas', J.cuantos('rama') >= antes + nr, `${antes} → ${J.cuantos('rama')}`);
+    }
   }
 
   // P4, las necesidades: a estas alturas del día, con todo lo que ha andado y trabajado, ya tiene algo de sed y de

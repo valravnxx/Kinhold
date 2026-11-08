@@ -13,6 +13,7 @@ import { ROCAS_COLOR, lin } from './color_suelo.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
 export { TAM_ADULTO };
 import { idArbol } from '../logica/tala.js';
+import { idMata } from '../logica/recoleccion.js';
 import { alturaMundo } from '../logica/whitholm.js';
 import { aplicar, marcasEn, caja } from '../logica/nivelado.js';
 
@@ -64,7 +65,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     }
     if (conHierba && !t.hierba) {
       const fuera = (l) => l.map(esc).filter(e => lejos(e, CLARO));
-      t.hierba = { hierba: fuera(v.hierba), flores: fuera(v.flores), matas: fuera(v.matas).map(e => ({ ...e, ob: { x: e.x, z: e.z, r: 0.55 * e.tam, mata: true, veg: true } })) };
+      t.hierba = { hierba: fuera(v.hierba), flores: fuera(v.flores), matas: fuera(v.matas).map(e => ({ ...e, id: idMata(e.x, e.z), ob: { x: e.x, z: e.z, r: 0.55 * e.tam, mata: true, veg: true } })) };
       const todo = [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas];
       for (const e of todo) e.yb = e.y;
       alNivel(todo, cajaTrozo(i, j));
@@ -132,7 +133,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
 
   // Las mallas de ahora, alrededor de P (escena): se hacen enteras y se cambian de golpe por las de antes.
   let mallas = [], vivas = [], deArboles = [], centro = null, ocupadoUlt = null, cuenta = null, tapan = new Set();
-  const api = { enPie: () => true, alLlegar: null, alIrse: null };
+  const api = { enPie: () => true, mataEnPie: () => true, alLlegar: null, alIrse: null };   // (mataEnPie(id): si no está desbrozada)
   const cero = new THREE.Matrix4().makeScale(0, 0, 0);
   function poner(P) {
     const nuevas = [], nuevasMallas = [];
@@ -145,7 +146,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       if (t.hierba) {
         for (const e of t.hierba.hierba) if (dist(e) <= H) hierba.push(e);
         for (const e of t.hierba.flores) if (dist(e) <= H) flores.push(e);
-        for (const e of t.hierba.matas) if (dist(e) <= H) matas.push(e);
+        for (const e of t.hierba.matas) if (dist(e) <= H && api.mataEnPie(e.id)) matas.push(e);
       }
     }
     // árboles: si hay más de los que aguanta el aparato, se quitan los más lejanos (no al azar: lo de cerca no cambia)
@@ -252,7 +253,15 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     tapan = ahora;
     return ahora.size;
   }
-  return Object.defineProperties(api, Object.getOwnPropertyDescriptors({ raiz, obstaculos, altura: mundoJ.altura, destapar, paso, nivelar,
+  // Las matas en pie a menos de d m de (x, z), de la más cercana a la más lejana (desbrozar, 8 nov); y rehacer las
+  // mallas donde se estaba (cuando se desbroza una o rebrota).
+  const matasCerca = (x, z, d = 1.6) => {
+    const r = [];
+    for (const t of trozos.values()) if (t.hierba) for (const e of t.hierba.matas) if (Math.hypot(e.x - x, e.z - z) <= d && api.mataEnPie(e.id) && !(e.ob && e.ob.oculto)) r.push(e);
+    return r.sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
+  };
+  const rehacer = () => { if (centro) poner(centro); };
+  return Object.defineProperties(api, Object.getOwnPropertyDescriptors({ raiz, obstaculos, altura: mundoJ.altura, destapar, paso, nivelar, matasCerca, rehacer,
     despejar: (ocupado) => { ocupadoUlt = ocupado; return despejarMallas(mallas, ocupado); },
     get cuenta() { return cuenta; }, get tapan() { return tapan.size; }, get centro() { return centro; },
     get pendientes() { return pendientes.length; }, get msMax() { return msMax; }, set msMax(v) { msMax = v; } }));
