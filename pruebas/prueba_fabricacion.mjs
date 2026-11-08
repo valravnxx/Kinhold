@@ -312,6 +312,13 @@ console.log('Depositar en las estaciones y volver a coger');
   const lleno = Inventario.inicial(); lleno.lugares['mano:der'] = { tipo: 'silex', n: 1 }; lleno.lugares['mano:izq'] = { tipo: 'fibra', n: 1 };
   r = fab.retirar('blas', pt, 'piedra', 3, { x: 0, z: 0 }, lleno);
   comprobar('si no te cabe, no se coge y sigue en la estación', !r.ok && fab.estaciones[pt].deposito.piedra === DEPOSITO_MAX - 2, r.motivo);
+  // valravnx, 8 nov: con más de lo que cabe, se coge lo que cabe y el resto se queda (antes, todo o nada: bloqueado)
+  const casi = Inventario.inicial(); casi.lugares['mano:izq'] = { tipo: 'fibra', n: 1 };
+  const cabeP = casi.cabenCuantos('piedra', 99), antesP = fab.estaciones[pt].deposito.piedra;
+  r = fab.retirar('blas', pt, 'piedra', undefined, { x: 0, z: 0 }, casi);
+  comprobar(`si no cabe todo, coge lo que cabe (${cabeP} de ${antesP}) y el resto sigue en la estación`,
+    r.ok && cabeP >= 1 && cabeP < antesP && casi.cuantos('piedra') === cabeP && fab.estaciones[pt].deposito.piedra === antesP - cabeP && r.noCabia === antesP - cabeP, r.motivo);
+  fab.estaciones[pt].deposito.piedra = antesP;
   r = fab.retirar('ana', pt, 'rama', undefined, { x: 0, z: 0 }, inv);
   comprobar('sin cantidad, todo lo de ese tipo; y el tipo sale de la lista', r.ok && !('rama' in fab.estaciones[pt].deposito), r.motivo);
   comprobar('cuentasEstacion dice lo que falta', igual(cuentasEstacion({ piedra: 1, silex: 2 }, { piedra: 4 }).faltan, { silex: 2 }));

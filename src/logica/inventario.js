@@ -404,6 +404,17 @@ export class Inventario {
     return { ok: true, donde };
   }
 
+  // Cuántas unidades de un tipo te caben, hasta n (lo prueba con meterDonde y lo deshace: mismas reglas).
+  cabenCuantos(tipo, n) {
+    if (!this.cat[tipo] || !Number.isInteger(n) || n < 1) return 0;
+    const antes = this.exportarJugador();
+    const cabe = k => { const r = this.meterDonde(tipo, k); if (r.ok) this.restaurar(antes); return r.ok; };
+    if (cabe(n)) return n;
+    let lo = 0, hi = n; // cabe lo, no cabe hi
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (cabe(m)) lo = m; else hi = m; }
+    return lo;
+  }
+
   // Cuántas unidades de un tipo lleva encima (en todos los huecos, dentro de los contenedores también).
   cuantos(tipo) {
     let t = 0;
