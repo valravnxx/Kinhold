@@ -10,14 +10,19 @@
 // (su «anim»), no de lo que corre de verdad; MUTAR=3: rendido sin llegar al máximo (el servidor no recorta). Las tres
 // deben FALLAR. MUTAR=4: se bebe en cualquier sitio (sin mirar si hay agua); MUTAR=5: se come sin gastar lo que llevas. Tienen que FALLAR.
 // MUTAR=6: dormir no descansa más que estar quieto: tiene que FALLAR.
+// El frío (8 nov): lo que pide el sitio (bioma, noche, ropa, techo y fuego) y, con el servidor y el terreno, de noche y
+// lejos del fuego sube y junto a una hoguera encendida baja. MUTAR=7: el servidor no mira el fuego; MUTAR=8: no mira
+// la noche. Tienen que FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe } from '../src/logica/necesidades.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
+import { abrigo } from '../src/logica/prendas.js';
+import { msDeHora } from '../src/logica/cielo.js';
 
 const MUTAR = process.env.MUTAR;
 let ok = 0, mal = 0;
@@ -83,16 +88,28 @@ console.log('Beber del río (la lógica)');
   const rio = (x, z) => (x > 10 ? 1 : null);   // agua de x = 10 en adelante
   comprobar('con el agua a 1 m, hay agua cerca; a 2,5 m, también; a 4 m, no', hayAguaCerca(rio, 9, 0) && hayAguaCerca(rio, 7.6, 0) && !hayAguaCerca(rio, 6, 0));
   comprobar('dentro del agua, también', hayAguaCerca(rio, 12, 0));
+  // el frío que pide el sitio (frioDelSitio)
+  const lino = abrigo(['camisa_lino', 'pantalon_lino']), lana = abrigo(['camisa_lino', 'pantalon_lino', 'tunica_lana']);
+  comprobar('la noche: de 20 a 4 entera, de día nada y al anochecer a medias', nocheDe(23) === 1 && nocheDe(2) === 1 && nocheDe(12) === 0 && nocheDe(19) === 0.5 && nocheDe(5) === 0.5);
+  const dia = frioDelSitio({ T: 9, noche: 0, abrigo: lino }), noche = frioDelSitio({ T: 9, noche: 1, abrigo: lino });
+  comprobar('en la salida (9 °C), con lo del principio: de día sin frío y de noche sí (sale el aviso)', dia === 0 && noche >= AVISO, `${dia} / ${noche}`);
+  comprobar('cada prenda abriga: con una túnica de lana encima, de noche apenas', frioDelSitio({ T: 9, noche: 1, abrigo: lana }) < noche && frioDelSitio({ T: 9, noche: 1, abrigo: lana }) < AVISO, `lino ${lino}, lana ${lana}`);
+  comprobar('desnudo, más frío que vestido', frioDelSitio({ T: 9, noche: 1, abrigo: 0 }) > noche);
+  comprobar('el bioma: en la taiga (1,5 °C) hace más frío, también de día', frioDelSitio({ T: 1.5, noche: 0, abrigo: lino }) > 0 && frioDelSitio({ T: 1.5, noche: 1, abrigo: lino }) > noche);
+  comprobar('bajo techo, la mitad', frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true }) === noche / 2);
+  comprobar('junto al fuego (a 2 m o menos) no hay frío, y a 3 m algo', frioDelSitio({ T: 9, noche: 1, abrigo: lino, calor: 0.5 }) === 0 && frioDelSitio({ T: 9, noche: 1, abrigo: lino, calor: 0.25 }) > 0);
   comprobar(`un trago baja la sed ${TRAGO} y van uno cada ${ESPERA_TRAGO / 1000} s`, saciar({ ...nuevas(), sed: 70 }, 'sed', TRAGO).sed === 40 && ESPERA_TRAGO >= 1000);
 }
 
 console.log('Con el servidor de verdad');
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
-if (['1', '2', '4', '5'].includes(MUTAR)) {
+if (['1', '2', '4', '5', '7', '8'].includes(MUTAR)) {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('necesidades.set(a, avanzarNecesidades(', 'necesidades.set(a, ((n) => n)(')
     : MUTAR === '2' ? fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;")
     : MUTAR === '4' ? fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)')
+    : MUTAR === '7' ? fuente.replace('calor: calorEn(cerca, e.x, e.z, ahora)', 'calor: 0')
+    : MUTAR === '8' ? fuente.replace('noche: nocheDe(horaDe(horaMundo()).hora)', 'noche: 0')
     : fuente.replace('else r = inv.gastar(tipo, 1);', 'else r = { ok: true };');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_necesidades.mjs');
@@ -218,7 +235,31 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     comprobar('pasado el rato, otro trago', r.ok && r.datos.sed < 70 - TRAGO, JSON.stringify(r.datos || r.motivo));
     c.ws.close();
   } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
-  finally { if (srv2) await srv2.cerrar(); rmSync(dir2, { recursive: true, force: true }); if (copia) rmSync(copia, { force: true }); }
+  finally { await pausa(300); if (srv2) await srv2.cerrar(); }
+
+  // el frío (8 nov): de noche (la hora del cielo, puesta por la prueba) y lejos del fuego sube; junto a una hoguera
+  // encendida baja. La hoguera se pone a mano en el servidor: levantarla y encenderla lo juega el recorrido.
+  console.log('El frío, con el servidor y el terreno');
+  const dir3 = mkdtempSync(join(tmpdir(), 'kinhold-frio-'));
+  let srv3 = null;
+  try {
+    const noche = msDeHora(0);
+    srv3 = crearServidor({ puerto: 0, archivo: join(dir3, 'mundo.jsonl'), terreno: T, altas: { origen: 1e6, total: 1e6, espera: 0 }, limiteMovimiento: false, salidaComun: true, ticoNecesidades: 250, horaMundo: () => noche });
+    const puerto = await srv3.listo, c = await cliente(puerto), yo = c.bienvenida.autor;
+    const p = seco || { x: 0, z: 4 };
+    const estarAhi = async (x, z, ms) => { for (let t = 0; t < ms; t += 250) { c.mandar({ tipo: 'estado', x, y: T.suelo(x, z), z, giro: 0, anim: 'quieto' }); await pausa(250); } };
+    await estarAhi(p.x, p.z, 500);
+    srv3.necesidades.set(yo, { ...nuevas(), frio: 20 });
+    await estarAhi(p.x, p.z, 3000);
+    const f1 = srv3.necesidades.get(yo).frio;
+    comprobar('de noche, sin fuego y con lo del principio, el frío sube', f1 > 20.3, f1.toFixed(2));
+    srv3.objetos.fab.estaciones.prueba_hoguera = { id: 'prueba_hoguera', tipo: 'hoguera', x: p.x + 1, z: p.z, autor: yo, cola: [], deposito: {}, fuego: { hasta: Date.now() + 600000, combustible: 0, cenizas: false } };
+    await estarAhi(p.x, p.z, 3000);
+    const f2 = srv3.necesidades.get(yo).frio;
+    comprobar('a 1 m de una hoguera encendida, baja', f2 < f1 - 0.3, `${f1.toFixed(2)} → ${f2.toFixed(2)}`);
+    c.ws.close();
+  } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
+  finally { await pausa(300); if (srv3) await srv3.cerrar(); await pausa(300); rmSync(dir2, { recursive: true, force: true }); rmSync(dir3, { recursive: true, force: true }); if (copia) rmSync(copia, { force: true }); }
 }
 
 console.log(`\n${ok} correctas, ${mal} fallan`);

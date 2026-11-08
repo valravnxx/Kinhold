@@ -13,8 +13,8 @@
 // Decisiones provisionales (registro de la demo y diario; los números, para ajustar probando):
 //   - el hambre llega al máximo en 90 minutos reales sin comer (medio día de juego: dos comidas por día como poco) y la
 //     sed en 60;
-//   - el frío va hacia lo que pide el sitio (frioObjetivo: 0 de día, más de noche, según la ropa y el fuego) y tarda
-//     unos 10 minutos en llegar; quién lo pide lo trae la tarea del frío (hasta entonces, el servidor pide 0);
+//   - el frío va hacia lo que pide el sitio (frioObjetivo) y tarda unos 10 minutos en llegar; lo que pide el sitio,
+//     frioDelSitio (más abajo, 8 nov);
 //   - el cansancio: correr (más de 4 m/s) 0,5 por segundo, con carga suelta en las manos o al hombro más; cada golpe de
 //     hacha 1,5, cada rato de obra 2, fabricar 0,5, recoger 0,3, desbrozar 2 (los golpes de una vez), cada golpe de mazo a una roca 1,5; quieto baja 0,4 por segundo y andando 0,1;
 //     durmiendo en tu cama ligada (8 nov), 1,5 por segundo;
@@ -130,4 +130,32 @@ export function redondear(n) {
   const r = {};
   for (const k of NECESIDADES) r[k] = Math.round(n[k] * 100) / 100;
   return r;
+}
+
+// El frío que pide el sitio (P4, 8 nov; GDD, apartado 6, y documento de sistemas, apartado 10: «según bioma, estación,
+// noche, lluvia y ropa»). Decisiones provisionales (registro de la demo y diario; los números, para ajustar probando):
+//   - el bioma, por la temperatura media del sitio a su altura (T, °C: la del paisaje, src/logica/paisaje.js, sitio):
+//     4 puntos por cada grado bajo 16 °C, hasta 60 (en la salida, unos 9 °C: 28; en la taiga, unos 58);
+//   - la noche suma 50 (de 20 a 4 entera; de 18 a 20 y de 4 a 6, poco a poco: nocheDe);
+//   - la ropa quita 4 por cada punto de abrigo de lo puesto (src/logica/prendas.js, abrigo: la camisa y el pantalón de
+//     lino del principio, 7, quitan 28): con lo del principio, de día no hay frío en la salida y de noche sí (50, sale
+//     el aviso); con una túnica de lana encima, apenas;
+//   - bajo techo (el de una construcción terminada), la mitad;
+//   - el fuego (la hoguera y el hogar: src/logica/fuego.js, calorEn, de 1 junto al fuego a 0 a 4 m): a 2 m o menos no
+//     hay frío, y de ahí a 4 m vuelve poco a poco;
+//   - la estación y la lluvia aún no cuentan (no hay estaciones ni tiempo en el mundo: llegan con P11).
+export const FRIO = { templado: 16, porGrado: 4, bioma: 60, noche: 50, abrigo: 4, techo: 0.5 };
+export function nocheDe(hora) {
+  const h = ((hora % 24) + 24) % 24;
+  if (h >= 20 || h < 4) return 1;
+  if (h >= 18) return (h - 18) / 2;
+  if (h < 6) return (6 - h) / 2;
+  return 0;
+}
+export function frioDelSitio({ T = FRIO.templado, noche = 0, abrigo = 0, techo = false, calor = 0 } = {}) {
+  let f = Math.min(FRIO.bioma, Math.max(0, (FRIO.templado - T) * FRIO.porGrado)) + FRIO.noche * Math.min(1, Math.max(0, noche));
+  f -= FRIO.abrigo * Math.max(0, abrigo);
+  if (techo) f *= FRIO.techo;
+  f *= 1 - Math.min(1, Math.max(0, 2 * calor));
+  return recorta(f);
 }

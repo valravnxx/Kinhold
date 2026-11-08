@@ -12,7 +12,8 @@
 // Desde P4, sus necesidades: llega a 0 y la sed y el hambre le suben solas; lejos del agua no puede beber, y en la
 // orilla del río bebe con las manos, trago a trago; coge las bayas de un arbusto y se las come. Y desbroza un matorral
 // con el hacha de piedra (8 nov) y se lleva sus ramas. Y su cama ligada (8 nov): un refugio de ramas en su tierra, que
-// liga y en el que duerme, y luego una cama de juncos en su casa, que liga.
+// liga y en el que duerme, y luego una cama de juncos en su casa, que liga. Y el frío (8 nov): de noche, lejos de la
+// hoguera, le sube, y junto a ella le baja.
 // Falla si algo no se puede hacer así.
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
@@ -45,6 +46,7 @@ import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.js';
 import { crearServidor } from '../servidor/servidor.mjs';
+import { msDeHora } from '../src/logica/cielo.js';
 
 const MUTAR = process.env.MUTAR === '1';
 
@@ -71,6 +73,9 @@ const TODAVIA_NO = {   // (8 nov) lo que el recorrido no hace, con el porqué
   'la resina': 'los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs',
 };   // (antes, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
 
+// La hora del cielo del servidor (P4, el frío: de noche sube): mediodía todo el recorrido, para que no dependa de la
+// hora a la que se pase, salvo en el paso de la hoguera, que se hace de noche (como adelantar la hora: no le da nada).
+let horaCielo = 12;
 const T = terrenoWhitholm();
 if (MUTAR) { const punto = T.punto.bind(T); T.punto = (id, x, z) => (id.startsWith('piedra:') ? null : punto(id, x, z)); }
 const O = T.origen;
@@ -139,7 +144,7 @@ const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));
 let s = null;
 try {
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, ticoNecesidades: 1000 / RELOJ });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
+  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, ticoNecesidades: 1000 / RELOJ, horaMundo: () => msDeHora(horaCielo) });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
   const puerto = await s.listo, J = await cliente(puerto);
   console.log('0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey');
   comprobar('llega sin posición: aún no ha elegido', J.bienvenida.posicion === null, JSON.stringify(J.bienvenida.posicion));
@@ -529,6 +534,19 @@ try {
     r = lr ? await J.objeto({ tipo: 'depositar_estacion', estacion: hog, de: lr, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no lleva ramas' };
     const rl = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hog, x: J.pos.x, z: J.pos.z });
     comprobar('deja una rama en la hoguera y la endurece al fuego (la lanza)', r.ok && rl.ok, `${r.motivo || ''} ${rl.motivo || ''}`);
+    // P4, el frío (8 nov): se hace de noche; lejos del fuego, con lo del principio, le sube el frío; junto a la
+    // hoguera encendida, le baja (lo lleva el servidor: la noche, su bioma, su ropa y el calor del fuego)
+    {
+      horaCielo = 0;
+      const lejos = [0, 1, 2, 3, 4, 5, 6, 7].map(i => ({ x: fogon.x + Math.cos(i * Math.PI / 4) * 9, z: fogon.z + Math.sin(i * Math.PI / 4) * 9 })).find(p => !T.aguaEn(p.x, p.z));
+      await J.andar(lejos.x, lejos.z);
+      const f0 = J.nec.frio; await pausa(20000); const f1 = J.nec.frio;
+      comprobar('de noche, a 9 m de la hoguera y con la camisa y el pantalón de lino, le sube el frío', f1 > f0 + 1, `${f0} → ${f1}`);
+      await J.andar(fogon.x, fogon.z);
+      const f2 = J.nec.frio; await pausa(20000); const f3 = J.nec.frio;
+      comprobar('junto a la hoguera encendida, le baja', H().fuego.hasta > Date.now() && f3 < f2 - 0.3, `${f2} → ${f3}`);
+      horaCielo = 12;
+    }
     // se apaga sola: la prueba adelanta la hora a la que se apaga (como lo que se fabrica), en vez de esperarla
     H().fuego.hasta = Date.now() - 1;
     const apagada = s.objetos.estacionesVisibles().find(e => e.id === hog);

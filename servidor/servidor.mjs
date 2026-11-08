@@ -139,8 +139,10 @@ import { salidaInicio } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
 import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, hayAguaCerca, TRAGO, ESPERA_TRAGO, NUTRE, comestible } from '../src/logica/necesidades.js';
-import { puestasDe } from '../src/logica/prendas.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, hayAguaCerca, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe } from '../src/logica/necesidades.js';
+import { puestasDe, abrigo as abrigoDe } from '../src/logica/prendas.js';
+import { horaDe } from '../src/logica/cielo.js';
+import { calorEn } from '../src/logica/fuego.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -174,7 +176,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000 } = {}) {
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now() } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
@@ -439,6 +441,21 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // cuando su presencia deja de decir «dormir» (pasado 1,5 s, lo que tarda en llegar), al alejarse de la cama (más de
   // 2,5 m) o al irse; mientras duerme, el cansancio baja deprisa (src/logica/necesidades.js)
   const durmiendo = new Map();
+  // El frío que pide el sitio de cada uno (P4, 8 nov; src/logica/necesidades.js, frioDelSitio): la temperatura de su
+  // bioma (la del paisaje, guardada mientras no se aleje 20 m), la noche (la hora del cielo: horaMundo, la real; las
+  // pruebas la cambian), lo que lleva puesto, si está bajo techo y el calor de los fuegos encendidos a su lado. Sin
+  // terreno (las pruebas sin mundo) no hay clima: no pide frío.
+  const tempDe = new Map();   // autor → { x, z, T }
+  const frioPedido = (a, e, inv) => {
+    if (!terreno || !e) return 0;
+    let c = tempDe.get(a);
+    if (!c || Math.hypot(c.x - e.x, c.z - e.z) > 20) {
+      const xm = e.x + terreno.origen.x, zm = e.z + terreno.origen.z, st = terreno.paisaje.sitio(xm, zm, terreno.alt(xm, zm));
+      c = { x: e.x, z: e.z, T: st && Number.isFinite(st.T) ? st.T : 10 }; tempDe.set(a, c);
+    }
+    const ahora = Date.now(), cerca = Object.values(objetos.fab.estaciones).filter(s => s.fuego && Math.abs(s.x - e.x) < 5 && Math.abs(s.z - e.z) < 5);
+    return frioDelSitio({ T: c.T, noche: nocheDe(horaDe(horaMundo()).hora), abrigo: abrigoDe(puestasDe(inv.lugares)), techo: mundo.bajoTecho(e.x, e.z), calor: calorEn(cerca, e.x, e.z, ahora) });
+  };
   const ticNecesidades = setInterval(() => {
     const t = reloj();
     for (const [ws, a] of clientes) {
@@ -450,7 +467,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (!(dt > 0)) continue;
       const inv = objetos.invs.de(a), d = durmiendo.get(a);
       if (d && (!e || Math.hypot(e.x - d.x, e.z - d.z) > 2.5 || (t - d.t > 1500 && e.anim !== 'dormir'))) durmiendo.delete(a);
-      necesidades.set(a, avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: 0, durmiendo: durmiendo.has(a) }));
+      necesidades.set(a, avanzarNecesidades(necesidadesDe(a), Math.min(dt, 10), { velocidad, kilos: inv.kilosSueltos(), frioObjetivo: frioPedido(a, e, inv), durmiendo: durmiendo.has(a) }));
       necesidadesCambiadas = true;
       enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(a)) });
     }
@@ -1008,7 +1025,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       conexionDe.delete(autor);
       modosAdmin.delete(autor);   // los modos del admin se apagan al irse
       apuntarPosicion(autor); guardarPosiciones();
-      antesNec.delete(autor); ultimoTrago.delete(autor); durmiendo.delete(autor);
+      antesNec.delete(autor); ultimoTrago.delete(autor); durmiendo.delete(autor); tempDe.delete(autor);
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
