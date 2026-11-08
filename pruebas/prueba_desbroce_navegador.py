@@ -124,6 +124,7 @@ def recorrido(pg, nombre, pref):
     if b:
         ir(pg, b)
         VIS = f"(id) => {{ const k = {K}, rec = k.recoleccion, lista = rec.puntos.filter(p => p.tipo === 'bayas'), i = lista.findIndex(p => p.id === id), m = new k.camara.matrixWorld.constructor(); const r = {{}}; rec.grupo.children.filter(c => c.name.startsWith('recoger_bayas')).forEach(c => {{ c.getMatrixAt(i, m); r[c.name] = Math.abs(m.determinant()) > 1e-9; }}); return r; }}"
+        if not pg.evaluate(f"{K}.inventario.cuantos('hacha_piedra')"): pg.evaluate(f"{K}.inventario.coger('hacha_piedra', 1, 'mano:der')")   # (al recargar no se guardó)
         antes = pg.evaluate(VIS, b['id'])
         pg.evaluate(f"(b) => {K}.empezarDesbroce({{ ...b, tipo: 'bayas' }})", b)
         try: pg.wait_for_function(f'!({K}.estado.talando && {K}.estado.talando.desbroce)', timeout=150000)   # (sin tarjeta gráfica, en PC, cada golpe tarda unos segundos)
