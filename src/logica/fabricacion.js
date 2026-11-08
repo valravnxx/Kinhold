@@ -139,12 +139,14 @@ export const RECETAS = {
   // el taladro de fuego de arco (7 nov; el documento de sistemas lo nombra para encender la hoguera sin decir de qué se
   // hace): una rama da el arco y el huso, otra la tabla, y el cordel tensa el arco. Provisional (diario y registro)
   taladro_fuego:     r('Taladro de fuego', 'manos', 'taladro_fuego', { rama: 2, cordel: 1 }, 20),
-  honda:             r('Honda', 'manos', 'honda', { cordel: 2, piel: 1 }, 30),
+  // (la honda y el odre piden piel, que sale de la caza: no hay animales en este tramo. Fuera del tramo hasta entonces
+  // (tarea «Origen de la piel…», 8 nov): no salen en el panel ni se pueden hacer; vuelven con la caza)
+  honda:             { ...r('Honda', 'manos', 'honda', { cordel: 2, piel: 1 }, 30), fuera: 'caza' },
   lenero:            r('Leñero', 'manos', 'lenero', { rama: 4, cordel: 2 }, 30),
   rastra:            r('Rastra', 'manos', 'rastra', { rama: 5, cordel: 2 }, 30),
   fardo:             r('Fardo atado', 'manos', 'fardo', { cordel: 2 }, 15),
   arpon:             r('Arpón', 'manos', 'arpon', { rama: 1, lasca_silex: 1, cordel: 1 }, 30),
-  odre:              r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30),
+  odre:              { ...r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30), fuera: 'caza' },
   // el mazo de piedra (valravnx, 8 nov): una piedra gorda atada al extremo de una rama con cordel, con las manos; rompe
   // las rocas medianas del mundo (src/logica/recoleccion.js). Tiempo, provisional (como el hacha, algo menos: no se talla)
   mazo_piedra:       r('Mazo de piedra', 'manos', 'mazo_piedra', { piedra: 1, rama: 1, cordel: 2 }, 45),
@@ -344,7 +346,7 @@ export class Fabricacion {
   // Cada una dice de dónde sale cada material (de: { tipo: { encima, suelo } }) y en qué estación se haría.
   lista(pos, inv, suelo, ahora) {
     const cerca = sueloCerca(suelo, pos, ahora);
-    return Object.entries(RECETAS).map(([receta, rc]) => {
+    return Object.entries(RECETAS).filter(([, rc]) => !rc.fuera).map(([receta, rc]) => {   // (lo de fuera del tramo, no)
       const e = rc.uso === 'manos' ? null : this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
       const { de, faltan: f } = e ? cuentasEstacion(rc.gasta, e.deposito) : cuentas(rc.gasta, inv, cerca);
       const apagada = !!(e && ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora));
@@ -597,6 +599,7 @@ export class Fabricacion {
   fabricar(autor, receta, estacion, pos, inv, suelo, ahora) {
     if (!tiene(RECETAS, receta)) return { ok: false, motivo: 'Esa receta no existe.' };
     const rc = RECETAS[receta];
+    if (rc.fuera) return { ok: false, motivo: 'Eso aún no se puede hacer: pide piel, y aún no hay caza.' };
     let cola, max = COLA_MANOS, enEst = null;
     if (rc.uso === 'manos') {
       if (estacion) return { ok: false, motivo: 'Eso se hace con las manos.' };

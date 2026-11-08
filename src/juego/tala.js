@@ -97,7 +97,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     for (const o of lista) {
       if (!o.arbol) continue;
       const id = o.id || idArbol(o.x, o.z); o.id = id; porId.set(id, o);
-      nuevos.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala) });
+      nuevos.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala), ...(o.especie ? { especie: o.especie } : {}) });
     }
     tala.anadir(nuevos);
     for (const o of lista) if (o.id && !tala.enPie(o.id, Date.now()) && !tocones.has(o.id)) esconder(o);
@@ -123,6 +123,13 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
       if (r.ok && r.cae) { sueloObjetos.guardar(); sueloObjetos.esconder(r.objetos); esconder(o); caer(o, r.dir, r.objetos); }
       return r;
     },
+    // sin servidor (las pruebas): descortezar o sangrar el árbol o aquí (src/logica/tala.js), a lo que llevas
+    usarArbol(invs, registro, autor, o, tipo, x, z, ahora = Date.now()) {
+      const r = ejecutarTala(tala, invs, sueloObjetos.suelo, registro, { autor, tipo, arbol: o.id, x, z }, ahora);
+      if (r.ok) guardarlo();
+      return r;
+    },
+    usos: (o, ahora = Date.now()) => tala.usos(o.id, ahora),
     paso(dt) {
       for (let i = cayendo.length - 1; i >= 0; i--) {
         const c = cayendo[i]; c.t += dt;

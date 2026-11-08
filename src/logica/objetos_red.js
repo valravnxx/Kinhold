@@ -13,6 +13,8 @@
 //   { tipo: 'soltar_suelo', de, cantidad?, x, z } — al suelo, a tus pies
 //   { tipo: 'coger_suelo', objeto, x, z, a?, cantidad? } — del suelo a lo que llevas
 //   { tipo: 'talar', arbol, x, z, ax, az, edad }  — un golpe de hacha a un árbol (src/logica/tala.js); lo que deja cae al suelo
+//   { tipo: 'descortezar' | 'sangrar', arbol, x, z, ax, az, edad, especie } — la corteza y la resina del árbol en pie
+//     (src/logica/tala.js), a lo que llevas
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
 //   { tipo: 'romper', punto, x, z, px, pz, clase: 'roca', tam } — un golpe de mazo a una roca del mundo (ídem); al último,
@@ -79,7 +81,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -123,7 +125,7 @@ export class ObjetosServidor {
       if (!p) r = this.anotar(a, { ok: false, motivo: 'El servidor aún no sabe dónde estás.' }, ahora);
       else if (!num(a.x) || !num(a.z)) r = this.anotar(a, { ok: false, motivo: 'Datos no válidos.' }, ahora);
       else if (Math.hypot(a.x - p.x, a.z - p.z) > TOLERANCIA) r = this.anotar(a, { ok: false, motivo: 'No estás ahí.' }, ahora);
-      else if (a.tipo === 'talar') {
+      else if (a.tipo === 'talar' || a.tipo === 'descortezar' || a.tipo === 'sangrar') {
         const fallo = this.conocerArbol(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarTala(this.tala, this.invs, this.suelo, this.registro, a, ahora);
         suelo = !!(r.ok && r.cae);
@@ -177,7 +179,7 @@ export class ObjetosServidor {
     if (!txt(a.arbol) || !num(a.ax) || !num(a.az) || !Object.hasOwn(DA, a.edad)) return 'Datos no válidos.';
     if (idArbol(a.ax, a.az) !== a.arbol) return 'Ahí no hay ningún árbol.';
     if (Math.hypot(a.ax - p.x, a.az - p.z) > ALCANCE_TALA + TOLERANCIA) return 'Está demasiado lejos.';
-    this.tala.anadir([{ id: a.arbol, x: Math.round(a.ax * 100) / 100, z: Math.round(a.az * 100) / 100, edad: a.edad }]);
+    this.tala.anadir([{ id: a.arbol, x: Math.round(a.ax * 100) / 100, z: Math.round(a.az * 100) / 100, edad: a.edad, ...(txt(a.especie) && a.especie.length <= 16 ? { especie: a.especie } : {}) }]);
     return null;
   }
   // Lo mismo con un punto de recogida: su clase (ramas, piedra…) y su sitio.
@@ -284,7 +286,7 @@ export class ObjetosServidor {
     let arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
     // con el terreno, solo los que de verdad están en el mundo, y como son en él (lo guardado antes lo decía el navegador)
     if (this.terreno) arboles = arboles.map(a => this.terreno.arbol(a.id, a.x, a.z)).filter(Boolean);
-    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
+    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad, ...(txt(a.especie) ? { especie: a.especie } : {}) }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
     this.troceo.importar(datos.troceo, ahora);
     let puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
     if (this.terreno) puntos = puntos.map(q => this.terreno.punto(q.id, q.x, q.z)).filter(Boolean);

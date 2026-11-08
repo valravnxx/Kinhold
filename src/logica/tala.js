@@ -33,6 +33,18 @@
 //  - Sin boca (golpes de lados opuestos, dos que talan enfrentados): cuesta abajo si el suelo baja un 12 % o más
 //    (PENDIENTE_CAIDA, medido a 1,5 m a cada lado del tronco); en llano, hacia donde se inclina el árbol: un lado fijo
 //    por árbol, de su nombre (inclinacionDe), el mismo en el navegador y en el servidor.
+//
+// Y lo que da el árbol en pie (tarea «Origen de la piel, el mimbre, la resina y la corteza», 8 nov; documento de
+// sistemas, apartado 3):
+//   Corteza — árbol en pie o tronco — cuchillo, hacha — descortezar — 1–2 corteza (M) — «—» (una vez)
+//   Resina  — coníferas en pie      — cuchillo        — sangrar (tarda horas reales) — 1 resina (P) — repetible
+// Decisiones provisionales (en el registro y en el diario):
+//  - Se descorteza el árbol en pie (no el tronco del suelo): una vez por árbol, hasta que se tala y vuelve a crecer.
+//    Basta con llevar encima la herramienta (la lasca de sílex vale de cuchillo), como los juncos.
+//  - Coníferas: el abeto y el pino. Sangrar es hacerle un corte; a las 4 h reales la resina está lista y se coge con
+//    la mano (1); al cogerla, el corte vuelve a sangrar y a las 4 h hay otra. Un árbol a medio sangrar no cambia nada
+//    al talarlo (se pierde lo que tenía).
+//  - A 1,8 m del tronco como mucho (como al talar).
 import { CATALOGO } from './inventario.js';
 
 const DIA = 24 * 3600 * 1000;
@@ -46,6 +58,11 @@ export const DA = {
   joven: { tronco: 'tronco_delgado', menudo: 'vara', ramas: [2, 4], largo: 2.6, vuelve: 3 * SEMANA },
   adulto: { tronco: 'tronco_largo', menudo: 'rama', ramas: [6, 9], largo: 4.5, vuelve: 6 * SEMANA },
 };
+export const DESCORTEZAR_CON = ['lasca_silex', 'cuchillo', 'hacha_piedra', 'hacha_hierro', 'hacha_mano'];
+export const SANGRAR_CON = ['lasca_silex', 'cuchillo'];
+export const CORTEZA = [1, 2];
+export const CONIFERAS = new Set(['abeto', 'pino']);
+export const RESINA_TARDA = 4 * 3600 * 1000;   // ms (4 h reales)
 export const PARTE_BOCA = 1 / 3;         // la boca, el primer tercio de los golpes
 export const COHERENCIA_BOCA = 0.7;     // de 0 (golpes de todos lados) a 1 (todos del mismo)
 export const PENDIENTE_CAIDA = 0.12;    // desde esta cuesta, sin boca, cae cuesta abajo
@@ -165,6 +182,50 @@ export class Tala {
     return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, dir: redondo(dir), por, deja, vuelve: ahora + d.vuelve };
   }
 
+  // Lo que se le puede hacer al árbol id en pie: { descortezar, sangrar, resina: 'lista' | 'sangrando' | null }.
+  usos(id, ahora) {
+    const a = this.porId.get(id), e = this.estado[id] || {};
+    if (!a || !this.enPie(id, ahora)) return { descortezar: false, sangrar: false, resina: null };
+    const conifera = CONIFERAS.has(a.especie);
+    const resina = !conifera || !e.resina ? null : ahora >= e.resina ? 'lista' : 'sangrando';
+    return { descortezar: !e.desc, sangrar: conifera && !e.resina, resina };
+  }
+  // Descortezar el árbol id en pie estando en (x, z): de 1 a 2 cortezas a lo que llevas.
+  descortezar(inv, id, x, z, ahora) {
+    const a = this.porId.get(id);
+    if (!a) return { ok: false, motivo: 'Ahí no hay ningún árbol.' };
+    if (!this.enPie(id, ahora)) return { ok: false, motivo: 'Ese árbol ya está talado: solo queda el tocón.' };
+    if (Math.hypot(a.x - x, a.z - z) > ALCANCE_TALA) return { ok: false, motivo: 'Está demasiado lejos.' };
+    if (!DESCORTEZAR_CON.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: 'Necesitas un cuchillo, una lasca de sílex o un hacha para descortezarlo.' };
+    const e = this.estado[id] || {};
+    if (e.desc) return { ok: false, motivo: 'Ese árbol ya está descortezado.' };
+    const n = CORTEZA[0] + Math.floor(hash(numTexto(a.id), e.veces || 0, 17) * (CORTEZA[1] - CORTEZA[0] + 1));
+    const r = inv.meterDonde('corteza', n);
+    if (!r.ok) return r;
+    this.estado[id] = { ...e, golpes: e.golpes || 0, parte: e.parte || 0, veces: e.veces || 0, desc: true };
+    return { ok: true, objeto: 'corteza', cantidad: n, donde: r.donde };
+  }
+  // Sangrar una conífera (hacerle el corte) o, si ya está lista, coger su resina (y vuelve a sangrar).
+  sangrar(inv, id, x, z, ahora) {
+    const a = this.porId.get(id);
+    if (!a) return { ok: false, motivo: 'Ahí no hay ningún árbol.' };
+    if (!this.enPie(id, ahora)) return { ok: false, motivo: 'Ese árbol ya está talado: solo queda el tocón.' };
+    if (!CONIFERAS.has(a.especie)) return { ok: false, motivo: 'Solo los pinos y los abetos dan resina.' };
+    if (Math.hypot(a.x - x, a.z - z) > ALCANCE_TALA) return { ok: false, motivo: 'Está demasiado lejos.' };
+    const e = this.estado[id] || {};
+    const base = { ...e, golpes: e.golpes || 0, parte: e.parte || 0, veces: e.veces || 0 };
+    if (e.resina && ahora < e.resina) return { ok: false, motivo: 'La resina aún no ha salido: tarda unas horas.', lista: e.resina };
+    if (e.resina) {   // lista: se coge con la mano
+      const r = inv.meterDonde('resina', 1);
+      if (!r.ok) return r;
+      this.estado[id] = { ...base, resina: ahora + RESINA_TARDA };
+      return { ok: true, objeto: 'resina', cantidad: 1, donde: r.donde, lista: this.estado[id].resina };
+    }
+    if (!SANGRAR_CON.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: 'Necesitas un cuchillo o una lasca de sílex para sangrarlo.' };
+    this.estado[id] = { ...base, resina: ahora + RESINA_TARDA };
+    return { ok: true, objeto: null, cantidad: 0, lista: this.estado[id].resina };
+  }
+
   exportar() { return { version: VERSION_TALA, estado: Object.fromEntries(Object.entries(this.estado).map(([k, v]) => [k, { ...v }])) }; }
   // Lo guardado de árboles que aún no están cargados se queda (llegan al acercarse el jugador); lo que no tiene forma
   // de árbol (el id) se descarta.
@@ -179,7 +240,9 @@ export class Tala {
         veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : 0 };
       // la boca (guardada desde el 7 nov; lo de antes, sin ella: cae por la cuesta o por su inclinación)
       if (num(e.bp) && e.bp > 0 && num(e.bx) && num(e.bz)) { x.bp = Math.min(PARTE_BOCA, e.bp); x.bx = e.bx; x.bz = e.bz; }
-      if (num(e.vuelve)) { Object.assign(x, { caido: num(e.caido) ? e.caido : e.vuelve, vuelve: e.vuelve, dir: num(e.dir) ? e.dir : 0, golpes: 0, parte: 0 }); delete x.bx; delete x.bz; delete x.bp; }
+      if (e.desc === true) x.desc = true;            // descortezado (8 nov)
+      if (num(e.resina) && e.resina > 0) x.resina = e.resina;   // sangrando: cuándo está lista su resina
+      if (num(e.vuelve)) { Object.assign(x, { caido: num(e.caido) ? e.caido : e.vuelve, vuelve: e.vuelve, dir: num(e.dir) ? e.dir : 0, golpes: 0, parte: 0 }); delete x.bx; delete x.bz; delete x.bp; delete x.desc; delete x.resina; }
       this.estado[id] = x;
     }
     return this;
@@ -216,9 +279,11 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
   if (!a || typeof a !== 'object') r = { ok: false, motivo: 'Acción no válida.' };
   else if (!txt(a.autor)) r = { ok: false, motivo: 'Acción sin autor.' };
-  else if (a.tipo !== 'talar') r = { ok: false, motivo: 'Acción desconocida.' };
+  else if (a.tipo !== 'talar' && a.tipo !== 'descortezar' && a.tipo !== 'sangrar') r = { ok: false, motivo: 'Acción desconocida.' };
   else if (!txt(a.arbol) || !Number.isFinite(a.x) || !Number.isFinite(a.z)) r = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
+  else if (a.tipo === 'descortezar') r = tala.descortezar(invs.de(a.autor), a.arbol, a.x, a.z, ahora);
+  else if (a.tipo === 'sangrar') r = tala.sangrar(invs.de(a.autor), a.arbol, a.x, a.z, ahora);
   else {
     r = tala.golpe(invs.de(a.autor), a.arbol, a.x, a.z, ahora, a.autor);
     // el tronco y las varas, tumbados a lo largo de donde cayó (se dibujan a lo largo de x); las ramas, como caen
@@ -226,7 +291,8 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   }
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
-  if (r.ok) e.resultado = r.cae ? { cae: true, deja: r.deja.map(o => ({ tipo: o.tipo, n: o.n })) } : { golpes: r.golpes };
+  if (r.ok && a.tipo !== 'talar') e.resultado = { objeto: r.objeto, cantidad: r.cantidad };
+  else if (r.ok) e.resultado = r.cae ? { cae: true, deja: r.deja.map(o => ({ tipo: o.tipo, n: o.n })) } : { golpes: r.golpes };
   return r;
 }
 

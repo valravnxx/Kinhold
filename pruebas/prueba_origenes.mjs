@@ -15,7 +15,7 @@ import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 import { OBJETO_DE_MATERIAL } from '../src/logica/inventario.js';
 import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.js';
-import { HACHAS, DA } from '../src/logica/tala.js';
+import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON } from '../src/logica/tala.js';
 import { TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
 
@@ -36,12 +36,9 @@ const CASA_HUMILDE = {
 // Lo que aún no tiene de dónde salir: por qué, y la tarea viva del roadmap que se lo dará (un trozo de su nombre).
 // (la paja no está aquí: sale del cereal, que no hay en este tramo, y lo que la pide se esconde del menú como lo de
 // después: src/logica/piezas.js, MATERIALES_POSTERIORES)
-const PENDIENTES = {
-  piel: ['de la caza o del despiece (no hay animales aún)', 'Origen de la piel, el mimbre, la resina y la corteza'],
-  mimbre: ['de las mimbreras de la ribera (no las hay aún)', 'Origen de la piel, el mimbre, la resina y la corteza'],
-  resina: ['de los pinos, sangrados (aún no)', 'Origen de la piel, el mimbre, la resina y la corteza'],
-  corteza: ['de los árboles (aún no)', 'Origen de la piel, el mimbre, la resina y la corteza'],
-};
+// (8 nov: vacío. La piel, el mimbre, la resina y la corteza ya salen del mundo o lo que los pide está fuera del tramo:
+// la honda y el odre, con la caza; src/logica/fabricacion.js, «fuera»)
+const PENDIENTES = {};
 
 // ---- lo que se puede tener, partiendo de nada ----
 const hay = new Set(), como = {};   // tipo del catálogo → cómo se consigue (la primera vez)
@@ -56,9 +53,13 @@ for (let nuevo = true; nuevo;) {
     if ((r.con === 'manos' || tieneAlguna(HERRAMIENTAS_RECOGER[r.con] || [])) && poner(r.da, `se recoge (${k})`)) nuevo = true;
   for (const [edad, d] of Object.entries(DA))
     if (tieneAlguna(Object.keys(HACHAS))) { if (poner(d.tronco, `talar un árbol ${edad}`)) nuevo = true; if (poner(d.menudo, `talar un árbol ${edad}`)) nuevo = true; }
+  // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto
+  if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
+  if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
   for (const [t, d] of Object.entries(TROCEO)) if (hay.has(t) && tieneAlguna(Object.keys(HACHAS)) && poner(d.da, `${d.accion} un ${t}`)) nuevo = true;
   for (const [e, d] of Object.entries(ESTACIONES)) if (estacionHecha(e) && poner('est_' + e, 'se levanta')) nuevo = true;
   for (const [k, r] of Object.entries(RECETAS)) {
+    if (r.fuera) continue;   // (fuera del tramo: no se enseña ni se hace)
     const sitio = r.uso === 'manos' || (USOS[r.uso]?.estaciones || []).some(e => hay.has('est_' + e));
     if (sitio && Object.keys(r.gasta).every(t => hay.has(t)) && poner(r.da, `se fabrica (${k})`)) nuevo = true;
   }
@@ -83,7 +84,7 @@ const anotar = (quien, lista) => { for (const m of lista) { if (!falta.has(m)) f
 for (const [k, d] of Object.entries(PIEZAS)) if (!d.oculta && enEsteTramo(d)) anotar(`pieza ${k}`, sePuede(d.coste));
 for (const [k, d] of Object.entries(DECORACION)) if (enEsteTramo(d)) anotar(`mueble ${k}`, sePuede(d.coste));
 for (const [k, d] of Object.entries(ESTACIONES)) anotar(`estación ${k}`, [...Object.keys(d.coste), ...(d.requiere || [])].filter(t => !hay.has(t)));
-for (const [k, r] of Object.entries(RECETAS)) anotar(`receta ${k}`, Object.keys(r.gasta).filter(t => !hay.has(t)));
+for (const [k, r] of Object.entries(RECETAS)) if (!r.fuera) anotar(`receta ${k}`, Object.keys(r.gasta).filter(t => !hay.has(t)));
 console.log('\nLo que el juego enseña ya');
 for (const [m, quien] of falta) {
   const p = PENDIENTES[m];

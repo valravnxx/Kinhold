@@ -36,7 +36,7 @@ export const RITMOS = {
   quieto: 0.4, andando: 0.1,
   dormir: 1.5,                  // durmiendo en tu cama ligada, por segundo: rendido del todo, unos 70 s (provisional)
 };
-export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5 };
+export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
 
 const recorta = (v) => Math.min(MAXIMO, Math.max(0, v));
 export const nuevas = () => ({ hambre: 0, sed: 0, frio: 0, cansancio: 0 });

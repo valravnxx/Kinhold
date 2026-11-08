@@ -52,7 +52,7 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
       const x = e.x - O.x, z = e.z - O.z;
       if (Math.hypot(x, z - 2) < CLARO_ARBOLES) continue;
       const id = idArbol(x, z);
-      m.set(id, { id, x: r2(x), z: r2(z), edad: e.edad });
+      m.set(id, { id, x: r2(x), z: r2(z), edad: e.edad, especie: e.especie });
     }
     return m;
   });

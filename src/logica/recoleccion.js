@@ -72,6 +72,9 @@ export const RECOLECTABLES = {
   ortiga:       { nombre: 'Ortigas', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   hierba_larga: { nombre: 'Hierba larga', donde: ['claro', 'ribera'], con: 'manos', accion: 'arrancar', da: 'fibra', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   juncos:       { nombre: 'Juncos', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'junco', min: 1, max: 3, vuelve: TIEMPOS.estacion },
+  // (8 nov) el mimbre: las mimbreras (sauces de mimbre) de la ribera; se cortan sus varas con un cuchillo (la lasca
+  // vale) y la cepa se queda: rebrota en una estación (documento de sistemas, apartado 3)
+  mimbre:       { nombre: 'Mimbrera', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'mimbre', min: 1, max: 1, vuelve: TIEMPOS.estacion },
   barro:        { nombre: 'Barro de la orilla', donde: ['rio', 'ribera'], con: 'cavar', accion: 'cavar', da: 'barro', min: 1, max: 1, vuelve: 0 },
   yesquero:     { nombre: 'Hongos yesqueros', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'yesca', min: 1, max: 2, vuelve: TIEMPOS.estacion },
   // (P4) lo que se come sin cazar (documento de sistemas, apartado 3: «Bayas, setas, frutos secos — bosque (según

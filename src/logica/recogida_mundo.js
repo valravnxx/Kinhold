@@ -44,8 +44,10 @@ export const DENSIDAD_RECOGIDA = {
   // multiplica por su densidad) y en los claros, y setas en el suelo del bosque. También después, en las celdas vacías.
   bayas:        { bosque: 0.03, claro: 0.012 },
   setas:        { bosque: 0.04 },
+  // (8 nov) las mimbreras de la ribera y de la orilla, también después (lo de antes, en su sitio)
+  mimbre:       { ribera: 0.035, rio: 0.05 },
 };
-const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas'];
+const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre'];
 // Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
 // al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
 // la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo

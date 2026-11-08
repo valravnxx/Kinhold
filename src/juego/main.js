@@ -46,7 +46,7 @@ import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
-import { hachaEnMano, HACHAS, edadDeEscala } from '../logica/tala.js';
+import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
@@ -1573,7 +1573,14 @@ function usar() {
     // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
     const a = arbolCercano();
     if (a) {
-      if (!hachaEnMano(inventario())) { mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true); return; }
+      if (!hachaEnMano(inventario())) {
+        // sin hacha en la mano, lo que da el árbol en pie (8 nov): su resina si ya está, la corteza o sangrarlo
+        const u = talaV.usos(a), inv = inventario(), con = l => l.some(t => inv.cuantos(t) > 0);
+        if (u.resina === 'lista') { usarArbol(a, 'sangrar'); return; }
+        if (u.descortezar && con(DESCORTEZAR_CON)) { usarArbol(a, 'descortezar'); return; }
+        if (u.sangrar && con(SANGRAR_CON)) { usarArbol(a, 'sangrar'); return; }
+        mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true); return;
+      }
       empezarTala(a); return;
     }
     if (aguaAlLado()) { beber(); return; }   // junto al agua, sin otra cosa que usar, se bebe
@@ -1622,6 +1629,12 @@ function opcionesUsar() {
   }
   const a = arbolCercano();
   if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
+  if (a) {   // lo que da el árbol en pie (8 nov): la corteza y, de los pinos y los abetos, la resina
+    const u = talaV.usos(a);
+    if (u.descortezar) ops.push({ texto: tr('Descortezar el árbol'), pos: a, alto: 1.4, hacer: () => usarArbol(a, 'descortezar') });
+    if (u.sangrar) ops.push({ texto: tr('Sangrar el árbol (resina)'), pos: a, alto: 1.2, hacer: () => usarArbol(a, 'sangrar') });
+    if (u.resina === 'lista') ops.push({ texto: tr('Coger la resina'), pos: a, alto: 1.2, hacer: () => usarArbol(a, 'sangrar') });
+  }
   if (pj.k === 0) {
     const tronco = troncoCercano();
     const rq = rocaCercana();
@@ -1785,6 +1798,20 @@ function recoger(punto) {
   panelInventario.pintar(); pintarLlevas(); vestir(); // lo recogido sale en el panel o en la línea de lo que llevas
   pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
   mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+}
+
+// Descortezar un árbol en pie o sangrarlo (y coger su resina cuando sale): src/logica/tala.js, por el servidor.
+function usarArbol(a, tipo) {
+  pj.rot = Math.atan2(a.x - pj.x, a.z - pj.z);
+  const fin = (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    if (r.objeto) mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }));
+    else mostrarAviso(tr('Le haces un corte al árbol: la resina saldrá en unas horas.'));
+  };
+  if (objetosRed) { objetosRed.mandar({ tipo, arbol: a.id, x: pj.x, z: pj.z, ax: a.x, az: a.z, edad: a.edad || edadDeEscala(a.escala), especie: a.especie }, fin); return; }
+  const r = talaV.usarArbol(inventarios, registroAcciones, AUTOR_LOCAL, a, tipo, pj.x, pj.z);
+  if (r.ok) { if (almacen) guardarInventarios(almacen, inventarios); panelInventario.pintar(); pintarLlevas(); vestir(); }
+  fin(r);
 }
 
 // Coger del suelo lo que se soltó (todo, o de una pila lo que quepa).
@@ -2926,6 +2953,7 @@ window.__kinhold = {
   beber, aguaAlLado, comer,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)
+  usarArbol,   // la corteza y la resina (8 nov)
   pintarTodoInventario,   // (pruebas: lo que llevas, otra vez en el panel y puesto, tras cambiarlo a mano)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),

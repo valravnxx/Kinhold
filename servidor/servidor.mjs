@@ -944,6 +944,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           for (const [otro, a] of clientes) if (a === autor || (k && vista.tiene(a, k))) hacer(otro, solo);
         };
         if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }));
+        // lo descortezado y lo sangrado (8 nov): lo de ese árbol, a quien lo tiene alrededor
+        if (r.ok && (msg.accion.tipo === 'descortezar' || msg.accion.tipo === 'sangrar')) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo) }));
         if (r.suelo) repartirSuelo(ahora);
         if (r.estaciones) repartirEstaciones();
         if (r.ok && (msg.accion.tipo === 'recoger' || msg.accion.tipo === 'desbrozar' || r.rota)) aSuTrozo(objetos.sitioPunto(msg.accion.punto), (otro, solo) => enviar(otro, { tipo: 'recoleccion', estado: objetos.recoleccionVisible(solo) }));

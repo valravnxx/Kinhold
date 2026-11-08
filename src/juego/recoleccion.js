@@ -37,6 +37,7 @@ const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO 
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
 // pardo y pie crema.
+const CEPA = 0x5e5040, CEPA_OSC = 0x4a3f33, VARA_MIMBRE = 0x7a4a32, VARA_MIMBRE_ARR = 0x8a7a3e, HOJA_SAUCE = 0x7d8f5a, HOJA_SAUCE_OSC = 0x627548;
 const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0xa2643a, SETA_OSC = 0x7e4c2a, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
@@ -195,11 +196,32 @@ export function modelosRecoleccion() {
     for (let k = 0; k < 9; k++) L.add(new THREE.IcosahedronGeometry(0.045, 0), 0x6b5a3e, Math.cos(k * 0.7) * 0.28, 0.005, Math.sin(k * 0.7) * 0.28, { y: k }, { escala: new THREE.Vector3(1.4, 0.3, 1), plano: true, tex: 'piedra' }); // hojarasca
   }, { rangoSuelo: 0.12 });
 
+  // (8 nov) la mimbrera: la cepa baja y nudosa de un sauce de mimbre, que se queda (siempre), y el manojo de varas
+  // largas, rectas y finas que salen de ella abiertas en abanico (1,6–2,3 m), pardo rojizas abajo y verde oliva arriba,
+  // con hojas estrechas y largas en el tercio de arriba; al cortarlas se van las varas
+  const cepa = geoLote(L => {
+    L.add(cil(0.16, 0.22, 0.32, 9), CEPA, 0, 0.16, 0, null, { tex: 'corteza' });
+    for (let k = 0; k < 6; k++) { const a = k * 1.05 + 0.3; L.add(new THREE.IcosahedronGeometry(0.08, 1), CEPA_OSC, Math.cos(a) * 0.15, 0.3 + (k % 2) * 0.03, Math.sin(a) * 0.15, null, { escala: new THREE.Vector3(1, 0.6, 1), tex: 'corteza', sinSuelo: true }); }   // los muñones de cortas de otros años
+    for (let k = 0; k < 5; k++) { const a = k * 1.3; L.add(cil(0.025, 0.045, 0.32, 5), CEPA, Math.cos(a) * 0.22, 0.04, Math.sin(a) * 0.22, new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeRotationZ(-1.25)), { tex: 'corteza' }); }   // raíces
+  }, { rangoSuelo: 0.4 });
+  const hojaSauce = (() => { const g = new THREE.PlaneGeometry(0.018, 0.11); g.translate(0, 0.055, 0); return g; })();
+  const varas = geoLote(L => {
+    for (let k = 0; k < 26; k++) {
+      const a = k * 2.399, d = 0.03 + (k % 5) * 0.025, h = 1.6 + ((k * 7) % 8) * 0.09, abre = 0.12 + (k % 4) * 0.05;
+      const pts = []; for (let i = 0; i <= 5; i++) { const t = i / 5; pts.push(new THREE.Vector3(Math.cos(a) * (d + abre * h * t * t), 0.3 + t * h, Math.sin(a) * (d + abre * h * t * t))); }
+      L.add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.0075, 4), k % 3 ? VARA_MIMBRE : VARA_MIMBRE_ARR, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+      for (let n = 0; n < 7; n++) {   // las hojas, en el tercio de arriba, apuntando hacia arriba y afuera
+        const t = 0.6 + n * 0.06, p = pts[0].clone().lerp(pts[5], t); p.x = Math.cos(a) * (d + abre * h * t * t); p.z = Math.sin(a) * (d + abre * h * t * t);
+        L.add(hojaSauce, n % 2 ? HOJA_SAUCE : HOJA_SAUCE_OSC, p.x, p.y, p.z, new THREE.Matrix4().makeRotationY(-a + n * 1.7).multiply(new THREE.Matrix4().makeRotationX(0.55 + (n % 3) * 0.12)), { sinSuelo: true });
+      }
+    }
+  }, { doble: true, rangoSuelo: 0.3 });
+
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
   // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo
   return (cache = { ramas, piedra, silex, ortiga, hierba_larga: hierbaLarga, juncos, barro, yesquero, pena,
-    bayas: [...arbusto.map(m => ({ ...m, siempre: true })), ...bayas], setas });
+    bayas: [...arbusto.map(m => ({ ...m, siempre: true })), ...bayas], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas] });
 }
 
 const CERO = new THREE.Matrix4().makeScale(0, 0, 0);
