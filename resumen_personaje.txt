@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2484 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2991 KB
+
+== Construir demo única
+      3129 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4219 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2888 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2479 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3001 KB
+dist/kinhold_trozos.html 2493 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: personaje
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'rubio', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'quaternius', 'capas': {'mujer': ['vestido'], 'hombre': ['tunica']}, 'tintes': {'hombre': {'prendas': {'camisa': 'natural', 'calzas': 'natural', 'tunica': 'pardo', 'vestido': 'natural', 'gambeson': 'natural', 'sobreveste': 'rubia', 'manto': 'natural', 'capucha': 'natural', 'toca': 'natural', 'zapatos': 'natural', 'botas': 'natural'}, 'blason': {'dibujo': 'liso', 'color': 'negro'}}}, 'hechuras': {'hombre': {'camisa': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'calzas': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'tunica': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'vestido': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'gambeson': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'sobreveste': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'manto': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'capucha': {'material': 'lana', 'corte': 'largo', 'tejido': 'liso'}, 'toca': {'material': 'lino', 'corte': 'largo', 'tejido': 'liso'}, 'cota': {'material': 'malla', 'corte': 'largo', 'tejido': 'liso'}}}, 'aspecto': {}}
+  FALLA sin errores en consola (movil) — Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found)
+
+Resultado: 2 fallos: sin errores en consola (pc), sin errores en consola (movil)
+!! FALLA: python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html /tmp/kinhold_capturas/personaje
+
+HAY FALLOS
+tardó 2199 s
