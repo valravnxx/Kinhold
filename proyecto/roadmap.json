@@ -1859,6 +1859,132 @@
    "num": "G"
   },
   {
+   "id": "fauna",
+   "num": "P8",
+   "nombre": "Animales del mundo y el caballo",
+   "jugable": "Corzos, ciervos y jabalíes que pastan y huyen, para cazar y despiezar; caballos salvajes que se doman, se montan a pelo, se atan y comen y beben.",
+   "estado": "pendiente",
+   "tareas": [
+    {
+     "nombre": "Prueba del arte de los animales (valravnx, 8 nov: «probar las dos»): un caballo y un corzo de un paquete libre CC0 adaptado al estilo v5 y otros hechos en el taller con Blender, con sus animaciones de andar y correr; capturas de cerca en PC y móvil al lado de la prueba de estilo v5, y valravnx elige el método",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Los animales en el servidor, sobre las liebres de P4: manadas que salen del mundo por su semilla en sus biomas, por trozos; el servidor las mueve (pastar, andar, huir de quien se acerca) y las reparte a quien las tiene alrededor; todos las ven igual",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Corzos, ciervos y jabalíes en bosques y lindes, con su modelo y sus animaciones (el método elegido); el jabalí acorralado embiste",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Cazar corzos, ciervos y jabalíes con la lanza endurecida de P4: lo herido huye y se debilita; el servidor decide cada lanzazo, con su autor",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Despiezar la caza mayor con la lasca de sílex (documento de sistemas, apartado 4): carne, piel, hueso, tendón y grasa en el suelo, junto al animal; el origen del hueso, el tendón y la grasa en pruebas/prueba_origenes.mjs",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Caballos salvajes en manadas pequeñas en praderas y brezales, con su modelo y sus animaciones de paso, trote y galope; huyen de quien corre hacia ellos",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La cabezada de cuerda (1 cuerda, en el banco de tronco) y domar: acercarse despacio sin asustarlo, echarle la cabezada y aguantar mientras se resiste; si te tira, se escapa. Domado, es tuyo (lo guarda el servidor, con su dueño)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Montar a pelo: subir y bajar, paso, trote y galope con el aguante del caballo, y el jinete sentado (su animación); el servidor sabe que vas montado y te deja la velocidad del caballo, no más; en PC y en el móvil, y todos lo ven",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Atar el caballo y cuidarlo: a un poste o a una estaca con una cuerda; atado come la hierba de alrededor y bebe del río si está cerca; hambre y sed como las tuyas (sin morir: débil y más lento); suelto, se va alejando",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador: hace la cabezada, doma un caballo salvaje, lo monta, cruza una comarca y lo ata en su tierra; caza un corzo con la lanza y lo despieza",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo."
+  },
+  {
+   "id": "oficios",
+   "num": "P9",
+   "nombre": "Oficios del asentamiento",
+   "jugable": "Secadero, raspador y cubas de curtido (cuero), carbonera, huso y horno de barro; la silla de montar y las alforjas del caballo; el mimbre, la resina y la corteza.",
+   "estado": "pendiente",
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (secadero, curtido, carbonera, huso, horno de barro, silla y alforjas), con la cadena de cada material hasta el mundo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "hierro",
+   "num": "P10",
+   "nombre": "Hierro y tablas",
+   "jugable": "Hierro de pantano, carbón, horno de reducción y fragua; hacha de hierro, sierra, pico, clavos y herraduras; tablas, y las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y la cantera.",
+   "estado": "pendiente",
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (hierro de pantano, carbonera, horno de reducción, fragua, herramientas de hierro, sierra y tablas, las piezas de nivel 2 escondidas), con la cadena de cada material hasta el mundo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "granja",
+   "num": "P11",
+   "nombre": "El año y los campos",
+   "jugable": "Las estaciones del año (un mes real cada una), que también cambian el mundo (hojas, nieve); sembrar con semillas silvestres, cuidar y cosechar; trillar; grano, paja (el tejado de paja), lino (hilo y tela) y legumbres; pan en el horno de barro.",
+   "estado": "pendiente",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo."
+  },
+  {
+   "id": "ganaderia",
+   "num": "P12",
+   "nombre": "Ganadería y cría",
+   "jugable": "Cercados y cuadra; gallinas, cabras y ovejas; heno; criar caballos con sus rasgos.",
+   "estado": "pendiente",
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (cercados, cuadra, gallinas, cabras, ovejas, heno, cría de caballos), con la cadena de cada material hasta el mundo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "tierras",
    "num": "13",
    "nombre": "Tierras y familias",
@@ -2348,24 +2474,6 @@
    ]
   },
   {
-   "id": "fauna",
-   "num": "7",
-   "nombre": "Fauna y caza",
-   "jugable": "Animales realistas.",
-   "estado": "congelado",
-   "tareas": [],
-   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
-  },
-  {
-   "id": "granja",
-   "num": "9",
-   "nombre": "Granja y estaciones del año",
-   "jugable": "Siembras por franja, ganado.",
-   "estado": "congelado",
-   "tareas": [],
-   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
-  },
-  {
    "id": "asedio",
    "num": "6",
    "nombre": "Asedio, fuego y mantenimiento",
@@ -2421,15 +2529,6 @@
     }
    ],
    "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos). Desde el 31 oct (valravnx) hay una ciudad NPC, la del rey, en Strandvang (GDD, «La comarca del rey y su ciudad»): no es para vivir, sino para comprar, vender, contratar, quedar y practicar. Cambia lo del 27 oct («sin ciudades NPC»)."
-  },
-  {
-   "id": "caballos",
-   "num": "8",
-   "nombre": "Caballos",
-   "jugable": "Domar, montar, cuadra y pasto.",
-   "estado": "congelado",
-   "tareas": [],
-   "nota": "Revisión del 1 nov con valravnx: congelado hasta que toque (la prioridad es que se pueda hacer la casa y jugar entre dos)."
   },
   {
    "id": "distancia",
