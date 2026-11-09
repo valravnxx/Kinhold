@@ -75,6 +75,8 @@ try:
             listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.yo && !document.getElementById('pantallaCuenta')", 300000)
             comprobar(f'{nombre}: en línea', listo)
             esperar(pg, f"{K}.objetosRed && {K}.objetosRed.deServidor", 30000)
+            # (en el móvil, unos metros más allá: donde se quedó el de PC, dormido, no tapa nada)
+            if movil: pj0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"); poner(pg, pj0[0] + 9, pj0[1] + 3)
             # la liebre cazada a sus pies y la lasca en la mano (del arcón de pruebas: la caza y la lasca de verdad, en el recorrido)
             ok = coger(pg, 'liebre', 'mano:izq') and al_suelo(pg, 'mano:izq', 'liebre') and coger(pg, 'lasca_silex', 'mano:der')
             comprobar(f'{nombre}: (la liebre a sus pies y la lasca en la mano)', ok)
@@ -102,10 +104,11 @@ try:
                 # el centro de lo que hay en el suelo, de cerca: el personaje a 1,3 m a un lado y la cámara cerca y baja
                 todo = [o for t in ['carne_cruda', 'carne_asada', 'piel'] for o in pg.evaluate(EN_SUELO, t)]
                 cx = sum(o['x'] for o in todo) / len(todo); cz = sum(o['z'] for o in todo) / len(todo)
+                # (el personaje, al otro lado: entre él y la cámara, lo del suelo)
                 yaw = 0.5
-                px, pz = cx + math.cos(yaw) * 1.3, cz - math.sin(yaw) * 1.3
+                px, pz = cx - math.sin(yaw) * 1.1, cz - math.cos(yaw) * 1.1
                 poner(pg, px, pz)
-                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {yaw}; k.cam.pitch = 0.75; k.cam.dist = 2.6; k.pj.rot = {yaw} + Math.PI; }})()")
+                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {yaw}; k.cam.pitch = 0.8; k.cam.dist = 2.8; k.pj.rot = {yaw}; }})()")
                 pg.wait_for_timeout(5000)
                 captura(pg, f'{SALIDA}/{nombre}_carne_de_cerca.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))

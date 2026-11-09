@@ -29,7 +29,7 @@
 //  - setas (P4): tres setas de sombrero pardo y pie crema, una tumbada, como recién cogidas.
 //  - carne cruda (9 nov, la de la liebre despiezada): el lomo y los dos cuartos traseros, rojo oscuro con la tela
 //    blanquecina por encima y la punta del hueso de cada pata, sobre una hoja.
-//  - carne asada (9 nov): lo mismo, dorado y tostado, con las puntas quemadas, ensartado en un espetón de rama.
+//  - carne asada (9 nov): lo mismo, tostado, con las puntas del hueso quemadas y alguna mancha quemada, sobre una hoja.
 //  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
 //    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
@@ -42,7 +42,7 @@ const FIBRA = 0xb3a77f, CORDEL = 0x9c8a60, CUERDA = 0x86714c, JUNCO = 0x7f8a4c, 
 const TOSTADO = 0x2f2620, LIBER = 0xb49a74, YESQUERO = 0x6e6152, YESCA_CORTE = 0xa58a62, YESCA_FIBRA = 0xc2b48a;
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_PELO = 0x7d6346, AMBAR = 0x8a561d, AMBAR_CLARO = 0xa36d2a;
 const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, HOJA_BAYA = 0x3f5a2e, SETA = 0x8c5a32, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
-const CARNE = 0x7a2b27, CARNE_OSC = 0x5e211d, TELA = 0xa8746a, HUESO = 0xddd2bb, ASADA = 0x58301a, ASADA_OSC = 0x3e200f, QUEMADA = 0x2e1c12, ESPETON = 0x6f573a;
+const CARNE = 0x7a2b27, CARNE_OSC = 0x5e211d, TELA = 0xa8746a, HUESO = 0xddd2bb, ASADA = 0x58301a, ASADA_OSC = 0x3e200f, QUEMADA = 0x2e1c12;
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const lote = (rango = 0.05) => new Lote({ rangoSuelo: rango, variacion: 0.06 });
@@ -149,7 +149,7 @@ function bayas(n, id) {
   return mallas(L);
 }
 // La carne de una liebre (9 nov): el lomo (a lo largo de X) y los dos cuartos traseros con la punta del hueso.
-// asada: tostada y en su espetón. n: cuántas piezas (hasta 3, una junto a otra).
+// asada: tostada. n: cuántas piezas (hasta 3, una junto a otra).
 function piezaCarne(L, x, z, giro, asada, id) {
   const m = new THREE.Matrix4().makeRotationY(giro), en = (dx, dy, dz) => v3(dx, dy, dz).applyMatrix4(m).add(v3(x, 0, z));
   const C = asada ? ASADA : CARNE, C2 = asada ? ASADA_OSC : CARNE_OSC;
@@ -166,17 +166,14 @@ function piezaCarne(L, x, z, giro, asada, id) {
     p = en(-0.178, 0.021, lado * 0.062); L.add(cil(0.0045, 0.006, 0.026, 5), asada ? QUEMADA : HUESO, p.x, p.y, p.z, { z: Math.PI / 2, y: giro + lado * 0.4 }, { tex: 'liso', sinSuelo: true });
   }
   if (asada) {
-    // el espetón: una rama fina que la atraviesa a lo largo, con las puntas tostadas
-    p = en(0.0, 0.03, 0); L.add(cil(0.0045, 0.005, 0.42, 5), ESPETON, p.x, p.y, p.z, { z: Math.PI / 2, y: giro }, { tex: 'corteza', sinSuelo: true });
-    for (const k of [-0.21, 0.21]) { p = en(k, 0.03, 0); L.add(new THREE.SphereGeometry(0.006, 5, 4), QUEMADA, p.x, p.y, p.z, null, { tex: 'liso', sinSuelo: true }); }
-    // manchas quemadas en la costra
-    for (let i = 0; i < 4; i++) { p = en(-0.05 + i * 0.035, 0.052 - Math.abs(i - 1.5) * 0.004, (az(id, i) - 0.5) * 0.03); L.add(new THREE.SphereGeometry(0.008, 5, 3), QUEMADA, p.x, p.y, p.z, null, { tex: 'liso', sinSuelo: true, escala: v3(1.4, 0.35, 1) }); }
+    // la costra tostada, con dos o tres manchas quemadas encima (sin espetón: a lo lejos parecía un bicho)
+    for (let i = 0; i < 3; i++) { p = en(-0.03 + i * 0.035, 0.05, (az(id, i) - 0.5) * 0.025); L.add(new THREE.SphereGeometry(0.009, 5, 3), QUEMADA, p.x, p.y, p.z, null, { tex: 'liso', sinSuelo: true, escala: v3(1.6, 0.3, 1.1) }); }
   }
 }
 function carne(asada) {
   return (n, id) => {
     const L = lote(0.04);
-    if (!asada) {   // la hoja ancha debajo de la cruda
+    {   // la hoja ancha debajo
       const hoja = new THREE.CircleGeometry(0.1, 10); hoja.rotateX(-Math.PI / 2); hoja.scale(2.2, 1, 1.2);
       L.add(hoja, HOJA_BAYA, -0.03, 0.003, 0, { y: az(id, 1) * 0.5 }, { tex: 'liso' });
     }
