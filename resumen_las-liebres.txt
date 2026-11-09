@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2519 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3025 KB
+
+== Construir demo única
+      3161 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4265 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2922 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2513 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3035 KB
+dist/kinhold_trozos.html 2527 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: las liebres
+  OK   movil: se aleja deprisa (más de 15 m en unos segundos) — 67.38976183367915
+  OK   movil: sin errores en la página
+
+2 fallos: pc: se ve, en el suelo; movil: se ve, en el suelo
+!! FALLA: python3 pruebas/prueba_fauna_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/liebres
+
+HAY FALLOS
+tardó 285 s
