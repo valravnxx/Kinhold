@@ -1740,7 +1740,8 @@
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "fin": "2026-11-09T08:44:08+00:00"
     },
     {
      "nombre": "El servidor guarda los objetos sin reescribir el archivo entero en cada acción (cada hachazo) y sin bloquear",
