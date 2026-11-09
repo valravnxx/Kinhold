@@ -220,7 +220,9 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     }
     // dormir en la cama ligada (P4): se tumba (y se queda tumbado) y, al despertar, se levanta (taller-dormir-v1)
     // (tumbado del todo, la de dormir: los brazos a lo largo del cuerpo, no levantados como acaba la de tumbarse)
-    if (j.durmiendo && j.mh.acciones.tumbarse) m = j.modo === 'dormido' || (j.modo === 'tumbarse' && j.mh.acciones.dormido && j.mh.acciones.tumbarse.time >= j.mh.acciones.tumbarse.getClip().duration - 0.05) ? 'dormido' : 'tumbarse';
+    // (el cuerpo de quien ha muerto, src/logica/muerte.js: ya tumbado del todo, sin la de tumbarse)
+    if (j.durmiendo && j.muerto && j.mh.acciones.dormido) m = 'dormido';
+    else if (j.durmiendo && j.mh.acciones.tumbarse) m = j.modo === 'dormido' || (j.modo === 'tumbarse' && j.mh.acciones.dormido && j.mh.acciones.tumbarse.time >= j.mh.acciones.tumbarse.getClip().duration - 0.05) ? 'dormido' : 'tumbarse';
     else if ((j.modo === 'tumbarse' || j.modo === 'dormido') && j.mh.acciones.levantarse) { m = 'levantarse'; j.levantaHasta = performance.now() + j.mh.acciones.levantarse.getClip().duration * 1000; }
     else if (j.modo === 'levantarse' && performance.now() < (j.levantaHasta || 0)) m = 'levantarse';
     // sentado en el suelo a descansar (P4, 8 nov; taller-sentarse-v1): quieto; al moverse, se levanta (main.js)
