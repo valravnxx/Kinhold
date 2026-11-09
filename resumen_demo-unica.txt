@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2510 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3016 KB
+
+== Construir demo única
+      3161 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4255 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2913 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2504 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3026 KB
+dist/kinhold_trozos.html 2518 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v164 (liebres en el mundo); v164: liebres en el mundo. Salen en los prados y en las lindes del bosque, siempre las mismas en cada sitio: pastan con la cabeza en la hierba y dan saltitos; si te acercas se sientan erguidas, alerta, y si llegas muy cerca (o vienes corriendo) salen huyendo a la carrera, con algún quiebro, sin meterse en el agua, y luego se paran. Las mueve el servidor: los dos veis la misma liebre en el mismo sitio. Tienen su modelo y su animación (pastar, alerta, saltar y huir).; v164, provisional: hasta 2 liebres por trozo de 128 m (unas 60 por km² en el mejor prado: más que en la realidad, para que se vean), solo donde el bosque es claro (espesor de menos de 0,6), en tierra, a más de 1,5 m sobre el mar y fuera de la nieve; alerta a 22 m, huida a 9 m (14 m si vienes corriendo), a 11 m/s (unos 40 km/h, más que un jugador) durante 40 a 70 m; no se alejan más de 30 m de su querencia al pastar; solo se mueven las de los trozos con alguien cerca, y las de un trozo sin nadie durante 2 minutos se olvidan y vuelven a salir en su sitio; el navegador no las dibuja a más de 160 m; el modelo es por código (no se encontró una liebre libre y realista).
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 274 s
