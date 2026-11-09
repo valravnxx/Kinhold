@@ -17,7 +17,7 @@
 //    la pasada anterior, ladera arriba o abajo); la decoración, de 0,5 m por debajo a 40 m por encima.
 //  - El mojón, en tierra firme (más de 0,15 m sobre el mar, como la orilla del juego) y dentro de la isla.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from './mapa.js';
-import { crearPaisaje } from './paisaje.js';
+import { crearPaisaje, bosqueEn } from './paisaje.js';
 import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from './whitholm.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetacion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
@@ -118,8 +118,29 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     return s < 0 ? -s : null;
   };
 
+  // Por dónde andan las liebres (P4, 9 nov; src/logica/fauna.js), en celdas de 2 m guardadas (las más viejas se van):
+  // pisable, en la isla, en seco y sin cortado (pendiente de menos de 0,7 m por metro); habitat, además un prado o la
+  // linde del bosque (espesor del bosque de menos de 0,6: bosqueEn) a más de 1,5 m sobre el mar y fuera de la nieve.
+  const celdasFauna = new Map();
+  const celdaFauna = (x, z) => {
+    const k = Math.round(x / 2) + ',' + Math.round(z / 2);
+    let v = celdasFauna.get(k);
+    if (v === undefined) {
+      const xm = x + O.x, zm = z + O.z, y = alt(xm, zm);
+      const pend = Math.hypot(alt(xm + 3, zm) - alt(xm - 3, zm), alt(xm, zm + 3) - alt(xm, zm - 3)) / 6;
+      const pis = enIsla(x, z) && aguaEn(x, z) === null && pend < 0.7;
+      let hab = false;
+      if (pis && y > 1.5) { const st = paisaje.sitio(xm, zm, y); hab = !!(st && st.bioma && st.bioma !== 'nieve') && bosqueEn(st, pend, xm, zm, { semilla }).d < 0.6; }
+      v = pis ? (hab ? 2 : 1) : 0;
+      celdasFauna.set(k, v);
+      if (celdasFauna.size > 40000) celdasFauna.delete(celdasFauna.keys().next().value);
+    }
+    return v;
+  };
+  const fauna = { pisable: (x, z) => celdaFauna(x, z) > 0, habitat: (x, z) => celdaFauna(x, z) === 2 };
+
   return {
-    origen: O, y0, suelo, enIsla, alturas, paisaje, alt, semilla, aguaEn,
+    origen: O, y0, suelo, enIsla, alturas, paisaje, alt, semilla, aguaEn, fauna,
     // El árbol de nombre id que el navegador dice tener en (x, z) de la escena: el del servidor ({ id, x, z, edad }) o null.
     arbol(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;

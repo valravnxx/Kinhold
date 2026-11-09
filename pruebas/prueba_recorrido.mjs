@@ -113,10 +113,13 @@ function cliente(puerto, ficha = null) {
     };
     c.salida = (salida) => { const id = ++c.id + 200000; const p = c.esperar(m => m.tipo === 'salida' && m.id === id); ws.send(JSON.stringify({ tipo: 'salida', id, salida })); return p; };
     c.cuantos = (tipo) => (c.inv ? c.inv.cuantos(tipo) : 0);
+    c.liebres = new Map(); c.huyen = new Set();
     ws.on('message', (d) => {
       const m = JSON.parse(d.toString());
       if ((m.tipo === 'bienvenida' || m.tipo === 'inventario' || m.tipo === 'resultado_objeto') && m.inventario) c.inv = Inventario.importarJugador(m.inventario);
       if (m.necesidades && (m.tipo === 'bienvenida' || m.tipo === 'necesidades')) c.nec = m.necesidades;   // (P4) las suyas, como se las manda el servidor
+      // (P4) las liebres de alrededor, como se las manda el servidor (src/logica/fauna.js), y las que ha visto huir
+      if (m.tipo === 'fauna') { for (const f of m.liebres) { c.liebres.set(f.id, f); if (f.anim === 'huir') c.huyen.add(f.id); } for (const id of m.fuera) c.liebres.delete(id); }
       c.esperas = c.esperas.filter(e => { if (e.cond(m)) { e.r(m); return false; } return true; });
     });
     const b = c.esperar(m => m.tipo === 'bienvenida', 20000);
@@ -1367,6 +1370,23 @@ try {
       }
     }
     comprobar('recupera lo suyo del cuerpo', cogidos > 0 && cogidos >= Math.min(suyos.length, 2), `${cogidos} de ${suyos.length} montones`);
+
+    console.log('19. Ve liebres y huyen al acercarse');
+    // P4, las liebres (9 nov; src/logica/fauna.js): ve liebres a su alrededor (las mueve el servidor) y, al ir hacia una,
+    // huye y se aleja (al final del día, con lo suyo recuperado; luego vuelve a donde estaba)
+    {
+      const desde = { ...J2.pos };
+      const ls = cerca([...J2.liebres.values()], J2.pos);
+      comprobar('ve liebres a su alrededor (se las manda el servidor)', ls.length > 0, `${ls.length}`);
+      if (ls.length) {
+        const l = ls[0], d0 = Math.hypot(l.x - J2.pos.x, l.z - J2.pos.z), a = Math.atan2(J2.pos.x - l.x, J2.pos.z - l.z);
+        await J2.andar(l.x + Math.sin(a) * 5, l.z + Math.cos(a) * 5);
+        await pausa(1500 * RELOJ);   // (en tiempo de verdad: la liebre corre en el del servidor)
+        const f = J2.liebres.get(l.id), d1 = f ? Math.hypot(f.x - J2.pos.x, f.z - J2.pos.z) : null;
+        comprobar('va hacia la más cercana y huye, alejándose deprisa', J2.huyen.has(l.id) && f && d1 > 12, `a ${d0.toFixed(0)} m; huye: ${J2.huyen.has(l.id)}; ahora a ${d1 && d1.toFixed(1)} m`);
+        await J2.andar(desde.x, desde.z);
+      }
+    }
     J2.ws.close();
   }
 

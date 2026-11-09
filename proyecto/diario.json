@@ -5767,5 +5767,23 @@
   "pruebas": "Revisor en la nube: lógica (con la prueba nueva de morir, rota a propósito dos veces —el cuerpo sin nada, la sed sin quitar sangre—: falla; bots e idiomas, arreglados), recorrido 221/221, demo única, morir y que te saqueen (navegador, PC y móvil; rota a propósito con los cuerpos de pie: falla), la cama ligada y dormido al desconectarse, bien",
   "capturas": "capturas/demo-v163",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T01:24:48+00:00",
+  "fin": "2026-11-09T02:39:46+00:00",
+  "titulo": "P4: liebres en el mundo",
+  "hito": "supervivencia",
+  "hecho": [
+   "Liebres en el mundo: salen en los prados y en las lindes del bosque (donde el bosque es claro), siempre las mismas en cada sitio, y nunca en el agua ni en el bosque cerrado",
+   "Pastan con la cabeza en la hierba y dan saltitos cerca de su querencia; si te acercas se sientan erguidas, alerta; si llegas muy cerca, o vienes corriendo, huyen a la carrera (más deprisa que un jugador), con algún quiebro, sin meterse en el agua, y luego se paran",
+   "Las mueve el servidor (src/logica/fauna.js, lógica pura): los dos veis la misma liebre en el mismo sitio; a cada uno le llegan solo las de sus trozos, y solo se mueven las que tienen a alguien cerca",
+   "Su modelo y su animación, por código en el estilo v5 (se buscó una liebre libre CC0 y realista y no la hay): una liebre parda de unos 55 cm con las orejas de punta negra, el cuarto trasero grande y la cola blanca, animada por piezas al pastar, alerta, saltar y huir",
+   "Recorrido de jugador: al final del día ve liebres a su alrededor, va hacia la más cercana y huye alejándose deprisa",
+   "Decisiones provisionales en el registro de la demo (v164): cuántas por trozo, a qué distancia se alertan y huyen, a qué velocidad, y cuándo se olvidan las de un sitio sin nadie",
+   "Aún mal: de muy cerca se notan las piezas del cuerpo de la liebre (el lomo, el cuarto trasero y el pecho no se funden del todo) y las patas son algo rectas; sin tarjeta gráfica, en las capturas del juego la liebre no se ve bien (queda detrás del jugador o lejos), así que solo se publican las de cerca del modelo"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la prueba nueva de las liebres, rota a propósito —no huyen—: falla; la de presencia falló una vez por tiempo, 2,59× frente a 2,5×, sin servidor con liebres, y aquí pasa 3 de 3), recorrido 223/223 (con la parte de las liebres), demo única y las liebres en navegador (PC y móvil; rota a propósito —el navegador no las dibuja—: falla), bien. Las capturas son del modelo de cerca: en las del juego (sin tarjeta gráfica) la liebre sale detrás del jugador o muy pequeña",
+  "capturas": "capturas/demo-v164",
+  "estado": "ok"
  }
 ]

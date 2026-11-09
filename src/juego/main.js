@@ -20,6 +20,7 @@ import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mu
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
+import { crearFauna } from './fauna.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
@@ -83,6 +84,7 @@ const CLAVE_GUARDADO = 'kinhold_h1_v1';
 // «Jugar en línea» (?enlinea=1): el mundo es el del servidor; nada se guarda en el navegador (src/juego/en_linea.js)
 const EN_LINEA = new URLSearchParams(location.search).get('enlinea') === '1';
 let enLinea = null;
+let fauna = null;   // las liebres que manda el servidor (P4; src/juego/fauna.js)
 let charla = null;   // el chat de texto (src/juego/charla.js), con la conexión
 let panelSalida = null;   // el de «¿Dónde empiezas?» (elegirSalidaPanel, más abajo)
 // El arcón de pruebas (valravnx, 1 nov: «fuera el arcón infinito» del juego de verdad): en línea, solo si el servidor lo
@@ -2554,6 +2556,7 @@ function paso() {
   pintarAccion();
 
   moverGente(dt);
+  if (fauna) fauna.paso(dt, pj);
   moverFuegos();
   if (charla) charla.paso();
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
@@ -2981,14 +2984,16 @@ function iniciarEnLinea() {
   };
   const vistos = new Map(); // obra → cuarto de trabajo con el que se dibujó
   let colocadoEnLinea = false;
+  fauna = crearFauna({ escena, alturaSuelo: (x, z) => sueloEn(x, z) });
   enLinea = conectarEnLinea({
     escena, recursos: RECURSOS_MH,
-    alAbrir: (enviar) => objetosRed.conectar(enviar), alCortarse: () => objetosRed.desconectar(),
+    alAbrir: (enviar) => objetosRed.conectar(enviar), alCortarse: () => { objetosRed.desconectar(); fauna.vaciar(); },
     // lo que llevas puesto en el inventario, con sus tintes y su hechura (cambia al vestirse: vestir() lo vuelve a mandar)
     aspecto: () => { const v = vestidoAhora(); return { sexo: SEXO, aspecto: elegido ? elegido.aspecto : undefined, capas: v.capas, tintes: v.tintes, hechuras: v.hechuras }; },
     avisar: mostrarAviso,
     alEstado: (txt) => { marca.textContent = txt; },
     alCambiar(info, msg) {
+      if (fauna.recibir(msg)) return;   // las liebres de alrededor (src/juego/fauna.js)
       // pelear en el mundo: tus heridas y lo que pasa con tus golpes y los de los demás contra ti (src/juego/combate_mundo.js)
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'bienvenida') combate.recibir(msg, enLinea.red.yo || msg.autor, (a) => enLinea.modeloDe(a));
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'combate_rechazo') return;
@@ -3147,6 +3152,7 @@ window.__kinhold = {
   nado,
   // la última vez que has muerto (P4; src/logica/muerte.js): de qué, si a tu cama, y tu cuerpo
   get ultimaMuerte() { return ultimaMuerte; },
+  get fauna() { return fauna; },   // las liebres de alrededor (P4; pruebas: dónde están y qué hacen)
   enLineaRemotos: () => (enLinea ? enLinea.remotos : new Map()),   // (pruebas: los demás y los cuerpos, como se dibujan)
   // un paso de alguien que anda por el suelo del mundo (el rival de práctica)
   andarHasta,
