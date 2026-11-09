@@ -1,0 +1,12 @@
+Textos del juego: 1546; sin traducir (en): 5; con variables distintas: 0
+  FALTA (en)  Puños
+  FALTA (en)  Hacha
+  FALTA (en)  Mantén para coger impulso y suelta para lanzar (Espacio)
+  FALTA (en)  No llevas nada que lanzar en la mano
+  FALTA (en)  ¡Le has dado a la liebre!
+Textos del juego: 1546; sin traducir (ru): 5; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  Puños
+  FALTA (ru)  Hacha
+  FALTA (ru)  Mantén para coger impulso y suelta para lanzar (Espacio)
+  FALTA (ru)  No llevas nada que lanzar en la mano
+  FALTA (ru)  ¡Le has dado a la liebre!

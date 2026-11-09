@@ -1,0 +1,602 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2531 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3037 KB
+
+== Construir demo única
+      3173 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4286 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2935 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2526 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3048 KB
+dist/kinhold_trozos.html 2540 KB
+hilo de los trozos 22 KB
+
+== Lógica de construcción
+  OK   el segundo tramo de una pendiente arranca 1 tramo más arriba
+  OK   remate de esquina: limatesa baja hacia los dos aleros, limahoya sube
+
+Resultado: 273 correctas, 0 fallidas
+
+== Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo
+  OK   la pestaña «exterior» tiene algo
+  OK   la pestaña de muebles tiene algo
+
+50 correctas, 0 fallos
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Modelos
+  OK   Cimiento de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 106 rayos sin madera
+  OK   Cimiento de troncos con vecino a un lado: testas solo hacia fuera
+
+Resultado: 184 correctas, 0 fallidas
+
+== Lógica de combate
+  OK   con el botón pulsado, un movimiento claro hacia arriba cambia a alto
+  OK   y luego a la derecha, sin soltar
+
+Resultado: 125 correctas, 0 fallidas
+
+== Acciones con autor
+  OK   ningún archivo fuera de la lógica pura cambia el mundo directamente (80 revisados)
+  OK   la construcción y el combate usan las acciones
+
+Resultado: 41 correctas, 0 fallidas
+
+== Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar
+  OK   y construye en su tierra nueva
+  OK   rehecho desde el registro da el mismo mundo
+
+30 bien, 0 mal
+
+== Alcance de las obras: el servidor solo deja entregar, subir, trabajar y desmontar junto a la obra y en su planta
+  OK   lo que devuelve (6 piedras): lo que le cabe a lo que lleva y lo demás al suelo a sus pies, nada al arcón — mano 3, suelo 3, arcón 106 → 106
+  OK   lo que no existe lo dice la acción misma — No existe.
+
+29 bien, 0 mal
+
+== Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba
+  OK   el servidor no deja a Bruno desmontar lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   a Ana, sí
+
+35 bien, 0 mal
+
+== La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus invitados (15 sin obra terminada), avisos por correo y ruinas
+  OK   con obra terminada, el día 20 sigue siendo suya
+  OK   el día 30, al rey
+
+41 bien, 0 mal
+
+== Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio
+  OK   un móvil muy rápido no pasa a los de PC
+  OK   si no llega a ninguno, el más bajo
+
+25 bien, 0 mal
+
+== El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento
+El reloj del servidor
+  OK   la bienvenida lleva el reloj del servidor (la hora del cielo) — 1794205001531
+
+23 correctas, 0 fallan
+
+== Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor
+  OK   de noche, sin fuego y con lo del principio, el frío sube — 20.60
+  OK   a 1 m de una hoguera encendida, baja — 20.60 → 20.19
+
+58 correctas, 0 fallan
+
+== Desconectarse: dormido en el mundo, atacable unos minutos fuera de tu tierra, en el servidor
+  OK   pone su mojón
+  OK   al irse en su tierra, dormido y protegido (fuera del combate) desde el primer momento
+
+26 correctas, 0 fallos
+
+== Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cuerpo con la mitad, y a tu cama
+  OK   en el agua honda, sí: ahogado
+  OK   de sed no se puede decir: eso lo ve el servidor
+
+36 bien, 0 mal
+
+== Las liebres: pastan, se ponen alerta y huyen de quien se acerca; las mueve el servidor
+  OK   el otro la ve en el mismo sitio y haciendo lo mismo — 12.11, 77.25
+  OK   a quien se va lejos se le dice que esas liebres ya no están — 6 fuera
+
+18 bien, 0 mal
+
+== El modo arma con lo de la mano: puños, hacha, lanza; lanzar la lanza y la piedra apuntando, y cazar la liebre
+  OK   lanza una y le queda una (se gasta: no queda en el suelo) — {"tipo":"piedra","n":1}
+  OK   sin piedras, vuelve a los puños — punos
+
+23 bien, 0 mal
+
+== Desbrozar matorrales y arbustos, en la lógica y en el servidor
+  bien  uno que no existe, no — Ahí no hay nada que recoger.
+  bien  lo desbrozado sale en lo que se reparte (quitado)
+
+27/27 bien
+
+== El mazo de piedra y romper rocas, en la lógica y en el servidor
+  bien  lo roto sale en lo que se reparte (quitado)
+  bien  y se guarda: al volver a abrir el servidor sigue rota
+
+32/32 bien
+
+== El mimbre, la corteza y la resina, en la lógica y en el servidor
+  bien  todos lo saben (lo que se reparte)
+  bien  y se guarda al volver a abrir el servidor
+
+26/26 bien
+
+== Horizonte de los perfiles altos
+  OK   los pasos son niveles que hay
+  OK   la niebla de cerca no tapa las montañas
+
+40 bien, 0 mal
+
+== De dónde sale cada cosa (la casa humilde entera, sin arcón)
+
+Lo que el juego enseña ya
+
+6 bien, 0 mal
+
+== Sin llanos pelados a ras del mar tierra adentro
+  OK    el llano de (210000, 27000): sobre el mar, con relieve, hierba y matas — de 6.38 a 7.70 m · hierba 3226 · matas 26
+  OK    la costa (la playa) sigue igual — 0 de 94 puntos cambian
+
+6 bien, 0 mal
+
+== El fondo del mar junto a la costa
+  OK   tierra adentro (a más de 400 m del mar, en lo bajo), sin arena de playa — 0 de 401 puntos con arena
+  OK   en las playas, arena junto a la orilla (a 15 m) — 13 de 18
+
+7 bien, 0 mal
+
+== Los ríos llegan al mar
+  OK   el cauce sigue en el mar (sin barra que cierre la boca) — 19 de 19
+  OK   la boca se ensancha (estuario) — 19 de 19
+
+11 bien, 0 mal
+
+== Inventario por huecos
+  OK   el factor queda entre 0,8 y 1 con datos raros
+  OK   lo cargado de un guardado ralentiza igual
+
+137 correctas, 0 fallos
+
+== Recoger del suelo y de las plantas
+  OK   lo guardado de un punto que ya no existe se descarta
+  OK   un guardado roto o sin versión se descarta sin romper
+
+56 correctas, 0 fallidas
+
+== Estaciones y recetas
+  OK   con autor, ligar y dormir quedan en el registro
+  OK   y la tierra la dice el servidor (enTierras) — La cama ligada va en tu tierra o en la de quien te ha invitado a construir.
+
+195 bien, 0 mal
+
+== El fuego de la hoguera
+  OK   Ana deja el hogar en brasas por el servidor y todos lo ven en brasas — {"encendida":false,"brasas":true,"queda":3540,"combustible":0,"cenizas":false}
+  OK   y el registro lo anota con su autor — {"n":5,"autor":"ana","tipo":"brasas_fuego","datos":{"estacion":"hogar:2","x":3.5,"z":0},"ok":true,"ahora":1794205344346,"resultado":{"estacion":"hogar:2","brasas":true,"hasta":1794208944346}}
+
+56 bien, 0 mal
+
+== Objetos en el suelo
+  OK   lo de fuera de tu tierra no cuenta
+  OK   sin tierra, nada
+
+44 bien, 0 mal
+
+== Tala de los árboles
+  OK   un guardado roto o sin versión se descarta
+  OK   un guardado ilegible no rompe nada
+
+63 bien, 0 mal
+
+== Tronzar y partir
+  OK   lo que ya no está en el suelo se olvida
+  OK   un guardado ilegible no rompe nada
+
+45 bien, 0 mal
+
+== La rastra
+  OK   sin arcón de pruebas, no sale ninguna rastra
+  OK   al volver a arrancar el servidor la rastra sigue donde estaba
+
+47 bien, 0 mal
+
+== La carretilla
+  OK   y queda anotado como aparcar
+  OK   al volver a arrancar el servidor siguen donde estaban, y la guarda también
+
+40 bien, 0 mal
+
+== Obras con lo que llevas
+  OK   y lo que no cabe sale para el suelo (3), no al arcón — {"piedra":3} arcón 109 → 109
+  OK   al rehacer, el arcón queda igual (lo desmontado ya cobrado no vuelve a él) — 109/109
+
+Resultado: 48 correctas, 0 fallidas
+
+== Datos de cada prenda (zonas, protección, abrigo y peso)
+  OK   mujer: descalzo, del visor a las prendas y vuelta da lo mismo
+  OK   mujer: del visor a las prendas y vuelta da lo mismo
+
+83 correctas, 0 fallos
+
+== Aspecto del personaje (personalización)
+  OK   los peinados nuevos se pueden elegir y se guardan
+  OK   el aspecto pasa por JSON sin cambiar
+
+Resultado: 28 correctas, 0 fallidas
+
+== Servidor mínimo con dos clientes
+  OK   y puede seguir construyendo (con su mojón)
+  OK   la numeración sigue donde se quedó — n=13
+
+19 correctas, 0 fallos
+
+== Jugadores que se ven, con lag simulado
+  OK   el que llega después ve dónde están los demás — jugador:3ffd617c, jugador:4c0f45f1
+  OK   cuando A se va, B y C lo siguen viendo, dormido (desconectado) donde estaba
+
+16 correctas, 0 fallos
+
+== Movimiento sin trampas (el servidor recorta lo que no se puede andar)
+  OK   lo que se guarda al salir es lo recortado — x=22.5, z=-8.7
+  OK   al volver a conectar tampoco se salta: el servidor lo ancla donde lo dejó — x=35.1, z=-18.5
+
+15 correctas, 0 fallos
+
+== Mundo en línea: dos clientes con el servidor
+  OK   el que llega después recibe el aspecto de los que ya están, con su personalización
+  OK   y el mundo tal como está
+
+29 correctas, 0 fallos
+
+== Conexiones que se cortan y datos mal formados
+  OK   la ficha sigue valiendo tras reiniciar el servidor — jugador:ecc86934
+  OK   el archivo de fichas no guarda las fichas, solo su resumen
+
+35 correctas, 0 fallos
+
+== Volver donde lo dejaste (posiciones en el servidor)
+Archivo roto
+  OK   con posiciones.json roto, el servidor arranca y no da posición
+
+7 bien, 0 mal
+
+== Copia de seguridad diaria del servidor: las 14 últimas, en la máquina y fuera, y restaurar
+  OK   y una contraseña mala sigue sin valer
+  OK   restaurar encima deja lo de antes al lado (kinhold.antes-<fecha>) — kinhold.antes-20261109-062244
+
+15 bien, 0 mal
+
+== Salidas en línea: cada personaje nuevo elige una de las tres del rey (Lindholt, la ciudad, Motdale) y el servidor lo recuerda
+Con salidaComun (solo las pruebas de navegador)
+  OK   un nuevo empieza en la común sin elegir — {"x":0,"y":0,"z":0,"giro":0}
+
+17 bien, 0 mal
+
+== Panel del admin en el servidor (por la cuenta, ver a todos, teletransportarse)
+  OK   y el panel le responde — {"ok":true,"n":1}
+  OK   uno nuevo sin cuenta no es admin
+
+57 bien, 0 mal
+
+== Herramienta del admin en el servidor (información, autoconstruir, arcón de admin, velocidad)
+  OK   (otra conexión sin cuenta no es admin)
+  OK   el mundo se rehace igual del registro (mojón y mueble sin cobrar, la obra terminada)
+
+38 bien, 0 mal
+
+== Cuentas: usuario y contraseña (resumida con sal), crear, entrar, intentos y lo que no debe dejar
+  OK   el registro de seguridad apunta recuperar, restablecer y los cambios
+  OK   tras reiniciar: vale la última contraseña, el correo nuevo y las fichas cerradas siguen cerradas
+
+145 bien, 0 mal
+
+== Combate en el servidor, con lag simulado
+  OK   al quitarse la camisa, el combate lo sabe y el otro lo ve — pantalon_lino
+  OK   al irse un jugador fuera de su tierra, su luchador sigue en el combate (dormido, atacable unos minutos)
+
+82 correctas, 0 fallos
+
+== Inventario y suelo en el servidor, con dos clientes
+  OK   y la piedra de tallar de A, sin perder nada de lo encargado
+  OK   y el tocón y lo recogido
+
+71 correctas, 0 fallos
+
+== El servidor conoce el mundo (árboles, recogida, posiciones y obras contra el terreno)
+  OK   lo que se guarda es solo lo cambiado: el árbol a medias, ni el falso ni ninguno más — 1 árboles, 0 puntos
+  OK   al volver a arrancar, lo guardado que no está en el mundo se descarta y lo de verdad sigue
+
+36 bien, 0 mal
+
+== Lo talado, lo recogido y el suelo, por trozos: a cada uno lo de su alrededor
+  OK   al volver a arrancar se lee igual
+  OK   lo guardado con el formato anterior (2) se lee igual
+
+25 correctas, 0 fallos
+
+== Las obras y lo alisado, por trozos: a cada uno lo de su alrededor, con los mismos ids que el servidor
+  OK   quien llega a la salida recibe en la bienvenida las obras de alrededor, iguales que en el servidor — 2 construcciones
+  OK   si la pide, le llega la foto de sus trozos
+
+25 correctas, 0 fallos
+
+== Obras con lo que llevas en línea, con dos clientes
+  OK   lo que lleva cada uno, también
+  OK   un navegador nuevo rehace el mismo mundo con la bienvenida
+
+22 correctas, 0 fallos
+
+== Chat de texto: lo que se dice, limpio, sin hablar a chorro, a los de cerca y apuntado
+  OK   B contesta y A lo recibe tal cual (como texto: el navegador no lo pone como HTML)
+  OK   lo dicho queda en charla.jsonl, con su autor, dónde y a cuántos llegó — [{"t":1794205415578,"autor":"jugador:acf34a53","cuenta":null,"x":0,"z":0,"texto":"Buenas, vecino","oyen":2},{"t":1794205417379,"autor":"jugador:9568264a","cuenta":null,"x":20,"z":0,"texto":"<b>hola</b>","oyen":2}]
+
+24 bien, 0 mal
+
+== Bots: jugadores simulados contra el servidor
+  OK   lo medido cuenta lo que se manda y se recibe
+  OK   al pararlos se van todos del servidor (y se quedan dormidos en el mundo; los cuerpos, tumbados) — 0 conexiones
+
+15 correctas, 1 fallos
+!! FALLA: node pruebas/prueba_bots.mjs
+
+== Terreno por trozos: anillos, bordes y faldones
+  OK   un paso que no cabe en el trozo se rechaza
+  OK   trozoDe con negativos
+
+Todo correcto
+
+== Whitholm: cuadro de la isla y sitio de salida
+  OK   la ciudad está en tierra, llana y fuera del río — 30.5 m
+  OK   la ciudad está cerca de la boca del río (a menos de 1,5 km) — 600 m
+
+Todo bien
+
+== Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma
+  OK   los adultos, 1.3 veces los de antes — 10.6 m de media
+  OK   más jóvenes en lindes y claros que dentro del bosque cerrado — 61 % de 2228 frente a 26 % de 231
+
+Todo bien
+
+== Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual
+  OK   al irse su trozo se guarda lo recogido, y al volver sigue recogido
+  un trozo de 32 m: 0.5 ms (en node, 128 puntos en 20 trozos)
+
+Todo bien
+
+== Ríos de verdad: uniones, nacimiento, ancho y hondo
+  OK   arroyo: hay cantos en el cauce y la orilla (más de 20 en 64 m de río) y ninguno lejos del agua — 37 cantos, 0 lejos
+  OK   río: hay cantos en el cauce y la orilla (más de 20 en 64 m de río) y ninguno lejos del agua — 122 cantos, 0 lejos
+
+14 bien, 0 mal
+
+== Comarcas y zonas de Whitholm
+  OK   la tabla de las comarcas aprobadas casa con las cuencas (más del 85 % de las zonas) — 1658 de 1717
+  OK   los lindes no son una rejilla: la separación entre lindes en una recta varía mucho — media 947 m, desviación 423 m
+
+TODO CORRECTO
+
+== Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)
+  OK   la tabla solo nombra grupos que existen
+  OK   cada grupo de navegador tiene su archivo de prueba
+
+Todo bien
+
+== Las zonas en el mapa del rey y tu tierra
+  OK   ninguno se confunde con el rojo de tu tierra ni con el oro del rey
+  OK   con más dueños que colores, cada uno tiene uno
+
+21 bien, 0 mal
+
+== Las zonas del rey: veta marcada, ciudad y salida no se reclaman
+  1840 zonas con tierra; 853 en las comarcas de inicio. veta pequeña: 32 · vado: 52 · salida al azar: 248 · salida común: 1 · ciudad: 1 · veta marcada: 1
+  OK   los sitios de la salida al azar caen en muchas zonas (por eso no son del rey: valravnx, 5 nov) — 248 de 853
+
+15 bien, 0 mal
+
+== Mapa del rey: costa del juego, nombres, ciudad y ríos
+  OK   ningún árbol pegado a la ciudad (1,6 km)
+  OK   hay montes y bosques dibujados — 163 montes, 1984 árboles
+
+Todo bien
+
+== Strandvang, tierras del rey: nadie hiere a otro jugador (el servidor lo rechaza, con su autor)
+  OK   entre dos jugadores dentro, no
+  OK   sin tierras (otro servidor), sí
+
+Tierras del rey: 21 bien, 0 mal
+
+== Aguante, agua y nado
+  OK   vadear frena más cuanto más hondo
+  OK   el peso hace que el aguante baje más deprisa al nadar (factor)
+
+Resultado: 17 correctas, 0 fallidas
+
+== Medición del servidor (CPU, memoria, red y disco)
+  OK   los bots no tienen errores
+  OK   se apunta la máquina
+
+Medición: 13 bien, 0 mal
+
+== Servidor de prueba en internet (Caddy con HTTPS delante del juego)
+  OK   dos clientes conectan por wss:// a través de Caddy y reciben la bienvenida — jugador:f532200a y jugador:7c08335e
+  OK   lo que manda uno le llega al otro a través de Caddy
+
+27/27 comprobaciones correctas
+
+== Servidor de prueba: al día solo con cada versión nueva de la demo
+  OK   la copia del servidor queda en la versión nueva
+  OK   después, sin nada nuevo, no se repite — 1 puestas al día
+
+6 correctas, 0 fallidas
+
+== Taller: los cinturones ciñen su prenda
+  OK   mh_mujer.glb: mujer_cinturon_gambeson ciñe la prenda (medio ancho 0.177 m, prenda 0.175 m)
+  OK   mh_mujer.glb: mujer_cinturon_sobreveste ciñe la prenda (medio ancho 0.193 m, prenda 0.190 m)
+  OK   mh_mujer.glb: mujer_cinturon_vestido ciñe la prenda (medio ancho 0.162 m, prenda 0.161 m)
+Resultado: 8 correctas, 0 fallidas
+
+== Taller: capa, calzado y tocados
+  OK   mh_mujer.glb: el sombrero queda por encima del pelo y con ala ancha — copa 3 cm por encima, ala 39 cm
+  OK   mh_mujer.glb: las botas llegan al suelo y suben más que los zapatos — suela -0.015 / -0.012 m, caña hasta 0.15 m (zapato 0.11 m)
+
+10 correctas, 0 fallos
+
+== Taller: formas y colores para personalizar
+  OK   mh_mujer.glb: cada peinado y cada barba tienen sus piezas — cofia, melena, coleta, trenzas · ninguna
+  OK   mh_mujer.glb: el pelo largo y las barbas llevan el color del pelo
+
+14 correctas, 0 fallos
+
+== Taller: manos enteras y botas de la mujer bajo la falda
+  OK   mh_mujer.glb: tiene botas
+  OK   mh_mujer.glb: las botas de la mujer son bajas (no atraviesan la falda larga) — caña de 16 cm
+
+8 correctas, 0 fallos
+
+== Taller: pies descalzos
+  OK   mh_mujer.glb: tienen detalle (dedos) — 4488 triángulos
+  OK   mh_mujer.glb: los zapatos tapan los pies — pies -0.207,-0.001,-0.013…0.207,0.163,0.186, zapatos -0.216,-0.012,-0.025…0.216,0.114,0.197
+
+18 correctas, 0 fallos
+
+== Taller: barba larga con volumen
+  OK   está donde el bigote pintado (a menos de 1,5 cm de altura) — -0.2 cm
+  OK   por los lados cae más que en el centro (por las comisuras) — 2.3 cm
+  OK   el cargador pinta corta, bigote y perilla como calcos, y la larga no — /_(vello|cejas|barba_(corta|bigote|perilla))$/ /_(vello|cejas|barba_(corta|bigote|perilla))$/
+Barbas: 10 bien, 0 mal
+
+== Taller: cejas y barba pintadas (calcos)
+  OK   mujer: las cejas ocupan al menos 6000 píxeles de su textura — 16797 px (1.6 % de 1024×1024)
+  OK   mujer: la caja de las cejas mide más de un sexto del lado en las dos direcciones — 652×653 de 1024×1024
+  OK   mujer: las cejas no se cortan en el borde de su malla (sin escalones) — 0.00 % de lo pintado
+Calcos: 13 bien, 0 mal
+
+== Taller: capa que cae de los hombros
+  OK   mujer: pliegues hondos por detrás (al menos 6,5 cm a 30 cm del bajo) — 11.3 cm
+  OK   mujer: la sombra de los pliegues, pintada en la tela (fondo a lo sumo al 70 % del lomo) — 60 %
+  OK   mujer: pliegues de la espalda anchos y marcados (9 cm o más de lomo a valle, como mucho 3 lomos en 40 cm) — 3 lomos, 9.9 cm de lomo a valle
+Capa: 22 bien, 0 mal
+
+== Taller: la piel bajo el escote
+  OK   mh_mujer.glb: la cofia baja bajo el escote (delante) — 12.2 cm por debajo de lo alto de la camisa
+  OK   mh_mujer.glb: la cofia baja bajo el escote (detrás) — 12.2 cm por debajo de lo alto de la camisa
+
+Resultado: 7 correctas, 0 fallidas
+
+== Taller: el nacimiento del pelo
+  OK   mh_mujer.glb: en el borde de la frente el pelo va pegado a la piel — 1.9 mm (de 2 a 4,5 cm sobre el ojo)
+  OK   mh_mujer.glb: más arriba el pelo tiene bulto — 8.3 mm (a más de 6,5 cm sobre el ojo)
+
+Resultado: 6 correctas, 0 fallidas
+
+== Taller: tintes de la ropa y blasón
+  OK   mh_mujer.glb: con los tintes por defecto, cada prenda tiene el color de antes — diferencia mayor 0.0000 (mujer_capa_camisa)
+  OK   mh_mujer.glb: la cota de malla no se tiñe
+
+27 correctas, 0 fallos
+
+== Hechura de la ropa (material, corte y tejido)
+  OK   en línea: el aspecto lleva los tintes y la hechura, comprobados
+  OK   en línea: lo que no vale, el de siempre; sin tintes, no se manda nada
+
+Hechura: 43 bien, 0 mal
+
+== Niveles de detalle de los personajes
+Niveles de detalle: 17/17
+
+== Animaciones para cargar (taller-anim-v2)
+  OK   el juego conoce las de empujar (CLIPS_EXTRA) y su texto en el visor
+  OK   el juego conoce las de cargar (CLIPS_EXTRA)
+  OK   y su texto en el visor
+Todo correcto
+
+== Lo que llevas se ve puesto: del inventario y por el servidor
+  OK   si no cambia lo que se ve, no se vuelve a mandar
+  OK   el que llega después lo ve en la bienvenida — {"cintura":"cinto_cuero","colgado":[],"espalda":"lenero","dentro":{},"hombro":null,"der":null,"izq":null,"n":{"der":0,"izq":0},"dos":false}
+
+17 correctas, 0 fallidas
+
+== Taller: versiones fijadas
+Taller (versiones fijadas): correcto
+
+== Capturas: solo las del cambio
+  OK   con nombres y patrones, solo esas (en JPG) — 03_vista.jpg 10_vista.jpg 11_vista.jpg 12_vista.jpg 13_vista.jpg 14_vista.jpg 15_vista.jpg 16_vista.jpg 17_vista.jpg 18_vista.jpg 19_vista.jpg
+  OK   un nombre que no está, falla
+
+4 correctas, 0 fallos
+
+== Unión del diario y las traducciones
+  OK   en.json y ru.json llevan los textos de las dos
+  OK   si las dos cambian la misma traducción distinto, git lo deja en conflicto
+
+19 correctas, 0 fallidas
+
+== Dos carriles en paralelo sin pisarse
+  OK   una tarea a medias de otro hito con el mismo nombre no se confunde con la terminada — {"hito":"p2","tarea":"p2-1"}
+  OK   el carril B retoma la de su hito, desde su rama — {"hito":"arte","tarea":"Revisión completa y publicación","retoma":true,"rama":"trabajo/arte"}
+
+Resultado: 29 correctas, 0 fallidas
+
+== Excavación y malla de la roca
+  OK   la pared no se ve a cuadros (casi ninguna cara alineada con los ejes) — 0.0 % alineadas
+  OK   los trozos vecinos comparten los vértices del borde (sin rendijas) — 17 vértices comunes
+
+Resultado: 13 correctas, 0 fallidas
+
+== Versiones antiguas a las releases
+Archivar versiones: 13/13
+
+== Generador del mapa del mundo
+  OK   bosques: en campo abierto los árboles van en corros, no sueltos al azar — el 30 % más espeso tiene el 83 % de los árboles (3000 sitios)
+  OK   bosques: límite del bosque en la montaña (por encima, nada; junto a él, solo coníferas bajas) — 0 árboles por encima; 0 de 300 junto al límite mal
+
+Resultado: 88 correctas, 0 fallidas
+
+== Valles sin paredes lisas de kilómetros
+  OK   ninguna ladera de valle es un plano liso de más de 800 m — la más larga, 612 m (en 192554, 39843)
+  OK   lo liso es menos del 11 % de lo que tallan los valles — 9.3 % de 103400
+
+Resultado: todo correcto
+
+== Azar y ruido: un solo módulo, los mismos números
+  OK   combate/logica.js ofrece el mismo azar
+  OK   mina/malla.js ofrece el mismo ruido3
+
+Todo correcto
+
+== Textos traducidos
+  FALTA (ru)  Hacha
+  FALTA (ru)  Mantén para coger impulso y suelta para lanzar (Espacio)
+  FALTA (ru)  No llevas nada que lanzar en la mano
+  FALTA (ru)  ¡Le has dado a la liebre!
+!! FALLA: node pruebas/prueba_idiomas.mjs
+
+== Imágenes de cada cosa para el panel de fabricar
+485 bien, 0 fallos · 98 imágenes que enseña el panel, 22 aún sin su modelo
+
+== Noticias del desarrollo en Discord
+  OK   la captura es la de PC de esa versión, en el commit exacto — https://raw.githubusercontent.com/valravnxx/Kinhold/0cd077c3ab03da85d92f97a4f788794f62a1e11a/docs/capturas/demo-v91/pc_a.jpg
+  OK   sin webhooks no manda nada (y no falla) — Sin webhooks de Discord (secretos DISCORD_WEBHOOK_*): no se publica nada.
+
+Todo bien
+
+HAY FALLOS
+tardó 718 s
