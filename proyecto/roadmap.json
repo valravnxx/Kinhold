@@ -3764,6 +3764,13 @@
      "archivo": "jugar/demo/v166.html",
      "capturas": "capturas/demo-v166",
      "notas": "Nada que salga solo sobre las cosas: en el móvil, ningún cuadro de texto mientras juegas (lo dice el botón de acción grande y el aro en el suelo), y lo demás que puedes hacer, manteniendo pulsado el botón de acción; en PC, la lista, con Alt o el clic derecho."
+    },
+    {
+     "v": "v167",
+     "fecha": "2026-11-09",
+     "archivo": "jugar/demo/v167.html",
+     "capturas": "capturas/demo-v167",
+     "notas": "El contador de arriba, plegado: una placa pequeña con el total de lo que tienes almacenado en tu tierra, que se despliega al tocarla. En el móvil, más pequeños el botón de acción, Fabricar y Construir, la barra de abajo y los avisos de las necesidades, para que tapen menos."
     }
    ]
   },
