@@ -29,14 +29,22 @@ export function ponerRendimiento(boton) {
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   const b = document.createElement('button');
   b.id = 'btnDemoFps'; b.textContent = '… fps'; b.title = tr('Rendimiento');
-  // junto a «Menú»; si ahí la fila de botones crece (móvil estrecho) y taparía otras cosas, va suelto a la izquierda
-  const caja = boton.parentElement, alto = caja.getBoundingClientRect().height;
-  boton.after(b);
-  if (caja !== document.body && caja.getBoundingClientRect().height > alto + 4) { b.classList.add('suelto'); document.body.appendChild(b); }
   const panel = document.createElement('div');
   panel.id = 'demoRend'; panel.hidden = true;
-  document.body.appendChild(panel);
-  const colocar = () => { const r = b.getBoundingClientRect(); panel.style.top = Math.round(r.bottom + 8) + 'px'; panel.style.maxHeight = Math.max(160, innerHeight - r.bottom - 18) + 'px'; };
+  // en el juego, en Ajustes (el menú con pestañas: estudio de la interfaz, 7 nov), con su detalle debajo
+  const ajustes = document.getElementById('ajustesRend');
+  if (ajustes) {
+    const fila = document.createElement('div'); fila.className = 'tierra-fila';
+    fila.innerHTML = `<span>${tr('Rendimiento y calidad gráfica')}</span>`;
+    b.classList.add('boton-t'); fila.appendChild(b); ajustes.append(fila, panel);
+  } else {
+    // junto a «Menú»; si ahí la fila de botones crece (móvil estrecho) y taparía otras cosas, va suelto a la izquierda
+    const caja = boton.parentElement, alto = caja.getBoundingClientRect().height;
+    boton.after(b);
+    if (caja !== document.body && caja.getBoundingClientRect().height > alto + 4) { b.classList.add('suelto'); document.body.appendChild(b); }
+    document.body.appendChild(panel);
+  }
+  const colocar = () => { if (ajustes) return; const r = b.getBoundingClientRect(); panel.style.top = Math.round(r.bottom + 8) + 'px'; panel.style.maxHeight = Math.max(160, innerHeight - r.bottom - 18) + 'px'; };
   b.onclick = () => { panel.hidden = !panel.hidden; b.classList.toggle('sel', !panel.hidden); colocar(); refrescar(); };
   addEventListener('resize', colocar);
 
