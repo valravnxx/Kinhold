@@ -1,0 +1,20 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: llegan las liebres de alrededor y se dibujan — 2
+  OK   pc: de lejos pasta (o da saltitos) — {"x": 0, "z": 0, "anim": "pastar", "ox": 189.77, "oz": 13.1}
+  FALLA pc: se ve, en el suelo — {"id": "liebre:1,0:0", "x": 0, "y": 0, "z": 0, "anim": "pastar", "suelo": 1.6634517692182271e-06, "visible": false}
+  OK   pc: a 17 m se pone alerta — {"x": 192.76620908234074, "z": 12.140102281965467, "anim": "alerta", "ox": 192.8, "oz": 12.09}
+  OK   pc: a 4 m huye — {"x": 189.33749503001076, "z": -35.03464137136201, "anim": "alerta", "ox": 188.58, "oz": -52.9}
+  OK   pc: se aleja deprisa (más de 15 m en unos segundos) — 66.58159805832238
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: llegan las liebres de alrededor y se dibujan — 3
+  OK   movil: de lejos pasta (o da saltitos) — {"x": 0, "z": 0, "anim": "pastar", "ox": 186.65, "oz": -17.56}
+  FALLA movil: se ve, en el suelo — {"id": "liebre:1,0:0", "x": 0, "y": 0, "z": 0, "anim": "pastar", "suelo": 1.6634517692182271e-06, "visible": false}
+  OK   movil: a 17 m se pone alerta — {"x": 184.6497469042822, "z": -18.054283258295307, "anim": "alerta", "ox": 184.64, "oz": -18.06}
+  OK   movil: a 4 m huye — {"x": 163.533690254555, "z": -47.955387517946264, "anim": "huir", "ox": 158.84, "oz": -55.75}
+  OK   movil: se aleja deprisa (más de 15 m en unos segundos) — 55.30992044832463
+  OK   movil: sin errores en la página
+
+2 fallos: pc: se ve, en el suelo; movil: se ve, en el suelo
