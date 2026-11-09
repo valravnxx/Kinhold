@@ -1,0 +1,20 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: llegan las liebres de alrededor — 2
+  OK   pc: (la lanza en la mano)
+  FALLA pc: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza» — None
+  FALLA pc: la lanza sale de la mano y se ve volar
+  FALLA pc: acierta: la liebre cae muerta y la lanza queda a su lado — [] []
+  OK   pc: la lanza ya no vuela
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: llegan las liebres de alrededor — 4
+  OK   movil: (la lanza en la mano)
+  FALLA movil: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza» — None
+  FALLA movil: la lanza sale de la mano y se ve volar
+  FALLA movil: acierta: la liebre cae muerta y la lanza queda a su lado — [] []
+  OK   movil: la lanza ya no vuela
+  OK   movil: sin errores en la página
+
+6 fallos: pc: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza»; pc: la lanza sale de la mano y se ve volar; pc: acierta: la liebre cae muerta y la lanza queda a su lado; movil: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza»; movil: la lanza sale de la mano y se ve volar; movil: acierta: la liebre cae muerta y la lanza queda a su lado

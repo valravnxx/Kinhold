@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2519 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3026 KB
+
+== Construir demo única
+      3189 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4268 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2923 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2514 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3036 KB
+dist/kinhold_trozos.html 2528 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: cazar con la lanza
+  OK   movil: la lanza ya no vuela
+  OK   movil: sin errores en la página
+
+6 fallos: pc: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza»; pc: la lanza sale de la mano y se ve volar; pc: acierta: la liebre cae muerta y la lanza queda a su lado; movil: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza»; movil: la lanza sale de la mano y se ve volar; movil: acierta: la liebre cae muerta y la lanza queda a su lado
+!! FALLA: python3 pruebas/prueba_caza_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/caza
+
+HAY FALLOS
+tardó 143 s
