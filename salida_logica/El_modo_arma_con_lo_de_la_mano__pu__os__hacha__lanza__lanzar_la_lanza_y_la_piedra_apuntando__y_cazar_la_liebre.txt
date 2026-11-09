@@ -1,0 +1,27 @@
+Lógica:
+  OK   con las manos vacías, puños
+  OK   con algo que no es un arma (un cordel), puños
+  OK   con el hacha de piedra, hacha
+  OK   con la lanza en la izquierda y un cordel en la derecha, la lanza
+  OK   con piedras, piedras (se lanzan de una en una y quedan en el suelo)
+  OK   la lanza se lanza (y cae al suelo); el hacha no se lanza
+  OK   la lanza clava (su estocada llega más lejos que su tajo)
+  OK   y se lanza (coger impulso)
+  OK   lanzada, sale con poca fuerza (no más de 13 m/s) — 13.0 m/s
+  OK   y con desvío: unas a un lado y otras al otro — 19 a la izquierda, 15 a la derecha de 60
+  OK   apuntando a una liebre a 12 m, unas le dan y otras no — 23 de 60
+Servidor:
+  OK   con las manos vacías, su arma son los puños — punos
+  OK   al coger la lanza, su arma es la lanza — lanza
+  OK   y el otro la ve en su mano
+  OK   (se acerca andando a una liebre hasta unos 10 m: alerta, quieta) — alerta a 10.4 m
+  OK   al lanzarla sale de su mano (vuelve a los puños)
+  OK   el otro la ve salir volando
+  OK   y cae al suelo
+  OK   alguna de las que lanza mata la liebre: queda muerta en el suelo y sale de las vivas — 2 lanzadas
+  OK   recoge la lanza del suelo y vuelve a ser su arma
+  OK   con dos piedras en la mano, su arma son las piedras — piedras
+  OK   lanza una y le queda una; la lanzada queda en el suelo donde cae (unos 10 m más allá) — {"tipo":"piedra","n":1}
+  OK   sin piedras, vuelve a los puños — punos
+
+23 bien, 0 mal
