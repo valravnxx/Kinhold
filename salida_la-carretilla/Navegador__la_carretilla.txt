@@ -1,0 +1,87 @@
+PC: la carretilla sale del arcón al suelo y se carga
+  OK   del arcón sale la carretilla al suelo, delante de ti — La carretilla está en el suelo, delante de ti: Usar la empuja.
+  OK   no desaparece
+  OK   tiene su rueda de rodaja de tronco
+  OK   no se coge con las manos
+  OK   el menú ofrece empujarla y cargar 4 de la pila (caben 4) — ['Empujar la carretilla (vacía)', 'Cargar en la carretilla: 4 × Tronco corto']
+  OK   lleva 4 troncos cortos y queda 1 en la pila — Cargas en la carretilla: 4 × Tronco corto. Lleva 4.
+  OK   la carga se ve en la caja
+  OK   cargar queda en el registro con su autor
+PC: empujarla
+  OK   con algo en las manos no se empuja — Para empujarla necesitas las dos manos libres.
+  OK   con las manos libres, Usar la empuja — Empujas la carretilla (4 × Tronco corto). Usar la aparca.
+  OK   con cuatro troncos vas al 65 % (más que con la rastra llena) — 0.65
+  OK   abajo sale «Empujas: Carretilla» con Aparcar
+  OK   al andar, la carretilla va delante (a 1,4 m) — 1.40
+  OK   delante de verdad: hacia donde anda
+  OK   la rueda rueda al avanzar (unos 6 m: 25 rad) — 25.0
+  OK   las varas suben a las manos
+  OK   el personaje la empuja con la animación de empujar (no la de llevar en brazos) — empujarQuieto
+  OK   la carretilla va poco levantada (menos de 25°)
+     puños y agarraderas: [['middle_01_l', 0.053, 0.853, 0.89], ['middle_01_r', 0.053, 0.853, 0.89]]
+  OK   las agarraderas quedan en los puños (a menos de 8 cm de los nudillos), quieto — [['middle_01_l', 0.053, 0.853, 0.89], ['middle_01_r', 0.053, 0.853, 0.89]]
+  OK   empujándola no se coge nada con las manos
+PC: aparcarla y volver
+  OK   Usar la aparca donde se ve — 7.6,4 / [7.600000000000005, 4]
+  OK   fuera de tus tierras avisa de que cualquiera puede coger lo que lleva — Aparcas la carretilla fuera de tus tierras: cualquiera puede coger lo que lleva.
+  OK   aparcada, descansa en las patas
+  OK   y vuelves a andar a tu paso
+  OK   al recargar sigue donde la dejaste, con lo que lleva
+  OK   descargada, los 4 troncos caen a su lado — Descargas la carretilla: 4 × Tronco corto en el suelo.
+  OK   la leña va en la carretilla — Cargas en la carretilla: 30 × Leña. Lleva 30.
+  FALLA sin errores en la consola (PC) — Failed to load resource: the server responded with a status of 404 (File not found); Failed to load resource: the server responded with a status of 404 (File not found)
+Móvil: desde el panel y con los botones
+  OK   móvil: en el arcón, la carretilla sale con «Dejarlo en el suelo»
+  OK   móvil: la deja en el suelo
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_carretilla_navegador.py", line 185, in <module>
+    pg.locator('#panelInventario .inv-cerrar').tap()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 20405, in tap
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.tap(
+        ^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_locator.py", line 680, in tap
+    return await self._frame.tap(
+           ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 626, in tap
+    await self._channel.send("tap", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.tap: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#panelInventario .inv-cerrar")
+    - locator resolved to <button aria-label="✕" class="cerrar inv-cerrar">✕</button>
+  - attempting tap action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying tap action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying tap action
+      - waiting 100ms
+    18 × waiting for element to be visible, enabled and stable
+       - element is not visible
+     - retrying tap action
+       - waiting 500ms
+    - waiting for element to be visible, enabled and stable
+
