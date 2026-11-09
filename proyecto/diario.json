@@ -5802,5 +5802,19 @@
   "pruebas": "Revisor en la nube: lógica (con la prueba nueva de la caza; rota a propósito —la lanza no da nunca—: falla) y cazar con la lanza en navegador (PC y móvil; rota a propósito —no se dibuja la lanza—: falla), bien. Fuera, por la sesión: panel de inventario, objetos en el suelo y las liebres (solo se añade la liebre al catálogo, dos modelos del suelo y la lanza en vuelo: lo mira la prueba de la caza). Recorrido 219 bien y 9 mal: su parte nueva (la caza) sale bien; lo que falla (los cordeles de fibra para la cama de juncos y lo que va detrás: la cama, dormir en ella y volver a ella al morir) falla igual en main (pasado aquí, 9 nov), así que no para la publicación. Una primera versión cazaba en el paso de la hoguera y movía lo que llevaba en las manos: rompía el paso de los juncos; ahora la caza va al final",
   "capturas": "capturas/demo-v165",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T05:36:00+01:00",
+  "fin": "2026-11-09T05:50:31+01:00",
+  "titulo": "Interfaz: nada que salga solo sobre las cosas (demo v166)",
+  "hito": "interfaz",
+  "hecho": [
+   "La lista de lo demás que hay al alcance ya no sale sola (valravnx, 8 nov): en PC se abre y se cierra con Alt (o el clic derecho, en el puntero) y la etiqueta de la F dice «Alt más» cuando hay más.",
+   "En el móvil, ningún cuadro de texto sobre las cosas (valravnx, 9 nov): lo dice el botón de acción grande y el aro en el suelo; manteniendo pulsado el botón de acción, la lista, que se cierra sola al cambiar de cosa.",
+   "El menú del dedo quieto y del clic derecho, con la misma forma que la lista (placas con su imagen)."
+  ],
+  "pruebas": "La prueba de la acción a la vista, aquí, en PC y móvil (en el móvil sin etiqueta ni lista hasta mantener pulsado; en PC la lista con Alt): bien. Sin batería en la nube (cambio pequeño de interfaz).",
+  "capturas": "capturas/demo-v166",
+  "estado": "ok"
  }
 ]

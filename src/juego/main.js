@@ -1744,7 +1744,8 @@ function abrirMenuUsar(cx, cy, tactil = false) {
   menuUsar.innerHTML = '';
   for (const op of ops.slice(0, 8)) {
     const b = document.createElement('button');
-    b.textContent = op.texto;
+    b.className = 'placa';
+    b.innerHTML = `${op.icono && !window.__sinImagenes ? `<img src="${urlIcono(op.icono)}" alt="" onerror="this.style.visibility='hidden'">` : '<img alt="" style="visibility:hidden">'}<span>${esc(op.texto)}</span>`;
     // el clic que el navegador manda al levantar el dedo tras dejarlo quieto no elige nada (caería en el menú)
     b.onclick = (e) => { e.stopPropagation(); if (performance.now() < ignorarClicMenu) return; cerrarMenuUsar(); op.hacer(); };
     menuUsar.appendChild(b);
@@ -2695,6 +2696,9 @@ function pintarAccion() {
     // pide (valravnx, 8 nov: «salen solos, siendo un caos… toggle con alt o click derecho, pero no todo el rato»): Alt en
     // PC y mantener pulsado el botón de acción en el móvil la abren y la cierran; sin pedirla, la etiqueta dice que hay más
     const otras = accionVista ? opcionesUsar().filter(o => o.texto !== accionVista.texto) : [];
+    // se cierra sola al cambiar de cosa (al alejarte o al hacerla): abrirla vale para lo que tienes delante, no para siempre
+    const cosa = accionVista ? `${accionVista.pos.x.toFixed(1)},${accionVista.pos.z.toFixed(1)}` : null;
+    if (estado.verLista && cosa !== estado.listaDe) estado.verLista = false;
     accionOps = estado.verLista ? otras.slice(0, 3) : [];
     accionVista && (accionVista.hayMas = !estado.verLista && otras.length > 0);
     pintarBotonAccion(btn, accionVista);
@@ -2723,7 +2727,9 @@ function pintarAccion() {
       + (a.sub ? `<small>${esc(a.sub)}</small>` : '') + (a.barra !== undefined ? `<div class="barra"><i style="width:${Math.round(a.barra * 100)}%"></i></div>` : '') + '</div>';
     etq.classList.toggle('apagada', !!a.apagada);
   }
-  etq.hidden = false;
+  // en el móvil, sin etiqueta sobre la cosa (valravnx, 9 nov: «cuando paso delante de algo sale»): el botón de acción
+  // grande ya lleva su imagen, el verbo y lo que falta; queda el aro en el suelo
+  etq.hidden = !!estado.esTactil;
   // (que no se salga por los lados)
   const ancho = etq.offsetWidth / 2 + 8;
   etq.style.left = Math.max(ancho, Math.min(innerWidth - ancho, sx)) + 'px';
@@ -2792,7 +2798,10 @@ $('btnSube').onclick = () => cambiarPlanta(1);
 $('btnBaja').onclick = () => cambiarPlanta(-1);
 $('btnUsar').onclick = () => { if (estado.listaPorToque) { estado.listaPorToque = false; return; } cerrarMenuUsar(); usar(); };
 // la lista de lo demás que hay al alcance, solo cuando se pide: Alt en PC; mantener pulsado el botón de acción en el móvil
-function alternarLista() { estado.verLista = !estado.verLista; accionHasta = 0; }
+function alternarLista() {
+  estado.verLista = !estado.verLista; accionHasta = 0;
+  estado.listaDe = accionVista ? `${accionVista.pos.x.toFixed(1)},${accionVista.pos.z.toFixed(1)}` : null;
+}
 addEventListener('keydown', (e) => {
   if (e.key !== 'Alt' || e.repeat || e.ctrlKey || e.metaKey || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
   e.preventDefault(); alternarLista();

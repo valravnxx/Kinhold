@@ -2,7 +2,8 @@
 # vea como un VIDEOJUEGO ACABADO»). En el mundo de verdad (Whitholm), sin servidor, en PC (1280×800) y móvil (390×844):
 #   - fuera los botones de la derecha: en PC, ni Usar (es la F) ni Mover ni Desmontar fuera de construir; Construir, sí;
 #     en el móvil, el botón de acción grande;
-#   - junto a un matorral, con el hacha, la etiqueta «Desbrozar» sobre él (con la F en PC) y un aro en el suelo bajo él;
+#   - junto a un matorral, con el hacha, en PC la etiqueta «Desbrozar» sobre él (con la F) y un aro en el suelo bajo él; en
+#     el móvil, solo el aro (valravnx, 9 nov: nada que salga solo sobre las cosas);
 #     en el móvil, el botón de acción dice el verbo;
 #   - con unas ramas en el suelo al lado, lo primero es cogerlas; la lista no sale sola (la etiqueta dice «más») y, con Alt
 #     en PC o manteniendo pulsado el botón de acción en el móvil, enseña también desbrozar; tocar esa fila lo hace;
@@ -106,7 +107,10 @@ def recorrido(pg, nombre, pref, tactil):
     comprobar(f'{nombre}: con el hacha al lado de un matorral, la acción es desbrozarlo', bool(a) and 'Desbrozar' in a['texto'] and abs(a['x'] - m['x']) < 0.01, str(a))
     pg.wait_for_timeout(500)
     e, aro = pg.evaluate(ETQ), pg.evaluate(ARO)
-    comprobar(f'{nombre}: la etiqueta lo dice', bool(e) and 'Desbrozar' in e['txt'], str(e))
+    if tactil:   # en el móvil no sale nada sobre la cosa (valravnx, 9 nov): lo dice el botón de acción
+        comprobar(f'{nombre}: sin etiqueta sobre la cosa (lo dice el botón de acción)', not e, str(e))
+        e = None
+    else: comprobar(f'{nombre}: la etiqueta lo dice', bool(e) and 'Desbrozar' in e['txt'], str(e))
     comprobar(f'{nombre}: el aro está en el suelo bajo el matorral', aro['v'] and abs(aro['x'] - m['x']) < 0.01 and abs(aro['z'] - m['z']) < 0.01, str(aro))
     if e:
         sc = pg.evaluate(f"([x, y, z]) => {K}.proyectar(x, y, z)", [m['x'], aro['y'], m['z']])
@@ -123,7 +127,8 @@ def recorrido(pg, nombre, pref, tactil):
     pg.wait_for_timeout(600)
     # la lista no sale sola (valravnx, 8 nov): la etiqueta dice que hay más, y se abre con Alt (PC) o manteniendo pulsado
     # el botón de acción (móvil)
-    comprobar(f'{nombre}: la lista no sale sola; la etiqueta dice que hay más', not pg.evaluate(VISIBLE, '#accionLista') and 'más' in (pg.evaluate(ETQ) or {}).get('txt', ''), str(pg.evaluate(ETQ)))
+    if tactil: comprobar(f'{nombre}: la lista no sale sola, ni la etiqueta', not pg.evaluate(VISIBLE, '#accionLista') and not pg.evaluate(ETQ), str(pg.evaluate(ETQ)))
+    else: comprobar(f'{nombre}: la lista no sale sola; la etiqueta dice que hay más', not pg.evaluate(VISIBLE, '#accionLista') and 'más' in (pg.evaluate(ETQ) or {}).get('txt', ''), str(pg.evaluate(ETQ)))
     pg.screenshot(path=f'{SALIDA}/{pref}_2_sin_lista.png', timeout=180000)
     if tactil:
         pg.evaluate("document.getElementById('btnUsar').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerType: 'touch' }))")

@@ -3743,6 +3743,13 @@
      "archivo": "jugar/demo/v165.html",
      "capturas": "capturas/demo-v165",
      "notas": "Cazar la liebre con la lanza endurecida: con la lanza en la mano y una liebre a tiro delante, Usar la lanza; vuela hacia donde miras, el servidor decide si acierta y la liebre cae muerta con la lanza a su lado, para recogerlas"
+    },
+    {
+     "v": "v166",
+     "fecha": "2026-11-09",
+     "archivo": "jugar/demo/v166.html",
+     "capturas": "capturas/demo-v166",
+     "notas": "Nada que salga solo sobre las cosas: en el móvil, ningún cuadro de texto mientras juegas (lo dice el botón de acción grande y el aro en el suelo), y lo demás que puedes hacer, manteniendo pulsado el botón de acción; en PC, la lista, con Alt o el clic derecho."
     }
    ]
   },
