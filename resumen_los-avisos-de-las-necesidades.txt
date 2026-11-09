@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2534 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3042 KB
+
+== Construir demo única
+      3214 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4290 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2937 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2528 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3052 KB
+dist/kinhold_trozos.html 2542 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: los avisos de las necesidades
+  OK   móvil: sin errores en la página
+  OK   en inglés, la ficha sale en inglés — Thirst · 60%You can still hold on; at the maximum you will tire twice as fast and if you still do not drink, after a while you die.Drink water from a river or a lake: «Use» on the bank.
+
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 269 s
