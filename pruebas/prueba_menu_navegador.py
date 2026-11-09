@@ -100,7 +100,7 @@ def recorrido(pg, nombre, pref, tactil):
     comprobar(f'{nombre}: «Menú» (Tab en PC) abre el tablero en Equipo', vis(pg, '#hub') and vis(pg, '#panelInventario') and pg.evaluate("document.getElementById('btnInventario').classList.contains('sel')"))
     pest = [s for s in ['#btnInventario', '#tabFabricar', '#tabConstruir', '#btnMapa', '#tabTierra'] if vis(pg, s)]
     comprobar(f'{nombre}: con las cinco pestañas', len(pest) == 5, str(pest))
-    pie = pg.evaluate("[...document.querySelectorAll('#menu > *')].filter(e => e.offsetParent !== null).map(e => e.textContent.trim() || e.value)")
+    pie = pg.evaluate("[...document.querySelectorAll('#menu > *')].filter(e => e.offsetParent !== null).map(e => e.tagName === 'SELECT' ? e.value.toUpperCase() : e.textContent.trim())")
     comprobar(f'{nombre}: al pie, Ajustes, Ayuda, Decisiones, lo de pruebas, Salir y el idioma', all(t in pie for t in ['Ajustes', 'Ayuda', 'Decisiones', '+ Materiales', 'Reiniciar', 'Salir']) and ('ES' in pie or 'es' in pie), str(pie))
     ok, det = cabe(pg, '#panelInventario'); comprobar(f'{nombre}: el equipo cabe entre las pestañas y el pie', ok, det)
     if tactil: comprobar(f'{nombre}: las pestañas son botones redondos', vis(pg, '#btnInventario .o'))
