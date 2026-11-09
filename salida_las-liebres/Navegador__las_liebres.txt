@@ -1,0 +1,20 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: llegan las liebres de alrededor y se dibujan — 2
+  OK   pc: de lejos pasta (o da saltitos) — {"x": -47.363297432894996, "z": -46.45527244081114, "anim": "saltar", "ox": -47.82, "oz": -45.7}
+  OK   pc: se ve, en el suelo — {"id": "liebre:-1,-1:0", "ox": -48.69, "oz": -44.35, "x": -47.523143331381746, "y": -1.9135112045371443, "z": -46.190927086527246, "anim": "saltar", "suelo": -1.9135112045371443, "visible": true}
+  OK   pc: a 17 m se pone alerta — {"x": -41.35100608155949, "z": -50.60800081234006, "anim": "alerta", "ox": -40.8, "oz": -50.83}
+  OK   pc: a 4 m huye — {"x": -74.03986507984982, "z": -87.34105871053048, "anim": "alerta", "ox": -86.22, "oz": -102.68}
+  OK   pc: se aleja deprisa (más de 15 m en unos segundos) — 68.92917103162223
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: llegan las liebres de alrededor y se dibujan — 4
+  OK   movil: de lejos pasta (o da saltitos) — {"x": -77.69167014499223, "z": -86.08717579544836, "anim": "pastar", "ox": -77.24, "oz": -85.3}
+  OK   movil: se ve, en el suelo — {"id": "liebre:-1,-1:0", "ox": -77.24, "oz": -85.3, "x": -77.53358559424495, "y": -7.260763402873437, "z": -85.81166426704144, "anim": "pastar", "suelo": -7.260763402873437, "visible": true}
+  OK   movil: a 17 m se pone alerta — {"x": -76.50001657806654, "z": -84.26002342887543, "anim": "alerta", "ox": -76.5, "oz": -84.26}
+  OK   movil: a 4 m huye — {"x": -98.45083293327325, "z": -109.3274597298391, "anim": "huir", "ox": -110.58, "oz": -116.35}
+  OK   movil: se aleja deprisa (más de 15 m en unos segundos) — 59.33010370651361
+  OK   movil: sin errores en la página
+
+Todo bien
