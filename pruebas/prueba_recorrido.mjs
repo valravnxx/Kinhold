@@ -1393,7 +1393,7 @@ try {
     console.log('20. Vuelve a la hoguera de la orilla, recoge la lanza que hizo y caza una liebre');
     // P4, cazar (9 nov; src/logica/caza.js): recoge la lanza de la hoguera, la lleva en la mano, se acerca andando a una
     // liebre de la orilla hasta unos 16 m (se pone alerta y se queda quieta), se la lanza y el servidor decide que acierta:
-    // la liebre cae muerta y la lanza a su lado. Las recoge y las deja junto a la hoguera (despiezarla es la tarea siguiente).
+    // la liebre cae muerta y la lanza a su lado. Las recoge y las deja junto a la hoguera (y luego la despieza y la asa).
     if (sitioCaza) {
       const { hog, fogon } = sitioCaza, yo = J2.bienvenida.autor;
       await J2.andar(fogon.x, fogon.z); await pausa(1000 * RELOJ);   // (le llegan las liebres de allí)
@@ -1431,6 +1431,46 @@ try {
         for (const l2 of ['mano:der', 'mano:izq']) if (J2.inv.lugares[l2]) await J2.objeto({ tipo: 'soltar_suelo', de: l2, x: J2.pos.x, z: J2.pos.z });
       }
       for (const d of dejado) await J2.objeto({ tipo: 'coger_suelo', objeto: d.id, x: J2.pos.x, z: J2.pos.z, a: d.a });
+
+      // P4, despiezar y asar (9 nov; src/logica/comida.js): junto a la hoguera, despieza la liebre del suelo con la lasca
+      // que lleva (carne cruda y una piel), deja la carne en la hoguera encendida, la asa, la recoge y se la come.
+      console.log('21. Despieza la liebre con la lasca, asa la carne en la hoguera y se la come');
+      const muertaAqui = s.objetos.suelo.objetos.find(o => o.cosa.tipo === 'liebre' && Math.hypot(o.x - J2.pos.x, o.z - J2.pos.z) < 2);
+      if (muertaAqui) {
+        // la lasca: la lleva desde que la talló (si no, la coge de su suelo)
+        if (!J2.cuantos('lasca_silex')) { const o = s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === 'lasca_silex').sort((a, b) => Math.hypot(a.x - J2.pos.x, a.z - J2.pos.z) - Math.hypot(b.x - J2.pos.x, b.z - J2.pos.z))[0]; if (o) { await J2.andar(o.x + 0.3, o.z); await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J2.pos.x, z: J2.pos.z }); await J2.andar(muertaAqui.x + 0.5, muertaAqui.z); } }
+        else if (Math.hypot(muertaAqui.x - J2.pos.x, muertaAqui.z - J2.pos.z) > 1.5) await J2.andar(muertaAqui.x + 0.5, muertaAqui.z);
+        r = await J2.objeto({ tipo: 'fabricar', receta: 'despiezar_liebre', x: J2.pos.x, z: J2.pos.z });
+        comprobar('despieza con las manos la liebre del suelo, llevando la lasca', r.ok && !s.objetos.suelo.objetos.some(o => o.id === muertaAqui.id), r.motivo || `lasca: ${J2.cuantos('lasca_silex')}`);
+        for (const c of (s.objetos.fab.manos[yo] || [])) c.fin = Math.min(c.fin, Date.now() - 1);   // (sus 30 s, ya pasados)
+        r = await J2.objeto({ tipo: 'recoger_fabricado', x: J2.pos.x, z: J2.pos.z });
+        // lo que no le cupo cae a sus pies: lo coge
+        for (const t of ['carne_cruda', 'piel']) if (!J2.cuantos(t)) { const o = s.objetos.suelo.objetos.find(x => x.cosa.tipo === t && Math.hypot(x.x - J2.pos.x, x.z - J2.pos.z) < 2); const libre = ['mano:der', 'mano:izq'].find(l => !J2.inv.lugares[l]); if (o && t === 'carne_cruda' && !libre) { await J2.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J2.pos.x, z: J2.pos.z }); } if (o) await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J2.pos.x, z: J2.pos.z }); }
+        const carne = (() => { const ver = (c, ruta) => { if (!c) return null; if (c.tipo === 'carne_cruda') return { ruta, c }; for (const [i, x] of (c.dentro || []).entries()) { const y = ver(x, ruta + '/' + i); if (y) return y; } return null; }; for (const [l, c] of Object.entries(J2.inv.lugares)) { const y = ver(c, l); if (y) return y; } return null; })();
+        const piel = J2.cuantos('piel') + s.objetos.suelo.objetos.filter(x => x.cosa.tipo === 'piel' && Math.hypot(x.x - J2.pos.x, x.z - J2.pos.z) < 2).length;
+        comprobar('recoge la carne cruda, que se estropea con el tiempo (lleva hasta cuándo), y la piel', r.ok && carne && Number.isFinite(carne.c.hasta) && carne.c.hasta > Date.now() && piel >= 1, r.motivo || JSON.stringify(carne));
+        // la hoguera, encendida (si se ha apagado desde que hizo la lanza, la vuelve a encender con su yesca y su taladro)
+        const H2 = () => s.objetos.fab.estaciones[hog];
+        await J2.andar(fogon.x, fogon.z);
+        if (!(H2().fuego && H2().fuego.hasta > Date.now())) {
+          for (const t of ['taladro_fuego', 'yesca']) if (!J2.cuantos(t)) { const o = s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === t).sort((a, b) => Math.hypot(a.x - J2.pos.x, a.z - J2.pos.z) - Math.hypot(b.x - J2.pos.x, b.z - J2.pos.z))[0]; if (o) { await J2.andar(o.x + 0.3, o.z); await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, x: J2.pos.x, z: J2.pos.z }); } }
+          await J2.andar(fogon.x, fogon.z);
+          const re = await J2.objeto({ tipo: 'encender_fuego', estacion: hog, x: J2.pos.x, z: J2.pos.z });
+          comprobar('la hoguera se había apagado: la vuelve a encender', re.ok, re.motivo);
+        }
+        if (carne) {
+          r = await J2.objeto({ tipo: 'depositar_estacion', estacion: hog, de: carne.ruta, cantidad: 1, x: J2.pos.x, z: J2.pos.z });
+          const ra = await J2.objeto({ tipo: 'fabricar', receta: 'asar_carne', estacion: hog, x: J2.pos.x, z: J2.pos.z });
+          comprobar('deja la carne en la hoguera encendida y la asa', r.ok && ra.ok, `${r.motivo || ''} ${ra.motivo || ''}`);
+          for (const c of (H2().cola || [])) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1);   // (sus 45 s, ya pasados)
+          if (!['mano:der', 'mano:izq'].some(l => !J2.inv.lugares[l])) await J2.objeto({ tipo: 'soltar_suelo', de: 'mano:izq', x: J2.pos.x, z: J2.pos.z });
+          r = await J2.objeto({ tipo: 'recoger_fabricado', estacion: hog, x: J2.pos.x, z: J2.pos.z });
+          comprobar('recoge la carne asada', r.ok && J2.cuantos('carne_asada') === 1, r.motivo);
+          const antes = (s.necesidades.get(yo) || { hambre: 0 }).hambre;
+          r = await J2.objeto({ tipo: 'comer', objeto: 'carne_asada' });
+          comprobar('se la come: le quita el hambre (más que cruda)', r.ok && J2.cuantos('carne_asada') === 0 && (antes === 0 || s.necesidades.get(yo).hambre < antes), `${r.motivo || ''} hambre ${antes} → ${(s.necesidades.get(yo) || {}).hambre}`);
+        }
+      } else comprobar('la liebre cazada está a sus pies, junto a la hoguera', false);
     }
     J2.ws.close();
   }

@@ -29,7 +29,7 @@ import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
@@ -1589,6 +1589,8 @@ function accionPrincipal() {
   if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
   // con la lanza en la mano y una liebre a tiro delante, Usar la lanza hacia ella (P4)
   if (!it && pj.k === 0 && lanzaEnMano() && liebreATiro()) { const l = liebreATiro(); return A(tr('Lanzar la lanza'), 'lanza_endurecida', l, lanzar, { alto: 0.4 }); }
+  // con la lasca encima y una liebre cazada a tus pies, despiezarla (9 nov)
+  if (!it && pj.k === 0 && inventario().cuantos('lasca_silex') > 0 && liebreAlLado()) { const l = liebreAlLado(); return A(tr('Despiezar la liebre'), 'liebre', l, despiezar, { alto: 0.2 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
@@ -1706,6 +1708,8 @@ function opcionesUsar() {
   }
   // con la lanza en la mano, lanzarla hacia donde miras (o a la liebre que tengas a tiro delante) (P4)
   if (pj.k === 0 && lanzaEnMano()) ops.push({ texto: tr('Lanzar la lanza'), pos: liebreATiro() || { x: pj.x + Math.sin(pj.rot) * 3, z: pj.z + Math.cos(pj.rot) * 3 }, alto: 0.4, hacer: lanzar });
+  // la liebre cazada a tus pies: despiezarla (con la lasca; sin ella, el servidor dice qué falta) (9 nov)
+  if (pj.k === 0 && liebreAlLado()) ops.push({ texto: tr('Despiezar la liebre'), pos: liebreAlLado(), alto: 0.2, hacer: despiezar });
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
@@ -1850,6 +1854,16 @@ function beber() {
   mostrarAviso(tr('Bebes agua con las manos.'));
 }
 // Comer (P4): una unidad de lo que llevas (bayas, setas…). En línea, por el servidor; sin servidor (pruebas), aquí.
+// Despiezar la liebre cazada (9 nov; src/logica/comida.js): la receta de las manos, con la liebre del suelo a tu lado y
+// la lasca encima; al terminar, se recoge sola la carne cruda y la piel (como desde el panel de fabricar).
+function liebreAlLado() { const o = sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now()).find(x => x.cosa.tipo === 'liebre'); return o ? { x: o.x, z: o.z, id: o.id } : null; }
+function despiezar() {
+  hacerFabricacion({ tipo: 'fabricar', receta: 'despiezar_liebre', estacion: null, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    mostrarAviso(tr('Despiezando la liebre…'));
+    setTimeout(() => hacerFabricacion({ tipo: 'recoger_fabricado', estacion: null, x: pj.x, z: pj.z }, (q) => { if (!q.ok) mostrarAviso(tr(q.motivo), true); }), RECETAS.despiezar_liebre.s * 1000 + 400);
+  });
+}
 const comidaQueLlevas = () => Object.keys(NUTRE).filter(t => inventario().cuantos(t) > 0);
 function comer(tipo) {
   if (objetosRed) {
@@ -3179,7 +3193,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
-  beber, aguaAlLado, comer, lanzar, liebreATiro, accionPrincipal,
+  beber, aguaAlLado, comer, lanzar, liebreATiro, accionPrincipal, despiezar, liebreAlLado,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)
