@@ -35,8 +35,20 @@ export const ARMAS = {
   espada_escudo: { nombre: 'Espada y escudo', tipo: 'cuerpo', alcance: 1.7, alcanceEstocada: 1.9, prep: 0.38, prepEstocada: 0.3, golpe: 0.12, recup: 0.33, danio: 0.9, cansancio: 10, escudo: true },
   palo:         { nombre: 'Palo', tipo: 'cuerpo', alcance: 1.5, alcanceEstocada: 1.6, prep: 0.5, prepEstocada: 0.4, golpe: 0.12, recup: 0.4, danio: 0.55, contundente: true, cansancio: 9 },
   arco:         { nombre: 'Arco', tipo: 'distancia', tensado: 1.0, recarga: 0.8, vMin: 18, vMax: 55, danio: 0.95, danioTipo: 'perforante', cansancio: 6 },
-  piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5 },
+  piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5, deLaMano: true },   // (la piedra sale de la mano: src/logica/arma_mano.js)
+  // Lo que llevas en la mano (valravnx, 9 nov: «modo arma tendría que ser modo emplear el equipo que tengas en la mano»;
+  // src/logica/arma_mano.js dice cuál es cuál). Valores provisionales (registro de la demo y diario), a ajustar probando.
+  punos:        { nombre: 'Puños', tipo: 'cuerpo', alcance: 0.9, alcanceEstocada: 1.0, prep: 0.3, prepEstocada: 0.25, golpe: 0.1, recup: 0.3, danio: 0.22, contundente: true, cansancio: 7 },
+  cuchillo:     { nombre: 'Cuchillo', tipo: 'cuerpo', alcance: 1.0, alcanceEstocada: 1.15, prep: 0.3, prepEstocada: 0.24, golpe: 0.1, recup: 0.28, danio: 0.45, cansancio: 7 },
+  hacha:        { nombre: 'Hacha', tipo: 'cuerpo', alcance: 1.3, alcanceEstocada: 1.35, prep: 0.5, prepEstocada: 0.45, golpe: 0.12, recup: 0.42, danio: 0.8, cansancio: 11 },
+  mazo:         { nombre: 'Mazo de piedra', tipo: 'cuerpo', alcance: 1.2, alcanceEstocada: 1.25, prep: 0.55, prepEstocada: 0.5, golpe: 0.12, recup: 0.45, danio: 0.75, contundente: true, cansancio: 12 },
+  // la lanza endurecida al fuego: clava (la estocada, más larga y más rápida) y se lanza apuntando, con poca fuerza y
+  // bastante desvío (valravnx, 9 nov: «que tenga algo de desvío, que no tenga mucha fuerza porque es una lanza súper básica»)
+  lanza:        { nombre: 'Lanza endurecida', tipo: 'cuerpo', alcance: 1.9, alcanceEstocada: 2.3, prep: 0.5, prepEstocada: 0.36, golpe: 0.12, recup: 0.4, danio: 0.5, cansancio: 9,
+                  arrojar: { tensado: 0.8, recarga: 0.6, vMin: 6, vMax: 13, danio: 0.7, danioTipo: 'perforante', cansancio: 8, desvio: 4 } },
 };
+// Lo que se lanza con un arma: la de distancia, ella misma; la de cuerpo, lo de «arrojar» si lo tiene (la lanza).
+export function defTiro(arma) { const a = ARMAS[arma]; return !a ? null : a.tipo === 'distancia' ? a : a.arrojar || null; }
 
 // Una sola tabla de armadura (7 nov): lo que frena un golpe sale de las prendas puestas (src/logica/prendas.js), zona
 // a zona, como en la ropa: lo que se ve es lo que protege. Los tres nombres del duelo son conjuntos de prendas (lo que
@@ -265,9 +277,10 @@ export class Luchador {
   }
 
   // ---------- Distancia ----------
+  get defTiro() { return defTiro(this.arma); }
   empezarTensar() {
-    if (!this.puedeActuar() || this.def.tipo !== 'distancia' || this.corriendo) return false;
-    this.accion = 'tensando'; this.tAccion = 0; this.tension = 0; this.tTenso = 0;
+    if (!this.puedeActuar() || !this.defTiro || this.corriendo) return false;
+    this.accion = 'tensando'; this.tAccion = 0; this.tension = 0; this.tTenso = 0; this.linea = null;
     return true;
   }
   soltar() {
@@ -275,8 +288,8 @@ export class Luchador {
     if (this.tension < T.tensionMinima) { this.cancelarTensado('flojo'); return null; }
     const t = { tension: this.tension, tTenso: this.tTenso };
     // sacar y encajar la siguiente flecha (o coger otra piedra)
-    this.accion = 'recuperando'; this.tAccion = 0; this.duracion = this.def.recarga ?? 0.35;
-    this.cansancio = Math.min(100, this.cansancio + this.def.cansancio);
+    this.accion = 'recuperando'; this.tAccion = 0; this.duracion = this.defTiro.recarga ?? 0.35;
+    this.cansancio = Math.min(100, this.cansancio + this.defTiro.cansancio);
     return t;
   }
 
@@ -372,7 +385,7 @@ export class Luchador {
         if (this.tAccion >= this.duracion) { this.accion = 'recuperando'; this.tAccion = 0; this.duracion = this.def.recup; this.imparable = false; }
         break;
       case 'tensando':
-        this.tension = Math.min(1, this.tAccion / this.def.tensado);
+        this.tension = Math.min(1, this.tAccion / (this.defTiro ? this.defTiro.tensado : 1));
         if (this.tension >= 1) this.tTenso += dt;
         this.cansancio = Math.min(100, this.cansancio + (this.tTenso > 0 ? 6 : 2) * dt);
         break;
@@ -486,8 +499,9 @@ export function elevacionPara(d, v, h = T.alturaTiro) {
 // Crea un proyectil hacia un punto apuntado. La elevación se calcula para un tiro a plena tensión:
 // si no tensas del todo, la flecha se queda corta. Mantener tenso mucho rato hace temblar el pulso.
 // objetivo.y: altura a la que se apunta (0 = suelo; al apuntar a una persona, su pecho).
+// desvio (grados, opcional en el arma): lo que se tuerce cada tiro, a un lado o a otro (la lanza, mucho; una flecha, nada).
 export function crearProyectil(tirador, objetivo, tiro, r) {
-  const a = tirador.def;
+  const a = tirador.defTiro || tirador.def;
   const dx = objetivo.x - tirador.x, dz = objetivo.z - tirador.z;
   const d = Math.hypot(dx, dz);
   const v = a.vMin + (a.vMax - a.vMin) * tiro.tension;
@@ -495,8 +509,8 @@ export function crearProyectil(tirador, objetivo, tiro, r) {
   let rumbo = Math.atan2(dx, dz);
   const extra = Math.max(0, tiro.tTenso - T.temblorDesde) * 2.5;
   const brazo = 1 / tirador.factorBrazo();
-  rumbo += (r() * 2 - 1) * (T.temblorRumbo + extra) * Math.PI / 180 * brazo;
-  elev += (r() * 2 - 1) * (T.temblorElevacion + extra) * Math.PI / 180 * brazo;
+  rumbo += (r() * 2 - 1) * (T.temblorRumbo + extra + (a.desvio || 0)) * Math.PI / 180 * brazo;
+  elev += (r() * 2 - 1) * (T.temblorElevacion + extra + (a.desvio || 0) / 2) * Math.PI / 180 * brazo;
   const ch = Math.cos(elev);
   return {
     arma: tirador.arma, tirador,
@@ -511,9 +525,13 @@ export function zonaPorAltura(l, y, lateral) {
   if (y < 1.5) return Math.abs(lateral) > 0.17 ? (lateral < 0 ? 'brazoI' : 'brazoD') : 'torso';
   return 'cabeza';
 }
-// Avanza un proyectil; devuelve { tipo: 'suelo' } o { tipo: 'blanco', luchador, zona, ... } o null
-// protegido (opcional): (L) → motivo o null. A quien protege, la flecha llega pero no le hiere (se para ahí).
-export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null) {
+// Avanza un proyectil; devuelve { tipo: 'suelo' } o { tipo: 'blanco', luchador, zona, ... } o { tipo: 'presa', presa }
+// o null. protegido (opcional): (L) → motivo o null. A quien protege, la flecha llega pero no le hiere (se para ahí).
+// mundo (opcional, el del servidor con el terreno): { suelo(x, z): altura del suelo, presas: [{ id, x, z }] (las liebres) }.
+// Sin él, el suelo es llano a la altura de quien tira (y = 0). Con él, p.base es la altura del suelo bajo el tirador.
+export const ALTO_PRESA = 0.45, RADIO_PRESA = 0.35;   // m: la liebre, de pie o agachada
+export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null, mundo = null) {
+  const suelo = (x, z) => (mundo && mundo.suelo && Number.isFinite(p.base) ? mundo.suelo(x, z) - p.base : 0);
   if (!p.activo) return null;
   const pasos = Math.max(1, Math.ceil(Math.hypot(p.vx, p.vy, p.vz) * dt / 0.15));
   const h = dt / pasos;
@@ -523,8 +541,8 @@ export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null)
     p.recorrido += Math.hypot(p.vx, p.vy, p.vz) * h;
     for (const L of blancos) {
       if (L === p.tirador || L.fuera) continue;
-      const ex = p.x - L.x, ez = p.z - L.z;
-      if (Math.hypot(ex, ez) <= 0.3 && p.y > 0 && p.y < 1.8) {
+      const ex = p.x - L.x, ez = p.z - L.z, yl = p.y - suelo(L.x, L.z);   // (la altura sobre su suelo)
+      if (Math.hypot(ex, ez) <= 0.3 && yl > 0 && yl < 1.8) {
         p.activo = false;
         const motivo = protegido ? protegido(L) : null;
         if (motivo) return { tipo: 'protegido', luchador: L, motivo };
@@ -534,8 +552,8 @@ export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null)
         }
         // lado respecto a hacia dónde mira el blanco
         const lateral = ex * Math.cos(L.rot) - ez * Math.sin(L.rot);
-        const zona = zonaPorAltura(L, p.y, lateral);
-        const a = ARMAS[p.arma];
+        const zona = zonaPorAltura(L, yl, lateral);
+        const a = defTiro(p.arma);
         const v = Math.hypot(p.vx, p.vy, p.vz);
         const sev = a.danio * (v / a.vMax) * L.proteccion(zona, a.danioTipo) * (0.8 + 0.4 * r());
         const herida = L.recibirHerida(zona, sev, a.danioTipo);
@@ -556,7 +574,11 @@ export function moverProyectil(p, dt, blancos, r, dianas = [], protegido = null)
         }
       }
     }
-    if (p.y <= 0) { p.y = 0; p.activo = false; return { tipo: 'suelo' }; }
+    if (mundo && mundo.presas) for (const q of mundo.presas) {
+      if (Math.hypot(p.x - q.x, p.z - q.z) <= RADIO_PRESA && p.y - suelo(q.x, q.z) < ALTO_PRESA) { p.activo = false; return { tipo: 'presa', presa: q.id }; }
+    }
+    const s0 = suelo(p.x, p.z);
+    if (p.y <= s0) { p.y = s0; p.activo = false; return { tipo: 'suelo' }; }
   }
   return null;
 }

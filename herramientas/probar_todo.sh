@@ -47,7 +47,7 @@ paso "Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el ser
 paso "Desconectarse: dormido en el mundo, atacable unos minutos fuera de tu tierra, en el servidor" node pruebas/prueba_dormidos.mjs
 paso "Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cuerpo con la mitad, y a tu cama" node pruebas/prueba_muerte.mjs
 paso "Las liebres: pastan, se ponen alerta y huyen de quien se acerca; las mueve el servidor" node pruebas/prueba_fauna.mjs
-paso "Cazar con la lanza: vuela, el servidor decide si acierta, la liebre cae y la lanza queda en el suelo" node pruebas/prueba_caza.mjs
+paso "El modo arma con lo de la mano: puños, hacha, lanza; lanzar la lanza y la piedra apuntando, y cazar la liebre" node pruebas/prueba_arma_mano.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
@@ -182,7 +182,7 @@ paso "Navegador: el chat de texto" python3 pruebas/prueba_charla_navegador.py di
 paso "Navegador: dormido al desconectarse" python3 pruebas/prueba_desconectado_navegador.py dist/kinhold_demo.html "$C/desconectado"
 paso "Navegador: morir y que te saqueen" python3 pruebas/prueba_muerte_navegador.py dist/kinhold_demo.html "$C/muerte"
 paso "Navegador: las liebres" python3 pruebas/prueba_fauna_navegador.py dist/kinhold_demo.html "$C/liebres"
-paso "Navegador: cazar con la lanza" python3 pruebas/prueba_caza_navegador.py dist/kinhold_demo.html "$C/caza"
+paso "Navegador: el modo arma con lo de la mano y cazar con la lanza" python3 pruebas/prueba_caza_navegador.py dist/kinhold_demo.html "$C/caza"
 paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"

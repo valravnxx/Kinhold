@@ -4,6 +4,9 @@ import { mat, deLote, deMano, cajaR } from '../mundo/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { vestirConTaller, pintarHeridaTaller, animarTaller } from './taller.js';
+import { loteEnMano } from '../juego/llevado.js';
+import { crearModeloLanza } from '../juego/fauna.js';
+import { ARMAS, defTiro } from './logica.js';
 
 const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
 const ROPA = { lino: [LINO, LINO_OSC], gambeson: [0xb59a6a, 0x8f7a52], malla: [0x8a8f94, 0x5f6368] };
@@ -49,8 +52,25 @@ function espada({ largoHoja, anchoBase, anchoPunta, largoPuno, anchoCruz }) {
   hoja(L, anchoBase, anchoPunta, largoHoja, 0.009, yc + 0.012);
   return deMano(L);
 }
-export function modeloArma(tipo) {
+// objeto (opcional): lo que se lleva en la mano (src/logica/arma_mano.js); se dibuja eso, como en el mundo (valravnx, 9 nov:
+// «modo emplear el equipo que tengas en la mano»): la lanza endurecida, la piedra, o el modelo de la mano de cada cosa
+// (src/juego/llevado.js). Sin objeto (el rival de práctica, las pruebas), el modelo del arma.
+export function modeloArma(tipo, objeto = null) {
   let g = new THREE.Group();
+  if (tipo === 'punos') { g.userData.tipo = tipo; return g; }
+  if (objeto === 'lanza_endurecida' || (tipo === 'lanza' && !objeto)) {
+    // la lanza, de 1,8 m, cogida a un tercio: el regatón a 0,55 m por detrás de la mano y la punta a 1,25 m
+    const l = crearModeloLanza(); l.rotation.x = -Math.PI / 2; l.position.y = 0.35; g.add(l);
+    marcador(g, 'punta', 1.22); marcador(g, 'medio', 0.6);
+    g.userData.tipo = tipo; return g;
+  }
+  if (objeto === 'piedra') { g = modeloPiedra(); g.userData.tipo = tipo; return g; }
+  if (objeto && objeto !== 'espada') {
+    g = deMano(loteEnMano(objeto));
+    const caja = new THREE.Box3().setFromObject(g), alto = Math.max(0.2, caja.max.y);
+    marcador(g, 'punta', alto); marcador(g, 'medio', alto * 0.5);
+    g.userData.tipo = tipo; return g;
+  }
   if (tipo === 'espada_larga') {
     // espada de mano y media: empuñadura en el origen; la hoja sale hacia +Y (hasta 1,2 m)
     g = espada({ largoHoja: 0.98, anchoBase: 0.048, anchoPunta: 0.018, largoPuno: 0.3, anchoCruz: 0.26 });
@@ -232,10 +252,10 @@ export function crearCombatiente({ armadura = 'lino', colorCinta = 0xc0392b, rec
   if (recursos) raiz.userData.listo = vestirConTaller(raiz, { armadura, colorCinta, sexo, capas, aspecto }, recursos);
   return raiz;
 }
-export function ponerArma(raiz, tipo) {
+export function ponerArma(raiz, tipo, objeto = null) {
   const u = raiz.userData;
   if (u.arma) u.manos.remove(u.arma);
-  u.arma = modeloArma(tipo);
+  u.arma = modeloArma(tipo, objeto); u.objeto = objeto;
   u.manos.add(u.arma);
   if (u.escudo) { u.escudo.removeFromParent(); u.escudo = null; }
   if (tipo === 'espada_escudo') {
@@ -332,9 +352,21 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea) {
   u.cuerpo.rotation.x += (inclina - u.cuerpo.rotation.x) * k;
   u.cuerpo.rotation.z = 0;
   // arma
-  const tipo = L.arma;
+  const tipo = L.arma, def = ARMAS[tipo] || {};
   let obj;
-  if (tipo === 'espada_larga' || tipo === 'palo' || tipo === 'espada_escudo') {
+  // coger impulso para lanzar lo de la mano (la lanza, la piedra): el brazo atrás y arriba, y al soltar, adelante
+  const tirando = def.tipo === 'cuerpo' && defTiro(tipo) && (L.accion === 'tensando' || (L.accion === 'recuperando' && !L.linea));
+  if (tirando) {
+    const tensando = L.accion === 'tensando', k = tensando ? L.tension : 0;
+    const m = tensando ? V(-0.28, 1.55 + k * 0.12, -0.1 - k * 0.3) : V(-0.2, 1.3, 0.45);
+    u.manos.position.lerp(m, Math.min(1, dt * 14));
+    u.manos.quaternion.setFromUnitVectors(V(0, 1, 0), V(0, 0.18, 1).normalize());   // la lanza tumbada, la punta delante
+    if (u.arma) u.arma.visible = tensando;   // (al soltar ya no la llevas)
+    apuntarBrazo(u.brazos[1], u.manos.position);
+    apuntarBrazo(u.brazos[0], V(0.32, 1.3, 0.35));
+    animarTaller(u, L, dt, velocidad, { d: u.manos.position.clone() }, null);
+  } else if (def.tipo === 'cuerpo') {
+    if (u.arma) u.arma.visible = true;
     const conEscudo = tipo === 'espada_escudo';
     const base = conEscudo ? POSE_ESCUDO : POSES.base;
     if (L.accion === 'preparando') obj = mezclar(base, POSES[L.linea].p, suave(t));
@@ -364,8 +396,9 @@ export function animarCombatiente(raiz, L, dt, velocidad, cojea) {
     } else {
       apuntarBrazo(u.brazos[0], u.pose.m.clone().add(V(0.05, 0, 0)));
       apuntarBrazo(u.brazos[1], u.pose.m.clone().add(V(-0.05, 0, 0)));
-      // dos manos en el puño: la derecha junto a la cruz y la izquierda junto al pomo (en el palo, más separadas)
-      const [sd, si] = tipo === 'palo' ? [0.1, -0.22] : [0.07, -0.07];
+      // dos manos en el puño: la derecha junto a la cruz y la izquierda junto al pomo (en el palo, la lanza, el hacha y
+      // el mazo, más separadas; el cuchillo y los puños, juntas)
+      const [sd, si] = tipo === 'palo' || tipo === 'lanza' ? [0.1, -0.22] : tipo === 'hacha' || tipo === 'mazo' ? [0.02, -0.16] : [0.02, -0.02];
       animarTaller(u, L, dt, velocidad, { d: u.pose.m.clone().addScaledVector(u.pose.d, sd), i: u.pose.m.clone().addScaledVector(u.pose.d, si), dosManos: true }, { d: u.pose.d, i: u.pose.d });
     }
   } else if (tipo === 'arco') {
