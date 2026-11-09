@@ -28,7 +28,7 @@ _ICONOS = _re.search(r"CARPETA_ICONOS = '([^']+)'", open(os.path.join(RAIZ, 'src
 shutil.copytree(os.path.join(RAIZ, 'docs', _ICONOS), f'{sitio}/{_ICONOS}')  # las imágenes de cada cosa
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
     if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -227,7 +227,7 @@ with sync_playwright() as p:
     mv.screenshot(path=f'{SALIDA}/05_movil_arcon.png')
     mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
     mv.evaluate("document.querySelector('#panelInventario .eq-centro').scrollTop = 0")
-    mv.tap('#panelInventario .inv-cerrar')
+    mv.tap('#hubCerrar')   # (la cruz del menú con pestañas)
     comprobar('el ✕ cierra el panel', not mv.is_visible('#panelInventario'))
     caja = mv.locator('#llevas').bounding_box()
     comprobar('en el móvil, lo que llevas se ve abajo sin salirse de la pantalla', caja and caja['x'] >= 0 and caja['x'] + caja['width'] <= 390 and 'Tronco corto' in mv.inner_text('#llevas'), str(caja))

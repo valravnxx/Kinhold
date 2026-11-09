@@ -25,7 +25,7 @@ _ICONOS = _re.search(r"CARPETA_ICONOS = '([^']+)'", open(os.path.join(RAIZ, 'src
 shutil.copytree(os.path.join(RAIZ, 'docs', _ICONOS), f'{sitio}/{_ICONOS}')  # las imágenes del panel de equipo
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
     if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -181,7 +181,7 @@ with sync_playwright() as p:
     foto(pg, 'rastra_05_movil_arcon')
     pg.locator('#panelInventario .inv-alsuelo').tap()
     comprobar('móvil: la deja en el suelo', rastra(pg) is not None)
-    pg.locator('#panelInventario .inv-cerrar').tap()
+    pg.locator('#hubCerrar').tap()   # (la cruz del menú con pestañas)
     pg.locator('#btnUsar').tap()
     comprobar('móvil: el botón Usar la engancha', pg.evaluate(f"!!{K}.miRastra()"), aviso(pg))
     andar(pg, 40)
