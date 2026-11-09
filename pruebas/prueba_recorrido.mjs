@@ -1459,7 +1459,7 @@ try {
             for (const [tipo, da] of [['piedra', 'piedra'], ['silex', 'silex']]) {
               await traer(da, tipo);
               await J2.andar(pt.x + 1, pt.z);
-              const l = ['mano:der', 'mano:izq'].find(x => J2.inv.lugares[x]?.tipo === da);
+              const l = J2.inv.rutasCon(da)[0];   // (en la mano o donde lo haya guardado)
               if (l) await J2.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J2.pos.x, z: J2.pos.z });
             }
             const rf = await J2.objeto({ tipo: 'fabricar', receta: 'lasca_silex', estacion: pt.id, x: J2.pos.x, z: J2.pos.z });
