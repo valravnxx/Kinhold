@@ -103,7 +103,7 @@ function postura(anim, t, u) {
     return { alto: 0.18, inclina: 0.1 + s * 0.12, cabeza: 0.1, orejas: -0.6, delante: s * 0.5, detras: -s * 0.6, salto: Math.max(0, s) * 0.07 };
   }
   if (anim === 'alerta') {
-    return { alto: 0.25, inclina: -0.6, cabeza: 0.45 + Math.sin(t * 0.7 + u * 6) * 0.08, orejas: 0.1 + Math.sin(t * 2.1 + u * 9) * 0.06, delante: 0.12, detras: -0.1, salto: 0 };
+    return { alto: 0.2, inclina: -0.5, cabeza: 0.45 + Math.sin(t * 0.7 + u * 6) * 0.08, orejas: 0.1 + Math.sin(t * 2.1 + u * 9) * 0.06, delante: 0.12, detras: -0.1, salto: 0 };
   }
   // pastar: agachada, el hocico en la hierba, mordisqueando
   return { alto: 0.17, inclina: 0.32, cabeza: 0.95 + Math.max(0, Math.sin(t * 9 + u * 5)) * 0.08, orejas: -1.25, delante: 0.05, detras: 0.15, salto: 0 };
