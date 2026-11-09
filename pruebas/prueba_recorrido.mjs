@@ -1483,13 +1483,39 @@ try {
             const rr = await J2.objeto({ tipo: 'echar_fuego', estacion: hog, objeto: 'rama', x: J2.pos.x, z: J2.pos.z });
             comprobar('la hoguera se ha apagado y no le queda nada: le echa una rama de por aquí', rr.ok, rr.motivo);
           }
-          for (const t of ['taladro_fuego', 'yesca']) if (!J2.cuantos(t)) { const o = s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === t).sort((a, b) => Math.hypot(a.x - J2.pos.x, a.z - J2.pos.z) - Math.hypot(b.x - J2.pos.x, b.z - J2.pos.z))[0]; if (o) { await J2.andar(o.x + 0.3, o.z); await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, x: J2.pos.x, z: J2.pos.z }); } }
+          // las manos libres (la carne y la lasca, a sus pies: luego las vuelve a coger) para el taladro y la yesca
+          const aPies = [];
+          for (const l of ['mano:der', 'mano:izq']) if (J2.inv.lugares[l]) { const q = await J2.objeto({ tipo: 'soltar_suelo', de: l, x: J2.pos.x, z: J2.pos.z }); if (q.ok) aPies.push({ id: q.datos.objeto, x: J2.pos.x, z: J2.pos.z }); }
+          const deMano = async (receta) => { const q = await J2.objeto({ tipo: 'fabricar', receta, x: J2.pos.x, z: J2.pos.z }); for (const c of (s.objetos.fab.manos[yo] || [])) c.fin = Math.min(c.fin, Date.now() - 1); const q2 = await J2.objeto({ tipo: 'recoger_fabricado', x: J2.pos.x, z: J2.pos.z }); return q.ok && q2.ok; };
+          const soltarManos = async () => { for (const l of ['mano:der', 'mano:izq']) if (J2.inv.lugares[l]) await J2.objeto({ tipo: 'soltar_suelo', de: l, x: J2.pos.x, z: J2.pos.z }); };
+          for (const t of ['taladro_fuego', 'yesca']) if (!J2.cuantos(t)) { const o = s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === t).sort((a, b) => dist2(a) - dist2(b))[0]; if (o && dist2(o) < 200) { await J2.andar(o.x + 0.3, o.z); await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, x: J2.pos.x, z: J2.pos.z }); } }
+          // si al morir se le rompieron, los vuelve a hacer con lo de por aquí: yesca de un hongo yesquero (o de fibra);
+          // el taladro, con 2 ramas y un cordel de fibra, con las manos
+          if (!J2.cuantos('yesca')) { await J2.andar(fogon.x, fogon.z); if (!(await recogerAqui('yesquero', 'yesca'))) { let n = 0; while (J2.cuantos('fibra') < 2 && n++ < 6) await recogerAqui(n % 2 ? 'ortiga' : 'hierba_larga', 'fibra'); await deMano('yesca'); } }
+          if (!J2.cuantos('taladro_fuego')) {
+            const lleva = ['mano:der', 'mano:izq'].map(l => J2.inv.lugares[l]?.tipo);
+            await J2.andar(fogon.x + 1.5, fogon.z); const taller2 = { ...J2.pos };
+            for (const l of ['mano:der', 'mano:izq']) if (J2.inv.lugares[l]) { const q = await J2.objeto({ tipo: 'soltar_suelo', de: l, x: J2.pos.x, z: J2.pos.z }); if (q.ok) aPies.push({ id: q.datos.objeto, x: J2.pos.x, z: J2.pos.z }); }
+            let n = 0; while (J2.cuantos('fibra') < 3 && n++ < 8) await recogerAqui(n % 2 ? 'ortiga' : 'hierba_larga', 'fibra');
+            await J2.andar(taller2.x, taller2.z); await soltarManos();
+            n = 0; while (J2.cuantos('rama') < 2 && n++ < 4) await recogerAqui('ramas', 'rama');
+            await J2.andar(taller2.x, taller2.z); await soltarManos();
+            const hecho = (await deMano('cordel')) && (await soltarManos(), await deMano('taladro_fuego'));
+            comprobar('se le rompió el taladro al morir: hace otro (2 ramas y un cordel de fibra)', hecho && J2.cuantos('taladro_fuego') === 1, `${lleva}`);
+          }
           await J2.andar(fogon.x, fogon.z);
           const re = await J2.objeto({ tipo: 'encender_fuego', estacion: hog, x: J2.pos.x, z: J2.pos.z });
           comprobar('la hoguera se había apagado: la vuelve a encender', re.ok, re.motivo);
         }
-        if (carne) {
-          r = await J2.objeto({ tipo: 'depositar_estacion', estacion: hog, de: carne.ruta, cantidad: 1, x: J2.pos.x, z: J2.pos.z });
+        // lo que dejó a sus pies para encenderla (la carne, la lasca), lo vuelve a coger
+        for (const o of s.objetos.sueloVisible(Date.now()).filter(x => ['carne_cruda', 'lasca_silex'].includes(x.cosa.tipo) && dist2(x) < 6)) {
+          if (J2.cuantos(o.cosa.tipo)) continue;
+          if (['mano:der', 'mano:izq'].every(l => J2.inv.lugares[l])) await J2.objeto({ tipo: 'soltar_suelo', de: J2.inv.lugares['mano:der'].tipo === 'carne_cruda' ? 'mano:izq' : 'mano:der', x: J2.pos.x, z: J2.pos.z });
+          await J2.andar(o.x + 0.3, o.z); await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J2.pos.x, z: J2.pos.z }); await J2.andar(fogon.x, fogon.z);
+        }
+        const carneYa = (() => { const ver = (c, ruta) => { if (!c) return null; if (c.tipo === 'carne_cruda') return { ruta, c }; for (const [i, x] of (c.dentro || []).entries()) { const y = ver(x, ruta + '/' + i); if (y) return y; } return null; }; for (const [l, c] of Object.entries(J2.inv.lugares)) { const y = ver(c, l); if (y) return y; } return null; })();
+        if (carneYa) {
+          r = await J2.objeto({ tipo: 'depositar_estacion', estacion: hog, de: carneYa.ruta, cantidad: 1, x: J2.pos.x, z: J2.pos.z });
           const ra = await J2.objeto({ tipo: 'fabricar', receta: 'asar_carne', estacion: hog, x: J2.pos.x, z: J2.pos.z });
           comprobar('deja la carne en la hoguera encendida y la asa', r.ok && ra.ok, `${r.motivo || ''} ${ra.motivo || ''}`);
           for (const c of (H2().cola || [])) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1);   // (sus 45 s, ya pasados)
