@@ -5,5 +5,11 @@
   "hito": "supervivencia",
   "rama": "trabajo/20261109-0522"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261109-0554-modo-arma": {
+  "inicio": "2026-11-09T05:53:59+00:00",
+  "tarea": "El modo arma emplea lo que llevas en la mano (valravnx, 9 nov: «prioridad absoluta»; hoy siempre sale la espada larga): el servidor saca el arma del inventario (fuera elegirla desde el navegador), y en la mano se ve lo que llevas; con las manos vacías o con algo que no es un arma, puños. Las hachas y el cuchillo cortan, el mazo de piedra golpea, el palo cavador, la vara y la rama son palo; la lanza endurecida clava (la estocada es la suya). Fuera la espada larga de pruebas, también del rival de práctica",
+  "hito": "supervivencia",
+  "rama": "trabajo/20261109-0554-modo-arma"
+ }
 }

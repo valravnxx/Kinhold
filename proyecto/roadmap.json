@@ -1561,6 +1561,16 @@
      "fin": "2026-11-09T04:43:12+00:00"
     },
     {
+     "nombre": "El modo arma emplea lo que llevas en la mano (valravnx, 9 nov: «prioridad absoluta»; hoy siempre sale la espada larga): el servidor saca el arma del inventario (fuera elegirla desde el navegador), y en la mano se ve lo que llevas; con las manos vacías o con algo que no es un arma, puños. Las hachas y el cuchillo cortan, el mazo de piedra golpea, el palo cavador, la vara y la rama son palo; la lanza endurecida clava (la estocada es la suya). Fuera la espada larga de pruebas, también del rival de práctica",
+     "estado": "en_curso",
+     "inicio": "2026-11-09T05:53:59+00:00",
+     "rama": "trabajo/20261109-0554-modo-arma"
+    },
+    {
+     "nombre": "Lanzar la lanza endurecida apuntando, en el modo arma (valravnx, 9 nov: «lanzarla tú apuntando… que tenga algo de desvío, que no tenga mucha fuerza»): se apunta con la mira (PC: botón de lanzar mantenido y soltar; móvil: su botón), sale con desvío y poca fuerza, vuela por el servidor (todos la ven), hiere a quien da y mata la liebre a la que alcanza, y cae al suelo para recogerla. Fuera la caza por Usar de la v165 (src/logica/caza.js). Recorrido: el jugador hace la lanza, la saca en el modo arma y caza una liebre lanzándola",
+     "estado": "pendiente"
+    },
+    {
      "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca de sílex (carne cruda y piel pequeña: el origen de la piel, que hoy no tiene, en pruebas/prueba_origenes.mjs); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
      "estado": "en_curso",
      "inicio": "2026-11-09T05:22:57+00:00",
