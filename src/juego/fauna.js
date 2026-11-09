@@ -134,7 +134,7 @@ export function crearLiebreMuerta() {
   M.tronco.position.y = 0; M.tronco.rotation.x = 0.05;
   M.cabeza.rotation.x = -0.25;
   for (const e of M.orejas) e.rotation.x = -1.5;
-  M.delante.rotation.x = -1.1; M.detras.rotation.x = 1.0;
+  M.delante.rotation.x = -0.75; M.detras.rotation.x = 0.55;
   M.raiz.rotation.z = Math.PI / 2; M.raiz.position.y = 0.075;
   M.raiz.traverse(o => { delete o.userData.liebre; });
   g.add(M.raiz);
@@ -152,7 +152,7 @@ export function crearFauna({ escena, alturaSuelo }) {
     if (msg.tipo === 'lanza' && typeof msg.id === 'string' && Number.isFinite(msg.x) && Number.isFinite(msg.z) && Number.isFinite(msg.dir)) {
       if (lanzas.has(msg.id) || globalThis.__mutarLanza) return;   // (__mutarLanza: la prueba de navegador, rota a propósito)
       const g = crearModeloLanza(); raiz.add(g);
-      lanzas.set(msg.id, { g, x: msg.x, z: msg.z, dir: msg.dir, vel: msg.vel || 16, alcance: msg.alcance || 20, d: 0, hasta: null });
+      lanzas.set(msg.id, { g, x: msg.x, z: msg.z, dir: msg.dir, vel: msg.vel || 16, alcance: msg.alcance || 20, t0: performance.now(), d: 0, hasta: null });
     } else if (msg.tipo === 'lanza_cae') {
       const l = lanzas.get(msg.id);
       if (l && Number.isFinite(msg.x)) l.hasta = Math.hypot(msg.x - l.x, msg.z - l.z);
@@ -182,7 +182,7 @@ export function crearFauna({ escena, alturaSuelo }) {
     t += dt;
     // las lanzas: adelante a su velocidad; sale a la altura del hombro y cae al final (hasta donde dice el servidor)
     for (const [id, l] of lanzas) {
-      l.d += l.vel * dt;
+      l.d = l.vel * (performance.now() - l.t0) / 1000;   // (con el reloj de verdad: a pocos fotogramas, el paso se recorta)
       const fin = l.hasta !== null ? l.hasta : l.alcance;
       if (l.d >= fin + 0.01 && (l.hasta !== null || l.d > l.alcance + 8)) { raiz.remove(l.g); lanzas.delete(id); continue; }
       const d = Math.min(l.d, fin), u = Math.min(1, d / Math.max(1, l.alcance));

@@ -1357,8 +1357,9 @@ try {
     comprobar('dentro de su casa está bajo techo', s.mundo.bajoTecho(D.x, D.z));
     await J.andar(D.x, D.z);
     await soltarManos();
-    for (let n = 0; n < 4; n++) { const c = J.inv.lugares.espalda?.dentro?.[n]; if (c && c.tipo === 'junco') { await J.objeto({ tipo: 'mover', de: `espalda/${n}`, a: 'mano:der' }); await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); } }
-    comprobar('deja los juncos en el suelo de su casa', enPila('junco', D) >= 8, `${enPila('junco', D)} · ${enMano()}`);
+    const motivosJunco = [];
+    for (let n = 0; n < 4; n++) { const c = J.inv.lugares.espalda?.dentro?.[n]; if (c && c.tipo === 'junco') { const m1 = await J.objeto({ tipo: 'mover', de: `espalda/${n}`, a: 'mano:der' }); const m2 = await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); for (const m of [m1, m2]) if (!m.ok) motivosJunco.push(m.motivo); } }
+    comprobar('deja los juncos en el suelo de su casa', enPila('junco', D) >= 8, `${enPila('junco', D)} · ${enMano()} · ${[...new Set(motivosJunco)].join('; ')} · hombro: ${J.inv.lugares.hombro?.tipo || '–'}`);
     const nc2 = await cordelesA(D, 2);
     comprobar('y le trae 2 cordeles de fibra', nc2 >= 2, `${nc2} cordeles`);
     await J.andar(D.x, D.z);

@@ -1,6 +1,6 @@
 # Prueba en navegador de cazar con la lanza endurecida (P4; src/logica/caza.js, src/juego/fauna.js y src/juego/suelo.js),
 # contra el servidor de verdad con Whitholm, en PC y en móvil. Es la parte de esta tarea que ve el jugador:
-#   - con la lanza en la mano y una liebre a tiro delante (alerta, a 14 m), Usar dice «Lanzar la lanza»;
+#   - con la lanza en la mano y una liebre a tiro delante (alerta, a 17 m), Usar dice «Lanzar la lanza»;
 #   - al lanzarla sale de la mano y se ve volar hacia la liebre (la dibuja el navegador con lo que dice el servidor);
 #   - el servidor decide que acierta: la liebre sale de las vivas y en el suelo quedan la liebre muerta y la lanza;
 #   - capturas: la lanza en vuelo y, de cerca, la liebre muerta y la lanza en la hierba.
@@ -87,28 +87,34 @@ try:
             l = min(ls, key=lambda q: math.hypot(q['ox'] - yo[0], q['oz'] - yo[1]))
             a = math.atan2(yo[0] - l['ox'], yo[1] - l['oz'])
             # a 14 m, andando, de cara a ella: se pone alerta (quieta)
-            poner(pg, l['ox'] + math.sin(a) * 14, l['oz'] + math.cos(a) * 14, a + math.pi)
+            for _ in range(3):
+                u0 = pg.evaluate(UNA, l['id']) or {'ox': l['ox'], 'oz': l['oz']}
+                poner(pg, u0['ox'] + math.sin(a) * 17, u0['oz'] + math.cos(a) * 17, a + math.pi)
+                u0 = pg.evaluate(UNA, l['id']); pj0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+                if u0 and 14.5 < math.hypot(u0['ox'] - pj0[0], u0['oz'] - pj0[1]) < 19.5: break
             alerta = esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.anim === 'alerta'; }}", 15000, l['id'])
             u = pg.evaluate(UNA, l['id'])
             pj = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
             pg.evaluate(f"{K}.pj.rot = {math.atan2(u['ox'] - pj[0], u['oz'] - pj[1])}")
             texto = pg.evaluate(f"(() => {{ const a = {K}.accionPrincipal(); return a ? a.texto : null; }})()")
-            comprobar(f'{nombre}: con la lanza en la mano y la liebre a tiro (alerta: {alerta}), Usar dice «Lanzar la lanza»', texto == 'Lanzar la lanza', str(texto))
+            comprobar(f'{nombre}: con la lanza en la mano y la liebre a tiro (alerta: {alerta}), Usar dice «Lanzar la lanza»', texto == 'Lanzar la lanza', str(texto) + ' ' + json.dumps(pg.evaluate(f"(id) => {{ const k = {K}, l = k.fauna.liebres.get(id); return {{ rot: k.pj.rot, pj: [k.pj.x, k.pj.z], l: l && [l.x, l.z], a: l && Math.atan2(l.x - k.pj.x, l.z - k.pj.z), tiro: k.liebreATiro() }}; }}", l['id'])))
             pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {a} + 0.5; k.cam.pitch = 0.25; k.cam.dist = 7; }})()")
             pg.evaluate(f"window.__vuelan = 0; setInterval(() => {{ window.__vuelan = Math.max(window.__vuelan, {K}.fauna.lanzas.size); }}, 50)")
             pg.evaluate(f"{K}.usar()")
             vuela = esperar(pg, "window.__vuelan > 0", 5000)
+            pg.wait_for_timeout(300)
             captura(pg, f'{SALIDA}/{nombre}_lanza_vuela.png')
             comprobar(f'{nombre}: la lanza sale de la mano y se ve volar', vuela and esperar(pg, f"!{K}.inventario.lugares['mano:der']", 5000))
             cae = esperar(pg, f"(id) => !{K}.fauna.liebres.has(id) && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'liebre')", 15000, l['id'])
-            muerta = pg.evaluate(EN_SUELO, 'liebre'); lanza = pg.evaluate(EN_SUELO, 'lanza_endurecida')
+            cerca_de = lambda lst: sorted(lst, key=lambda o: math.hypot(o['x'] - u['ox'], o['z'] - u['oz']))[:1]
+            muerta = cerca_de(pg.evaluate(EN_SUELO, 'liebre')); lanza = cerca_de(pg.evaluate(EN_SUELO, 'lanza_endurecida'))
             comprobar(f'{nombre}: acierta: la liebre cae muerta y la lanza queda a su lado', cae and muerta and lanza and math.hypot(muerta[0]['x'] - lanza[0]['x'], muerta[0]['z'] - lanza[0]['z']) < 1.2, f'{muerta} {lanza}')
             comprobar(f'{nombre}: la lanza ya no vuela', esperar(pg, f"{K}.fauna.lanzas.size === 0", 5000))
             if muerta:
                 m = muerta[0]
                 poner(pg, m['x'] + 1.6, m['z'] + 0.4)
                 pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {math.atan2(1.6, 0.4)}; k.cam.pitch = 0.55; k.cam.dist = 1.8; }})()")
-                pg.wait_for_timeout(5000)
+                pg.wait_for_timeout(6000)
                 captura(pg, f'{SALIDA}/{nombre}_liebre_cazada.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()
