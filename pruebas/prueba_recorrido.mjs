@@ -1428,6 +1428,8 @@ try {
         return null;
       };
       let muerta = null, lanzadas = 0, salio = true, cogida = true;
+      const caidas = [], tiros = [];   // (dónde cae cada una, para decirlo si no da)
+      J2.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'combate') for (const e of m.eventos) if (e.tipo === 'flecha' && e.autor === yo) caidas.push(e); });
       for (let k = 0; k < 10 && !muerta && enLaMano(); k++) {
         const l = aTiro()[0]; if (!l) break;
         const q = await acercarse(l.id); if (!q) continue;
@@ -1435,6 +1437,7 @@ try {
         const v = s.fauna.de(l.id) || q;
         combate({ que: 'tensar' }); await pausa(950 * RELOJ);
         combate({ que: 'soltar', x: v.x, y: T.suelo(v.x, v.z) - T.suelo(J2.pos.x, J2.pos.z), z: v.z }); lanzadas++;
+        tiros.push({ v: { x: v.x, z: v.z, e: v.estado }, L: LJ() && { x: LJ().x, z: LJ().z, c: Math.round(LJ().cansancio), a: LJ().accion }, n: caidas.length });
         await pausa(2000 * RELOJ);
         if (enLaMano()) salio = false;
         if (!s.fauna.de(l.id)) { muerta = s.objetos.suelo.objetos.find(o => o.cosa.tipo === 'liebre' && Math.hypot(o.x - v.x, o.z - v.z) < 2); break; }
@@ -1449,7 +1452,8 @@ try {
       comprobar('al lanzarla sale de su mano', lanzadas > 0 && salio, `${lanzadas} lanzadas`);
       comprobar('si falla, recoge su lanza del suelo y vuelve a probar', cogida);
       const lanza = muerta && cerca(s.objetos.suelo.objetos.filter(o => o.cosa.tipo === 'lanza_endurecida'), muerta)[0];
-      comprobar('apuntando, con desvío, alguna le da: lo decide el servidor, la liebre cae muerta y la lanza cerca', !!muerta && !!lanza && Math.hypot(lanza.x - muerta.x, lanza.z - muerta.z) < 3, `${lanzadas} lanzadas`);
+      const dicho = tiros.map(t => { const c = caidas[t.n]; return `a ${Math.hypot(t.v.x - t.L.x, t.v.z - t.L.z).toFixed(1)} m (${t.v.e}, aliento ${t.L.c}, ${t.L.a}): ${c ? `${c.resultado} a ${Math.hypot(c.x - t.v.x, c.z - t.v.z).toFixed(1)} m de ella` : 'no cae'}`; }).join('; ');
+      comprobar('apuntando, con desvío, alguna le da: lo decide el servidor, la liebre cae muerta y la lanza cerca', !!muerta && !!lanza && Math.hypot(lanza.x - muerta.x, lanza.z - muerta.z) < 3, `${lanzadas} lanzadas: ${dicho}`);
       if (muerta && lanza) {
         combate({ que: 'arma', sacada: false });
         await J2.andar(lanza.x, lanza.z);
