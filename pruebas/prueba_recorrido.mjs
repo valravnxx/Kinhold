@@ -1454,18 +1454,20 @@ try {
         if (!J2.cuantos('lasca_silex')) { const o = s.objetos.sueloVisible(Date.now()).filter(x => x.cosa.tipo === 'lasca_silex').sort((a, b) => dist2(a) - dist2(b))[0]; if (o && dist2(o) < 150) { await J2.andar(o.x + 0.3, o.z); await J2.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J2.pos.x, z: J2.pos.z }); } }
         if (!J2.cuantos('lasca_silex')) {
           const pt = Object.values(s.objetos.fab.estaciones).filter(e => e.autor === yo && e.tipo === 'piedra_tallar' && !e.obra).sort((a, b) => dist2(a) - dist2(b))[0];
+          const diag = [];   // (lo que pasa al traer y dejar cada cosa: para ver por qué falla, si falla)
           if (pt) {
             await manosLibres();
             for (const [tipo, da] of [['piedra', 'piedra'], ['silex', 'silex']]) {
-              await traer(da, tipo);
+              const tr = await traer(da, tipo);
               await J2.andar(pt.x + 1, pt.z);
               const l = J2.inv.rutasCon(da)[0];   // (en la mano o donde lo haya guardado)
-              if (l) await J2.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J2.pos.x, z: J2.pos.z });
+              const rd = l ? await J2.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J2.pos.x, z: J2.pos.z }) : { ok: false, motivo: 'no lo lleva' };
+              diag.push(`${da}: traer ${tr}, lleva ${J2.cuantos(da)}, ruta ${l}, deja ${rd.ok || rd.motivo}`);
             }
             const rf = await J2.objeto({ tipo: 'fabricar', receta: 'lasca_silex', estacion: pt.id, x: J2.pos.x, z: J2.pos.z });
             for (const c of pt.cola) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1);
             const rr = await J2.objeto({ tipo: 'recoger_fabricado', estacion: pt.id, x: J2.pos.x, z: J2.pos.z });
-            comprobar('se le rompió la lasca al morir: talla otra en su piedra de tallar', rf.ok && rr.ok && J2.cuantos('lasca_silex') === 1, `${rf.motivo || ''} ${rr.motivo || ''}`);
+            comprobar('se le rompió la lasca al morir: talla otra en su piedra de tallar', rf.ok && rr.ok && J2.cuantos('lasca_silex') === 1, `${rf.motivo || ''} ${rr.motivo || ''} · ${diag.join(' · ')} · a ${Math.round(dist2(pt))} m de la piedra de tallar`);
           }
         }
         await J2.andar(muertaAqui.x + 0.5, muertaAqui.z);
