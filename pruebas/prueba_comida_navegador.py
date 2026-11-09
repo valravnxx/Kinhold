@@ -93,10 +93,16 @@ try:
             comprobar(f'{nombre}: (la carne cruda, la asada y la piel, en el suelo)', all(hay.values()), json.dumps(hay))
             c = pg.evaluate(EN_SUELO, 'carne_cruda')
             if c:
-                m = c[0]
-                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = 0.6; k.cam.pitch = 0.6; k.cam.dist = 1.4; Object.assign(k.pj, {{ x: {m['x']} - 0.9, z: {m['z']} - 1.2, vel: 0 }}); }})()")
+                # el centro de lo que hay en el suelo, de cerca, con la cámara libre (el personaje, a un lado, fuera del cuadro)
+                todo = [o for t in ['carne_cruda', 'carne_asada', 'piel'] for o in pg.evaluate(EN_SUELO, t)]
+                cx = sum(o['x'] for o in todo) / len(todo); cz = sum(o['z'] for o in todo) / len(todo)
+                pg.evaluate(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {cx} - 4, z: {cz} - 4, vel: 0 }}); }})()")
+                pg.wait_for_timeout(1500)
+                pg.evaluate(f"(() => {{ const k = {K}, yaw = 0.5, p = 0.75, d = 1.5, y0 = k.alturaSuelo({cx}, {cz}); k.cam.yaw = yaw; k.cam.pitch = p;"
+                            f" Object.assign(k.camLibre, {{ activa: true, x: {cx} + Math.sin(yaw) * Math.cos(p) * d, y: y0 + Math.sin(p) * d, z: {cz} + Math.cos(yaw) * Math.cos(p) * d }}); }})()")
                 pg.wait_for_timeout(5000)
                 captura(pg, f'{SALIDA}/{nombre}_carne_de_cerca.png')
+                pg.evaluate(f"{K}.camLibre.activa = false")
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()
             time.sleep(1.0)
