@@ -101,7 +101,7 @@ try:
             except Exception: pass
             listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.yo && !document.getElementById('pantallaCuenta') && {K}.objetosRed && {K}.objetosRed.deServidor", 300000)
             comprobar(f'{nombre}: en línea', listo)
-            if MUTAR: pg.evaluate(f"(() => {{ const c = {CB}, s = c.sacar; c.sacar = () => {{ s(); c.L.arma = 'espada_larga'; }}; }})()")
+            if MUTAR: pg.evaluate("window.__mutarArma = true")
             # con las manos vacías: puños
             pg.evaluate(f"{CB}.sacar()"); pg.wait_for_timeout(1500)
             a = arma(pg)

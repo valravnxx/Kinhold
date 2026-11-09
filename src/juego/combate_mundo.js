@@ -126,7 +126,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!puedeLuchar()) { decir(tr('Nadando no se puede sacar el arma')); return; }
     c.activo = true;
     const ritmo = RITMO.normal;
-    const am = armaMano();
+    const am = deLaMano();
     if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: am.arma, prendas: prendasActuales(), ritmo, x: pj.x, z: pj.z, rot: pj.rot });
     else c.L.vestir(prendasActuales());
     if (!c.modelo) {
@@ -144,8 +144,10 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     bArma.classList.add('sel');
   }
   // el arma es lo que llevas en la mano: si cambia (coges, sueltas, se gasta la piedra), se cambia la de la mano
+  // (__mutarArma: la prueba de navegador, rota a propósito: la espada de antes, mires lo que lleves)
+  const deLaMano = () => (globalThis.__mutarArma ? { arma: 'espada_larga', objeto: null } : armaMano());
   function armarDeMano() {
-    const am = armaMano(), k = am.arma + '|' + am.objeto;
+    const am = deLaMano(), k = am.arma + '|' + am.objeto;
     if (c.L) { c.L.arma = am.arma; c.L.objeto = am.objeto; }
     if (c.modelo && c.armaVista !== k) { c.armaVista = k; ponerArma(c.modelo, am.arma, am.objeto); }
     bLanzar.hidden = !loQueSeLanza(lugares());
