@@ -1,0 +1,22 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: tu jugador muere de sed, y el aviso lo dice — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:1:jugador:4a1b3d7e", "x": 0, "z": 0, "hasta": 1794182579314}, "t": 1794182535747, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  OK   pc: vuelve a su sitio de salida (sin cama) — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:1:jugador:4a1b3d7e", "x": 0, "z": 0, "hasta": 1794182579314}, "t": 1794182535747, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  OK   pc: el cuerpo del otro se queda donde cayó — [{"id": "cuerpo:2:jugador:836d5b10", "de": "jugador:836d5b10", "x": 3, "z": -5, "tumbado": true}]
+  OK   pc: tumbado — {"id": "cuerpo:2:jugador:836d5b10", "de": "jugador:836d5b10", "x": 3, "z": -5, "tumbado": true}
+  OK   pc: y él ya no está ahí (ha vuelto a su salida) — [0, 0]
+  OK   pc: lo suyo que queda, en el suelo a su lado (la mitad: una de sus dos prendas) — ["camisa_lino"]
+  OK   pc: pasado su tiempo, el cuerpo se va
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: tu jugador muere de sed, y el aviso lo dice — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:3:jugador:82365499", "x": 0, "z": 0, "hasta": 1794182709330}, "t": 1794182666880, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  OK   movil: vuelve a su sitio de salida (sin cama) — {"m": {"motivo": "De sed", "enCama": false, "cuerpo": {"id": "cuerpo:3:jugador:82365499", "x": 0, "z": 0, "hasta": 1794182709330}, "t": 1794182666880, "aviso": "Has muerto de sed. Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora."}, "x": 0, "z": 0, "aviso": "Correo confirmado. Tu personaje ya es de tu cuenta."}
+  OK   movil: el cuerpo del otro se queda donde cayó — [{"id": "cuerpo:4:jugador:68ebeea5", "de": "jugador:68ebeea5", "x": -3, "z": -5, "tumbado": true}]
+  OK   movil: tumbado — {"id": "cuerpo:4:jugador:68ebeea5", "de": "jugador:68ebeea5", "x": -3, "z": -5, "tumbado": true}
+  OK   movil: y él ya no está ahí (ha vuelto a su salida) — [0, 0]
+  OK   movil: lo suyo que queda, en el suelo a su lado (la mitad: una de sus dos prendas) — ["camisa_lino"]
+  OK   movil: pasado su tiempo, el cuerpo se va
+  OK   movil: sin errores en la página
+
+Todo bien
