@@ -2375,9 +2375,29 @@ function pintarAguante() {
 function ahogado() {
   nado.muertes++;
   nado.e = nuevoAguante();
+  // en línea lo dice el servidor (mira que estés en el agua honda): él te devuelve a tu cama o a tu salida (alMorir)
+  if (enLinea && enLinea.estado === 'conectado') { enLinea.enviar({ tipo: 'morir', motivo: 'ahogado' }); return; }
   pj.x = 0; pj.z = 4; pj.k = 0; pj.y = alturaSuelo();
   mostrarAviso(tr('Te has ahogado. Vuelves a tu sitio de salida.'), true);
 }
+// Has muerto (P4; GDD, apartado 6; src/logica/muerte.js): de sed, de hambre, en el combate o ahogado. El servidor ya te
+// ha puesto donde vuelves; aquí, el personaje va allí (despierto y sin nada en las manos que no sea tuyo ya).
+const MUERTES = { 'De sed': 'Has muerto de sed.', 'De hambre': 'Has muerto de hambre.', 'Ahogado': 'Te has ahogado.' };
+function alMorir(m) {
+  const p = m && m.posicion;
+  if (!p || ![p.x, p.y, p.z].every(Number.isFinite)) return;
+  nado.muertes++;
+  nado.e = nuevoAguante();
+  despertar(); levantarse();
+  Object.assign(pj, { x: p.x, y: p.y, z: p.z, k: 0, vel: 0, rot: Number.isFinite(p.giro) ? p.giro : pj.rot });
+  if (combate.activo) combate.guardar();
+  enLinea.mandarEstado({ x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: 'quieto' });
+  const que = MUERTES[m.motivo] ? tr(MUERTES[m.motivo]) : tr('Has muerto: {m}.', { m: tr(m.motivo || 'Desangrado') });
+  const aviso = que + ' ' + (m.enCama ? tr('Vuelves a tu cama. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora.') : tr('Vuelves a tu sitio de salida. Tu cuerpo queda donde caíste, con la mitad de lo que llevabas, una hora.'));
+  ultimaMuerte = { motivo: m.motivo, enCama: !!m.enCama, cuerpo: m.cuerpo || null, t: Date.now(), aviso };
+  mostrarAviso(aviso, true);
+}
+let ultimaMuerte = null;
 
 // ---------------- La herramienta del admin: velocidad y cámara libre ----------------
 // (valravnx, 6 nov: «poder multiplicar la velocidad de carrera y poder ir a freecam volando en 3 dimensiones»; el panel
@@ -3017,6 +3037,9 @@ function iniciarEnLinea() {
       if (info.cambio || e) actualizarUI();
     },
   });
+  // has muerto (P4; src/logica/muerte.js; lo decide el servidor): vuelves a tu cama o a tu sitio de salida, y tu cuerpo
+  // se queda donde caíste con la mitad de lo que llevabas
+  enLinea.escucharMuerte(alMorir);
   // las obras cobran de lo que llevas, que es el del servidor (objetosRed): hasta que llegue, no se adelanta nada
   const deInventario = { de: () => inventario() };
   Object.defineProperty(enLinea.red, 'invs', { get: () => (objetosRed.deServidor ? deInventario : null) });
@@ -3122,6 +3145,9 @@ window.__kinhold = {
   mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
+  // la última vez que has muerto (P4; src/logica/muerte.js): de qué, si a tu cama, y tu cuerpo
+  get ultimaMuerte() { return ultimaMuerte; },
+  enLineaRemotos: () => (enLinea ? enLinea.remotos : new Map()),   // (pruebas: los demás y los cuerpos, como se dibujan)
   // un paso de alguien que anda por el suelo del mundo (el rival de práctica)
   andarHasta,
   // los sitios de salida (src/logica/whitholm.js): el común y si uno es de la lista de la salida al azar

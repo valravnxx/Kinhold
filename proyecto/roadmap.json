@@ -1544,9 +1544,9 @@
     },
     {
      "nombre": "Morir y que te saqueen (GDD, apartado 6; documento de sistemas, apartado 10): se muere también de sed y de hambre (valravnx, 7 nov: «no es survival si no hay que sobrevivir»): a tope se pierde sangre poco a poco y, sin beber ni comer, se muere (unos 20 minutos de sed y 40 de hambre). Mueras como mueras (sed, hambre, combate, ahogado), reapareces en tu cama ligada o, sin ella, en tu sitio de salida; tu cuerpo queda en el suelo 1 hora real con la mitad de lo que llevabas, que cualquiera puede coger, y la otra mitad se rompe, elegida al azar por el servidor. Recorrido: el jugador muere, vuelve a su cama y recupera lo suyo del cuerpo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-08T23:22:36+00:00",
-     "rama": "trabajo/20261108-2322"
+     "fin": "2026-11-09T00:25:23+00:00"
     },
     {
      "nombre": "Liebres en el mundo: salen en prados y bordes del bosque, pastan y huyen de quien se acerca (fauna realista, GDD apartado 14), con su modelo y su animación (antes, buscar uno libre CC0 o el mejor método; estilo v5 y capturas de cerca). Las mueve el servidor, para que los dos vean la misma. Recorrido: el jugador ve liebres y huyen al acercarse",
@@ -3718,6 +3718,13 @@
      "archivo": "jugar/demo/v162.html",
      "capturas": "capturas/demo-v162",
      "notas": "Dormido al desconectarse: al salir del juego, tu personaje se queda dormido en el mundo, tumbado y con el símbolo de desconectado encima. En tu tierra, protegido y a tu cama ligada; fuera, atacable 5 minutos (15 si peleaste en el último minuto) y luego a salvo y a su cama. Por el servidor."
+    },
+    {
+     "v": "v163",
+     "fecha": "2026-11-09",
+     "archivo": "jugar/demo/v163.html",
+     "capturas": "capturas/demo-v163",
+     "notas": "Morir y que te saqueen: se muere de sed y de hambre (con la sed o el hambre al máximo se pierde sangre poco a poco), en el combate o ahogado; vuelves sano a tu cama ligada o a tu sitio de salida, y tu cuerpo queda tumbado donde caíste una hora, con la mitad de lo que llevabas en el suelo a su lado, que cualquiera puede coger; la otra mitad se rompe, al azar del servidor"
     }
    ]
   },

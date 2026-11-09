@@ -45,6 +45,7 @@ paso "Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio"
 paso "El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento" node pruebas/prueba_cielo.mjs
 paso "Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor" node pruebas/prueba_necesidades.mjs
 paso "Desconectarse: dormido en el mundo, atacable unos minutos fuera de tu tierra, en el servidor" node pruebas/prueba_dormidos.mjs
+paso "Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cuerpo con la mitad, y a tu cama" node pruebas/prueba_muerte.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
@@ -177,6 +178,7 @@ paso "Navegador: tierras del rey" python3 pruebas/prueba_tierras_rey_navegador.p
 paso "Navegador: panel del admin" python3 pruebas/prueba_admin_navegador.py dist/kinhold_demo.html "$C/admin"
 paso "Navegador: el chat de texto" python3 pruebas/prueba_charla_navegador.py dist/kinhold_demo.html "$C/charla"
 paso "Navegador: dormido al desconectarse" python3 pruebas/prueba_desconectado_navegador.py dist/kinhold_demo.html "$C/desconectado"
+paso "Navegador: morir y que te saqueen" python3 pruebas/prueba_muerte_navegador.py dist/kinhold_demo.html "$C/muerte"
 paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"

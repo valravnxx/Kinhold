@@ -62,8 +62,10 @@ try {
   await pausa(9000);
   const L = s.combate.luchadores;
   const distancias = [];
-  for (let i = 0; i < N; i += 2) { const a = L[autores[i]], b = L[autores[i + 1]]; distancias.push(a && b ? Math.hypot(a.x - b.x, a.z - b.z) : Infinity); }
-  comprobar('cada bot se pone frente a su pareja', distancias.every(d => d < 2), distancias.map(d => d.toFixed(2)).join(' m, ') + ' m');
+  // (la pareja en la que uno ha muerto en la pelea no cuenta: vuelve a su salida, src/logica/muerte.js)
+  const murio = (a) => s.cuerpos.todos().some(c => c.autor === a);
+  for (let i = 0; i < N; i += 2) { const a = L[autores[i]], b = L[autores[i + 1]]; distancias.push(murio(autores[i]) || murio(autores[i + 1]) ? null : a && b ? Math.hypot(a.x - b.x, a.z - b.z) : Infinity); }
+  comprobar('cada bot se pone frente a su pareja (si nadie ha muerto en ella)', distancias.every(d => d === null || d < 2) && s.combate.registro.entradas.length > 0, distancias.map(d => d === null ? 'murió' : d.toFixed(2) + ' m').join(', '));
   await pausa(FASE * 1000 - 9000 + 500);
   const golpes = s.combate.registro.entradas.filter(e => e.tipo === 'golpe' && e.ok);
   comprobar('el servidor resuelve golpes entre ellos, con su autor', golpes.length >= N && golpes.every(e => autores.includes(e.autor) && autores.includes(e.datos.objetivo)), `${golpes.length} golpes`);
@@ -87,7 +89,7 @@ try {
 
   await E.parar(); E = null;
   await pausa(300);
-  comprobar('al pararlos se van todos del servidor (y se quedan dormidos en el mundo)', s.clientes.size === 0 && s.presencia.todos().every(e => e.anim === 'desconectado'), `${s.clientes.size} conexiones`);
+  comprobar('al pararlos se van todos del servidor (y se quedan dormidos en el mundo; los cuerpos, tumbados)', s.clientes.size === 0 && s.presencia.todos().every(e => e.anim === 'desconectado' || e.anim === 'muerto'), `${s.clientes.size} conexiones`);
 } catch (e) {
   mal++; console.log('  FALLA la prueba no ha podido seguir: ' + (e && e.stack || e));
 } finally {
