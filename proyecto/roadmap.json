@@ -1562,7 +1562,9 @@
     },
     {
      "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca de sílex (carne cruda y piel pequeña: el origen de la piel, que hoy no tiene, en pruebas/prueba_origenes.mjs); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-09T05:22:57+00:00",
+     "rama": "trabajo/20261109-0522"
     },
     {
      "nombre": "Herramientas y armas que se gastan (documento de sistemas, apartado 10: el hacha de piedra, unos 3 árboles adultos; un arma de madera o piedra, unos 50 golpes): cada uso lo cuenta el servidor, se ve en la ficha del equipo y, al acabarse, se rompe. Recorrido: el hacha de piedra se gasta talando",
