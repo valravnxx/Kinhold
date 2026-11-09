@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2527 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3033 KB
+
+== Construir demo única
+      3189 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4276 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2930 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2521 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3043 KB
+dist/kinhold_trozos.html 2535 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: cazar con la lanza
+  OK   movil: la lanza ya no vuela
+  OK   movil: sin errores en la página
+
+Todo bien
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 170 s

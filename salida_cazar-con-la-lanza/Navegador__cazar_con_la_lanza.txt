@@ -1,0 +1,20 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: llegan las liebres de alrededor — 2
+  OK   pc: (la lanza en la mano)
+  OK   pc: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza» — Lanzar la lanza {"rot": -2.28793690869357, "pj": [-42.76730213754106, -31.457051710253907], "l": [-55.57535394837621, -42.633621430533445], "a": -2.288277105483654, "tiro": {"id": "liebre:-1,-1:0", "x": -55.57535394837621, "z": -42.633621430533445, "d": 16.998879430753874}}
+  OK   pc: la lanza sale de la mano y se ve volar
+  OK   pc: acierta: la liebre cae muerta y la lanza queda a su lado — [{'id': 's2', 'x': -55.58, 'z': -42.63}] [{'id': 's1', 'x': -55.35, 'z': -42.43}]
+  OK   pc: la lanza ya no vuela
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: llegan las liebres de alrededor — 3
+  OK   movil: (la lanza en la mano)
+  OK   movil: con la lanza en la mano y la liebre a tiro (alerta: True), Usar dice «Lanzar la lanza» — Lanzar la lanza {"rot": -2.817259396701961, "pj": [-22.716542840566078, -151.9568345304137], "l": [-27.679316844022683, -166.72057162031481], "a": -2.817312666212688, "tiro": {"id": "liebre:-1,-2:0", "x": -27.679316844022683, "z": -166.72057162031481, "d": 15.575527556686707}}
+  OK   movil: la lanza sale de la mano y se ve volar
+  OK   movil: acierta: la liebre cae muerta y la lanza queda a su lado — [{'id': 's4', 'x': -27.68, 'z': -166.72}] [{'id': 's3', 'x': -27.58, 'z': -166.43}]
+  OK   movil: la lanza ya no vuela
+  OK   movil: sin errores en la página
+
+Todo bien
