@@ -5785,5 +5785,22 @@
   "pruebas": "Revisor en la nube: lógica (con la prueba nueva de las liebres, rota a propósito —no huyen—: falla; la de presencia falló una vez por tiempo, 2,59× frente a 2,5×, sin servidor con liebres, y aquí pasa 3 de 3), recorrido 223/223 (con la parte de las liebres), demo única y las liebres en navegador (PC y móvil; rota a propósito —el navegador no las dibuja—: falla), bien. Las capturas son del modelo de cerca: en las del juego (sin tarjeta gráfica) la liebre sale detrás del jugador o muy pequeña",
   "capturas": "capturas/demo-v164",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T03:23:38+00:00",
+  "fin": "2026-11-09T04:43:12+00:00",
+  "titulo": "P4: cazar la liebre con la lanza",
+  "hito": "supervivencia",
+  "hecho": [
+   "Con la lanza endurecida en la mano y una liebre a tiro delante, Usar dice «Lanzar la lanza» (también en el menú del clic derecho, y en el móvil con el botón de usar); se lanza hacia donde mira el personaje y, si hay una liebre delante (a menos de 30° y de 20 m), hacia ella",
+   "Lo lleva el servidor (src/logica/caza.js, lógica pura): la lanza sale de la mano, vuela a 16 m/s hasta 20 m y, a cada tic, mira si pasa junto a una liebre donde está de verdad (la que huye puede escaparse); si acierta, la liebre cae muerta y la lanza a su lado; si no, la lanza cae al final de su vuelo o antes del agua. Todos ven la lanza volar",
+   "La liebre cazada es un objeto nuevo del suelo y de lo que se lleva («Liebre», para despiezarla en la tarea siguiente), con su modelo tumbado de lado y su icono (iconos v14); la lanza tirada en la hierba tiene su modelo (antes salía con el hatillo). La cazada no vuelve a salir en su querencia hasta media hora después",
+   "Recorrido de jugador: al final del día vuelve a la hoguera de la orilla, recoge la lanza que hizo en ella, se acerca andando a una liebre hasta unos 16 m (alerta, quieta), se la lanza, acierta, y recoge la lanza y la liebre",
+   "Decisiones provisionales en el registro de la demo (v165): el alcance, la velocidad, lo cerca que tiene que pasar, el cono de 30° y la media hora",
+   "Aún mal: no hay animación de lanzar (la lanza sale sin que el personaje haga el gesto); la liebre muerta se ve hecha de piezas de cerca, como la viva; sin tarjeta gráfica, las capturas del juego no cogen la lanza en el aire, así que se publican la liebre cazada de cerca y la lanza en el suelo vista en el móvil"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la prueba nueva de la caza; rota a propósito —la lanza no da nunca—: falla) y cazar con la lanza en navegador (PC y móvil; rota a propósito —no se dibuja la lanza—: falla), bien. Fuera, por la sesión: panel de inventario, objetos en el suelo y las liebres (solo se añade la liebre al catálogo, dos modelos del suelo y la lanza en vuelo: lo mira la prueba de la caza). Recorrido 219 bien y 9 mal: su parte nueva (la caza) sale bien; lo que falla (los cordeles de fibra para la cama de juncos y lo que va detrás: la cama, dormir en ella y volver a ella al morir) falla igual en main (pasado aquí, 9 nov), así que no para la publicación. Una primera versión cazaba en el paso de la hoguera y movía lo que llevaba en las manos: rompía el paso de los juncos; ahora la caza va al final",
+  "capturas": "capturas/demo-v165",
+  "estado": "ok"
  }
 ]
