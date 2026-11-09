@@ -14,7 +14,12 @@
 //  - Fijar (Tab o el botón): con un rival fijado vuelve la cámara del duelo (detrás de ti, mirándole) y andas a su
 //    alrededor; sin fijar, cámara y movimiento libres.
 // Un rival de práctica (botón «Rival») viene a por ti con la máquina del duelo. Todo golpe pasa por las acciones con
-// autor (ejecutarCombate). Provisional, hasta que el arma salga del inventario: espada larga.
+// autor (ejecutarCombate). El arma es lo que llevas en la mano (valravnx, 9 nov; src/logica/arma_mano.js): las hachas, el
+// cuchillo, el mazo, el palo, la lanza; con las manos vacías o con algo que no es un arma, puños. El servidor la pone desde
+// tu inventario; aquí se dibuja la misma. Lanzar (la lanza endurecida o una piedra): Espacio mantenido en PC (con la
+// piedra, también el clic izquierdo) o el botón «Lanzar» en el móvil; se apunta con la mira (lo que hay en el centro de la
+// cámara) y, al soltar, sale con algo de desvío (lo decide el servidor). La lanza cae al suelo para recogerla; la piedra
+// se gasta. Lo lanzado (de cualquiera) se ve volar. El rival de práctica pelea con un palo.
 // En línea (valravnx, 31 oct: «sacábamos arma y no veíamos al otro con arma en mano ni los ataques nos hacían nada»):
 // sacar y guardar el arma, cargar, soltar, fintar y parar se mandan también al servidor (src/logica/combate_servidor.js),
 // que resuelve los golpes entre jugadores con su autor; aquí se hace enseguida en la copia propia para no esperar a la
@@ -28,6 +33,10 @@ import { crearCombatiente, ponerArma, animarCombatiente, pintarHeridas, sacudir,
 import { LectorDireccion, lineaDe } from '../combate/direccion.js';
 import { ejecutarCombate } from '../logica/acciones.js';
 import { aplicarFoto, resultadoDeEvento } from '../logica/combate_cliente.js';
+import { loQueSeLanza } from '../logica/arma_mano.js';
+import { T as TC, ARMAS, defTiro } from '../combate/logica.js';
+import { modeloArma } from '../combate/modelos.js';
+import { crearModeloLanza } from './fauna.js';
 import { tr } from '../idioma.js';
 
 // abajo, clavar (la estocada): la punta hacia delante
@@ -39,7 +48,9 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   modo, alturaEn, registro, esTactil, aviso, red = () => null,
   // pelear en cualquier sitio del mundo (hito «El juego en el mundo de verdad»): el rival de práctica anda por donde
   // andarías tú (sin atravesar obras ni árboles, sin subir cortados ni meterse donde cubre), y nadando no se lucha
-  andarHasta = (x0, z0, x1, z1) => ({ x: x1, z: z1 }), puedeLuchar = () => true }) {
+  andarHasta = (x0, z0, x1, z1) => ({ x: x1, z: z1 }), puedeLuchar = () => true,
+  // lo que llevas en las manos (src/logica/arma_mano.js): armaMano() → { arma, objeto }; lugares() → los del inventario
+  armaMano = () => ({ arma: 'punos', objeto: null }), lugares = () => ({}) }) {
   const c = {
     activo: false, L: null, modelo: null, rivales: [], fijado: null, ctx: null,
     lector: new LectorDireccion(), atacando: false, parando: false, raton: false, reloj: 0,
@@ -94,6 +105,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   const boton = (id, texto, donde = botones) => { const b = document.createElement('button'); b.id = id; b.textContent = tr(texto); donde.appendChild(b); return b; };
   const bFijar = boton('cmbFijar', 'Fijar');
   const bRival = boton('cmbRival', 'Rival');
+  const bLanzar = boton('cmbLanzar', 'Lanzar'); bLanzar.title = tr('Mantén para coger impulso y suelta para lanzar (Espacio)'); bLanzar.hidden = true;
   botones.hidden = true;
   // el botón de sacar el arma va con los de modo (Mover, Construir, Desmontar)
   const bArma = document.createElement('button'); bArma.id = 'btnArma'; bArma.textContent = tr('Arma');
@@ -114,16 +126,16 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!puedeLuchar()) { decir(tr('Nadando no se puede sacar el arma')); return; }
     c.activo = true;
     const ritmo = RITMO.normal;
-    if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', prendas: prendasActuales(), ritmo, x: pj.x, z: pj.z, rot: pj.rot });
+    const am = armaMano();
+    if (!c.L || c.L.fuera) c.L = new Luchador({ nombre: tr('Tú'), arma: am.arma, prendas: prendasActuales(), ritmo, x: pj.x, z: pj.z, rot: pj.rot });
     else c.L.vestir(prendasActuales());
     if (!c.modelo) {
       c.modelo = crearCombatiente({ armadura: c.L.armadura, colorCinta: 0x46607e, recursos, sexo, capas: capasActuales(), aspecto });
-      ponerArma(c.modelo, 'espada_larga');
       escena.add(c.modelo);
     }
+    c.armaVista = null; armarDeMano();
     c.modelo.visible = true; jugador.raiz.visible = false;
-    mandar({ que: 'equipar', arma: 'espada_larga' });   // la armadura no se manda: es lo que llevas puesto (servidor)
-    mandar({ que: 'arma', sacada: true });
+    mandar({ que: 'arma', sacada: true });   // el arma y la armadura no se mandan: son lo que llevas (servidor)
     c.ctx = { luchadores: { jugador: c.L }, r };
     // la cámara se acerca y baja para luchar (por detrás del hombro); al guardar el arma vuelve a como estaba
     c.camAntes = { dist: cam.dist, pitch: cam.pitch };
@@ -131,8 +143,16 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     document.body.classList.add('combate'); document.body.classList.toggle('tactil', esTactil);
     bArma.classList.add('sel');
   }
+  // el arma es lo que llevas en la mano: si cambia (coges, sueltas, se gasta la piedra), se cambia la de la mano
+  function armarDeMano() {
+    const am = armaMano(), k = am.arma + '|' + am.objeto;
+    if (c.L) { c.L.arma = am.arma; c.L.objeto = am.objeto; }
+    if (c.modelo && c.armaVista !== k) { c.armaVista = k; ponerArma(c.modelo, am.arma, am.objeto); }
+    bLanzar.hidden = !loQueSeLanza(lugares());
+  }
   function guardar() {
     if (!c.activo) return;
+    if (c.L && c.L.accion === 'tensando') { c.L.cancelarTensado('guardar'); c.tirando = false; }
     c.activo = false; c.fijado = null; c.atacando = false; c.parando = false;
     if (c.L) { c.L.bloquear(false); if (c.L.accion === 'preparando') c.L.descargar(); }
     mandar({ que: 'arma', sacada: false });
@@ -157,10 +177,10 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       if (Math.hypot(p.x - px, p.z - pz) < 0.05) { x = px; z = pz; }
     }
     if (x === null) { decir(tr('Aquí no hay sitio para un rival')); return; }
-    const L = new Luchador({ nombre: tr('Rival'), arma: 'espada_larga', armadura: 'gambeson', ritmo: RITMO.normal, x, z, rot: a + Math.PI });
+    const L = new Luchador({ nombre: tr('Rival'), arma: 'palo', armadura: 'gambeson', ritmo: RITMO.normal, x, z, rot: a + Math.PI });
     const ia = new IA(L, 'normal', azar((Date.now() >> 3) & 0xffff));
     const m = crearCombatiente({ armadura: 'gambeson', colorCinta: 0xb3923f, recursos });
-    ponerArma(m, 'espada_larga'); escena.add(m);
+    ponerArma(m, 'palo'); escena.add(m);
     const id = 'rival' + (c.rivales.length + 1);
     c.rivales.push({ id, L, ia, m, rastro: new Rastro(escena), caidoDesde: 0 });
     c.ctx.luchadores[id] = L;
@@ -188,12 +208,44 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   bFijar.addEventListener('click', (e) => { e.stopPropagation(); fijar(); });
 
   // ---------- Atacar y parar (comunes a ratón y rosa) ----------
+  // ---------- Lanzar (la lanza, la piedra) ----------
+  // se coge impulso mientras se mantiene (Espacio o el botón; con la piedra, también el clic) y al soltar sale hacia la
+  // mira: lo que hay en el centro de la cámara, a la altura de la mira (34 % desde arriba), hasta 45 m
+  const rayo = new THREE.Raycaster();
+  function puntoMira() {
+    rayo.setFromCamera(new THREE.Vector2(0, 1 - 2 * 0.34), camara);
+    const o = rayo.ray.origin, d = rayo.ray.direction;
+    for (let t = 1; t <= 50; t += 0.4) {
+      const x = o.x + d.x * t, y = o.y + d.y * t, z = o.z + d.z * t, h = alturaEn(x, z);
+      if (Math.hypot(x - pj.x, z - pj.z) > 1.5 && y <= h) return { x, y: h, z };
+    }
+    return { x: o.x + d.x * 40, y: o.y + d.y * 40, z: o.z + d.z * 40 };
+  }
+  function empezarTiro() {
+    if (!c.activo || !c.L || c.L.fuera || c.tirando) return;
+    if (!loQueSeLanza(lugares())) { decir(tr('No llevas nada que lanzar en la mano')); return; }
+    if (c.L.bloqueando) { c.L.bloquear(false); mandar({ que: 'parar', activo: false }); }
+    if (c.L.empezarTensar()) { c.tirando = true; mandar({ que: 'tensar' }); }
+  }
+  function soltarTiro() {
+    if (!c.tirando) return;
+    c.tirando = false;
+    const p = puntoMira();
+    const t = c.L.soltar();
+    if (!t) { mandar({ que: 'soltar', x: p.x, y: 0, z: p.z }); return; }   // flojo: no sale (el servidor tampoco lo lanza)
+    mandar({ que: 'soltar', x: p.x, y: Math.max(-50, Math.min(50, p.y - alturaEn(pj.x, pj.z))), z: p.z });
+  }
+  bLanzar.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { bLanzar.setPointerCapture(e.pointerId); } catch (err) { /* nada */ } empezarTiro(); });
+  const finLanzar = (e) => { e.stopPropagation(); soltarTiro(); };
+  bLanzar.addEventListener('pointerup', finLanzar); bLanzar.addEventListener('pointercancel', finLanzar);
+
   function empezarGolpe(linea) {
     if (!c.activo || !c.L || c.L.fuera) return;
+    if (c.L.def.tipo === 'distancia') { empezarTiro(); return; }   // (la piedra: el clic la lanza)
     if (c.L.bloqueando) { c.L.bloquear(false); mandar({ que: 'parar', activo: false }); }
     if (c.L.cargar(linea)) { c.atacando = true; mandar({ que: 'cargar', linea }); }
   }
-  function soltarGolpe() { if (c.atacando) { c.L.descargar(); c.atacando = false; mandar({ que: 'descargar' }); } }
+  function soltarGolpe() { if (c.tirando && c.L && c.L.def.tipo === 'distancia') { soltarTiro(); return; } if (c.atacando) { c.L.descargar(); c.atacando = false; mandar({ que: 'descargar' }); } }
   // el botón de parar mientras se prepara un golpe lo cancela (finta) y, si se mantiene, para
   function fintar() {
     if (!c.L || c.L.accion !== 'preparando') return false;
@@ -305,8 +357,41 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA' || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.code === 'KeyC' && !e.repeat) alternar();
+    if (e.code === 'Space' && c.activo && modo() === 'mover') { e.preventDefault(); if (!e.repeat) empezarTiro(); }
     if (e.code === 'Tab' && c.activo) { e.preventDefault(); fijar(); }
   });
+
+  addEventListener('keyup', (e) => { if (e.code === 'Space' && c.tirando) { e.preventDefault(); soltarTiro(); } });
+
+  // ---------- Lo lanzado, volando (de todos: lo dice el servidor con el evento «disparo») ----------
+  // se mueve aquí con la misma gravedad que en el servidor, desde la altura del suelo de quien lo lanza, y se quita al
+  // llegar al suelo o cuando el servidor dice dónde ha dado (evento «flecha»). Donde cae, la lanza la pone el suelo.
+  const vuelos = [];
+  function modeloVuelo(e) {
+    if (e.objeto === 'lanza_endurecida') return crearModeloLanza();
+    const g = new THREE.Group(), m = modeloArma(e.arma === 'piedras' ? 'piedras' : e.arma === 'arco' ? 'arco' : 'piedras', e.objeto || null);
+    g.add(m); return g;
+  }
+  function volar(e) {
+    const base = Number.isFinite(e.base) ? e.base : alturaEn(e.x, e.z), m = modeloVuelo(e);
+    escena.add(m);
+    vuelos.push({ autor: e.autor, m, x: e.x, y: e.y, z: e.z, vx: e.vx, vy: e.vy, vz: e.vz, base, t: 0 });
+  }
+  const _v = new THREE.Vector3(), _z = new THREE.Vector3(0, 0, 1);
+  function pasoVuelos(dt) {
+    for (let i = vuelos.length - 1; i >= 0; i--) {
+      const v = vuelos[i];
+      v.t += dt; v.vy -= TC.g * dt; v.x += v.vx * dt; v.y += v.vy * dt; v.z += v.vz * dt;
+      const h = alturaEn(v.x, v.z);
+      v.m.position.set(v.x, v.base + v.y, v.z);
+      v.m.quaternion.setFromUnitVectors(_z, _v.set(v.vx, v.vy, v.vz).normalize());
+      if (v.base + v.y <= h || v.t > 8) { escena.remove(v.m); vuelos.splice(i, 1); }
+    }
+  }
+  function cayo(e) {   // el servidor dice dónde ha caído: fuera el que vuela de ese autor (el más antiguo)
+    const i = vuelos.findIndex(v => v.autor === e.autor);
+    if (i >= 0) { escena.remove(vuelos[i].m); vuelos.splice(i, 1); }
+  }
 
   // ---------- Golpes ----------
   function resolver(autor, objetivo, linea) {
@@ -355,14 +440,16 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (c.activo && modo() !== 'mover') guardar();
     const vis = c.activo;
     // solo se toca la página cuando cambia algo (sin tarjeta gráfica, cada cambio cuesta en cada fotograma)
-    const clave = modo() + vis;
+    const clave = modo() + vis + !!c.tirando;
     if (clave !== c.vistaAntes) {
       c.vistaAntes = clave;
       bArma.hidden = modo() !== 'mover';
-      mira.hidden = !vis || esTactil; carga.hidden = !vis || esTactil;
+      mira.hidden = carga.hidden = !vis || (esTactil && !c.tirando);   // (en el móvil, la mira solo al apuntar)
       estadoEl.hidden = !vis; botones.hidden = !vis; rosa.hidden = rosaParar.hidden = !vis || !esTactil;
     }
     if (tMsg > 0) { tMsg -= dt; if (tMsg <= 0) msg.hidden = true; }
+    pasoVuelos(dt);
+    if (c.activo) armarDeMano();
     if (!c.L) return;
     const L = c.L;
     // tú: donde estás en el mundo, mirando hacia donde mira la cámara (o hacia el rival fijado)
@@ -416,7 +503,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (L.fuera && c.reloj >= c.caidoHasta) {
       c.caidoHasta = 0;
       mandar({ que: 'reiniciar' });
-      c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', prendas: prendasActuales(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      c.L = new Luchador({ nombre: tr('Tú'), arma: armaMano().arma, prendas: prendasActuales(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       c.ctx.luchadores.jugador = c.L;
       decir(tr('Te levantas (prueba: vuelves curado)'));
     }
@@ -450,7 +537,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
       b.classList.toggle('para', L.bloqueando && L.lineaBloqueo === l);
       b.classList.toggle('viene', viene === l);
     }
-    carga.firstChild.style.width = Math.round((L.accion === 'preparando' ? L.carga() : 0) * 100) + '%';
+    carga.firstChild.style.width = Math.round((L.accion === 'preparando' ? L.carga() : L.accion === 'tensando' ? L.tension : 0) * 100) + '%';
     estadoEl.querySelector('.barra i').style.width = Math.round(100 - L.cansancio) + '%';
     estadoEl.querySelector('.sangre').textContent = tr('Sangre {s} %', { s: Math.round(L.sangre) });
   }
@@ -461,11 +548,11 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   function recibir(msg, yo, modeloDe = () => null) {
     if (!yo) return;
     // al conectar (o volver a conectar), el servidor sabe si llevas el arma sacada
-    if (msg.tipo === 'bienvenida' && c.activo) { if (c.L) mandar({ que: 'equipar', arma: 'espada_larga' }); mandar({ que: 'arma', sacada: true }); }
+    if (msg.tipo === 'bienvenida' && c.activo) mandar({ que: 'arma', sacada: true });
     if (msg.tipo === 'luchadores' || msg.tipo === 'bienvenida') {
       const f = (msg.tipo === 'luchadores' ? msg.lista : msg.luchadores || []).find(x => x.autor === yo);
       if (!f) return;
-      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: 'espada_larga', prendas: prendasActuales(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
+      if (!c.L) c.L = new Luchador({ nombre: tr('Tú'), arma: armaMano().arma, prendas: prendasActuales(), ritmo: RITMO.normal, x: pj.x, z: pj.z, rot: pj.rot });
       const caido = c.L.fuera;
       aplicarFoto(c.L, f, { propio: true, prediciendo: true });
       // de pie otra vez (tras volver a empezar sano en el servidor)
@@ -474,6 +561,8 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     }
     if (msg.tipo !== 'combate') return;
     for (const e of msg.eventos || []) {
+      if (e.tipo === 'disparo') volar(e);
+      if (e.tipo === 'flecha') { cayo(e); if (e.autor === yo && e.resultado === 'presa') decir(tr('¡Le has dado a la liebre!')); }
       if (e.tipo !== 'golpe' || (e.autor !== yo && e.objetivo !== yo)) continue;
       const res = resultadoDeEvento(e);
       const propio = e.autor === yo;
@@ -490,7 +579,8 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     // para el movimiento del mundo: con el arma sacada se anda como dice la lógica (cargando, parando, herido…)
     factorVelocidad(corriendo) { return c.activo && c.L ? c.L.velocidad(corriendo) / (corriendo ? 6 : 3.6) : 1; },
     // para las pruebas
-    get L() { return c.L; }, get rivales() { return c.rivales; }, get fijado() { return c.fijado; },
+    get L() { return c.L; }, get rivales() { return c.rivales; }, get fijado() { return c.fijado; }, get vuelos() { return vuelos; },
+    get modelo() { return c.modelo; }, empezarTiro, soltarTiro, puntoMira,
     raton: { mover: moverRaton, pulsar(b) { const l = c.lector.alPulsar(ahora()); if (b === 2) parar(true, l); else empezarGolpe(l); }, soltar(b) { if (b === 2) parar(false); else soltarGolpe(); } },
   };
 }

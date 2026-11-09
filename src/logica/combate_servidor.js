@@ -20,10 +20,15 @@
 //                        { tipo: 'combate', que: 'descargar' }              suelta el botón: el golpe sale
 //                        { tipo: 'combate', que: 'fintar' }                 cancela el golpe que se carga (finta)
 //                        { tipo: 'combate', que: 'parar', activo, linea }   activo: true / false; linea: el lado
-//                        { tipo: 'combate', que: 'tensar' }
-//                        { tipo: 'combate', que: 'soltar', x, y, z }         punto al que apunta
-//                        { tipo: 'combate', que: 'equipar', arma }          solo estando libre (la armadura es lo
-//                                                                             que lleva puesto en el inventario: vestir)
+//                        { tipo: 'combate', que: 'tensar' }                 coger impulso para lanzar (el arco, la
+//                                                                             piedra o la lanza de la mano)
+//                        { tipo: 'combate', que: 'soltar', x, y, z }         punto al que apunta (y: sobre su suelo)
+//                        { tipo: 'combate', que: 'equipar', arma }          ya no cuenta (valravnx, 9 nov): el arma es
+//                                                                             lo que lleva en la mano (armar, desde su
+//                                                                             inventario); se acepta sin hacer nada
+//   Lo que se lanza (la piedra, la lanza) sale de su inventario al soltar (alLanzar, lo da el servidor); la lanza cae
+//   al suelo donde acaba su vuelo (el evento «flecha» lleva objeto), la piedra se gasta. Con el terreno (mundo), las
+//   alturas van sobre el suelo de cada sitio y lo lanzado puede dar a una liebre (resultado «presa», con su id).
 //                        { tipo: 'combate', que: 'curar', herida, metodo }   herida: índice en sus heridas
 //                        { tipo: 'combate', que: 'dejarCura' }               deja la cura a medias (echa a correr)
 //                        { tipo: 'combate', que: 'reiniciar' }               vuelve a empezar sano: solo si está fuera
@@ -34,7 +39,7 @@
 //   su autor y el motivo, y el evento sale con resultado «tierras del rey».
 //   servidor → clientes  { tipo: 'combate', eventos: [...] }               golpes, flechas e impactos, en orden
 //                        { tipo: 'luchadores', t, lista: [...] }             cada tic, los que han cambiado
-import { Luchador, LINEAS, ARMAS, RITMO, TRATAMIENTOS, azar, angulo, difAngulo } from '../combate/logica.js';
+import { Luchador, LINEAS, ARMAS, RITMO, TRATAMIENTOS, T, azar, angulo, difAngulo, defTiro } from '../combate/logica.js';
 import { RegistroAcciones, ejecutarCombate, avanzarProyectil } from './acciones.js';
 import { motivoProtegido, RESULTADO_TIERRAS } from './tierras_rey.js';
 
@@ -74,7 +79,7 @@ export function validarIntencion(m) {
 // Lo que se reparte de cada luchador (lo que hace falta para dibujarlo y para leer sus golpes)
 function foto(autor, L) {
   return {
-    autor, arma: L.arma, armadura: L.armadura, prendas: [...L.puestas], accion: L.accion, linea: L.linea,
+    autor, arma: L.arma, objeto: L.objeto || null, armadura: L.armadura, prendas: [...L.puestas], accion: L.accion, linea: L.linea,
     duracion: Math.round(L.duracion * 1000), tAccion: Math.round(L.tAccion * 1000),
     bloqueando: L.bloqueando, lineaBloqueo: L.lineaBloqueo, sacada: !!L.sacada, tension: Math.round(L.tension * 100) / 100,
     cansancio: Math.round(L.cansancio), sangre: Math.round(L.sangre), heridas: L.heridas.length,
@@ -88,13 +93,16 @@ function foto(autor, L) {
 export const MARCAS_CURA = { v: 'vendada', c: 'cosida', q: 'cauterizada', e: 'entablillada', h: 'hierbas' };
 const marcasCura = (h) => Object.entries(MARCAS_CURA).filter(([, k]) => h[k]).map(([m]) => m).join('');
 // lo que cambia sin parar (el avance de la acción) no cuenta para decidir si hay que mandarlo otra vez
-const clave = (f) => [f.arma, f.armadura, f.prendas.join(','), f.accion, f.linea, f.bloqueando, f.lineaBloqueo, f.sacada, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.contra, Math.round(f.tension * 10)].join('|');
+const clave = (f) => [f.arma, f.objeto, f.armadura, f.prendas.join(','), f.accion, f.linea, f.bloqueando, f.lineaBloqueo, f.sacada, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.contra, Math.round(f.tension * 10)].join('|');
 
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
   // tierras: en(x, z) de crearTierrasRey (src/logica/tierras_rey.js), o null para no proteger ningún sitio.
-  constructor({ ritmo = RITMO.normal, semilla = 1, registro = new RegistroAcciones(1000), tierras = null } = {}) {
-    this.ctx = { luchadores: {}, r: azar(semilla) };
+  // mundo (opcional): { suelo(x, z), presas() → [{ id, x, z }] } — el terreno y las liebres (moverProyectil).
+  // alLanzar(autor, L) → { tipo, n, gasta } o null: lo saca de su inventario al soltar (sin ello, se lanza sin gastar nada).
+  constructor({ ritmo = RITMO.normal, semilla = 1, registro = new RegistroAcciones(1000), tierras = null, mundo = null, alLanzar = null } = {}) {
+    this.ctx = { luchadores: {}, r: azar(semilla), mundo };
+    this.alLanzar = alLanzar;
     this.tierras = tierras;
     if (tierras) this.ctx.protegido = (A, B) => motivoProtegido(tierras, A, B);
     this.registro = registro;
@@ -136,6 +144,15 @@ export class CombateServidor {
     const L = this.ctx.luchadores[autor];
     if (L) L.vestir(prendas);
   }
+  // El arma es lo que lleva en la mano (src/logica/arma_mano.js): lo pone el servidor desde su inventario, al entrar y
+  // cada vez que cambia. Si ya no puede lanzar lo que estaba tensando, se cancela.
+  armar(autor, { arma, objeto = null }) {
+    const L = this.ctx.luchadores[autor];
+    if (!L || !Object.hasOwn(ARMAS, arma)) return;
+    L.arma = arma; L.objeto = objeto;
+    if (L.accion === 'tensando' && !defTiro(arma)) L.cancelarTensado('sin');
+    if (L.accion === 'preparando' && ARMAS[arma].tipo !== 'cuerpo') L.fintar();
+  }
   // posición y giro (de la presencia)
   colocar(autor, x, z, giro) {
     const L = this.ctx.luchadores[autor];
@@ -166,21 +183,26 @@ export class CombateServidor {
       case 'fintar': ok = L.fintar(); break;
       case 'tensar': ok = L.empezarTensar(); break;
       case 'soltar': {
+        if (L.accion !== 'tensando') break;
+        if (L.tension < T.tensionMinima) { L.soltar(); ok = true; break; }   // soltar flojo: no sale nada, pero vale
+        // lo que se lanza sale de su inventario (sin ello en la mano, no sale nada)
+        const objeto = this.alLanzar ? this.alLanzar(autor, L) : null;
+        if (this.alLanzar && !objeto) { L.cancelarTensado('sin'); break; }
         const tiro = L.soltar();
-        if (!tiro) { ok = L.accion === 'libre' && L.cancelado === 'flojo'; break; }   // soltar flojo: no sale nada, pero vale
+        const base = this.ctx.mundo && this.ctx.mundo.suelo ? this.ctx.mundo.suelo(L.x, L.z) : null;
         const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'disparo', x: i.x, y: i.y, z: i.z, tension: tiro.tension, tTenso: tiro.tTenso });
         if (r.ok) {
           r.proyectil.t0 = this.reloj;
+          if (Number.isFinite(base)) r.proyectil.base = base;
+          if (objeto) r.proyectil.objeto = objeto;
           this.proyectiles.push(r.proyectil);
           const p = r.proyectil;
           this.pendientes.push({ tipo: 'disparo', n: this.registro.total, autor, arma: p.arma, t: this.ms(),
-            x: p.x, y: p.y, z: p.z, vx: p.vx, vy: p.vy, vz: p.vz });
-        }
+            x: p.x, y: p.y, z: p.z, vx: p.vx, vy: p.vy, vz: p.vz, ...(Number.isFinite(base) ? { base } : {}), ...(objeto ? { objeto: objeto.tipo } : {}) });
+        } else if (objeto) this.pendientes.push({ tipo: 'flecha', autor, arma: L.arma, t: this.ms(), x: L.x, y: 0, z: L.z, resultado: 'suelo', objeto });   // (cae a sus pies)
         ok = r.ok; break;
       }
-      case 'equipar':
-        if (!L.puedeActuar() || L.bloqueando) break;
-        L.arma = i.arma; ok = true; break;
+      case 'equipar': ok = true; break;   // (ya no cuenta: el arma es lo de la mano)
       case 'dejarCura': ok = L.accion === 'curando'; L.cortarCura('dejaCura'); break;
       case 'curar': {
         const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'curar', herida: i.herida, metodo: i.metodo });
@@ -227,7 +249,8 @@ export class CombateServidor {
         const antes = this.registro.total;
         const res = avanzarProyectil(this.ctx, this.registro, p, h, Object.values(this.ctx.luchadores));
         if (res) {
-          const e = { tipo: 'flecha', autor: p.autor, arma: p.arma, t: this.ms(), x: p.x, y: p.y, z: p.z, resultado: res.tipo === 'protegido' ? RESULTADO_TIERRAS : res.tipo };
+          const e = { tipo: 'flecha', autor: p.autor, arma: p.arma, t: this.ms(), x: p.x, y: p.y, z: p.z, resultado: res.tipo === 'protegido' ? RESULTADO_TIERRAS : res.tipo,
+            ...(res.presa ? { presa: res.presa } : {}), ...(p.objeto ? { objeto: p.objeto } : {}) };
           if (this.registro.total > antes) {
             const r = this.registro.entradas[this.registro.entradas.length - 1];
             Object.assign(e, { n: r.n, objetivo: r.datos.objetivo });
@@ -235,7 +258,10 @@ export class CombateServidor {
             if (r.zona) { e.zona = r.zona; e.gravedad = r.gravedad; }
           }
           this.pendientes.push(e);
-        } else if (this.reloj - p.t0 > DURA_PROYECTIL) p.activo = false;
+        } else if (this.reloj - p.t0 > DURA_PROYECTIL) {
+          p.activo = false;   // (lo lanzado que no ha caído en ese tiempo cae donde está)
+          if (p.objeto) this.pendientes.push({ tipo: 'flecha', autor: p.autor, arma: p.arma, t: this.ms(), x: p.x, y: p.y, z: p.z, resultado: 'suelo', objeto: p.objeto });
+        }
       }
       if (this.proyectiles.length && !this.proyectiles[0].activo) this.proyectiles = this.proyectiles.filter(p => p.activo);
     }

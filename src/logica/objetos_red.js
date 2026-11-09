@@ -41,9 +41,6 @@
 //     tierra de otro, solo su dueño y sus invitados
 //   { tipo: 'ligar_cama', estacion, x, z } — ligar esa cama (una por personaje; en tu tierra o en la de quien te ha
 //     invitado); { tipo: 'dormir', estacion, x, z } — dormir en tu cama ligada (lo que hace lo lleva el servidor)
-//   { tipo: 'lanzar', de: 'mano:der' | 'mano:izq', x, z, dir } — lanzar la lanza de esa mano hacia dir (src/logica/caza.js):
-//     sale de lo que llevas y sale volando desde donde el servidor te tiene; dónde cae y si da en una liebre lo decide el
-//     servidor después (devuelve { lanzada: { cosa, x, z, dir } } para que la eche a volar)
 //   { tipo: 'arcon_al_suelo', objeto: 'rastra', x, z } — del arcón de pruebas al suelo (solo con arconPruebas)
 //   { tipo: 'coger', objeto, cantidad, a, … } y { tipo: 'soltar', de } — el arcón de pruebas del panel (solo con
 //     arconPruebas: sacar algo de la nada y hacerlo desaparecer; sin él, se rechazan)
@@ -77,7 +74,6 @@ import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './r
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
 import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, DE_LA_CAMA, ESTACIONES } from './fabricacion.js';
 import { estadoFuego } from './fuego.js';
-import { SE_LANZA } from './caza.js';
 
 export const TOLERANCIA = 3; // m
 export const ENTRE_GOLPES_RED = 500; // ms
@@ -85,7 +81,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', 'lanzar', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -153,15 +149,6 @@ export class ObjetosServidor {
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
         estaciones = !!r.ok && a.tipo !== 'recoger_fabricado' && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
-      } else if (a.tipo === 'lanzar') {
-        const inv = this.invs.de(a.autor), c = (a.de === 'mano:der' || a.de === 'mano:izq') ? inv.lugares[a.de] : null;
-        if (!num(a.dir)) r = this.anotar(a, { ok: false, motivo: 'Datos no válidos.' }, ahora);
-        else if (!c || !SE_LANZA.has(c.tipo)) r = this.anotar(a, { ok: false, motivo: 'Necesitas la lanza en la mano para lanzarla.' }, ahora);
-        else {
-          const s = inv.sacar(a.de);
-          r = s.ok ? { ok: true, lanzada: { cosa: s.cosa, x: p.x, z: p.z, dir: a.dir } } : { ok: false, motivo: s.motivo };
-          this.anotar(a, r, ahora);
-        }
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;

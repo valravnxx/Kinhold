@@ -370,7 +370,8 @@ export function ejecutarCombate(ctx, registro, accion) {
 export function avanzarProyectil(ctx, registro, p, dt, blancos = Object.values(ctx.luchadores), dianas = []) {
   const tirador = ctx.protegido ? ctx.luchadores[p.autor] || p.tirador : null;
   const protegido = tirador ? (L) => ctx.protegido(tirador, L) : null;
-  const res = moverProyectil(p, dt, blancos, ctx.r, dianas, protegido);
+  const m = ctx.mundo ? { suelo: ctx.mundo.suelo, presas: ctx.mundo.presas ? ctx.mundo.presas() : [] } : null;
+  const res = moverProyectil(p, dt, blancos, ctx.r, dianas, protegido, m);
   if (res && res.tipo === 'protegido') {
     const objetivo = Object.keys(ctx.luchadores).find(id => ctx.luchadores[id] === res.luchador);
     registro.anotar({ autor: p.autor || 'desconocido', tipo: 'impacto', objetivo, arma: p.arma }, { ok: false, motivo: res.motivo });
