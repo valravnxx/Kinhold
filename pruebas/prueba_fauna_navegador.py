@@ -52,9 +52,9 @@ def poner(pg, x, z, giro=None):
     pg.evaluate(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {x}, z: {z}, vel: 0 }}); {'' if giro is None else f'k.pj.rot = {giro};'} }})()")
 # la cámara libre (como la del admin) a d m de la liebre, a la altura h, mirándola
 def camara_cerca(pg, id, d, h, lado):
-    pg.evaluate(f"""((id) => {{ const k = {K}, l = k.fauna.liebres.get(id); if (!l) return; const p = l.m.raiz.position, a = l.giro + {lado};
+    pg.evaluate(f"""(id) => {{ const k = {K}, l = k.fauna.liebres.get(id); if (!l) return; const p = l.m.raiz.position, a = l.giro + {lado};
       k.camLibre.x = p.x + Math.sin(a) * {d}; k.camLibre.z = p.z + Math.cos(a) * {d}; k.camLibre.y = p.y + {h}; k.camLibre.activa = true;
-      k.cam.yaw = Math.atan2(k.camLibre.x - p.x, k.camLibre.z - p.z); k.cam.pitch = Math.atan2({h} - 0.15, {d}); }})""", id)
+      k.cam.yaw = Math.atan2(k.camLibre.x - p.x, k.camLibre.z - p.z); k.cam.pitch = Math.atan2({h} - 0.15, {d}); }}""", id)
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=ARGS)
@@ -81,10 +81,11 @@ try:
             a = math.atan2(yo[0] - l['x'], yo[1] - l['z'])
             poner(pg, l['x'] + math.sin(a) * 30, l['z'] + math.cos(a) * 30)
             pg.wait_for_timeout(6000)
+            esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.m.raiz.visible && Math.hypot(l.m.raiz.position.x - l.obj.x, l.m.raiz.position.z - l.obj.z) < 1; }}", 60000, l['id'])
             u = pg.evaluate(UNA, l['id'])
             comprobar(f'{nombre}: de lejos pasta (o da saltitos)', u and u['anim'] in ('pastar', 'saltar'), json.dumps(u))
             l2 = next(q for q in pg.evaluate(LIEBRES) if q['id'] == l['id'])
-            comprobar(f'{nombre}: está en el suelo', abs(l2['y'] - l2['suelo']) < 0.05, json.dumps(l2))
+            comprobar(f'{nombre}: se ve, en el suelo', l2['visible'] and abs(l2['x']) + abs(l2['z']) > 0 and abs(l2['y'] - l2['suelo']) < 0.05, json.dumps(l2))
             camara_cerca(pg, l['id'], 1.4, 0.55, 1.2)
             pg.wait_for_timeout(9000)
             captura(pg, f'{SALIDA}/{nombre}_liebre_pasta.png')
@@ -103,9 +104,8 @@ try:
             pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {a}; k.cam.pitch = 0.3; k.cam.dist = 6; }})()")
             huye = esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.anim === 'huir'; }}", 15000, l['id'])
             comprobar(f'{nombre}: a 4 m huye', huye, json.dumps(pg.evaluate(UNA, l['id'])))
-            pg.wait_for_timeout(1500)
             captura(pg, f'{SALIDA}/{nombre}_liebre_huye.png')
-            pg.wait_for_timeout(3000)
+            pg.wait_for_timeout(4000)
             u2 = pg.evaluate(UNA, l['id']); pj = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
             lejos = u2 and math.hypot(u2['ox'] - pj[0], u2['oz'] - pj[1])
             comprobar(f'{nombre}: se aleja deprisa (más de 15 m en unos segundos)', bool(lejos and lejos > 15), f'{lejos}')
