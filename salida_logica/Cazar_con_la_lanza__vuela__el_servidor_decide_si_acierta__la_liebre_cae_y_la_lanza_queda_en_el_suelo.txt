@@ -1,0 +1,19 @@
+Lógica:
+  OK   sin nada delante cae al final de su alcance, a su velocidad — 20 m en 1.3 s
+  OK   si pasa junto a una liebre, la mata ahí — liebre:0,0:0 en 11.7
+  OK   si la liebre se aparta antes, no — null
+  OK   hacia el agua, cae antes de ella — x 199.6
+Servidor:
+  OK   a 15 m, la liebre se queda alerta (quieta) — alerta
+  OK   sin la lanza en la mano no se lanza — Necesitas la lanza en la mano para lanzarla.
+  OK   (del arcón de pruebas, la lanza a la mano)
+  OK   con la lanza en la mano, la lanza: sale de la mano
+  OK   el otro jugador la ve salir volando — {"tipo":"lanza","id":"lz1","autor":"jugador:c3cb3c42","x":25.1,"z":63.87,"dir":0,"vel":16,"alcance":20}
+  OK   el servidor decide que acierta: la liebre cae — {"tipo":"lanza_cae","id":"lz1","x":25.1,"z":78.57,"liebre":"liebre:0,0:0"}
+  OK   la liebre ya no está en la fauna ni se le manda
+  OK   en el suelo, la liebre muerta y la lanza a su lado (los dos lo ven) — liebre en 25.1, 78.87
+  OK   recoge la lanza y la liebre —  
+  OK   lanzada hacia donde no hay nada, cae a su alcance — {"tipo":"lanza_cae","id":"lz2","x":25.1,"z":58.57}
+  OK   la cazada no vuelve a salir
+
+15 bien, 0 mal
