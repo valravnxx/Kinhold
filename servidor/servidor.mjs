@@ -17,6 +17,7 @@
 //   por segundo; el servidor le pone el autor y su hora, y cada tic (100 ms) manda a cada uno los que han
 //   cambiado: { tipo: 'estados', t, jugadores }. Al irse alguien: { tipo: 'sale', autor }. La bienvenida
 //   lleva también t y presentes (dónde está cada uno).
+//   Liebres (src/logica/fauna.js): las mueve el servidor; a cada uno, las de sus trozos: { tipo: 'fauna', liebres, fuera }.
 //   Aspecto (cuerpo y ropa del taller, y la personalización de src/logica/aspecto.js): el cliente lo manda al
 //   conectar, { tipo: 'aspecto', sexo, capas, aspecto }; el
 //   servidor lo comprueba (validarAspecto) y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas, aspecto }. La bienvenida
@@ -147,6 +148,7 @@ import { Dormidos, DESCONECTADO } from '../src/logica/dormidos.js';
 import { Cuerpos, despojar, repartir, sitiosAlrededor, necesidadesAlVolver, reaparicion, sangrePerdida, motivoNecesidades, MOTIVOS, MUERTO, DURA_CUERPO } from '../src/logica/muerte.js';
 import { RECUPERAR_SANGRE } from '../src/combate/logica.js';
 import { NADO } from '../src/logica/nado.js';
+import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -180,7 +182,8 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0 } = {}) {
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
+  fauna: entornoFauna = terreno && terreno.fauna, ticoFauna = 200 } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
@@ -560,6 +563,27 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
   }, tico);
 
+  // Las liebres (P4, 9 nov; src/logica/fauna.js): las mueve el servidor, para que todos vean la misma. Cada ticoFauna ms
+  // avanzan las de los trozos que tiene alguien cerca (huyen de quien se acerca) y a cada uno le llegan las de sus
+  // trozos: { tipo: 'fauna', liebres: [{ id, x, z, giro, anim }], fuera: [id] } (enteras las que le entran; luego, solo
+  // las que cambian). Sin terreno (las pruebas sin mundo), solo si la prueba da por dónde andan (fauna: { habitat, pisable }).
+  const fauna = entornoFauna ? new Fauna({ ...entornoFauna, semilla: terreno ? terreno.semilla : 1 }) : null, faunaRed = new FaunaEnRed();
+  const antesFauna = new Map();   // autor → { x, z, t }: para ver si viene corriendo
+  const ticFauna = fauna ? setInterval(() => {
+    try {
+      const t = reloj(), jugadores = [], autores = [];
+      for (const [ws, a] of clientes) {
+        if (conexionDe.get(a) !== ws || cuentas.sinConfirmar(a) || (terreno && !posiciones.has(a))) continue;
+        const e = presencia.ultimo.get(a); if (!e || e.anim === MUERTO) continue;
+        const q = antesFauna.get(a), dt = q ? (t - q.t) / 1000 : 0;
+        jugadores.push({ x: e.x, z: e.z, vel: dt > 0 ? Math.hypot(e.x - q.x, e.z - q.z) / dt : 0 });
+        antesFauna.set(a, { x: e.x, z: e.z, t }); autores.push(a);
+      }
+      fauna.avanzar(ticoFauna / 1000, jugadores);
+      for (const [a, m] of faunaRed.repartir(fauna, fauna.sacarCambios(), autores, (x) => vista.trozosDe(x))) enviar(conexionDe.get(a), { tipo: 'fauna', ...m });
+    } catch (e) { registrar(`error en la fauna: ${e && e.message}`); }
+  }, ticoFauna) : null;
+
   // las necesidades de los conectados: el tiempo, lo que corren (la distancia que el servidor les ha visto andar desde
   // el tic anterior) y lo que cargan suelto
   const antesNec = new Map();   // autor → { x, z, t }
@@ -714,7 +738,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     vestirLuchador(autor);
     // lo de alrededor de donde aparece: donde lo dejó o la salida (si es nuevo, la común hasta que elija)
     if (salidaComun && terreno && !posiciones.has(autor)) elegirSalida(autor, 'lindholt');
-    vista.quitar(autor);
+    vista.quitar(autor); faunaRed.quitar(autor); antesFauna.delete(autor);   // (las liebres de alrededor le llegan enteras otra vez)
     { const p = posiciones.get(autor); vista.mover(autor, p ? p.x : 0, p ? p.z : 0); presencia.anclar(autor, p || { x: 0, z: 0 }, reloj()); }
     const suyos = vista.trozosDe(autor);
     enviar(ws, { tipo: 'bienvenida', protocolo: PROTOCOLO, autor, ficha, vuelve, obras: obrasEnTrozos(mundo, suyos), n: registro.total, t: reloj(), presentes: presencia.todos().filter(e => e.autor !== autor),
@@ -1202,7 +1226,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       try { guardarNecesidades(); } catch (e) { registrar(`no se pudo guardar necesidades.json: ${e && e.message}`); }
       // la rastra que arrastraba se queda donde estaba (antes de olvidar dónde estaba él)
       if (objetos.soltarAlSalir(autor, Date.now())) { guardarObjetos(); repartirSuelo(Date.now()); }
-      recienLlegado.delete(autor); vista.quitar(autor);
+      recienLlegado.delete(autor); vista.quitar(autor); faunaRed.quitar(autor); antesFauna.delete(autor);
       ponerAlDia();
       // se queda dormido en el mundo, donde el servidor lo tiene (si ha llegado a estar en él)
       const p = presencia.ultimo.get(autor), ahora = Date.now();
@@ -1230,9 +1254,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, fauna, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
 }
 
