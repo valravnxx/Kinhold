@@ -227,10 +227,10 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (c.L.bloqueando) { c.L.bloquear(false); mandar({ que: 'parar', activo: false }); }
     if (c.L.empezarTensar()) { c.tirando = true; mandar({ que: 'tensar' }); }
   }
-  function soltarTiro() {
+  function soltarTiro(apunta = null) {   // (apunta: un punto { x, y, z } en vez de la mira; las pruebas)
     if (!c.tirando) return;
     c.tirando = false;
-    const p = puntoMira();
+    const p = apunta && Number.isFinite(apunta.x) ? apunta : puntoMira();
     const t = c.L.soltar();
     if (!t) { mandar({ que: 'soltar', x: p.x, y: 0, z: p.z }); return; }   // flojo: no sale (el servidor tampoco lo lanza)
     mandar({ que: 'soltar', x: p.x, y: Math.max(-50, Math.min(50, p.y - alturaEn(pj.x, pj.z))), z: p.z });

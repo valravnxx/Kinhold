@@ -115,7 +115,7 @@ export class CombateServidor {
   get luchadores() { return this.ctx.luchadores; }
 
   // prendas: lo que lleva puesto en el inventario (lo que le protege); sin ellas, la armadura (el rival de las pruebas).
-  entrar(autor, { arma = 'espada_larga', armadura = 'gambeson', prendas = null, x = 0, z = 0, rot = 0 } = {}) {
+  entrar(autor, { arma = 'punos', armadura = 'gambeson', prendas = null, x = 0, z = 0, rot = 0 } = {}) {
     this.ctx.luchadores[autor] = new Luchador({ nombre: autor, arma, armadura, prendas, ritmo: this.ritmo, x, z, rot });
     this.ctx.luchadores[autor].reloj = this.reloj;
     return this.ctx.luchadores[autor];
@@ -186,9 +186,16 @@ export class CombateServidor {
         if (L.accion !== 'tensando') break;
         if (L.tension < T.tensionMinima) { L.soltar(); ok = true; break; }   // soltar flojo: no sale nada, pero vale
         // lo que se lanza sale de su inventario (sin ello en la mano, no sale nada)
-        const objeto = this.alLanzar ? this.alLanzar(autor, L) : null;
-        if (this.alLanzar && !objeto) { L.cancelarTensado('sin'); break; }
+        // (lo que se tira de la mano: la piedra y la lanza; el arco de las pruebas no gasta nada)
+        const deMano = !!(L.defTiro && (L.defTiro.gasta || L.def.arrojar));
+        // (sacarlo de la mano vuelve a armarle con lo que le quede: el tiro sale con el arma que tenía al soltar)
+        // (y suelta antes de sacarlo: al armarle de nuevo, lo que ya no se lanza deja de tensarse)
+        const armaTiro = L.arma, objetoTiro = L.objeto;
         const tiro = L.soltar();
+        const objeto = this.alLanzar && deMano ? this.alLanzar(autor, L) : null;
+        const armaLuego = L.arma, objetoLuego = L.objeto;
+        L.arma = armaTiro; L.objeto = objetoTiro;
+        if (this.alLanzar && deMano && !objeto) { L.arma = armaLuego; L.objeto = objetoLuego; break; }
         const base = this.ctx.mundo && this.ctx.mundo.suelo ? this.ctx.mundo.suelo(L.x, L.z) : null;
         const r = ejecutarCombate(this.ctx, this.registro, { autor, tipo: 'disparo', x: i.x, y: i.y, z: i.z, tension: tiro.tension, tTenso: tiro.tTenso });
         if (r.ok) {
@@ -200,6 +207,7 @@ export class CombateServidor {
           this.pendientes.push({ tipo: 'disparo', n: this.registro.total, autor, arma: p.arma, t: this.ms(),
             x: p.x, y: p.y, z: p.z, vx: p.vx, vy: p.vy, vz: p.vz, ...(Number.isFinite(base) ? { base } : {}), ...(objeto ? { objeto: objeto.tipo } : {}) });
         } else if (objeto) this.pendientes.push({ tipo: 'flecha', autor, arma: L.arma, t: this.ms(), x: L.x, y: 0, z: L.z, resultado: 'suelo', objeto });   // (cae a sus pies)
+        L.arma = armaLuego; L.objeto = objetoLuego;
         ok = r.ok; break;
       }
       case 'equipar': ok = true; break;   // (ya no cuenta: el arma es lo de la mano)

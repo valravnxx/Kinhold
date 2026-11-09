@@ -48,8 +48,8 @@ console.log('El servidor rechaza los golpes entre jugadores en Strandvang');
 // A mirando a +z y B a 1,5 m delante, mirándole; en la escena de la salida 41 (dentro) o 400 m al oeste (fuera)
 function pareja(x0, opc = {}) {
   const c = new CombateServidor({ semilla: 5, ...(MUTAR ? {} : { tierras: T41.en }), ...opc });
-  c.entrar('jugador:a', { x: x0, z: 0, rot: 0 });
-  c.entrar('jugador:b', { x: x0, z: 1.5, rot: Math.PI });
+  c.entrar('jugador:a', { arma: 'espada_larga', x: x0, z: 0, rot: 0 });   // (con una espada en la mano)
+  c.entrar('jugador:b', { arma: 'espada_larga', x: x0, z: 1.5, rot: Math.PI });
   return c;
 }
 const ic = (c, a, m) => c.intencion(a, { tipo: 'combate', ...m });
@@ -85,7 +85,7 @@ function golpe(c) {
 {
   // y una flecha desde 12 m
   const c = pareja(0); c.colocar('jugador:b', 0, 12, Math.PI);
-  ic(c, 'jugador:a', { que: 'equipar', arma: 'arco' }); ic(c, 'jugador:a', { que: 'tensar' }); c.avanzar(1.1);
+  c.armar('jugador:a', { arma: 'arco' }); ic(c, 'jugador:a', { que: 'tensar' }); c.avanzar(1.1);
   const tiro = ic(c, 'jugador:a', { que: 'soltar', x: 0, y: 1.2, z: 12 }).ok;
   c.avanzar(1.5);
   const f = c.sacarEventos().find(e => e.tipo === 'flecha');
@@ -94,7 +94,7 @@ function golpe(c) {
 }
 {
   const c = pareja(-400); c.colocar('jugador:b', -400, 12, Math.PI);
-  ic(c, 'jugador:a', { que: 'equipar', arma: 'arco' }); ic(c, 'jugador:a', { que: 'tensar' }); c.avanzar(1.1);
+  c.armar('jugador:a', { arma: 'arco' }); ic(c, 'jugador:a', { que: 'tensar' }); c.avanzar(1.1);
   ic(c, 'jugador:a', { que: 'soltar', x: -400, y: 1.2, z: 12 }); c.avanzar(1.5);
   const f = c.sacarEventos().find(e => e.tipo === 'flecha');
   comprobar('fuera, la flecha hiere', f && f.resultado === 'blanco' && c.luchadores['jugador:b'].heridas.length === 1, f && f.resultado);

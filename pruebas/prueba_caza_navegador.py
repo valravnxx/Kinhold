@@ -1,11 +1,13 @@
-# Prueba en navegador de cazar con la lanza endurecida (P4; src/logica/caza.js, src/juego/fauna.js y src/juego/suelo.js),
-# contra el servidor de verdad con Whitholm, en PC y en móvil. Es la parte de esta tarea que ve el jugador:
-#   - con la lanza en la mano y una liebre a tiro delante (alerta, a 17 m), Usar dice «Lanzar la lanza»;
-#   - al lanzarla sale de la mano y se ve volar hacia la liebre (la dibuja el navegador con lo que dice el servidor);
-#   - el servidor decide que acierta: la liebre sale de las vivas y en el suelo quedan la liebre muerta y la lanza;
-#   - capturas: la lanza en vuelo y, de cerca, la liebre muerta y la lanza en la hierba.
+# Prueba en navegador del modo arma con lo que llevas en la mano (valravnx, 9 nov; src/logica/arma_mano.js,
+# src/juego/combate_mundo.js, src/combate/modelos.js), contra el servidor de verdad con Whitholm, en PC y en móvil:
+#   - con las manos vacías, el modo arma es a puños (sin nada en la mano del modelo);
+#   - con el hacha de piedra en la mano, su arma es el hacha y se ve el hacha en la mano;
+#   - con la lanza endurecida, su arma es la lanza y se ve la lanza; sale el botón «Lanzar»;
+#   - se acerca andando a una liebre, coge impulso y la lanza apuntando a ella: sale de la mano y se ve volar; alguna de
+#     las que lanza la mata (la dice el servidor): la liebre muerta y la lanza quedan en el suelo;
+#   - capturas: la lanza en la mano en el modo arma, cogiendo impulso, y la liebre cazada.
 # Uso: python3 pruebas/prueba_caza_navegador.py <html de la demo> <carpeta_capturas>
-# MUTAR=1: el navegador no dibuja la lanza que vuela: tiene que fallar.
+# MUTAR=1: el modo arma sigue con la espada larga (no mira la mano): tiene que fallar.
 import sys, os, json, math, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
@@ -59,62 +61,84 @@ def poner(pg, x, z, giro=None):
 def camara_hacia(pg, a, dist=2.4, pitch=0.12):
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {a}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; k.pj.rot = {a} + Math.PI; }})()")
 EN_SUELO = f"(t) => {K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === t).map(o => ({{ id: o.id, x: o.x, z: o.z }}))"
+EN_SUELO = f"(t) => {K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === t).map(o => ({{ id: o.id, x: o.x, z: o.z }}))"
+CB = f"{K}.combate"
+def arma(pg): return pg.evaluate(f"(() => {{ const c = {CB}; return {{ arma: c.L && c.L.arma, objeto: c.modelo && c.modelo.userData.objeto, piezas: c.modelo && c.modelo.userData.arma ? c.modelo.userData.arma.children.length : -1, lanzar: !document.getElementById('cmbLanzar').hidden }}; }})()")
+def coger(pg, objeto):
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: '{objeto}', cantidad: 1, a: 'mano:der' }})")
+    return esperar(pg, f"(() => {{ const c = {K}.inventario.lugares['mano:der']; return !!c && c.tipo === '{objeto}'; }})()", 10000)
+def soltar(pg):
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
+    esperar(pg, f"!{K}.inventario.lugares['mano:der']", 10000)
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=ARGS)
         for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
             print('Vista', nombre)
             ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
-            if MUTAR: ctx.add_init_script('window.__mutarLanza = true')
             pg = ctx.new_page()
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
             pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
-            try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=20000); crear_y_confirmar(pg, codigos, 'caza' + nombre)
+            try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=20000); crear_y_confirmar(pg, codigos, 'arma' + nombre)
             except Exception: pass
-            listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.yo && !document.getElementById('pantallaCuenta')", 300000)
+            listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.yo && !document.getElementById('pantallaCuenta') && {K}.objetosRed && {K}.objetosRed.deServidor", 300000)
             comprobar(f'{nombre}: en línea', listo)
+            if MUTAR: pg.evaluate(f"(() => {{ const c = {CB}, s = c.sacar; c.sacar = () => {{ s(); c.L.arma = 'espada_larga'; }}; }})()")
+            # con las manos vacías: puños
+            pg.evaluate(f"{CB}.sacar()"); pg.wait_for_timeout(1500)
+            a = arma(pg)
+            comprobar(f'{nombre}: con las manos vacías, a puños (nada en la mano)', a['arma'] == 'punos' and a['objeto'] is None and a['piezas'] == 0 and not a['lanzar'], str(a))
+            pg.evaluate(f"{CB}.guardar()")
+            # con el hacha de piedra
+            coger(pg, 'hacha_piedra')
+            pg.evaluate(f"{CB}.sacar()"); pg.wait_for_timeout(1500)
+            a = arma(pg)
+            comprobar(f'{nombre}: con el hacha de piedra en la mano, el hacha (y se ve en la mano)', a['arma'] == 'hacha' and a['objeto'] == 'hacha_piedra' and a['piezas'] > 0, str(a))
+            pg.evaluate(f"{CB}.guardar()"); soltar(pg)
+            # con la lanza
+            coger(pg, 'lanza_endurecida')
+            pg.evaluate(f"{CB}.sacar()"); pg.wait_for_timeout(1500)
+            a = arma(pg)
+            comprobar(f'{nombre}: con la lanza en la mano, la lanza (se ve, y sale el botón Lanzar)', a['arma'] == 'lanza' and a['objeto'] == 'lanza_endurecida' and a['piezas'] > 0 and a['lanzar'], str(a))
             hay = esperar(pg, f"{K}.fauna && {K}.fauna.liebres.size > 0", 60000)
             ls = pg.evaluate(LIEBRES) if hay else []
             comprobar(f'{nombre}: llegan las liebres de alrededor', len(ls) > 0, f'{len(ls)}')
             if not ls:
                 ctx.close(); continue
-            # la lanza a la mano (del arcón de pruebas: la de verdad se hace en la hoguera, en el recorrido)
-            esperar(pg, f"{K}.objetosRed && {K}.objetosRed.deServidor", 30000)
-            pg.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'lanza_endurecida', cantidad: 1, a: 'mano:der' }})")
-            comprobar(f'{nombre}: (la lanza en la mano)', esperar(pg, f"(() => {{ const c = {K}.inventario.lugares['mano:der']; return !!c && c.tipo === 'lanza_endurecida'; }})()", 10000))
             yo = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
             l = min(ls, key=lambda q: math.hypot(q['ox'] - yo[0], q['oz'] - yo[1]))
-            a = math.atan2(yo[0] - l['ox'], yo[1] - l['oz'])
-            # a 14 m, andando, de cara a ella: se pone alerta (quieta)
-            for _ in range(3):
-                u0 = pg.evaluate(UNA, l['id']) or {'ox': l['ox'], 'oz': l['oz']}
-                poner(pg, u0['ox'] + math.sin(a) * 17, u0['oz'] + math.cos(a) * 17, a + math.pi)
-                u0 = pg.evaluate(UNA, l['id']); pj0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
-                if u0 and 14.5 < math.hypot(u0['ox'] - pj0[0], u0['oz'] - pj0[1]) < 19.5: break
-            alerta = esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.anim === 'alerta'; }}", 15000, l['id'])
-            u = pg.evaluate(UNA, l['id'])
-            pj = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
-            pg.evaluate(f"{K}.pj.rot = {math.atan2(u['ox'] - pj[0], u['oz'] - pj[1])}")
-            texto = pg.evaluate(f"(() => {{ const a = {K}.accionPrincipal(); return a ? a.texto : null; }})()")
-            comprobar(f'{nombre}: con la lanza en la mano y la liebre a tiro (alerta: {alerta}), Usar dice «Lanzar la lanza»', texto == 'Lanzar la lanza', str(texto) + ' ' + json.dumps(pg.evaluate(f"(id) => {{ const k = {K}, l = k.fauna.liebres.get(id); return {{ rot: k.pj.rot, pj: [k.pj.x, k.pj.z], l: l && [l.x, l.z], a: l && Math.atan2(l.x - k.pj.x, l.z - k.pj.z), tiro: k.liebreATiro() }}; }}", l['id'])))
-            pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {a} + 0.5; k.cam.pitch = 0.25; k.cam.dist = 7; }})()")
-            pg.evaluate(f"window.__vuelan = 0; setInterval(() => {{ window.__vuelan = Math.max(window.__vuelan, {K}.fauna.lanzas.size); }}, 50)")
-            pg.evaluate(f"{K}.usar()")
-            vuela = esperar(pg, "window.__vuelan > 0", 5000)
-            pg.wait_for_timeout(300)
-            captura(pg, f'{SALIDA}/{nombre}_lanza_vuela.png')
-            comprobar(f'{nombre}: la lanza sale de la mano y se ve volar', vuela and esperar(pg, f"!{K}.inventario.lugares['mano:der']", 5000))
-            cae = esperar(pg, f"(id) => !{K}.fauna.liebres.has(id) && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'liebre')", 15000, l['id'])
-            cerca_de = lambda lst: sorted(lst, key=lambda o: math.hypot(o['x'] - u['ox'], o['z'] - u['oz']))[:1]
-            muerta = cerca_de(pg.evaluate(EN_SUELO, 'liebre')); lanza = cerca_de(pg.evaluate(EN_SUELO, 'lanza_endurecida'))
-            comprobar(f'{nombre}: acierta: la liebre cae muerta y la lanza queda a su lado', cae and muerta and lanza and math.hypot(muerta[0]['x'] - lanza[0]['x'], muerta[0]['z'] - lanza[0]['z']) < 1.2, f'{muerta} {lanza}')
-            comprobar(f'{nombre}: la lanza ya no vuela', esperar(pg, f"{K}.fauna.lanzas.size === 0", 5000))
+            # a 18 m de golpe (no la asusta) y luego andando despacio hasta unos 10 m
+            ang = math.atan2(yo[0] - l['ox'], yo[1] - l['oz'])
+            poner(pg, l['ox'] + math.sin(ang) * 18, l['oz'] + math.cos(ang) * 18)
+            pg.evaluate(f"""(id) => new Promise(r => {{ const k = {K}, t = setInterval(() => {{ const q = k.fauna.liebres.get(id); if (!q) {{ clearInterval(t); r(); return; }}
+              const d = Math.hypot(q.obj.x - k.pj.x, q.obj.z - k.pj.z); if (d <= 10.5) {{ clearInterval(t); r(); return; }}
+              k.pj.x += (q.obj.x - k.pj.x) / d * 0.2; k.pj.z += (q.obj.z - k.pj.z) / d * 0.2; }}, 100); }})""", l['id'])
+            pg.wait_for_timeout(1500)
+            pg.evaluate(f"window.__vuelan = 0; setInterval(() => {{ window.__vuelan = Math.max(window.__vuelan, {CB}.vuelos.length); }}, 30)")
+            muerta = False; salio = True; lanzadas = 0
+            for k in range(8):
+                u = pg.evaluate(UNA, l['id'])
+                if not u: break
+                if k > 0: coger(pg, 'lanza_endurecida'); pg.wait_for_timeout(500)
+                pj = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {math.atan2(pj[0] - u['ox'], pj[1] - u['oz'])}; k.pj.rot = k.cam.yaw + Math.PI; }})()")
+                pg.evaluate(f"{CB}.empezarTiro()")
+                pg.wait_for_timeout(1200)
+                if k == 0: captura(pg, f'{SALIDA}/{nombre}_lanza_impulso.png')
+                y = pg.evaluate(f"{K}.alturaSuelo({u['ox']}, {u['oz']})")
+                pg.evaluate(f"{CB}.soltarTiro({{ x: {u['ox']}, y: {y}, z: {u['oz']} }})"); lanzadas += 1
+                if not esperar(pg, f"!{K}.inventario.lugares['mano:der']", 5000): salio = False
+                if esperar(pg, f"(id) => !{K}.fauna.liebres.has(id) && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'liebre')", 4000, l['id']): muerta = True; break
+            comprobar(f'{nombre}: al lanzarla sale de la mano', salio)
+            comprobar(f'{nombre}: y se ve volar', pg.evaluate("window.__vuelan > 0"))
+            comprobar(f'{nombre}: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza', muerta and len(pg.evaluate(EN_SUELO, 'lanza_endurecida')) > 0, f'{lanzadas} lanzadas')
             if muerta:
-                m = muerta[0]
+                m = sorted(pg.evaluate(EN_SUELO, 'liebre'), key=lambda o: math.hypot(o['x'] - u['ox'], o['z'] - u['oz']))[0]
+                pg.evaluate(f"{CB}.guardar()")
                 poner(pg, m['x'] + 1.6, m['z'] + 0.4)
                 pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {math.atan2(1.6, 0.4)}; k.cam.pitch = 0.55; k.cam.dist = 1.8; }})()")
-                pg.wait_for_timeout(6000)
+                pg.wait_for_timeout(5000)
                 captura(pg, f'{SALIDA}/{nombre}_liebre_cazada.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()

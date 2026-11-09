@@ -106,7 +106,7 @@ try {
   const A2 = await cliente(puerto, { ficha: A.bienvenida.ficha });
   comprobar('al volver con su ficha es el mismo jugador', A2.bienvenida.autor === yoA && A2.bienvenida.vuelve === true, A2.bienvenida.autor);
   const L2 = s.combate.luchadores[yoA];
-  comprobar('y su luchador vuelve como estaba (heridas, sangre, arma)', !!L2 && L2.heridas.length === 1 && L2.heridas[0].zona === 'brazoI' && L2.arma === 'hacha' && L2.sangre <= sangreAntes,
+  comprobar('y su luchador vuelve como estaba (heridas y sangre; el arma, la de su mano: puños)', !!L2 && L2.heridas.length === 1 && L2.heridas[0].zona === 'brazoI' && L2.arma === 'punos' && L2.sangre <= sangreAntes,
     `${L2 && L2.heridas.length} herida, sangre ${L2 && L2.sangre.toFixed(2)}`);
   await A2.accion({ tipo: 'sacar_arcon', material: 'piedra', cantidad: 3 });   // el mojón se paga de lo que llevas
   const r1 = await A2.accion({ tipo: 'mojon', x: 0, z: 0 });
