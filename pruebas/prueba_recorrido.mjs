@@ -1416,14 +1416,28 @@ try {
       const seco = (p, q) => { const d = Math.hypot(q.x - p.x, q.z - p.z); for (let k = 0; k <= d; k++) if (T.aguaEn(p.x + (q.x - p.x) * k / d, p.z + (q.z - p.z) * k / d)) return false; return true; };
       const aTiro = () => cerca([...J2.liebres.values()], J2.pos).filter(l => seco(J2.pos, l) && s.fauna.de(l.id));
       comprobar('ve liebres alrededor de la hoguera (sin agua por medio)', aTiro().length > 0, `${aTiro().length} de ${J2.liebres.size}`);
-      // andar despacio (2 m/s: no la asusta) hasta tenerla a unos 10 m
+      // como cazaría alguien: un sitio a unos 10 m de la liebre desde el que se la vea sin nada en medio (la lanza va baja:
+      // un talud de la orilla entre los dos la para), en seco; hasta allí, andando, y los últimos 24 m despacio (2 m/s:
+      // no la asusta)
+      const despejado = (p, q) => { const h0 = T.suelo(p.x, p.z) + 1.45, h1 = T.suelo(q.x, q.z) + 0.2; for (let k = 1; k < 20; k++) { const u = k / 20; if (T.suelo(p.x + (q.x - p.x) * u, p.z + (q.z - p.z) * u) > h0 + (h1 - h0) * u - 0.15) return false; } return true; };
+      const sitioPara = (q) => {
+        let mejor = null;
+        for (let k = 0; k < 16; k++) {
+          const a = k * Math.PI / 8, p = { x: q.x + Math.sin(a) * 10, z: q.z + Math.cos(a) * 10 };
+          if (T.aguaEn(p.x, p.z) || !seco(p, q) || !despejado(p, q)) continue;
+          if (!mejor || Math.hypot(p.x - J2.pos.x, p.z - J2.pos.z) < Math.hypot(mejor.x - J2.pos.x, mejor.z - J2.pos.z)) mejor = p;
+        }
+        return mejor;
+      };
       const acercarse = async (id) => {
-        for (let k = 0; k < 600; k++) {
+        const q0 = s.fauna.de(id); if (!q0) return null;
+        const sitio = sitioPara(q0); if (!sitio) return null;
+        for (let k = 0; k < 2000; k++) {
           const q = s.fauna.de(id); if (!q) return null;
-          const d = Math.hypot(q.x - J2.pos.x, q.z - J2.pos.z);
-          if (d <= 10.5) return q;
-          const paso = d > 24 ? 0.6 : 0.2;
-          J2.estar(J2.pos.x + (q.x - J2.pos.x) / d * paso, J2.pos.z + (q.z - J2.pos.z) / d * paso); await pausa(100 * RELOJ);
+          const d = Math.hypot(sitio.x - J2.pos.x, sitio.z - J2.pos.z);
+          if (d <= 0.25) return q;
+          const paso = Math.min(d, Math.hypot(q.x - J2.pos.x, q.z - J2.pos.z) > 24 ? 0.6 : 0.2);
+          J2.estar(J2.pos.x + (sitio.x - J2.pos.x) / d * paso, J2.pos.z + (sitio.z - J2.pos.z) / d * paso); await pausa(100 * RELOJ);
         }
         return null;
       };
@@ -1431,7 +1445,7 @@ try {
       const caidas = [], tiros = [];   // (dónde cae cada una, para decirlo si no da)
       J2.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'combate') for (const e of m.eventos) if (e.tipo === 'flecha' && e.autor === yo) caidas.push(e); });
       for (let k = 0; k < 10 && !muerta && enLaMano(); k++) {
-        const l = aTiro()[0]; if (!l) break;
+        const l = aTiro().find(x => sitioPara(x)); if (!l) break;
         const q = await acercarse(l.id); if (!q) continue;
         await pausa(800 * RELOJ);   // quieto: alerta
         const v = s.fauna.de(l.id) || q;

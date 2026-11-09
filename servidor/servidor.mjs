@@ -417,7 +417,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
   // Strandvang, tierras del rey: ahí no se hiere a otro jugador (tierras: en(x, z) de src/logica/tierras_rey.js)
   // el arma es lo de la mano (valravnx, 9 nov; src/logica/arma_mano.js): lo que se lanza sale de su inventario al soltar
-  // (la lanza entera, una piedra de la pila); con el terreno, las alturas sobre el suelo y las liebres como presas
+  // (la lanza entera, una piedra de la pila; las dos caen al suelo); con el terreno, alturas sobre el suelo y liebres
   const combate = new CombateServidor({ semilla, tierras: tierras || null,
     mundo: { suelo: terreno ? (x, z) => terreno.suelo(x, z) : null, presas: () => (fauna ? fauna.todas() : []) },
     alLanzar: (autor) => {
@@ -555,7 +555,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const repartirCombate = () => {
     const eventos = combate.sacarEventos();
     if (eventos.length) for (const ws of clientes.keys()) enviar(ws, { tipo: 'combate', eventos });
-    // lo lanzado que cae (P4, 9 nov): la lanza queda en el suelo donde acaba (la piedra se gasta); la liebre a la que da,
+    // lo lanzado que cae (P4, 9 nov): la lanza y la piedra quedan en el suelo donde acaban; la liebre a la que da,
     // muerta, sale de la fauna y queda en el suelo para despiezarla
     let suelo = false;
     for (const e of eventos) {

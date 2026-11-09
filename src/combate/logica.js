@@ -35,7 +35,7 @@ export const ARMAS = {
   espada_escudo: { nombre: 'Espada y escudo', tipo: 'cuerpo', alcance: 1.7, alcanceEstocada: 1.9, prep: 0.38, prepEstocada: 0.3, golpe: 0.12, recup: 0.33, danio: 0.9, cansancio: 10, escudo: true },
   palo:         { nombre: 'Palo', tipo: 'cuerpo', alcance: 1.5, alcanceEstocada: 1.6, prep: 0.5, prepEstocada: 0.4, golpe: 0.12, recup: 0.4, danio: 0.55, contundente: true, cansancio: 9 },
   arco:         { nombre: 'Arco', tipo: 'distancia', tensado: 1.0, recarga: 0.8, vMin: 18, vMax: 55, danio: 0.95, danioTipo: 'perforante', cansancio: 6 },
-  piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5, gasta: true },
+  piedras:      { nombre: 'Piedras', tipo: 'distancia', tensado: 0.5, recarga: 0.5, vMin: 8, vMax: 19, danio: 0.45, danioTipo: 'contundente', cansancio: 5, deLaMano: true },   // (la piedra sale de la mano: src/logica/arma_mano.js)
   // Lo que llevas en la mano (valravnx, 9 nov: «modo arma tendría que ser modo emplear el equipo que tengas en la mano»;
   // src/logica/arma_mano.js dice cuál es cuál). Valores provisionales (registro de la demo y diario), a ajustar probando.
   punos:        { nombre: 'Puños', tipo: 'cuerpo', alcance: 0.9, alcanceEstocada: 1.0, prep: 0.3, prepEstocada: 0.25, golpe: 0.1, recup: 0.3, danio: 0.22, contundente: true, cansancio: 7 },

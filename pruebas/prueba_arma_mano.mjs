@@ -8,8 +8,8 @@
 //     con desvío (unas caen a un lado y otras al otro), y puede dar a una liebre que esté en su camino;
 //   - en el servidor: con las manos vacías, puños; al coger la lanza, su arma es la lanza (y el otro la ve en su mano);
 //     al lanzarla apuntando a una liebre sale de su mano (puños otra vez) y cae al suelo, y alguna de las que lanza la
-//     mata (la liebre muerta queda en el suelo y sale de las vivas); la lanza del suelo se recoge; la piedra se lanza y
-//     se gasta (no queda en el suelo), y sin piedras vuelve a puños.
+//     mata (la liebre muerta queda en el suelo y sale de las vivas); la lanza del suelo se recoge; la piedra se lanza de
+//     una en una y queda en el suelo donde cae, y sin piedras vuelve a puños.
 // MUTAR=1: el arma no sale de la mano (siempre puños): tiene que FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'fs';
@@ -49,8 +49,8 @@ try {
   comprobar('con algo que no es un arma (un cordel), puños', armaDeMano(L({ der: { tipo: 'cordel', n: 1 } })).arma === 'punos');
   comprobar('con el hacha de piedra, hacha', armaDeMano(L({ der: { tipo: 'hacha_piedra', n: 1 } })).arma === 'hacha');
   comprobar('con la lanza en la izquierda y un cordel en la derecha, la lanza', armaDeMano(L({ der: { tipo: 'cordel', n: 1 }, izq: { tipo: 'lanza_endurecida', n: 1 } })).arma === 'lanza');
-  comprobar('con piedras, piedras (y se lanzan gastándolas)', armaDeMano(L({ der: { tipo: 'piedra', n: 3 } })).arma === 'piedras' && loQueSeLanza(L({ der: { tipo: 'piedra', n: 3 } })).gasta);
-  comprobar('la lanza se lanza sin gastarse; el hacha no se lanza', loQueSeLanza(L({ der: { tipo: 'lanza_endurecida', n: 1 } })).gasta === false && !loQueSeLanza(L({ der: { tipo: 'hacha_piedra', n: 1 } })));
+  comprobar('con piedras, piedras (se lanzan de una en una y quedan en el suelo)', armaDeMano(L({ der: { tipo: 'piedra', n: 3 } })).arma === 'piedras' && loQueSeLanza(L({ der: { tipo: 'piedra', n: 3 } })).cuanto === 1 && !loQueSeLanza(L({ der: { tipo: 'piedra', n: 3 } })).gasta);
+  comprobar('la lanza se lanza (y cae al suelo); el hacha no se lanza', loQueSeLanza(L({ der: { tipo: 'lanza_endurecida', n: 1 } })).gasta === false && !loQueSeLanza(L({ der: { tipo: 'hacha_piedra', n: 1 } })));
   const lz = new Luchador({ arma: 'lanza' });
   comprobar('la lanza clava (su estocada llega más lejos que su tajo)', lz.cargar('estocada') && ARMAS.lanza.alcanceEstocada > ARMAS.lanza.alcance);
   const lz2 = new Luchador({ arma: 'lanza' });
@@ -154,7 +154,7 @@ try {
   A.combate({ que: 'tensar' }); await pausa(700);
   A.combate({ que: 'soltar', x: A.pos.x, y: 0, z: A.pos.z + 10 }); await pausa(2000);
   const queda = s.objetos.invs.de(A.autor).lugares['mano:der'];
-  comprobar('lanza una y le queda una (se gasta: no queda en el suelo)', queda && queda.tipo === 'piedra' && queda.n === 1 && piedrasSuelo() === ps0, JSON.stringify(queda));
+  comprobar('lanza una y le queda una; la lanzada queda en el suelo donde cae (unos 10 m más allá)', queda && queda.tipo === 'piedra' && queda.n === 1 && piedrasSuelo() === ps0 + 1 && s.objetos.suelo.objetos.some(o => o.cosa.tipo === 'piedra' && Math.hypot(o.x - A.pos.x, o.z - (A.pos.z + 10)) < 4), JSON.stringify(queda));
   A.combate({ que: 'tensar' }); await pausa(700);
   A.combate({ que: 'soltar', x: A.pos.x, y: 0, z: A.pos.z + 10 }); await pausa(1500);
   comprobar('sin piedras, vuelve a los puños', !s.objetos.invs.de(A.autor).lugares['mano:der'] && LA().arma === 'punos', LA().arma);

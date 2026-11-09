@@ -18,8 +18,8 @@
 // cuchillo, el mazo, el palo, la lanza; con las manos vacías o con algo que no es un arma, puños. El servidor la pone desde
 // tu inventario; aquí se dibuja la misma. Lanzar (la lanza endurecida o una piedra): Espacio mantenido en PC (con la
 // piedra, también el clic izquierdo) o el botón «Lanzar» en el móvil; se apunta con la mira (lo que hay en el centro de la
-// cámara) y, al soltar, sale con algo de desvío (lo decide el servidor). La lanza cae al suelo para recogerla; la piedra
-// se gasta. Lo lanzado (de cualquiera) se ve volar. El rival de práctica pelea con un palo.
+// cámara) y, al soltar, sale con algo de desvío (lo decide el servidor). La lanza y la piedra caen al suelo donde acaban,
+// para recogerlas. Lo lanzado (de cualquiera) se ve volar. El rival de práctica pelea con un palo.
 // En línea (valravnx, 31 oct: «sacábamos arma y no veíamos al otro con arma en mano ni los ataques nos hacían nada»):
 // sacar y guardar el arma, cargar, soltar, fintar y parar se mandan también al servidor (src/logica/combate_servidor.js),
 // que resuelve los golpes entre jugadores con su autor; aquí se hace enseguida en la copia propia para no esperar a la
@@ -365,7 +365,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
 
   // ---------- Lo lanzado, volando (de todos: lo dice el servidor con el evento «disparo») ----------
   // se mueve aquí con la misma gravedad que en el servidor, desde la altura del suelo de quien lo lanza, y se quita al
-  // llegar al suelo o cuando el servidor dice dónde ha dado (evento «flecha»). Donde cae, la lanza la pone el suelo.
+  // llegar al suelo o cuando el servidor dice dónde ha dado (evento «flecha»). Donde cae, la lanza o la piedra la pone el suelo.
   const vuelos = [];
   function modeloVuelo(e) {
     if (e.objeto === 'lanza_endurecida') return crearModeloLanza();

@@ -26,8 +26,9 @@
 //                        { tipo: 'combate', que: 'equipar', arma }          ya no cuenta (valravnx, 9 nov): el arma es
 //                                                                             lo que lleva en la mano (armar, desde su
 //                                                                             inventario); se acepta sin hacer nada
-//   Lo que se lanza (la piedra, la lanza) sale de su inventario al soltar (alLanzar, lo da el servidor); la lanza cae
-//   al suelo donde acaba su vuelo (el evento «flecha» lleva objeto), la piedra se gasta. Con el terreno (mundo), las
+//   Lo que se lanza (la piedra, la lanza) sale de su inventario al soltar (alLanzar, lo da el servidor) y cae al suelo
+//   donde acaba su vuelo (el evento «flecha» lleva objeto), para recogerlo (valravnx, 9 nov: «la piedra sí queda en el
+//   suelo, igual que con la lanza»). Con el terreno (mundo), las
 //   alturas van sobre el suelo de cada sitio y lo lanzado puede dar a una liebre (resultado «presa», con su id).
 //                        { tipo: 'combate', que: 'curar', herida, metodo }   herida: índice en sus heridas
 //                        { tipo: 'combate', que: 'dejarCura' }               deja la cura a medias (echa a correr)
@@ -187,7 +188,7 @@ export class CombateServidor {
         if (L.tension < T.tensionMinima) { L.soltar(); ok = true; break; }   // soltar flojo: no sale nada, pero vale
         // lo que se lanza sale de su inventario (sin ello en la mano, no sale nada)
         // (lo que se tira de la mano: la piedra y la lanza; el arco de las pruebas no gasta nada)
-        const deMano = !!(L.defTiro && (L.defTiro.gasta || L.def.arrojar));
+        const deMano = !!(L.defTiro && (L.defTiro.deLaMano || L.def.arrojar));
         // (sacarlo de la mano vuelve a armarle con lo que le quede: el tiro sale con el arma que tenía al soltar)
         // (y suelta antes de sacarlo: al armarle de nuevo, lo que ya no se lanza deja de tensarse)
         const armaTiro = L.arma, objetoTiro = L.objeto;

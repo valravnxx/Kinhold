@@ -108,12 +108,17 @@ try:
                 ctx.close(); continue
             yo = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
             l = min(ls, key=lambda q: math.hypot(q['ox'] - yo[0], q['oz'] - yo[1]))
-            # a 18 m de golpe (no la asusta) y luego andando despacio hasta unos 10 m
-            ang = math.atan2(yo[0] - l['ox'], yo[1] - l['oz'])
-            poner(pg, l['ox'] + math.sin(ang) * 18, l['oz'] + math.cos(ang) * 18)
-            pg.evaluate(f"""(id) => new Promise(r => {{ const k = {K}, t = setInterval(() => {{ const q = k.fauna.liebres.get(id); if (!q) {{ clearInterval(t); r(); return; }}
-              const d = Math.hypot(q.obj.x - k.pj.x, q.obj.z - k.pj.z); if (d <= 10.5) {{ clearInterval(t); r(); return; }}
-              k.pj.x += (q.obj.x - k.pj.x) / d * 0.2; k.pj.z += (q.obj.z - k.pj.z) / d * 0.2; }}, 100); }})""", l['id'])
+            # como cazaría alguien: un sitio a unos 10 m desde el que se la vea sin nada en medio (la lanza va baja: un
+            # desnivel entre los dos la para); de golpe a 24 m de ella (no la asusta) y luego andando despacio hasta él
+            sitio = pg.evaluate(f"""(id) => {{ const k = {K}, q = k.fauna.liebres.get(id).obj, S = (x, z) => k.alturaSuelo(x, z);
+              const libre = (p) => {{ const h0 = S(p.x, p.z) + 1.45, h1 = S(q.x, q.z) + 0.2; for (let i = 1; i < 20; i++) {{ const u = i / 20; if (S(p.x + (q.x - p.x) * u, p.z + (q.z - p.z) * u) > h0 + (h1 - h0) * u - 0.15) return false; }} return true; }};
+              let m = null; for (let i = 0; i < 16; i++) {{ const a = i * Math.PI / 8, p = {{ x: q.x + Math.sin(a) * 10, z: q.z + Math.cos(a) * 10, a }}; if (libre(p) && (!m || Math.hypot(p.x - k.pj.x, p.z - k.pj.z) < Math.hypot(m.x - k.pj.x, m.z - k.pj.z))) m = p; }}
+              return m; }}""", l['id'])
+            comprobar(f'{nombre}: (hay un sitio a 10 m de la liebre sin nada en medio)', bool(sitio), str(sitio))
+            if sitio:
+                poner(pg, l['ox'] + math.sin(sitio['a']) * 24, l['oz'] + math.cos(sitio['a']) * 24)
+                pg.evaluate(f"""(p) => new Promise(r => {{ const k = {K}, t = setInterval(() => {{ const d = Math.hypot(p.x - k.pj.x, p.z - k.pj.z);
+                  if (d <= 0.25) {{ clearInterval(t); r(); return; }} const s = Math.min(d, 0.2); k.pj.x += (p.x - k.pj.x) / d * s; k.pj.z += (p.z - k.pj.z) / d * s; }}, 100); }})""", sitio)
             pg.wait_for_timeout(1500)
             pg.evaluate(f"window.__vuelan = 0; setInterval(() => {{ window.__vuelan = Math.max(window.__vuelan, {CB}.vuelos.length); }}, 30)")
             muerta = False; salio = True; lanzadas = 0
