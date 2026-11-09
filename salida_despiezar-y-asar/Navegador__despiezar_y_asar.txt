@@ -1,0 +1,20 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: (la liebre a sus pies y la lasca en la mano)
+  OK   pc: Usar dice «Despiezar la liebre» — Despiezar la liebre
+  OK   pc: la liebre sale del suelo
+  OK   pc: pasados sus 30 s, la carne cruda y la piel llegan solas — {"carne_cruda": 1, "piel": 0, "lasca_silex": 1}
+  OK   pc: la lasca no se gasta
+  OK   pc: (la carne cruda, la asada y la piel, en el suelo) — {"carne_cruda": 1, "carne_asada": 1, "piel": 1}
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: (la liebre a sus pies y la lasca en la mano)
+  OK   movil: Usar dice «Despiezar la liebre» — Despiezar la liebre
+  OK   movil: la liebre sale del suelo
+  OK   movil: pasados sus 30 s, la carne cruda y la piel llegan solas — {"carne_cruda": 1, "piel": 0, "lasca_silex": 1}
+  OK   movil: la lasca no se gasta
+  OK   movil: (la carne cruda, la asada y la piel, en el suelo) — {"carne_cruda": 2, "carne_asada": 2, "piel": 2}
+  OK   movil: sin errores en la página
+
+Todo bien
