@@ -214,7 +214,11 @@ try:
         comprobar('llena, no cabe ni una más (el panel lo dice)', esperar(A, f"/No cabe nada más/.test({PANEL}) && /40 de 40/.test({PANEL})", 5000), A.evaluate(PANEL)[:300])
         comprobar('y se ve llena: 40 piedras en montón', esperar(A, f"{DEPOSITO}('pila_piedras') >= 40", 5000), str(A.evaluate(f"{DEPOSITO}('pila_piedras')")))
         captura(A, f'{SALIDA}/PC_panel_pila_llena.png')
-        comprobar('el contador de arriba («En tu tierra») cuenta lo guardado: 40 piedras', esperar(A, "/En tu tierra/.test(document.getElementById('materiales').innerText) && /40\\s*piedra/.test(document.getElementById('materiales').innerText)", 6000), A.evaluate("document.getElementById('materiales').innerText"))
+        # el contador va plegado (valravnx, 9 nov): la placa dice el total; tocándola, la lista
+        comprobar('el contador de arriba va plegado: «En tu tierra» y el total, sin la lista', esperar(A, "/En tu tierra\\s*40/.test(document.getElementById('materiales').innerText) && !/piedra/.test(document.getElementById('materiales').innerText)", 6000), A.evaluate("document.getElementById('materiales').innerText"))
+        A.click('#materiales .mat-cab')
+        comprobar('y desplegado cuenta lo guardado: 40 piedras', esperar(A, "/40\\s*piedra/.test(document.getElementById('materiales').innerText)", 3000), A.evaluate("document.getElementById('materiales').innerText"))
+        A.click('#materiales .mat-cab')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
         A.add_style_tag(content='#menuUsar, #aviso { visibility: hidden !important; }')
         mirar(A, 'pila_piedras', 2.8, 0.45); A.wait_for_timeout(2500)

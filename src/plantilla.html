@@ -79,8 +79,6 @@ body.hub-abierto :is(#hudBotones,#materiales,#modos,#btnUsar,#btnFabricar,#accio
 .seccion-t:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(193,154,85,.6),transparent)}
 #ajustesRend #btnDemoFps{font:17px 'Alegreya SC',Georgia,serif}
 #ajustesRend #demoRend{position:static;width:auto;max-height:none!important;margin-top:10px;background:rgba(10,6,3,.4);border-color:rgba(193,154,85,.35)}
-#materiales{pointer-events:auto;background:var(--panel);border-radius:12px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:min(520px,70vw);font-size:12.5px}
-#materiales b{color:var(--acento)}
 /* Fabricar, en el móvil: botón redondo del kit en el arco del pulgar (construyendo, arriba a la izquierda de la barra) */
 #btnFabricar{position:fixed;z-index:5;display:grid;place-items:center;width:56px;height:56px;min-width:0;padding:0;border:0;border-radius:50%;background:url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));right:calc(128px + env(safe-area-inset-right,0px));bottom:calc(154px + env(safe-area-inset-bottom,0px))}
 #btnFabricar:active{background-image:url(../../recursos/interfaz-v1/boton_pulsado.webp)}
@@ -88,6 +86,15 @@ body.hub-abierto :is(#hudBotones,#materiales,#modos,#btnUsar,#btnFabricar,#accio
 #btnFabricar .nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 body:not(.tactil-ui) #btnFabricar{display:none}
 body.construyendo #btnFabricar,body.desmontando #btnFabricar{right:auto;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(290px + env(safe-area-inset-bottom,0px))}
+/* el contador de lo almacenado en tu tierra: plegado, una placa pequeña con el total; tocándola se despliega */
+#materiales{pointer-events:auto;background:var(--panel);border-radius:10px;max-width:min(520px,70vw);font-size:12.5px;overflow:hidden}
+#materiales b{color:var(--acento)}
+#materiales:not(.abierto){flex:none}
+#materiales .mat-cab{display:flex;align-items:center;gap:6px;padding:6px 10px;border:0;background:none;color:inherit;font:inherit;cursor:pointer;min-width:0;white-space:nowrap}
+#materiales .mat-cab .fl{width:7px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-2px,-2px);opacity:.7;margin-left:2px}
+#materiales.abierto .mat-cab .fl{transform:rotate(-135deg) translate(-2px,-2px)}
+#materiales .mat-lista{display:none;flex-wrap:wrap;gap:4px 10px;padding:0 10px 8px}
+#materiales.abierto .mat-lista{display:flex}
 
 #aviso{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);max-width:min(560px,92vw);background:var(--panel);border-left:4px solid var(--verde);padding:8px 12px;border-radius:8px;font-size:13.5px;pointer-events:none}
 #aviso.error{border-left-color:var(--rojo)}
@@ -386,6 +393,7 @@ body.construyendo #pomo{left:25px;top:25px}
   body.hub-abierto :is(#panelInventario,#panelFabricar,#panelAjustes,#panelTierra,#panelRegistro,#panelAyuda)::after{border-width:22px}
   .br{width:50px;height:50px}
   #materiales{font-size:11.5px;max-width:58vw}
+  #materiales .mat-cab{padding:5px 9px}
   /* en el móvil, el idioma va en un desplegable (idioma.js) */
   #acciones button{min-width:84px;padding:8px 10px}
   /* «Fabricar», abajo a la izquierda a la altura de «Usar» (en la barra de arriba la alargaba una fila y tapaba el cielo) */
@@ -441,8 +449,12 @@ body.construyendo #pomo{left:25px;top:25px}
   .inv-c{width:62px;height:62px}
   /* móvil: a la derecha del joystick, sin pisarlo (ni con el botón de soltar, que sobresale 9 px) */
   #llevas{left:calc(162px + env(safe-area-inset-left,0px));transform:none;bottom:calc(26px + env(safe-area-inset-bottom,0px));gap:5px;flex-wrap:wrap;max-width:calc(100vw - 166px)}
-  #llevas .hu{width:50px;height:50px} #llevas .hu.cinto{width:42px;height:42px} #llevas .hu.hombro{width:54px;height:54px} #llevas .sep{margin:10px 0}
-  #llevas .hu button{width:30px;height:30px;top:-12px}
+  /* (más pequeña en el móvil: valravnx, 9 nov) */
+  #llevas{gap:4px;padding-bottom:7px}
+  #llevas .hu{width:40px;height:40px} #llevas .hu.cinto{width:34px;height:34px} #llevas .hu.hombro{width:44px;height:44px} #llevas .sep{margin:8px 0}
+  #llevas .hu button{width:24px;height:24px;top:-10px}
+  #llevas .hu .n{font-size:12.5px}
+  #llevas .hu .k{display:none}
   #llevas .llevo{flex-wrap:wrap;white-space:normal;font-size:12px}
   .inv-retrato{height:380px}
 }
@@ -451,6 +463,16 @@ body.construyendo #pomo{left:25px;top:25px}
   -webkit-mask:radial-gradient(circle,transparent 52%,#000 54%);mask:radial-gradient(circle,transparent 52%,#000 54%);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
 #aguante.ahogo{animation:latido .5s ease-in-out infinite alternate}
 @keyframes latido{from{transform:scale(1)}to{transform:scale(1.18)}}
+
+/* en el móvil, el botón de acción y los de Fabricar y Construir, más pequeños (valravnx, 9 nov: «tapa mucha pantalla») */
+@media (max-width:640px){
+  body.tactil-ui:not(.construyendo):not(.desmontando) #btnUsar{width:74px;height:74px;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+  body.tactil-ui #btnUsar .verbo{font-size:15px;margin-top:2px}
+  body.tactil-ui #btnUsar .prog{inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px)}
+  body.tactil-ui:not(.construyendo):not(.desmontando) #btnFabricar{width:44px;height:44px;right:calc(100px + env(safe-area-inset-right,0px));bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+  body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir]{width:44px;height:44px;right:calc(36px + env(safe-area-inset-right,0px));bottom:calc(228px + env(safe-area-inset-bottom,0px))}
+  body.tactil-ui #accionLista{bottom:calc(286px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 </head>
 <body>

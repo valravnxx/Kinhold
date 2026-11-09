@@ -2508,5 +2508,7 @@
  "Solo tú. Para invitar a alguien, ponte a su lado y elige «Invitar a tu tierra».": "Только ты. Чтобы пригласить кого-то, встань рядом и выбери «Пригласить на свою землю».",
  "Verla en el mapa": "Показать на карте",
  "Rendimiento y calidad gráfica": "Производительность и качество графики",
- "Púlsalo para ver el detalle y elegir la calidad.": "Нажми, чтобы увидеть подробности и выбрать качество."
+ "Púlsalo para ver el detalle y elegir la calidad.": "Нажми, чтобы увидеть подробности и выбрать качество.",
+ "v167: el contador de arriba de lo almacenado en tu tierra va plegado (valravnx, 9 nov: «desplegable y nunca fijo»): una placa pequeña con el total; tocándola se despliega la lista y se vuelve a plegar, y siempre empieza plegado. En el móvil, más pequeños el botón de acción, Fabricar y Construir, la barra de abajo y los avisos de las necesidades.": "v167: счётчик наверху (что хранится на твоей земле) свёрнут (valravnx, 9 нояб.: «раскрывающийся и никогда не закреплённый»): маленькая плашка с итогом; нажатие разворачивает список и снова сворачивает, и он всегда начинается свёрнутым. На телефоне кнопка действия, «Изготовить» и «Строить», нижняя панель и значки потребностей стали меньше.",
+ "Demo única · v167 (el contador plegado)": "Единое демо · v167 (свёрнутый счётчик)"
 }
