@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-09T03:25:04+00:00",
-  "tarea": "Cazar la liebre con la lanza endurecida: se lanza hacia donde miras (PC y móvil), vuela y cae; el servidor decide si acierta, con su autor; la liebre cae y la lanza queda en el suelo para recogerla. Recorrido: el jugador hace la lanza en la hoguera y caza una liebre",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261109-0324"
- },
+ "A": null,
  "B": null
 }
