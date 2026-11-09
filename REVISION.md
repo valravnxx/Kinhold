@@ -6,6 +6,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 9 nov 2026 (05:49 UTC) — valravnx, en la sesión del carril A: el modo arma emplea lo que llevas en la mano; la lanza se lanza apuntando
+valravnx, tras la v165 (cazar con la lanza por Usar, con el acierto decidido por el servidor): «No me acaba de gustar eso de que el server decida si acierta, usar lanza y tal. Tenemos un modo combate […] aún hicimos un hito que está apuntado como hecho, de que el arma que se emplea es la que tienes en mano, pero sigues apretando el botón y sigue saliendo una espada larga de acero […] modo arma tendría que ser modo emplear el equipo que tengas en la mano. En ese caso, si tienes la lanza endurecida, pues poder lanzarla. Y lanzarla tú apuntando, obviamente. Y tú lanzándola, que tenga algo de desvío, que no tenga mucha fuerza porque es una lanza súper básica […] No creando sistemas nuevos como el que acabas de crear. […] le quitamos todo lo de la espada, que estaba muy bien para testear el modo de combate, pero ahora mismo hay que hacer un sistema que funcione. Encima me habías puesto que funcionaba […] y no se ha cambiado, así que ponlo con prioridad absoluta ahora mismo».
+→ Prioridad absoluta. El modo arma emplea lo que llevas en la mano (fuera la espada de pruebas). Con la lanza endurecida en la mano, en el modo arma se lanza apuntando el jugador, con algo de desvío y poca fuerza, por el mismo camino del combate (no un sistema aparte). Se quita la caza por Usar de la v165.
+
+
 ### 8 nov 2026 (18:35 UTC) — por el chat: apruebo P3
 valravnx: «aprueba» (tras la revisión completa de P3 «De nada a una casa», que el carril A pasó a revisión).
 → P3 «De nada a una casa» pasa a hecho.
