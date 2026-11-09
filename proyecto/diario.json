@@ -5816,5 +5816,30 @@
   "pruebas": "La prueba de la acción a la vista, aquí, en PC y móvil (en el móvil sin etiqueta ni lista hasta mantener pulsado; en PC la lista con Alt): bien. Sin batería en la nube (cambio pequeño de interfaz).",
   "capturas": "capturas/demo-v166",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T09:14:00+01:00",
+  "fin": "2026-11-09T09:21:38+01:00",
+  "titulo": "Interfaz: el contador de arriba plegado y lo del móvil más pequeño (demo v167)",
+  "hito": "interfaz",
+  "hecho": [
+   "El contador de lo almacenado en tu tierra va plegado (valravnx, 9 nov: «desplegable y nunca fijo»): una placa pequeña con el total; tocándola se despliega la lista. Siempre empieza plegado.",
+   "En el móvil, más pequeños el botón de acción (de 96 a 74 px), Fabricar y Construir (de 56 a 44), la barra de abajo (huecos de 50 a 40) y los avisos de las necesidades (de 36 a 30)."
+  ],
+  "pruebas": "Aquí: la prueba de la acción a la vista en PC y móvil (bien) y capturas del contador plegado y desplegado en PC y móvil. La de los almacenajes, puesta al día para el contador plegado (no pasada: es de dos páginas en línea). Sin batería en la nube (cambio pequeño de interfaz).",
+  "capturas": "capturas/demo-v167",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T05:22:57+00:00",
+  "fin": "2026-11-09T08:32:50+00:00",
+  "titulo": "Un primer día: despiezar y asar la liebre (a medias)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Hecho en la rama trabajo/20261109-0522, sin publicar: despiezar la liebre con la lasca (carne cruda y piel), asar la carne al fuego, la asada sacia más, la carne cruda se estropea por el servidor; modelos de la carne e iconos v15; la honda y el odre vuelven (ya hay piel).",
+   "Falla el recorrido de jugador en su paso nuevo: tras morir de sed se le rompe la lasca y, al tallar otra, no llega a dejar la piedra en la piedra de tallar; sin lasca no despieza. El paso ya apunta qué pasa al traer y dejar cada cosa."
+  ],
+  "pruebas": "Lógica (despiezar y asar, fabricar, inventario, suelo, de dónde sale cada cosa, la piel, traducciones) bien; navegador de despiezar y asar en la nube, bien; el recorrido falla en su paso 21 (la lasca nueva). No comprobado: la prueba de navegador rota a propósito.",
+  "estado": "fallo"
  }
 ]

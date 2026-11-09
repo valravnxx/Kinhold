@@ -2618,10 +2618,14 @@ function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : 
 // hasta que los hubo, era lo que había en el suelo de tu tierra. Sin servidor (las pruebas de navegador), lo que hay en
 // el arcón de pruebas, como antes.
 let htmlMateriales = null;
+// El contador de arriba (lo almacenado en tu tierra), plegado (valravnx, 9 nov: «desplegable y nunca fijo, porque tapa
+// mucha pantalla sobre todo en móvil»): una placa pequeña con el total; tocándola se despliega la lista y se vuelve a
+// plegar. Siempre empieza plegado.
+let materialesAbierto = false;
 function pintarMateriales() {
   const m = $('materiales');
-  let html = '';
-  if (!enLinea) html = `<span>${tr('En el arcón:')}</span>` + Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
+  let html = '', titulo = '', total = 0;
+  if (!enLinea) { titulo = tr('En el arcón:'); html = Object.entries(MATERIALES).map(([k, n]) => { total += mundo.materiales[k] ?? 0; return `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`; }).join(''); }
   else {
     const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null;
     const esMio = (x, z) => zona !== null && mundo.tierraDe(x, z) === zona;
@@ -2630,13 +2634,20 @@ function pintarMateriales() {
       for (const e of Object.values(fabCliente.estaciones)) if (esAlmacen(e.tipo) && !e.obra && esMio(e.x, e.z))
         for (const [k, n] of Object.entries(e.deposito || {})) hay[k] = (hay[k] || 0) + n;
       const ks = Object.keys(hay).filter(k => CATALOGO[k]).sort((a, b) => hay[b] - hay[a]);
-      html = `<span>${tr('En tu tierra:')}</span>` + (ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
-        : `<span>${tr('aún no tienes nada almacenado')}</span>`);
+      titulo = tr('En tu tierra:'); total = ks.reduce((t, k) => t + hay[k], 0);
+      html = ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
+        : `<span>${tr('aún no tienes nada almacenado')}</span>`;
     }
   }
+  if (html) html = `<button type="button" class="mat-cab" aria-expanded="${materialesAbierto}">${titulo.replace(/:$/, '')} <b>${total}</b><i class="fl"></i></button><div class="mat-lista">${html}</div>`;
   if (html !== htmlMateriales) { htmlMateriales = html; m.innerHTML = html; }
+  m.classList.toggle('abierto', materialesAbierto);
   m.hidden = !html;
 }
+$('materiales').addEventListener('click', (e) => {
+  if (!e.target.closest('.mat-cab')) return;
+  materialesAbierto = !materialesAbierto; htmlMateriales = null; pintarMateriales();
+});
 let ultimoMateriales = 0;
 
 // ---------------- La acción, a la vista (estudio de la interfaz del 7 nov) ----------------
