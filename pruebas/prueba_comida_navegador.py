@@ -47,6 +47,12 @@ def captura(pg, ruta):
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 EN_SUELO = f"(t) => {K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === t).map(o => ({{ id: o.id, x: o.x, z: o.z }}))"
 CUANTOS = f"(t) => {K}.inventario.cuantos(t)"
+def poner(pg, x, z):
+    for _ in range(4):
+        pg.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {x}, z: {z}, vel: 0 }}); }})()")
+        pg.wait_for_timeout(2500)
+        if pg.evaluate(f"Math.hypot({K}.pj.x - ({x}), {K}.pj.z - ({z})) < 1"): return True
+    return False
 def coger(pg, t, a):
     pg.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: '{t}', cantidad: 1, a: '{a}' }})")
     return esperar(pg, f"(() => {{ const c = {K}.inventario.lugares['{a}']; return !!c && c.tipo === '{t}'; }})()", 10000)
@@ -93,16 +99,15 @@ try:
             comprobar(f'{nombre}: (la carne cruda, la asada y la piel, en el suelo)', all(hay.values()), json.dumps(hay))
             c = pg.evaluate(EN_SUELO, 'carne_cruda')
             if c:
-                # el centro de lo que hay en el suelo, de cerca, con la cámara libre (el personaje, a un lado, fuera del cuadro)
+                # el centro de lo que hay en el suelo, de cerca: el personaje a 1,3 m a un lado y la cámara cerca y baja
                 todo = [o for t in ['carne_cruda', 'carne_asada', 'piel'] for o in pg.evaluate(EN_SUELO, t)]
                 cx = sum(o['x'] for o in todo) / len(todo); cz = sum(o['z'] for o in todo) / len(todo)
-                pg.evaluate(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {cx} - 4, z: {cz} - 4, vel: 0 }}); }})()")
-                pg.wait_for_timeout(1500)
-                pg.evaluate(f"(() => {{ const k = {K}, yaw = 0.5, p = 0.75, d = 1.5, y0 = k.alturaSuelo({cx}, {cz}); k.cam.yaw = yaw; k.cam.pitch = p;"
-                            f" Object.assign(k.camLibre, {{ activa: true, x: {cx} + Math.sin(yaw) * Math.cos(p) * d, y: y0 + Math.sin(p) * d, z: {cz} + Math.cos(yaw) * Math.cos(p) * d }}); }})()")
+                yaw = 0.5
+                px, pz = cx + math.cos(yaw) * 1.3, cz - math.sin(yaw) * 1.3
+                poner(pg, px, pz)
+                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {yaw}; k.cam.pitch = 0.75; k.cam.dist = 2.6; k.pj.rot = {yaw} + Math.PI; }})()")
                 pg.wait_for_timeout(5000)
                 captura(pg, f'{SALIDA}/{nombre}_carne_de_cerca.png')
-                pg.evaluate(f"{K}.camLibre.activa = false")
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()
             time.sleep(1.0)
