@@ -1550,9 +1550,9 @@
     },
     {
      "nombre": "Liebres en el mundo: salen en prados y bordes del bosque, pastan y huyen de quien se acerca (fauna realista, GDD apartado 14), con su modelo y su animación (antes, buscar uno libre CC0 o el mejor método; estilo v5 y capturas de cerca). Las mueve el servidor, para que los dos vean la misma. Recorrido: el jugador ve liebres y huyen al acercarse",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-09T01:24:48+00:00",
-     "rama": "trabajo/20261109-0123"
+     "fin": "2026-11-09T02:39:46+00:00"
     },
     {
      "nombre": "Cazar la liebre con la lanza endurecida: se lanza hacia donde miras (PC y móvil), vuela y cae; el servidor decide si acierta, con su autor; la liebre cae y la lanza queda en el suelo para recogerla. Recorrido: el jugador hace la lanza en la hoguera y caza una liebre",
@@ -3727,6 +3727,13 @@
      "archivo": "jugar/demo/v163.html",
      "capturas": "capturas/demo-v163",
      "notas": "Morir y que te saqueen: se muere de sed y de hambre (con la sed o el hambre al máximo se pierde sangre poco a poco), en el combate o ahogado; vuelves sano a tu cama ligada o a tu sitio de salida, y tu cuerpo queda tumbado donde caíste una hora, con la mitad de lo que llevabas en el suelo a su lado, que cualquiera puede coger; la otra mitad se rompe, al azar del servidor"
+    },
+    {
+     "v": "v164",
+     "fecha": "2026-11-09",
+     "archivo": "jugar/demo/v164.html",
+     "capturas": "capturas/demo-v164",
+     "notas": "Liebres en el mundo: salen en los prados y en las lindes del bosque, pastan, se ponen alerta si te acercas y huyen a la carrera si llegas cerca. Las mueve el servidor: los dos veis la misma."
     }
    ]
   },
