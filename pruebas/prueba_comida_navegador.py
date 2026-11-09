@@ -104,11 +104,12 @@ try:
                 # el centro de lo que hay en el suelo, de cerca: el personaje a 1,3 m a un lado y la cámara cerca y baja
                 todo = [o for t in ['carne_cruda', 'carne_asada', 'piel'] for o in pg.evaluate(EN_SUELO, t)]
                 cx = sum(o['x'] for o in todo) / len(todo); cz = sum(o['z'] for o in todo) / len(todo)
-                # (el personaje, al otro lado: entre él y la cámara, lo del suelo)
+                # (la cámara está del lado de yaw: el personaje, 1 m hacia ella y 0,9 m a un lado; lo del suelo, detrás de
+                # él y al lado, a la vista)
                 yaw = 0.5
-                px, pz = cx - math.sin(yaw) * 1.1, cz - math.cos(yaw) * 1.1
+                px = cx + math.sin(yaw) * 1.0 + math.cos(yaw) * 0.9; pz = cz + math.cos(yaw) * 1.0 - math.sin(yaw) * 0.9
                 poner(pg, px, pz)
-                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {yaw}; k.cam.pitch = 0.8; k.cam.dist = 2.8; k.pj.rot = {yaw}; }})()")
+                pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {yaw}; k.cam.pitch = 0.6; k.cam.dist = 2.6; k.pj.rot = {yaw}; }})()")
                 pg.wait_for_timeout(5000)
                 captura(pg, f'{SALIDA}/{nombre}_carne_de_cerca.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
