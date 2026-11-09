@@ -52,6 +52,8 @@ ESPANOL = re.compile(r'\b(Construir|Desmontar|Ayuda|Decisiones|Reiniciar|Opcione
 
 def elegir_idioma(pg, l):
     # en PC hay un botón por idioma; en el móvil, un desplegable
+    # (en el juego, el idioma va al pie del menú con pestañas: se abre primero)
+    if pg.evaluate("!!document.getElementById('btnMenu') && document.getElementById('hub').hidden"): pg.click('#btnMenu'); pg.wait_for_timeout(200)
     b = pg.locator(f'button.idioma[data-idioma="{l}"]')
     if b.is_visible(): b.click()
     else: pg.select_option('select.idioma', l)
@@ -112,13 +114,13 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_02_construir.png')
         revisar(pg, f'construcción {etiqueta}, construyendo')
         pg.evaluate(f"{K}.cambiarModo('mover')")
-        pg.click('#btnAyuda'); pg.wait_for_timeout(200)
+        pg.click('#btnMenu'); pg.click('#btnAyuda'); pg.wait_for_timeout(200)   # (al pie del menú con pestañas)
         pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_03_ayuda.png')
         revisar(pg, f'construcción {etiqueta}, ayuda')
-        pg.click('#panelAyuda .cerrar'); pg.click('#btnRegistro'); pg.wait_for_timeout(200)
+        pg.click('#btnRegistro'); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/construccion_{sufijo}_04_decisiones.png')
         revisar(pg, f'construcción {etiqueta}, decisiones')
-        pg.click('#panelRegistro .cerrar')
+        pg.click('#hubCerrar')
         # cambiar a español con el botón: recarga, recuerda el idioma y la partida sigue
         # sin ?lang ni nada guardado manda el idioma del navegador (aquí, español)
         pg.goto(URL_CONSTR)
@@ -233,11 +235,11 @@ with sync_playwright() as p:
         comprobar('ruso: aviso de construcción en ruso', bool(re.search('[А-Яа-я]', av)), av)
         aviso_libre(pg, f'ru construcción {etiqueta}')
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_02_construir.png'); revisar_ru(pg, f'ru construcción {etiqueta}, construyendo')
-        pg.evaluate(f"{K}.cambiarModo('mover')"); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
+        pg.evaluate(f"{K}.cambiarModo('mover')"); pg.click('#btnMenu'); pg.click('#btnAyuda'); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_03_ayuda.png'); revisar_ru(pg, f'ru construcción {etiqueta}, ayuda')
-        pg.click('#panelAyuda .cerrar'); pg.click('#btnRegistro'); pg.wait_for_timeout(200)
+        pg.click('#btnRegistro'); pg.wait_for_timeout(200)
         pg.screenshot(path=f'{SALIDA}/ru_construccion_{sufijo}_04_decisiones.png'); revisar_ru(pg, f'ru construcción {etiqueta}, decisiones')
-        pg.click('#panelRegistro .cerrar')
+        pg.click('#hubCerrar')
         # el botón RU guarda el ruso para todos los prototipos y no borra la partida
         pg.goto(URL_CONSTR); pg.wait_for_function('window.__kinhold !== undefined', timeout=20000)
         elegir_idioma(pg, 'ru')

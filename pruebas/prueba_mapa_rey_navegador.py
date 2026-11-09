@@ -81,12 +81,13 @@ with sync_playwright() as p:
         pg.evaluate(f"""(() => {{ const k = {K}, m = k.miMojon, mu = k.mundo;
           mu.mojones['prueba-vecina'] = {{ x: m.x + 2200, z: m.z }}; mu.mojones['prueba-otro'] = {{ x: m.x - 2200, z: m.z + 300 }};
           mu.invitados['prueba-vecina'] = [k.yo]; }})()""")
-        # el botón «Mapa», a la vista y dentro de la pantalla
+        # la pestaña «Mapa» del menú con pestañas, a la vista y dentro de la pantalla
+        (pg.tap if movil else pg.click)('#btnMenu'); pg.wait_for_timeout(300)
         caja = pg.evaluate("(() => { const b = document.getElementById('btnMapa'); if (!b || b.hidden) return null; const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })()")
         comprobar('el botón «Mapa» se ve y cabe en la pantalla', caja is not None and caja[0] >= 0 and caja[2] <= vista['width'] and caja[1] >= 0, str(caja))
         # abrir: con M en el PC, con el botón en el móvil
         if movil: pg.tap('#btnMapa')
-        else: pg.keyboard.press('m')
+        else: pg.keyboard.press('Escape'); pg.keyboard.press('m')
         pg.wait_for_timeout(600)
         comprobar('se abre (' + ('botón' if movil else 'M') + ')', pg.evaluate(f'{K}.mapaRey.abierto'))
         # el papel pintado (no en blanco) y la marca donde estás

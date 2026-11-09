@@ -2494,5 +2494,19 @@
  "v165, provisional: la lanza llega hasta 20 m, a 16 m/s, y da en la liebre que pasa a menos de 45 cm de su vuelo; si hay agua o un cortado por medio, cae antes; se apunta hacia donde mira el personaje y, si hay una liebre delante (a menos de 30° y de 20 m), hacia ella, para que en el móvil se pueda apuntar sin ratón; la liebre cazada no vuelve a salir en su querencia hasta media hora después (si el servidor se reinicia, sí); aún sin animación de lanzar.": "v165, временно: копьё летит до 20 м со скоростью 16 м/с и попадает в зайца, оказавшегося ближе 45 см к линии полёта; если на пути вода или обрыв, оно падает раньше; целится туда, куда смотрит персонаж, а если впереди есть заяц (в пределах 30° и 20 м) — в него, чтобы на телефоне можно было целиться без мыши; убитый заяц не появляется снова на своём месте полчаса (после перезапуска сервера — появляется); анимации броска пока нет.",
  "Demo única · v165 (cazar la liebre con la lanza)": "Единое демо · v165 (охота на зайца с копьём)",
  "v166: nada que salga solo sobre las cosas (valravnx, 8 y 9 nov). En PC, la etiqueta de la F sobre la cosa y, si hay más que hacer, «Alt más»: la lista de lo demás se abre y se cierra con Alt (o el clic derecho, en el puntero). En el móvil, ningún cuadro de texto: lo dice el botón de acción grande (su imagen y el verbo) y el aro en el suelo; manteniendo pulsado el botón de acción, la lista, que se cierra sola al cambiar de cosa. El menú del dedo quieto o del clic derecho, con la misma forma que la lista.": "v166: ничего не всплывает над вещами само (valravnx, 8 и 9 нояб.). На ПК — подпись F над вещью и, если можно сделать что-то ещё, «Alt ещё»: список остального открывается и закрывается по Alt (или правым щелчком у указателя). На телефоне никаких текстовых окошек: всё говорит большая кнопка действия (картинка и глагол) и кольцо на земле; если удерживать кнопку действия — список, который сам закрывается, когда меняется вещь. Меню долгого нажатия и правого щелчка выглядит так же, как список.",
- "Demo única · v166 (nada que salga solo)": "Единое демо · v166 (ничего не всплывает само)"
+ "Demo única · v166 (nada que salga solo)": "Единое демо · v166 (ничего не всплывает само)",
+ "Ajustes": "Настройки",
+ "Salir": "Выйти",
+ "Aún no tienes tierra.": "У тебя ещё нет земли.",
+ "Pon tu mojón donde quieras vivir: la zona entera donde lo pongas es tuya, y solo tú (y a quien invites) construyes en ella.": "Поставь свой межевой камень там, где хочешь жить: вся зона, где ты его поставишь, твоя, и строить в ней можешь только ты (и те, кого пригласишь).",
+ "Poner el mojón": "Поставить межевой камень",
+ "Estás en tu tierra.": "Ты на своей земле.",
+ "Tu mojón está a {d} m de aquí.": "Твой межевой камень в {d} м отсюда.",
+ "Es tuya la zona entera donde está tu mojón.": "Вся зона, где стоит твой межевой камень, — твоя.",
+ "Quién puede construir en ella": "Кто может на ней строить",
+ "un vecino": "сосед",
+ "Solo tú. Para invitar a alguien, ponte a su lado y elige «Invitar a tu tierra».": "Только ты. Чтобы пригласить кого-то, встань рядом и выбери «Пригласить на свою землю».",
+ "Verla en el mapa": "Показать на карте",
+ "Rendimiento y calidad gráfica": "Производительность и качество графики",
+ "Púlsalo para ver el detalle y elegir la calidad.": "Нажми, чтобы увидеть подробности и выбрать качество."
 }

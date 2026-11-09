@@ -35,7 +35,7 @@ export function ponerRendimiento(boton) {
   const ajustes = document.getElementById('ajustesRend');
   if (ajustes) {
     const fila = document.createElement('div'); fila.className = 'tierra-fila';
-    fila.innerHTML = `<span>${tr('Rendimiento y calidad gráfica')}</span>`;
+    fila.innerHTML = `<span>${tr('Rendimiento y calidad gráfica')}<br><small class="tierra-sub">${tr('Púlsalo para ver el detalle y elegir la calidad.')}</small></span>`;
     b.classList.add('boton-t'); fila.appendChild(b); ajustes.append(fila, panel);
   } else {
     // junto a «Menú»; si ahí la fila de botones crece (móvil estrecho) y taparía otras cosas, va suelto a la izquierda

@@ -174,7 +174,7 @@ with sync_playwright() as p:
     print('Móvil: desde el panel y con los botones')
     pg = abrir(nav, 390, 844, movil=True)
     pg.evaluate(f"{K}.pj.k = 0; {K}.pj.rot = Math.PI / 2")
-    pg.locator('#btnInventario').tap()
+    pg.locator('#btnMenu').tap(); pg.locator('#btnInventario').tap()   # (el menú con pestañas)
     pg.wait_for_timeout(300)
     pg.locator('#panelInventario .inv-objeto[data-tipo="rastra"]').tap()
     comprobar('móvil: en el arcón, la rastra sale con «Dejarlo en el suelo»', pg.locator('#panelInventario .inv-alsuelo').count() == 1)

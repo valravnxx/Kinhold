@@ -9,14 +9,16 @@
 // pone el menú alrededor (sincronizar, en cada fotograma); si se abre otro, cierra el de antes, para que haya uno solo.
 // Construir no es un panel: la pestaña cierra el menú y entra en el modo construir (su barra va abajo, en el mundo).
 //
-// pestanas: { equipo, fabricar, mapa, tierra: { abrir, cerrar, abierto() }, construir: { ir } }
+// pestanas: { equipo, fabricar, mapa, tierra: { abrir, cerrar, abierto } , construir: { ir } }
 // pie: { ajustes, ayuda, registro: { boton, panel } }: los paneles del pie, que se abren dentro del menú igual
 // tactil: en el móvil (las pestañas son botones redondos)
 export function montarMenuJuego({ hub, pestanas, pie = {}, boton = null, cerrarBoton = null }) {
   let actual = null;          // lo que está abierto: el nombre de una pestaña o de un panel del pie
   let ultima = 'equipo';      // la pestaña con la que se abre «Menú»
   const botones = new Map([...hub.querySelectorAll('[data-pest]')].map(b => [b.dataset.pest, b]));
-  const abiertoDe = (n) => (pestanas[n] ? !!(pestanas[n].abierto && pestanas[n].abierto()) : pie[n] ? !pie[n].panel.hidden : false);
+  // (abierto: una función o, en los paneles de equipo y fabricar, una propiedad)
+  const estaAbierto = (o) => (typeof o.abierto === 'function' ? o.abierto() : !!o.abierto);
+  const abiertoDe = (n) => (pestanas[n] ? estaAbierto(pestanas[n]) : pie[n] ? !pie[n].panel.hidden : false);
   const nombres = () => [...Object.keys(pestanas).filter(n => pestanas[n].abrir), ...Object.keys(pie)];
   function cerrarUno(n) {
     if (pestanas[n] && pestanas[n].cerrar) pestanas[n].cerrar();
@@ -56,6 +58,9 @@ export function montarMenuJuego({ hub, pestanas, pie = {}, boton = null, cerrarB
   if (boton) boton.onclick = (e) => { e.stopPropagation(); alternar(); };
   if (cerrarBoton) cerrarBoton.onclick = (e) => { e.stopPropagation(); cerrar(); };
   // tocar el fondo desenfocado (fuera del tablero) cierra, como en los juegos
+  // Admin y Salir, al pie: el menú se cierra antes (Admin abre su propio panel, a veces con el mapa)
+  const menu = hub.querySelector('#menu');
+  if (menu) menu.addEventListener('click', (e) => { if (e.target.closest('#btnAdmin')) cerrar(); }, { capture: true });
   const fondo = hub.querySelector('.hub-fondo');
   if (fondo) fondo.onclick = cerrar;
   sincronizar();

@@ -53,10 +53,16 @@ def tapado(pg, sel):
     return pg.evaluate("""s => { const e = document.querySelector(s); if (!e) return 'no está'; const r = e.getBoundingClientRect();
       if (r.width === 0) return 'invisible'; const x = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
       return x === e || e.contains(x) ? '' : (x ? x.id || x.tagName : 'nada'); }""", sel)
+def ajustes(pg):
+    """en el juego, los fps van en Ajustes, al pie del menú con pestañas (estudio de la interfaz, 7 nov)"""
+    if pg.evaluate("!!document.getElementById('btnAjustes') && document.getElementById('panelAjustes').hidden"):
+        if pg.evaluate("document.getElementById('hub').hidden"): pg.click('#btnMenu')
+        pg.click('#btnAjustes'); pg.wait_for_timeout(300)
 def medir(pg, nombre, parte, personajes):
     """el botón de fps junto a «Menú», su panel y la medida (se renueva cada segundo)"""
     try: pg.wait_for_function('window.__rendimiento.medida() && window.__rendimiento.medida().fps > 0 && window.__rendimiento.medida().personajes >= %d' % personajes, timeout=60000)
     except Exception: pass  # lo dice la comprobación de abajo
+    ajustes(pg)
     t = tapado(pg, '#btnDemoFps'); comprobar(f'{parte}: botón de fps libre', t == '', t)
     comprobar(f'{parte}: el botón dice los fps', pg.inner_text('#btnDemoFps').endswith('fps'), pg.inner_text('#btnDemoFps'))
     pg.wait_for_timeout(1100)
@@ -66,7 +72,7 @@ def medir(pg, nombre, parte, personajes):
     MEDIDAS[f'{nombre}_{parte}'] = m
     return m
 def abrirPanel(pg, parte):
-    pg.click('#btnDemoFps'); pg.wait_for_timeout(1200)
+    ajustes(pg); pg.click('#btnDemoFps'); pg.wait_for_timeout(1200)
     txt = pg.inner_text('#demoRend')
     # en el juego, también el perfil gráfico y los seis para elegir (valravnx, 5 nov); ya no pide los fps del móvil: los midió
     comprobar(f'{parte}: el panel enseña los números', 'Triángulos' in txt and 'Personajes en escena' in txt and (parte != 'construir' or ('Perfil gráfico' in txt and 'Calidad gráfica' in txt)), txt[:80])
@@ -112,7 +118,10 @@ with sync_playwright() as p:
         # el personaje lleva lo que dice el inventario (valravnx, 29 oct): la ropa del visor entra en él, y el vestido y
         # el gambesón son la misma capa (abrigo), así que queda el de fuera
         comprobar('construir: el personaje elegido, con la ropa del visor pasada al inventario', mh['s'] == 'mujer' and mh['c'] == ['gambeson'], str(mh))
-        t = tapado(pg, '#btnDemoMenu'); comprobar('construir: botón Menú libre', t == '', t)
+        # (en el juego, «Salir» va al pie del menú con pestañas)
+        pg.click('#btnMenu'); pg.wait_for_timeout(300)
+        t = tapado(pg, '#btnDemoMenu'); comprobar('construir: botón «Salir» libre, al pie del menú', t == '' and pg.inner_text('#btnDemoMenu').strip() == 'Salir', t)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
         pg.wait_for_timeout(1500)
         png = pg.screenshot(path=f'{SALIDA}/{nombre}_construir.png')
         v = variedad(png); comprobar('construir: se dibuja', v > 8, f'{v:.1f}')
@@ -167,6 +176,7 @@ with sync_playwright() as p:
         abrirPanel(pg, 'construir')
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_rendimiento.png')
         pg.click('#btnDemoFps')
+        if pg.evaluate("document.getElementById('hub').hidden"): pg.click('#btnMenu')
         ir(pg, '#btnDemoMenu')
         comprobar('vuelve al menú', pg.locator('a.parte').count() == 2)
         # un enlace de antes a «Duelo» lleva a «Jugar»

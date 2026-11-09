@@ -117,7 +117,7 @@ with sync_playwright() as p:
             return pg.evaluate('({...window.__rendimiento.medida(), niveles: window.__rendimiento.niveles()})')
         sin = medir(False); con = medir(True)
         pg.screenshot(path=f'{SALIDA}/{nombre}_demo_20.png')
-        pg.click('#btnDemoFps')
+        pg.click('#btnMenu'); pg.click('#btnAjustes'); pg.click('#btnDemoFps')   # (en Ajustes, al pie del menú)
         # el panel se rellena en el bucle del juego: a 0–1 fps (sin tarjeta gráfica) puede tardar más de un segundo
         try: pg.wait_for_function("(e => e && e.innerText.includes('Niveles de detalle') && e.innerText.includes('lejos'))(document.getElementById('demoRend'))", timeout=30000)
         except Exception: pass

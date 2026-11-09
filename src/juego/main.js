@@ -3038,7 +3038,7 @@ menuJuego = montarMenuJuego({
     equipo: panelInventario,
     fabricar: panelFabricar,
     construir: { ir: () => cambiarModo('construir') },
-    ...(mapaRey ? { mapa: { abrir: () => mapaRey.abrir(), cerrar: () => mapaRey.cerrar(), abierto: () => mapaRey.abierto } } : {}),
+    ...(mapaRey ? { mapa: { abrir: () => mapaRey.abrir(), cerrar: () => mapaRey.cerrar(), abierto: () => mapaRey.abierto && !($('panelAdmin') && !$('panelAdmin').hidden) } } : {}),   // (el del admin usa el mapa a su manera)
     tierra: { abrir: () => { pintarTierra(); $('panelTierra').hidden = false; }, cerrar: () => { $('panelTierra').hidden = true; }, abierto: () => !$('panelTierra').hidden },
   },
   pie: {
@@ -3048,6 +3048,8 @@ menuJuego = montarMenuJuego({
   },
 });
 $('btnMojon').onclick = () => menuJuego.abrir('tierra');
+// el mapa, bajo las pestañas y encima del pie del menú (salvo con el panel del admin, que lo usa a pantalla entera)
+if (mapaRey) mapaRey.ponerMargen(() => ($('panelAdmin') && !$('panelAdmin').hidden ? { arriba: 0, abajo: 0 } : innerWidth > 640 ? { arriba: 84, abajo: 50 } : { arriba: 88, abajo: 76 }));
 for (const [id, t] of [['btnMenu', 'Menú'], ['btnMojon', 'Tu tierra'], ['hubCerrar', 'Volver']]) { $(id).title = tr(t); $(id).setAttribute('aria-label', tr(t)); }
 $('btnFabricar').setAttribute('aria-label', tr('Fabricar'));
 construirBarra();

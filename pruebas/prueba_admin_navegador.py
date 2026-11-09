@@ -170,7 +170,7 @@ try:
             comprobar(f'{nombre}: crea la cuenta de admin', crear_cuenta(pg, ADMINS[0] if not movil else ADMINS[1]))
             esperar(pg, f"{K}.mapaRey.listo", 300000)
             comprobar(f'{nombre}: con la cuenta de admin sale el botón «Admin», sin recargar', esperar(pg, "!!document.getElementById('btnAdmin')", 5000))
-            abrir_panel = (lambda: pg.tap('#btnAdmin')) if movil else (lambda: pg.keyboard.press('F9'))
+            abrir_panel = (lambda: (pg.tap('#btnMenu'), pg.tap('#btnAdmin'))) if movil else (lambda: pg.keyboard.press('F9'))   # (Admin, al pie del menú)
             pulsar = (lambda sel: pg.tap(sel, timeout=90000)) if movil else (lambda sel: pg.click(sel, timeout=90000))
             # (desde el 6 nov el panel se abre en «Info», sin el mapa; el mapa y la lista están en su pestaña)
             abrir_panel(); pg.wait_for_timeout(600)
@@ -273,7 +273,7 @@ try:
                 pg.keyboard.press('F10'); pg.wait_for_timeout(300)
                 comprobar(f'{nombre}: F10 la pone y la quita', on and not pg.evaluate(f"{K}.camLibre.activa"))
             else:
-                pulsar('#btnAdmin'); pg.wait_for_timeout(300); pulsar('#panelAdmin .pa-p-modos'); pulsar('#panelAdmin .pa-camara'); pg.wait_for_timeout(300)
+                pulsar('#btnMenu'); pulsar('#btnAdmin'); pg.wait_for_timeout(300); pulsar('#panelAdmin .pa-p-modos'); pulsar('#panelAdmin .pa-camara'); pg.wait_for_timeout(300)
                 on = pg.evaluate(f"{K}.camLibre.activa")
                 pulsar('#vueloSalir'); pg.wait_for_timeout(300)
                 comprobar(f'{nombre}: el botón «Cámara» la quita', on and not pg.evaluate(f"{K}.camLibre.activa"))

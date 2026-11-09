@@ -133,6 +133,7 @@ paso "Imágenes de cada cosa para el panel de fabricar" node pruebas/prueba_icon
 paso "Noticias del desarrollo en Discord" node pruebas/prueba_discord_noticias.mjs
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_demo.html "$C/construccion"
 paso "Navegador: quitar el mojón" python3 pruebas/prueba_quitar_mojon_navegador.py dist/kinhold_demo.html "$C/quitar_mojon"
+paso "Navegador: el menú con pestañas (tablero, pestañas, pie y arriba solo Menú)" python3 pruebas/prueba_menu_navegador.py dist/kinhold_demo.html "$C/menu"
 paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_posprocesado_navegador.py dist/kinhold_posprocesado.html "$C/posprocesado"
 paso "Navegador: el perfil gráfico en el juego" python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html "$C/graficos_juego"
 paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py dist/kinhold_demo.html "$C/cielo"
