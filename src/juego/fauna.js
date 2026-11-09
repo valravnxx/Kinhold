@@ -117,6 +117,7 @@ export function crearFauna({ escena, alturaSuelo }) {
   const angulo = (a) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
   function recibir(msg) {
     if (!msg || msg.tipo !== 'fauna') return false;
+    if (globalThis.__mutarFauna) return true;   // (la prueba de navegador, rota a propósito: no se dibuja ninguna)
     for (const f of msg.liebres || []) {
       if (!f || typeof f.id !== 'string' || !Number.isFinite(f.x) || !Number.isFinite(f.z)) continue;
       let l = liebres.get(f.id);

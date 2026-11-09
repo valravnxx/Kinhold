@@ -1,0 +1,119 @@
+# Prueba en navegador de las liebres (P4; src/logica/fauna.js y src/juego/fauna.js), contra el servidor de verdad con
+# Whitholm, en PC y en móvil (una sola página por vista). Es la parte del recorrido de jugador de esta tarea: el jugador
+# ve liebres y huyen al acercarse.
+#   - al entrar le llegan las liebres de alrededor (las mueve el servidor) y se dibujan en el suelo;
+#   - de lejos (a 30 m) pastan; a 17 m se ponen alerta (quietas); a 4 m, corriendo hacia ella, huye y se aleja deprisa;
+#   - capturas de cerca de la liebre (con la cámara libre) pastando y alerta, y huyendo vista desde el jugador.
+# Uso: python3 pruebas/prueba_fauna_navegador.py <html de la demo> <carpeta_capturas>
+# MUTAR=1: el navegador no dibuja las liebres que llegan: tiene que fallar.
+import sys, os, json, math, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
+from playwright.sync_api import sync_playwright
+from correo_prueba import Codigos, crear_y_confirmar
+
+RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
+SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_fauna'
+os.makedirs(SALIDA, exist_ok=True)
+MUTAR = os.environ.get('MUTAR', '') == '1'
+
+sitio = tempfile.mkdtemp()
+os.makedirs(f'{sitio}/jugar/demo')
+shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
+os.symlink(os.path.join(RAIZ, 'docs/recursos'), f'{sitio}/recursos')
+class Silencioso(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+web = socketserver.ThreadingTCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
+threading.Thread(target=web.serve_forever, daemon=True).start()
+
+s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
+servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
+                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_PRUEBAS_MOVIMIENTO': 'libre', 'KINHOLD_PRUEBAS_SALIDA': 'comun'},
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+servidor.stdout.readline()
+codigos = Codigos(servidor)
+
+URL = f'http://127.0.0.1:{web.server_address[1]}/jugar/demo/prueba.html?modo=construir&enlinea=1&servidor=ws://127.0.0.1:{PUERTO}'
+K = 'window.__kinhold'
+ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+fallos = []
+def comprobar(nombre, ok, detalle=''):
+    print(('  OK   ' if ok else '  FALLA ') + nombre + (f' — {detalle}' if detalle else ''))
+    if not ok: fallos.append(nombre)
+def esperar(pg, cond, ms=30000, arg=None):
+    try: pg.wait_for_function(cond, arg=arg, timeout=ms); return True
+    except Exception: return False
+def captura(pg, ruta):
+    try: pg.screenshot(path=ruta)
+    except Exception as e: print('  (sin captura:', str(e)[:80], ')')
+# las liebres que se dibujan: id, dónde (el modelo), qué hace y si está en el suelo
+LIEBRES = f"""() => [...{K}.fauna.liebres.entries()].map(([id, l]) => ({{ id, x: l.m.raiz.position.x, y: l.m.raiz.position.y, z: l.m.raiz.position.z, anim: l.anim, suelo: {K}.alturaSuelo(l.m.raiz.position.x, l.m.raiz.position.z), visible: l.m.raiz.visible }}))"""
+UNA = f"""(id) => {{ const l = {K}.fauna.liebres.get(id); return l ? {{ x: l.m.raiz.position.x, z: l.m.raiz.position.z, anim: l.anim, ox: l.obj.x, oz: l.obj.z }} : null; }}"""
+def poner(pg, x, z, giro=None):
+    pg.evaluate(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {x}, z: {z}, vel: 0 }}); {'' if giro is None else f'k.pj.rot = {giro};'} }})()")
+# la cámara libre (como la del admin) a d m de la liebre, a la altura h, mirándola
+def camara_cerca(pg, id, d, h, lado):
+    pg.evaluate(f"""((id) => {{ const k = {K}, l = k.fauna.liebres.get(id); if (!l) return; const p = l.m.raiz.position, a = l.giro + {lado};
+      k.camLibre.x = p.x + Math.sin(a) * {d}; k.camLibre.z = p.z + Math.cos(a) * {d}; k.camLibre.y = p.y + {h}; k.camLibre.activa = true;
+      k.cam.yaw = Math.atan2(k.camLibre.x - p.x, k.camLibre.z - p.z); k.cam.pitch = Math.atan2({h} - 0.15, {d}); }})""", id)
+try:
+    with sync_playwright() as p:
+        nav = p.chromium.launch(args=ARGS)
+        for nombre, vista, movil in [('pc', {'width': 1280, 'height': 800}, False), ('movil', {'width': 390, 'height': 844}, True)]:
+            print('Vista', nombre)
+            ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+            if MUTAR: ctx.add_init_script('window.__mutarFauna = true')
+            pg = ctx.new_page()
+            err = []
+            pg.on('pageerror', lambda e, err=err: err.append(str(e)))
+            pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
+            try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=20000); crear_y_confirmar(pg, codigos, 'liebres' + nombre)
+            except Exception: pass
+            listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.yo && !document.getElementById('pantallaCuenta')", 300000)
+            comprobar(f'{nombre}: en línea', listo)
+            hay = esperar(pg, f"{K}.fauna && {K}.fauna.liebres.size > 0", 60000)
+            ls = pg.evaluate(LIEBRES) if hay else []
+            comprobar(f'{nombre}: llegan las liebres de alrededor y se dibujan', hay and len(ls) > 0, f'{len(ls)}')
+            if not ls:
+                ctx.close(); continue
+            yo = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            l = min(ls, key=lambda q: math.hypot(q['x'] - yo[0], q['z'] - yo[1]))
+            # de lejos (30 m): pasta, en el suelo
+            a = math.atan2(yo[0] - l['x'], yo[1] - l['z'])
+            poner(pg, l['x'] + math.sin(a) * 30, l['z'] + math.cos(a) * 30)
+            pg.wait_for_timeout(6000)
+            u = pg.evaluate(UNA, l['id'])
+            comprobar(f'{nombre}: de lejos pasta (o da saltitos)', u and u['anim'] in ('pastar', 'saltar'), json.dumps(u))
+            l2 = next(q for q in pg.evaluate(LIEBRES) if q['id'] == l['id'])
+            comprobar(f'{nombre}: está en el suelo', abs(l2['y'] - l2['suelo']) < 0.05, json.dumps(l2))
+            camara_cerca(pg, l['id'], 1.4, 0.55, 1.2)
+            pg.wait_for_timeout(9000)
+            captura(pg, f'{SALIDA}/{nombre}_liebre_pasta.png')
+            # a 17 m: alerta, quieta
+            u = pg.evaluate(UNA, l['id'])
+            poner(pg, u['ox'] + math.sin(a) * 17, u['oz'] + math.cos(a) * 17)
+            alerta = esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.anim === 'alerta'; }}", 15000, l['id'])
+            comprobar(f'{nombre}: a 17 m se pone alerta', alerta, json.dumps(pg.evaluate(UNA, l['id'])))
+            camara_cerca(pg, l['id'], 1.4, 0.5, -1.0)
+            pg.wait_for_timeout(9000)
+            captura(pg, f'{SALIDA}/{nombre}_liebre_alerta.png')
+            pg.evaluate(f"{K}.camLibre.activa = false")
+            # a 4 m: huye y se aleja deprisa (lo dice el servidor; el navegador la mueve)
+            u = pg.evaluate(UNA, l['id'])
+            poner(pg, u['ox'] + math.sin(a) * 4, u['oz'] + math.cos(a) * 4, a + math.pi)
+            pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {a}; k.cam.pitch = 0.3; k.cam.dist = 6; }})()")
+            huye = esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.anim === 'huir'; }}", 15000, l['id'])
+            comprobar(f'{nombre}: a 4 m huye', huye, json.dumps(pg.evaluate(UNA, l['id'])))
+            pg.wait_for_timeout(1500)
+            captura(pg, f'{SALIDA}/{nombre}_liebre_huye.png')
+            pg.wait_for_timeout(3000)
+            u2 = pg.evaluate(UNA, l['id']); pj = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+            lejos = u2 and math.hypot(u2['ox'] - pj[0], u2['oz'] - pj[1])
+            comprobar(f'{nombre}: se aleja deprisa (más de 15 m en unos segundos)', bool(lejos and lejos > 15), f'{lejos}')
+            comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
+            ctx.close()
+            time.sleep(1.0)
+        nav.close()
+finally:
+    servidor.kill()
+print('\n' + (f'{len(fallos)} fallos: ' + '; '.join(fallos) if fallos else 'Todo bien'))
+sys.exit(1 if fallos else 0)
