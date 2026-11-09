@@ -14,6 +14,11 @@
 //   saltar — saltitos cortos y despacio.
 //   huir   — a la carrera, estirada, en saltos largos con las orejas pegadas al lomo.
 // Entre una y otra, la postura cambia poco a poco. El sitio y el giro siguen a lo que manda el servidor, suavizados.
+//
+// Las lanzas que vuelan (9 nov; src/logica/caza.js): el servidor dice de dónde sale, hacia dónde y a qué velocidad
+// ({ tipo: 'lanza' }), y aquí vuela en línea recta, con la punta un poco hacia arriba al salir y cayendo al final, hasta
+// donde el servidor dice que cae ({ tipo: 'lanza_cae' }); allí la deja el suelo (src/juego/suelo.js, con la liebre si
+// acertó).
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, material } from '../mundo/estilos.js';
@@ -109,13 +114,52 @@ function postura(anim, t, u) {
   return { alto: 0.17, inclina: 0.32, cabeza: 0.95 + Math.max(0, Math.sin(t * 9 + u * 5)) * 0.08, orejas: -1.25, delante: 0.05, detras: 0.15, salto: 0 };
 }
 
+// La lanza endurecida (1,8 m): el asta de fresno pelada, más gruesa hacia atrás, y la punta tostada al fuego, oscura.
+// La raíz en su centro, a lo largo de +Z (la punta hacia +Z). Sirve para la que vuela y para la del suelo.
+const ASTA = 0x9a8262, TOSTADA = 0x3a2c1f, QUEMADA = 0x5e4733;
+export function crearModeloLanza() {
+  const L = new Lote({ variacion: 0.05, rangoSuelo: 0 });
+  const rx = { x: Math.PI / 2 };
+  L.add(new THREE.CylinderGeometry(0.014, 0.019, 1.45, 7), ASTA, 0, 0, -0.15, rx, { tex: 'veta', sinSuelo: true });
+  L.add(new THREE.CylinderGeometry(0.009, 0.014, 0.22, 7), QUEMADA, 0, 0, 0.68, rx, { tex: 'veta', sinSuelo: true });
+  L.add(new THREE.ConeGeometry(0.009, 0.14, 7), TOSTADA, 0, 0, 0.86, rx, { sinSuelo: true });
+  const m = malla(L); m.castShadow = true;
+  const g = new THREE.Group(); g.add(m);
+  return g;
+}
+
+// La liebre muerta en el suelo (la cazada, hasta despiezarla): tumbada de lado, las patas estiradas.
+export function crearLiebreMuerta() {
+  const M = crearModeloLiebre(), g = new THREE.Group();
+  M.tronco.position.y = 0; M.tronco.rotation.x = 0.05;
+  M.cabeza.rotation.x = -0.25;
+  for (const e of M.orejas) e.rotation.x = -1.5;
+  M.delante.rotation.x = -0.75; M.detras.rotation.x = 0.55;
+  M.raiz.rotation.z = Math.PI / 2; M.raiz.position.y = 0.075;
+  M.raiz.traverse(o => { delete o.userData.liebre; });
+  g.add(M.raiz);
+  return g;
+}
+
 // Las liebres de la escena. alturaSuelo(x, z): la del suelo del mundo. Devuelve { recibir(msg), paso(dt, yo), liebres }.
 export function crearFauna({ escena, alturaSuelo }) {
   const raiz = new THREE.Group(); raiz.name = 'fauna'; escena.add(raiz);
   const liebres = new Map();   // id → { m, x, z, giro, obj: { x, z, giro }, anim, p (postura actual), u }
   let t = 0;
   const angulo = (a) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
+  const lanzas = new Map();   // id → { g, x, z, dir, vel, alcance, d, hasta }
+  function recibirLanza(msg) {
+    if (msg.tipo === 'lanza' && typeof msg.id === 'string' && Number.isFinite(msg.x) && Number.isFinite(msg.z) && Number.isFinite(msg.dir)) {
+      if (lanzas.has(msg.id) || globalThis.__mutarLanza) return;   // (__mutarLanza: la prueba de navegador, rota a propósito)
+      const g = crearModeloLanza(); raiz.add(g);
+      lanzas.set(msg.id, { g, x: msg.x, z: msg.z, dir: msg.dir, vel: msg.vel || 16, alcance: msg.alcance || 20, t0: performance.now(), d: 0, hasta: null });
+    } else if (msg.tipo === 'lanza_cae') {
+      const l = lanzas.get(msg.id);
+      if (l && Number.isFinite(msg.x)) l.hasta = Math.hypot(msg.x - l.x, msg.z - l.z);
+    }
+  }
   function recibir(msg) {
+    if (msg && (msg.tipo === 'lanza' || msg.tipo === 'lanza_cae')) { recibirLanza(msg); return true; }
     if (!msg || msg.tipo !== 'fauna') return false;
     if (globalThis.__mutarFauna) return true;   // (la prueba de navegador, rota a propósito: no se dibuja ninguna)
     for (const f of msg.liebres || []) {
@@ -133,9 +177,19 @@ export function crearFauna({ escena, alturaSuelo }) {
     return true;
   }
   // al cortarse la conexión: fuera todas (al volver, el servidor las manda otra vez)
-  function vaciar() { for (const l of liebres.values()) raiz.remove(l.m.raiz); liebres.clear(); }
+  function vaciar() { for (const l of liebres.values()) raiz.remove(l.m.raiz); liebres.clear(); for (const l of lanzas.values()) raiz.remove(l.g); lanzas.clear(); }
   function paso(dt, yo) {
     t += dt;
+    // las lanzas: adelante a su velocidad; sale a la altura del hombro y cae al final (hasta donde dice el servidor)
+    for (const [id, l] of lanzas) {
+      l.d = l.vel * (performance.now() - l.t0) / 1000;   // (con el reloj de verdad: a pocos fotogramas, el paso se recorta)
+      const fin = l.hasta !== null ? l.hasta : l.alcance;
+      if (l.d >= fin + 0.01 && (l.hasta !== null || l.d > l.alcance + 8)) { raiz.remove(l.g); lanzas.delete(id); continue; }
+      const d = Math.min(l.d, fin), u = Math.min(1, d / Math.max(1, l.alcance));
+      const x = l.x + Math.sin(l.dir) * d, z = l.z + Math.cos(l.dir) * d;
+      l.g.position.set(x, alturaSuelo(x, z) + 1.55 + 0.6 * u - 1.95 * u * u, z);
+      l.g.rotation.set(0, l.dir, 0); l.g.rotateX(-Math.atan((0.6 - 3.9 * u) / Math.max(1, l.alcance)));   // (la punta, por donde va)
+    }
     const k = Math.min(1, dt * 7), kp = Math.min(1, dt * 6);
     for (const l of liebres.values()) {
       const o = l.obj || l;
@@ -157,5 +211,5 @@ export function crearFauna({ escena, alturaSuelo }) {
       M.detras.rotation.x = -P.detras - P.inclina * 0.8;
     }
   }
-  return { recibir, paso, vaciar, liebres, raiz };
+  return { recibir, paso, vaciar, liebres, lanzas, raiz };
 }

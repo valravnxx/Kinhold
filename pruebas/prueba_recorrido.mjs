@@ -20,7 +20,7 @@
 // Ejecutar: node pruebas/prueba_recorrido.mjs
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
-// mismo jugador, y no se publica si no sale. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, caza una liebre. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -127,6 +127,7 @@ function cliente(puerto, ficha = null) {
     ws.on('error', fallo);
   });
 }
+let sitioCaza = null;   // (P4) la hoguera de la orilla donde se hizo la lanza
 const pausa = (ms) => new Promise(r => setTimeout(r, ms / RELOJ));   // en ms del reloj (acelerado): RELOJ veces menos de verdad
 const r2 = v => Math.round(v * 100) / 100;
 
@@ -540,6 +541,7 @@ try {
     r = lr ? await J.objeto({ tipo: 'depositar_estacion', estacion: hog, de: lr, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no lleva ramas' };
     const rl = await J.objeto({ tipo: 'fabricar', receta: 'lanza_endurecida', estacion: hog, x: J.pos.x, z: J.pos.z });
     comprobar('deja una rama en la hoguera y la endurece al fuego (la lanza)', r.ok && rl.ok, `${r.motivo || ''} ${rl.motivo || ''}`);
+    sitioCaza = { hog, fogon };   // (la lanza se queda hecha en la hoguera: vuelve a por ella al final, para cazar)
     // P4, el frío (8 nov): se hace de noche; lejos del fuego, con lo del principio, le sube el frío; junto a la
     // hoguera encendida, le baja (lo lleva el servidor: la noche, su bioma, su ropa y el calor del fuego)
     {
@@ -1317,8 +1319,9 @@ try {
     comprobar('dentro de su casa está bajo techo', s.mundo.bajoTecho(D.x, D.z));
     await J.andar(D.x, D.z);
     await soltarManos();
-    for (let n = 0; n < 4; n++) { const c = J.inv.lugares.espalda?.dentro?.[n]; if (c && c.tipo === 'junco') { await J.objeto({ tipo: 'mover', de: `espalda/${n}`, a: 'mano:der' }); await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); } }
-    comprobar('deja los juncos en el suelo de su casa', enPila('junco', D) >= 8, `${enPila('junco', D)} · ${enMano()}`);
+    const motivosJunco = [];
+    for (let n = 0; n < 4; n++) { const c = J.inv.lugares.espalda?.dentro?.[n]; if (c && c.tipo === 'junco') { const m1 = await J.objeto({ tipo: 'mover', de: `espalda/${n}`, a: 'mano:der' }); const m2 = await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); for (const m of [m1, m2]) if (!m.ok) motivosJunco.push(m.motivo); } }
+    comprobar('deja los juncos en el suelo de su casa', enPila('junco', D) >= 8, `${enPila('junco', D)} · ${enMano()} · ${[...new Set(motivosJunco)].join('; ')} · hombro: ${J.inv.lugares.hombro?.tipo || '–'}`);
     const nc2 = await cordelesA(D, 2);
     comprobar('y le trae 2 cordeles de fibra', nc2 >= 2, `${nc2} cordeles`);
     await J.andar(D.x, D.z);
@@ -1386,6 +1389,48 @@ try {
         comprobar('va hacia la más cercana y huye, alejándose deprisa', J2.huyen.has(l.id) && f && d1 > 12, `a ${d0.toFixed(0)} m; huye: ${J2.huyen.has(l.id)}; ahora a ${d1 && d1.toFixed(1)} m`);
         await J2.andar(desde.x, desde.z);
       }
+    }
+    console.log('20. Vuelve a la hoguera de la orilla, recoge la lanza que hizo y caza una liebre');
+    // P4, cazar (9 nov; src/logica/caza.js): recoge la lanza de la hoguera, la lleva en la mano, se acerca andando a una
+    // liebre de la orilla hasta unos 16 m (se pone alerta y se queda quieta), se la lanza y el servidor decide que acierta:
+    // la liebre cae muerta y la lanza a su lado. Las recoge y las deja junto a la hoguera (despiezarla es la tarea siguiente).
+    if (sitioCaza) {
+      const { hog, fogon } = sitioCaza, yo = J2.bienvenida.autor;
+      await J2.andar(fogon.x, fogon.z); await pausa(1000 * RELOJ);   // (le llegan las liebres de allí)
+      for (const c of (s.objetos.fab.estaciones[hog]?.cola || [])) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1);
+      // las manos libres: lo que lleve, a sus pies junto a la hoguera (luego lo vuelve a coger)
+      const dejado = [];
+      for (const l of ['mano:der', 'mano:izq']) if (J2.inv.lugares[l]) { const q = await J2.objeto({ tipo: 'soltar_suelo', de: l, x: J2.pos.x, z: J2.pos.z }); if (q.ok) dejado.push({ id: q.datos.objeto, a: l }); }
+      r = await J2.objeto({ tipo: 'recoger_fabricado', estacion: hog, x: J2.pos.x, z: J2.pos.z });
+      const dondeLanza = ['mano:der', 'mano:izq'].find(l => J2.inv.lugares[l]?.tipo === 'lanza_endurecida');
+      comprobar('recoge de la hoguera la lanza endurecida, en la mano', r.ok && dondeLanza, r.motivo || enMano());
+      const desde = { ...J2.pos };
+      // (las que tiene a tiro sin agua por medio: la lanza cae en la orilla)
+      const seco = (p, q) => { const d = Math.hypot(q.x - p.x, q.z - p.z); for (let k = 0; k <= d; k++) if (T.aguaEn(p.x + (q.x - p.x) * k / d, p.z + (q.z - p.z) * k / d)) return false; return true; };
+      const ls = cerca([...J2.liebres.values()], J2.pos).filter(l => seco(J2.pos, l));
+      comprobar('ve liebres alrededor de la hoguera (sin agua por medio)', ls.length > 0, `${ls.length} de ${J2.liebres.size}`);
+      if (ls.length && dondeLanza) {
+        const l = ls[0], a = Math.atan2(J2.pos.x - l.x, J2.pos.z - l.z), d0 = Math.hypot(l.x - J2.pos.x, l.z - J2.pos.z);
+        if (d0 > 16) await J2.andar(l.x + Math.sin(a) * 16, l.z + Math.cos(a) * 16);
+        await pausa(1500 * RELOJ);   // quieto: la liebre se pone alerta y no se mueve (en tiempo de verdad: la fauna va en el del servidor)
+        const v = J2.liebres.get(l.id) || l, dir = Math.atan2(v.x - J2.pos.x, v.z - J2.pos.z), dl = Math.hypot(v.x - J2.pos.x, v.z - J2.pos.z);
+        r = await J2.objeto({ tipo: 'lanzar', de: dondeLanza, x: J2.pos.x, z: J2.pos.z, dir });
+        comprobar('le lanza la lanza: sale de la mano', r.ok && !J2.inv.lugares[dondeLanza], r.motivo);
+        await pausa(2000 * RELOJ);
+        const muerta = s.objetos.suelo.objetos.find(o => o.cosa.tipo === 'liebre' && Math.hypot(o.x - v.x, o.z - v.z) < 3);
+        const lanza = s.objetos.suelo.objetos.find(o => o.cosa.tipo === 'lanza_endurecida' && muerta && Math.hypot(o.x - muerta.x, o.z - muerta.z) < 1.2);
+        comprobar('el servidor decide que acierta: la liebre cae muerta y la lanza a su lado', muerta && lanza && !s.fauna.de(l.id) && !J2.liebres.has(l.id), `a ${dl.toFixed(1)} m (${v.anim}); ${muerta ? 'liebre en el suelo' : 'sin liebre'}`);
+        if (muerta && lanza) {
+          await J2.andar(lanza.x, lanza.z);
+          const c1 = await J2.objeto({ tipo: 'coger_suelo', objeto: lanza.id, x: J2.pos.x, z: J2.pos.z, a: 'mano:der' });
+          const c2 = await J2.objeto({ tipo: 'coger_suelo', objeto: muerta.id, x: J2.pos.x, z: J2.pos.z, a: 'mano:izq' });
+          comprobar('recoge la lanza y la liebre', c1.ok && c2.ok && J2.cuantos('liebre') === 1, `${c1.motivo || ''} ${c2.motivo || ''}`);
+        }
+        // de vuelta a la hoguera: deja la lanza y la liebre, y vuelve a coger lo suyo
+        await J2.andar(desde.x, desde.z);
+        for (const l2 of ['mano:der', 'mano:izq']) if (J2.inv.lugares[l2]) await J2.objeto({ tipo: 'soltar_suelo', de: l2, x: J2.pos.x, z: J2.pos.z });
+      }
+      for (const d of dejado) await J2.objeto({ tipo: 'coger_suelo', objeto: d.id, x: J2.pos.x, z: J2.pos.z, a: d.a });
     }
     J2.ws.close();
   }

@@ -53,7 +53,7 @@ const desdeArriba = o => { const g = new THREE.Group(); o.updateMatrixWorld(true
 const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
 
 // De dónde sale cada imagen. Lo que no está aquí sale con el hatillo del suelo (sin modelo aún).
-const SUELO = { rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco_delgado: 2, tronco_largo: 2, lena: 6, rastra: 1, carretilla: 1 };
+const SUELO = { liebre: 1, rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco_delgado: 2, tronco_largo: 2, lena: 6, rastra: 1, carretilla: 1 };
 const MANO = ['mineral_hierro', 'vara', 'tabla', 'cuchillo', 'lasca_silex', 'espada', 'escudo', 'palo_cavador', 'arpon', 'pala_madera', 'azada', 'hoz_silex', 'mayal', 'lanza_endurecida', 'antorcha'];
 const ESPALDA = ['lenero', 'porta_piedras', 'mochila_bastidor', 'zurron', 'fardo', 'cesta_recoleccion', 'cesto_pescador', 'caja_herramientas', 'carcaj', 'correa_escudo'];
 const HACHAS = ['hacha_mano', 'hacha_piedra', 'hacha_hierro'];

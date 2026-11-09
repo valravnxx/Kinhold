@@ -21,6 +21,7 @@ import { modeloCarretilla } from './carretilla.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
 import { CATALOGO } from '../logica/inventario.js';
 import { MODELO_OBJETO } from './modelos_objetos.js';
+import { crearModeloLanza, crearLiebreMuerta } from './fauna.js';
 
 const mallas = L => {
   const grupos = L.cerrar(null, true), g = new THREE.Group();
@@ -104,6 +105,9 @@ export function modeloDe(o) {
     }
     return g;
   }
+  // la caza (9 nov): la lanza tirada en la hierba y la liebre muerta, de lado
+  if (t === 'lanza_endurecida') { const g = new THREE.Group(), l = crearModeloLanza(); l.rotation.y = az(o.id, 3) * 6; l.position.y = 0.02; g.add(l); return g; }
+  if (t === 'liebre') { const g = new THREE.Group(), l = crearLiebreMuerta(); l.rotation.y = az(o.id, 3) * 6; g.add(l); return g; }
   if (t === 'tronco_corto') return troncosConCortes(n, 0.9, 0.14, o.id);
   if (t === 'tronco_delgado') return troncosConCortes(n, 2.6, 0.09, o.id);
   if (t === 'tronco_largo') return troncosConCortes(n, 4.5, 0.18, o.id);

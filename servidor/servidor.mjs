@@ -18,6 +18,9 @@
 //   cambiado: { tipo: 'estados', t, jugadores }. Al irse alguien: { tipo: 'sale', autor }. La bienvenida
 //   lleva también t y presentes (dónde está cada uno).
 //   Liebres (src/logica/fauna.js): las mueve el servidor; a cada uno, las de sus trozos: { tipo: 'fauna', liebres, fuera }.
+//   Cazar (src/logica/caza.js): la acción de objeto 'lanzar' saca la lanza de la mano; el servidor la echa a volar y a
+//   quien tiene su trozo le manda { tipo: 'lanza', id, autor, x, z, dir, vel, alcance }; cuando cae (cada 100 ms la
+//   adelanta), { tipo: 'lanza_cae', id, x, z, liebre? } y el suelo (la lanza y, si acertó, la liebre muerta).
 //   Aspecto (cuerpo y ropa del taller, y la personalización de src/logica/aspecto.js): el cliente lo manda al
 //   conectar, { tipo: 'aspecto', sexo, capas, aspecto }; el
 //   servidor lo comprueba (validarAspecto) y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas, aspecto }. La bienvenida
@@ -149,6 +152,7 @@ import { Cuerpos, despojar, repartir, sitiosAlrededor, necesidadesAlVolver, reap
 import { RECUPERAR_SANGRE } from '../src/combate/logica.js';
 import { NADO } from '../src/logica/nado.js';
 import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
+import { Lanzas } from '../src/logica/caza.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -583,6 +587,28 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       for (const [a, m] of faunaRed.repartir(fauna, fauna.sacarCambios(), autores, (x) => vista.trozosDe(x))) enviar(conexionDe.get(a), { tipo: 'fauna', ...m });
     } catch (e) { registrar(`error en la fauna: ${e && e.message}`); }
   }, ticoFauna) : null;
+
+  // Las lanzas que vuelan (P4, 9 nov; src/logica/caza.js): cada 100 ms se adelantan con las liebres donde están; la que
+  // cae deja la lanza en el suelo y, si dio en una liebre, la liebre muerta (sale de la fauna) a su lado.
+  const lanzas = new Lanzas({ pisable: entornoFauna && entornoFauna.pisable ? entornoFauna.pisable : () => true });
+  const aQuienVe = (x, z, autor, msg) => { const k = trozoDe(x, z); for (const [ws, a] of clientes) if (a === autor || vista.tiene(a, k)) enviar(ws, msg); };
+  const echarLanza = (autor, l) => { const f = lanzas.lanzar({ autor, ...l }); aQuienVe(f.x, f.z, autor, { tipo: 'lanza', ...f }); };
+  const ticLanzas = setInterval(() => {
+    if (!lanzas.vuelan.length) return;
+    try {
+      const ahora = Date.now(), caen = lanzas.avanzar(0.1, fauna ? fauna.todas() : []);
+      for (const c of caen) {
+        const enT = (x, z) => !!mundo.tierraDe(x, z);
+        objetos.suelo.dejar(c.cosa, c.x, c.z, ahora, c.autor, enT(c.x, c.z));
+        if (c.liebre && fauna && fauna.matar(c.liebre)) objetos.suelo.dejar({ tipo: 'liebre', n: 1 }, c.lx, c.lz, ahora, c.autor, enT(c.lx, c.lz));
+        else c.liebre = null;
+        const e = { autor: c.autor, tipo: 'lanza_cae', lanza: c.lanza, x: c.x, z: c.z, liebre: c.liebre, ahora };
+        appendFileSync(archivoObjetosReg, JSON.stringify(e) + '\n');
+        aQuienVe(c.x, c.z, c.autor, { tipo: 'lanza_cae', id: c.lanza, x: c.x, z: c.z, ...(c.liebre ? { liebre: c.liebre } : {}) });
+      }
+      if (caen.length) { guardarObjetos(); repartirSuelo(ahora); }
+    } catch (e) { registrar(`error en las lanzas: ${e && e.message}`); }
+  }, 100);
 
   // las necesidades de los conectados: el tiempo, lo que corren (la distancia que el servidor les ha visto andar desde
   // el tic anterior) y lo que cargan suelto
@@ -1148,6 +1174,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
         if (r.ok) repartirLlevado(autor);
+        if (r.ok && r.lanzada) echarLanza(autor, r.lanzada);   // la lanza, a volar (P4)
         if (r.ok) cansar(autor, msg.accion.tipo);   // talar, trocear, fabricar y recoger cansan (src/logica/necesidades.js)
         // dormir en la cama ligada: hasta que se mueva de donde se tumbó (el tic de las necesidades)
         if (r.ok && msg.accion.tipo === 'dormir') { const c = objetos.fab.estaciones[msg.accion.estacion]; if (c) durmiendo.set(autor, { x: c.x, z: c.z, t: reloj() }); }
@@ -1254,9 +1281,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, fauna, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, fauna, lanzas, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); clearInterval(ticLanzas); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
 }
 

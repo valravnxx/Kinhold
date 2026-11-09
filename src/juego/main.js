@@ -21,6 +21,7 @@ import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
+import { CAZA, SE_LANZA } from '../logica/caza.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
@@ -1584,6 +1585,8 @@ function accionPrincipal() {
   if (ob && !subirAndamio) return accionObra(ob);
   // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
   if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
+  // con la lanza en la mano y una liebre a tiro delante, Usar la lanza hacia ella (P4)
+  if (!it && pj.k === 0 && lanzaEnMano() && liebreATiro()) { const l = liebreATiro(); return A(tr('Lanzar la lanza'), 'lanza_endurecida', l, lanzar, { alto: 0.4 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
@@ -1699,6 +1702,8 @@ function opcionesUsar() {
     const db = desbrozableCercano();
     if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
   }
+  // con la lanza en la mano, lanzarla hacia donde miras (o a la liebre que tengas a tiro delante) (P4)
+  if (pj.k === 0 && lanzaEnMano()) ops.push({ texto: tr('Lanzar la lanza'), pos: liebreATiro() || { x: pj.x + Math.sin(pj.rot) * 3, z: pj.z + Math.cos(pj.rot) * 3 }, alto: 0.4, hacer: lanzar });
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
@@ -1806,6 +1811,29 @@ function usarInteractivo(it) {
 // Beber del río con las manos (P4; src/logica/necesidades.js): con agua a tu lado (río, lago o mar) y en el suelo. En
 // línea, el trago lo da el servidor (mira dónde te tiene y si hay agua ahí); sin servidor (las pruebas), aquí.
 const aguaAlLado = () => !!mundoJ && pj.k === 0 && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z);
+// Cazar (P4, 9 nov; src/logica/caza.js): con la lanza endurecida en la mano, se lanza hacia donde miras; si delante (a
+// menos de 30° y de su alcance) hay una liebre, hacia ella. El servidor la echa a volar y decide si acierta; dónde cae
+// la lanza (y la liebre muerta) llega con el suelo. Decisión provisional (registro y diario): el cono de 30°, para que
+// en el móvil se pueda apuntar sin precisión de ratón; la liebre que huye puede escaparse igual.
+function lanzaEnMano() { const inv = inventario(); for (const r of ['mano:der', 'mano:izq']) { const c = inv.lugares[r]; if (c && SE_LANZA.has(c.tipo)) return r; } return null; }
+function liebreATiro(cono = 0.52) {
+  if (!fauna) return null;
+  let mejor = null;
+  for (const [id, l] of fauna.liebres) {
+    const d = Math.hypot(l.x - pj.x, l.z - pj.z);
+    if (d > CAZA.ALCANCE || d < 0.8) continue;
+    let a = Math.atan2(l.x - pj.x, l.z - pj.z) - pj.rot; a = Math.atan2(Math.sin(a), Math.cos(a));
+    if (Math.abs(a) <= cono && (!mejor || d < mejor.d)) mejor = { id, x: l.x, z: l.z, d };
+  }
+  return mejor;
+}
+function lanzar() {
+  const de = lanzaEnMano();
+  if (!de) { mostrarAviso(tr('Necesitas la lanza en la mano para lanzarla.'), true); return; }
+  if (!objetosRed) { mostrarAviso(tr('Sin conexión con el servidor.'), true); return; }
+  const l = liebreATiro(); if (l) pj.rot = Math.atan2(l.x - pj.x, l.z - pj.z);
+  objetosRed.mandar({ tipo: 'lanzar', de, x: pj.x, z: pj.z, dir: pj.rot }, (r) => { if (!r.ok) mostrarAviso(tr(r.motivo), true); });
+}
 function beber() {
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
@@ -3140,7 +3168,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
-  beber, aguaAlLado, comer,
+  beber, aguaAlLado, comer, lanzar, liebreATiro, accionPrincipal,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)
