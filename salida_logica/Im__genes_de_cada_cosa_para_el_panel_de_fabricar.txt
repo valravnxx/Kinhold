@@ -1,0 +1,3 @@
+FALLO: «liebre» está en el índice y dice si tiene su modelo
+FALLO: existe la imagen de «liebre» (docs/recursos/iconos-v13/liebre.webp)
+482 bien, 2 fallos · 98 imágenes que enseña el panel, 22 aún sin su modelo
