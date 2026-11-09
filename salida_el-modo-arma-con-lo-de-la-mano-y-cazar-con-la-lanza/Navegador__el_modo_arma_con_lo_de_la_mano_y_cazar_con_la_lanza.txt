@@ -1,0 +1,22 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: con las manos vacías, a puños (nada en la mano) — {'arma': 'punos', 'objeto': None, 'piezas': 0, 'lanzar': False}
+  OK   pc: con el hacha de piedra en la mano, el hacha (y se ve en la mano) — {'arma': 'hacha', 'objeto': 'hacha_piedra', 'piezas': 3, 'lanzar': False}
+  OK   pc: con la lanza en la mano, la lanza (se ve, y sale el botón Lanzar) — {'arma': 'lanza', 'objeto': 'lanza_endurecida', 'piezas': 3, 'lanzar': True}
+  OK   pc: llegan las liebres de alrededor — 2
+  OK   pc: al lanzarla sale de la mano
+  OK   pc: y se ve volar
+  FALLA pc: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza — 8 lanzadas
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: con las manos vacías, a puños (nada en la mano) — {'arma': 'punos', 'objeto': None, 'piezas': 0, 'lanzar': False}
+  OK   movil: con el hacha de piedra en la mano, el hacha (y se ve en la mano) — {'arma': 'hacha', 'objeto': 'hacha_piedra', 'piezas': 3, 'lanzar': False}
+  OK   movil: con la lanza en la mano, la lanza (se ve, y sale el botón Lanzar) — {'arma': 'lanza', 'objeto': 'lanza_endurecida', 'piezas': 3, 'lanzar': True}
+  OK   movil: llegan las liebres de alrededor — 4
+  OK   movil: al lanzarla sale de la mano
+  OK   movil: y se ve volar
+  FALLA movil: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza — 8 lanzadas
+  OK   movil: sin errores en la página
+
+2 fallos: pc: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza; movil: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza
