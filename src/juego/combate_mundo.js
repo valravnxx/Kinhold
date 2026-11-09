@@ -367,7 +367,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
   // ---------- Lo lanzado, volando (de todos: lo dice el servidor con el evento «disparo») ----------
   // se mueve aquí con la misma gravedad que en el servidor, desde la altura del suelo de quien lo lanza, y se quita al
   // llegar al suelo o cuando el servidor dice dónde ha dado (evento «flecha»). Donde cae, la lanza o la piedra la pone el suelo.
-  const vuelos = [];
+  const vuelos = [], tiros = [];
   function modeloVuelo(e) {
     if (e.objeto === 'lanza_endurecida') return crearModeloLanza();
     const g = new THREE.Group(), m = modeloArma(e.arma === 'piedras' ? 'piedras' : e.arma === 'arco' ? 'arco' : 'piedras', e.objeto || null);
@@ -377,6 +377,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     const base = Number.isFinite(e.base) ? e.base : alturaEn(e.x, e.z), m = modeloVuelo(e);
     escena.add(m);
     vuelos.push({ autor: e.autor, m, x: e.x, y: e.y, z: e.z, vx: e.vx, vy: e.vy, vz: e.vz, base, t: 0 });
+    c.volados = (c.volados || 0) + 1;
   }
   const _v = new THREE.Vector3(), _z = new THREE.Vector3(0, 0, 1);
   function pasoVuelos(dt) {
@@ -562,6 +563,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     }
     if (msg.tipo !== 'combate') return;
     for (const e of msg.eventos || []) {
+      if (e.tipo === 'disparo' || e.tipo === 'flecha') { tiros.push(e); if (tiros.length > 20) tiros.shift(); }   // (las pruebas)
       if (e.tipo === 'disparo') volar(e);
       if (e.tipo === 'flecha') { cayo(e); if (e.autor === yo && e.resultado === 'presa') decir(tr('¡Le has dado a la liebre!')); }
       if (e.tipo !== 'golpe' || (e.autor !== yo && e.objetivo !== yo)) continue;
@@ -580,7 +582,7 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     // para el movimiento del mundo: con el arma sacada se anda como dice la lógica (cargando, parando, herido…)
     factorVelocidad(corriendo) { return c.activo && c.L ? c.L.velocidad(corriendo) / (corriendo ? 6 : 3.6) : 1; },
     // para las pruebas
-    get L() { return c.L; }, get rivales() { return c.rivales; }, get fijado() { return c.fijado; }, get vuelos() { return vuelos; },
+    get L() { return c.L; }, get rivales() { return c.rivales; }, get fijado() { return c.fijado; }, get vuelos() { return vuelos; }, get tiros() { return tiros; }, get volados() { return c.volados || 0; },
     get modelo() { return c.modelo; }, empezarTiro, soltarTiro, puntoMira,
     raton: { mover: moverRaton, pulsar(b) { const l = c.lector.alPulsar(ahora()); if (b === 2) parar(true, l); else empezarGolpe(l); }, soltar(b) { if (b === 2) parar(false); else soltarGolpe(); } },
   };

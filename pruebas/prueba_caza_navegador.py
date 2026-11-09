@@ -70,6 +70,23 @@ def coger(pg, objeto):
 def soltar(pg):
     pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
     esperar(pg, f"!{K}.inventario.lugares['mano:der']", 10000)
+SITIO = """(id) => {{ const k = {K}, q = k.fauna.liebres.get(id).obj, S = (x, z) => k.alturaSuelo(x, z);
+  const libre = (p) => {{ const h0 = S(p.x, p.z) + 1.45, h1 = S(q.x, q.z) + 0.2; for (let i = 1; i < 20; i++) {{ const u = i / 20; if (S(p.x + (q.x - p.x) * u, p.z + (q.z - p.z) * u) > h0 + (h1 - h0) * u - 0.15) return false; }} return true; }};
+  let m = null; for (let i = 0; i < 16; i++) {{ const a = i * Math.PI / 8, p = {{ x: q.x + Math.sin(a) * 10, z: q.z + Math.cos(a) * 10, a }}; if (libre(p) && (!m || Math.hypot(p.x - k.pj.x, p.z - k.pj.z) < Math.hypot(m.x - k.pj.x, m.z - k.pj.z))) m = p; }}
+  return m; }}""".replace('{K}', K)
+ANDAR = """(p) => new Promise(r => {{ const k = {K}, t = setInterval(() => {{ const d = Math.hypot(p.x - k.pj.x, p.z - k.pj.z);
+  if (d <= 0.25) {{ clearInterval(t); r(); return; }} const s = Math.min(d, 0.2); k.pj.x += (p.x - k.pj.x) / d * s; k.pj.z += (p.z - k.pj.z) / d * s; }}, 100); }})""".replace('{K}', K)
+# como cazaría alguien: un sitio a unos 10 m desde el que se la vea sin nada en medio (la lanza va baja: un desnivel
+# entre los dos la para); de lejos de golpe (24 m: no la asusta) y luego andando despacio hasta él. Antes de cada
+# lanzamiento se vuelve a acercar (pastando se aleja)
+def acercarse(pg, lid, primera=False):
+    sitio = pg.evaluate(SITIO.replace('{{', '{').replace('}}', '}'), lid)
+    if not sitio: return None
+    if primera:
+        q = pg.evaluate(UNA, lid)
+        poner(pg, q['ox'] + math.sin(sitio['a']) * 24, q['oz'] + math.cos(sitio['a']) * 24)
+    pg.evaluate(ANDAR.replace('{{', '{').replace('}}', '}'), sitio)
+    return sitio
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=ARGS)
@@ -110,22 +127,17 @@ try:
             l = min(ls, key=lambda q: math.hypot(q['ox'] - yo[0], q['oz'] - yo[1]))
             # como cazaría alguien: un sitio a unos 10 m desde el que se la vea sin nada en medio (la lanza va baja: un
             # desnivel entre los dos la para); de golpe a 24 m de ella (no la asusta) y luego andando despacio hasta él
-            sitio = pg.evaluate(f"""(id) => {{ const k = {K}, q = k.fauna.liebres.get(id).obj, S = (x, z) => k.alturaSuelo(x, z);
-              const libre = (p) => {{ const h0 = S(p.x, p.z) + 1.45, h1 = S(q.x, q.z) + 0.2; for (let i = 1; i < 20; i++) {{ const u = i / 20; if (S(p.x + (q.x - p.x) * u, p.z + (q.z - p.z) * u) > h0 + (h1 - h0) * u - 0.15) return false; }} return true; }};
-              let m = null; for (let i = 0; i < 16; i++) {{ const a = i * Math.PI / 8, p = {{ x: q.x + Math.sin(a) * 10, z: q.z + Math.cos(a) * 10, a }}; if (libre(p) && (!m || Math.hypot(p.x - k.pj.x, p.z - k.pj.z) < Math.hypot(m.x - k.pj.x, m.z - k.pj.z))) m = p; }}
-              return m; }}""", l['id'])
+            sitio = acercarse(pg, l['id'], True)
             comprobar(f'{nombre}: (hay un sitio a 10 m de la liebre sin nada en medio)', bool(sitio), str(sitio))
-            if sitio:
-                poner(pg, l['ox'] + math.sin(sitio['a']) * 24, l['oz'] + math.cos(sitio['a']) * 24)
-                pg.evaluate(f"""(p) => new Promise(r => {{ const k = {K}, t = setInterval(() => {{ const d = Math.hypot(p.x - k.pj.x, p.z - k.pj.z);
-                  if (d <= 0.25) {{ clearInterval(t); r(); return; }} const s = Math.min(d, 0.2); k.pj.x += (p.x - k.pj.x) / d * s; k.pj.z += (p.z - k.pj.z) / d * s; }}, 100); }})""", sitio)
             pg.wait_for_timeout(1500)
-            pg.evaluate(f"window.__vuelan = 0; setInterval(() => {{ window.__vuelan = Math.max(window.__vuelan, {CB}.vuelos.length); }}, 30)")
+            volados0 = pg.evaluate(f"{CB}.volados")
             muerta = False; salio = True; lanzadas = 0
             for k in range(8):
                 u = pg.evaluate(UNA, l['id'])
                 if not u: break
-                if k > 0: coger(pg, 'lanza_endurecida'); pg.wait_for_timeout(500)
+                if k > 0:
+                    coger(pg, 'lanza_endurecida'); pg.wait_for_timeout(500)
+                    if math.hypot(u['ox'] - pg.evaluate(f"{K}.pj.x"), u['oz'] - pg.evaluate(f"{K}.pj.z")) > 12: acercarse(pg, l['id']); pg.wait_for_timeout(1500); u = pg.evaluate(UNA, l['id']) or u
                 pj = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
                 pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {math.atan2(pj[0] - u['ox'], pj[1] - u['oz'])}; k.pj.rot = k.cam.yaw + Math.PI; }})()")
                 pg.evaluate(f"{CB}.empezarTiro()")
@@ -136,8 +148,9 @@ try:
                 if not esperar(pg, f"!{K}.inventario.lugares['mano:der']", 5000): salio = False
                 if esperar(pg, f"(id) => !{K}.fauna.liebres.has(id) && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'liebre')", 4000, l['id']): muerta = True; break
             comprobar(f'{nombre}: al lanzarla sale de la mano', salio)
-            comprobar(f'{nombre}: y se ve volar', pg.evaluate("window.__vuelan > 0"))
-            comprobar(f'{nombre}: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza', muerta and len(pg.evaluate(EN_SUELO, 'lanza_endurecida')) > 0, f'{lanzadas} lanzadas')
+            comprobar(f'{nombre}: y se ve volar (sale volando en el navegador lo que dice el servidor)', pg.evaluate(f"{CB}.volados") > volados0)
+            diag = pg.evaluate(f"(() => {{ const k = {K}, yo = k.yo; return {{ pj: [k.pj.x, k.pj.z], tiros: {CB}.tiros.filter(e => e.autor === yo).map(e => [e.tipo, +e.x.toFixed(1), +e.y.toFixed(2), +e.z.toFixed(1), e.resultado || '', e.base]) }}; }})()")
+            comprobar(f'{nombre}: alguna de las que lanza mata la liebre (lo dice el servidor): muerta en el suelo, con la lanza', muerta and len(pg.evaluate(EN_SUELO, 'lanza_endurecida')) > 0, f'{lanzadas} lanzadas; liebre {u and [round(u["ox"],1), round(u["oz"],1)]}; {diag}')
             if muerta:
                 m = sorted(pg.evaluate(EN_SUELO, 'liebre'), key=lambda o: math.hypot(o['x'] - u['ox'], o['z'] - u['oz']))[0]
                 pg.evaluate(f"{CB}.guardar()")
