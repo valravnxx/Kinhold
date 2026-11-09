@@ -32,6 +32,7 @@ export const FAUNA = {
   VEL_SALTO: 1.6, VEL_HUIDA: 11, LARGO_HUIDA: [40, 70],
   RADIO_CASA: 30, SALTO: [1.5, 5],         // m
   PASTA: [3, 9], CALMA: 4,                  // s pastando entre saltos; s sin nadie cerca para volver a pastar
+  REAPARECE: 1800,                          // s: la cazada (src/logica/caza.js) no vuelve a salir hasta entonces
 };
 const CAPA = 77;   // la capa del azar de las liebres (azarCelda)
 const r2 = v => Math.round(v * 100) / 100;
@@ -67,7 +68,20 @@ export class Fauna {
     this.t = 0;                  // s desde que empezó
     this.cambiadas = new Set();  // ids de las que se han movido o cambiado de estado desde el último sacarCambios
     this.quitadas = [];          // ids de las olvidadas desde el último sacarCambios
+    this.muertas = new Map();    // id → s hasta los que no vuelve a salir (las cazadas)
   }
+  // La liebre cazada (src/logica/caza.js): sale de su trozo y no vuelve a salir hasta REAPARECE s. Devuelve si estaba.
+  matar(id) {
+    for (const v of this.trozos.values()) {
+      const i = v.liebres.findIndex(l => l.id === id);
+      if (i < 0) continue;
+      v.liebres.splice(i, 1); this.cambiadas.delete(id); this.quitadas.push(id);
+      this.muertas.set(id, this.t + FAUNA.REAPARECE);
+      return true;
+    }
+    return false;
+  }
+  viva(id) { const h = this.muertas.get(id); if (h === undefined) return true; if (this.t >= h) { this.muertas.delete(id); return true; } return false; }
   // las liebres que se mueven ahora (las de los trozos vivos)
   todas() { const r = []; for (const v of this.trozos.values()) r.push(...v.liebres); return r; }
   de(id) { for (const v of this.trozos.values()) for (const l of v.liebres) if (l.id === id) return l; return null; }
@@ -84,7 +98,7 @@ export class Fauna {
         const k = `${i},${j}`;
         let v = this.trozos.get(k);
         if (!v) {
-          v = { liebres: liebresDelTrozo(k, this.habitat, this.semilla).map(l => ({ ...l, casa: { x: l.x, z: l.z }, estado: 'pastar', hasta: this.t + entre(this.r, FAUNA.PASTA), dest: null })), visto: this.t };
+          v = { liebres: liebresDelTrozo(k, this.habitat, this.semilla).filter(l => this.viva(l.id)).map(l => ({ ...l, casa: { x: l.x, z: l.z }, estado: 'pastar', hasta: this.t + entre(this.r, FAUNA.PASTA), dest: null })), visto: this.t };
           this.trozos.set(k, v);
           for (const l of v.liebres) this.cambiadas.add(l.id);
         }
