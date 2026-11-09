@@ -3,7 +3,7 @@
 # ve liebres y huyen al acercarse.
 #   - al entrar le llegan las liebres de alrededor (las mueve el servidor) y se dibujan en el suelo;
 #   - de lejos (a 30 m) pastan; a 17 m se ponen alerta (quietas); a 4 m, corriendo hacia ella, huye y se aleja deprisa;
-#   - capturas de cerca de la liebre (con la cámara libre) pastando y alerta, y huyendo vista desde el jugador.
+#   - capturas de la liebre vista desde el jugador: pastando, alerta y huyendo (las de cerca del modelo, aparte).
 # Uso: python3 pruebas/prueba_fauna_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1: el navegador no dibuja las liebres que llegan: tiene que fallar.
 import sys, os, json, math, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
@@ -46,7 +46,7 @@ def captura(pg, ruta):
     try: pg.screenshot(path=ruta)
     except Exception as e: print('  (sin captura:', str(e)[:80], ')')
 # las liebres que se dibujan: id, dónde (el modelo), qué hace y si está en el suelo
-LIEBRES = f"""() => [...{K}.fauna.liebres.entries()].map(([id, l]) => ({{ id, x: l.m.raiz.position.x, y: l.m.raiz.position.y, z: l.m.raiz.position.z, anim: l.anim, suelo: {K}.alturaSuelo(l.m.raiz.position.x, l.m.raiz.position.z), visible: l.m.raiz.visible }}))"""
+LIEBRES = f"""() => [...{K}.fauna.liebres.entries()].map(([id, l]) => ({{ id, ox: l.obj.x, oz: l.obj.z, x: l.m.raiz.position.x, y: l.m.raiz.position.y, z: l.m.raiz.position.z, anim: l.anim, suelo: {K}.alturaSuelo(l.m.raiz.position.x, l.m.raiz.position.z), visible: l.m.raiz.visible }}))"""
 UNA = f"""(id) => {{ const l = {K}.fauna.liebres.get(id); return l ? {{ x: l.m.raiz.position.x, z: l.m.raiz.position.z, anim: l.anim, ox: l.obj.x, oz: l.obj.z }} : null; }}"""
 # pone al jugador en (x, z) y espera a que siga allí (justo al entrar, el juego aún puede colocarlo en su sitio)
 def poner(pg, x, z, giro=None):
@@ -55,11 +55,9 @@ def poner(pg, x, z, giro=None):
         pg.wait_for_timeout(3000)
         if pg.evaluate(f"Math.hypot({K}.pj.x - ({x}), {K}.pj.z - ({z})) < 1"): return True
     return False
-# la cámara libre (como la del admin) a d m de la liebre, a la altura h, mirándola
-def camara_cerca(pg, id, d, h, lado):
-    pg.evaluate(f"""(id) => {{ const k = {K}, l = k.fauna.liebres.get(id); if (!l) return; const p = {{ x: l.obj.x, y: k.alturaSuelo(l.obj.x, l.obj.z), z: l.obj.z }}, a = l.giro + {lado};
-      k.camLibre.x = p.x + Math.sin(a) * {d}; k.camLibre.z = p.z + Math.cos(a) * {d}; k.camLibre.y = p.y + {h}; k.camLibre.activa = true;
-      k.cam.yaw = Math.atan2(k.camLibre.x - p.x, k.camLibre.z - p.z); k.cam.pitch = Math.atan2({h} - 0.15, {d}); }}""", id)
+# la cámara detrás del jugador, baja y cerca, mirando hacia la liebre (a: de la liebre al jugador)
+def camara_hacia(pg, a, dist=2.4, pitch=0.12):
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = {a}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; k.pj.rot = {a} + Math.PI; }})()")
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=ARGS)
@@ -81,28 +79,27 @@ try:
             if not ls:
                 ctx.close(); continue
             yo = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
-            l = min(ls, key=lambda q: math.hypot(q['x'] - yo[0], q['z'] - yo[1]))
+            l = min(ls, key=lambda q: math.hypot(q['ox'] - yo[0], q['oz'] - yo[1]))
             # de lejos (30 m): pasta, en el suelo
-            a = math.atan2(yo[0] - l['x'], yo[1] - l['z'])
-            poner(pg, l['x'] + math.sin(a) * 30, l['z'] + math.cos(a) * 30)
+            a = math.atan2(yo[0] - l['ox'], yo[1] - l['oz'])
+            poner(pg, l['ox'] + math.sin(a) * 30, l['oz'] + math.cos(a) * 30)
             pg.wait_for_timeout(6000)
             esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.m.raiz.visible && Math.hypot(l.m.raiz.position.x - l.obj.x, l.m.raiz.position.z - l.obj.z) < 1; }}", 60000, l['id'])
             u = pg.evaluate(UNA, l['id'])
             comprobar(f'{nombre}: de lejos pasta (o da saltitos)', u and u['anim'] in ('pastar', 'saltar'), json.dumps(u))
             l2 = next(q for q in pg.evaluate(LIEBRES) if q['id'] == l['id'])
             comprobar(f'{nombre}: se ve, en el suelo', l2['visible'] and abs(l2['x']) + abs(l2['z']) > 0 and abs(l2['y'] - l2['suelo']) < 0.05, json.dumps(l2))
-            camara_cerca(pg, l['id'], 1.4, 0.55, 1.2)
-            pg.wait_for_timeout(9000)
+            camara_hacia(pg, a)
+            pg.wait_for_timeout(6000)
             captura(pg, f'{SALIDA}/{nombre}_liebre_pasta.png')
             # a 17 m: alerta, quieta
             u = pg.evaluate(UNA, l['id'])
             poner(pg, u['ox'] + math.sin(a) * 17, u['oz'] + math.cos(a) * 17)
             alerta = esperar(pg, f"(id) => {{ const l = {K}.fauna.liebres.get(id); return l && l.anim === 'alerta'; }}", 15000, l['id'])
             comprobar(f'{nombre}: a 17 m se pone alerta', alerta, json.dumps(pg.evaluate(UNA, l['id'])))
-            camara_cerca(pg, l['id'], 1.4, 0.5, -1.0)
-            pg.wait_for_timeout(9000)
+            camara_hacia(pg, a)
+            pg.wait_for_timeout(6000)
             captura(pg, f'{SALIDA}/{nombre}_liebre_alerta.png')
-            pg.evaluate(f"{K}.camLibre.activa = false")
             # a 4 m: huye y se aleja deprisa (lo dice el servidor; el navegador la mueve)
             u = pg.evaluate(UNA, l['id'])
             poner(pg, u['ox'] + math.sin(a) * 4, u['oz'] + math.cos(a) * 4, a + math.pi)
