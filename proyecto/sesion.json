@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-09T01:24:48+00:00",
+  "tarea": "Liebres en el mundo: salen en prados y bordes del bosque, pastan y huyen de quien se acerca (fauna realista, GDD apartado 14), con su modelo y su animación (antes, buscar uno libre CC0 o el mejor método; estilo v5 y capturas de cerca). Las mueve el servidor, para que los dos vean la misma. Recorrido: el jugador ve liebres y huyen al acercarse",
+  "hito": "supervivencia",
+  "rama": "trabajo/20261109-0123"
+ },
  "B": null
 }

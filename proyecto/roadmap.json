@@ -1550,7 +1550,9 @@
     },
     {
      "nombre": "Liebres en el mundo: salen en prados y bordes del bosque, pastan y huyen de quien se acerca (fauna realista, GDD apartado 14), con su modelo y su animación (antes, buscar uno libre CC0 o el mejor método; estilo v5 y capturas de cerca). Las mueve el servidor, para que los dos vean la misma. Recorrido: el jugador ve liebres y huyen al acercarse",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-09T01:24:48+00:00",
+     "rama": "trabajo/20261109-0123"
     },
     {
      "nombre": "Cazar la liebre con la lanza endurecida: se lanza hacia donde miras (PC y móvil), vuela y cae; el servidor decide si acierta, con su autor; la liebre cae y la lanza queda en el suelo para recogerla. Recorrido: el jugador hace la lanza en la hoguera y caza una liebre",
