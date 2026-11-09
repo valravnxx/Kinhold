@@ -153,6 +153,7 @@ import { RECUPERAR_SANGRE } from '../src/combate/logica.js';
 import { NADO } from '../src/logica/nado.js';
 import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
 import { Lanzas } from '../src/logica/caza.js';
+import { estropearInventario, estropearSuelo } from '../src/logica/comida.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -690,7 +691,24 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
     // lo soltado fuera de las tierras desaparece pasada su hora
     const t = Date.now();
-    if (objetos.limpiar(t)) { guardarObjetos(); repartirSuelo(t); }
+    let sueloCambia = objetos.limpiar(t) > 0, guardar = sueloCambia;
+    // la carne cruda se estropea (P4, 9 nov; src/logica/comida.js): la de lo que lleva cada uno y la del suelo
+    try {
+      for (const [a, inv] of Object.entries(objetos.invs.jugadores)) {
+        const e = estropearInventario(inv, t);
+        if (!e.cambia) continue;
+        guardar = true;
+        if (Object.keys(e.estropeadas).length) {
+          const ws = conexionDe.get(a);
+          if (ws) { enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(a), estropeadas: e.estropeadas }); repartirLlevado(a); }
+          appendFileSync(archivoObjetosReg, JSON.stringify({ autor: a, tipo: 'estropeado', estropeadas: e.estropeadas, ahora: t }) + '\n');
+        }
+      }
+      const s = estropearSuelo(objetos.suelo, t);
+      if (s.cambia) { guardar = true; if (Object.keys(s.estropeadas).length) sueloCambia = true; }
+    } catch (e) { registrar(`error al estropear: ${e && e.message}`); }
+    if (guardar) guardarObjetos();
+    if (sueloCambia) repartirSuelo(t);
   }, latido);
 
   // La tierra que no se usa vuelve al rey (src/logica/abandono.js): cada revisarCada ms (y cuando lo pide una prueba, con

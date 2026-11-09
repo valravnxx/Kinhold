@@ -66,6 +66,7 @@
 //    y 15 s, 30 de lo pequeño (sílex y lascas, fibra, yesca, cordel, cuerda, resina, bayas, setas, frutos secos y
 //    hierbas), dentro o fuera.
 import { CATALOGO } from './inventario.js';
+import { VIDA, seEstropea } from './comida.js';
 import { ALCANCE_COGER } from './suelo.js';
 import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
 
@@ -139,14 +140,16 @@ export const RECETAS = {
   // el taladro de fuego de arco (7 nov; el documento de sistemas lo nombra para encender la hoguera sin decir de qué se
   // hace): una rama da el arco y el huso, otra la tabla, y el cordel tensa el arco. Provisional (diario y registro)
   taladro_fuego:     r('Taladro de fuego', 'manos', 'taladro_fuego', { rama: 2, cordel: 1 }, 20),
-  // (la honda y el odre piden piel, que sale de la caza: no hay animales en este tramo. Fuera del tramo hasta entonces
-  // (tarea «Origen de la piel…», 8 nov): no salen en el panel ni se pueden hacer; vuelven con la caza)
-  honda:             { ...r('Honda', 'manos', 'honda', { cordel: 2, piel: 1 }, 30), fuera: 'caza' },
+  // (la honda y el odre piden piel: vuelven con la caza, 9 nov; la piel sale de despiezar la liebre)
+  honda:             r('Honda', 'manos', 'honda', { cordel: 2, piel: 1 }, 30),
   lenero:            r('Leñero', 'manos', 'lenero', { rama: 4, cordel: 2 }, 30),
   rastra:            r('Rastra', 'manos', 'rastra', { rama: 5, cordel: 2 }, 30),
   fardo:             r('Fardo atado', 'manos', 'fardo', { cordel: 2 }, 15),
   arpon:             r('Arpón', 'manos', 'arpon', { rama: 1, lasca_silex: 1, cordel: 1 }, 30),
-  odre:              { ...r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30), fuera: 'caza' },
+  odre:              r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30),
+  // despiezar la liebre cazada (9 nov; src/logica/comida.js): con las manos, llevando la lasca de sílex (requiere: no
+  // se gasta); da la carne cruda y, además (tambien), la piel. Tiempo, provisional
+  despiezar_liebre:  { ...r('Despiezar la liebre', 'manos', 'carne_cruda', { liebre: 1 }, 30), requiere: ['lasca_silex'], tambien: { piel: 1 } },
   // el mazo de piedra (valravnx, 8 nov): una piedra gorda atada al extremo de una rama con cordel, con las manos; rompe
   // las rocas medianas del mundo (src/logica/recoleccion.js). Tiempo, provisional (como el hacha, algo menos: no se talla)
   mazo_piedra:       r('Mazo de piedra', 'manos', 'mazo_piedra', { piedra: 1, rama: 1, cordel: 2 }, 45),
@@ -161,6 +164,8 @@ export const RECETAS = {
   lanza_endurecida:  r('Lanza endurecida', 'fuego', 'lanza_endurecida', { rama: 1 }, 60),
   antorcha:          r('Antorcha', 'fuego', 'antorcha', { rama: 1, fibra: 1 }, 20),
   antorcha_resina:   r('Antorcha (con resina)', 'fuego', 'antorcha', { rama: 1, resina: 1 }, 20),
+  // asar la carne (9 nov; src/logica/comida.js): sacia más que cruda y no se estropea. Tiempo, provisional
+  asar_carne:        r('Carne asada', 'fuego', 'carne_asada', { carne_cruda: 1 }, 45),
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -194,6 +199,8 @@ export const PARA = {
   mazo_piedra: 'Rompe las rocas medianas en piedras sueltas (las grandes, solo con hierro).',
   hacha_piedra: 'Tala árboles jóvenes (da un tronco delgado y varas); los adultos, muy despacio.',
   lanza_endurecida: 'Caza y defensa.',
+  despiezar_liebre: 'Carne cruda (se estropea en unas horas) y una piel pequeña.',
+  asar_carne: 'Sacia mucho más que la cruda y no se estropea.',
   antorcha: 'Luz; dura un rato.',
   antorcha_resina: 'Luz; dura un rato.',
   cuerda: 'Base de casi todo.',
@@ -291,6 +298,8 @@ function gastarTodo(gasta, inv, cerca, suelo) {
   return usado;
 }
 
+// lo que hay que llevar para una receta que pide herramienta (que no se gasta)
+export const textoRequiere = rc => `Para eso hace falta llevar ${rc.requiere.map(t => CATALOGO[t].nombre.toLowerCase()).join(' o ')}.`;
 const textoFaltan = f => 'Te falta: ' + Object.entries(f).map(([t, n]) => `${n} de ${(CATALOGO[t] || {}).nombre || t}`).join(', ') + '.';
 
 // ---------------- Estaciones y colas ----------------
@@ -350,8 +359,10 @@ export class Fabricacion {
       const e = rc.uso === 'manos' ? null : this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
       const { de, faltan: f } = e ? cuentasEstacion(rc.gasta, e.deposito) : cuentas(rc.gasta, inv, cerca);
       const apagada = !!(e && ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora));
-      const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length || apagada ? 'casi' : 'ya';
-      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}) };
+      const sinHerramienta = !!rc.requiere && !rc.requiere.some(t => inv.cuantos(t) > 0);
+      const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length || apagada || sinHerramienta ? 'casi' : 'ya';
+      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}),
+        ...(rc.requiere ? { requiere: [...rc.requiere], ...(sinHerramienta ? { sinHerramienta: true } : {}) } : {}), ...(rc.tambien ? { tambien: { ...rc.tambien } } : {}) };
     });
   }
 
@@ -600,6 +611,7 @@ export class Fabricacion {
     if (!tiene(RECETAS, receta)) return { ok: false, motivo: 'Esa receta no existe.' };
     const rc = RECETAS[receta];
     if (rc.fuera) return { ok: false, motivo: 'Eso aún no se puede hacer: pide piel, y aún no hay caza.' };
+    if (rc.requiere && !rc.requiere.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: textoRequiere(rc) };
     let cola, max = COLA_MANOS, enEst = null;
     if (rc.uso === 'manos') {
       if (estacion) return { ok: false, motivo: 'Eso se hace con las manos.' };
@@ -660,17 +672,22 @@ export class Fabricacion {
     if (!mios.length) return { ok: false, motivo: cola.some(c => c.autor === autor) ? 'Aún no está terminado.' : 'Aquí no tienes nada.' };
     const dados = [];
     let sinSitio = false;
+    // lo que se estropea (la carne cruda) dura desde que se terminó
+    const rasgos = (t, c) => (seEstropea(t) ? { hasta: c.fin + VIDA[t] } : null);
     for (const c of mios) {
-      const rc = RECETAS[c.receta], m = inv.meterDonde(rc.da, rc.n);
-      if (!m.ok && suelo) {
-        const o = suelo.dejar({ tipo: rc.da, n: rc.n }, pos.x, pos.z, ahora, autor, !!enTierras);
-        cola.splice(cola.indexOf(c), 1);
-        dados.push({ objeto: rc.da, cantidad: rc.n, alSuelo: o.id });
-        continue;
-      }
-      if (!m.ok) { sinSitio = true; continue; }
+      const rc = RECETAS[c.receta], m = inv.meterDonde(rc.da, rc.n, undefined, rasgos(rc.da, c));
+      if (!m.ok && !suelo) { sinSitio = true; continue; }
       cola.splice(cola.indexOf(c), 1);
-      dados.push({ objeto: rc.da, cantidad: rc.n, donde: m.donde });
+      if (!m.ok) dados.push({ objeto: rc.da, cantidad: rc.n, alSuelo: suelo.dejar({ tipo: rc.da, n: rc.n, ...(rasgos(rc.da, c) || {}) }, pos.x, pos.z, ahora, autor, !!enTierras).id });
+      else dados.push({ objeto: rc.da, cantidad: rc.n, donde: m.donde });
+      // lo que da además (la piel de la liebre): donde quepa; si no cabe, a tus pies (o, sin suelo, también a tus pies:
+      // a lo que no cupo al cargar, que cae al suelo en cuanto lo hay)
+      for (const [t, n] of Object.entries(rc.tambien || {})) {
+        const m2 = inv.meterDonde(t, n, undefined, rasgos(t, c));
+        if (m2.ok) dados.push({ objeto: t, cantidad: n, donde: m2.donde });
+        else if (suelo) dados.push({ objeto: t, cantidad: n, alSuelo: suelo.dejar({ tipo: t, n }, pos.x, pos.z, ahora, autor, !!enTierras).id });
+        else { inv.apartado.push({ tipo: t, n }); dados.push({ objeto: t, cantidad: n, apartado: true }); }
+      }
     }
     if (!dados.length) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
     return { ok: true, dados, quedan: sinSitio };

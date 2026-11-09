@@ -286,6 +286,8 @@ const estacionesV = crearEstaciones({ raiz: escena, altura: decorado.altura, fab
 let panelFabricar = null; // se monta más abajo, con el de inventario
 const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion, estacionesV,
   alEncargos: (d) => { if (panelFabricar) panelFabricar.ponerEncargos(d); },
+  // lo que se te ha estropeado encima (la carne cruda, 9 nov; src/logica/comida.js)
+  alEstropear: (e) => { for (const t of Object.keys(e)) mostrarAviso(tr('Se te ha estropeado: {c}.', { c: tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase() }), true); },
   alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); if ((que === 'suelo' || que === 'estaciones') && panelFabricar) panelFabricar.pintar(); if (que === 'matas' && decorado.rehacer) decorado.rehacer(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
