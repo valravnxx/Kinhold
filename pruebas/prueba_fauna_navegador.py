@@ -48,11 +48,16 @@ def captura(pg, ruta):
 # las liebres que se dibujan: id, dónde (el modelo), qué hace y si está en el suelo
 LIEBRES = f"""() => [...{K}.fauna.liebres.entries()].map(([id, l]) => ({{ id, x: l.m.raiz.position.x, y: l.m.raiz.position.y, z: l.m.raiz.position.z, anim: l.anim, suelo: {K}.alturaSuelo(l.m.raiz.position.x, l.m.raiz.position.z), visible: l.m.raiz.visible }}))"""
 UNA = f"""(id) => {{ const l = {K}.fauna.liebres.get(id); return l ? {{ x: l.m.raiz.position.x, z: l.m.raiz.position.z, anim: l.anim, ox: l.obj.x, oz: l.obj.z }} : null; }}"""
+# pone al jugador en (x, z) y espera a que siga allí (justo al entrar, el juego aún puede colocarlo en su sitio)
 def poner(pg, x, z, giro=None):
-    pg.evaluate(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {x}, z: {z}, vel: 0 }}); {'' if giro is None else f'k.pj.rot = {giro};'} }})()")
+    for _ in range(4):
+        pg.evaluate(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {x}, z: {z}, vel: 0 }}); {'' if giro is None else f'k.pj.rot = {giro};'} }})()")
+        pg.wait_for_timeout(3000)
+        if pg.evaluate(f"Math.hypot({K}.pj.x - ({x}), {K}.pj.z - ({z})) < 1"): return True
+    return False
 # la cámara libre (como la del admin) a d m de la liebre, a la altura h, mirándola
 def camara_cerca(pg, id, d, h, lado):
-    pg.evaluate(f"""(id) => {{ const k = {K}, l = k.fauna.liebres.get(id); if (!l) return; const p = l.m.raiz.position, a = l.giro + {lado};
+    pg.evaluate(f"""(id) => {{ const k = {K}, l = k.fauna.liebres.get(id); if (!l) return; const p = {{ x: l.obj.x, y: k.alturaSuelo(l.obj.x, l.obj.z), z: l.obj.z }}, a = l.giro + {lado};
       k.camLibre.x = p.x + Math.sin(a) * {d}; k.camLibre.z = p.z + Math.cos(a) * {d}; k.camLibre.y = p.y + {h}; k.camLibre.activa = true;
       k.cam.yaw = Math.atan2(k.camLibre.x - p.x, k.camLibre.z - p.z); k.cam.pitch = Math.atan2({h} - 0.15, {d}); }}""", id)
 try:
