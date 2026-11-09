@@ -231,8 +231,9 @@ export function crearCombateMundo({ escena, camara, lienzo, pj, cam, jugador, re
     if (!c.tirando) return;
     c.tirando = false;
     const p = apunta && Number.isFinite(apunta.x) ? apunta : puntoMira();
-    const t = c.L.soltar();
-    if (!t) { mandar({ que: 'soltar', x: p.x, y: 0, z: p.z }); return; }   // flojo: no sale (el servidor tampoco lo lanza)
+    // si sale o es flojo lo dice el servidor con su reloj (aquí, con pocos fotogramas, la copia tensa más despacio): se
+    // manda siempre el punto, con su altura sobre tu suelo
+    c.L.soltar();
     mandar({ que: 'soltar', x: p.x, y: Math.max(-50, Math.min(50, p.y - alturaEn(pj.x, pj.z))), z: p.z });
   }
   bLanzar.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); try { bLanzar.setPointerCapture(e.pointerId); } catch (err) { /* nada */ } empezarTiro(); });
