@@ -1,0 +1,13 @@
+Se puede tener, sin arcón: antorcha, arpon, azada, barro, bayas, cesta_recoleccion, cesto_pescador, cordel, corteza, cubo, cuerda, cuerda_trenzada, fardo, fibra, hacha_piedra, hoz_silex, junco, lanza_endurecida, lasca_silex, lena, lenero, mayal, mazo_piedra, mimbre, nasa, pala_madera, palo_cavador, piedra, rama, rastra, resina, setas, silex, taladro_fuego, trampa_lazo, tronco_corto, tronco_delgado, tronco_largo, vara, yesca
+
+La casa humilde
+  OK    cimiento: alguna pieza se hace solo con lo que se consigue — cim_piedra
+  OK    postes: alguna pieza se hace solo con lo que se consigue — poste
+  OK    muros: alguna pieza se hace solo con lo que se consigue — muro_tronco, muro_zarzo
+  OK    muro con puerta: alguna pieza se hace solo con lo que se consigue — muro_tronco_puerta, muro_zarzo_puerta
+  OK    tejado: alguna pieza se hace solo con lo que se consigue — tejado_juncos
+  OK    puerta: alguna pieza se hace solo con lo que se consigue — puerta_varas
+
+Lo que el juego enseña ya
+
+6 bien, 0 mal
