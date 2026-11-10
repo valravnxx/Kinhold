@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2589 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2926 KB
+
+== Construir demo única
+      3230 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4197 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2993 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2584 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2946 KB
+dist/kinhold_trozos.html 2598 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — v174: la ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»). Cada prenda lleva su desgaste, que cuenta el servidor: con el uso, todo lo puesto, y con cada golpe que hiere, lo que cubre esa zona. Su ficha dice cuántos usos le quedan y cómo se repara. Se repara puesta (o en la mano) junto al banco de tronco, con su material dejado en él: la de lino y la de lana se zurcen con una fibra; la de cuero, con una piel y un cordel. Al acabarse, se rompe.; v174, provisional: la vida de cada prenda sale de su material, en usos (un uso cada 10 minutos puesta en el mundo; un golpe que hiere, 10): lino 600 (unas 100 horas o unos 60 golpes), lana 900, cuero 1200, paja 300, acolchado 900 y malla de hierro 2400. Reparar recupera la mitad de su vida. Mientras no haya hilo, el lino y la lana se zurcen con la fibra cruda (de la que sale el hilo). El gambesón (pide tela), lo de paja (pide paja) y la cota de malla (pide la fragua) aún no se reparan: su ficha lo dice. El tiempo puesta que aún no llega a un uso se pierde si el servidor se reinicia.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 222 s

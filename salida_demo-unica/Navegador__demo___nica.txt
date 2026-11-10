@@ -1,0 +1,80 @@
+Vista pc
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 103.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 1 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 745.1, 'peor': 746, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 15, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón Menú libre
+  OK   construir: se dibuja — 107.8
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 2 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 2, 'ms': 564.6, 'peor': 586, 'triangulos': 278646, 'dibujados': 59, 'geometrias': 32, 'texturas': 18, 'memoriaJS': 15, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 0.54}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 0.43200000000000005}
+  OK   construir: cargado también avanza — 0.43 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 2 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 2, 'ms': 586, 'peor': 591, 'triangulos': 324966, 'dibujados': 74, 'geometrias': 33, 'texturas': 29, 'memoriaJS': 15, 'personajes': 9, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 278646 → 324966
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	2 por segundo
+Cada fotograma	578.7 ms de 
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:51707/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+Vista movil
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 121.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 5 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 5, 'ms': 193.2, 'peor': 199, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 14, 'personajes': 1, 'resolucion': 0.5, 'ancho': 195, 'alto': 422}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón Menú libre
+  OK   construir: se dibuja — 99.0
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 4 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 4, 'ms': 232.5, 'peor': 259, 'triangulos': 161008, 'dibujados': 45, 'geometrias': 26, 'texturas': 18, 'memoriaJS': 14, 'personajes': 1, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 1.26}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 1.008}
+  OK   construir: cargado también avanza — 1.01 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 4 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 4, 'ms': 231, 'peor': 233, 'triangulos': 218336, 'dibujados': 62, 'geometrias': 30, 'texturas': 29, 'memoriaJS': 14, 'personajes': 9, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 161008 → 218336
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	4 por segundo
+Cada fotograma	234.6 ms de 
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:51707/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+  FALLA menú en en: todo traducido — v174: la ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»). Cada prenda lleva su desgaste, que cuenta el servidor: con el uso, todo lo puesto, y con cada golpe que hiere, lo que cubre esa zona. Su ficha dice cuántos usos le quedan y cómo se repara. Se repara puesta (o en la mano) junto al banco de tronco, con su material dejado en él: la de lino y la de lana se zurcen con una fibra; la de cuero, con una piel y un cordel. Al acabarse, se rompe.; v174, provisional: la vida de cada prenda sale de su material, en usos (un uso cada 10 minutos puesta en el mundo; un golpe que hiere, 10): lino 600 (unas 100 horas o unos 60 golpes), lana 900, cuero 1200, paja 300, acolchado 900 y malla de hierro 2400. Reparar recupera la mitad de su vida. Mientras no haya hilo, el lino y la lana se zurcen con la fibra cruda (de la que sale el hilo). El gambesón (pide tela), lo de paja (pide paja) y la cota de malla (pide la fragua) aún no se reparan: su ficha lo dice. El tiempo puesta que aún no llega a un uso se pierde si el servidor se reinicia.
+  OK   menú en en: nada tapado
+  FALLA menú en ru: todo traducido — v174: la ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»). Cada prenda lleva su desgaste, que cuenta el servidor: con el uso, todo lo puesto, y con cada golpe que hiere, lo que cubre esa zona. Su ficha dice cuántos usos le quedan y cómo se repara. Se repara puesta (o en la mano) junto al banco de tronco, con su material dejado en él: la de lino y la de lana se zurcen con una fibra; la de cuero, con una piel y un cordel. Al acabarse, se rompe.; v174, provisional: la vida de cada prenda sale de su material, en usos (un uso cada 10 minutos puesta en el mundo; un golpe que hiere, 10): lino 600 (unas 100 horas o unos 60 golpes), lana 900, cuero 1200, paja 300, acolchado 900 y malla de hierro 2400. Reparar recupera la mitad de su vida. Mientras no haya hilo, el lino y la lana se zurcen con la fibra cruda (de la que sale el hilo). El gambesón (pide tela), lo de paja (pide paja) y la cota de malla (pide la fragua) aún no se reparan: su ficha lo dice. El tiempo puesta que aún no llega a un uso se pierde si el servidor se reinicia.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
