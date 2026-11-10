@@ -153,7 +153,7 @@ const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, cuadro).arboles
 const dir = mkdtempSync(join(tmpdir(), 'kinhold-recorrido-'));
 let s = null;
 try {
-  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, ticoNecesidades: 1000 / RELOJ, usoRopa: 10000, horaMundo: () => msDeHora(horaCielo) });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
+  s = crearServidor({ puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno: T, ticoNecesidades: 1000 / RELOJ, usoRopa: 30000, horaMundo: () => msDeHora(horaCielo) });   // sin arcón: como el servidor de verdad (es lo que hay si no se pide)
   const puerto = await s.listo, J = await cliente(puerto);
   console.log('0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey');
   comprobar('llega sin posición: aún no ha elegido', J.bienvenida.posicion === null, JSON.stringify(J.bienvenida.posicion));
@@ -1022,7 +1022,7 @@ try {
     // recoge del suelo las cuerdas que dejó a sus pies (se apilan en una mano) y el hacha se queda junto al banco
     for (const o of enSuelo('cuerda', taller2, 2.5)) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: o.cosa.n, a: J.inv.lugares['mano:der'] && J.inv.lugares['mano:der'].tipo !== 'cuerda' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z });
     comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()} · ${noTrenza.join(' | ')}`);
-    // la ropa se gasta con el uso (10 nov; src/logica/desgaste.js; aquí, un uso cada 10 s, usoRopa): la camisa lleva lo
+    // la ropa se gasta con el uso (10 nov; src/logica/desgaste.js; aquí, un uso cada 30 s del reloj acelerado, usoRopa): la camisa lleva lo
     // que le ha contado el servidor, y se zurce puesta en el banco de tronco, con una fibra dejada en él
     const camisaR = () => s.objetos.invs.de(yo).lugares['ropa:interior'];
     const gastadaR = (camisaR() && camisaR().usado) || 0;
@@ -1032,6 +1032,7 @@ try {
     const lfc = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra');
     const dfc = lfc && banco.ok ? await J.objeto({ tipo: 'depositar_estacion', estacion: banco.id, de: lfc, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva fibra (${enMano()})` };
     const rzc = dfc.ok ? await J.objeto({ tipo: 'reparar', estacion: banco.id, de: 'ropa:interior', x: J.pos.x, z: J.pos.z }) : dfc;
+    if (lfc && J.inv.lugares[lfc]?.tipo === 'fibra') await J.objeto({ tipo: 'soltar_suelo', de: lfc, x: J.pos.x, z: J.pos.z });   // (la fibra que sobra, al suelo: la mano, libre para las varas)
     comprobar('la zurce puesta, en el banco de tronco con una fibra: recupera lo gastado', rzc.ok && camisaR() && camisaR().tipo === 'camisa_lino' && (camisaR().usado || 0) < gastadaR && rzc.datos?.reparado?.objeto === 'camisa_lino',
       `${rzc.motivo || ''} ${JSON.stringify(camisaR())} · antes ${gastadaR}`);
 
