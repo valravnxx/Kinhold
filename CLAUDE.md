@@ -80,6 +80,7 @@ Las horas son reales (`date -Iseconds`), nunca estimadas. Las tareas guardan tam
 
 ## Alcance y listón visual (que quede claro siempre)
 
+- **El arte, con Meshy (valravnx, 10 nov; manda sobre lo de abajo donde choque).** «No estamos consiguiendo ese estilo visual, solo un lowpoly genérico y tirando a muy feo»: lo que se ve sale de Meshy (generador de modelos 3D con IA), con el aspecto de **maqueta en miniatura**, y se va reemplazando lo hecho por código **por categorías enteras** (naturaleza, objetos y estaciones, piezas de construir, animales, personajes), en el hito «El arte con Meshy», el primero mientras duren los créditos. Cada encargo lleva delante el prompt de estilo de valravnx (`herramientas/meshy/estilo.md`, que no se cambia sin él) y se hace por la API en GitHub Actions (`.github/workflows/meshy.yml`, `herramientas/meshy/`; la clave es el secreto `MESHY_API_KEY`: nunca en un archivo, ni en el chat, ni en un registro). Siempre con el remallado de Meshy, un tope de triángulos por tipo de cosa y texturas de 1024 para el móvil, y un tope de créditos por tanda (plan Premium, 3.000 al mes). **Cada modelo nuevo pasa por valravnx** (capturas de cerca en el mundo de verdad, PC y móvil, al lado de lo de hoy) antes de entrar. Los esqueletos y las animaciones de los animales los hace valravnx en Meshy; las de los personajes, la biblioteca de animaciones de Meshy. Mientras una categoría no esté aprobada, lo suyo sigue como está (con el estilo v5).
 - Es un **juego online persistente tipo MMO**, aunque sea pequeño al principio: pensado para que algún día tenga muchos jugadores. Cuentas, administración, registros y seguridad son **prioridad alta**, no un añadido (hitos 11 y 11b).
 - **Toda acción que cambia el mundo** (construir, desmontar, coger, soltar, comerciar, herir, matar) pasa por la lógica pura con un **autor** (quién la hace), aunque hoy sea un solo jugador. Así el servidor podrá validarla y registrarla sin rehacer nada.
 - **Aspecto: sobrio y realista dentro del low-poly.** Nada de colores chillones ni muñecos de cubos de estética infantil. Proporciones humanas creíbles, materiales y paleta apagados y naturales, buena luz y sombras. Técnicas por código permitidas y deseables: geometría con más detalle donde se ve (cara, manos, bordes), variación de color por vértice, texturas generadas por código (canvas), sombreado plano o suave según la pieza, oclusión ambiental horneada en vértices, niebla, gradación de color y posproceso ligero.
@@ -117,7 +118,7 @@ Las horas son reales (`date -Iseconds`), nunca estimadas. Las tareas guardan tam
 - **Nunca referencias a propiedad intelectual ajena** en el juego (nombres de otros juegos, marcas, personajes) ni en sus textos.
 - No dar tiempos que no salgan de datos medidos.
 - Los guardados del navegador no se pierden con una versión nueva: si cambia su formato, migrarlo.
-- El arte es low-poly por código; cada pieza nueva sale en capturas de cerca para que valravnx la revise.
+- El arte sale de Meshy (ver «El arte, con Meshy»); lo que aún es de código sigue con el estilo v5. Cada pieza nueva sale en capturas de cerca para que valravnx la revise.
 - Commits con mensajes en español que digan qué cambia. Al final de cada mensaje de commit:
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

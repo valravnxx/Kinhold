@@ -5,10 +5,17 @@
   "hito": "supervivencia",
   "rama": "trabajo/20261109-0522"
  },
- "B": {
-  "inicio": "2026-11-09T09:09:01+01:00",
-  "tarea": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
-  "hito": "interfaz",
-  "rama": "trabajo/20261109-0909"
+ "B": null,
+ "chat:trabajo/20261110-0652-meshy": {
+  "inicio": "2026-11-10T06:52:29+01:00",
+  "tarea": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
+  "hito": "meshy",
+  "rama": "trabajo/20261110-0652-meshy"
+ },
+ "chat:trabajo/20261110-0740-personajes": {
+  "inicio": "2026-11-10T07:41:38+01:00",
+  "tarea": "Personajes: el hombre y la mujer de valravnx (Meshy, con su esqueleto y andar y correr) como base del jugador; propuesta de cómo se viste por capas y se personaliza con ellos, para que valravnx decida",
+  "hito": "meshy",
+  "rama": "trabajo/20261110-0740-personajes"
  }
 }
