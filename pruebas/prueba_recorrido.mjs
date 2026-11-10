@@ -1024,16 +1024,16 @@ try {
     comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()} · ${noTrenza.join(' | ')}`);
     // la ropa se gasta con el uso (10 nov; src/logica/desgaste.js; aquí, un uso cada 10 s, usoRopa): la camisa lleva lo
     // que le ha contado el servidor, y se zurce puesta en el banco de tronco, con una fibra dejada en él
-    const camisa = () => s.objetos.invs.de(yo).lugares['ropa:interior'];
-    const gastada = (camisa() && camisa().usado) || 0;
-    comprobar('la camisa de lino se ha gastado con el uso (lo cuenta el servidor)', gastada > 0, JSON.stringify(camisa()));
+    const camisaR = () => s.objetos.invs.de(yo).lugares['ropa:interior'];
+    const gastadaR = (camisaR() && camisaR().usado) || 0;
+    comprobar('la camisa de lino se ha gastado con el uso (lo cuenta el servidor)', gastadaR > 0, JSON.stringify(camisaR()));
     for (let k = 0; k < 10 && J.cuantos('fibra') < 1; k++) { const p = cerca(libres(fibras, 'ortiga').concat(libres(fibras, 'hierba_larga')), J.pos)[0]; if (!p) break; await coger(p); }
     await J.andar(taller2.x, taller2.z);
-    const lf = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra');
-    const df = lf && banco.ok ? await J.objeto({ tipo: 'depositar_estacion', estacion: banco.id, de: lf, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva fibra (${enMano()})` };
-    const rz = df.ok ? await J.objeto({ tipo: 'reparar', estacion: banco.id, de: 'ropa:interior', x: J.pos.x, z: J.pos.z }) : df;
-    comprobar('la zurce puesta, en el banco de tronco con una fibra: recupera lo gastado', rz.ok && camisa() && camisa().tipo === 'camisa_lino' && (camisa().usado || 0) < gastada && rz.datos?.reparado?.objeto === 'camisa_lino',
-      `${rz.motivo || ''} ${JSON.stringify(camisa())} · antes ${gastada}`);
+    const lfc = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra');
+    const dfc = lfc && banco.ok ? await J.objeto({ tipo: 'depositar_estacion', estacion: banco.id, de: lfc, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva fibra (${enMano()})` };
+    const rzc = dfc.ok ? await J.objeto({ tipo: 'reparar', estacion: banco.id, de: 'ropa:interior', x: J.pos.x, z: J.pos.z }) : dfc;
+    comprobar('la zurce puesta, en el banco de tronco con una fibra: recupera lo gastado', rzc.ok && camisaR() && camisaR().tipo === 'camisa_lino' && (camisaR().usado || 0) < gastadaR && rzc.datos?.reparado?.objeto === 'camisa_lino',
+      `${rzc.motivo || ''} ${JSON.stringify(camisaR())} · antes ${gastadaR}`);
 
     // 16g. la puerta de varas, en el hueco del muro de la puerta: una de las cuerdas y 4 varas
     const puerta = pieza('puerta_varas', 0, -0.95);
