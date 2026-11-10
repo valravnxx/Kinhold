@@ -18,6 +18,8 @@ import { meshopt, dequantize } from '@gltf-transform/functions';
 import * as THREE from 'three';
 
 const [entrada, salida] = process.argv.slice(2);
+// SOLO_MARCAS=1: sin huesos de dedos ni pesos nuevos (las manos quedan como son), solo los puntos de agarre de cada mano
+const SOLO_MARCAS = !!process.env.SOLO_MARCAS;
 await MeshoptDecoder.ready; await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder, 'meshopt.encoder': MeshoptEncoder });
 const doc = await io.read(entrada);
@@ -108,7 +110,7 @@ for (const [lado, L] of [['l', 'Left'], ['r', 'Right']]) {
   const cadenas = [['middle', dedos.flat()]];
   // (valravnx, 10 nov: «manopla es usar la mano con dedos juntos»): los cuatro dedos de la malla, juntos de lado, uno
   // pegado al otro sin hueco y centrados donde estaban; cerca del nudillo se mueven menos (para no rasgar la palma)
-  {
+  if (!SOLO_MARCAS) {
     const lat = (i) => pos[i].clone().sub(H).dot(w);
     const info = dedos.map(c => { const l = c.map(lat); return { c, min: Math.min(...l), max: Math.max(...l) }; });
     const anchos = info.map(f => f.max - f.min), total = anchos.reduce((x, y) => x + y, 0);
@@ -121,13 +123,22 @@ for (const [lado, L] of [['l', 'Left'], ['r', 'Right']]) {
     }
     informe['juntados_' + L] = info.map(f => +((f.max - f.min) * 100).toFixed(1));
   }
+  // el agarre: por donde pasa el mango, en la palma (del lado contrario al que da «palma», comprobado en capturas: con el
+  // otro, el mango quedaba por el dorso) (algo hacia la palma desde la línea de los nudillos y un poco hacia la
+  // muñeca), y la línea de los nudillos (middle_01, si no hay huesos de dedos)
+  {
+    const bases = dedos.map(c => { const o = [...c].sort((p, q) => pos[p].distanceTo(H) - pos[q].distanceTo(H)); return centro(o.slice(0, Math.max(3, o.length >> 2))); });
+    const nudillos = bases.reduce((x, b) => x.add(b), new THREE.Vector3()).divideScalar(bases.length);
+    if (SOLO_MARCAS) marcas.push({ nombre: `middle_01_${lado}`, mano: hi, pos: nudillos });
+    marcas.push({ nombre: `agarre_${lado}`, mano: hi, pos: nudillos.clone().addScaledVector(palma, 0.022 * (+process.env.PALMA || -1)).addScaledVector(a, -0.012) });
+  }
   for (const [k, nombre] of [[0, 'index'], [3, 'pinky']]) {
     const c = [...dedos[k]].sort((p, q) => pos[p].distanceTo(H) - pos[q].distanceTo(H));
     marcas.push({ nombre: `${nombre}_01_${lado}`, mano: hi, pos: centro(c.slice(0, Math.max(3, c.length >> 2))) });
   }
   if (pulgar.length >= 3) cadenas.push(['thumb', pulgar]);
   informe[L] = { dedos: dedos.map(c => c.length), pulgar: pulgar.length, nudillos_cm: +(corte * 100).toFixed(1), largo_cm: +(tmax * 100).toFixed(1) };
-  for (const [nombre, c] of cadenas) {
+  for (const [nombre, c] of SOLO_MARCAS ? [] : cadenas) {
     // a lo largo del dedo: de su base (lo más cerca de la muñeca) a la punta (lo más lejos)
     const d = (i) => pos[i].distanceTo(H);
     const orden = [...c].sort((p, q) => d(p) - d(q));

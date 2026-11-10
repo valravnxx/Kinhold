@@ -95,7 +95,8 @@ export function empunar(mh, modelo) {
   const pm = loc(med), f = pm.clone().normalize();                       // hacia los nudillos
   const y = loc(ind).sub(loc(men)); y.addScaledVector(f, -y.dot(f)).normalize(); // del meñique al índice
   const x = new THREE.Vector3().crossVectors(y, f);
-  modelo.matrix.makeBasis(x, y, f).setPosition(pm.multiplyScalar(1.15));
+  // (los de Meshy traen marcado el agarre: en la palma, junto a los nudillos; herramientas/meshy/poner_dedos.mjs)
+  modelo.matrix.makeBasis(x, y, f).setPosition(h.agarre_r ? loc(h.agarre_r) : pm.multiplyScalar(1.15));
   modelo.matrix.decompose(modelo.position, modelo.quaternion, modelo.scale);
   // la mano tiene la escala del esqueleto: la herramienta se deja a su tamaño de verdad
   const e = new THREE.Vector3(); mano.getWorldScale(e); modelo.scale.divideScalar(e.x || 1);
@@ -249,6 +250,14 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   };
   j.animar = (...a) => {
     animarCuerpo(...a);
+    // con el hacha o el pico trabajando, la mano izquierda también en el mango, más arriba que la derecha (los de Meshy)
+    if (j.mh && j.mh.meshy && j.hacha && j.hacha.visible && (j.modo === 'talar' || j.modo === 'minar') && j.mh.hueso.agarre_l && !globalThis.__unaMano) {
+      const h = j.mh.hueso, b = { sup: h.upperarm_l, inf: h.lowerarm_l, mano: h.hand_l, nudillo: h.agarre_l };
+      j.raiz.updateMatrixWorld(true);
+      const p = j.hacha.localToWorld(new THREE.Vector3(0, 0.2, 0));
+      const lado = new THREE.Vector3().subVectors(h.upperarm_l.getWorldPosition(new THREE.Vector3()), h.upperarm_r.getWorldPosition(new THREE.Vector3())).normalize();
+      nudillosA(b, p, lado.multiplyScalar(0.6).add(new THREE.Vector3(0, -1, 0)));
+    }
     // las manos cerradas en O sobre lo que agarran (el hacha o lo que va en la mano, el tronco al hombro, la carretilla,
     // lo que se lleva en brazos); abiertas si no
     if (j.mh && j.mh.cerrarMano) {

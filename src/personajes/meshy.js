@@ -89,7 +89,7 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
   const hueso = {};
   // (los dedos: la manopla middle_01…03 y el pulgar, hechos con herramientas/meshy/poner_dedos.mjs, y los puntos index_01
   // y pinky_01 de la mano)
-  modelo.traverse(n => { if (n.isBone || /^(index|pinky|middle|thumb)_0\d_[lr]$/.test(n.name)) hueso[n.name] = n; });
+  modelo.traverse(n => { if (n.isBone || /^((index|pinky|middle|thumb)_0\d|agarre)_[lr]$/.test(n.name)) hueso[n.name] = n; });
   for (const [k, v] of Object.entries(HUESOS)) if (hueso[v]) hueso[k] = hueso[v];
   hueso.Head = hueso.Head || hueso.head;
   if (!hueso.middle_01_r) ponerDedos(hueso, modelo); // (los .glb sin dedos)
