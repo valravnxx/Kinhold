@@ -1,5 +1,5 @@
 {
- "accion": "modelos",
+ "accion": "recuperar",
  "tope": 300,
  "cosas": [
   {
@@ -34,5 +34,6 @@
   }
  ],
  "textura_prompt": false,
- "remallado": false
+ "remallado": false,
+ "desde": 1794317580
 }

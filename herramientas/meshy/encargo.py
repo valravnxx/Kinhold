@@ -16,7 +16,7 @@
 #     cada movimiento: Text to Motion (prime 10 créditos, swift 3; de 2 a 10 s) y, con su motion_task_id, la Animation API
 #     lo pasa al esqueleto de cada personaje (el rig hecho por la API); a salida/ van <personaje>_<nombre>.glb
 # Lo que sale va a salida/ y vuelve por la rama meshy/<ejecución>.
-import base64, json, os, sys, time, urllib.request
+import subprocess, base64, json, os, sys, time, urllib.request
 
 CLAVE = os.environ.get('MESHY_API_KEY', '')
 API = 'https://api.meshy.ai/openapi'
@@ -90,11 +90,34 @@ def listar():
     print(f'{len(resumen)} tareas')
     for r in resumen: print(json.dumps(r, ensure_ascii=False)[:300])
 
+def aligera(n, c):
+    # la malla entera sin remallar pesa decenas de MB y no cabe en el push de vuelta (naturaleza5, 10 nov: HTTP 408):
+    # se aligera aquí (herramientas/meshy/aligerar.mjs) y la cruda no vuelve
+    crudo = f'{SAL}/{n}_crudo.glb'
+    print(n, 'crudo', os.path.getsize(crudo) if os.path.exists(crudo) else 'no está')
+    r = subprocess.run(['node', 'herramientas/meshy/aligerar.mjs', crudo, f'{SAL}/{n}.glb', str(c.get('tri', 3000)), str(c.get('alto', 1))], capture_output=True, text=True)
+    print(n, 'aligerado', r.stdout.strip()[-300:], r.stderr.strip()[-300:])
+    if r.returncode == 0: os.remove(crudo)
+
+def recuperar():
+    # vuelve a bajar los modelos de un encargo ya hecho (los guarda Meshy unos días), sin gastar: los image-to-3d
+    # creados desde «desde» (segundos), del más viejo al más nuevo, con los nombres de «cosas» en ese orden
+    l = pide('/v1/image-to-3d?page_size=50&page_num=1&sort_by=-created_at')
+    l = sorted([t for t in l if t.get('created_at', 0) >= pedido['desde'] * 1000 and t.get('status') == 'SUCCEEDED'], key=lambda t: t['created_at'])
+    print(len(l), 'modelos desde', pedido['desde'])
+    if len(l) != len(pedido['cosas']): print('NO: no son tantos como las cosas del pedido'); sys.exit(1)
+    for c, m in zip(pedido['cosas'], l):
+        n = c['nombre']
+        json.dump({k: v for k, v in m.items() if k != 'model_urls'}, open(f'{SAL}/{n}_tarea.json', 'w'), ensure_ascii=False, indent=1)
+        baja(m['model_urls']['glb'], f'{SAL}/{n}_crudo.glb'); aligera(n, c)
+        for lado, u in (m.get('thumbnail_urls') or {}).items(): baja(u, f'{SAL}/{n}_vista_{lado}.png')
+
 pedido = json.load(open('herramientas/meshy/pedido.json'))
 if not CLAVE:
     print('FALTA la clave: no hay secreto MESHY_API_KEY'); open(f'{SAL}/saldo.txt', 'w').write('sin clave'); sys.exit(1)
 saldo = pide('/v1/balance'); open(f'{SAL}/saldo.txt', 'w').write(json.dumps(saldo)); print('saldo', saldo)
 if pedido.get('accion') == 'listar': listar()
+if pedido.get('accion') == 'recuperar': recuperar()
 if pedido.get('accion') == 'animar':
     acciones = pedido['acciones']; pers = pedido['personajes']
     coste = len(pers) * (5 + 3 * len(acciones))
@@ -148,7 +171,8 @@ if pedido.get('accion') == 'modelos':
         print(n, 'modelo', m.get('status'), m.get('task_error'), 'créditos', m.get('consumed_credits'))
         json.dump({k: v for k, v in m.items() if k != 'model_urls'}, open(f'{SAL}/{n}_tarea.json', 'w'), ensure_ascii=False, indent=1)
         if m.get('status') == 'SUCCEEDED':
-            baja(m['model_urls']['glb'], f'{SAL}/{n}.glb')
+            if pedido.get('remallado', True): baja(m['model_urls']['glb'], f'{SAL}/{n}.glb')
+            else: baja(m['model_urls']['glb'], f'{SAL}/{n}_crudo.glb'); aligera(n, c)
             for lado, u in (m.get('thumbnail_urls') or {}).items(): baja(u, f'{SAL}/{n}_vista_{lado}.png')
         informe.append({'nombre': n, 'alto': c.get('alto'), 'imagen_id': im['id'], 'modelo_id': m.get('id'), 'estado': m.get('status'), 'error': m.get('task_error'),
                         'creditos': (im.get('consumed_credits') or 0) + (m.get('consumed_credits') or 0)})
