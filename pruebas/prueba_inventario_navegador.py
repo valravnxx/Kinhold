@@ -152,6 +152,7 @@ with sync_playwright() as p:
     comprobar('la ficha del hacha dice cuánto le queda (18 usos de 168), con su barra en rojo', '18' in gasto and '168' in gasto and pg.locator('#panelInventario .eq-desgaste .eq-poco').count() == 1, gasto)
     pg.screenshot(path=f'{SALIDA}/08_pc_ficha_desgaste.png')
     pg.click('#panelInventario .inv-dejar')
+    pg.evaluate(f"{K}.inventario.lugares['mano:der'] = null; {K}.panelInventario.pintar()")   # (lo que sigue, con la mano libre)
     pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)   # el personaje se carga después de la página
     capas = pg.evaluate(f'{K}.jugador.mh && {K}.jugador.mh.capas')
     comprobar('al recargar, el personaje lleva otra vez la túnica', 'tunica' in (capas or []), str(capas))
