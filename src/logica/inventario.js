@@ -204,7 +204,9 @@ export function factorPeso(kilos) {
 // prenda lleva los suyos y dos distintas no se juntan nunca (la ropa no se apila, y aunque se apilara, no serían lo mismo).
 // Lo que se estropea (la carne cruda, 9 nov; src/logica/comida.js) lleva además hasta cuándo dura (hasta, ms): se copia
 // con la cosa y, al juntar dos montones, se queda el que antes se estropea.
-const conHasta = o => (o && Number.isFinite(o.hasta) ? { hasta: o.hasta } : {});
+// Lo que se gasta (herramientas y armas, 10 nov; src/logica/desgaste.js) lleva los usos que lleva («usado»), que van con
+// la cosa a donde vaya (también al suelo y de vuelta).
+const conHasta = o => ({ ...(o && Number.isFinite(o.hasta) ? { hasta: o.hasta } : {}), ...(o && Number.isInteger(o.usado) && o.usado > 0 ? { usado: o.usado } : {}) });
 const cosa = (tipo, n = 1, rasgos = null) => ({ tipo, n, ...(rasgos ? rasgosPrenda(tipo, rasgos) : {}), ...conHasta(rasgos) });
 const copiarRasgos = c => ({ ...(c.hechura || c.tinte ? rasgosPrenda(c.tipo, c) : {}), ...conHasta(c) }); // copia limpia (lo que no vale, fuera)
 const copiar = c => c && ({ tipo: c.tipo, n: c.n, ...copiarRasgos(c), ...(c.dentro ? { dentro: c.dentro.map(copiar) } : {}) });

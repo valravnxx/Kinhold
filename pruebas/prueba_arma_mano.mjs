@@ -138,6 +138,8 @@ try {
   comprobar('el otro la ve salir volando', otroLaVe);
   comprobar('y cae al suelo', cayoLanza);
   comprobar('alguna de las que lanza mata la liebre: queda muerta en el suelo y sale de las vivas', !!muerta && !s.fauna.de(id) && !A.liebres.has(id), `${lanzadas} lanzadas`);
+  // herramientas y armas que se gastan (10 nov; src/logica/desgaste.js): la lanza que da a la liebre gasta un uso
+  comprobar('la lanza que da a la liebre se gasta: queda en el suelo con un uso', s.objetos.suelo.objetos.some(o => o.cosa.tipo === 'lanza_endurecida' && o.cosa.usado === 1));
   // va a por una lanza del suelo y la recoge
   const lanza = s.objetos.suelo.objetos.find(o => o.cosa.tipo === 'lanza_endurecida');
   A.estar(lanza.x, lanza.z); await pausa(300);
@@ -158,6 +160,20 @@ try {
   A.combate({ que: 'tensar' }); await pausa(700);
   A.combate({ que: 'soltar', x: A.pos.x, y: 0, z: A.pos.z + 10 }); await pausa(1500);
   comprobar('sin piedras, vuelve a los puños', !s.objetos.invs.de(A.autor).lugares['mano:der'] && LA().arma === 'punos', LA().arma);
+  // un golpe con el palo cavador que alcanza al otro (o que el otro para) gasta el palo: lo cuenta el servidor
+  r = await A.objeto({ tipo: 'coger', objeto: 'palo_cavador', cantidad: 1, a: 'mano:der' });
+  A.estar(200, 200); B.estar(200, 201.1); await pausa(400);
+  A.combate({ que: 'arma', sacada: true }); await pausa(300);
+  const nEv = B.eventos.length;
+  let alcanza = null;
+  for (let k = 0; k < 4 && !alcanza; k++) {
+    A.combate({ que: 'cargar', linea: 'alto' }); await pausa(500);
+    A.combate({ que: 'descargar' }); await pausa(1500);
+    alcanza = B.eventos.slice(nEv).find(e => e.tipo === 'golpe' && e.autor === A.autor && e.objetivo === B.autor && ['herida', 'golpe maestro', 'parada', 'parada perfecta'].includes(e.resultado));
+  }
+  const palo = s.objetos.invs.de(A.autor).lugares['mano:der'];
+  const golpes = B.eventos.slice(nEv).filter(e => e.tipo === 'golpe' && e.autor === A.autor && e.objetivo && ['herida', 'golpe maestro', 'parada', 'parada perfecta'].includes(e.resultado)).length;
+  comprobar('el palo cavador se gasta con cada golpe que alcanza, y su navegador lo sabe', r.ok && !!alcanza && palo && palo.tipo === 'palo_cavador' && palo.usado === golpes && A.inv?.lugares?.['mano:der']?.usado === golpes, `${alcanza && alcanza.resultado}; usado ${palo && palo.usado}, golpes ${golpes}`);
   A.ws.close(); B.ws.close();
   await s.cerrar();
   rmSync(dir, { recursive: true, force: true });

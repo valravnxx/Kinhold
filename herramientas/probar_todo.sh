@@ -49,6 +49,7 @@ paso "Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cue
 paso "Las liebres: pastan, se ponen alerta y huyen de quien se acerca; las mueve el servidor" node pruebas/prueba_fauna.mjs
 paso "El modo arma con lo de la mano: puños, hacha, lanza; lanzar la lanza y la piedra apuntando, y cazar la liebre" node pruebas/prueba_arma_mano.mjs
 paso "Despiezar y asar: la liebre con la lasca, la carne al fuego, la cruda se estropea" node pruebas/prueba_comida.mjs
+paso "Herramientas y armas que se gastan: el hacha de piedra tala 3 adultos y se rompe" node pruebas/prueba_desgaste.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs

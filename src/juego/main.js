@@ -288,6 +288,8 @@ const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LO
   alEncargos: (d) => { if (panelFabricar) panelFabricar.ponerEncargos(d); },
   // lo que se te ha estropeado encima (la carne cruda, 9 nov; src/logica/comida.js)
   alEstropear: (e) => { for (const t of Object.keys(e)) mostrarAviso(tr('Se te ha estropeado: {c}.', { c: tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase() }), true); },
+  // lo que se te ha roto al gastarse del todo en el combate o al cazar (10 nov; src/logica/desgaste.js)
+  alRomper: (t) => mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase() }), true),
   alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); if ((que === 'suelo' || que === 'estaciones') && panelFabricar) panelFabricar.pintar(); if (que === 'matas' && decorado.rehacer) decorado.rehacer(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
@@ -2238,6 +2240,12 @@ function golpeTala() {
 function avisoTala(a, r) {
   // lo que llevas talado, para el aro de la acción (el primer golpe dice cuántos faltan)
   if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
+  // el hacha se ha gastado del todo con este golpe (src/logica/desgaste.js): se rompe y se deja de talar
+  if (r.seRompe) {
+    estado.talando = null;
+    mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[r.seRompe] ? CATALOGO[r.seRompe].nombre : r.seRompe).toLowerCase() }), true);
+    if (!r.cae) return;
+  }
   // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
   if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }

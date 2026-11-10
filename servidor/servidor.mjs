@@ -153,6 +153,7 @@ import { NADO } from '../src/logica/nado.js';
 import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
 import { estropearInventario, estropearSuelo } from '../src/logica/comida.js';
 import { armaDeMano, loQueSeLanza } from '../src/logica/arma_mano.js';
+import { gastar, gastarCosa, GASTA_AL_DAR, GASTA_AL_PARAR } from '../src/logica/desgaste.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -427,7 +428,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       const r = inv.sacar(q.mano, q.cuanto);
       if (!r.ok) return null;
       guardarObjetos(); enviar(conexionDe.get(autor), { tipo: 'inventario', inventario: objetos.inventarioDe(autor) }); repartirLlevado(autor);
-      return { tipo: r.cosa.tipo, n: r.cosa.n, gasta: q.gasta };
+      return { tipo: r.cosa.tipo, n: r.cosa.n, gasta: q.gasta, ...(r.cosa.usado ? { usado: r.cosa.usado } : {}) };
     } });
   // Desconectarse (GDD, apartado 6; src/logica/dormidos.js): quien se va se queda dormido en el mundo, donde estaba, y los
   // demás lo ven tumbado con su símbolo de desconectado (su presencia sigue, con la animación DESCONECTADO). En su tierra
@@ -559,10 +560,28 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     // lo lanzado que cae (P4, 9 nov): la lanza y la piedra quedan en el suelo donde acaban; la liebre a la que da,
     // muerta, sale de la fauna y queda en el suelo para despiezarla
     let suelo = false;
+    // herramientas y armas que se gastan (10 nov; src/logica/desgaste.js): el golpe que alcanza gasta el arma de quien lo
+    // da, y el que se para, también la de quien lo para; la lanza lanzada, al dar a una presa. Al acabarse, se rompe.
+    const gastarArma = (autor) => {
+      const inv = objetos.invs.de(autor), m = armaDeMano(inv.lugares).mano, g = m ? gastar(inv, m) : null;
+      if (!g) return;
+      guardarObjetos();
+      const ws = conexionDe.get(autor);
+      if (ws) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor), ...(g.roto ? { roto: g.tipo } : {}) });
+      if (g.roto) { repartirLlevado(autor); appendFileSync(archivoObjetosReg, JSON.stringify({ autor, tipo: 'se_rompe', objeto: g.tipo, ahora: Date.now() }) + '\n'); }
+    };
+    for (const e of eventos) {
+      if (e.tipo !== 'golpe' || !e.objetivo) continue;
+      if (GASTA_AL_DAR.has(e.resultado)) gastarArma(e.autor);
+      if (GASTA_AL_PARAR.has(e.resultado)) gastarArma(e.objetivo);
+    }
     for (const e of eventos) {
       if (e.tipo !== 'flecha') continue;
       const ahora = Date.now(), enT = (x, z) => !!mundo.tierraDe(x, z);
-      if (e.objeto && !e.objeto.gasta) { objetos.suelo.dejar({ tipo: e.objeto.tipo, n: e.objeto.n }, e.x, e.z, ahora, e.autor, enT(e.x, e.z)); suelo = true; }
+      const lanzado = e.objeto && !e.objeto.gasta ? { tipo: e.objeto.tipo, n: e.objeto.n, ...(e.objeto.usado ? { usado: e.objeto.usado } : {}) } : null;
+      const roto = lanzado && e.presa ? gastarCosa(lanzado) : null;   // la lanza que da a una presa se gasta
+      if (roto && roto.roto) { const ws = conexionDe.get(e.autor); if (ws) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(e.autor), roto: lanzado.tipo }); appendFileSync(archivoObjetosReg, JSON.stringify({ autor: e.autor, tipo: 'se_rompe', objeto: lanzado.tipo, ahora }) + '\n'); }
+      else if (lanzado) { objetos.suelo.dejar(lanzado, e.x, e.z, ahora, e.autor, enT(e.x, e.z)); suelo = true; }
       if (e.presa && fauna) {
         const l = fauna.de(e.presa);
         if (l && fauna.matar(e.presa)) { objetos.suelo.dejar({ tipo: 'liebre', n: 1 }, l.x, l.z, ahora, e.autor, enT(l.x, l.z)); suelo = true; }

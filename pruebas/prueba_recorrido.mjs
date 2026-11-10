@@ -367,6 +367,9 @@ try {
     let golpes = 0;
     do { r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); golpes++; if (r.ok && !r.datos.cae) await pausa(550); } while (r.ok && !r.datos.cae && golpes < 30);
     comprobar('lo tala a golpes (joven con piedra: 8) y cae', r.ok && r.datos.cae && golpes === 8, `${golpes} golpes · ${r.motivo || ''}`);
+    // herramientas que se gastan (10 nov; documento de sistemas, apartado 10): cada golpe lo cuenta el servidor
+    const hachaInv = ['mano:der', 'mano:izq'].map(l => s.objetos.invs.de(J.bienvenida.autor).lugares[l]).find(c => c?.tipo === 'hacha_piedra');
+    comprobar('el hacha de piedra se gasta talando: el servidor cuenta los 8 golpes y se lo dice', r.datos?.desgaste?.usado === 8 && r.datos.desgaste.vida === 168 && hachaInv?.usado === 8 && J.inv.lugares[['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'hacha_piedra')]?.usado === 8, `${JSON.stringify(r.datos?.desgaste)} · en el servidor ${hachaInv?.usado}`);
     comprobar('cae hacia la boca que le ha abierto: el lado desde el que tala (al este del tronco)', r.datos?.por === 'boca' && Math.abs(r.datos.dir - Math.PI / 2) < 0.05, `dir ${r.datos?.dir}, por ${r.datos?.por}`);
     const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5);
     const tronco = deja.find(o => o.cosa.tipo === 'tronco_delgado'), varas = deja.find(o => o.cosa.tipo === 'vara');
@@ -725,6 +728,54 @@ try {
     };
     comprobar('recoge su hacha de piedra del suelo', await cogerHacha(), enMano());
 
+    // herramientas que se gastan (10 nov; documento de sistemas, apartado 10): el hacha de piedra aguanta unos 3 árboles
+    // adultos (168 golpes); la casa pide 16 jóvenes (8 golpes cada uno) y un adulto (56), así que se le rompe talando el
+    // adulto y, como haría un jugador, se hace otra junto a la casa con lo que recoge: fibra para 2 cordeles, 2 piedras
+    // (una para una piedra de tallar nueva y otra para el hacha) y una rama
+    const hachasRotas = [];
+    const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
+    const otraHacha = async () => {
+      const taller = { x: r2(C.x - 4), z: r2(C.z + 4) };
+      await J.andar(taller.x, taller.z);
+      await soltarManos();
+      for (const q of [...libres(aqui, 'ortiga'), ...libres(aqui, 'hierba_larga')].slice(0, 20)) { if (J.cuantos('fibra') >= 6) break; await coger(q); }
+      if (J.cuantos('fibra') < 6) return { ok: false, motivo: `solo ${J.cuantos('fibra')} de fibra` };
+      for (let k = 0; k < 2; k++) {
+        let f = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+        if (!f.ok) return f;
+        adelantar();
+        f = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+        if (!f.ok) return f;
+      }
+      await J.andar(taller.x, taller.z);
+      await soltarManos();   // los cordeles y la fibra que sobre, a sus pies
+      for (const q of libres(aqui, 'piedra').slice(0, 12)) { if (J.cuantos('piedra') >= 2) break; await coger(q); }
+      for (const q of libres(aqui, 'ramas').slice(0, 6)) { if (J.cuantos('rama') >= 1) break; await coger(q); }
+      if (J.cuantos('piedra') < 2 || J.cuantos('rama') < 1) return { ok: false, motivo: `piedras ${J.cuantos('piedra')}, ramas ${J.cuantos('rama')}` };
+      await J.andar(taller.x, taller.z);
+      const pp = await ponerPuesto('piedra_tallar', r2(J.pos.x + 0.8), J.pos.z);
+      if (!pp.ok) return pp;
+      const pt = Object.values(s.objetos.fab.estaciones).filter(e => e.autor === yo && e.tipo === 'piedra_tallar').sort((a, b) => Math.hypot(a.x - J.pos.x, a.z - J.pos.z) - Math.hypot(b.x - J.pos.x, b.z - J.pos.z))[0];
+      const deMano = async tipo => { const l = manos.find(x => J.inv.lugares[x]?.tipo === tipo); return l ? J.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: l, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva ${tipo}` }; };
+      let d = await deMano('piedra');
+      if (d.ok) d = await deMano('rama');
+      if (!d.ok) return d;
+      await soltarManos();   // lo que sobre (más ramas), a sus pies: para coger los cordeles hace falta la mano
+      for (let k = 0; k < 2; k++) {
+        const o = enSuelo('cordel', J.pos, 2)[0];
+        if (!o) return { ok: false, motivo: 'no encuentra sus cordeles' };
+        const c = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: 'mano:der', x: J.pos.x, z: J.pos.z });
+        if (!c.ok) return c;
+        d = await deMano('cordel');
+        if (!d.ok) return d;
+      }
+      let f = await J.objeto({ tipo: 'fabricar', receta: 'hacha_piedra', estacion: pt.id, x: J.pos.x, z: J.pos.z });
+      if (!f.ok) return f;
+      adelantar();
+      f = await J.objeto({ tipo: 'recoger_fabricado', estacion: pt.id, x: J.pos.x, z: J.pos.z });
+      return f.ok && s.objetos.invs.de(yo).cuantos('hacha_piedra') > 0 ? { ok: true } : { ok: false, motivo: f.motivo || 'no tiene el hacha nueva' };
+    };
+
     // talar el árbol (joven o adulto) más cercano que quede en pie; lo que deja, al suelo
     const taladas = new Set(), tocones = [];
     const talar = async (edad) => {
@@ -732,10 +783,17 @@ try {
         const a = cerca(arboles.filter(e => e.edad === edad && !taladas.has(e.id) && Math.hypot(e.x - C.x, e.z - C.z) > 8), C)[0];
         if (!a) return { ok: false, motivo: `no quedan árboles (${edad})` };
         taladas.add(a.id);
-        if (!(await cogerHacha())) return { ok: false, motivo: 'sin hacha' };
+        if (!(await cogerHacha())) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `sin hacha: ${h.motivo}` }; }
         await J.andar(a.x + 1, a.z);
         let t, g = 0;
-        do { t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++; if (t.ok && !t.datos.cae) await pausa(550); } while (t.ok && !t.datos.cae && g < 80);
+        do {
+          t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++;
+          if (t.ok && t.datos.seRompe) {
+            hachasRotas.push({ edad, golpe: g, usado: t.datos.desgaste?.usado, enMano: s.objetos.invs.de(yo).cuantos('hacha_piedra') > 0 });
+            if (!t.datos.cae) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `se le rompe el hacha y no se hace otra: ${h.motivo}` }; await J.andar(a.x + 1, a.z); }
+          }
+          if (t.ok && !t.datos.cae) await pausa(550);
+        } while (t.ok && !t.datos.cae && g < 80);
         if (t.ok && t.datos.cae) { tocones.push(a); return { ok: true, a, golpes: g }; }
       }
       return { ok: false, motivo: 'ningún árbol cae' };
@@ -875,6 +933,7 @@ try {
     console.log('16f. Para las cuerdas de la puerta y del andamio: tala un árbol adulto, lo tronza, levanta un banco de tronco y trenza 3 cuerdas');
     const ad = await talar('adulto');
     comprobar('tala un árbol adulto con su hacha de piedra (despacio)', ad.ok, `${ad.motivo || ''} ${ad.golpes || ''} golpes`);
+    comprobar('el hacha de piedra se le rompe de tanto talar (168 golpes: 16 jóvenes y parte del adulto), sale de la mano, y se hace otra', hachasRotas.length === 1 && hachasRotas[0].edad === 'adulto' && hachasRotas[0].usado === 168 && !hachasRotas[0].enMano && ad.ok, JSON.stringify(hachasRotas));
     const largo = ad.ok && enSuelo('tronco_largo', ad.a, 6)[0];
     let golpes = 0, tz = { ok: false, motivo: 'no hay tronco largo' };
     if (largo) {

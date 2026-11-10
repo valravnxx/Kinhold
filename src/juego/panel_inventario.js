@@ -12,6 +12,7 @@
 // verdad), hace de mundo: de él se coge y en él se deja.
 import { CATALOGO, pila, MATERIAL_DE_OBJETO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { nombrePrenda, rasgosPrenda } from '../logica/hechura.js';
+import { desgasteDe } from '../logica/desgaste.js';
 import { PRENDAS } from '../logica/prendas.js';
 import { RECETAS, PARA } from '../logica/fabricacion.js';
 import { svgPrenda } from './iconos_ropa.js';
@@ -249,6 +250,9 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const chips = [tr(NOMBRE_TAM[d.tam]), ...(c.n > 1 ? [`× ${c.n}`] : []), ...(d.huecos ? [tr('{n} huecos', { n: d.huecos.length })] : []),
       ...(PRENDAS[c.tipo] ? [tr('{p} kg', { p: PRENDAS[c.tipo].peso })] : [])].map(t => `<span class="fab-chip">${esc(t)}</span>`).join('');
     const dentro = enInv && c.dentro && c.dentro.some(Boolean) ? `<p class="inv-nota">${tr('Lleva cosas dentro: van con él.')}</p>` : '';
+    // lo que le queda a lo que se gasta (herramientas y armas, 10 nov; src/logica/desgaste.js): al acabarse, se rompe
+    const dg = desgasteDe(c);
+    const gasto = dg ? `<p class="eq-desgaste"><span>${esc(tr('Le quedan {q} usos de {v}', { q: dg.queda, v: dg.vida }))}</span><span class="fab-barra eq-barra${dg.fraccion <= 0.2 ? ' eq-poco' : ''}"><i style="width:${Math.round(dg.fraccion * 100)}%"></i></span></p>` : '';
     const para = PARA_TIPO[c.tipo] ? `<p class="fab-para">${esc(tr(PARA_TIPO[c.tipo]))}</p>` : '';
     const btn = (cls, txt, prim = false) => `<button class="${cls} ${prim ? 'fab-btn' : 'fab-btn2'}">${esc(txt)}</button>`;
     const botones = [
@@ -262,7 +266,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     ].join('');
     const pista = aSuelo ? tr('Es enorme: no se lleva encima. Déjalo en el suelo y arrástralo.') : enInv ? tr('O toca otro sitio de tu equipo para llevarlo allí.') : tr('Cógelo con las manos o toca un hueco donde guardarlo.');
     caja.innerHTML = `<button class="eq-sel-cerrar" aria-label="✕"></button>${imagen(c.tipo, c, true)}<h3 class="fab-titulo">${esc(nombreDe(c))}</h3>
-      <p class="eq-donde">${esc(enInv ? dondeEsta(sel.ruta) : tr('En el arcón de pruebas.'))}</p>${para}<div class="fab-chips">${chips}</div>${dentro}
+      <p class="eq-donde">${esc(enInv ? dondeEsta(sel.ruta) : tr('En el arcón de pruebas.'))}</p>${para}<div class="fab-chips">${chips}</div>${gasto}${dentro}
       <div class="fab-acciones inv-botones">${botones}</div><p class="inv-nota">${esc(pista)}</p>`;
   }
 
