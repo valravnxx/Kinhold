@@ -30,9 +30,9 @@ const HUESOS = {
 };
 // las animaciones del juego y la de Meshy que hace de cada una (por sexo, si cambia)
 export const CLIPS_MESHY = {
-  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'Heavy_Hammer_Swing',
+  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'mov_talar',
   guardia: 'Combat_Stance', golpe: 'Right_Hand_Sword_Slash', parar: 'Sword_Parry', cargar: 'mov_cargar_brazos', recoger: 'Collect_Object',
-  minar: 'Heavy_Hammer_Swing', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
+  minar: 'mov_picar', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
   cogerDeMesa: 'Female_Crouch_Pick_Up_Place_Side', agacharse: 'Male_Bend_Over_Pick_Up', comer: 'Stand_and_Drink', abrirCofre: 'open_door',
   golpeLigero1: 'Left_Slash', golpeLigero2: 'Thrust_Slash', golpePesado1: 'Charged_Upward_Slash', pararDos: 'Two_Handed_Parry', bloquear: 'Block1',
   rodar: 'Roll_Dodge', esquivar: 'Stand_Dodge', empujado: 'Hit_Reaction', derribado: 'Knock_Down', morir: 'dying_backwards', muerto: 'Dead',

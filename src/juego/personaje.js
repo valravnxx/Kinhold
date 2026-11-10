@@ -101,6 +101,7 @@ export function empunar(mh, modelo) {
   // la mano tiene la escala del esqueleto: la herramienta se deja a su tamaño de verdad
   const e = new THREE.Vector3(); mano.getWorldScale(e); modelo.scale.divideScalar(e.x || 1);
   modelo.visible = false;
+  modelo.userData.agarreUnaMano = { p: modelo.position.clone(), q: modelo.quaternion.clone(), s: modelo.scale.clone() };
   // no es del cuerpo: los niveles de detalle (src/personajes/detalle.js) no la tocan ni la cuentan
   modelo.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
   mano.add(modelo);
@@ -250,13 +251,35 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   };
   j.animar = (...a) => {
     animarCuerpo(...a);
-    // con el hacha o el pico trabajando, la mano izquierda también en el mango, más arriba que la derecha (los de Meshy)
+    // con el hacha o el pico trabajando (los de Meshy, con la animación a dos manos): el mango pasa por las dos manos en
+    // cada fotograma, la izquierda junto al pomo, la cabeza más allá de la derecha y el filo hacia delante (antes iba fijo a
+    // la mano derecha y la cabeza se metía en la del personaje: lo vio la revisión de las capturas)
     if (j.mh && j.mh.meshy && j.hacha && j.hacha.visible && (j.modo === 'talar' || j.modo === 'minar') && j.mh.hueso.agarre_l && !globalThis.__unaMano) {
-      const h = j.mh.hueso, b = { sup: h.upperarm_l, inf: h.lowerarm_l, mano: h.hand_l, nudillo: h.agarre_l };
+      const h = j.mh.hueso, mano = h.hand_r;
       j.raiz.updateMatrixWorld(true);
-      const p = j.hacha.localToWorld(new THREE.Vector3(0, 0.2, 0));
-      const lado = new THREE.Vector3().subVectors(h.upperarm_l.getWorldPosition(new THREE.Vector3()), h.upperarm_r.getWorldPosition(new THREE.Vector3())).normalize();
-      nudillosA(b, p, lado.multiplyScalar(0.6).add(new THREE.Vector3(0, -1, 0)));
+      const aR = h.agarre_r.getWorldPosition(new THREE.Vector3()), aL = h.agarre_l.getWorldPosition(new THREE.Vector3());
+      // el mango, de la mano izquierda (junto al pomo) a la derecha, y la cabeza más allá; con las manos muy juntas la línea
+      // entre ellas no vale y se sigue con la de antes (guardada respecto a la mano derecha, para que gire con ella)
+      const y = aR.clone().sub(aL);
+      const giroMano = new THREE.Quaternion(); mano.getWorldQuaternion(giroMano);
+      if (y.length() >= 0.1) { y.normalize(); j.hacha.userData.ejeLocal = y.clone().applyQuaternion(giroMano.clone().invert()); }
+      else if (j.hacha.userData.ejeLocal) y.copy(j.hacha.userData.ejeLocal).applyQuaternion(giroMano);
+      if (y.lengthSq() > 1e-6) {
+        y.normalize();
+        const z = new THREE.Vector3(0, 0, 1).transformDirection(j.raiz.matrixWorld); z.addScaledVector(y, -z.dot(y));
+        if (z.lengthSq() < 1e-6) z.set(0, 1, 0).addScaledVector(y, -y.y);
+        z.normalize();
+        const x = new THREE.Vector3().crossVectors(y, z);
+        const mundo = new THREE.Matrix4().makeBasis(x, y, z).setPosition(aL.clone().addScaledVector(y, 0.05)); // a 5 cm del origen (el pomo está a −0,1)
+        const local = mano.matrixWorld.clone().invert().multiply(mundo);
+        local.decompose(j.hacha.position, j.hacha.quaternion, j.hacha.scale);
+        const e = new THREE.Vector3(); mano.getWorldScale(e); j.hacha.scale.set(1 / e.x, 1 / e.y, 1 / e.z);
+        j.hacha.userData.aDosManos = true;
+      }
+    } else if (j.hacha && j.hacha.userData.aDosManos && j.hacha.userData.agarreUnaMano) {
+      // de vuelta a una mano: como lo puso empunar
+      j.hacha.userData.aDosManos = false;
+      j.hacha.position.copy(j.hacha.userData.agarreUnaMano.p); j.hacha.quaternion.copy(j.hacha.userData.agarreUnaMano.q); j.hacha.scale.copy(j.hacha.userData.agarreUnaMano.s);
     }
     // las manos cerradas en O sobre lo que agarran (el hacha o lo que va en la mano, el tronco al hombro, la carretilla,
     // lo que se lleva en brazos); abiertas si no
