@@ -1,0 +1,32 @@
+# Encargos a Meshy (valravnx, 10 nov: el arte del juego, con Meshy; herramientas/meshy/). Desde las sesiones no se llega a
+# api.meshy.ai, así que los encargos van por aquí: se sube una rama meshy-pedido/<id> con el encargo en
+# herramientas/meshy/pedido.json y esto lo hace con la clave MESHY_API_KEY (un secreto del repositorio que puso
+# valravnx; nunca va en un archivo). Lo que sale vuelve por la rama meshy/<ejecución>.
+# Por ahora solo «saldo»: comprueba que la clave está y cuántos créditos quedan.
+name: meshy
+run-name: ${{ github.ref_name }}
+on:
+  push:
+    branches: ['meshy-pedido/**']
+permissions:
+  contents: write
+jobs:
+  encargo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: La clave y el saldo
+        env:
+          MESHY_API_KEY: ${{ secrets.MESHY_API_KEY }}
+        run: |
+          if [ -z "$MESHY_API_KEY" ]; then echo "FALTA la clave: no hay secreto MESHY_API_KEY"; echo "sin clave" > saldo.txt; else
+            codigo=$(curl -sS -o r.json -w '%{http_code}' -H "Authorization: Bearer $MESHY_API_KEY" https://api.meshy.ai/openapi/v1/balance)
+            echo "respuesta $codigo"; cat r.json; echo
+            echo "http $codigo $(cat r.json)" > saldo.txt
+          fi
+      - name: Devolver lo que sale
+        run: |
+          git config user.name "meshy (GitHub Actions)"; git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan "meshy/${{ github.run_id }}"; git rm -rfq . ; git add saldo.txt
+          git commit -qm "Meshy: saldo"; git push -q origin "HEAD:meshy/${{ github.run_id }}"
+          git push -q origin --delete "${{ github.ref_name }}" || true

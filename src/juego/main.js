@@ -21,7 +21,7 @@ import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
-import { CAZA, SE_LANZA } from '../logica/caza.js';
+import { armaDeMano } from '../logica/arma_mano.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
@@ -1587,8 +1587,6 @@ function accionPrincipal() {
   if (ob && !subirAndamio) return accionObra(ob);
   // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
   if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
-  // con la lanza en la mano y una liebre a tiro delante, Usar la lanza hacia ella (P4)
-  if (!it && pj.k === 0 && lanzaEnMano() && liebreATiro()) { const l = liebreATiro(); return A(tr('Lanzar la lanza'), 'lanza_endurecida', l, lanzar, { alto: 0.4 }); }
   // con la lasca encima y una liebre cazada a tus pies, despiezarla (9 nov)
   if (!it && pj.k === 0 && inventario().cuantos('lasca_silex') > 0 && liebreAlLado()) { const l = liebreAlLado(); return A(tr('Despiezar la liebre'), 'liebre', l, despiezar, { alto: 0.2 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
@@ -1706,8 +1704,6 @@ function opcionesUsar() {
     const db = desbrozableCercano();
     if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
   }
-  // con la lanza en la mano, lanzarla hacia donde miras (o a la liebre que tengas a tiro delante) (P4)
-  if (pj.k === 0 && lanzaEnMano()) ops.push({ texto: tr('Lanzar la lanza'), pos: liebreATiro() || { x: pj.x + Math.sin(pj.rot) * 3, z: pj.z + Math.cos(pj.rot) * 3 }, alto: 0.4, hacer: lanzar });
   // la liebre cazada a tus pies: despiezarla (con la lasca; sin ella, el servidor dice qué falta) (9 nov)
   if (pj.k === 0 && liebreAlLado()) ops.push({ texto: tr('Despiezar la liebre'), pos: liebreAlLado(), alto: 0.2, hacer: despiezar });
   // lo que llevas de comer (P4)
@@ -1818,29 +1814,6 @@ function usarInteractivo(it) {
 // Beber del río con las manos (P4; src/logica/necesidades.js): con agua a tu lado (río, lago o mar) y en el suelo. En
 // línea, el trago lo da el servidor (mira dónde te tiene y si hay agua ahí); sin servidor (las pruebas), aquí.
 const aguaAlLado = () => !!mundoJ && pj.k === 0 && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z);
-// Cazar (P4, 9 nov; src/logica/caza.js): con la lanza endurecida en la mano, se lanza hacia donde miras; si delante (a
-// menos de 30° y de su alcance) hay una liebre, hacia ella. El servidor la echa a volar y decide si acierta; dónde cae
-// la lanza (y la liebre muerta) llega con el suelo. Decisión provisional (registro y diario): el cono de 30°, para que
-// en el móvil se pueda apuntar sin precisión de ratón; la liebre que huye puede escaparse igual.
-function lanzaEnMano() { const inv = inventario(); for (const r of ['mano:der', 'mano:izq']) { const c = inv.lugares[r]; if (c && SE_LANZA.has(c.tipo)) return r; } return null; }
-function liebreATiro(cono = 0.52) {
-  if (!fauna) return null;
-  let mejor = null;
-  for (const [id, l] of fauna.liebres) {
-    const d = Math.hypot(l.x - pj.x, l.z - pj.z);
-    if (d > CAZA.ALCANCE || d < 0.8) continue;
-    let a = Math.atan2(l.x - pj.x, l.z - pj.z) - pj.rot; a = Math.atan2(Math.sin(a), Math.cos(a));
-    if (Math.abs(a) <= cono && (!mejor || d < mejor.d)) mejor = { id, x: l.x, z: l.z, d };
-  }
-  return mejor;
-}
-function lanzar() {
-  const de = lanzaEnMano();
-  if (!de) { mostrarAviso(tr('Necesitas la lanza en la mano para lanzarla.'), true); return; }
-  if (!objetosRed) { mostrarAviso(tr('Sin conexión con el servidor.'), true); return; }
-  const l = liebreATiro(); if (l) pj.rot = Math.atan2(l.x - pj.x, l.z - pj.z);
-  objetosRed.mandar({ tipo: 'lanzar', de, x: pj.x, z: pj.z, dir: pj.rot }, (r) => { if (!r.ok) mostrarAviso(tr(r.motivo), true); });
-}
 function beber() {
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
@@ -2661,10 +2634,14 @@ function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : 
 // hasta que los hubo, era lo que había en el suelo de tu tierra. Sin servidor (las pruebas de navegador), lo que hay en
 // el arcón de pruebas, como antes.
 let htmlMateriales = null;
+// El contador de arriba (lo almacenado en tu tierra), plegado (valravnx, 9 nov: «desplegable y nunca fijo, porque tapa
+// mucha pantalla sobre todo en móvil»): una placa pequeña con el total; tocándola se despliega la lista y se vuelve a
+// plegar. Siempre empieza plegado.
+let materialesAbierto = false;
 function pintarMateriales() {
   const m = $('materiales');
-  let html = '';
-  if (!enLinea) html = `<span>${tr('En el arcón:')}</span>` + Object.entries(MATERIALES).map(([k, n]) => `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`).join('');
+  let html = '', titulo = '', total = 0;
+  if (!enLinea) { titulo = tr('En el arcón:'); html = Object.entries(MATERIALES).map(([k, n]) => { total += mundo.materiales[k] ?? 0; return `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`; }).join(''); }
   else {
     const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null;
     const esMio = (x, z) => zona !== null && mundo.tierraDe(x, z) === zona;
@@ -2673,13 +2650,20 @@ function pintarMateriales() {
       for (const e of Object.values(fabCliente.estaciones)) if (esAlmacen(e.tipo) && !e.obra && esMio(e.x, e.z))
         for (const [k, n] of Object.entries(e.deposito || {})) hay[k] = (hay[k] || 0) + n;
       const ks = Object.keys(hay).filter(k => CATALOGO[k]).sort((a, b) => hay[b] - hay[a]);
-      html = `<span>${tr('En tu tierra:')}</span>` + (ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
-        : `<span>${tr('aún no tienes nada almacenado')}</span>`);
+      titulo = tr('En tu tierra:'); total = ks.reduce((t, k) => t + hay[k], 0);
+      html = ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
+        : `<span>${tr('aún no tienes nada almacenado')}</span>`;
     }
   }
+  if (html) html = `<button type="button" class="mat-cab" aria-expanded="${materialesAbierto}">${titulo.replace(/:$/, '')} <b>${total}</b><i class="fl"></i></button><div class="mat-lista">${html}</div>`;
   if (html !== htmlMateriales) { htmlMateriales = html; m.innerHTML = html; }
+  m.classList.toggle('abierto', materialesAbierto);
   m.hidden = !html;
 }
+$('materiales').addEventListener('click', (e) => {
+  if (!e.target.closest('.mat-cab')) return;
+  materialesAbierto = !materialesAbierto; htmlMateriales = null; pintarMateriales();
+});
 let ultimoMateriales = 0;
 
 // ---------------- La acción, a la vista (estudio de la interfaz del 7 nov) ----------------
@@ -2898,6 +2882,8 @@ const combate = crearCombateMundo({
   // el duelo con lo que llevas (7 nov): lo que frena un golpe sale de las prendas que llevas puestas; en línea las pone
   // el servidor, de su inventario (esto es solo la copia del navegador hasta que llega su foto)
   prendasActuales: () => puestasDe(inventario().lugares),
+  // y el arma, lo que llevas en la mano (valravnx, 9 nov; src/logica/arma_mano.js)
+  armaMano: () => armaDeMano(inventario().lugares), lugares: () => inventario().lugares,
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
   registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
   red: () => enLinea,   // en línea, lo que haces con el arma va también al servidor (pelear con los demás)
@@ -3193,7 +3179,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
-  beber, aguaAlLado, comer, lanzar, liebreATiro, accionPrincipal, despiezar, liebreAlLado,
+  beber, aguaAlLado, comer, accionPrincipal, despiezar, liebreAlLado,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)

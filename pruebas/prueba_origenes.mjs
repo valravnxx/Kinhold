@@ -18,7 +18,6 @@ import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.j
 import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON } from '../src/logica/tala.js';
 import { TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
-import { SE_LANZA } from '../src/logica/caza.js';
 
 const MUTAR = process.env.MUTAR;
 let bien = 0, mal = 0;
@@ -57,8 +56,8 @@ for (let nuevo = true; nuevo;) {
   // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto
   if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
-  // la caza (9 nov; src/logica/caza.js): con una lanza que se pueda tener, la liebre (entera, para despiezarla)
-  if (tieneAlguna([...SE_LANZA]) && poner('liebre', 'cazar con la lanza')) nuevo = true;
+  // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
+  if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;
   for (const [t, d] of Object.entries(TROCEO)) if (hay.has(t) && tieneAlguna(Object.keys(HACHAS)) && poner(d.da, `${d.accion} un ${t}`)) nuevo = true;
   for (const [e, d] of Object.entries(ESTACIONES)) if (estacionHecha(e) && poner('est_' + e, 'se levanta')) nuevo = true;
   for (const [k, r] of Object.entries(RECETAS)) {

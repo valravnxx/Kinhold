@@ -5816,5 +5816,51 @@
   "pruebas": "La prueba de la acción a la vista, aquí, en PC y móvil (en el móvil sin etiqueta ni lista hasta mantener pulsado; en PC la lista con Alt): bien. Sin batería en la nube (cambio pequeño de interfaz).",
   "capturas": "capturas/demo-v166",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T09:14:00+01:00",
+  "fin": "2026-11-09T09:21:38+01:00",
+  "titulo": "Interfaz: el contador de arriba plegado y lo del móvil más pequeño (demo v167)",
+  "hito": "interfaz",
+  "hecho": [
+   "El contador de lo almacenado en tu tierra va plegado (valravnx, 9 nov: «desplegable y nunca fijo»): una placa pequeña con el total; tocándola se despliega la lista. Siempre empieza plegado.",
+   "En el móvil, más pequeños el botón de acción (de 96 a 74 px), Fabricar y Construir (de 56 a 44), la barra de abajo (huecos de 50 a 40) y los avisos de las necesidades (de 36 a 30)."
+  ],
+  "pruebas": "Aquí: la prueba de la acción a la vista en PC y móvil (bien) y capturas del contador plegado y desplegado en PC y móvil. La de los almacenajes, puesta al día para el contador plegado (no pasada: es de dos páginas en línea). Sin batería en la nube (cambio pequeño de interfaz).",
+  "capturas": "capturas/demo-v167",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-09T05:22:57+00:00",
+  "fin": "2026-11-09T08:32:50+00:00",
+  "titulo": "Un primer día: despiezar y asar la liebre (a medias)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Hecho en la rama trabajo/20261109-0522, sin publicar: despiezar la liebre con la lasca (carne cruda y piel), asar la carne al fuego, la asada sacia más, la carne cruda se estropea por el servidor; modelos de la carne e iconos v15; la honda y el odre vuelven (ya hay piel).",
+   "Falla el recorrido de jugador en su paso nuevo: tras morir de sed se le rompe la lasca y, al tallar otra, no llega a dejar la piedra en la piedra de tallar; sin lasca no despieza. El paso ya apunta qué pasa al traer y dejar cada cosa."
+  ],
+  "pruebas": "Lógica (despiezar y asar, fabricar, inventario, suelo, de dónde sale cada cosa, la piel, traducciones) bien; navegador de despiezar y asar en la nube, bien; el recorrido falla en su paso 21 (la lasca nueva). No comprobado: la prueba de navegador rota a propósito.",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-09T05:49:18+00:00",
+  "fin": "2026-11-09T08:44:08+00:00",
+  "titulo": "P4: el modo arma, con lo que llevas en la mano (y lanzar la lanza y la piedra apuntando)",
+  "hito": "supervivencia",
+  "hecho": [
+   "valravnx, en la sesión: en el modo arma salía siempre la espada larga de pruebas, y la caza por Usar de la v165 (con el acierto decidido aparte) no le gustaba: el modo arma tiene que emplear lo que llevas en la mano, y la lanza lanzarse apuntando, con desvío y poca fuerza. Prioridad absoluta",
+   "El arma es lo de la mano (src/logica/arma_mano.js): las hachas y la lasca cortan, el mazo de piedra golpea, el palo cavador, la vara, la rama y la antorcha son palo, la lanza endurecida clava; con las manos vacías o con algo que no es un arma, puños (lo eligió valravnx). La pone el servidor desde tu inventario (ya no la elige el navegador) y se ve en tu mano, también para los demás. Fuera la espada de pruebas, también del rival de práctica (con palo)",
+   "Lanzar por el mismo combate (tensar y soltar, como el arco y las piedras del duelo de antes): Espacio mantenido en PC, el botón «Lanzar» en el móvil; se apunta con la mira y al soltar sale hacia allí con algo de desvío; vuela por el servidor (todos lo ven volar) y da a quien alcanza o a una liebre (la mata y queda en el suelo). Lo lanzado sale de la mano y queda en el suelo donde cae, la lanza y la piedra (valravnx: «la piedra sí queda en el suelo, igual que con la lanza»)",
+   "Lo lanzado vuela sobre el terreno de verdad (las alturas, sobre el suelo de cada sitio): un talud entre tú y la liebre para la lanza, que va baja",
+   "Fuera la caza por Usar de la v165 (src/logica/caza.js y su acción)",
+   "Recorrido de jugador: al final del día vuelve a la hoguera de la orilla, recoge la lanza que hizo, saca el arma, busca un sitio a 10 m de una liebre sin nada en medio, se la lanza y, si falla, va a por la lanza y vuelve a probar; alguna le da",
+   "Arreglado de paso: en el móvil, con el arma sacada, los botones redondos de Usar y Construir de la barra nueva quedaban encima de las rosas de atacar y parar; ahora se esconden",
+   "Los bots de las pruebas de carga pelean a puños (más cerca, a 0,8 m)",
+   "Decisiones provisionales en el registro de la demo (v168): qué es cada cosa como arma, el alcance y el daño de los puños y del hacha, la fuerza y el desvío de la lanza lanzada y el impulso",
+   "Aún mal: no hay animación propia de lanzar (el brazo se echa atrás y adelante); de cerca, la liebre muerta se ve hecha de piezas; sin tarjeta gráfica, las capturas del juego no cogen la lanza en el aire ni dejan ver la liebre cazada (se publican las del modo arma con la lanza)"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la prueba nueva del arma de la mano y del lanzar, rota a propósito —el arma no sale de la mano—: falla; las del combate y de las tierras del rey, puestas al día: el arma ya no se elige con «equipar»), recorrido entero (con la caza en el modo arma), combate en el mundo, pelear en cualquier sitio, desconectarse y las liebres, bien. La de navegador del modo arma y la caza, aquí (PC y móvil, bien; rota a propósito —el arma no mira la mano—: falla) después de arreglar dos cosas que la nube sacó: el navegador mandaba el punto apuntado sin su altura cuando su copia creía flojo el tiro (con pocos fotogramas), y la prueba tiene que volver a acercarse a la liebre antes de cada lanzamiento. Tras unir main (solo textos a mano), lógica del arma, del combate y de la fauna otra vez aquí, bien",
+  "capturas": "capturas/demo-v168",
+  "estado": "ok"
  }
 ]

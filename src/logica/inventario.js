@@ -88,7 +88,7 @@ export const CATALOGO = {
   vara: R('Vara', 'M'), cuerda: R('Cuerda', 'P'), tabla: R('Tabla', 'M'), clavo: R('Clavo', 'P'),
   barra_hierro: R('Barra de hierro', 'M'), teja: R('Teja', 'P'),
   // de los animales, el campo y el agua
-  liebre: R('Liebre', 'M'),   // (9 nov) la cazada con la lanza (src/logica/caza.js), entera: se despieza
+  liebre: R('Liebre', 'M'),   // (9 nov) la cazada lanzando la lanza en el modo arma, entera: se despieza
   // (9 nov) lo que da la liebre al despiezarla (src/logica/comida.js): la carne cruda se estropea; asada, sacia más
   carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'),
   piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),

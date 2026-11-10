@@ -1561,6 +1561,18 @@
      "fin": "2026-11-09T04:43:12+00:00"
     },
     {
+     "nombre": "El modo arma emplea lo que llevas en la mano (valravnx, 9 nov: «prioridad absoluta»; hoy siempre sale la espada larga): el servidor saca el arma del inventario (fuera elegirla desde el navegador), y en la mano se ve lo que llevas; con las manos vacías o con algo que no es un arma, puños. Las hachas y el cuchillo cortan, el mazo de piedra golpea, el palo cavador, la vara y la rama son palo; la lanza endurecida clava (la estocada es la suya). Fuera la espada larga de pruebas, también del rival de práctica",
+     "estado": "hecho",
+     "inicio": "2026-11-09T05:53:59+00:00",
+     "fin": "2026-11-09T08:44:08+00:00"
+    },
+    {
+     "nombre": "Lanzar la lanza endurecida apuntando, en el modo arma (valravnx, 9 nov: «lanzarla tú apuntando… que tenga algo de desvío, que no tenga mucha fuerza»): se apunta con la mira (PC: botón de lanzar mantenido y soltar; móvil: su botón), sale con desvío y poca fuerza, vuela por el servidor (todos la ven), hiere a quien da y mata la liebre a la que alcanza, y cae al suelo para recogerla. Fuera la caza por Usar de la v165 (src/logica/caza.js). Recorrido: el jugador hace la lanza, la saca en el modo arma y caza una liebre lanzándola",
+     "estado": "hecho",
+     "inicio": "2026-11-09T05:53:55+00:00",
+     "fin": "2026-11-09T08:44:08+00:00"
+    },
+    {
      "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca de sílex (carne cruda y piel pequeña: el origen de la piel, que hoy no tiene, en pruebas/prueba_origenes.mjs); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
      "estado": "en_curso",
      "inicio": "2026-11-09T05:22:57+00:00",
@@ -1620,7 +1632,9 @@
     },
     {
      "nombre": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-09T09:09:01+01:00",
+     "rama": "trabajo/20261109-0909"
     },
     {
      "nombre": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
@@ -1726,7 +1740,8 @@
     },
     {
      "nombre": "El arma de la mano en el combate sale del inventario (hoy siempre es la espada larga) y el servidor lo comprueba",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "fin": "2026-11-09T08:44:08+00:00"
     },
     {
      "nombre": "El servidor guarda los objetos sin reescribir el archivo entero en cada acción (cada hachazo) y sin bloquear",
@@ -3752,6 +3767,20 @@
      "archivo": "jugar/demo/v166.html",
      "capturas": "capturas/demo-v166",
      "notas": "Nada que salga solo sobre las cosas: en el móvil, ningún cuadro de texto mientras juegas (lo dice el botón de acción grande y el aro en el suelo), y lo demás que puedes hacer, manteniendo pulsado el botón de acción; en PC, la lista, con Alt o el clic derecho."
+    },
+    {
+     "v": "v167",
+     "fecha": "2026-11-09",
+     "archivo": "jugar/demo/v167.html",
+     "capturas": "capturas/demo-v167",
+     "notas": "El contador de arriba, plegado: una placa pequeña con el total de lo que tienes almacenado en tu tierra, que se despliega al tocarla. En el móvil, más pequeños el botón de acción, Fabricar y Construir, la barra de abajo y los avisos de las necesidades, para que tapen menos."
+    },
+    {
+     "v": "v168",
+     "fecha": "2026-11-09",
+     "archivo": "jugar/demo/v168.html",
+     "capturas": "capturas/demo-v168",
+     "notas": "El modo arma emplea lo que llevas en la mano (fuera la espada de pruebas): puños, hacha, mazo, palo, cuchillo, lanza; la lanza clava y se lanza apuntando (Espacio o el botón Lanzar), con poca fuerza y algo de desvío, y caza liebres; las piedras también se lanzan; lo lanzado queda en el suelo"
     }
    ]
   },

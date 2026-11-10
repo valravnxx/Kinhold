@@ -57,8 +57,8 @@ export function montarAvisos(op = {}) {
 #fichaNec .sentarse kbd{font:11px system-ui,sans-serif;border:1px solid rgba(241,232,216,.4);border-radius:3px;padding:0 4px;margin-left:6px;opacity:.8}
 @media (max-width:640px){
   #avisosNec{flex-direction:row;transform:none;gap:6px}
-  #avisosNec .aviso-nec{width:36px;height:36px}
-  #avisosNec .aviso-nec svg{width:20px;height:20px}
+  #avisosNec .aviso-nec{width:30px;height:30px}   /* (más pequeños en el móvil: valravnx, 9 nov) */
+  #avisosNec .aviso-nec svg{width:17px;height:17px}
   #fichaNec{right:calc(10px + env(safe-area-inset-right,0px));width:min(260px,calc(100vw - 20px))}
 }`;
   document.head.appendChild(estilo);

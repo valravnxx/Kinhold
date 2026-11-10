@@ -2,7 +2,7 @@
 // cae → despiezar con cuchillo → productos → la carne se estropea con el tiempo si no se cocina o se conserva»; GDD,
 // cocina: lo cocinado sacia más). Lógica pura (sin three.js ni navegador): la lleva el servidor y la usan las pruebas.
 //
-// - Despiezar: la liebre cazada (src/logica/caza.js) se despieza con las manos llevando la lasca de sílex (que no se
+// - Despiezar: la liebre cazada (lanzando la lanza en el modo arma) se despieza con las manos llevando la lasca de sílex (que no se
 //   gasta): da 1 carne cruda y 1 piel (la «piel pequeña» del documento es la piel del catálogo). Es una receta de las
 //   manos (src/logica/fabricacion.js, despiezar_liebre), así que vale la liebre que llevas o la del suelo a tu lado.
 // - Asar: la carne cruda, al fuego (la hoguera o el hogar), da carne asada (receta asar_carne).

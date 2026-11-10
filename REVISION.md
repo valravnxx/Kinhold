@@ -6,6 +6,18 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 10 nov 2026 (05:15 UTC) — valravnx, en una sesión de chat: el arte, con Meshy
+valravnx: «recuerda que el estilo del juego era de noseque en miniatura, no? no estamos consiguiendo ese estilo visual, solo un lowpoly generico y tirando a muy feo, asi que he decidido usar meshy para potenciar lo visual del juego». La dirección sigue siendo la «maqueta en miniatura» (formas limpias y redondeadas, luz suave, sombras de contacto, fondo desenfocado); lo que cambia es cómo se hace.
+Respuestas de valravnx: de Meshy sale **todo** (objetos y muebles, naturaleza, animales y piezas de construir); llegan **por la API, en automático** (su clave como secreto de GitHub, nunca en el repositorio); plan **Premium** (3.000 créditos al mes, los modelos son suyos); **cada modelo nuevo pasa por él** antes de entrar en el juego (capturas de cerca al lado de la referencia, como el estilo v5). Ya tiene hechos en Meshy el hombre y la mujer básicos, el mojón y alguna prueba más, y un prompt de estilo «miniatura» que le ha diseñado otra IA.
+→ En preparación (chat): la tubería de Meshy (generar, limpiar y probar cada modelo) y un hito nuevo con su prueba de estilo. Hasta que esté, lo de antes sigue igual.
+
+### 9 nov 2026 (05:49 UTC) — valravnx, en la sesión del carril A: el modo arma emplea lo que llevas en la mano; la lanza se lanza apuntando
+valravnx, tras la v165 (cazar con la lanza por Usar, con el acierto decidido por el servidor): «No me acaba de gustar eso de que el server decida si acierta, usar lanza y tal. Tenemos un modo combate […] aún hicimos un hito que está apuntado como hecho, de que el arma que se emplea es la que tienes en mano, pero sigues apretando el botón y sigue saliendo una espada larga de acero […] modo arma tendría que ser modo emplear el equipo que tengas en la mano. En ese caso, si tienes la lanza endurecida, pues poder lanzarla. Y lanzarla tú apuntando, obviamente. Y tú lanzándola, que tenga algo de desvío, que no tenga mucha fuerza porque es una lanza súper básica […] No creando sistemas nuevos como el que acabas de crear. […] le quitamos todo lo de la espada, que estaba muy bien para testear el modo de combate, pero ahora mismo hay que hacer un sistema que funcione. Encima me habías puesto que funcionaba […] y no se ha cambiado, así que ponlo con prioridad absoluta ahora mismo».
+→ Prioridad absoluta. El modo arma emplea lo que llevas en la mano (fuera la espada de pruebas). Con la lanza endurecida en la mano, en el modo arma se lanza apuntando el jugador, con algo de desvío y poca fuerza, por el mismo camino del combate (no un sistema aparte). Se quita la caza por Usar de la v165.
+Respuestas de valravnx (05:58 UTC): la lanza, «clavar y lanzar» (las cuatro direcciones, con la estocada como la suya, y además lanzarla apuntando); con las manos vacías o con algo que no es un arma, «puños». → Dos tareas nuevas en «Un primer día con sentido», delante de despiezar: el modo arma con lo de la mano, y lanzar la lanza apuntando. Las lleva el chat.
+Y a mitad (06:00 UTC): «añade: con piedra en mano, se puede lanzar gastándola»; luego (06:50 UTC): «la piedra sí queda en el suelo, igual que con la lanza, queda donde cae». → Con piedras en la mano, en el modo arma se lanzan de una en una, y cada una sale de la mano y queda en el suelo donde cae.
+
+
 ### 8 nov 2026 (18:35 UTC) — por el chat: apruebo P3
 valravnx: «aprueba» (tras la revisión completa de P3 «De nada a una casa», que el carril A pasó a revisión).
 → P3 «De nada a una casa» pasa a hecho.

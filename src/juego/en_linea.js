@@ -99,13 +99,13 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   function dibujarCombate(r, e, f, asp, dt) {
     if (!r.comb) {
       const m = crearCombatiente({ armadura: f.armadura, colorCinta: 0xb3923f, recursos, sexo: asp.sexo, capas: asp.capas, aspecto: asp.aspecto });
-      ponerArma(m, f.arma); m.userData.autor = e.autor;
+      ponerArma(m, f.arma, f.objeto || null); m.userData.autor = e.autor;
       escena.add(m);
-      r.comb = { m, L: new Luchador({ arma: f.arma, armadura: f.armadura }), foto: null, arma: f.arma, rastro: new Rastro(escena) };
+      r.comb = { m, L: new Luchador({ arma: f.arma, armadura: f.armadura }), foto: null, arma: f.arma + '|' + (f.objeto || ''), rastro: new Rastro(escena) };
       r.j.raiz.visible = false;
     }
     const c = r.comb, L = c.L;
-    if (c.foto !== f) { c.foto = f; aplicarFoto(L, f); if (c.arma !== f.arma) { c.arma = f.arma; ponerArma(c.m, f.arma); } }
+    if (c.foto !== f) { c.foto = f; aplicarFoto(L, f); { const k = f.arma + '|' + (f.objeto || ''); if (c.arma !== k) { c.arma = k; ponerArma(c.m, f.arma, f.objeto || null); } } }
     L.x = e.x; L.z = e.z; if (!L.fuera) L.rot = e.giro;
     avanzarCopia(L, dt);
     c.m.position.set(e.x, e.y, e.z); c.m.rotation.y = L.rot;
