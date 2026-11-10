@@ -150,6 +150,9 @@ with sync_playwright() as p:
     pg.click(R('mano:der'))
     gasto = pg.inner_text('#panelInventario .eq-desgaste') if pg.locator('#panelInventario .eq-desgaste').count() else ''
     comprobar('la ficha del hacha dice cuánto le queda (18 usos de 168), con su barra en rojo', '18' in gasto and '168' in gasto and pg.locator('#panelInventario .eq-desgaste .eq-poco').count() == 1, gasto)
+    # y dónde se repara (10 nov): en la piedra de tallar, con un cordel dejado en ella
+    nota = pg.inner_text('#panelInventario .eq-sel') if pg.locator('#panelInventario .eq-sel').count() else pg.inner_text('#panelInventario')
+    comprobar('la ficha del hacha dice dónde y con qué se repara (la piedra de tallar, un cordel)', 'piedra de tallar' in nota and 'cordel' in nota.lower(), nota[:300])
     pg.screenshot(path=f'{SALIDA}/08_pc_ficha_desgaste.png')
     pg.click('#panelInventario .inv-dejar')
     pg.evaluate(f"{K}.inventario.lugares['mano:der'] = null; {K}.panelInventario.pintar()")   # (lo que sigue, con la mano libre)
@@ -241,6 +244,7 @@ with sync_playwright() as p:
     gasto = mv.inner_text('#panelInventario .eq-desgaste') if mv.locator('#panelInventario .eq-desgaste').count() else ''
     comprobar('móvil: la ficha del cuchillo dice cuánto le queda (300 usos de 400)', '300' in gasto and '400' in gasto, gasto)
     mv.screenshot(path=f'{SALIDA}/07_movil_ficha_desgaste.png')
+    comprobar('móvil: el cuchillo (de hierro) no dice que se repare aún', 'Se repara' not in mv.inner_text('#panelInventario'))
     mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
     mv.tap('#panelInventario .inv-cerrar')
     comprobar('el ✕ cierra el panel', not mv.is_visible('#panelInventario'))

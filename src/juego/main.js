@@ -22,6 +22,7 @@ import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
 import { armaDeMano } from '../logica/arma_mano.js';
+import { REPARAR, desgasteDe } from '../logica/desgaste.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
@@ -1504,6 +1505,17 @@ function pasoPuesto() {
     mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
   });
 }
+// Reparar en su puesto (10 nov): lo de la mano de, con lo depositado en el puesto e; lo hace el servidor
+function repararEn(e, de) {
+  hacerFabricacion({ tipo: 'reparar', estacion: e.id, de, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) {
+      const f = r.faltan && Object.entries(r.faltan).map(([t, n]) => `${n} ${tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase()}`).join(', ');
+      mostrarAviso(f ? tr('Falta dejar en el puesto: {c}.', { c: f }) : tr(r.motivo), true); return;
+    }
+    const rp = r.reparado;
+    mostrarAviso(rp ? tr('Reparado: {c}. Le quedan {q} usos de {v}.', { c: tr(CATALOGO[rp.objeto].nombre).toLowerCase(), q: rp.vida - rp.usado, v: rp.vida }) : tr('Reparado.'));
+  });
+}
 function usarFuego(e, a) {
   hacerFabricacion({ ...a, estacion: e.id, x: pj.x, z: pj.z }, (r) => {
     mostrarAviso(!r.ok ? tr(r.motivo) : r.avivada ? tr('Avivas el fuego: vuelve la llama.') : a.tipo === 'encender_fuego' ? tr('El fuego prende.') : a.tipo === 'brasas_fuego' ? tr('Cubres el fuego con su ceniza: queda en brasas.') : tr('Echas al fuego: 1 {c}.', { c: tr(CATALOGO[a.objeto].nombre).toLowerCase() }), !r.ok);
@@ -1677,6 +1689,11 @@ function opcionesUsar() {
       else ops.push({ texto: tr('Dormir: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => dormir(e) });
     } else {
       ops.push({ texto: tr(esAlmacen(e.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+      // reparar lo que llevas en la mano, gastado, en su puesto (10 nov; src/logica/desgaste.js): con lo depositado en él
+      for (const l of ['mano:der', 'mano:izq']) {
+        const c = inventario().lugares[l], d = c && desgasteDe(c);
+        if (d && d.usado && REPARAR[c.tipo] && REPARAR[c.tipo].uso === ESTACIONES[e.tipo].uso) ops.push({ texto: tr('Reparar: {c}', { c: tr(CATALOGO[c.tipo].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => repararEn(e, l) });
+      }
       // la hoguera: encenderla (con yesca y el taladro de fuego) y echarle una rama o una leña de lo que llevas
       if (ESTACIONES[e.tipo].fuego && e.fuego) {
         const st = estadoFuego(e.fuego, Date.now()), inv = inventario();

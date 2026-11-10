@@ -535,11 +535,11 @@ export class Fabricacion {
     if (e.obra) return { ok: false, motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
     const b = typeof de === 'string' ? inv.buscar(de) : { motivo: 'Ahí no hay nada.' };
     if (b.motivo || !b.cosa) return { ok: false, motivo: b.motivo || 'Ahí no hay nada.' };
-    const c = b.cosa, nombre = (CATALOGO[c.tipo] || {}).nombre || c.tipo;
-    if (!seRepara(c.tipo)) return { ok: false, motivo: `${nombre}: eso no se repara aquí.` };
+    const c = b.cosa;
+    if (!seRepara(c.tipo)) return { ok: false, motivo: 'Eso no se repara.' };
     const rp = REPARAR[c.tipo];
-    if (ESTACIONES[e.tipo].uso !== rp.uso) return { ok: false, motivo: `${nombre}: se repara en ${conQue(rp.uso)}.` };
-    if (!desgasteDe(c).usado) return { ok: false, motivo: `${nombre}: está como nuevo, no le hace falta.` };
+    if (ESTACIONES[e.tipo].uso !== rp.uso) return { ok: false, motivo: `Eso se repara en ${conQue(rp.uso)}.` };
+    if (!desgasteDe(c).usado) return { ok: false, motivo: 'Está como nuevo: no le hace falta.' };
     if (rp.requiere && !rp.requiere.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: textoRequiere(rp) };
     const f = cuentasEstacion(rp.gasta, e.deposito).faltan;
     if (Object.keys(f).length) return { ok: false, motivo: textoFaltan(f).replace('Te falta', 'Falta en la estación'), faltan: f };

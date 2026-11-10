@@ -45,6 +45,7 @@ import { idMata, idRoca, rompible, golpesRoca, piedrasRoca } from '../src/logica
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 import { ESTACIONES } from '../src/logica/fabricacion.js';
+import { VIDA as VIDA_DESGASTE } from '../src/logica/desgaste.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
 import { USAN_INVENTARIO } from '../src/logica/acciones.js';
 import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.js';
@@ -776,6 +777,50 @@ try {
       return f.ok && s.objetos.invs.de(yo).cuantos('hacha_piedra') > 0 ? { ok: true } : { ok: false, motivo: f.motivo || 'no tiene el hacha nueva' };
     };
 
+    // reparar el hacha antes de que se rompa (10 nov; src/logica/desgaste.js): en una piedra de tallar con un cordel
+    // dejado en ella, como haría un jugador: fibra para el cordel y una piedra para la piedra de tallar, junto a la casa
+    const reparaciones = [];
+    const repararHacha = async () => {
+      const taller = { x: r2(C.x - 4), z: r2(C.z + 4) };
+      if (!(await cogerHacha())) return { ok: false, motivo: 'no tiene el hacha' };
+      await J.andar(taller.x, taller.z);
+      const lh = manos.find(x => J.inv.lugares[x]?.tipo === 'hacha_piedra');
+      const otra = manos.find(x => x !== lh);
+      if (J.inv.lugares[otra]) await J.objeto({ tipo: 'soltar_suelo', de: otra, x: J.pos.x, z: J.pos.z });
+      for (const q of [...libres(aqui, 'ortiga'), ...libres(aqui, 'hierba_larga')].slice(0, 12)) { if (J.cuantos('fibra') >= 3) break; await coger(q); }
+      if (J.cuantos('fibra') < 3) return { ok: false, motivo: `solo ${J.cuantos('fibra')} de fibra` };
+      let f = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
+      if (!f.ok) return f;
+      adelantar();
+      f = await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
+      if (!f.ok) return f;
+      await J.andar(taller.x, taller.z);
+      const dist2 = e => Math.hypot(e.x - J.pos.x, e.z - J.pos.z);
+      let pt = Object.values(s.objetos.fab.estaciones).filter(e => e.tipo === 'piedra_tallar' && !e.obra && dist2(e) < 2.4).sort((a, b) => dist2(a) - dist2(b))[0];
+      if (!pt) {
+        const lc = manos.find(x => J.inv.lugares[x]?.tipo === 'cordel');
+        const ld = lc ? await J.objeto({ tipo: 'soltar_suelo', de: lc, x: J.pos.x, z: J.pos.z }) : { ok: false };
+        if (!ld.ok) return { ok: false, motivo: 'no deja el cordel' };
+        for (const q of libres(aqui, 'piedra').slice(0, 12)) { if (J.cuantos('piedra') >= 1) break; await coger(q); }
+        await J.andar(taller.x, taller.z);
+        const pp = await ponerPuesto('piedra_tallar', r2(J.pos.x + 0.8), J.pos.z);
+        if (!pp.ok) return pp;
+        pt = s.objetos.fab.estaciones[pp.id];
+        const o = enSuelo('cordel', J.pos, 2.5)[0];
+        const lb = manos.find(x => !J.inv.lugares[x]);
+        const c = o && lb ? await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: lb, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no encuentra su cordel' };
+        if (!c.ok) return c;
+      }
+      const lc = manos.find(x => J.inv.lugares[x]?.tipo === 'cordel');
+      const d = lc ? await J.objeto({ tipo: 'depositar_estacion', estacion: pt.id, de: lc, cantidad: 1, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no lleva el cordel' };
+      if (!d.ok) return d;
+      const antes = s.objetos.invs.de(yo).lugares[lh]?.usado || 0;
+      const rp = await J.objeto({ tipo: 'reparar', estacion: pt.id, de: lh, x: J.pos.x, z: J.pos.z });
+      if (!rp.ok) return rp;
+      reparaciones.push({ antes, despues: s.objetos.invs.de(yo).lugares[lh]?.usado || 0, datos: rp.datos?.reparado, gasta: rp.datos?.usado?.estacion });
+      return { ok: true };
+    };
+
     // talar el árbol (joven o adulto) más cercano que quede en pie; lo que deja, al suelo
     const taladas = new Set(), tocones = [];
     const talar = async (edad) => {
@@ -784,6 +829,9 @@ try {
         if (!a) return { ok: false, motivo: `no quedan árboles (${edad})` };
         taladas.add(a.id);
         if (!(await cogerHacha())) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `sin hacha: ${h.motivo}` }; }
+        // si al hacha no le quedan los golpes de este árbol, se repara antes (un adulto con piedra: 56; un joven: 8)
+        { const h = s.objetos.invs.de(yo).rutasCon('hacha_piedra').map(ru => s.objetos.invs.de(yo).buscar(ru).cosa)[0];
+          if (h && VIDA_DESGASTE.hacha_piedra - (h.usado || 0) < (edad === 'adulto' ? 56 : 8)) { const rp = await repararHacha(); if (!rp.ok) return { ok: false, motivo: `no repara el hacha: ${rp.motivo}` }; } }
         await J.andar(a.x + 1, a.z);
         let t, g = 0;
         do {
@@ -933,7 +981,8 @@ try {
     console.log('16f. Para las cuerdas de la puerta y del andamio: tala un árbol adulto, lo tronza, levanta un banco de tronco y trenza 3 cuerdas');
     const ad = await talar('adulto');
     comprobar('tala un árbol adulto con su hacha de piedra (despacio)', ad.ok, `${ad.motivo || ''} ${ad.golpes || ''} golpes`);
-    comprobar('el hacha de piedra se le rompe de tanto talar (168 golpes: 16 jóvenes y parte del adulto), sale de la mano, y se hace otra', hachasRotas.length === 1 && hachasRotas[0].edad === 'adulto' && hachasRotas[0].usado === 168 && !hachasRotas[0].enMano && ad.ok, JSON.stringify(hachasRotas));
+    comprobar('antes del adulto, al hacha de piedra no le quedan sus golpes (tras 16 jóvenes): la repara en una piedra de tallar con un cordel dejado en ella, y recupera la mitad', reparaciones.length === 1 && reparaciones[0].antes === 128 && reparaciones[0].despues === 44 && reparaciones[0].datos?.recuperado === 84 && JSON.stringify(reparaciones[0].gasta) === JSON.stringify({ cordel: 1 }), JSON.stringify(reparaciones));
+    comprobar('y no se le rompe: tala el adulto con el hacha reparada', hachasRotas.length === 0 && ad.ok, JSON.stringify(hachasRotas));
     const largo = ad.ok && enSuelo('tronco_largo', ad.a, 6)[0];
     let golpes = 0, tz = { ok: false, motivo: 'no hay tronco largo' };
     if (largo) {

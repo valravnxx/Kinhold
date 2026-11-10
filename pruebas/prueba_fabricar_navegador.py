@@ -13,6 +13,9 @@
 # Depositar (valravnx, 6 nov): con Usar delante de la piedra de tallar se abre el panel en su pestaña, con lo que
 # tiene encima y lo que lleva para dejar; lo dejado está en el servidor, se ve puesto encima y tocarlo lo devuelve;
 # el atajo «Poner en la piedra de tallar lo que falta» deja el sílex y la piedra de una vez, y la lasca pasa a «ya».
+# Reparar (10 nov): un hacha de piedra nueva no se repara; gastada con un par de golpes a un árbol (los cuenta el
+# servidor), junto a la piedra de tallar con el cordel dejado en ella, el menú del clic derecho ofrece «Reparar: hacha
+# de piedra», y elegirlo la deja nueva en el servidor, gasta el cordel y lo dice.
 # En el móvil (390×844), otro jugador ve la piedra de tallar con lo depositado, su panel va a pantalla completa y la
 # ficha sube desde abajo al tocar una carta.
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba el panel; el recorrido de jugador
@@ -247,6 +250,47 @@ try:
         A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.6; }})()")
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_piedra_tallar_con_deposito.png')
+
+        print('Reparar en su puesto (10 nov): el hacha de piedra gastada, en la piedra de tallar, con el cordel dejado en ella')
+        def usado_hacha(d):
+            j = d['inventarios']['jugadores'].get(yo) or {}
+            for c in (j.get('lugares') or {}).values():
+                if isinstance(c, dict) and c.get('tipo') == 'hacha_piedra': return c.get('usado', 0)
+            return None
+        libre = A.evaluate(f"['mano:der', 'mano:izq'].find(l => !{K}.inventario.lugares[l])") or 'mano:der'
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'hacha_piedra', cantidad: 1, a: '{libre}' }})")
+        comprobar('coge un hacha de piedra (nueva)', servidorDice(lambda d: usado_hacha(d) == 0) is not None)
+        comprobar('nueva, el menú no ofrece repararla', 'Reparar: hacha de piedra' not in A.evaluate(f"{K}.opcionesUsar()"))
+        # un par de golpes a un árbol, como un jugador (el servidor cuenta cada uno), y vuelta a la piedra de tallar
+        arb = A.evaluate(f"""(() => {{ const k = {K}, e = Object.values(k.fabCliente.estaciones)[0];
+          const a = k.obstaculos.filter(o => o.arbol && o.id && k.talaV.enPie(o)).sort((p, q) => Math.hypot(p.x - e.x, p.z - e.z) - Math.hypot(q.x - e.x, q.z - e.z))[0];
+          if (!a) return null; const d = Math.hypot(a.x - e.x, a.z - e.z) || 1;
+          Object.assign(k.pj, {{ x: a.x - (a.x - e.x) / d * (a.r + 0.6), z: a.z - (a.z - e.z) / d * (a.r + 0.6) }}); k.pj.rot = Math.atan2(a.x - k.pj.x, a.z - k.pj.z);
+          return {{ id: a.id, x: a.x, z: a.z }}; }})()""")
+        A.wait_for_timeout(1500)
+        if arb: A.evaluate(f"{K}.usar()")
+        d = servidorDice(lambda d: (usado_hacha(d) or 0) >= 2, 30000)
+        A.evaluate(f"{K}.estado.talando = null")
+        comprobar('talando, el servidor gasta el hacha', d is not None, str(arb))
+        A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.6; }})()")
+        A.wait_for_timeout(1500)
+        gastado = usado_hacha(json.load(open(OBJETOS))) or 0
+        ops = A.evaluate(f"{K}.opcionesUsar()")
+        comprobar('gastada, junto a la piedra de tallar, el menú del clic derecho ofrece «Reparar: hacha de piedra»', 'Reparar: hacha de piedra' in ops, str(ops))
+        sitio_pt = A.evaluate(f"""(() => {{ const k = {K}, e = Object.values(k.fabCliente.estaciones)[0], v = new k.camara.position.constructor(e.x, k.alturaSuelo(e.x, e.z) + 0.2, e.z).project(k.camara);
+          return [(v.x + 1) / 2 * innerWidth, (1 - v.y) / 2 * innerHeight]; }})()""")
+        A.evaluate(f"{K}.abrirMenuUsar({sitio_pt[0]}, {sitio_pt[1]})"); A.wait_for_timeout(400)
+        menu = A.evaluate(f"{K}.menuUsar()") or []
+        comprobar('y sale en el menú, junto al puesto', any('Reparar: hacha de piedra' in m for m in menu), str(menu))
+        captura(A, f'{SALIDA}/PC_menu_reparar.png')
+        A.evaluate("(() => { const b = [...document.querySelectorAll('#menuUsar button')].find(b => /Reparar/.test(b.textContent)); if (b) b.click(); })()")
+        d = servidorDice(lambda d: usado_hacha(d) == 0 and not any(e.get('deposito', {}).get('cordel') for e in d['fabricacion']['estaciones']))
+        comprobar(f'al elegirlo, el servidor la repara (de {gastado} usos a 0: recupera hasta 84) y gasta el cordel dejado en la piedra de tallar', d is not None and gastado >= 2)
+        comprobar('y lo dice, con lo que le queda', esperar(A, "/Reparado: hacha de piedra\\. Le quedan 168 usos de 168/.test(document.getElementById('aviso').textContent)", 5000), A.evaluate("document.getElementById('aviso').textContent"))
+        A.wait_for_timeout(300)
+        captura(A, f'{SALIDA}/PC_reparado.png')
+        comprobar('nueva otra vez, el menú ya no ofrece repararla', 'Reparar: hacha de piedra' not in A.evaluate(f"{K}.opcionesUsar()"))
+        A.evaluate(f"(() => {{ const l = ['mano:der', 'mano:izq'].find(l => {K}.inventario.lugares[l] && {K}.inventario.lugares[l].tipo === 'hacha_piedra'); if (l) {K}.accionInventario({{ tipo: 'soltar', de: l }}); }})()")
 
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
