@@ -4,7 +4,7 @@
 // Y los movimientos hechos con Text to Motion (acción «movimientos»: <quien>_<nombre>.glb, un clip cada uno), con el
 // nombre «mov_<nombre>», si se da su carpeta.
 // Y lotes de más de la biblioteca (otra ejecución de «animar» sobre el mismo rig): EXTRA=<carpeta>, con SOLO_EXTRA=<clip,clip>
-// para coger solo esos (los que ya están no se repiten).
+// para coger solo esos (los que ya están no se repiten). ACELERAR=<clip>:<veces>,… acorta esos clips (más pasos por segundo).
 // Uso: node herramientas/meshy/unir_personaje.mjs <carpeta de los lotes> <hombre|mujer> <salida.glb> [carpeta de los movimientos]
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -40,13 +40,19 @@ for (const [archivo, nombre, extra] of fuentes) {
   }
 }
 // los de andar, sin avanzar: se quita a las caderas lo que avanzan de principio a fin (el juego ya mueve al personaje)
-const ANDAN = new Set(['mov_hombro_andar','mov_empujar_andar','mov_arrastrar','mov_cargar_brazos','Casual_Walk','Walking_Woman','Quick_Walk','Walk_Backward','Run_02','RunFast','Carry_Heavy_Object_Walk','Carry_Water_Bucket_Walk','Injured_Walk','Cautious_Crouch_Walk_Forward','Swim_Forward','Push_and_Walk_Forward','walking_2']);
+const ANDAN = new Set(['mov_hombro_andar','mov_empujar_andar','mov_arrastrar','mov_cargar_brazos','Casual_Walk','Walking_Woman','Quick_Walk','Walk_Backward','Run_02','RunFast','Carry_Heavy_Object_Walk','Carry_Water_Bucket_Walk','Injured_Walk','Cautious_Crouch_Walk_Forward','Swim_Forward','Push_and_Walk_Forward','walking_2','Casual_Walk_inplace']);
 for (const a of raiz.listAnimations()) if (ANDAN.has(a.getName())) for (const c of a.listChannels()) {
   if (c.getTargetNode().getName() !== 'Hips' || c.getTargetPath() !== 'translation') continue;
   const t = c.getSampler().getInput().getArray(), o = c.getSampler().getOutput().getArray().slice(), n = t.length, T = t[n - 1] - t[0];
   const d0 = [o[0], o[2]], d1 = [o[3 * (n - 1)], o[3 * (n - 1) + 2]];
   for (let i = 0; i < n; i++) { const f = (t[i] - t[0]) / T; o[3 * i] -= (d1[0] - d0[0]) * f; o[3 * i + 2] -= (d1[1] - d0[1]) * f; }
   c.getSampler().setOutput(c.getSampler().getOutput().clone().setArray(o));
+}
+for (const par of (process.env.ACELERAR || '').split(',').filter(Boolean)) {
+  const [n, f] = par.split(':'); const a = raiz.listAnimations().find(x => x.getName() === n);
+  if (!a) throw new Error('ACELERAR: no está ' + n);
+  const hechos = new Set();
+  for (const c of a.listChannels()) { const i = c.getSampler().getInput(); if (hechos.has(i)) continue; hechos.add(i); i.setArray(i.getArray().map(t => t / Number(f))); }
 }
 await MeshoptEncoder.ready;
 await base.transform(resample(), dedup(), prune(), textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [1024, 1024] }), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
