@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2566 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2902 KB
+
+== Construir demo única
+      3204 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4163 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2969 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2560 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2921 KB
+dist/kinhold_trozos.html 2575 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: lo que llevas se ve puesto
+  OK   movil: la mujer, elegida (se carga la de Meshy, con sus animaciones)
+  OK   movil (mujer): sin errores en la página
+
+FALLAN: mujer: la mano encima del tronco y por delante del hombro
+!! FALLA: python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/llevado
+
+HAY FALLOS
+tardó 306 s
