@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-10T07:30:41+00:00",
-  "tarea": "Herramientas y armas que se gastan (documento de sistemas, apartado 10: el hacha de piedra, unos 3 árboles adultos; un arma de madera o piedra, unos 50 golpes): cada uso lo cuenta el servidor, se ve en la ficha del equipo y, al acabarse, se rompe. Recorrido: el hacha de piedra se gasta talando",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261110-0730"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261110-0652-meshy": {
   "inicio": "2026-11-10T06:52:29+01:00",
