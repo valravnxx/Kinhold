@@ -1,0 +1,30 @@
+La hora del mundo
+  OK   el día dura 2 h y la noche 1 h (el sol, arriba 2/3 del tiempo) — 66.7 %
+  OK   a las 6 el sol sale por el este — 1.000 0.000 0.000
+  OK   a mediodía está al sur (z+) a 48° — 48.00°
+  OK   a las 18 se pone por el oeste
+  OK   de la hora del mundo a la real y de vuelta (la próxima vez que es esa hora)
+  OK   la hora como texto
+Sin saltos
+  OK   los colores del cielo y de la luz cambian poco a poco (cada 2 s, como mucho 3 de 255) — 3
+  OK   la fuerza de las luces, poco a poco (cada 2 s, menos de 0,03) — 0.027
+  OK   la luz gira poco a poco (cada 2 s, menos de 0,15°) — 0.129°
+  OK   del sol a la luna y de vuelta, con las dos casi apagadas (cada día, dos veces) — 4 cambios; la más fuerte, 0.009
+  OK   la sombra nunca rasante (la luz, a 8° o más)
+La luna y las estrellas
+  OK   la luna llena está alta a medianoche, al sur — 48.0°
+  OK   la luna nueva va junto al sol
+  OK   una vuelta de fases cada 8 días del mundo
+  OK   la fase avanza seguida al pasar la medianoche
+  OK   las estrellas, solo de noche
+La luz de cada momento
+  OK   de noche, oscuro pero jugable: la luz del cielo nunca se apaga — 2.30
+  OK   de noche, menos luz que de día (con luna nueva, menos de un tercio; con llena, menos de la mitad) — 0.68 y 1.09 contra 2.81
+  OK   la luna llena alumbra más que la nueva y su luz es la que hace sombra
+  OK   a mediodía, la luz «mañana» del estilo v5
+  OK   los momentos van de la noche al día, en orden
+  OK   la misma hora del servidor, el mismo cielo
+El reloj del servidor
+  OK   la bienvenida lleva el reloj del servidor (la hora del cielo) — 1794308184491
+
+23 correctas, 0 fallan
