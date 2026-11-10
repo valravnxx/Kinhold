@@ -68,7 +68,7 @@
 import { CATALOGO } from './inventario.js';
 import { VIDA, seEstropea } from './comida.js';
 import { ALCANCE_COGER } from './suelo.js';
-import { REPARAR, seRepara, repararCosa, desgasteDe } from './desgaste.js';
+import { reparacionDe, seRepara, repararCosa, desgasteDe } from './desgaste.js';
 import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
@@ -537,7 +537,7 @@ export class Fabricacion {
     if (b.motivo || !b.cosa) return { ok: false, motivo: b.motivo || 'Ahí no hay nada.' };
     const c = b.cosa;
     if (!seRepara(c.tipo)) return { ok: false, motivo: 'Eso no se repara.' };
-    const rp = REPARAR[c.tipo];
+    const rp = reparacionDe(c.tipo);
     if (ESTACIONES[e.tipo].uso !== rp.uso) return { ok: false, motivo: `Eso se repara en ${conQue(rp.uso)}.` };
     if (!desgasteDe(c).usado) return { ok: false, motivo: 'Está como nuevo: no le hace falta.' };
     if (rp.requiere && !rp.requiere.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: textoRequiere(rp) };

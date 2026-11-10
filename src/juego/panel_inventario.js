@@ -12,7 +12,7 @@
 // verdad), hace de mundo: de él se coge y en él se deja.
 import { CATALOGO, pila, MATERIAL_DE_OBJETO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { nombrePrenda, rasgosPrenda } from '../logica/hechura.js';
-import { desgasteDe, REPARAR } from '../logica/desgaste.js';
+import { desgasteDe, reparacionDe } from '../logica/desgaste.js';
 import { PRENDAS } from '../logica/prendas.js';
 import { RECETAS, PARA } from '../logica/fabricacion.js';
 import { svgPrenda } from './iconos_ropa.js';
@@ -65,10 +65,11 @@ for (const [k, r] of Object.entries(RECETAS)) if (PARA[k] && !PARA_TIPO[r.da]) P
 // cómo se repara lo que se gasta (10 nov): en qué puesto y con qué, dejado en él
 const PUESTO_REPARAR = { tallar: 'en la piedra de tallar', banco: 'en el banco de tronco' };
 function comoSeRepara(tipo) {
-  const rp = REPARAR[tipo];
-  if (!rp) return '';
+  const rp = reparacionDe(tipo), ropa = Object.hasOwn(PRENDAS, tipo);
+  if (!rp) return ropa ? `<p class="inv-nota">${esc(tr('Aún no se puede reparar: al acabarse, se rompe.'))}</p>` : '';
   const con = Object.entries(rp.gasta).map(([t, n]) => `${n} ${tr(CATALOGO[t].nombre).toLowerCase()}`).join(', ');
-  return `<p class="inv-nota">${esc(tr('Se repara {p}, con {c} dejado en el puesto: con la herramienta en la mano, Usar junto a él.', { p: tr(PUESTO_REPARAR[rp.uso]), c: con }))}</p>`;
+  // (la ropa se repara puesta o en la mano; las herramientas, en la mano)
+  return `<p class="inv-nota">${esc(tr(ropa ? 'Se repara {p}, con {c} dejado en el puesto: puesta o en la mano, Usar junto a él.' : 'Se repara {p}, con {c} dejado en el puesto: con la herramienta en la mano, Usar junto a él.', { p: tr(PUESTO_REPARAR[rp.uso]), c: con }))}</p>`;
 }
 export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, soltarSuelo = null, hayArcon = () => true, comer = null, comestible = () => false }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }

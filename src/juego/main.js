@@ -22,7 +22,7 @@ import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
 import { armaDeMano } from '../logica/arma_mano.js';
-import { REPARAR, desgasteDe } from '../logica/desgaste.js';
+import { reparacionDe, desgasteDe } from '../logica/desgaste.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
@@ -1689,10 +1689,11 @@ function opcionesUsar() {
       else ops.push({ texto: tr('Dormir: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => dormir(e) });
     } else {
       ops.push({ texto: tr(esAlmacen(e.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
-      // reparar lo que llevas en la mano, gastado, en su puesto (10 nov; src/logica/desgaste.js): con lo depositado en él
-      for (const l of ['mano:der', 'mano:izq']) {
-        const c = inventario().lugares[l], d = c && desgasteDe(c);
-        if (d && d.usado && REPARAR[c.tipo] && REPARAR[c.tipo].uso === ESTACIONES[e.tipo].uso) ops.push({ texto: tr('Reparar: {c}', { c: tr(CATALOGO[c.tipo].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => repararEn(e, l) });
+      // reparar lo que llevas en la mano o puesto (la ropa), gastado, en su puesto (10 nov; src/logica/desgaste.js): con lo
+      // depositado en él
+      for (const l of ['mano:der', 'mano:izq', ...Object.keys(inventario().lugares).filter(r => r.startsWith('ropa:'))]) {
+        const c = inventario().lugares[l], d = c && desgasteDe(c), rp = c && reparacionDe(c.tipo);
+        if (d && d.usado && rp && rp.uso === ESTACIONES[e.tipo].uso) ops.push({ texto: tr('Reparar: {c}', { c: tr(CATALOGO[c.tipo].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => repararEn(e, l) });
       }
       // la hoguera: encenderla (con yesca y el taladro de fuego) y echarle una rama o una leña de lo que llevas
       if (ESTACIONES[e.tipo].fuego && e.fuego) {

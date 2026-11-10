@@ -153,7 +153,7 @@ import { NADO } from '../src/logica/nado.js';
 import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
 import { estropearInventario, estropearSuelo } from '../src/logica/comida.js';
 import { armaDeMano, loQueSeLanza } from '../src/logica/arma_mano.js';
-import { gastar, gastarCosa, GASTA_AL_DAR, GASTA_AL_PARAR } from '../src/logica/desgaste.js';
+import { gastar, gastarCosa, gastarRopa, GASTA_AL_DAR, GASTA_AL_PARAR, GOLPE_ROPA, USO_ROPA_MS } from '../src/logica/desgaste.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -187,7 +187,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, usoRopa = USO_ROPA_MS, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
   fauna: entornoFauna = terreno && terreno.fauna, ticoFauna = 200 } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
@@ -553,6 +553,20 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const t0 = reloj();
   let muriendo = false;   // (morir no vuelve a mirar las muertes)
   const ponerAlDia = () => { combate.avanzarHasta((reloj() - t0) / 1000); if (!muriendo) { muriendo = true; try { revisarMuertes(); } finally { muriendo = false; } } };
+  // La ropa y la armadura que se gastan (10 nov; src/logica/desgaste.js, gastarRopa): con los golpes que hieren y con
+  // el uso. Lo que se acaba, se rompe: se le avisa, se vuelve a vestir su luchador y se reparte su aspecto.
+  const gastarRopaDe = (autor, n, zona = null) => {
+    const l = gastarRopa(objetos.invs.de(autor), n, zona);
+    if (!l.length) return;
+    guardarObjetos();
+    const rotas = l.filter(g => g.roto), ws = conexionDe.get(autor);
+    if (ws) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor), ...(rotas.length ? { roto: rotas[0].tipo } : {}) });
+    if (rotas.length) {
+      repartirLlevado(autor);
+      for (const g of rotas) appendFileSync(archivoObjetosReg, JSON.stringify({ autor, tipo: 'se_rompe', objeto: g.tipo, ahora: Date.now() }) + '\n');
+    }
+  };
+  const puestaDe = new Map();   // autor → ms que lleva la ropa puesta en el mundo desde el último uso contado
   let escritas = 0;
   const repartirCombate = () => {
     const eventos = combate.sacarEventos();
@@ -575,6 +589,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (GASTA_AL_DAR.has(e.resultado)) gastarArma(e.autor);
       if (GASTA_AL_PARAR.has(e.resultado)) gastarArma(e.objetivo);
     }
+    // la ropa y la armadura (10 nov): el golpe o lo lanzado que hiere gasta lo que cubre esa zona a quien lo recibe
+    for (const e of eventos) if ((e.tipo === 'golpe' || e.tipo === 'flecha') && e.objetivo && e.zona && objetos.invs.de(e.objetivo)) gastarRopaDe(e.objetivo, GOLPE_ROPA, e.zona);
     for (const e of eventos) {
       if (e.tipo !== 'flecha') continue;
       const ahora = Date.now(), enT = (x, z) => !!mundo.tierraDe(x, z);
@@ -689,6 +705,11 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           L.sangre -= (pierde + (sangra ? 0 : RECUPERAR_SANGRE)) * Math.min(dt, 10);
           if (L.sangre <= 0) { L.sangre = 0; L.caer(motivoNecesidades(n)); }
         }
+      }
+      // la ropa puesta se gasta con el uso (10 nov): un uso cada usoRopa ms en el mundo (USO_ROPA_MS; las pruebas, menos) (solo quien ya está en él)
+      if (e && (!terreno || posiciones.has(a))) {
+        const p = (puestaDe.get(a) || 0) + Math.min(dt, 10) * 1000;
+        if (p >= usoRopa) { puestaDe.set(a, p - usoRopa); gastarRopaDe(a, 1); } else puestaDe.set(a, p);
       }
       necesidades.set(a, n);
       necesidadesCambiadas = true;

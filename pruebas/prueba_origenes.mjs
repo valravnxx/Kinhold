@@ -18,6 +18,8 @@ import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.j
 import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON } from '../src/logica/tala.js';
 import { TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
+import { REPARAR, reparacionDe } from '../src/logica/desgaste.js';
+import { PRENDAS } from '../src/logica/prendas.js';
 
 const MUTAR = process.env.MUTAR;
 let bien = 0, mal = 0;
@@ -90,6 +92,11 @@ for (const [k, d] of Object.entries(PIEZAS)) if (!d.oculta && enEsteTramo(d)) an
 for (const [k, d] of Object.entries(DECORACION)) if (enEsteTramo(d)) anotar(`mueble ${k}`, sePuede(d.coste));
 for (const [k, d] of Object.entries(ESTACIONES)) anotar(`estación ${k}`, [...Object.keys(d.coste), ...(d.requiere || [])].filter(t => !hay.has(t)));
 for (const [k, r] of Object.entries(RECETAS)) if (!r.fuera) anotar(`receta ${k}`, [...Object.keys(r.gasta), ...(r.requiere && !tieneAlguna(r.requiere) ? r.requiere : [])].filter(t => !hay.has(t)));
+// reparar (10 nov; src/logica/desgaste.js): lo que se repara, con lo que gasta y lo que hay que llevar (la ropa, también)
+for (const t of [...Object.keys(REPARAR), ...Object.keys(PRENDAS)]) {
+  const rp = reparacionDe(t);
+  if (rp) anotar(`reparar ${t}`, [...Object.keys(rp.gasta), ...(rp.requiere && !tieneAlguna(rp.requiere) ? rp.requiere : [])].filter(m => !hay.has(m)));
+}
 console.log('\nLo que el juego enseña ya');
 for (const [m, quien] of falta) {
   const p = PENDIENTES[m];

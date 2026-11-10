@@ -10,17 +10,24 @@
 //   - reparar en su puesto con su material: el hacha y el mazo de piedra en la piedra de tallar con un cordel
 //     depositado; la lanza en el banco de tronco con fibra y llevando la lasca; lo que no se repara, en otro puesto, sin
 //     material o nuevo, no; y por la acción, con su autor en el registro.
+//   - la ropa y la armadura (apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su
+//     material»): su vida sale de su material; el golpe que hiere gasta solo lo que cubre esa zona; el uso, todo lo
+//     puesto; al acabarse se rompe y sale de su lugar; se repara puesta en el banco de tronco (el lino, con fibra; el
+//     cuero, con piel y cordel) y lo que pide algo que aún no sale de ningún sitio (el gambesón, la paja), no.
 // MUTAR=1: el hacha no se gasta al talar: tiene que FALLAR. MUTAR=2: reparar no gasta el material: tiene que FALLAR.
+// MUTAR=3: el golpe gasta toda la ropa, cubra o no su zona: tiene que FALLAR.
 import { VIDA, desgasteDe, gastar, gastarCosa, seGasta, GASTA_AL_DAR, GASTA_AL_PARAR } from '../src/logica/desgaste.js';
 import { Tala, GOLPES, ENTRE_GOLPES, idArbol, ejecutarTala } from '../src/logica/tala.js';
 import { Inventario, Inventarios } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
-import { REPARAR, seRepara } from '../src/logica/desgaste.js';
+import { REPARAR, seRepara, gastarRopa, vidaDe, reparacionDe, VIDA_ROPA, GOLPE_ROPA } from '../src/logica/desgaste.js';
+import { PRENDAS } from '../src/logica/prendas.js';
 import { Fabricacion, ejecutarFabricacion } from '../src/logica/fabricacion.js';
 
 if (process.env.MUTAR === '1') VIDA.hacha_piedra = 1e9;
 if (process.env.MUTAR === '2') REPARAR.hacha_piedra.gasta = {};
+const MUTAR3 = process.env.MUTAR === '3';
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -34,7 +41,7 @@ console.log('Lo que dice el documento de sistemas (apartado 10, «Durabilidad»)
   comprobar('hacha de hierro: unos 30 árboles adultos', VIDA.hacha_hierro === 30 * GOLPES.adulto.hierro && VIDA.hacha_mano === VIDA.hacha_hierro, `${VIDA.hacha_hierro} golpes`);
   comprobar('armas de madera o piedra: unos 50 golpes', ['lanza_endurecida', 'palo_cavador', 'mazo_piedra'].every(t => VIDA[t] === 50));
   comprobar('armas de hierro: unos 400 golpes', VIDA.espada === 400 && VIDA.cuchillo === 400);
-  comprobar('lo que no es herramienta ni arma no se gasta', !seGasta('piedra') && !seGasta('rama') && !seGasta('camisa_lino') && desgasteDe({ tipo: 'piedra', n: 3 }) === null);
+  comprobar('lo que no es herramienta, arma ni ropa no se gasta', !seGasta('piedra') && !seGasta('rama') && !seGasta('lasca_silex') && desgasteDe({ tipo: 'piedra', n: 3 }) === null);
   comprobar('el golpe que alcanza gasta al que lo da; el parado, también al que para', GASTA_AL_DAR.has('herida') && GASTA_AL_DAR.has('parada') && !GASTA_AL_DAR.has('al aire') && GASTA_AL_PARAR.has('parada') && !GASTA_AL_PARAR.has('herida'));
 }
 
@@ -131,6 +138,53 @@ console.log('Reparar en su puesto con su material');
   comprobar('lo de hierro y el palo cavador no se reparan (aún)', !seRepara('espada') && !seRepara('hacha_hierro') && !seRepara('palo_cavador'));
   r = rep(pt, 'mano:der', 9);
   comprobar('lejos del puesto, no', !r.ok && /lejos/.test(r.motivo), r.motivo);
+}
+
+console.log('\nLa ropa y la armadura');
+{
+  comprobar('cada prenda tiene su vida, de su material', Object.keys(PRENDAS).every(t => vidaDe(t) === VIDA_ROPA[PRENDAS[t].material] && seGasta(t)));
+  comprobar('la malla aguanta más que el lino, y el lino, unos 60 golpes', vidaDe('cota_malla') > vidaDe('gambeson') && vidaDe('gambeson') > vidaDe('camisa_lino') && vidaDe('camisa_lino') / GOLPE_ROPA === 60);
+  const fab = new Fabricacion(), invs = new Inventarios(), reg = new RegistroAcciones(), inv = invs.de('eva');
+  inv.lugares['ropa:sobre'] = { tipo: 'manto_lana', n: 1 };     // (cubre el torso y las piernas, no los brazos ni la cabeza)
+  inv.lugares['ropa:cabeza'] = { tipo: 'capucha_lana', n: 1 };
+  inv.lugares['ropa:pies'] = { tipo: 'zapatos_cuero', n: 1 };
+  const golpe = zona => MUTAR3 ? gastarRopa(inv, GOLPE_ROPA) : gastarRopa(inv, GOLPE_ROPA, zona);
+  const camisa = () => inv.lugares['ropa:interior'], pantalon = () => inv.lugares['ropa:piernas'];
+  comprobar('empieza con la camisa y el pantalón de lino, nuevos', camisa().tipo === 'camisa_lino' && pantalon().tipo === 'pantalon_lino' && desgasteDe(camisa()).usado === 0);
+  let l = golpe('brazoD');
+  comprobar('un golpe en el brazo gasta la camisa (tiene mangas), y no el pantalón, la capa ni la capucha', camisa().usado === GOLPE_ROPA && !pantalon().usado && !inv.lugares['ropa:sobre'].usado && !inv.lugares['ropa:cabeza'].usado && l.length === 1, JSON.stringify(l));
+  golpe('cabeza');
+  comprobar('uno en la cabeza, solo la capucha', inv.lugares['ropa:cabeza'].usado === GOLPE_ROPA && camisa().usado === GOLPE_ROPA);
+  l = gastarRopa(inv, 1);
+  comprobar('el uso gasta todo lo puesto, un uso cada cosa', l.length === 5 && inv.lugares['ropa:pies'].usado === 1 && camisa().usado === GOLPE_ROPA + 1, l.map(g => g.tipo).join(', '));
+  inv.lugares['ropa:cabeza'].usado = vidaDe('capucha_lana') - 5;
+  l = golpe('cabeza');
+  comprobar('al acabarse se rompe y sale de su lugar', l.length === 1 && l[0].roto && inv.lugares['ropa:cabeza'] === null, JSON.stringify(l));
+  const puesto = (tipo, x) => { const r = fab.colocar('eva', tipo, x, 0); delete fab.estaciones[r.id].obra; return r.id; };
+  const bt = puesto('banco_tronco', 0), pt = puesto('piedra_tallar', 3);
+  const rep = (estacion, de, x = 0) => ejecutarFabricacion(fab, invs, reg, { autor: 'eva', tipo: 'reparar', estacion, de, x, z: 0.5 }, T0);
+  const dejar = (est, tipo, x = 0) => { inv.coger(tipo, 1, 'mano:izq'); return fab.depositar('eva', est, 'mano:izq', 1, { x, z: 0.5 }, inv).ok; };
+  camisa().usado = 400;
+  let r = rep(bt, 'ropa:interior');
+  comprobar('la camisa, sin fibra en el banco, no', !r.ok && /fibra/i.test(r.motivo), r.motivo);
+  r = rep(pt, 'ropa:interior', 3);
+  comprobar('ni en la piedra de tallar', !r.ok && /banco/.test(r.motivo), r.motivo);
+  dejar(bt, 'fibra');
+  r = rep(bt, 'ropa:interior');
+  comprobar('puesta, en el banco con una fibra, recupera la mitad de su vida', r.ok && camisa().usado === 100 && r.reparado.recuperado === 300 && !fab.estaciones[bt].deposito.fibra && camisa().tipo === 'camisa_lino', r.motivo || JSON.stringify(camisa()));
+  comprobar('y queda en el registro, con su autor', (e => e && e.autor === 'eva' && e.resultado.reparado.objeto === 'camisa_lino')(reg.entradas.at(-1)));
+  inv.lugares['ropa:pies'].usado = 900;
+  dejar(bt, 'piel');
+  r = rep(bt, 'ropa:pies');
+  comprobar('los zapatos de cuero, con la piel sola, no: piden también un cordel', !r.ok && /cordel/i.test(r.motivo), r.motivo);
+  dejar(bt, 'cordel');
+  r = rep(bt, 'ropa:pies');
+  comprobar('con piel y cordel, sí: la mitad de su vida', r.ok && inv.lugares['ropa:pies'].usado === 300, r.motivo);
+  comprobar('el gambesón (tela), lo de paja y la cota de malla (fragua), aún no se reparan', !reparacionDe('gambeson') && !reparacionDe('sombrero_paja') && !reparacionDe('cota_malla') && !!reparacionDe('tunica_lana'));
+  // (lo que gasta reparar sale del mundo: lo mira pruebas/prueba_origenes.mjs)
+  // el desgaste va con la prenda al guardarla y cargarla
+  const invs2 = Inventarios.importar(JSON.parse(JSON.stringify(invs.exportar())));
+  comprobar('el desgaste de la ropa se guarda y se carga', invs2.de('eva').lugares['ropa:interior'].usado === 100, JSON.stringify(invs2.de('eva').lugares['ropa:interior']));
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);
