@@ -157,6 +157,15 @@ with sync_playwright() as p:
     pg.screenshot(path=f'{SALIDA}/08_pc_ficha_desgaste.png')
     pg.click('#panelInventario .inv-dejar')
     pg.evaluate(f"{K}.inventario.lugares['mano:der'] = null; {K}.panelInventario.pintar()")   # (lo que sigue, con la mano libre)
+    # la ropa también se gasta (10 nov): la camisa de lino, muy usada (450 de 600; en el juego lo cuenta el servidor),
+    # dice lo que le queda y que se zurce en el banco de tronco con una fibra, puesta o en la mano
+    pg.evaluate(f"{K}.inventario.lugares['ropa:interior'] = {{ tipo: 'camisa_lino', n: 1, usado: 450 }}; {K}.panelInventario.pintar()")
+    pg.click(R('ropa:interior'))
+    gasto = pg.inner_text('#panelInventario .eq-desgaste') if pg.locator('#panelInventario .eq-desgaste').count() else ''
+    nota = pg.inner_text('#panelInventario .eq-sel') if pg.locator('#panelInventario .eq-sel').count() else pg.inner_text('#panelInventario')
+    comprobar('la ficha de la camisa dice cuánto le queda (150 usos de 600) y que se zurce en el banco con fibra', '150' in gasto and '600' in gasto and 'banco de tronco' in nota and 'fibra' in nota.lower(), gasto + ' · ' + nota[:300])
+    pg.screenshot(path=f'{SALIDA}/08b_pc_ficha_ropa_gastada.png')
+    pg.click('#panelInventario .inv-dejar')
     pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)   # el personaje se carga después de la página
     capas = pg.evaluate(f'{K}.jugador.mh && {K}.jugador.mh.capas')
     comprobar('al recargar, el personaje lleva otra vez la túnica', 'tunica' in (capas or []), str(capas))
@@ -246,6 +255,14 @@ with sync_playwright() as p:
     comprobar('móvil: la ficha del cuchillo dice cuánto le queda (300 usos de 400)', '300' in gasto and '400' in gasto, gasto)
     mv.screenshot(path=f'{SALIDA}/07_movil_ficha_desgaste.png')
     comprobar('móvil: el cuchillo (de hierro) no dice que se repare aún', 'Se repara' not in mv.inner_text('#panelInventario'))
+    mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
+    # la ropa (10 nov): el gambesón gastado dice que aún no se repara (pide tela, que aún no sale de ningún sitio)
+    mv.evaluate(f"{K}.inventario.lugares['ropa:abrigo'] = {{ tipo: 'gambeson', n: 1, usado: 600 }}; {K}.panelInventario.pintar && {K}.panelInventario.pintar()")
+    mv.evaluate("document.querySelector('#panelInventario .eq-centro').scrollTop = 0")
+    mv.tap(R('ropa:abrigo')); mv.wait_for_timeout(200)
+    gasto = mv.inner_text('#panelInventario .eq-desgaste') if mv.locator('#panelInventario .eq-desgaste').count() else ''
+    comprobar('móvil: la ficha del gambesón dice lo que le queda (300 de 900) y que aún no se repara', '300' in gasto and '900' in gasto and 'Aún no se puede reparar' in mv.inner_text('#panelInventario'), gasto)
+    mv.screenshot(path=f'{SALIDA}/07b_movil_ficha_ropa_gastada.png')
     mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
     mv.tap('#panelInventario .inv-cerrar')
     comprobar('el ✕ cierra el panel', not mv.is_visible('#panelInventario'))
