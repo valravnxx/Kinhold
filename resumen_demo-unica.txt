@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2548 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2882 KB
+
+== Construir demo única
+      3184 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4135 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2952 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2543 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2897 KB
+dist/kinhold_trozos.html 2557 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  OK   menú en ru: todo traducido
+  OK   menú en ru: nada tapado
+
+FALLAN 3: construir: el personaje elegido, con la ropa del visor pasada al inventario, construir: con 8 más hay más triángulos, construir: el personaje elegido, con la ropa del visor pasada al inventario
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 198 s
