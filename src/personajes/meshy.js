@@ -95,6 +95,15 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
   const acciones = {};
   for (const clip of g.animations) acciones[clip.name] = mezclador.clipAction(clip);
   for (const [id, c] of Object.entries(CLIPS_MESHY)) { const n = typeof c === 'string' ? c : c[sexo]; if (acciones[n]) acciones[id] = acciones[n]; }
+  // parado con la carretilla o con el tronco al hombro, la postura de andar quieta (el primer instante, con el cuerpo de
+  // frente: el «Idle» de Meshy va con el tronco girado y una mano no llega a su agarradera)
+  {
+    const andar = acciones.andar?.getClip();
+    if (andar) for (const id of ['empujarQuieto', 'hombroQuieto']) {
+      const quieto = THREE.AnimationUtils.subclip(andar, id, 0, 2, 30);
+      acciones[id] = mezclador.clipAction(quieto);
+    }
+  }
   // las de una vez (tumbarse, levantarse, morir…) se quedan en la última postura
   for (const id of ['tumbarse', 'levantarse', 'morir', 'derribado']) if (acciones[id]) { acciones[id].setLoop(THREE.LoopOnce, 1); acciones[id].clampWhenFinished = true; }
 

@@ -9,7 +9,7 @@ import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
 export { carpetaMeshy };
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
 import { crearLlevado } from './llevado.js';
-import { nudillosA } from '../personajes/ik.js';
+import { nudillosA, girarHueso } from '../personajes/ik.js';
 import { loteHachaPiedra, loteMazoPiedra } from './modelos_objetos.js';
 
 // Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
@@ -224,6 +224,16 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       const ag = j.agarraderas.map(a => a.getWorldPosition(new THREE.Vector3()));
       const mr = b.r.mano.getWorldPosition(_p);
       const [ar, al] = ag[0].distanceTo(mr) <= ag[1].distanceTo(mr) ? [ag[0], ag[1]] : [ag[1], ag[0]];
+      // el cuerpo de frente a las varas y, si los brazos no llegan, echado hacia delante (los de Meshy los tienen cortos)
+      const h = j.mh.hueso, pecho = h.spine_03 || h.spine_02;
+      if (pecho && h.spine_01) {
+        const c = pecho.getWorldPosition(new THREE.Vector3()), sr = b.r.sup.getWorldPosition(new THREE.Vector3());
+        const quiero = sr.clone().sub(c); quiero.addScaledVector(_f, -quiero.dot(_f));
+        girarHueso(pecho, sr, c.clone().add(quiero));
+        const alcance = 0.95 * (b.r.sup.getWorldPosition(_p).distanceTo(b.r.inf.getWorldPosition(_q)) + b.r.inf.getWorldPosition(_p).distanceTo(b.r.mano.getWorldPosition(_q)) + 0.085);
+        const falta = Math.max(ar.distanceTo(b.r.sup.getWorldPosition(_p)), al.distanceTo(b.l.sup.getWorldPosition(_q))) - alcance;
+        if (falta > 0) { const k = Math.min(falta * 1.3, 0.35), c2 = pecho.getWorldPosition(new THREE.Vector3()); girarHueso(h.spine_01, c2, c2.clone().addScaledVector(_f, k).addScaledVector(_u, -k * 0.4)); }
+      }
       nudillosA(b.r, ar, polo('r')); nudillosA(b.l, al, polo('l'));
       return true;
     }
