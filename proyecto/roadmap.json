@@ -1504,7 +1504,9 @@
     },
     {
      "nombre": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-10T06:52:29+01:00",
+     "rama": "trabajo/20261110-0652-meshy"
     },
     {
      "nombre": "La naturaleza aprobada, en el mundo: árboles, arbustos, matorrales y rocas de Meshy en lugar de los de código, copiados de un mismo modelo (instancias) y con versiones más simples de lejos para que aguante el móvil; medir los fotogramas antes y después",
