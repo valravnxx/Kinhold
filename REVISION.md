@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 10 nov — valravnx en el chat: Discord y Ko-fi en la web
+
+- «en la web necesitamos el link al discord oficial de la comunidad, y un mensaje para pedir apoyo con el proyecto con kofi, ambos en la parte inferior, y hacer la web de kofi». Discord: https://discord.gg/frKTaM5NNY. Ko-fi: https://ko-fi.com/kinhold.
+- Hecho en la misma sesión: el tablero «Comunidad» encima del pie de la web (bajo todas las pestañas, en es/en/ru), y los textos de la página de Ko-fi en `proyecto/comunidad/kofi.md` para que valravnx los pegue al crearla (la cuenta la crea él).
+
+
 ### 10 nov — las manos y talar
 valravnx: «deja las manos abiertas, pero PON LA HERRAMIENTA DONDE TOCA» (y antes: «las herramientas tocan las dos manos»). Las manos de los personajes de Meshy se quedan abiertas (los dedos puestos por código no sirven con su malla). El mango va por las dos manos en cada fotograma. El golpe de talar y el de picar los elige valravnx en la web de Meshy (con vista previa) y pasa los GLB: «lo hago yo».
 

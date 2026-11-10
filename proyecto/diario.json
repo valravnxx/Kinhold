@@ -5921,6 +5921,18 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-10T09:31:00+00:00",
+  "fin": "2026-11-10T11:53:40+00:00",
+  "titulo": "Discord y Ko-fi en la web",
+  "hito": "infra",
+  "hecho": [
+   "Tablero «Comunidad» al pie de la web, debajo de todas las pestañas: el enlace al Discord oficial y un mensaje para apoyar el desarrollo en Ko-fi.",
+   "Los textos de la página de Ko-fi, listos para pegar."
+  ],
+  "pruebas": "La web generada y mirada en PC y móvil, en español y ruso.",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-10T10:24:28+00:00",
   "fin": "2026-11-10T11:22:29+00:00",
   "titulo": "P4: reparar en su puesto con su material (demo v171)",
