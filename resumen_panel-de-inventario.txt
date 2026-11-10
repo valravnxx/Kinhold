@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2589 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2926 KB
+
+== Construir demo única
+      3230 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4197 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2993 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2584 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2946 KB
+dist/kinhold_trozos.html 2598 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: panel de inventario
+    at eval (eval at evaluate (:311:30), <anonymous>:2:181)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+!! FALLA: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/inventario
+
+HAY FALLOS
+tardó 115 s
