@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2564 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3072 KB
+
+== Construir demo única
+      3208 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4331 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2968 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2559 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3082 KB
+dist/kinhold_trozos.html 2573 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: panel de inventario
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#panelInventario .inv-ponerse")
+
+!! FALLA: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/inventario
+
+HAY FALLOS
+tardó 305 s

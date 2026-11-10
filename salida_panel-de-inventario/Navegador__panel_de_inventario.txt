@@ -1,0 +1,78 @@
+PC: arrastrar del arcón a la silueta y a los huecos
+  OK   el botón abre el panel
+  OK   10 cuadros de equipo (espalda, cintura y 8 capas de ropa) — 10
+  OK   el panel se llama «Equipo» (el botón y el título)
+  OK   las manos y el hombro, en el panel
+  OK   lo del arcón, con la imagen de su modelo
+  OK   lo de la camisa puesta se ve con su imagen (la prenda dibujada)
+  OK   el retrato es tu personaje dibujado (un 10–60 % del cuadro) — 0.17
+  OK   empieza con camisa y pantalón de lino
+  OK   sin cinturón no hay cuadros de cintura
+  OK   arrastrar el cinto de cuero a la cintura se lo pone — cinto_cuero:1
+  OK   con el cinto, 3 cuadros de cintura bajo la silueta — 3
+  OK   el cuchillo, arrastrado a un hueco pequeño del cinto — cuchillo:1
+  OK   el hacha (mediana) no entra en un hueco pequeño, y se dice por qué — No cabe en ese hueco.
+  OK   tocar el leñero abre sus 6 huecos — lenero:1 ·  · espalda
+  OK   la leña entra en el leñero, una pila entera — lena:3
+  OK   la piedra no entra en el leñero
+  OK   el personaje se pone la túnica que dice el inventario — ['tunica', 'descalzo']
+  OK   con el hacha en la mano, el saco no se sube al hombro (valravnx, 1 nov) — Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.
+  OK   del arcón: el hacha con las manos y el odre colgado al hombro — hacha_mano:1 · odre:1
+  OK   el hacha se ve en la mano del personaje
+  OK   abajo se ve lo que llevas en la mano y al hombro — En la mano derecha: Hacha de mano
+Soltar
+Al hombro: Odre
+Soltar
+Al cinto: Cuchillo
+  OK   la barra de abajo: las dos manos, el hombro y el cinto, cada cosa con su imagen y su botón de soltar — {'huecos': 4, 'imgs': 3, 'soltar': 2, 'hombro': True, 'fondo': 'url("http://127.0.0.1:54525/recursos/interfaz-v1/hueco.webp")'}
+  OK   arrastrar el cuchillo del cinto al arcón lo deja
+  OK   se ve la carga y la velocidad — Carga: 42% · velocidad al andar: 97%
+  OK   cada cambio queda en el registro de acciones con autor — 10
+  OK   «Soltar» deja lo de la mano (y el hacha ya no se ve)
+  OK   y lo del hombro; sin nada, abajo quedan las dos manos vacías (sin nada que soltar)
+  OK   lo que llevas se guarda al recargar
+  OK   la tecla I abre el panel
+  OK   la ficha del hacha dice cuánto le queda (18 usos de 168), con su barra en rojo — Le quedan 18 usos de 168
+  OK   al recargar, el personaje lleva otra vez la túnica — ['tunica', 'descalzo']
+  OK   la túnica cosida entra con su hechura y su tinte — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'corto', 'tejido': 'sarga'}, 'tinte': 'glasto'}
+  OK   su cuadro dice la hechura y el tinte — Túnica de lana · Corto, Sarga · Azul de glasto
+  OK   puesta: la túnica corta, de sarga y azul, y la cota corta — {'tinte': 'glasto', 'corte': 'corto', 'tejido': 'sarga', 'cota': 'corto', 'alturaCota': 0.8149861425161362, 'capas': ['tunica', 'cota', 'descalzo']}
+  OK   otra túnica cosida, con lo suyo (cuadros y verde) — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'largo', 'tejido': 'cuadros'}, 'tinte': 'verde'}
+  OK   la ficha de lo puesto dice qué es, dónde lo llevas y qué se puede hacer — Túnica de lana · Cuadros · Verde ·  · Lo llevas puesto (abrigo). ·  · mediano · 0.8 kg · Quitártelo a las manos · Dejarlo en el suelo · Al arcón · Cancelar ·  · O toca otro sitio de tu equipo para llevarlo allí.
+  OK   la ficha enseña su imagen grande
+  FALLA «Quitártelo a las manos»: la túnica pasa a la mano y deja de verse puesta — hacha_piedra:1 · ['cota', 'descalzo'] · Lo llevas en las manos.
+  FALLA y sale en su cuadro de la mano
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_inventario_navegador.py", line 193, in <module>
+    pg.click(R('mano:der')); pg.click('#panelInventario .inv-ponerse')
+                             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#panelInventario .inv-ponerse")
+
