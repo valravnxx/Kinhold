@@ -1367,17 +1367,18 @@ try {
     const ribera = alrededor(rio, 500);   // (los juncos de al lado ya los cortó para el tejado: vuelven en una estación)
     await J.andar(rio.x, rio.z);
     const enFardo = () => (J.inv.lugares.espalda?.dentro || []).filter(Boolean).filter(c => c.tipo === 'junco').reduce((t, c) => t + c.n, 0);
+    let motivoJunco = '';
     for (const q of libres(ribera, ['juncos'])) {
       if (J.cuantos('junco') >= 8) break;
       probados.add(q.id);
       const c = await recoger(q);
-      if (!c.ok) continue;
+      if (!c.ok) { motivoJunco = c.motivo; continue; }
       // al fardo lo que quepa (a la espalda; 3 haces por hueco)
       const lj = manos.find(l => J.inv.lugares[l]?.tipo === 'junco');
       const hueco = [0, 1, 2, 3].find(n => J.inv.lugares.espalda?.tipo === 'fardo' && (!J.inv.lugares.espalda.dentro?.[n] || (J.inv.lugares.espalda.dentro[n].tipo === 'junco' && J.inv.lugares.espalda.dentro[n].n < 3)));
       if (lj && hueco !== undefined) await J.objeto({ tipo: 'mover', de: lj, a: `espalda/${hueco}` });
     }
-    comprobar('corta al menos 8 haces de juncos en el río (en las manos y en el fardo)', J.cuantos('junco') >= 8, `${J.cuantos('junco')} haces · en el fardo ${enFardo()} · ${enMano()}`);
+    comprobar('corta al menos 8 haces de juncos en el río (en las manos y en el fardo)', J.cuantos('junco') >= 8, `${J.cuantos('junco')} haces · en el fardo ${enFardo()} · ${enMano()} · ${motivoJunco} · ${JSON.stringify(s.objetos.invs.de(yo).lugares.cintura)} · ${libres(ribera, ['juncos']).length} sin probar`);
     const D = { x: r2(C.x - 0.4), z: C.z };   // dentro de la casa
     comprobar('dentro de su casa está bajo techo', s.mundo.bajoTecho(D.x, D.z));
     await J.andar(D.x, D.z);
