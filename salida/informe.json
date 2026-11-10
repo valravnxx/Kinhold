@@ -1,0 +1,82 @@
+[
+ {
+  "nombre": "hombro_andar",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14624340,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13272208
+ },
+ {
+  "nombre": "hombro_quieto",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14624324,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13272212
+ },
+ {
+  "nombre": "empujar_andar",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14624348,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13272204
+ },
+ {
+  "nombre": "empujar_quieto",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14624332,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13272212
+ },
+ {
+  "nombre": "arrastrar",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14624344,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13272212
+ },
+ {
+  "nombre": "talar",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14595320,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13243196
+ },
+ {
+  "nombre": "picar",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14595324,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13243212
+ },
+ {
+  "nombre": "cargar_brazos",
+  "movimiento": "SUCCEEDED",
+  "error": null,
+  "creditos": 16,
+  "hombre": "SUCCEEDED",
+  "hombre_glb": 14624348,
+  "mujer": "SUCCEEDED",
+  "mujer_glb": 13272220
+ }
+]
