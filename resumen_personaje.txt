@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2584 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2920 KB
+
+== Construir demo única
+      3229 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4189 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2987 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2578 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2940 KB
+dist/kinhold_trozos.html 2592 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: personaje
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'castano', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'makehuman'}
+  OK   sin errores en consola (movil)
+
+Resultado: TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 388 s
