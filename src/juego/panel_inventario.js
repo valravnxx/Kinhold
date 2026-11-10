@@ -69,7 +69,7 @@ function comoSeRepara(tipo) {
   if (!rp) return ropa ? `<p class="inv-nota">${esc(tr('Aún no se puede reparar: al acabarse, se rompe.'))}</p>` : '';
   const con = Object.entries(rp.gasta).map(([t, n]) => `${n} ${tr(CATALOGO[t].nombre).toLowerCase()}`).join(', ');
   // (la ropa se repara puesta o en la mano; las herramientas, en la mano)
-  return `<p class="inv-nota">${esc(tr(ropa ? 'Se repara {p}, con {c} dejado en el puesto: puesta o en la mano, Usar junto a él.' : 'Se repara {p}, con {c} dejado en el puesto: con la herramienta en la mano, Usar junto a él.', { p: tr(PUESTO_REPARAR[rp.uso]), c: con }))}</p>`;
+  return `<p class="inv-nota">${esc(tr(ropa ? 'Se repara {p}, dejando en el puesto {c}: puesta o en la mano, Usar junto a él.' : 'Se repara {p}, con {c} dejado en el puesto: con la herramienta en la mano, Usar junto a él.', { p: tr(PUESTO_REPARAR[rp.uso]), c: con }))}</p>`;
 }
 export function montarPanelInventario({ panel, boton, inventario, accion, alCambiar = () => {}, retrato = null, accionArcon = null, materialesArcon = null, alSuelo = null, soltarSuelo = null, hayArcon = () => true, comer = null, comestible = () => false }) {
   let sel = null;          // { de: 'arcon', tipo } o { de: 'inv', ruta }
