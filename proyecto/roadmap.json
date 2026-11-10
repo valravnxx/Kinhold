@@ -1481,6 +1481,66 @@
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
   },
   {
+   "id": "meshy",
+   "num": "A1",
+   "nombre": "El arte con Meshy",
+   "jugable": "Todo lo que se ve, con el aspecto de maqueta en miniatura: la naturaleza, los objetos y estaciones, las piezas de construir, los animales y los personajes, hechos con Meshy y aprobados uno a uno por valravnx.",
+   "estado": "en_curso",
+   "bloquea": false,
+   "nota": "valravnx, 10 nov: «no estamos consiguiendo ese estilo visual, solo un lowpoly generico y tirando a muy feo, asi que he decidido usar meshy para potenciar lo visual del juego»; «la cosa es ir reemplazando todo por lo de meshy poco a poco»; «tenemos tokens de meshy… nos vamos a centrar en ello mientras duren». Plan Premium; los encargos, por la API en automático; cada modelo pasa por valravnx. Se cambia por categorías enteras, en este orden: naturaleza, objetos y estaciones, piezas de construir, animales (el esqueleto lo hace valravnx), personajes.",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: la lista de todo lo que se ve en el juego (naturaleza, objetos y estaciones, piezas de construir, animales y personajes) con su tope de triángulos y de textura para el móvil, el orden por categorías enteras y los créditos de cada tanda (3.000 al mes, Premium)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La tubería de Meshy en GitHub Actions (herramientas/meshy/, .github/workflows/meshy.yml; la clave MESHY_API_KEY es un secreto del repositorio): cada encargo, primero una imagen con el prompt de estilo (herramientas/meshy/estilo.md) y una miniatura de valravnx de referencia, luego el modelo 3D con el remallado de Meshy y su textura; el .glb, aligerado (texturas de 1024 en webp) en una carpeta nueva de docs/recursos/; un tope de créditos por tanda y lo gastado, apuntado",
+     "estado": "pendiente",
+     "nota": "Empezada el 10 nov en el chat con valravnx: el flujo ya comprueba la clave y el saldo (3.375 créditos) y baja los modelos hechos por la API (herramientas/meshy/encargo.py)."
+    },
+    {
+     "nombre": "Capturas para aprobar: cada modelo nuevo en el mundo de verdad (Whitholm), de cerca, en PC y en el móvil, al lado de lo que hay hoy; va a decisiones_pendientes y espera el visto bueno de valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La naturaleza aprobada, en el mundo: árboles, arbustos, matorrales y rocas de Meshy en lugar de los de código, copiados de un mismo modelo (instancias) y con versiones más simples de lejos para que aguante el móvil; medir los fotogramas antes y después",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El mojón de valravnx (Meshy) en el juego, en lugar del de código",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Objetos y estaciones con Meshy: hoguera, hogar, banco de tronco, piedra de tallar, camas, cesto y almacenajes, y las herramientas en la mano (hacha de piedra, lasca, mazo, cuchillo)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Piezas de construir con Meshy, prueba con la casa humilde entera (cimiento, postes, muro de tronco delgado, muro de zarzo con barro, tejado de juncos y puerta): cada pieza a su medida exacta para que encaje en la rejilla",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Personajes: el hombre y la mujer de valravnx (Meshy, con su esqueleto y andar y correr) como base del jugador; propuesta de cómo se viste por capas y se personaliza con ellos, para que valravnx decida",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animaciones de los personajes con Meshy (valravnx, 10 nov: «de todo tipo»): con su biblioteca de animaciones, sobre el esqueleto del hombre y de la mujer, todo lo que hace el jugador (quieto, andar, correr, agacharse, coger del suelo, cargar al hombro, talar, golpear con el mazo, trabajar en la obra, sentarse, tumbarse y levantarse, beber y comer, morir, y los golpes y paradas de la esgrima); 3 créditos cada una",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Animales: valravnx les hace el esqueleto y las animaciones en Meshy (quieto, andar, correr, morir; los nombres en inglés iguales en todos; mirando a +Z) y aquí se aligeran y se meten en el juego",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "supervivencia",
    "num": "P4",
    "nombre": "Un primer día con sentido",
@@ -1904,7 +1964,7 @@
    "estado": "pendiente",
    "tareas": [
     {
-     "nombre": "Prueba del arte de los animales (valravnx, 8 nov: «probar las dos»): un caballo y un corzo de un paquete libre CC0 adaptado al estilo v5 y otros hechos en el taller con Blender, con sus animaciones de andar y correr; capturas de cerca en PC y móvil al lado de la prueba de estilo v5, y valravnx elige el método",
+     "nombre": "Prueba del arte de los animales (valravnx, 8 nov: «probar las dos»): un caballo y un corzo de un paquete libre CC0 adaptado al estilo v5 y otros hechos en el taller con Blender, con sus animaciones de andar y correr; capturas de cerca en PC y móvil al lado de la prueba de estilo v5, y valravnx elige el método (valravnx, 10 nov: los animales salen de Meshy, con el esqueleto hecho por él; ver el hito «El arte con Meshy»)",
      "estado": "pendiente"
     },
     {
