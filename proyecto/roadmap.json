@@ -1526,12 +1526,18 @@
     },
     {
      "nombre": "Personajes: el hombre y la mujer de valravnx (Meshy, con su esqueleto y andar y correr) como base del jugador; propuesta de cómo se viste por capas y se personaliza con ellos, para que valravnx decida",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-10T07:41:38+01:00",
-     "rama": "trabajo/20261110-0740-personajes"
+     "fin": "2026-11-10T09:28:05+01:00"
     },
     {
      "nombre": "Animaciones de los personajes con Meshy (valravnx, 10 nov: «de todo tipo»): con su biblioteca de animaciones, sobre el esqueleto del hombre y de la mujer, todo lo que hace el jugador (quieto, andar, correr, agacharse, coger del suelo, cargar al hombro, talar, golpear con el mazo, trabajar en la obra, sentarse, tumbarse y levantarse, beber y comer, morir, y los golpes y paradas de la esgrima); 3 créditos cada una",
+     "estado": "hecho",
+     "inicio": "2026-11-10T07:41:38+01:00",
+     "fin": "2026-11-10T09:28:05+01:00"
+    },
+    {
+     "nombre": "La ropa por capas y la personalización (complexión, cara, pelo, barba, piel) con los personajes de Meshy (valravnx, 10 nov: «poco a poco, sin prisa»)",
      "estado": "pendiente"
     },
     {

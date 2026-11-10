@@ -5883,5 +5883,22 @@
   "pruebas": "Revisor en la nube: lógica (con la de despiezar y asar; rota a propósito —la carne no se estropea—: falla), recorrido 238/238, despiezar y asar en navegador (PC y móvil; rota a propósito aquí —Usar no ofrece despiezar—: falla), panel de fabricación, panel de inventario, objetos en el suelo, la cama ligada, los avisos de las necesidades, el mazo de piedra y la demo única, bien. La primera vuelta de la lógica se quedó colgada en la nube instalando el navegador; repetida, bien",
   "capturas": "capturas/demo-v169",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T07:41:38+01:00",
+  "fin": "2026-11-10T09:28:05+01:00",
+  "titulo": "Los personajes de Meshy en el juego (demo v170)",
+  "hito": "meshy",
+  "hecho": [
+   "El jugador, los demás jugadores, los luchadores del duelo y el visor son ya el hombre o la mujer de valravnx hechos en Meshy; fuera el del taller, el de Quaternius y el muñeco de bloques",
+   "Esqueleto de la API de Meshy y 59 animaciones de su biblioteca, unidas en un .glb por sexo de unos 3,6 MB (herramientas/meshy/unir_personaje.mjs), los de andar sin avanzar",
+   "8 movimientos hechos a partir de texto con Text to Motion de Meshy (al hombro, empujar la carretilla, arrastrar, talar, picar y en brazos): la biblioteca no los trae; 16 créditos cada uno",
+   "Los pies, en el suelo: el modelo los trae 17 y 19 cm hundidos y se suben al cargar (lo vio valravnx)",
+   "Las manos se ajustan donde agarran (encima del tronco al hombro, en las agarraderas de la carretilla, a los lados de lo que se lleva en brazos)",
+   "Aún sin ropa por capas ni personalización: queda como tarea del hito, poco a poco"
+  ],
+  "pruebas": "Visor de personajes (aquí) y en la nube construcción, demo, llevar, carretilla, rastra, tala, duelo, pelear en el mundo y cama. Fuera de la batería la del visor de las animaciones de cargar del taller (ya no se usan)",
+  "capturas": "capturas/demo-v170",
+  "estado": "ok"
  }
 ]
