@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 10 nov — la referencia de cómo se ve el juego
+valravnx: «te paso una imagen que quiero que guardes siempre y tenga siempre siempre de referencia a como quiero que se vea el juego, medias tintas no me valen». Guardada en `diseno/referencia/aspecto_del_juego.jpg` y puesta en `CLAUDE.md` (Alcance y listón visual) como la referencia de todo lo que se ve.
+
+
 ### 10 nov 2026 (05:15 UTC) — valravnx, en una sesión de chat: el arte, con Meshy
 valravnx: «recuerda que el estilo del juego era de noseque en miniatura, no? no estamos consiguiendo ese estilo visual, solo un lowpoly generico y tirando a muy feo, asi que he decidido usar meshy para potenciar lo visual del juego». La dirección sigue siendo la «maqueta en miniatura» (formas limpias y redondeadas, luz suave, sombras de contacto, fondo desenfocado); lo que cambia es cómo se hace.
 Respuestas de valravnx: de Meshy sale **todo** (objetos y muebles, naturaleza, animales y piezas de construir); llegan **por la API, en automático** (su clave como secreto de GitHub, nunca en el repositorio); plan **Premium** (3.000 créditos al mes, los modelos son suyos); **cada modelo nuevo pasa por él** antes de entrar en el juego (capturas de cerca al lado de la referencia, como el estilo v5). Ya tiene hechos en Meshy el hombre y la mujer básicos, el mojón y alguna prueba más, y un prompt de estilo «miniatura» que le ha diseñado otra IA.
