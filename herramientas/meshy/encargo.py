@@ -135,8 +135,10 @@ if pedido.get('accion') == 'modelos':
         print(n, 'imagen', im.get('status'), im.get('task_error'), 'créditos', im.get('consumed_credits'))
         if im.get('status') != 'SUCCEEDED': informe.append({'nombre': n, 'imagen': im.get('status'), 'error': im.get('task_error')}); continue
         baja(im['image_urls'][0], f'{SAL}/{n}_imagen.png')
-        cuerpo = {'input_task_id': im['id'], 'should_texture': True, 'texture_prompt': corto[:800], 'should_remesh': True,
+        # sin «textura_prompt»: la textura sale de la imagen (con el prompt corto, el follaje salió pardo, 10 nov)
+        cuerpo = {'input_task_id': im['id'], 'should_texture': True, 'should_remesh': True,
                   'target_polycount': c.get('tri', 3000), 'topology': 'triangle', 'target_formats': ['glb'], 'multi_view_thumbnails': True}
+        if pedido.get('textura_prompt', True): cuerpo['texture_prompt'] = corto[:800]
         m = espera('/v1/image-to-3d/' + manda('/v1/image-to-3d', cuerpo)['result'])
         print(n, 'modelo', m.get('status'), m.get('task_error'), 'créditos', m.get('consumed_credits'))
         json.dump({k: v for k, v in m.items() if k != 'model_urls'}, open(f'{SAL}/{n}_tarea.json', 'w'), ensure_ascii=False, indent=1)
