@@ -138,6 +138,11 @@ if pedido.get('accion') == 'modelos':
         # sin «textura_prompt»: la textura sale de la imagen (con el prompt corto, el follaje salió pardo, 10 nov)
         cuerpo = {'input_task_id': im['id'], 'should_texture': True, 'should_remesh': True,
                   'target_polycount': c.get('tri', 3000), 'topology': 'triangle', 'target_formats': ['glb'], 'multi_view_thumbnails': True}
+        # «remallado»: false = la malla tal cual sale (sin el remallado de Meshy, que a pocos triángulos deja el follaje en
+        # esquirlas, naturaleza 1 a 4); se aligera luego aquí con herramientas/meshy/aligerar.mjs (simplificar y texturas de 1024)
+        if not pedido.get('remallado', True):
+            cuerpo['should_remesh'] = False; cuerpo.pop('target_polycount'); cuerpo.pop('topology')
+        if pedido.get('modelo_3d'): cuerpo['ai_model'] = pedido['modelo_3d']
         if pedido.get('textura_prompt', True): cuerpo['texture_prompt'] = corto[:800]
         m = espera('/v1/image-to-3d/' + manda('/v1/image-to-3d', cuerpo)['result'])
         print(n, 'modelo', m.get('status'), m.get('task_error'), 'créditos', m.get('consumed_credits'))
