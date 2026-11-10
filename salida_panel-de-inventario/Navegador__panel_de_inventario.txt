@@ -1,0 +1,126 @@
+PC: arrastrar del arcón a la silueta y a los huecos
+  OK   el botón abre el panel
+  OK   10 cuadros de equipo (espalda, cintura y 8 capas de ropa) — 10
+  OK   el panel se llama «Equipo» (el botón y el título)
+  OK   las manos y el hombro, en el panel
+  OK   lo del arcón, con la imagen de su modelo
+  OK   lo de la camisa puesta se ve con su imagen (la prenda dibujada)
+  OK   el retrato es tu personaje dibujado (un 10–60 % del cuadro) — 0.18
+  OK   empieza con camisa y pantalón de lino
+  OK   sin cinturón no hay cuadros de cintura
+  OK   arrastrar el cinto de cuero a la cintura se lo pone — cinto_cuero:1
+  OK   con el cinto, 3 cuadros de cintura bajo la silueta — 3
+  OK   el cuchillo, arrastrado a un hueco pequeño del cinto — cuchillo:1
+  OK   el hacha (mediana) no entra en un hueco pequeño, y se dice por qué — No cabe en ese hueco.
+  OK   tocar el leñero abre sus 6 huecos — lenero:1 ·  · espalda
+  OK   la leña entra en el leñero, una pila entera — lena:3
+  OK   la piedra no entra en el leñero
+  OK   el personaje se pone la túnica que dice el inventario — ['tunica', 'descalzo']
+  OK   con el hacha en la mano, el saco no se sube al hombro (valravnx, 1 nov) — Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.
+  OK   del arcón: el hacha con las manos y el odre colgado al hombro — hacha_mano:1 · odre:1
+  OK   el hacha se ve en la mano del personaje
+  OK   abajo se ve lo que llevas en la mano y al hombro — En la mano derecha: Hacha de mano
+Soltar
+Al hombro: Odre
+Soltar
+Al cinto: Cuchillo
+  OK   la barra de abajo: las dos manos, el hombro y el cinto, cada cosa con su imagen y su botón de soltar — {'huecos': 4, 'imgs': 3, 'soltar': 2, 'hombro': True, 'fondo': 'url("http://127.0.0.1:41141/recursos/interfaz-v1/hueco.webp")'}
+  OK   arrastrar el cuchillo del cinto al arcón lo deja
+  OK   se ve la carga y la velocidad — Carga: 42% · velocidad al andar: 97%
+  OK   cada cambio queda en el registro de acciones con autor — 10
+  OK   «Soltar» deja lo de la mano (y el hacha ya no se ve)
+  OK   y lo del hombro; sin nada, abajo quedan las dos manos vacías (sin nada que soltar)
+  OK   lo que llevas se guarda al recargar
+  OK   la tecla I abre el panel
+  OK   la ficha del hacha dice cuánto le queda (18 usos de 168), con su barra en rojo — Le quedan 18 usos de 168
+  OK   la ficha del hacha dice dónde y con qué se repara (la piedra de tallar, un cordel) — Equipo
+Lo que llevas puesto, en las manos y guardado. Toca algo para ver qué puedes hacer con ello.
+✕
+Cabeza
+—
+Sobre todo
+—
+Abrigo
+Túnica de lana
+Guantes
+—
+Piernas
+Pantalón de lino
+Espalda
+Leñero
+Exterior
+—
+Camisa
+Camisa de lino
+Cintura
+Cinto de cuero
+Pies
+—
+Manos y hombro
+Mano derecha
+Hacha de pied
+  OK   la ficha de la camisa dice cuánto le queda (150 usos de 600) y que se zurce en el banco con fibra — Le quedan 150 usos de 600 · Equipo
+Lo que llevas puesto, en las manos y guardado. Toca algo para ver qué puedes hacer con ello.
+✕
+Cabeza
+—
+Sobre todo
+—
+Abrigo
+Túnica de lana
+Guantes
+—
+Piernas
+Pantalón de lino
+Espalda
+Leñero
+Exterior
+—
+Camisa
+Camisa de lino
+Cintura
+Cinto de cuero
+Pies
+—
+Manos y hombro
+Mano derecha
+—
+Mano izquie
+  OK   al recargar, el personaje lleva otra vez la túnica — ['tunica', 'descalzo']
+  OK   la túnica cosida entra con su hechura y su tinte — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'corto', 'tejido': 'sarga'}, 'tinte': 'glasto'}
+  OK   su cuadro dice la hechura y el tinte — Túnica de lana · Corto, Sarga · Azul de glasto
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_inventario_navegador.py", line 181, in <module>
+    puesto = pg.evaluate(f"""(() => {{ const m = {K}.jugador.mh; let cota = -100; m.modelo.traverse(n => {{ if (n.isMesh && /_capa_cota_falda$/.test(n.name)) cota = m.corteDe(n); }});
+      return {{ tinte: m.tintes.prendas.tunica, corte: m.hechuras.tunica.corte, tejido: m.hechuras.tunica.tejido, cota: m.hechuras.cota.corte, alturaCota: cota, capas: m.capas }}; }})()""")
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of null (reading 'prendas')
+    at eval (eval at evaluate (:311:30), <anonymous>:2:32)
+    at eval (eval at evaluate (:311:30), <anonymous>:2:181)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
