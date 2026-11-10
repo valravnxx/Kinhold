@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2566 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2902 KB
+
+== Construir demo única
+      3204 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4163 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2969 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2560 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2921 KB
+dist/kinhold_trozos.html 2575 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: personaje
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'castano', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'makehuman'}
+  OK   sin errores en consola (movil)
+
+Resultado: 2 fallos: (hombre) al picar, el pico en la mano; al talar, el hacha; con la espada, nada, (hombre) al picar, el pico en la mano; al talar, el hacha; con la espada, nada
+!! FALLA: python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html /tmp/kinhold_capturas/personaje
+
+HAY FALLOS
+tardó 385 s
