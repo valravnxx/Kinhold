@@ -571,7 +571,7 @@ export function crearLlevado(j) {
           hueso = H.clavicle_r;
           // donde van los nudillos de la mano derecha: encima del tronco, algo por delante del hombro (los personajes de
           // Meshy no traen la postura: el brazo se pone ahí, src/juego/personaje.js)
-          agarre = v3(x, yT + r + 0.01, z + 0.04);
+          agarre = v3(x, yT + r + 0.035, z + 0.04);
         } else troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, largo, r, 'z');
       } else if (t === 'saco') {
         // el saco lleno, echado sobre el hombro derecho y colgando a la espalda; la boca atada por delante

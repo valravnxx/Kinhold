@@ -39,9 +39,25 @@ export function brazoHacia(b, objetivo, polo) {
 
 // Lleva los nudillos (el punto middle_01 de la mano, src/personajes/meshy.js) a `punto` (en el mundo), con el codo hacia
 // `polo`: mueve la muñeca lo que les falta, dos veces (la mano gira con el antebrazo).
+// La mano se pone recta con el antebrazo y el conjunto (antebrazo y mano) hace de segundo hueso: los nudillos van al punto
+// (en los de Meshy el hueso de la mano está en la muñeca y los nudillos quedan a 15-20 cm: una mano torcida los apartaba).
 export function nudillosA(b, punto, polo) {
-  for (let i = 0; i < 2; i++) {
-    const m = b.mano.getWorldPosition(V(0, 0, 0)), n = b.nudillo ? b.nudillo.getWorldPosition(V(0, 0, 0)) : m.clone();
-    brazoHacia(b, punto.clone().sub(n.sub(m)), polo);
-  }
+  if (!b.nudillo) { brazoHacia(b, punto, polo); return; }
+  const S = b.sup.getWorldPosition(V(0, 0, 0)), E0 = b.inf.getWorldPosition(V(0, 0, 0)), H0 = b.mano.getWorldPosition(V(0, 0, 0));
+  const N0 = b.nudillo.getWorldPosition(V(0, 0, 0));
+  const la = S.distanceTo(E0), lb = E0.distanceTo(H0) + H0.distanceTo(N0);
+  const dir = punto.clone().sub(S);
+  const d = THREE.MathUtils.clamp(dir.length(), Math.abs(la - lb) + 1e-3, (la + lb) * 0.999);
+  const n = dir.normalize();
+  const cos = (la * la + d * d - lb * lb) / (2 * la * d), sen = Math.sqrt(Math.max(0, 1 - cos * cos));
+  const perp = polo.clone().sub(n.clone().multiplyScalar(polo.dot(n)));
+  if (perp.lengthSq() < 1e-8) perp.set(0, -1, 0);
+  perp.normalize();
+  const codo = S.clone().addScaledVector(n, la * cos).addScaledVector(perp, la * sen);
+  const fin = S.clone().addScaledVector(n, d);
+  girarHueso(b.sup, E0, codo);
+  girarHueso(b.inf, b.mano.getWorldPosition(_d), fin);   // el antebrazo, hacia el punto
+  const m = b.mano.getWorldPosition(V(0, 0, 0));
+  girarHueso(b.mano, b.nudillo.getWorldPosition(V(0, 0, 0)), fin);   // y la mano, recta hacia él
+  void m;
 }

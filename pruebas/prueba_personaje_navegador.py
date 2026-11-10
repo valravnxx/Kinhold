@@ -151,7 +151,8 @@ with sync_playwright() as p:
             pg.evaluate(f"{E}.ponerModo('talar')"); pg.evaluate(f'{E}.instante(0.4)'); herr_talar = pg.evaluate(f'{E}.herramienta()')
             pg.click('[data-vista="cuerpo"]'); pg.evaluate(f'{E}.instante(0.4)'); pg.screenshot(path=f'{SALIDA}/{nombre}_{sexo}_talar.png')
             if os.environ.get('MUTAR'): herr_talar = None
-            cerca = lambda h: h and sum((h['mano'][i] - pg.evaluate(f"{E}.hueso('hand_r')")[i]) ** 2 for i in range(3)) ** 0.5 < 0.15
+            # (en los de Meshy el hueso de la mano está en la muñeca: el mango, a unos 20 cm)
+            cerca = lambda h: h and sum((h['mano'][i] - pg.evaluate(f"{E}.hueso('hand_r')")[i]) ** 2 for i in range(3)) ** 0.5 < 0.28
             comprobar(f'({sexo}) al picar, el pico en la mano; al talar, el hacha; con la espada, nada',
                       bool(herr_minar) and herr_minar['tipo'] == 'pico' and bool(herr_talar) and herr_talar['tipo'] == 'hacha' and cerca(herr_talar) and herr_golpe is None,
                       f'{herr_minar} / {herr_talar} / {herr_golpe}')
