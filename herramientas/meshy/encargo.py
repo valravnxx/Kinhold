@@ -2,6 +2,7 @@
 # del repositorio) y nunca se escribe en ningún archivo. Lee herramientas/meshy/pedido.json:
 #   {"accion": "saldo"}    cuántos créditos quedan
 #   {"accion": "listar"}   los modelos ya hechos (en la web o por la API): sus datos, la imagen y el .glb, a salida/
+#   {"accion": "biblioteca"} la biblioteca de animaciones de Meshy (gratis), a salida/biblioteca.json
 # Lo que sale va a salida/ y vuelve por la rama meshy/<ejecución>.
 import json, os, sys, urllib.request
 
@@ -60,3 +61,14 @@ if not CLAVE:
     print('FALTA la clave: no hay secreto MESHY_API_KEY'); open(f'{SAL}/saldo.txt', 'w').write('sin clave'); sys.exit(1)
 saldo = pide('/v1/balance'); open(f'{SAL}/saldo.txt', 'w').write(json.dumps(saldo)); print('saldo', saldo)
 if pedido.get('accion') == 'listar': listar()
+if pedido.get('accion') == 'biblioteca':
+    todo = []
+    for pag in range(1, 40):
+        try: l = pide(f'/v1/animations/library?page_size=100&page_num={pag}')
+        except Exception as e: print('error', e); break
+        items = l if isinstance(l, list) else (l.get('result') or l.get('items') or l.get('data') or [])
+        if not items: break
+        todo += items
+        if len(items) < 100: break
+    json.dump(todo, open(f'{SAL}/biblioteca.json', 'w'), ensure_ascii=False, indent=1)
+    print(len(todo), 'animaciones')
