@@ -1,12 +1,12 @@
-// Kinhold — el jugador de la construcción: el personaje del taller propio (MakeHuman vestido por código, con las
-// animaciones de Quaternius) con camisa y calzas de lino y descalzo, como empieza según el GDD (los pies descalzos
-// están desde la taller-v12).
-// Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
+// Kinhold — el jugador (y los demás jugadores en línea): el hombre o la mujer de Meshy (src/personajes/meshy.js), con
+// sus animaciones de la biblioteca de Meshy (valravnx, 10 nov: fuera los modelos de antes, el del taller, el de
+// Quaternius y el muñeco de bloques). Mientras se carga no se ve nada (sale en un momento).
 import * as THREE from 'three';
-import { mat, cajaR, deMano } from '../mundo/modelos.js';
+import { cajaR, deMano } from '../mundo/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
-import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
+export { carpetaMeshy };
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
 import { crearLlevado } from './llevado.js';
 import { loteHachaPiedra, loteMazoPiedra } from './modelos_objetos.js';
@@ -31,64 +31,6 @@ function nivelPara(j) {
   if (!_f.intersectsSphere(_e.set(_p, RADIO_VISTA))) return OCULTO;
   const px = pixelesEnPantalla(_p.distanceTo(c.position), innerHeight, c.fov);
   return nivelDetalle(px, j.mh.nivel);
-}
-
-const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
-
-
-function pieza(geo, color, x, y, z) {
-  const m = new THREE.Mesh(geo, mat(color));
-  m.position.set(x, y, z);
-  m.castShadow = true;
-  return m;
-}
-
-// muñeco provisional (el de siempre), solo mientras carga el del taller
-function crearMuneco() {
-  const g = new THREE.Group();
-  const cuerpo = new THREE.Group();
-  g.add(cuerpo);
-  const piernas = [];
-  for (const lado of [-1, 1]) {
-    const cadera = new THREE.Group();
-    cadera.position.set(lado * 0.12, 0.9, 0);
-    cadera.add(pieza(new THREE.BoxGeometry(0.17, 0.78, 0.2), LINO_OSC, 0, -0.39, 0));
-    cadera.add(pieza(new THREE.BoxGeometry(0.15, 0.1, 0.26), PIEL, 0, -0.85, 0.04));
-    cuerpo.add(cadera);
-    piernas.push(cadera);
-  }
-  cuerpo.add(pieza(new THREE.BoxGeometry(0.46, 0.62, 0.26), LINO, 0, 1.22, 0));
-  cuerpo.add(pieza(new THREE.BoxGeometry(0.48, 0.06, 0.28), CORDEL, 0, 0.93, 0));
-  const brazos = [];
-  for (const lado of [-1, 1]) {
-    const hombro = new THREE.Group();
-    hombro.position.set(lado * 0.3, 1.48, 0);
-    hombro.add(pieza(new THREE.BoxGeometry(0.13, 0.42, 0.14), LINO, 0, -0.21, 0));
-    hombro.add(pieza(new THREE.BoxGeometry(0.11, 0.24, 0.12), PIEL, 0, -0.52, 0));
-    cuerpo.add(hombro);
-    brazos.push(hombro);
-  }
-  const cabeza = new THREE.Group();
-  cabeza.position.set(0, 1.62, 0);
-  cabeza.add(pieza(new THREE.BoxGeometry(0.1, 0.1, 0.1), PIEL, 0, 0.02, 0));
-  cabeza.add(pieza(new THREE.IcosahedronGeometry(0.15, 0), PIEL, 0, 0.2, 0));
-  cabeza.add(pieza(new THREE.IcosahedronGeometry(0.155, 0), PELO, 0, 0.26, -0.03));
-  cuerpo.add(cabeza);
-  g.userData = { piernas, brazos, cuerpo, fase: 0 };
-  return g;
-}
-function animarMuneco(g, velocidad, dt) {
-  const u = g.userData;
-  if (velocidad > 0.1) {
-    u.fase += dt * velocidad * 2.4;
-    const a = Math.sin(u.fase) * Math.min(0.7, velocidad * 0.16);
-    u.piernas[0].rotation.x = a; u.piernas[1].rotation.x = -a;
-    u.brazos[0].rotation.x = -a * 0.8; u.brazos[1].rotation.x = a * 0.8;
-    u.cuerpo.position.y = Math.abs(Math.cos(u.fase)) * 0.03;
-  } else {
-    for (const p of [...u.piernas, ...u.brazos]) p.rotation.x *= 0.8;
-    u.cuerpo.position.y *= 0.8;
-  }
 }
 
 // Hacha de talar con el estilo v5 (como la del tocón de la prueba): mango de fresno con veta, algo curvado y más
@@ -175,25 +117,21 @@ export function modeloHachaDe(tipo) {
   return g;
 }
 
-// Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
-// `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
-// `ropa`: { tintes, hechuras } de lo que lleva puesto (src/logica/hechura.js: vestidoDe); sin ella, los de siempre.
+// Devuelve { raiz, animar(velocidad, dt, talando), mh }. `recursos`: la carpeta de personajes del taller
+// (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v1. `sexo`: el del personaje elegido.
+// `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
 const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
-  const muneco = crearMuneco();
-  raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  // cargas: las animaciones de llevar al hombro, arrastrar y empujar hechas en el taller (taller-carga-v3, unos 100 KB)
-  j.listo = crearPersonajeMH({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras, cargas: true }, recursos).then(mh => {
-    raiz.remove(muneco);
+  j.listo = crearPersonajeMeshy({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras }, carpetaMeshy(recursos)).then(mh => {
     raiz.add(mh.raiz);
     j.mh = mh;
     j.hacha = empunar(mh, modeloHachaDe(j.tipoHacha)); j.hachaPuesta = j.tipoHacha;
     cuenta.add(j);
-  }).catch(e => { j.error = e.message || String(e); console.warn('Personaje del taller no cargado, sigue el muñeco:', e); });
+  }).catch(e => { j.error = e.message || String(e); console.warn('Personaje no cargado:', e); });
   j.animar = (velocidad, dt, talando = false) => {
-    if (!j.mh) { animarMuneco(muneco, velocidad, dt); return; }
+    if (!j.mh) return;
     // andar despacio (joystick a medias), correr a partir de 1,8 m/s; la animación se acelera con la velocidad,
     // hasta 1,6× (más rápido se ve atropellado; a 6 m/s los pies resbalan algo)
     let m = 'quieto', ritmo = 1;

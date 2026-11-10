@@ -1,11 +1,12 @@
-// Kinhold — los luchadores del duelo con el personaje del taller propio (MakeHuman vestido por capas).
+// Kinhold — los luchadores del duelo con el hombre o la mujer de Meshy (src/personajes/meshy.js; antes, el personaje
+// del taller propio, MakeHuman vestido por capas).
 // La armadura del duelo son las capas del taller: lino = camisa y calzas, gambesón = gambesón, malla = gambesón y cota.
 // Las piernas y el cuerpo van con las animaciones del taller (guardia, andar, correr); los brazos se colocan cada
 // fotograma con cinemática inversa de dos huesos para que las manos agarren el arma donde la pone la lógica de poses de
 // modelos.js (la misma de antes: golpes, paradas, escudo, arco y honda no cambian). Las heridas se pegan en la superficie
 // del cuerpo o de la ropa, donde entra el golpe, y siguen al hueso.
 import * as THREE from 'three';
-import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
 import { textura } from '../mundo/estilos.js';
 
 export const CAPAS_ARMADURA = { lino: [], gambeson: ['gambeson'], malla: ['gambeson', 'cota'] };
@@ -56,8 +57,10 @@ function cerrarMano(b, eje) {
 export function vestirConTaller(raiz, { armadura = 'lino', colorCinta = 0xc0392b, sexo = 'hombre', capas = null, aspecto = undefined } = {}, recursos) {
   const u = raiz.userData;
   u.taller = { estado: 'cargando' };
-  return crearPersonajeMH({ sexo, capas: capas || CAPAS_ARMADURA[armadura] || [], aspecto }, recursos).then(mh => {
-    for (const hijo of [...u.cuerpo.children]) if (hijo !== u.armas) hijo.visible = false;
+  // el muñeco de bloques ya no se ve (valravnx, 10 nov: «todos fuera»): mientras carga, solo el arma
+  for (const hijo of [...u.cuerpo.children]) if (hijo !== u.armas) hijo.visible = false;
+  // el hombre o la mujer de Meshy (src/personajes/meshy.js); la armadura por capas aún no se ve en ellos
+  return crearPersonajeMeshy({ sexo, capas: capas || CAPAS_ARMADURA[armadura] || [], aspecto }, carpetaMeshy(recursos)).then(mh => {
     u.cuerpo.add(mh.raiz);
     mh.raiz.updateMatrixWorld(true);
     const h = mh.hueso;
@@ -80,7 +83,7 @@ export function vestirConTaller(raiz, { armadura = 'lino', colorCinta = 0xc0392b
     const cinta = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.22, 0.012), new THREE.MeshLambertMaterial({ color: colorCinta, map: textura('tejido') }));
     cinta.name = 'cinta';
     pegar(u, cinta, { hueso: h.spine_03, de: h.spine_03, a: h.spine_03, alto: 0.07, par: hombros }, 0.07, 0.02, 1);
-  }).catch(e => { u.taller = { estado: 'error', error: e.message || String(e) }; console.warn('Luchador del taller no cargado, sigue el muñeco:', e); });
+  }).catch(e => { u.taller = { estado: 'error', error: e.message || String(e) }; console.warn('Luchador no cargado:', e); });
 }
 
 const _ray = new THREE.Raycaster();

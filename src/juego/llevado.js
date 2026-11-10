@@ -34,7 +34,7 @@ const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -1
 const azar = (s) => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
 // ---------- medir el cuerpo ----------
-const BRAZO = /upperarm|lowerarm|hand|thumb|index|middle|ring|pinky|metacarpal/;
+const BRAZO = /upperarm|lowerarm|hand|thumb|index|middle|ring|pinky|metacarpal|Arm$|Hand$/; // (Arm, ForeArm y Hand: el esqueleto de Meshy)
 const CABEZA = /(pelo|barba|ojo|iris|cejas|orejas|vello|cofia|dientes|lengua)/;
 // Puntos del cuerpo vestido, en el espacio de `raiz` (el del personaje), sin brazos ni cabeza. También la altura del
 // cinturón del taller si se ve (va sobre la última prenda ceñida).
@@ -46,7 +46,7 @@ function medir(mh, raiz) {
     if (!o.isSkinnedMesh || !o.visible || o.userData.herramienta || CABEZA.test(o.name)) return;
     const g = o.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
     if (!pos || !si) return;
-    const huesos = o.skeleton.bones.map(b => BRAZO.test(b.name) ? 2 : /head|neck/.test(b.name) ? 1 : 0);
+    const huesos = o.skeleton.bones.map(b => BRAZO.test(b.name) ? 2 : /head|neck/i.test(b.name) ? 1 : 0);
     m.multiplyMatrices(inv, o.matrixWorld);
     const esCinturon = /_cinturon_/.test(o.name), paso = pos.count > 12000 ? 2 : 1;
     for (let i = 0; i < pos.count; i += paso) {

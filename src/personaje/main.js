@@ -5,8 +5,8 @@ import { LUCES } from '../mundo/estilos.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { vigilar } from '../mundo/rendimiento.js';
 import { crearEscena } from '../estilo/escena.js';
-import { crearPersonaje, OPCIONES } from '../personajes/cargar.js';
-import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { OPCIONES } from '../personajes/cargar.js';
+import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
 import { empunar, HERRAMIENTA_DE, MODELOS_HERRAMIENTA } from '../juego/personaje.js';
 import { VERSION_PERSONAJE, REGISTRO_PERSONAJE } from './registro.js';
 import { BASES, CAPAS, ANIMS, ANIMS_EXTRA, ZONAS_TABLA, GOLPES_TABLA } from './textos.js';
@@ -117,7 +117,9 @@ async function rehacer() {
   const n = ++cargando;
   $('cargando').hidden = false;
   if (!OPCIONES.pelo[estado.sexo][estado.pelo]) estado.pelo = Object.keys(OPCIONES.pelo[estado.sexo])[0];
-  const nuevo = estado.base === 'makehuman' ? await crearPersonajeMH({ ...estado, capas: capasMH(), aspecto: aspectoMH(), tintes: tintesMH(), hechuras: hechurasMH(), extra: RECURSOS_ANIM_MH, cargas: RECURSOS_CARGAS_MH }, RECURSOS_MH) : await crearPersonaje(estado, RECURSOS);
+  // el hombre o la mujer de Meshy (valravnx, 10 nov: fuera el taller, Quaternius y el muñeco de bloques). La ropa por
+  // capas, los tintes, las hechuras y el aspecto vuelven cuando estos modelos los tengan («poco a poco, sin prisa»)
+  const nuevo = await crearPersonajeMeshy({ sexo: estado.sexo }, carpetaMeshy(RECURSOS_MH));
   if (n !== cargando) return; // llegó otro cambio mientras cargaba
   if (pj) escena.remove(pj.raiz);
   pj = nuevo;
@@ -157,17 +159,15 @@ function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${ti
 function pintarOpciones() {
   const grupo = (clave, valores, titulo) => `<div class="grupo"><span>${tr(titulo)}</span>${Object.entries(valores).map(([k, v]) =>
     `<button data-op="${clave}" data-v="${k}" class="${estado[clave] === k ? 'sel' : ''}">${Array.isArray(v) ? `<i style="background:#${new THREE.Color(v[1]).getHexString()}"></i>${tr(v[0])}` : tr(v)}</button>`).join('')}</div>`;
-  const mh = estado.base === 'makehuman';
-  $('opciones').innerHTML = grupo('base', BASES, 'Base del personaje') + grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
+  const mh = false; // (la ropa y el aspecto del taller: aún no en los de Meshy)
+  $('opciones').innerHTML = grupo('sexo', OPCIONES.sexo, 'Cuerpo') +
     (mh ? `<div class="grupo"><span>${tr(estado.sexo === 'hombre' ? 'Ropa por capas (debajo siempre camisa y calzas, y zapatos si no vas descalzo)' : 'Ropa por capas (debajo siempre camisa, y zapatos si no vas descalza)')}</span>${(pj?.capasPosibles || []).map(c =>
         `<button data-capa="${c}" class="${capasMH().includes(c) ? 'sel' : ''}">${tr(CAPAS[c])}</button>`).join('')}</div>` +
       pintarTintes() + pintarHechuras() + pintarRopa() + pintarAspecto()
-      : grupo('ropa', { campesino: OPCIONES.ropa.campesino }, 'Ropa') + grupo('pelo', OPCIONES.pelo[estado.sexo], 'Pelo') +
-    grupo('colorPelo', OPCIONES.colorPelo, 'Color del pelo') + grupo('piel', OPCIONES.piel, 'Piel') + (estado.sexo === 'hombre' ? grupo('barba', OPCIONES.barba, 'Barba') : '')) +
-    grupo('calidad', { alta: 'Alta', ligera: 'Ligera (móvil)' }, 'Calidad') +
+      : '') +
     `<div class="grupo"><span>${tr('Prueba de rendimiento (mira los fps arriba)')}</span><button data-diag="sombras" class="${estado.sombras ? 'sel' : ''}">${tr('Sombras')}</button><button data-diag="escena" class="${estado.escena ? 'sel' : ''}">${tr('Cabaña y suelo')}</button></div>` +
     `<div class="grupo"><span>${tr('Animación')}</span>${Object.entries(ANIMS).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>` +
-    (mh ? `<div class="grupo" id="anims-extra"><span>${tr('Más animaciones')}</span>${Object.entries(ANIMS_EXTRA).filter(([k]) => pj?.acciones[k]).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>` : '');
+    (pj ? `<div class="grupo" id="anims-extra"><span>${tr('Más animaciones')}</span>${Object.entries(ANIMS_EXTRA).filter(([k]) => pj?.acciones[k]).map(([k, v]) => `<button data-modo="${k}" class="${estado.modo === k ? 'sel' : ''}">${tr(v)}</button>`).join('')}</div>` : '');
   for (const b of $('opciones').querySelectorAll('[data-op]')) b.onclick = () => { estado[b.dataset.op] = b.dataset.v; if (b.dataset.op === 'calidad') estado.calidadElegida = true; rehacer(); };
   for (const b of $('opciones').querySelectorAll('[data-modo]')) b.onclick = () => ponerModo(b.dataset.modo);
   for (const b of $('opciones').querySelectorAll('[data-capa]')) b.onclick = () => {
