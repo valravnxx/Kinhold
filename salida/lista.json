@@ -1,0 +1,106 @@
+[
+ {
+  "tipo": "image-to-3d",
+  "id": "232f4468-272e-5f0d-9e0e-a0e244a7e021",
+  "estado": "SUCCEEDED",
+  "creado": 1794287009080,
+  "prompt": "",
+  "modelo": null,
+  "creditos": 0,
+  "imagen": 126708,
+  "glb": 49023072
+ },
+ {
+  "tipo": "image-to-3d",
+  "id": "12b5a6c9-3690-4d38-b689-d7875d42b71d",
+  "estado": "SUCCEEDED",
+  "creado": 1794286887661,
+  "prompt": "",
+  "modelo": null,
+  "creditos": 0,
+  "imagen": 174744,
+  "glb": 93247040
+ },
+ {
+  "tipo": "image-to-3d",
+  "id": "3d285c4b-63b5-5bf6-9913-31cdb35f0ad7",
+  "estado": "SUCCEEDED",
+  "creado": 1794237116374,
+  "prompt": "",
+  "modelo": null,
+  "creditos": 0,
+  "imagen": 68943,
+  "glb": 22159576
+ },
+ {
+  "tipo": "image-to-3d",
+  "id": "ce9135ef-8270-4319-8118-7ba4b8b0eb41",
+  "estado": "SUCCEEDED",
+  "creado": 1794237009994,
+  "prompt": "",
+  "modelo": null,
+  "creditos": 0,
+  "imagen": 77189,
+  "glb": 49626040
+ },
+ {
+  "tipo": "text-to-image",
+  "id": "a8f8385f-c055-403d-acaa-cb9e5d2dbafa",
+  "estado": "SUCCEEDED",
+  "creado": 1794286787147,
+  "prompt": "Change the proportions of the panel to be vertically tall and rectangular (2:1 aspect ratio, 2 meters high by 1 meter wide). Remove the heavy interior wooden divider grid so there is only a clean, slim weathered oak timber frame running around the outer perimeter, enclosing a large continuous sectio",
+  "modelo": "gpt-image-2-5-sunburst",
+  "creditos": 0,
+  "img0": 2368719
+ },
+ {
+  "tipo": "text-to-image",
+  "id": "92cb7dca-70d2-486f-96ab-785b0f286c2e",
+  "estado": "SUCCEEDED",
+  "creado": 1794286720832,
+  "prompt": "A single modular medieval wattle and daub wall panel, museum-quality historical architectural diorama style, miniature medieval model. Construction: sturdy rectangular timber frame made of weathered aged oak perimeter beams, straight vertical wooden studs, and horizontal cross braces. Infill of auth",
+  "modelo": "gpt-image-2-5-flare",
+  "creditos": 0,
+  "img0": 1897406
+ },
+ {
+  "tipo": "text-to-image",
+  "id": "2444406b-746d-4c4c-9741-e8f490a385bb",
+  "estado": "SUCCEEDED",
+  "creado": 1794236944135,
+  "prompt": "Full-body shot of a realistic medieval peasant male character, approximately 30 years old, average realistic human build and proportions, humble and weary expression. Standing in a relaxed neutral A-pose, arms angled away from the torso with palms facing downward, legs slightly apart. Wearing only a",
+  "modelo": "gpt-image-2-5-flare",
+  "creditos": 0,
+  "img0": 1063259
+ },
+ {
+  "tipo": "image-to-image",
+  "id": "a8f8385f-c055-403d-acaa-cb9e5d2dbafa",
+  "estado": "SUCCEEDED",
+  "creado": 1794286787147,
+  "prompt": "Change the proportions of the panel to be vertically tall and rectangular (2:1 aspect ratio, 2 meters high by 1 meter wide). Remove the heavy interior wooden divider grid so there is only a clean, slim weathered oak timber frame running around the outer perimeter, enclosing a large continuous sectio",
+  "modelo": "gpt-image-2-5-sunburst",
+  "creditos": 0,
+  "img0": 2368719
+ },
+ {
+  "tipo": "image-to-image",
+  "id": "92cb7dca-70d2-486f-96ab-785b0f286c2e",
+  "estado": "SUCCEEDED",
+  "creado": 1794286720832,
+  "prompt": "A single modular medieval wattle and daub wall panel, museum-quality historical architectural diorama style, miniature medieval model. Construction: sturdy rectangular timber frame made of weathered aged oak perimeter beams, straight vertical wooden studs, and horizontal cross braces. Infill of auth",
+  "modelo": "gpt-image-2-5-flare",
+  "creditos": 0,
+  "img0": 1897406
+ },
+ {
+  "tipo": "image-to-image",
+  "id": "2444406b-746d-4c4c-9741-e8f490a385bb",
+  "estado": "SUCCEEDED",
+  "creado": 1794236944135,
+  "prompt": "Full-body shot of a realistic medieval peasant male character, approximately 30 years old, average realistic human build and proportions, humble and weary expression. Standing in a relaxed neutral A-pose, arms angled away from the torso with palms facing downward, legs slightly apart. Wearing only a",
+  "modelo": "gpt-image-2-5-flare",
+  "creditos": 0,
+  "img0": 1063259
+ }
+]
