@@ -732,6 +732,7 @@ try {
     // adultos (168 golpes); la casa pide 16 jóvenes (8 golpes cada uno) y un adulto (56), así que se le rompe talando el
     // adulto y, como haría un jugador, se hace otra junto a la casa con lo que recoge: fibra para 2 cordeles, 2 piedras
     // (una para una piedra de tallar nueva y otra para el hacha) y una rama
+    if (process.env.DEPURAR) console.log('    [depurar antes]', JSON.stringify(s.objetos.invs.de(J.bienvenida.autor).lugares.cintura), JSON.stringify(J.inv.lugares.cintura), JSON.stringify(J.nec), s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex').length);
     const hachasRotas = [];
     const adelantar = () => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola)]) if (c.autor === yo) c.fin = Math.min(c.fin, Date.now() - 1); };
     const otraHacha = async () => {
@@ -934,6 +935,7 @@ try {
     const ad = await talar('adulto');
     comprobar('tala un árbol adulto con su hacha de piedra (despacio)', ad.ok, `${ad.motivo || ''} ${ad.golpes || ''} golpes`);
     comprobar('el hacha de piedra se le rompe de tanto talar (168 golpes: 16 jóvenes y parte del adulto), sale de la mano, y se hace otra', hachasRotas.length === 1 && hachasRotas[0].edad === 'adulto' && hachasRotas[0].usado === 168 && !hachasRotas[0].enMano && ad.ok, JSON.stringify(hachasRotas));
+    if (process.env.DEPURAR) console.log('    [depurar tras el adulto]', JSON.stringify(s.objetos.invs.de(J.bienvenida.autor).lugares.cintura), JSON.stringify(J.inv.lugares.cintura), JSON.stringify(J.nec), s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex').length);
     const largo = ad.ok && enSuelo('tronco_largo', ad.a, 6)[0];
     let golpes = 0, tz = { ok: false, motivo: 'no hay tronco largo' };
     if (largo) {
@@ -974,6 +976,7 @@ try {
     for (const o of enSuelo('cuerda', taller2, 2.5)) await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: o.cosa.n, a: J.inv.lugares['mano:der'] && J.inv.lugares['mano:der'].tipo !== 'cuerda' ? 'mano:izq' : 'mano:der', x: J.pos.x, z: J.pos.z });
     comprobar('arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas', cordeles === 9 && cuerdas === 3 && J.cuantos('cuerda') === 3, `${cordeles} cordeles, ${cuerdas} cuerdas · ${enMano()} · ${noTrenza.join(' | ')}`);
 
+    if (process.env.DEPURAR) console.log('    [depurar tras las cuerdas]', JSON.stringify(s.objetos.invs.de(J.bienvenida.autor).lugares.cintura), JSON.stringify(J.inv.lugares.cintura), JSON.stringify(J.nec), s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex').length);
     // 16g. la puerta de varas, en el hueco del muro de la puerta: una de las cuerdas y 4 varas
     const puerta = pieza('puerta_varas', 0, -0.95);
     r = await marco(puerta);
@@ -1280,11 +1283,30 @@ try {
       comprobar('bebe hasta quitarse la sed', J.nec.sed <= 40, `sed ${sedAntes} → ${J.nec.sed}`);
       await J.andar(desde.x, desde.z);
     }
+    // y con hambre, come (10 nov: talar tanto que se le rompe el hacha y hacerse otra lleva su rato, y el hambre sube):
+    // las bayas que lleva y, si no basta, las de los arbustos de alrededor, como haría un jugador
+    const hambreAntes = J.nec.hambre;
+    if (J.nec.hambre > 60) {
+      for (let i = 0; i < 6 && J.cuantos('bayas') > 0 && J.nec.hambre > 40; i++) { await J.objeto({ tipo: 'comer', objeto: 'bayas' }); await pausa(300); }
+      const cuadro2 = { x0: O.x + J.pos.x - 200, z0: O.z + J.pos.z - 200, x1: O.x + J.pos.x + 200, z1: O.z + J.pos.z + 200 };
+      const matas = cerca(recogidaEn(T.paisaje, T.alt, T.semilla, cuadro2).filter(p => p.tipo === 'bayas').map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) })), J.pos);
+      for (const m of matas.slice(0, 12)) {
+        if (J.nec.hambre <= 40) break;
+        if (!s.objetos.recoleccion.disponible(m.id, Date.now())) continue;
+        const libre = ['mano:der', 'mano:izq'].find(l => !J.inv.lugares[l] || J.inv.lugares[l].tipo === 'bayas');
+        if (!libre) for (const l of ['mano:der', 'mano:izq']) await J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
+        if (!(await recoger(m)).ok) continue;
+        for (let i = 0; i < 6 && J.cuantos('bayas') > 0 && J.nec.hambre > 40; i++) { await J.objeto({ tipo: 'comer', objeto: 'bayas' }); await pausa(300); }
+      }
+      await J.andar(desde.x, desde.z);
+      comprobar('con hambre, come bayas (las que lleva y las de los arbustos de alrededor)', J.nec.hambre < hambreAntes - 20, `hambre ${hambreAntes} → ${J.nec.hambre}`);
+    }
   }
 
   // P4, la cama ligada (valravnx, 8 nov: «ambas viables»): un refugio de ramas fuera, en su tierra (12 ramas del bosque
   // y 4 cordeles de fibra), lo liga y duerme en él (el cansancio baja deprisa); luego va al río a por juncos, hace una
   // cama de juncos dentro de su casa (8 haces y 2 cordeles) y la liga: el refugio deja de ser su cama
+    if (process.env.DEPURAR) console.log('    [depurar en 17]', JSON.stringify(s.objetos.invs.de(J.bienvenida.autor).lugares.cintura), JSON.stringify(J.inv.lugares.cintura), JSON.stringify(J.nec), s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'lasca_silex').length);
   console.log('17. La cama ligada: un refugio de ramas en su tierra, lo liga y duerme; luego una cama de juncos en su casa, y la liga');
   {
     const yo = J.bienvenida.autor, manos = ['mano:der', 'mano:izq'];
