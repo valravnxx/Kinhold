@@ -2,41 +2,17 @@
  "accion": "modelos",
  "tope": 300,
  "cosas": [
-  {
-   "nombre": "arbol_adulto",
-   "alto": 9.0,
-   "tri": 5000,
-   "cosa": "A mature broadleaf oak tree of a medieval north-European woodland, about 9 metres tall: a thick gnarled bark-covered trunk with a slight lean, roots gripping the ground at its foot, strong spreading branches and a broad rounded crown made of dense clumps of small leaves."
-  },
-  {
-   "nombre": "arbol_joven",
-   "alto": 4.0,
-   "tri": 2500,
-   "cosa": "A young slender broadleaf tree about 4 metres tall: a thin straight trunk no thicker than a wrist, a few thin side branches and a small, sparse, airy crown of leaves; clearly young and lightweight, easy to fell with a stone axe."
-  },
-  {
-   "nombre": "arbusto",
-   "alto": 1.4,
-   "tri": 1800,
-   "cosa": "A wild hazel bush about 1.4 metres tall: many thin upright woody stems growing from one point in the ground, with rounded clumps of soft green leaves."
-  },
-  {
-   "nombre": "arbusto_bayas",
-   "alto": 1.2,
-   "tri": 2000,
-   "cosa": "A low wild berry bush about 1.2 metres tall, a dense rounded mass of small dark green leaves on woody twigs, with gaps among the leaves where bunches of berries hang (draw it with NO berries: only leaves and twigs)."
-  },
-  {
-   "nombre": "matorral",
-   "alto": 0.9,
-   "tri": 1500,
-   "cosa": "A low tangled thicket of wild scrub about 0.9 metres tall and 1.5 metres wide: thorny bramble stems, dry twigs and small leaves, the kind of undergrowth that has to be cleared with an axe."
-  },
-  {
-   "nombre": "roca_mediana",
-   "alto": 0.9,
-   "tri": 900,
-   "cosa": "A medium weathered limestone boulder about 0.9 metres tall, irregular rounded shape with cracks, lichen patches and a little moss at its base; big enough to be broken apart with a stone maul."
-  }
+  {"nombre": "arbol_adulto", "alto": 9.0, "tri": 5000,
+   "cosa": "A mature broadleaf oak tree about 9 metres tall, made like a model-railway miniature tree: a thick gnarled bark-covered trunk with a slight lean, roots gripping the ground, a few strong branches, and a broad crown built from 6 to 9 large solid rounded clumps of foliage, like dense sculpted foam tufts with a fine leafy texture; no individual leaves, no thin twigs, no gaps of sky through the clumps."},
+  {"nombre": "arbol_joven", "alto": 4.0, "tri": 2500,
+   "cosa": "A young slender broadleaf tree about 4 metres tall, made like a model-railway miniature tree: a thin straight trunk no thicker than a wrist, two or three short side branches, and a small crown of 3 to 5 solid rounded clumps of foliage like dense foam tufts with a fine leafy texture; no individual leaves or thin twigs."},
+  {"nombre": "arbusto", "alto": 1.4, "tri": 1800,
+   "cosa": "A wild hazel bush about 1.4 metres tall, made like a model-railway miniature shrub: a few short woody stems at the base under 3 or 4 solid rounded clumps of green foliage, like dense foam tufts with a fine leafy texture; no individual leaves."},
+  {"nombre": "arbusto_bayas", "alto": 1.2, "tri": 2000,
+   "cosa": "A low wild berry bush about 1.2 metres tall, made like a model-railway miniature shrub: one dense rounded mound of dark green foliage built from a few solid clumps, like foam tufts with a fine leafy texture, on short woody twigs at the base; no berries, no individual leaves."},
+  {"nombre": "matorral", "alto": 0.9, "tri": 1500,
+   "cosa": "A low thicket of wild scrub about 0.9 metres tall and 1.5 metres wide, made like a model-railway miniature: a low lumpy mound of solid clumps of olive-green and brownish foliage, like dense foam tufts, with a few short dry woody sticks poking out; no individual leaves or thin stems."},
+  {"nombre": "roca_mediana", "alto": 0.9, "tri": 900,
+   "cosa": "A medium weathered grey limestone boulder about 0.9 metres tall, irregular rounded blocky shape with a few cracks, pale grey stone with small lichen spots and a little green moss at its base; solid, no sand-coloured or brown stone."}
  ]
 }
