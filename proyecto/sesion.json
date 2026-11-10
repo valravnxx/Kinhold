@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-10T05:25:02+00:00",
-  "tarea": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca de sílex (carne cruda y piel pequeña: el origen de la piel, que hoy no tiene, en pruebas/prueba_origenes.mjs); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261109-0522"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261110-0652-meshy": {
   "inicio": "2026-11-10T06:52:29+01:00",
