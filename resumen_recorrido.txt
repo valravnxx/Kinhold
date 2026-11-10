@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2588 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2925 KB
+
+== Construir demo única
+      3230 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4196 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2992 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2583 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2945 KB
+dist/kinhold_trozos.html 2597 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Recorrido de jugador: uno nuevo, sin arcón y con lo que recoge, de principio a fin
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:321:41)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:680:25)
+
+Node.js v22.23.4
+!! FALLA: node pruebas/prueba_recorrido.mjs
+
+HAY FALLOS
+tardó 3 s
