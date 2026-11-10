@@ -1,21 +1,10 @@
 {
- "A": {
-  "inicio": "2026-11-10T07:30:41+00:00",
-  "tarea": "Herramientas y armas que se gastan (documento de sistemas, apartado 10: el hacha de piedra, unos 3 árboles adultos; un arma de madera o piedra, unos 50 golpes): cada uso lo cuenta el servidor, se ve en la ficha del equipo y, al acabarse, se rompe. Recorrido: el hacha de piedra se gasta talando",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261110-0730"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261110-0652-meshy": {
   "inicio": "2026-11-10T06:52:29+01:00",
   "tarea": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
   "hito": "meshy",
   "rama": "trabajo/20261110-0652-meshy"
- },
- "chat:trabajo/20261110-0740-personajes": {
-  "inicio": "2026-11-10T07:41:38+01:00",
-  "tarea": "Personajes: el hombre y la mujer de valravnx (Meshy, con su esqueleto y andar y correr) como base del jugador; propuesta de cómo se viste por capas y se personaliza con ellos, para que valravnx decida",
-  "hito": "meshy",
-  "rama": "trabajo/20261110-0740-personajes"
  }
 }

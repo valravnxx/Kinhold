@@ -143,8 +143,20 @@ with sync_playwright() as p:
     # se guarda: al recargar sigue lo mismo
     pg.reload(); pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     comprobar('lo que llevas se guarda al recargar', lugar(pg, 'cintura') == 'cinto_cuero:1' and lugar(pg, 'espalda/2') == 'lena:3')
+    # herramientas que se gastan (10 nov; src/logica/desgaste.js): la ficha dice lo que le queda (un hacha de piedra
+    # muy gastada: 150 golpes de 168; en el juego los cuenta el servidor)
+    pg.evaluate(f"{K}.inventario.lugares['mano:der'] = {{ tipo: 'hacha_piedra', n: 1, usado: 150 }}")
     pg.keyboard.press('i')
     comprobar('la tecla I abre el panel', pg.is_visible('#panelInventario'))
+    pg.click(R('mano:der'))
+    gasto = pg.inner_text('#panelInventario .eq-desgaste') if pg.locator('#panelInventario .eq-desgaste').count() else ''
+    comprobar('la ficha del hacha dice cuánto le queda (18 usos de 168), con su barra en rojo', '18' in gasto and '168' in gasto and pg.locator('#panelInventario .eq-desgaste .eq-poco').count() == 1, gasto)
+    # y dónde se repara (10 nov): en la piedra de tallar, con un cordel dejado en ella
+    nota = pg.inner_text('#panelInventario .eq-sel') if pg.locator('#panelInventario .eq-sel').count() else pg.inner_text('#panelInventario')
+    comprobar('la ficha del hacha dice dónde y con qué se repara (la piedra de tallar, un cordel)', 'piedra de tallar' in nota and 'cordel' in nota.lower(), nota[:300])
+    pg.screenshot(path=f'{SALIDA}/08_pc_ficha_desgaste.png')
+    pg.click('#panelInventario .inv-dejar')
+    pg.evaluate(f"{K}.inventario.lugares['mano:der'] = null; {K}.panelInventario.pintar()")   # (lo que sigue, con la mano libre)
     pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)   # el personaje se carga después de la página
     capas = pg.evaluate(f'{K}.jugador.mh && {K}.jugador.mh.capas')
     comprobar('al recargar, el personaje lleva otra vez la túnica', 'tunica' in (capas or []), str(capas))
@@ -228,6 +240,13 @@ with sync_playwright() as p:
     mv.screenshot(path=f'{SALIDA}/05_movil_arcon.png')
     mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
     mv.evaluate("document.querySelector('#panelInventario .eq-centro').scrollTop = 0")
+    mv.evaluate(f"{K}.inventario.poner({K}.inventario.buscar('cintura/1'), {{ tipo: 'cuchillo', n: 1, usado: 100 }}); {K}.panelInventario.pintar && {K}.panelInventario.pintar()")
+    mv.tap(R('cintura/1')); mv.wait_for_timeout(200)
+    gasto = mv.inner_text('#panelInventario .eq-desgaste') if mv.locator('#panelInventario .eq-desgaste').count() else ''
+    comprobar('móvil: la ficha del cuchillo dice cuánto le queda (300 usos de 400)', '300' in gasto and '400' in gasto, gasto)
+    mv.screenshot(path=f'{SALIDA}/07_movil_ficha_desgaste.png')
+    comprobar('móvil: el cuchillo (de hierro) no dice que se repare aún', 'Se repara' not in mv.inner_text('#panelInventario'))
+    mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
     mv.tap('#panelInventario .inv-cerrar')
     comprobar('el ✕ cierra el panel', not mv.is_visible('#panelInventario'))
     caja = mv.locator('#llevas').bounding_box()

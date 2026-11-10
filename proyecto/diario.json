@@ -5886,19 +5886,55 @@
  },
  {
   "inicio": "2026-11-10T07:41:38+01:00",
-  "fin": "2026-11-10T09:28:05+01:00",
-  "titulo": "Los personajes de Meshy en el juego (demo v170)",
+  "fin": "2026-11-10T12:53:03+01:00",
+  "titulo": "Los personajes de Meshy en el juego (demo v172)",
   "hito": "meshy",
   "hecho": [
    "El jugador, los demás jugadores, los luchadores del duelo y el visor son ya el hombre o la mujer de valravnx hechos en Meshy; fuera el del taller, el de Quaternius y el muñeco de bloques",
    "Esqueleto de la API de Meshy y 59 animaciones de su biblioteca, unidas en un .glb por sexo de unos 3,6 MB (herramientas/meshy/unir_personaje.mjs), los de andar sin avanzar",
    "8 movimientos hechos a partir de texto con Text to Motion de Meshy (al hombro, empujar la carretilla, arrastrar, talar, picar y en brazos): la biblioteca no los trae; 16 créditos cada uno",
    "Los pies, en el suelo: el modelo los trae 17 y 19 cm hundidos y se suben al cargar (lo vio valravnx)",
-   "Las manos se ajustan donde agarran (encima del tronco al hombro, en las agarraderas de la carretilla, a los lados de lo que se lleva en brazos)",
-   "Aún sin ropa por capas ni personalización: queda como tarea del hito, poco a poco"
+   "Aún sin ropa por capas ni personalización: queda como tarea del hito, poco a poco",
+   "Al talar y al picar (movimientos nuevos a dos manos), el mango pasa por las dos manos en cada fotograma; manos abiertas",
+   "Aún mal (valravnx lo ve igual): el golpe de talar sube las manos junto a la cara y el hacha roza la cabeza; valravnx elige el bueno en Meshy"
   ],
-  "pruebas": "Visor de personajes (aquí) y en la nube construcción, demo, llevar, carretilla, rastra, tala, duelo, pelear en el mundo y cama. Fuera de la batería la del visor de las animaciones de cargar del taller (ya no se usan)",
+  "pruebas": "Visor de personajes y en la nube construcción, demo, carretilla, rastra, tala, duelo, pelear en el mundo y cama correctas; en «lo que llevas se ve puesto» falla aún que la mano quede encima del tronco al hombro (hombre y mujer, por pocos cm). Publicado igual porque lo pidió valravnx («publícalos aun así, quiero verlos»)",
+  "capturas": "capturas/demo-v172",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T07:30:41+00:00",
+  "fin": "2026-11-10T09:54:51+00:00",
+  "titulo": "P4: herramientas y armas que se gastan (demo v170)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Las herramientas y las armas se gastan con el uso (documento de sistemas, apartado 10): cada cosa lleva los usos que lleva y va con ella a donde vaya (las manos, el suelo, el guardado); al acabarse, se rompe y te avisa",
+   "El hacha se gasta con cada golpe de tala: la de piedra aguanta 168 golpes (los de 3 árboles adultos; unos 21 jóvenes) y la de hierro 420 (30 adultos)",
+   "Un arma se gasta con cada golpe que alcanza o que para (unos 50 la de madera o piedra: la lanza, el palo cavador, el mazo; unos 400 la de hierro), y la lanza lanzada al dar a una presa. Lo cuenta el servidor, con su autor en el registro",
+   "La ficha del equipo dice cuántos usos le quedan, con su barra (en rojo cuando queda poco)",
+   "Recorrido de jugador: el hacha de piedra se gasta talando; la casa pide 16 árboles jóvenes y un adulto, así que se le rompe talando el adulto y se hace otra junto a la casa con lo que recoge (fibra, cordeles, piedras, una rama y una piedra de tallar nueva)",
+   "Hacerse otra hacha lleva su rato y el hambre subía hasta matarle de hambre en la cama ligada (perdía el cinturón con la lasca): ahora, con hambre, come bayas y setas de alrededor después de beber, como haría un jugador",
+   "Decisiones provisionales en el registro de la demo (v170): el hacha por golpes de tala (tronzar y partir no la gastan), qué golpes gastan un arma y qué no se gasta así"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la nueva de las herramientas que se gastan; rota a propósito —el hacha no se gasta—: falla; y en la del modo arma, la lanza que da a la liebre y el palo que alcanza se gastan; rota a propósito en el servidor: falla), tala de los árboles, la demo única y el panel de inventario (la ficha con el desgaste, PC y móvil; a la primera fallaba porque la prueba dejaba el hacha en la mano: arreglado), bien. El recorrido 240/240 (aquí, buscando por qué moría de hambre, y en la nube)",
   "capturas": "capturas/demo-v170",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T10:24:28+00:00",
+  "fin": "2026-11-10T11:22:29+00:00",
+  "titulo": "P4: reparar en su puesto con su material (demo v171)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Se repara en su puesto con su material (documento de sistemas, apartado 10): con la herramienta gastada en la mano, junto a su puesto y con su material dejado en él, Usar → «Reparar». Lo hace el servidor, con su autor en el registro",
+   "Lo de piedra, en la piedra de tallar con un cordel: el hacha de piedra recupera la mitad de su vida (84 golpes) y el mazo de piedra, 25. Lo de madera, en el banco de tronco: la lanza endurecida, con fibra y llevando la lasca de sílex (no se gasta), recupera 25",
+   "La ficha del equipo dice dónde se repara y con qué",
+   "Recorrido de jugador: antes del árbol adulto al hacha ya no le quedan sus golpes (lleva 16 jóvenes), así que se hace un cordel, lo deja en una piedra de tallar y la repara; tala el adulto sin que se le rompa",
+   "Decisiones provisionales en el registro de la demo (v171): reparar es en el acto, cuánto recupera cada cosa y con qué, sin pasar de nueva; el palo cavador no se repara (se hace otro con una rama); lo de hierro espera a la fragua",
+   "La ropa y la armadura aún no se gastan, así que no hay nada que reparar en ellas: tarea nueva en este hito para que se gasten y se reparen"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la reparación en la prueba de las herramientas que se gastan; rota a propósito —reparar no gasta el material—: falla), el recorrido (también aquí, 242/242), el panel de fabricación (el menú del clic derecho ofrece «Reparar: hacha de piedra» junto a la piedra de tallar y el servidor la repara), el panel de inventario (la ficha dice dónde se repara), la demo única y la cama ligada (la pedía fabricacion.js; no hacía falta, ya estaba lanzada), bien. No comprobado: el menú de reparar en el móvil (es el mismo menú del clic derecho, ya probado en el móvil con otras cosas). Otra rama activa (personajes, del chat) toca main.js, registro.js y las traducciones: main no había cambiado, se une sin tocar nada a mano",
+  "capturas": "capturas/demo-v171",
   "estado": "ok"
  }
 ]
