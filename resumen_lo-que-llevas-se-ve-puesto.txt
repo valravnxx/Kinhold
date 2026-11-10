@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2548 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2882 KB
+
+== Construir demo única
+      3184 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4135 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2952 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2543 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2897 KB
+dist/kinhold_trozos.html 2557 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: lo que llevas se ve puesto
+  FALLA movil: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)
+  OK   movil (mujer): sin errores en la página
+
+FALLAN: armas: la mano derecha sujeta el tronco (sobre el hombro, cerca del tronco), armas: la mano encima del tronco y por delante del hombro, lenero_en_manos: lo grande, delante, entre las dos manos, pc: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar), mujer: el tronco va al lado de la cabeza, sin taparla, mujer: el tronco apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación), mujer: la mano encima del tronco y por delante del hombro, movil: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)
+!! FALLA: python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/llevado
+
+HAY FALLOS
+tardó 269 s
