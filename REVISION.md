@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 10 nov — las manos y talar
+valravnx: «deja las manos abiertas, pero PON LA HERRAMIENTA DONDE TOCA» (y antes: «las herramientas tocan las dos manos»). Las manos de los personajes de Meshy se quedan abiertas (los dedos puestos por código no sirven con su malla). El mango va por las dos manos en cada fotograma. El golpe de talar y el de picar los elige valravnx en la web de Meshy (con vista previa) y pasa los GLB: «lo hago yo».
+
+
 ### 10 nov — la referencia de cómo se ve el juego
 valravnx: «te paso una imagen que quiero que guardes siempre y tenga siempre siempre de referencia a como quiero que se vea el juego, medias tintas no me valen». Guardada en `diseno/referencia/aspecto_del_juego.jpg` y puesta en `CLAUDE.md` (Alcance y listón visual) como la referencia de todo lo que se ve.
 
