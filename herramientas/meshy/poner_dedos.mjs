@@ -106,6 +106,21 @@ for (const [lado, L] of [['l', 'Left'], ['r', 'Right']]) {
   // (valravnx, 10 nov: «junta todos los dedos menos el pulgar en una manopla»): los cuatro, una sola cadena (middle_…),
   // que se dobla entera; el índice y el meñique quedan como puntos de referencia en la mano (para poner lo que se coge)
   const cadenas = [['middle', dedos.flat()]];
+  // (valravnx, 10 nov: «manopla es usar la mano con dedos juntos»): los cuatro dedos de la malla, juntos de lado, uno
+  // pegado al otro sin hueco y centrados donde estaban; cerca del nudillo se mueven menos (para no rasgar la palma)
+  {
+    const lat = (i) => pos[i].clone().sub(H).dot(w);
+    const info = dedos.map(c => { const l = c.map(lat); return { c, min: Math.min(...l), max: Math.max(...l) }; });
+    const anchos = info.map(f => f.max - f.min), total = anchos.reduce((x, y) => x + y, 0);
+    const centroTodo = info.reduce((x, f) => x + (f.min + f.max) / 2, 0) / info.length;
+    let borde = centroTodo + total / 2; // del índice (lado del pulgar, +w) al meñique
+    for (const [k, f] of info.entries()) {
+      const nuevo = borde - anchos[k] / 2, mover = nuevo - (f.min + f.max) / 2; borde -= anchos[k];
+      const tmin = Math.min(...f.c.map(i => t.get(i))), tmx = Math.max(...f.c.map(i => t.get(i)));
+      for (const i of f.c) { const r = THREE.MathUtils.clamp((t.get(i) - tmin) / Math.max(1e-4, (tmx - tmin) * 0.3), 0, 1); pos[i].addScaledVector(w, mover * (0.5 + 0.5 * r)); P.setElement(i, pos[i].toArray()); }
+    }
+    informe['juntados_' + L] = info.map(f => +((f.max - f.min) * 100).toFixed(1));
+  }
   for (const [k, nombre] of [[0, 'index'], [3, 'pinky']]) {
     const c = [...dedos[k]].sort((p, q) => pos[p].distanceTo(H) - pos[q].distanceTo(H));
     marcas.push({ nombre: `${nombre}_01_${lado}`, mano: hi, pos: centro(c.slice(0, Math.max(3, c.length >> 2))) });
@@ -132,12 +147,13 @@ for (const [lado, L] of [['l', 'Left'], ['r', 'Right']]) {
       ids.push(B + nuevas.length);
       nuevas.push({ nombre: `${nombre}_0${k + 1}_${lado}`, padre: k === 0 ? hi : null, padreNueva: k ? ids[k - 1] - B : null, pos: p, giro, signo });
     }
+    // pesos suaves: cada vértice, entre el hueso de su tramo y el siguiente (y cerca del nudillo, con la mano), para que
+    // al doblarse los dedos de pocos vértices no se arruguen en picos
     const pesoEn = (u01) => {
-      const u = THREE.MathUtils.clamp(u01, 0, 0.999) * 3, k = Math.floor(u), f = u - k;
-      // mezcla con el tramo de al lado cerca del corte
-      if (f < 0.25 && k > 0) return [[ids[k - 1], 0.5 - f * 2], [ids[k], 0.5 + f * 2]];
-      if (f < 0.25 && k === 0) return [[hi, 0.5 - f * 2], [ids[0], 0.5 + f * 2]];
-      return [[ids[k], 1]];
+      const u = THREE.MathUtils.clamp(u01, -0.2, 1) * 3;
+      if (u < 0.35) { const f = THREE.MathUtils.clamp((u + 0.6) / 0.95, 0, 1); return [[hi, 1 - f], [ids[0], f]]; }
+      const x = Math.min(u - 0.35, 1.999 - 0.0001) / 1.0, k = Math.min(1, Math.floor(x)), f = x - k;
+      return [[ids[k], 1 - f], [ids[k + 1], f]];
     };
     for (const i of c) pesos.set(i, pesoEn(pos[i].clone().sub(base).dot(eje) / largo));
     if (nombre === 'middle') {
@@ -192,11 +208,11 @@ for (const [i, p] of pesos) for (let k = 0; k < 4; k++) { Jn[i * 4 + k] = p[k] ?
 const N = prim.getAttribute('NORMAL'), T = prim.getAttribute('TEXCOORD_0');
 const nP = [], nN = [], nT = [], nJ = [], nW = [];
 let tri = [...idx];
-const quitar = new Set(manoplas.flatMap(m => [...m.quitar]));
+const quitar = new Set(); // (los dedos de la malla se quedan: la manopla son esos mismos dedos, juntos)
 tri = (() => { const r = []; for (let k = 0; k < tri.length; k += 3) if (!quitar.has(tri[k]) && !quitar.has(tri[k + 1]) && !quitar.has(tri[k + 2])) r.push(tri[k], tri[k + 1], tri[k + 2]); return r; })();
 let siguiente = nv;
 const LADOS = 12, ANILLOS = [-0.35, -0.1, 0.2, 0.45, 0.7, 0.9]; // (empieza dentro de la palma: tapa el hueco de los dedos quitados)
-for (const m of manoplas) {
+for (const m of []) {
   const cerca = (p) => { let b = -1, d = Infinity; for (const i of m.quitar) { const x = pos[i].distanceToSquared(p); if (x < d) { d = x; b = i; } } return b; };
   const anillo0 = siguiente;
   for (const [ka, u] of ANILLOS.entries()) {
@@ -231,7 +247,7 @@ Jn2 = junta(Jn, new Uint16Array(nJ)); Wn2 = junta(Wn, new Float32Array(nW));
 // los triángulos de la manopla miran hacia fuera: si salen al revés (según el orden), se dan la vuelta
 prim.getIndices().setArray(new Uint32Array(tri));
 J.setArray(Jn2); W.setArray(Wn2).setNormalized(false);
-informe.manoplas = manoplas.map(m => ({ ancho_cm: +(m.hl * 200).toFixed(1), largo_cm: +(m.largo * 100).toFixed(1) }));
+
 
 await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 await io.write(salida, doc);
