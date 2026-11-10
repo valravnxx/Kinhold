@@ -3894,6 +3894,13 @@
      "archivo": "jugar/demo/v172.html",
      "capturas": "capturas/demo-v172",
      "notas": "v172: los personajes de Meshy (valravnx, 10 nov). El jugador y los demás jugadores son el hombre o la mujer que hizo valravnx en Meshy, con 59 animaciones de su biblioteca y 8 hechas a partir de texto (llevar un tronco al hombro, andando y parado; empujar la carretilla, andando y parada; arrastrar la rastra; talar y picar a dos manos; llevar algo en brazos). Fuera los de antes: el del taller, el de Quaternius y el muñeco de bloques, también en las peleas y en el visor de personajes. v172, provisional: aún sin ropa por capas, aspecto, tintes ni hechuras (vuelven poco a poco), y con las manos abiertas. Al talar y al picar, el mango pasa por las dos manos; el golpe de ahora (de Meshy, hecho a partir de texto) aún sube las manos junto a la cara y el hacha roza la cabeza: valravnx elige el bueno en Meshy. Los pies se suben lo que el modelo los trae hundidos (17 cm el hombre, 19 la mujer). Las manos se ajustan encima del tronco al hombro y en las agarraderas de la carretilla."
+    },
+    {
+     "v": "v173",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v173.html",
+     "capturas": "capturas/demo-v173",
+     "notas": "El hombre anda como un hombre (el paso tranquilo de Meshy, con los pies separados) y los dos esperan quietos, sin mirar a los lados"
     }
    ]
   },

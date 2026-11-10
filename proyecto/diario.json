@@ -5962,5 +5962,21 @@
   ],
   "pruebas": "Sin pruebas de la nube: no cambia código del juego (solo herramientas de Meshy). Capturas del muestrario en PC y móvil miradas: no pasan el listón.",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-10T14:44:40+01:00",
+  "fin": "2026-11-10T15:24:14+01:00",
+  "titulo": "El andar del hombre y el reposo, más neutros (demo v173)",
+  "hito": "meshy",
+  "hecho": [
+   "El hombre anda con el paso tranquilo de la biblioteca de Meshy (pies separados, brazos a los lados), acortado 1,5× para ir a paso normal (1,08 m/s); el de antes cruzaba los pies como en una pasarela.",
+   "El reposo de los dos es uno de pie y en calma («Idle 3»); el de antes giraba la cabeza y el cuerpo a los lados.",
+   "Probado y descartado «Walking 2»: el brazo derecho se abría hacia fuera.",
+   "Las animaciones nuevas, pedidas a Meshy sobre los mismos rigs (encargo.py, «animar» con «rigs», sin volver a riggear; 78 créditos).",
+   "Personajes nuevos en meshy-v2 (69 animaciones); los de meshy-v1 quedan como estaban para la v172."
+  ],
+  "pruebas": "Nube: personaje y demo única correctas (solo esas: es lo que toca el cambio de clips). Capturas en el juego de verdad, PC y móvil, varios momentos; segunda mirada aparte: sí. No comprobado: el andar de la mujer (no cambia).",
+  "capturas": "capturas/demo-v173",
+  "estado": "ok"
  }
 ]

@@ -1,10 +1,4 @@
 {
  "A": null,
- "B": null,
- "chat:trabajo/20261110-1500-andar": {
-  "inicio": "2026-11-10T14:44:40+01:00",
-  "tarea": "El andar del hombre y el reposo de los dos, más neutros (de la biblioteca de Meshy)",
-  "hito": "meshy",
-  "rama": "trabajo/20261110-1500-andar"
- }
+ "B": null
 }
