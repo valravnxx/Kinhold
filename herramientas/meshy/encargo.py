@@ -5,6 +5,10 @@
 #   {"accion": "biblioteca"} la biblioteca de animaciones de Meshy (gratis), a salida/biblioteca.json
 #   {"accion": "animar", "tope": 400, "personajes": [{"nombre": "hombre", "glb": "herramientas/meshy/entrada/hombre.glb",
 #     "alto": 1.75}], "acciones": [{"id": 0, "nombre": "Idle"}, …]}
+#   {"accion": "modelos", "tope": 300, "cosas": [{"nombre": "roca_mediana", "cosa": "…", "alto": 1.0, "tri": 800}]}
+#     cada cosa: una imagen con el prompt de estilo entero (herramientas/meshy/estilo.md) + la cosa, sin fondo; de ella el
+#     modelo 3D con el remallado de Meshy (tri: el tope de triángulos) y la textura guiada por la versión corta del estilo;
+#     a salida/ van la imagen, el .glb y sus cuatro vistas; no empieza si pasaría del tope de créditos (unos 40 por cosa)
 #     cada personaje se riggea por la API (5 créditos; la animación solo admite un rig hecho por la API) y se le ponen las
 #     animaciones de la biblioteca de 10 en 10 (3 créditos cada una); no empieza si pasaría del tope de créditos
 # Lo que sale va a salida/ y vuelve por la rama meshy/<ejecución>.
@@ -110,6 +114,33 @@ if pedido.get('accion') == 'animar':
             for c, u in urls(a.get('result') or {}):
                 print(' ', c, baja(u, f'{SAL}/{p["nombre"]}_anim_{n:02d}_{c.replace(".", "_")}.{u.split("?")[0].rsplit(".", 1)[1]}'))
             informe.append({'personaje': p['nombre'], 'lote': [x['nombre'] for x in lote], 'estado': a.get('status'), 'error': a.get('task_error'), 'creditos': a.get('consumed_credits')})
+    json.dump(informe, open(f'{SAL}/informe.json', 'w'), ensure_ascii=False, indent=1)
+    print('saldo al acabar', pide('/v1/balance'))
+if pedido.get('accion') == 'modelos':
+    est = open('herramientas/meshy/estilo.md').read()
+    largo = est.split('## El prompt entero')[1].split('\n', 1)[1].split('## La versión corta')[0].strip()
+    corto = est.split('## La versión corta')[1].split('\n', 1)[1].strip()
+    cosas = pedido['cosas']; coste = 40 * len(cosas)
+    print(f'coste previsto: unos {coste} créditos (tope {pedido.get("tope")})')
+    if coste > pedido.get('tope', 0) or coste > saldo.get('balance', 0): print('NO: pasa del tope o del saldo'); sys.exit(1)
+    informe = []
+    for c in cosas:
+        n = c['nombre']
+        prompt = f"{largo}\n\nSUBJECT: {c['cosa']}\nA single isolated object, the whole of it in view, three-quarter view from slightly above, centred, on a plain neutral background, no other objects, no base, no ground plane, no text."
+        im = espera('/v1/text-to-image/' + manda('/v1/text-to-image', {'ai_model': pedido.get('modelo_imagen', 'gpt-image-2-5-flare'), 'prompt': prompt[:4000], 'aspect_ratio': '1:1', 'remove_background': True})['result'])
+        print(n, 'imagen', im.get('status'), im.get('task_error'), 'créditos', im.get('consumed_credits'))
+        if im.get('status') != 'SUCCEEDED': informe.append({'nombre': n, 'imagen': im.get('status'), 'error': im.get('task_error')}); continue
+        baja(im['image_urls'][0], f'{SAL}/{n}_imagen.png')
+        cuerpo = {'input_task_id': im['id'], 'should_texture': True, 'texture_prompt': corto[:800], 'should_remesh': True,
+                  'target_polycount': c.get('tri', 3000), 'topology': 'triangle', 'target_formats': ['glb'], 'multi_view_thumbnails': True}
+        m = espera('/v1/image-to-3d/' + manda('/v1/image-to-3d', cuerpo)['result'])
+        print(n, 'modelo', m.get('status'), m.get('task_error'), 'créditos', m.get('consumed_credits'))
+        json.dump({k: v for k, v in m.items() if k != 'model_urls'}, open(f'{SAL}/{n}_tarea.json', 'w'), ensure_ascii=False, indent=1)
+        if m.get('status') == 'SUCCEEDED':
+            baja(m['model_urls']['glb'], f'{SAL}/{n}.glb')
+            for lado, u in (m.get('thumbnail_urls') or {}).items(): baja(u, f'{SAL}/{n}_vista_{lado}.png')
+        informe.append({'nombre': n, 'alto': c.get('alto'), 'imagen_id': im['id'], 'modelo_id': m.get('id'), 'estado': m.get('status'), 'error': m.get('task_error'),
+                        'creditos': (im.get('consumed_credits') or 0) + (m.get('consumed_credits') or 0)})
     json.dump(informe, open(f'{SAL}/informe.json', 'w'), ensure_ascii=False, indent=1)
     print('saldo al acabar', pide('/v1/balance'))
 if pedido.get('accion') == 'biblioteca':
