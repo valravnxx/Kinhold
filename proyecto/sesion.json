@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-10T10:25:15+00:00",
-  "tarea": "Reparar en su puesto con su material (documento de sistemas, apartado 10): lo de piedra en la piedra de tallar, lo de madera en el banco de tronco, la ropa con lo suyo; lo que el documento no fija (cuánto material y cuánto recupera), provisional y en el registro. Recorrido: el jugador repara el hacha antes de que se rompa",
-  "hito": "supervivencia",
-  "rama": "trabajo/20261110-1024"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261110-0652-meshy": {
   "inicio": "2026-11-10T06:52:29+01:00",
