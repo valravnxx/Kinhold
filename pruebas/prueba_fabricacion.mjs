@@ -265,8 +265,8 @@ console.log('Todas las recetas a la vista: lo que puedes ya, lo que casi y lo qu
   suelo.dejar({ tipo: 'silex', n: 1 }, 0.5, 0.5, T0, 'ana', false);
   let l = fab.lista({ x: 0, z: 0 }, inv, suelo, T0);
   const de = k => l.find(x => x.receta === k);
-  { const delTramo = Object.keys(RECETAS).filter(k => !RECETAS[k].fuera);   // (8 nov: la honda y el odre, fuera del tramo hasta la caza)
-  comprobar('salen todas las recetas del tramo, sin conocer ninguna', l.length === delTramo.length && igual(l.map(x => x.receta), delTramo) && delTramo.length === Object.keys(RECETAS).length - 2); }
+  { const delTramo = Object.keys(RECETAS).filter(k => !RECETAS[k].fuera);   // (9 nov: ya ninguna fuera; la honda y el odre volvieron con la caza)
+  comprobar('salen todas las recetas del tramo, sin conocer ninguna', l.length === delTramo.length && igual(l.map(x => x.receta), delTramo)); }
   comprobar('el cordel, ya (3 fibra encima)', de('cordel').grupo === 'ya' && de('cordel').de.fibra.encima === 3 && de('cordel').de.fibra.suelo === 0, JSON.stringify(de('cordel').de));
   comprobar('y dice de qué sitio sale (lo que llevas, por sitios)', Object.values(de('cordel').de.fibra.sitios).reduce((a, b) => a + b, 0) === 3 && !de('cordel').de.fibra.sitios.suelo, JSON.stringify(de('cordel').de));
   comprobar('cada receta lleva lo que gasta, lo que da y su tiempo', igual(de('cordel').gasta, { fibra: 3 }) && de('cordel').da === 'cordel' && de('cordel').s === 15);

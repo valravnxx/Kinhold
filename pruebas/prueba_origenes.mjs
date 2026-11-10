@@ -36,8 +36,8 @@ const CASA_HUMILDE = {
 // Lo que aún no tiene de dónde salir: por qué, y la tarea viva del roadmap que se lo dará (un trozo de su nombre).
 // (la paja no está aquí: sale del cereal, que no hay en este tramo, y lo que la pide se esconde del menú como lo de
 // después: src/logica/piezas.js, MATERIALES_POSTERIORES)
-// (8 nov: vacío. La piel, el mimbre, la resina y la corteza ya salen del mundo o lo que los pide está fuera del tramo:
-// la honda y el odre, con la caza; src/logica/fabricacion.js, «fuera»)
+// (8 nov: vacío. El mimbre, la resina y la corteza ya salen del mundo; 9 nov: la piel, de despiezar la liebre que se
+// caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {};
 
 // ---- lo que se puede tener, partiendo de nada ----
@@ -56,12 +56,17 @@ for (let nuevo = true; nuevo;) {
   // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto
   if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
+  // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
+  if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;
   for (const [t, d] of Object.entries(TROCEO)) if (hay.has(t) && tieneAlguna(Object.keys(HACHAS)) && poner(d.da, `${d.accion} un ${t}`)) nuevo = true;
   for (const [e, d] of Object.entries(ESTACIONES)) if (estacionHecha(e) && poner('est_' + e, 'se levanta')) nuevo = true;
   for (const [k, r] of Object.entries(RECETAS)) {
     if (r.fuera) continue;   // (fuera del tramo: no se enseña ni se hace)
     const sitio = r.uso === 'manos' || (USOS[r.uso]?.estaciones || []).some(e => hay.has('est_' + e));
-    if (sitio && Object.keys(r.gasta).every(t => hay.has(t)) && poner(r.da, `se fabrica (${k})`)) nuevo = true;
+    if (sitio && Object.keys(r.gasta).every(t => hay.has(t)) && (!r.requiere || tieneAlguna(r.requiere))) {
+      if (poner(r.da, `se fabrica (${k})`)) nuevo = true;
+      for (const t of Object.keys(r.tambien || {})) if (poner(t, `se fabrica (${k}, además)`)) nuevo = true;
+    }
   }
 }
 const sePuede = (coste) => Object.keys(coste).filter(m => !hay.has(OBJETO_DE_MATERIAL[m] || m));
@@ -84,7 +89,7 @@ const anotar = (quien, lista) => { for (const m of lista) { if (!falta.has(m)) f
 for (const [k, d] of Object.entries(PIEZAS)) if (!d.oculta && enEsteTramo(d)) anotar(`pieza ${k}`, sePuede(d.coste));
 for (const [k, d] of Object.entries(DECORACION)) if (enEsteTramo(d)) anotar(`mueble ${k}`, sePuede(d.coste));
 for (const [k, d] of Object.entries(ESTACIONES)) anotar(`estación ${k}`, [...Object.keys(d.coste), ...(d.requiere || [])].filter(t => !hay.has(t)));
-for (const [k, r] of Object.entries(RECETAS)) if (!r.fuera) anotar(`receta ${k}`, Object.keys(r.gasta).filter(t => !hay.has(t)));
+for (const [k, r] of Object.entries(RECETAS)) if (!r.fuera) anotar(`receta ${k}`, [...Object.keys(r.gasta), ...(r.requiere && !tieneAlguna(r.requiere) ? r.requiere : [])].filter(t => !hay.has(t)));
 console.log('\nLo que el juego enseña ya');
 for (const [m, quien] of falta) {
   const p = PENDIENTES[m];

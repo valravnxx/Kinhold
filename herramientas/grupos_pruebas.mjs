@@ -68,6 +68,7 @@ export const TOCA = {
   'dormido-al-desconectarse': [/^src\/logica\/dormidos\.js$/, /^src\/juego\/en_linea\.js$/, /^pruebas\/prueba_desconectado_navegador\.py$/],
   'morir-y-que-te-saqueen': [/^src\/logica\/muerte\.js$/, /^pruebas\/prueba_muerte_navegador\.py$/],
   'las-liebres': [/^src\/(logica|juego)\/fauna\.js$/, /^pruebas\/prueba_fauna_navegador\.py$/],
+  'despiezar-y-asar': [/^src\/logica\/comida\.js$/, /^src\/juego\/modelos_objetos\.js$/, /^pruebas\/prueba_comida_navegador\.py$/],
   'el-modo-arma-con-lo-de-la-mano-y-cazar-con-la-lanza': [/^src\/logica\/arma_mano\.js$/, /^src\/juego\/(fauna|combate_mundo)\.js$/, /^src\/combate\/modelos\.js$/, /^pruebas\/prueba_caza_navegador\.py$/],
   'entrar-con-la-cuenta': [/^src\/mundo\/(pantalla_cuenta|eleccion|conexion)\.js$/, /^src\/logica\/(cuentas|correo|fichas)\.js$/],
   'web': [/^herramientas\/(construir_web\.mjs|plantilla_web\.html)$/],

@@ -88,7 +88,9 @@ export const CATALOGO = {
   vara: R('Vara', 'M'), cuerda: R('Cuerda', 'P'), tabla: R('Tabla', 'M'), clavo: R('Clavo', 'P'),
   barra_hierro: R('Barra de hierro', 'M'), teja: R('Teja', 'P'),
   // de los animales, el campo y el agua
-  liebre: R('Liebre', 'M'),   // (9 nov) la cazada con la lanza (src/logica/caza.js), entera: se despieza
+  liebre: R('Liebre', 'M'),   // (9 nov) la cazada lanzando la lanza en el modo arma, entera: se despieza
+  // (9 nov) lo que da la liebre al despiezarla (src/logica/comida.js): la carne cruda se estropea; asada, sacia más
+  carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'),
   piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
   grano: R('Grano', 'P'), harina: R('Harina', 'P'), agua: R('Agua', 'P'),
   flecha: R('Flecha', 'P'), virote: R('Virote', 'P'), anzuelo: R('Anzuelo y sedal', 'P'),
@@ -200,8 +202,11 @@ export function factorPeso(kilos) {
 
 // Una cosa: { tipo, n } y, si es una prenda cosida, su hechura y su tinte (src/logica/hechura.js: rasgosPrenda). Cada
 // prenda lleva los suyos y dos distintas no se juntan nunca (la ropa no se apila, y aunque se apilara, no serían lo mismo).
-const cosa = (tipo, n = 1, rasgos = null) => ({ tipo, n, ...(rasgos ? rasgosPrenda(tipo, rasgos) : {}) });
-const copiarRasgos = c => (c.hechura || c.tinte ? rasgosPrenda(c.tipo, c) : {}); // copia limpia (lo que no vale, fuera)
+// Lo que se estropea (la carne cruda, 9 nov; src/logica/comida.js) lleva además hasta cuándo dura (hasta, ms): se copia
+// con la cosa y, al juntar dos montones, se queda el que antes se estropea.
+const conHasta = o => (o && Number.isFinite(o.hasta) ? { hasta: o.hasta } : {});
+const cosa = (tipo, n = 1, rasgos = null) => ({ tipo, n, ...(rasgos ? rasgosPrenda(tipo, rasgos) : {}), ...conHasta(rasgos) });
+const copiarRasgos = c => ({ ...(c.hechura || c.tinte ? rasgosPrenda(c.tipo, c) : {}), ...conHasta(c) }); // copia limpia (lo que no vale, fuera)
 const copiar = c => c && ({ tipo: c.tipo, n: c.n, ...copiarRasgos(c), ...(c.dentro ? { dentro: c.dentro.map(copiar) } : {}) });
 
 // Inventario de un jugador. cat: catálogo (por defecto, el del juego; las pruebas pueden darle otro).
@@ -303,6 +308,7 @@ export class Inventario {
       const sitio = pila(c.tipo, this.cat) - hay.n;
       if (c.n > sitio) return { ok: false, motivo: sitio > 0 ? `No cabe tanto: caben ${sitio}.` : 'Ese hueco está lleno.' };
       hay.n += c.n;
+      if (Number.isFinite(c.hasta) || Number.isFinite(hay.hasta)) hay.hasta = Math.min(Number.isFinite(hay.hasta) ? hay.hasta : Infinity, Number.isFinite(c.hasta) ? c.hasta : Infinity);
       return { ok: true };
     }
     if (c.n > pila(c.tipo, this.cat)) return { ok: false, motivo: `No cabe tanto: caben ${pila(c.tipo, this.cat)}.` };
@@ -384,7 +390,7 @@ export class Inventario {
   // Guarda n unidades de un tipo donde quepan, repartidas si hace falta (lo que se recoge «va al inventario por
   // huecos»): primero en una ruta preferida si se da, luego junto a lo mismo que ya llevas, luego en huecos vacíos.
   // Todo o nada: si no cabe entero, nada cambia. Devuelve { ok, donde: [[ruta, n]…] } o { ok: false, motivo }.
-  meterDonde(tipo, n, preferida) {
+  meterDonde(tipo, n, preferida, rasgos = null) {
     if (!this.cat[tipo]) return { ok: false, motivo: 'Objeto desconocido.' };
     if (!Number.isInteger(n) || n < 1) return { ok: false, motivo: 'Cantidad no válida.' };
     const antes = this.exportarJugador(), donde = [];
@@ -400,7 +406,7 @@ export class Inventario {
       if (b.cosa && b.cosa.tipo !== tipo) continue;
       const sitio = pila(tipo, this.cat) - (b.cosa ? b.cosa.n : 0);
       const m = Math.min(sitio, queda);
-      if (m > 0 && this.meter(r, cosa(tipo, m)).ok) { donde.push([r, m]); queda -= m; }
+      if (m > 0 && this.meter(r, cosa(tipo, m, rasgos)).ok) { donde.push([r, m]); queda -= m; }
     }
     if (queda) { this.restaurar(antes); return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' }; }
     return { ok: true, donde };

@@ -20,7 +20,7 @@ import { Inventario } from '../logica/inventario.js';
 // 'recoleccion' (para volver a pintar).
 // estacionesV: las estaciones de fabricar que se dibujan (src/juego/estaciones.js); alEncargos(d): lo que tienes
 // encargado, que trae la bienvenida (para el panel de fabricación).
-export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, recoleccion, estacionesV = null, alEncargos = () => {}, alCambiar = () => {} }) {
+export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, recoleccion, estacionesV = null, alEncargos = () => {}, alCambiar = () => {}, alEstropear = () => {} }) {
   let enviar = null, id = 0;
   const esperan = new Map();   // id → alResultado
   let deServidor = false;      // si ya ha llegado lo que llevas en el servidor
@@ -93,7 +93,7 @@ export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, r
         case 'trozos':
           ponerTala(msg.tala); ponerRecoleccion(msg.recoleccion); ponerSuelo(msg.suelo); ponerEstaciones(msg.estaciones);
           return true;
-        case 'inventario': ponerInventario(msg.inventario); return true;
+        case 'inventario': ponerInventario(msg.inventario); if (msg.estropeadas) alEstropear(msg.estropeadas); return true;   // (la carne cruda pasada, 9 nov)
         case 'suelo': ponerSuelo(msg.objetos); return true;
         case 'estaciones': ponerEstaciones(msg.estaciones); return true;
         case 'tala': talaDeRed(msg); return true;
