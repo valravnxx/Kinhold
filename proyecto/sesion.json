@@ -5,10 +5,5 @@
   "hito": "supervivencia",
   "rama": "trabajo/20261109-0522"
  },
- "B": {
-  "inicio": "2026-11-09T09:09:01+01:00",
-  "tarea": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
-  "hito": "interfaz",
-  "rama": "trabajo/20261109-0909"
- }
+ "B": null
 }
