@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-10T16:26:08+00:00",
+  "tarea": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
+  "hito": "meshy",
+  "rama": "trabajo/20261110-0652-meshy"
+ },
  "B": null
 }
