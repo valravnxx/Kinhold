@@ -5883,5 +5883,23 @@
   "pruebas": "Revisor en la nube: lógica (con la de despiezar y asar; rota a propósito —la carne no se estropea—: falla), recorrido 238/238, despiezar y asar en navegador (PC y móvil; rota a propósito aquí —Usar no ofrece despiezar—: falla), panel de fabricación, panel de inventario, objetos en el suelo, la cama ligada, los avisos de las necesidades, el mazo de piedra y la demo única, bien. La primera vuelta de la lógica se quedó colgada en la nube instalando el navegador; repetida, bien",
   "capturas": "capturas/demo-v169",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T07:30:41+00:00",
+  "fin": "2026-11-10T09:54:51+00:00",
+  "titulo": "P4: herramientas y armas que se gastan (demo v170)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Las herramientas y las armas se gastan con el uso (documento de sistemas, apartado 10): cada cosa lleva los usos que lleva y va con ella a donde vaya (las manos, el suelo, el guardado); al acabarse, se rompe y te avisa",
+   "El hacha se gasta con cada golpe de tala: la de piedra aguanta 168 golpes (los de 3 árboles adultos; unos 21 jóvenes) y la de hierro 420 (30 adultos)",
+   "Un arma se gasta con cada golpe que alcanza o que para (unos 50 la de madera o piedra: la lanza, el palo cavador, el mazo; unos 400 la de hierro), y la lanza lanzada al dar a una presa. Lo cuenta el servidor, con su autor en el registro",
+   "La ficha del equipo dice cuántos usos le quedan, con su barra (en rojo cuando queda poco)",
+   "Recorrido de jugador: el hacha de piedra se gasta talando; la casa pide 16 árboles jóvenes y un adulto, así que se le rompe talando el adulto y se hace otra junto a la casa con lo que recoge (fibra, cordeles, piedras, una rama y una piedra de tallar nueva)",
+   "Hacerse otra hacha lleva su rato y el hambre subía hasta matarle de hambre en la cama ligada (perdía el cinturón con la lasca): ahora, con hambre, come bayas y setas de alrededor después de beber, como haría un jugador",
+   "Decisiones provisionales en el registro de la demo (v170): el hacha por golpes de tala (tronzar y partir no la gastan), qué golpes gastan un arma y qué no se gasta así"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la nueva de las herramientas que se gastan; rota a propósito —el hacha no se gasta—: falla; y en la del modo arma, la lanza que da a la liebre y el palo que alcanza se gastan; rota a propósito en el servidor: falla), tala de los árboles, la demo única y el panel de inventario (la ficha con el desgaste, PC y móvil; a la primera fallaba porque la prueba dejaba el hacha en la mano: arreglado), bien. El recorrido 240/240 (aquí, buscando por qué moría de hambre, y en la nube)",
+  "capturas": "capturas/demo-v170",
+  "estado": "ok"
  }
 ]
