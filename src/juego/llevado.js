@@ -566,7 +566,8 @@ export function crearLlevado(j) {
           const ms = mh.meshy ? { x: -0.035, y: 0.025, z: 0.04 } : { x: 0, y: 0, z: 0 };
           const x = s.x + TRONCO_HOMBRO.x + ms.x, z = s.z + TRONCO_HOMBRO.z + ms.z, yT = s.y + TRONCO_HOMBRO.y + ms.y;
           troncoCorto(L, x, yT, z, largo, r, 'z');
-          hueso = H.clavicle_r;
+          // (en los de Meshy, al pecho: su clavícula gira mucho de una animación a otra y el tronco se cruzaba)
+          hueso = mh.meshy ? pecho : H.clavicle_r;
           // donde van los nudillos de la mano derecha: encima del tronco, algo por delante del hombro (los personajes de
           // Meshy no traen la postura: el brazo se pone ahí, src/juego/personaje.js)
           agarre = v3(x, yT + r + 0.01, z + 0.04);
