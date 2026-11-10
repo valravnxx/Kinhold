@@ -20,7 +20,7 @@ shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{si
 # las animaciones de cargar hechas en el taller (al hombro, arrastrar). MUTAR_HOMBRO=1 no las copia: tiene que fallar
 if not os.environ.get('MUTAR_HOMBRO'):
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')
-    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v1'), f'{sitio}/recursos/personajes/meshy-v1')  # los personajes de Meshy
+    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v2'), f'{sitio}/recursos/personajes/meshy-v2')  # los personajes de Meshy
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-dormir-v1'), f'{sitio}/recursos/personajes/taller-dormir-v1')  # tumbarse y levantarse
     shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-sentarse-v1'), f'{sitio}/recursos/personajes/taller-sentarse-v1')  # sentarse en el suelo
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
@@ -216,7 +216,7 @@ with sync_playwright() as pw:
         pg.wait_for_function('window.__kinhold !== undefined && window.__kinhold.jugador.mh', timeout=180000)
         if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
         pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
-        comprobar(f'{disp}: la mujer, elegida (se carga la de Meshy, con sus animaciones)', any('meshy-v1/mujer.glb' in u for u in pedidos))
+        comprobar(f'{disp}: la mujer, elegida (se carga la de Meshy, con sus animaciones)', any('meshy-v2/mujer.glb' in u for u in pedidos))
         equipar(pg, {'hombro': C('tronco_corto')})
         m = pg.evaluate(MEDIR)
         if disp == 'pc':

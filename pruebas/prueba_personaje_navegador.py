@@ -18,7 +18,7 @@ shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v1'), f'{sitio}/recursos/personajes/meshy-v1')  # los personajes de Meshy
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v2'), f'{sitio}/recursos/personajes/meshy-v2')  # los personajes de Meshy
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-dormir-v1'), f'{sitio}/recursos/personajes/taller-dormir-v1')  # tumbarse y levantarse
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-sentarse-v1'), f'{sitio}/recursos/personajes/taller-sentarse-v1')  # sentarse en el suelo
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
@@ -123,7 +123,7 @@ with sync_playwright() as p:
             # las 59 de la biblioteca de Meshy: se cargan, y los botones de «Más animaciones» ponen cada una
             n_clips = pg.evaluate(f'{E}.diag().pj.clips.length')
             if os.environ.get('MUTAR'): n_clips = 9
-            comprobar(f'({sexo}) las 67 animaciones de Meshy se cargan (59 de su biblioteca y 8 hechas con texto)', n_clips == 67, f'{n_clips} clips')
+            comprobar(f'({sexo}) las 69 animaciones de Meshy se cargan (61 de su biblioteca y 8 hechas con texto)', n_clips == 69, f'{n_clips} clips')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
             comprobar(f'({sexo}) «Más animaciones» tiene sus botones', len(botones) >= 30, str(len(botones)))
             HUESOS = ['pelvis', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r']

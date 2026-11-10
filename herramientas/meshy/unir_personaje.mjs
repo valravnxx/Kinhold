@@ -3,6 +3,8 @@
 // en un solo .glb: la malla del primero y todos los clips, los de andar sin avanzar, texturas WebP de 1024 y meshopt.
 // Y los movimientos hechos con Text to Motion (acción «movimientos»: <quien>_<nombre>.glb, un clip cada uno), con el
 // nombre «mov_<nombre>», si se da su carpeta.
+// Y lotes de más de la biblioteca (otra ejecución de «animar» sobre el mismo rig): EXTRA=<carpeta>, con SOLO_EXTRA=<clip,clip>
+// para coger solo esos (los que ya están no se repiten).
 // Uso: node herramientas/meshy/unir_personaje.mjs <carpeta de los lotes> <hombre|mujer> <salida.glb> [carpeta de los movimientos]
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -19,10 +21,13 @@ const buf = raiz.listBuffers()[0];
 const nodos = new Map(raiz.listNodes().map(n => [n.getName(), n]));
 const fuentes = ['10','20','30','40','50'].map(n => [lote(n), null]);
 if (carpetaMov) for (const f of fs.readdirSync(carpetaMov).sort()) if (f.startsWith(quien + '_') && f.endsWith('.glb')) fuentes.push([`${carpetaMov}/${f}`, 'mov_' + f.slice(quien.length + 1, -4)]);
-for (const [archivo, nombre] of fuentes) {
+if (process.env.EXTRA) for (const f of fs.readdirSync(process.env.EXTRA).sort()) if (f.startsWith(quien + '_anim_') && f.endsWith('_glb_url.glb')) fuentes.push([`${process.env.EXTRA}/${f}`, null, true]);
+const soloExtra = process.env.SOLO_EXTRA ? new Set(process.env.SOLO_EXTRA.split(',')) : null;
+for (const [archivo, nombre, extra] of fuentes) {
   const otro = await io.read(archivo);
   const anims = otro.getRoot().listAnimations();
   for (const a of nombre ? anims.slice(-1) : anims) {
+    if (extra && (raiz.listAnimations().some(x => x.getName() === a.getName()) || (soloExtra && !soloExtra.has(a.getName())))) continue;
     const na = base.createAnimation(nombre || a.getName());
     for (const c of a.listChannels()) {
       const s = c.getSampler();
@@ -35,7 +40,7 @@ for (const [archivo, nombre] of fuentes) {
   }
 }
 // los de andar, sin avanzar: se quita a las caderas lo que avanzan de principio a fin (el juego ya mueve al personaje)
-const ANDAN = new Set(['mov_hombro_andar','mov_empujar_andar','mov_arrastrar','mov_cargar_brazos','Casual_Walk','Walking_Woman','Quick_Walk','Walk_Backward','Run_02','RunFast','Carry_Heavy_Object_Walk','Carry_Water_Bucket_Walk','Injured_Walk','Cautious_Crouch_Walk_Forward','Swim_Forward','Push_and_Walk_Forward']);
+const ANDAN = new Set(['mov_hombro_andar','mov_empujar_andar','mov_arrastrar','mov_cargar_brazos','Casual_Walk','Walking_Woman','Quick_Walk','Walk_Backward','Run_02','RunFast','Carry_Heavy_Object_Walk','Carry_Water_Bucket_Walk','Injured_Walk','Cautious_Crouch_Walk_Forward','Swim_Forward','Push_and_Walk_Forward','walking_2']);
 for (const a of raiz.listAnimations()) if (ANDAN.has(a.getName())) for (const c of a.listChannels()) {
   if (c.getTargetNode().getName() !== 'Hips' || c.getTargetPath() !== 'translation') continue;
   const t = c.getSampler().getInput().getArray(), o = c.getSampler().getOutput().getArray().slice(), n = t.length, T = t[n - 1] - t[0];

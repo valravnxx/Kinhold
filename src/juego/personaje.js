@@ -121,7 +121,7 @@ export function modeloHachaDe(tipo) {
 }
 
 // Devuelve { raiz, animar(velocidad, dt, talando), mh }. `recursos`: la carpeta de personajes del taller
-// (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v1. `sexo`: el del personaje elegido.
+// (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v2. `sexo`: el del personaje elegido.
 // `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
 const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {

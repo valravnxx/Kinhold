@@ -19,7 +19,7 @@ os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):
     o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o) and (c in ('v1', 'taller-anim-v1', 'taller-carga-v3', 'taller-dormir-v1', 'taller-sentarse-v1', 'meshy-v1') or re.fullmatch(r'taller-v\d+', c)): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
+    if os.path.isdir(o) and (c in ('v1', 'taller-anim-v1', 'taller-carga-v3', 'taller-dormir-v1', 'taller-sentarse-v1', 'meshy-v2') or re.fullmatch(r'taller-v\d+', c)): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
 for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):

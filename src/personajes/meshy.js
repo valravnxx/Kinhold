@@ -1,7 +1,7 @@
 // Kinhold — los personajes de Meshy (valravnx, 10 nov: «integrar a la alpha el modelo masculino y femenino retirando
 // del juego los modelos antiguos»). Un hombre y una mujer hechos por valravnx en Meshy, con el esqueleto de la API de
 // Meshy (24 huesos, sin dedos) y 59 animaciones de su biblioteca, unidos en un .glb por sexo
-// (docs/recursos/personajes/meshy-v1/, herramientas/meshy/unir_personaje.mjs).
+// (docs/recursos/personajes/meshy-v2/, herramientas/meshy/unir_personaje.mjs).
 //
 // Devuelve lo mismo que crearPersonajeMH (src/personajes/makehuman.js) para que el juego no tenga que cambiar: raiz,
 // modelo, mezclador, acciones (con los nombres del juego: quieto, andar, correr, talar…), poner, velocidad, hueso
@@ -30,7 +30,7 @@ const HUESOS = {
 };
 // las animaciones del juego y la de Meshy que hace de cada una (por sexo, si cambia)
 export const CLIPS_MESHY = {
-  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'mov_talar',
+  quieto: 'Idle_3', andar: { hombre: 'walking_2', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'mov_talar',
   guardia: 'Combat_Stance', golpe: 'Right_Hand_Sword_Slash', parar: 'Sword_Parry', cargar: 'mov_cargar_brazos', recoger: 'Collect_Object',
   minar: 'mov_picar', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
   cogerDeMesa: 'Female_Crouch_Pick_Up_Place_Side', agacharse: 'Male_Bend_Over_Pick_Up', comer: 'Stand_and_Drink', abrirCofre: 'open_door',
@@ -69,10 +69,10 @@ function ponerDedos(hueso, modelo) {
 }
 
 // la carpeta de los de Meshy, al lado de la del taller que da cada prototipo (src/mundo/eleccion.js: recursosTaller)
-export const carpetaMeshy = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/[^/]+\/?$/, 'meshy-v1/');
+export const carpetaMeshy = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/[^/]+\/?$/, 'meshy-v2/');
 
 // `base`: la carpeta de los .glb de Meshy (con barra final)
-export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/meshy-v1/') {
+export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/meshy-v2/') {
   const o = { sexo: 'hombre', ...op };
   const sexo = o.sexo === 'mujer' ? 'mujer' : 'hombre';
   const g = await cargar(`${base}${sexo}.glb`);
