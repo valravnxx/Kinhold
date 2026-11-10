@@ -7,14 +7,20 @@
 //   - cada golpe de tala gasta el hacha de la mano, y el hacha de piedra tala 3 adultos y se rompe al acabar el tercero;
 //   - el desgaste va con la cosa: al soltarla al suelo y cogerla, al guardar y cargar el inventario;
 //   - gastar un arma en la mano, y la lanza suelta (la que vuela), hasta que se rompe.
-// MUTAR=1: el hacha no se gasta al talar: tiene que FALLAR.
+//   - reparar en su puesto con su material: el hacha y el mazo de piedra en la piedra de tallar con un cordel
+//     depositado; la lanza en el banco de tronco con fibra y llevando la lasca; lo que no se repara, en otro puesto, sin
+//     material o nuevo, no; y por la acción, con su autor en el registro.
+// MUTAR=1: el hacha no se gasta al talar: tiene que FALLAR. MUTAR=2: reparar no gasta el material: tiene que FALLAR.
 import { VIDA, desgasteDe, gastar, gastarCosa, seGasta, GASTA_AL_DAR, GASTA_AL_PARAR } from '../src/logica/desgaste.js';
 import { Tala, GOLPES, ENTRE_GOLPES, idArbol, ejecutarTala } from '../src/logica/tala.js';
 import { Inventario, Inventarios } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
+import { REPARAR, seRepara } from '../src/logica/desgaste.js';
+import { Fabricacion, ejecutarFabricacion } from '../src/logica/fabricacion.js';
 
 if (process.env.MUTAR === '1') VIDA.hacha_piedra = 1e9;
+if (process.env.MUTAR === '2') REPARAR.hacha_piedra.gasta = {};
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -85,6 +91,46 @@ console.log('Las armas se gastan hasta romperse');
   comprobar('sin nada en la mano, no se gasta nada', gastar(inv, 'mano:der') === null);
   const suelta = { tipo: 'lanza_endurecida', n: 1, usado: 48 };
   comprobar('la lanza que vuela se gasta al dar a una presa', !gastarCosa(suelta).roto && gastarCosa(suelta).roto && suelta.usado === 50);
+}
+
+console.log('Reparar en su puesto con su material');
+{
+  const fab = new Fabricacion(), invs = new Inventarios(), reg = new RegistroAcciones(), inv = invs.de('ana');
+  const puesto = (tipo, x) => { const r = fab.colocar('ana', tipo, x, 0); delete fab.estaciones[r.id].obra; return r.id; };
+  const pt = puesto('piedra_tallar', 0), bt = puesto('banco_tronco', 1.5);
+  inv.coger('hacha_piedra', 1, 'mano:der');
+  const hacha = () => inv.lugares['mano:der'];
+  const rep = (estacion, de = 'mano:der', x = 0) => ejecutarFabricacion(fab, invs, reg, { autor: 'ana', tipo: 'reparar', estacion, de, x, z: 0.5 }, T0);
+  let r = rep(pt);
+  comprobar('nueva, no le hace falta', !r.ok && /nuevo/.test(r.motivo), r.motivo);
+  for (let i = 0; i < 150; i++) gastar(inv, 'mano:der');
+  r = rep(pt);
+  comprobar('sin cordel depositado en la piedra de tallar, no', !r.ok && /Falta en la estación/.test(r.motivo) && hacha().usado === 150, r.motivo);
+  const dejar = (est, tipo, x) => { inv.coger(tipo, 1, 'mano:izq'); return fab.depositar('ana', est, 'mano:izq', 1, { x, z: 0.5 }, inv).ok; };
+  comprobar('deja 2 cordeles en la piedra de tallar', dejar(pt, 'cordel', 0) && dejar(pt, 'cordel', 0) && fab.estaciones[pt].deposito.cordel === 2);
+  r = rep(bt, 'mano:der', 1.5);
+  comprobar('el hacha de piedra no se repara en el banco de tronco', !r.ok && /piedra de tallar/.test(r.motivo), r.motivo);
+  r = rep(pt);
+  comprobar('en la piedra de tallar, con un cordel, recupera 84 golpes (la mitad)', r.ok && r.reparado.recuperado === 84 && hacha().usado === 66 && fab.estaciones[pt].deposito.cordel === 1, JSON.stringify(r.reparado));
+  comprobar('queda en el registro, con su autor', (e => e && e.autor === 'ana' && e.tipo === 'reparar' && e.resultado && e.resultado.reparado.objeto === 'hacha_piedra')(reg.entradas.at(-1)));
+  r = rep(pt);
+  comprobar('no pasa de nueva', r.ok && r.reparado.recuperado === 66 && hacha().usado === undefined && !fab.estaciones[pt].deposito.cordel, JSON.stringify(hacha()));
+  inv.coger('mazo_piedra', 1, 'mano:izq');
+  for (let i = 0; i < 40; i++) gastar(inv, 'mano:izq');
+  r = rep(pt, 'mano:izq');
+  comprobar('el mazo también, pero ya no queda cordel', !r.ok && /cordel/i.test(r.motivo), r.motivo);
+  inv.sacar('mano:izq'); inv.sacar('mano:der');
+  inv.coger('lanza_endurecida', 1, 'mano:der');
+  for (let i = 0; i < 40; i++) gastar(inv, 'mano:der');
+  dejar(bt, 'fibra', 1.5);
+  r = rep(bt, 'mano:der', 1.5);
+  comprobar('la lanza, en el banco, pide llevar la lasca', !r.ok && /lasca/i.test(r.motivo), r.motivo);
+  inv.coger('lasca_silex', 1, 'mano:izq');
+  r = rep(bt, 'mano:der', 1.5);
+  comprobar('con la lasca y la fibra depositada, recupera 25 golpes; la lasca no se gasta', r.ok && inv.lugares['mano:der'].usado === 15 && inv.cuantos('lasca_silex') === 1 && !fab.estaciones[bt].deposito.fibra, r.motivo || JSON.stringify(inv.lugares['mano:der']));
+  comprobar('lo de hierro y el palo cavador no se reparan (aún)', !seRepara('espada') && !seRepara('hacha_hierro') && !seRepara('palo_cavador'));
+  r = rep(pt, 'mano:der', 9);
+  comprobar('lejos del puesto, no', !r.ok && /lejos/.test(r.motivo), r.motivo);
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);

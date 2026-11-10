@@ -55,3 +55,29 @@ export function gastar(inv, ruta, n = 1) {
 // Los resultados de un golpe que gastan el arma de quien lo da, y los que gastan la de quien lo para.
 export const GASTA_AL_DAR = new Set(['herida', 'golpe maestro', 'parada', 'parada perfecta']);
 export const GASTA_AL_PARAR = new Set(['parada', 'parada perfecta']);
+
+// Reparar en su puesto con su material (documento de sistemas, apartado 10: «se repara en su estación con su material»).
+// Se repara lo que se lleva en la mano, junto a un puesto de su uso, con lo DEPOSITADO en él (como las recetas de
+// estación: «lo que se deposite en mesa», valravnx, 6 nov). Se hace en el acto y le quita usos (recupera), sin pasar
+// de nuevo. Decisiones provisionales (el documento no fija cuánto material ni cuánto recupera; registro y diario, 10 nov):
+//  - Lo de piedra, en la piedra de tallar: se le saca filo a la piedra y se vuelve a atar con un cordel. El hacha de
+//    piedra recupera la mitad de su vida (84 golpes: un adulto y medio); el mazo de piedra, 25 golpes.
+//  - Lo de madera, en el banco de tronco: la lanza endurecida se le saca punta con la lasca de sílex (hay que llevarla;
+//    no se gasta) y se le ata la empuñadura con fibra; recupera 25 golpes. El palo cavador no se repara: se hace otro
+//    con una rama en 10 s.
+//  - Lo de hierro (la espada, el cuchillo, el hacha de hierro y la de mano), en la fragua, cuando la haya. La ropa y la
+//    armadura aún no se gastan: su reparación llega con su desgaste.
+export const REPARAR = {
+  hacha_piedra:     { uso: 'tallar', gasta: { cordel: 1 }, recupera: 84 },
+  mazo_piedra:      { uso: 'tallar', gasta: { cordel: 1 }, recupera: 25 },
+  lanza_endurecida: { uso: 'banco', gasta: { fibra: 1 }, recupera: 25, requiere: ['lasca_silex'] },
+};
+export const seRepara = tipo => Object.hasOwn(REPARAR, tipo);
+
+// Le quita a c los usos que recupera su reparación (sin bajar de 0). Devuelve { usado, vida, recuperado } o null.
+export function repararCosa(c) {
+  if (!c || !seRepara(c.tipo)) return null;
+  const antes = Number.isInteger(c.usado) && c.usado > 0 ? c.usado : 0, usado = Math.max(0, antes - REPARAR[c.tipo].recupera);
+  if (usado > 0) c.usado = usado; else delete c.usado;
+  return { usado, vida: VIDA[c.tipo], recuperado: antes - usado };
+}

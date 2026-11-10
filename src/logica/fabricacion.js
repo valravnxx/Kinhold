@@ -68,6 +68,7 @@
 import { CATALOGO } from './inventario.js';
 import { VIDA, seEstropea } from './comida.js';
 import { ALCANCE_COGER } from './suelo.js';
+import { REPARAR, seRepara, repararCosa, desgasteDe } from './desgaste.js';
 import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
@@ -526,6 +527,27 @@ export class Fabricacion {
     return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde, ...(n < pide ? { noCabia: pide - n } : {}) };
   }
 
+  // Reparar lo que llevas en de (una mano, casi siempre) en la estación que tienes al lado, con lo depositado en ella
+  // (src/logica/desgaste.js, REPARAR: qué puesto, qué material y cuánto recupera). Se hace en el acto.
+  reparar(autor, estacion, de, pos, inv) {
+    const { e, motivo } = this.estacionAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    if (e.obra) return { ok: false, motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
+    const b = typeof de === 'string' ? inv.buscar(de) : { motivo: 'Ahí no hay nada.' };
+    if (b.motivo || !b.cosa) return { ok: false, motivo: b.motivo || 'Ahí no hay nada.' };
+    const c = b.cosa, nombre = (CATALOGO[c.tipo] || {}).nombre || c.tipo;
+    if (!seRepara(c.tipo)) return { ok: false, motivo: `${nombre}: eso no se repara aquí.` };
+    const rp = REPARAR[c.tipo];
+    if (ESTACIONES[e.tipo].uso !== rp.uso) return { ok: false, motivo: `${nombre}: se repara en ${conQue(rp.uso)}.` };
+    if (!desgasteDe(c).usado) return { ok: false, motivo: `${nombre}: está como nuevo, no le hace falta.` };
+    if (rp.requiere && !rp.requiere.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: textoRequiere(rp) };
+    const f = cuentasEstacion(rp.gasta, e.deposito).faltan;
+    if (Object.keys(f).length) return { ok: false, motivo: textoFaltan(f).replace('Te falta', 'Falta en la estación'), faltan: f };
+    for (const [tipo, n] of Object.entries(rp.gasta)) { e.deposito[tipo] -= n; if (!e.deposito[tipo]) delete e.deposito[tipo]; }
+    const g = repararCosa(c);
+    return { ok: true, estacion: e.id, reparado: { objeto: c.tipo, ...g }, usado: { encima: {}, suelo: {}, estacion: { ...rp.gasta } } };
+  }
+
   // ---------- el fuego (src/logica/fuego.js) ----------
   fuegoAlLado(estacion, pos) {
     const { e, motivo } = this.estacionAlLado(estacion, pos);
@@ -769,7 +791,7 @@ export function migrarFabricacion(datos) {
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion', 'desmontar_estacion'];
 export const DEL_FUEGO = ['encender_fuego', 'echar_fuego', 'brasas_fuego'];
 export const DE_LA_CAMA = ['ligar_cama', 'dormir'];
-export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO, ...DE_LA_CAMA];
+export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', 'reparar', ...DEL_FUEGO, ...DE_LA_CAMA];
 export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false, alMuro = () => null) {
   let res;
   const a = accion;
@@ -780,7 +802,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!TIPOS_FABRICACION.includes(a.tipo)) res = { ok: false, motivo: 'Acción desconocida.' };
   else if (!Number.isFinite(a.x) || !Number.isFinite(a.z) || !est(a.estacion) || (a.tipo === 'fabricar' && !txt(a.receta))
     || ((a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && (!txt(a.estacion) || (a.cantidad !== undefined && a.cantidad !== null && !Number.isInteger(a.cantidad))))
-    || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
+    || (a.tipo === 'reparar' && (!txt(a.estacion) || !txt(a.de))) || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
     || ((OBRA_ESTACION.includes(a.tipo) || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo)) && !txt(a.estacion)) || (a.tipo === 'echar_fuego' && !txt(a.objeto)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
     || (a.tipo === 'colocar_estacion' && a.y !== undefined && a.y !== null && !Number.isFinite(a.y))
     || (a.tipo === 'colocar_estacion' && a.giro !== undefined && a.giro !== null && !Number.isFinite(a.giro))) res = { ok: false, motivo: 'Datos no válidos.' };
@@ -799,6 +821,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     else if (a.tipo === 'desmontar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.desmontarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'quitar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.quitarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'depositar_estacion') res = fab.depositar(a.autor, a.estacion, a.de, a.cantidad, pos, inv);
+    else if (a.tipo === 'reparar') res = fab.reparar(a.autor, a.estacion, a.de, pos, inv);
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
     else if (a.tipo === 'encender_fuego') res = fab.encenderFuego(a.autor, a.estacion, pos, inv, ahora);
     else if (a.tipo === 'echar_fuego') res = fab.echarFuego(a.autor, a.estacion, a.objeto, pos, inv, ahora);
@@ -811,7 +834,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.ligada ? { estacion: res.estacion, ligada: true } : res.dormir ? { estacion: res.estacion, dormir: true } : res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
+    e.resultado = res.reparado ? { estacion: res.estacion, reparado: { ...res.reparado } } : res.ligada ? { estacion: res.estacion, ligada: true } : res.dormir ? { estacion: res.estacion, dormir: true } : res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
       : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado }, ...(res.avivada ? { avivada: true } : {}) }
       : res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.desmontada ? { estacion: res.estacion, desmontada: true, devuelto: { ...res.devuelto }, guardado: { ...res.guardado } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
       : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }
