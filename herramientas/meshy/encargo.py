@@ -8,7 +8,8 @@
 #   {"accion": "modelos", "tope": 300, "cosas": [{"nombre": "roca_mediana", "cosa": "…", "alto": 1.0, "tri": 800}]}
 #     cada cosa: una imagen con el prompt de estilo entero (herramientas/meshy/estilo.md) + la cosa, sin fondo; de ella el
 #     modelo 3D con el remallado de Meshy (tri: el tope de triángulos) y la textura guiada por la versión corta del estilo;
-#     a salida/ van la imagen, el .glb y sus cuatro vistas; no empieza si pasaría del tope de créditos (unos 40 por cosa)
+#     a salida/ van la imagen, el .glb y sus cuatro vistas; no empieza si pasaría del tope de créditos (unos 40 por cosa);
+#     una cosa con «id» (un image-to-3d ya hecho) no se vuelve a pagar: se baja y se aligera con su «tri» de ahora
 #     cada personaje se riggea por la API (5 créditos; la animación solo admite un rig hecho por la API) y se le ponen las
 #     animaciones de la biblioteca de 10 en 10 (3 créditos cada una); no empieza si pasaría del tope de créditos
 #   {"accion": "movimientos", "tope": 250, "rigs": {"hombre": "<rig_task_id>", "mujer": "…"}, "movimientos": [{"nombre": "hombro_andar",
@@ -147,12 +148,23 @@ if pedido.get('accion') == 'modelos':
     est = open('herramientas/meshy/estilo.md').read()
     largo = est.split('## El prompt entero')[1].split('\n', 1)[1].split('## La versión corta')[0].strip()
     corto = est.split('## La versión corta')[1].split('\n', 1)[1].strip()
-    cosas = pedido['cosas']; coste = 40 * len(cosas)
+    # una cosa con «id» ya está pagada: se vuelve a bajar ese modelo (lo guarda Meshy unos días) y se aligera con su
+    # «tri» y su «alto» de ahora, sin gastar
+    cosas = pedido['cosas']; coste = 40 * len([c for c in cosas if not c.get('id')])
     print(f'coste previsto: unos {coste} créditos (tope {pedido.get("tope")})')
     if coste > pedido.get('tope', 0) or coste > saldo.get('balance', 0): print('NO: pasa del tope o del saldo'); sys.exit(1)
     informe = []
     for c in cosas:
         n = c['nombre']
+        if c.get('id'):
+            m = pide('/v1/image-to-3d/' + c['id'])
+            print(n, 'ya hecho', m.get('status'))
+            json.dump({k: v for k, v in m.items() if k != 'model_urls'}, open(f'{SAL}/{n}_tarea.json', 'w'), ensure_ascii=False, indent=1)
+            if m.get('status') == 'SUCCEEDED':
+                baja(m['model_urls']['glb'], f'{SAL}/{n}_crudo.glb'); aligera(n, c)
+                for lado, u in (m.get('thumbnail_urls') or {}).items(): baja(u, f'{SAL}/{n}_vista_{lado}.png')
+            informe.append({'nombre': n, 'alto': c.get('alto'), 'modelo_id': c['id'], 'estado': m.get('status'), 'creditos': 0})
+            continue
         prompt = f"{largo}\n\nSUBJECT: {c['cosa']}\nA single isolated object, the whole of it in view, three-quarter view from slightly above, centred, on a plain neutral background, no other objects, no base, no ground plane, no text."
         im = espera('/v1/text-to-image/' + manda('/v1/text-to-image', {'ai_model': pedido.get('modelo_imagen', 'gpt-image-2-5-flare'), 'prompt': prompt[:4000], 'aspect_ratio': '1:1', 'remove_background': True})['result'])
         print(n, 'imagen', im.get('status'), im.get('task_error'), 'créditos', im.get('consumed_credits'))
