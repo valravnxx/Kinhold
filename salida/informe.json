@@ -1,0 +1,56 @@
+[
+ {
+  "nombre": "arbol_adulto",
+  "alto": 9.0,
+  "imagen_id": "01a1c47b-7066-71f9-9226-46259d6ff30a",
+  "modelo_id": "01a1c47b-f383-771a-88bb-7175c539ef75",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "arbol_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c47e-3ca6-704f-8b10-1eefb1e9c2e7",
+  "modelo_id": "01a1c47e-9f36-73ab-acac-b06e3e059d73",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "arbusto",
+  "alto": 1.4,
+  "imagen_id": "01a1c480-0635-72cd-a018-6018f38403d1",
+  "modelo_id": "01a1c480-68ab-753c-8dac-95a67eba8472",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "arbusto_bayas",
+  "alto": 1.2,
+  "imagen_id": "01a1c483-f09a-74b2-9042-d312d7f637d2",
+  "modelo_id": "01a1c484-5299-754e-8304-4dceca80072c",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "matorral",
+  "alto": 0.9,
+  "imagen_id": "01a1c488-db83-7650-b5c2-312d9cea9f40",
+  "modelo_id": "01a1c489-3dcf-7408-9635-0666a84c3c88",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "roca_mediana",
+  "alto": 0.9,
+  "imagen_id": "01a1c48c-e91b-7299-ac0e-10d8d5ca455a",
+  "modelo_id": "01a1c48d-4c11-75ac-8ea6-bbcfdfe66a5b",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
