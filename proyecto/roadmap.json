@@ -1669,7 +1669,9 @@
     },
     {
      "nombre": "La ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»): cada prenda lleva su desgaste, lo cuenta el servidor, se ve en su ficha y se repara con lo suyo (la de cuero, con piel y cordel; la de lino y lana, con lo que dé hilo, que aún no tiene origen: buscárselo o esconderlo); lo que el documento no fija, provisional y en el registro",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-10T14:26:34+00:00",
+     "rama": "trabajo/20261110-1426"
     },
     {
      "nombre": "Recorrido entero de un primer día, sin arcón, en el recorrido de jugador: entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo; y prueba de valravnx entre dos",
