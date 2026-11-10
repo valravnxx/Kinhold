@@ -48,6 +48,8 @@ paso "Desconectarse: dormido en el mundo, atacable unos minutos fuera de tu tier
 paso "Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cuerpo con la mitad, y a tu cama" node pruebas/prueba_muerte.mjs
 paso "Las liebres: pastan, se ponen alerta y huyen de quien se acerca; las mueve el servidor" node pruebas/prueba_fauna.mjs
 paso "El modo arma con lo de la mano: puños, hacha, lanza; lanzar la lanza y la piedra apuntando, y cazar la liebre" node pruebas/prueba_arma_mano.mjs
+paso "Despiezar y asar: la liebre con la lasca, la carne al fuego, la cruda se estropea" node pruebas/prueba_comida.mjs
+paso "Herramientas y armas que se gastan: el hacha de piedra tala 3 adultos y se rompe" node pruebas/prueba_desgaste.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
@@ -161,7 +163,8 @@ paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_naveg
 paso "Navegador: pelear en cualquier sitio del mundo" python3 pruebas/prueba_pelear_mundo_navegador.py dist/kinhold_demo.html "$C/pelear_mundo"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
-paso "Navegador: animaciones para cargar" python3 pruebas/prueba_anim_carga_navegador.py dist/kinhold_personaje.html "$C/anim_carga"
+# (la de navegador de las animaciones de cargar del taller, fuera desde el 10 nov: el visor ya enseña los personajes de
+# Meshy, sin las animaciones del taller; las del taller siguen publicadas y la de lógica de arriba las sigue mirando)
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: lo que se recoge en el mundo" python3 pruebas/prueba_recogida_mundo_navegador.py dist/kinhold_demo.html "$C/recogida_mundo"
@@ -183,6 +186,7 @@ paso "Navegador: dormido al desconectarse" python3 pruebas/prueba_desconectado_n
 paso "Navegador: morir y que te saqueen" python3 pruebas/prueba_muerte_navegador.py dist/kinhold_demo.html "$C/muerte"
 paso "Navegador: las liebres" python3 pruebas/prueba_fauna_navegador.py dist/kinhold_demo.html "$C/liebres"
 paso "Navegador: el modo arma con lo de la mano y cazar con la lanza" python3 pruebas/prueba_caza_navegador.py dist/kinhold_demo.html "$C/caza"
+paso "Navegador: despiezar y asar" python3 pruebas/prueba_comida_navegador.py dist/kinhold_demo.html "$C/comida"
 paso "Navegador: entrar con la cuenta" python3 pruebas/prueba_cuenta_navegador.py dist/kinhold_demo.html "$C/cuenta"
 paso "Web de progreso" node herramientas/construir_web.mjs
 paso "Navegador: web" python3 pruebas/prueba_web.py "$C/web"

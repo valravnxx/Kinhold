@@ -5,8 +5,8 @@
 //   - la corteza: un árbol en pie se descorteza una vez (de 1 a 2 cortezas) con un cuchillo, la lasca o un hacha;
 //   - la resina: un pino o un abeto se sangra con un cuchillo o la lasca; a las 4 h reales da 1 resina, que se coge con
 //     la mano, y vuelve a sangrar (repetible); los demás árboles no dan;
-//   - lo descortezado y lo sangrado se guarda; la honda y el odre (piel, de la caza) quedan fuera del tramo: ni salen en
-//     la lista del panel ni se pueden hacer;
+//   - lo descortezado y lo sangrado se guarda; la honda y el odre (piel, de despiezar la liebre cazada: 9 nov) salen en
+//     la lista del panel y, sin piel, no se pueden hacer;
 //   - en el servidor, cada árbol con su especie (la del mundo, no la que diga el navegador).
 // MUTAR=1: se descorteza sin fin; MUTAR=2: la resina se coge sin esperar. Tienen que FALLAR.
 import { Tala, ejecutarTala, idArbol, RESINA_TARDA, CONIFERAS } from '../src/logica/tala.js';
@@ -74,11 +74,11 @@ r = usar(pino, 'sangrar', T0 + RESINA_TARDA + 2000);
 comprobar('y vuelve a sangrar (repetible): otra a las 4 h más', !r.ok && usar(pino, 'sangrar', T0 + 2 * RESINA_TARDA + 3000).ok && inv.cuantos('resina') === 2);
 comprobar('queda en el registro con su autor', reg.entradas.some(e => e.tipo === 'sangrar' && e.autor === yo && e.ok && e.resultado.objeto === 'resina'));
 
-console.log('La piel: fuera del tramo');
+console.log('La piel: de la caza (9 nov)');
 const fab = new Fabricacion();
 const lista = fab.lista({ x: 0, z: 0 }, inv, suelo, T0).map(x => x.receta);
-comprobar('la honda y el odre no salen en el panel', !lista.includes('honda') && !lista.includes('odre') && lista.includes('mazo_piedra'), lista.length + ' recetas');
-comprobar('ni se pueden hacer', !fab.fabricar(yo, 'odre', null, { x: 0, z: 0 }, inv, suelo, T0).ok && RECETAS.odre.fuera === 'caza');
+comprobar('la honda y el odre salen en el panel (vuelven con la caza)', lista.includes('honda') && lista.includes('odre') && lista.includes('mazo_piedra'), lista.length + ' recetas');
+comprobar('sin piel no se pueden hacer', !fab.fabricar(yo, 'odre', null, { x: 0, z: 0 }, inv, suelo, T0).ok && !RECETAS.odre.fuera && RECETAS.odre.gasta.piel === 1);
 
 console.log('En el servidor, con el terreno de Whitholm');
 const { terrenoWhitholm } = await import('../src/logica/terreno_servidor.js');

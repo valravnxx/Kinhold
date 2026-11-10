@@ -1526,10 +1526,18 @@
     },
     {
      "nombre": "Personajes: el hombre y la mujer de valravnx (Meshy, con su esqueleto y andar y correr) como base del jugador; propuesta de cómo se viste por capas y se personaliza con ellos, para que valravnx decida",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-10T07:41:38+01:00",
+     "fin": "2026-11-10T09:28:05+01:00"
     },
     {
      "nombre": "Animaciones de los personajes con Meshy (valravnx, 10 nov: «de todo tipo»): con su biblioteca de animaciones, sobre el esqueleto del hombre y de la mujer, todo lo que hace el jugador (quieto, andar, correr, agacharse, coger del suelo, cargar al hombro, talar, golpear con el mazo, trabajar en la obra, sentarse, tumbarse y levantarse, beber y comer, morir, y los golpes y paradas de la esgrima); 3 créditos cada una",
+     "estado": "hecho",
+     "inicio": "2026-11-10T07:41:38+01:00",
+     "fin": "2026-11-10T09:28:05+01:00"
+    },
+    {
+     "nombre": "La ropa por capas y la personalización (complexión, cara, pelo, barba, piel) con los personajes de Meshy (valravnx, 10 nov: «poco a poco, sin prisa»)",
      "estado": "pendiente"
     },
     {
@@ -1636,16 +1644,24 @@
     },
     {
      "nombre": "Despiezar y asar (documento de sistemas, apartado 4): la liebre se despieza con la lasca de sílex (carne cruda y piel pequeña: el origen de la piel, que hoy no tiene, en pruebas/prueba_origenes.mjs); la carne se asa en la hoguera o en el hogar y lo asado sacia más que lo crudo (GDD, cocina); la carne cruda se estropea con el tiempo. Modelos (estilo v5) y por el servidor. Recorrido: el jugador despieza la liebre, la asa y se la come",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-09T05:22:57+00:00",
-     "rama": "trabajo/20261109-0522"
+     "fin": "2026-11-10T06:51:11+00:00"
     },
     {
      "nombre": "Herramientas y armas que se gastan (documento de sistemas, apartado 10: el hacha de piedra, unos 3 árboles adultos; un arma de madera o piedra, unos 50 golpes): cada uso lo cuenta el servidor, se ve en la ficha del equipo y, al acabarse, se rompe. Recorrido: el hacha de piedra se gasta talando",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-10T07:30:41+00:00",
+     "fin": "2026-11-10T09:54:51+00:00"
     },
     {
      "nombre": "Reparar en su puesto con su material (documento de sistemas, apartado 10): lo de piedra en la piedra de tallar, lo de madera en el banco de tronco, la ropa con lo suyo; lo que el documento no fija (cuánto material y cuánto recupera), provisional y en el registro. Recorrido: el jugador repara el hacha antes de que se rompa",
+     "estado": "hecho",
+     "inicio": "2026-11-10T10:25:15+00:00",
+     "fin": "2026-11-10T11:22:29+00:00"
+    },
+    {
+     "nombre": "La ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»): cada prenda lleva su desgaste, lo cuenta el servidor, se ve en su ficha y se repara con lo suyo (la de cuero, con piel y cordel; la de lino y lana, con lo que dé hilo, que aún no tiene origen: buscárselo o esconderlo); lo que el documento no fija, provisional y en el registro",
      "estado": "pendiente"
     },
     {
@@ -3843,6 +3859,34 @@
      "archivo": "jugar/demo/v168.html",
      "capturas": "capturas/demo-v168",
      "notas": "El modo arma emplea lo que llevas en la mano (fuera la espada de pruebas): puños, hacha, mazo, palo, cuchillo, lanza; la lanza clava y se lanza apuntando (Espacio o el botón Lanzar), con poca fuerza y algo de desvío, y caza liebres; las piedras también se lanzan; lo lanzado queda en el suelo"
+    },
+    {
+     "v": "v169",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v169.html",
+     "capturas": "capturas/demo-v169",
+     "notas": "Despiezar y asar la liebre: con la lasca de sílex encima y la liebre cazada a tus pies, Usar la despieza (también desde el panel de fabricar); da carne cruda y una piel pequeña, y con la piel vuelven la honda y el odre. La carne se asa en la hoguera o en el hogar y la asada sacia mucho más que la cruda; la cruda se estropea en unas horas. Todo por el servidor."
+    },
+    {
+     "v": "v170",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v170.html",
+     "capturas": "capturas/demo-v170",
+     "notas": "v170: las herramientas y las armas se gastan. Cada golpe al talar gasta el hacha: la de piedra aguanta unos 3 árboles adultos (o unos 21 jóvenes) y la de hierro unos 30. Cada golpe que alcanza o que se para gasta el arma de la mano (unos 50 la de madera o piedra: la lanza, el palo cavador, el mazo; unos 400 la de hierro), y la lanza lanzada se gasta al dar a una presa. Lo cuenta el servidor; la ficha del equipo dice cuántos usos le quedan, con su barra, y al acabarse se rompe y te avisa."
+    },
+    {
+     "v": "v171",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v171.html",
+     "capturas": "capturas/demo-v171",
+     "notas": "Reparar en su puesto con su material: el hacha y el mazo de piedra en la piedra de tallar con un cordel dejado en ella, la lanza endurecida en el banco de tronco con fibra (llevando la lasca); desde el menú de Usar junto al puesto, lo hace el servidor; la ficha del equipo dice dónde y con qué"
+    },
+    {
+     "v": "v172",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v172.html",
+     "capturas": "capturas/demo-v172",
+     "notas": "v172: los personajes de Meshy (valravnx, 10 nov). El jugador y los demás jugadores son el hombre o la mujer que hizo valravnx en Meshy, con 59 animaciones de su biblioteca y 8 hechas a partir de texto (llevar un tronco al hombro, andando y parado; empujar la carretilla, andando y parada; arrastrar la rastra; talar y picar a dos manos; llevar algo en brazos). Fuera los de antes: el del taller, el de Quaternius y el muñeco de bloques, también en las peleas y en el visor de personajes. v172, provisional: aún sin ropa por capas, aspecto, tintes ni hechuras (vuelven poco a poco), y con las manos abiertas. Al talar y al picar, el mango pasa por las dos manos; el golpe de ahora (de Meshy, hecho a partir de texto) aún sube las manos junto a la cara y el hacha roza la cabeza: valravnx elige el bueno en Meshy. Los pies se suben lo que el modelo los trae hundidos (17 cm el hombre, 19 la mujer). Las manos se ajustan encima del tronco al hombro y en las agarraderas de la carretilla."
     }
    ]
   },

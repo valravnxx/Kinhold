@@ -66,7 +66,9 @@
 //    y 15 s, 30 de lo pequeño (sílex y lascas, fibra, yesca, cordel, cuerda, resina, bayas, setas, frutos secos y
 //    hierbas), dentro o fuera.
 import { CATALOGO } from './inventario.js';
+import { VIDA, seEstropea } from './comida.js';
 import { ALCANCE_COGER } from './suelo.js';
+import { REPARAR, seRepara, repararCosa, desgasteDe } from './desgaste.js';
 import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
@@ -139,14 +141,16 @@ export const RECETAS = {
   // el taladro de fuego de arco (7 nov; el documento de sistemas lo nombra para encender la hoguera sin decir de qué se
   // hace): una rama da el arco y el huso, otra la tabla, y el cordel tensa el arco. Provisional (diario y registro)
   taladro_fuego:     r('Taladro de fuego', 'manos', 'taladro_fuego', { rama: 2, cordel: 1 }, 20),
-  // (la honda y el odre piden piel, que sale de la caza: no hay animales en este tramo. Fuera del tramo hasta entonces
-  // (tarea «Origen de la piel…», 8 nov): no salen en el panel ni se pueden hacer; vuelven con la caza)
-  honda:             { ...r('Honda', 'manos', 'honda', { cordel: 2, piel: 1 }, 30), fuera: 'caza' },
+  // (la honda y el odre piden piel: vuelven con la caza, 9 nov; la piel sale de despiezar la liebre)
+  honda:             r('Honda', 'manos', 'honda', { cordel: 2, piel: 1 }, 30),
   lenero:            r('Leñero', 'manos', 'lenero', { rama: 4, cordel: 2 }, 30),
   rastra:            r('Rastra', 'manos', 'rastra', { rama: 5, cordel: 2 }, 30),
   fardo:             r('Fardo atado', 'manos', 'fardo', { cordel: 2 }, 15),
   arpon:             r('Arpón', 'manos', 'arpon', { rama: 1, lasca_silex: 1, cordel: 1 }, 30),
-  odre:              { ...r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30), fuera: 'caza' },
+  odre:              r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30),
+  // despiezar la liebre cazada (9 nov; src/logica/comida.js): con las manos, llevando la lasca de sílex (requiere: no
+  // se gasta); da la carne cruda y, además (tambien), la piel. Tiempo, provisional
+  despiezar_liebre:  { ...r('Despiezar la liebre', 'manos', 'carne_cruda', { liebre: 1 }, 30), requiere: ['lasca_silex'], tambien: { piel: 1 } },
   // el mazo de piedra (valravnx, 8 nov): una piedra gorda atada al extremo de una rama con cordel, con las manos; rompe
   // las rocas medianas del mundo (src/logica/recoleccion.js). Tiempo, provisional (como el hacha, algo menos: no se talla)
   mazo_piedra:       r('Mazo de piedra', 'manos', 'mazo_piedra', { piedra: 1, rama: 1, cordel: 2 }, 45),
@@ -161,6 +165,8 @@ export const RECETAS = {
   lanza_endurecida:  r('Lanza endurecida', 'fuego', 'lanza_endurecida', { rama: 1 }, 60),
   antorcha:          r('Antorcha', 'fuego', 'antorcha', { rama: 1, fibra: 1 }, 20),
   antorcha_resina:   r('Antorcha (con resina)', 'fuego', 'antorcha', { rama: 1, resina: 1 }, 20),
+  // asar la carne (9 nov; src/logica/comida.js): sacia más que cruda y no se estropea. Tiempo, provisional
+  asar_carne:        r('Carne asada', 'fuego', 'carne_asada', { carne_cruda: 1 }, 45),
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -194,6 +200,8 @@ export const PARA = {
   mazo_piedra: 'Rompe las rocas medianas en piedras sueltas (las grandes, solo con hierro).',
   hacha_piedra: 'Tala árboles jóvenes (da un tronco delgado y varas); los adultos, muy despacio.',
   lanza_endurecida: 'Caza y defensa.',
+  despiezar_liebre: 'Carne cruda (se estropea en unas horas) y una piel pequeña.',
+  asar_carne: 'Sacia mucho más que la cruda y no se estropea.',
   antorcha: 'Luz; dura un rato.',
   antorcha_resina: 'Luz; dura un rato.',
   cuerda: 'Base de casi todo.',
@@ -291,6 +299,8 @@ function gastarTodo(gasta, inv, cerca, suelo) {
   return usado;
 }
 
+// lo que hay que llevar para una receta que pide herramienta (que no se gasta)
+export const textoRequiere = rc => `Para eso hace falta llevar ${rc.requiere.map(t => CATALOGO[t].nombre.toLowerCase()).join(' o ')}.`;
 const textoFaltan = f => 'Te falta: ' + Object.entries(f).map(([t, n]) => `${n} de ${(CATALOGO[t] || {}).nombre || t}`).join(', ') + '.';
 
 // ---------------- Estaciones y colas ----------------
@@ -350,8 +360,10 @@ export class Fabricacion {
       const e = rc.uso === 'manos' ? null : this.estacionCerca(rc.uso, pos, rc.gasta, ahora);
       const { de, faltan: f } = e ? cuentasEstacion(rc.gasta, e.deposito) : cuentas(rc.gasta, inv, cerca);
       const apagada = !!(e && ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora));
-      const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length || apagada ? 'casi' : 'ya';
-      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}) };
+      const sinHerramienta = !!rc.requiere && !rc.requiere.some(t => inv.cuantos(t) > 0);
+      const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length || apagada || sinHerramienta ? 'casi' : 'ya';
+      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}),
+        ...(rc.requiere ? { requiere: [...rc.requiere], ...(sinHerramienta ? { sinHerramienta: true } : {}) } : {}), ...(rc.tambien ? { tambien: { ...rc.tambien } } : {}) };
     });
   }
 
@@ -515,6 +527,27 @@ export class Fabricacion {
     return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde, ...(n < pide ? { noCabia: pide - n } : {}) };
   }
 
+  // Reparar lo que llevas en de (una mano, casi siempre) en la estación que tienes al lado, con lo depositado en ella
+  // (src/logica/desgaste.js, REPARAR: qué puesto, qué material y cuánto recupera). Se hace en el acto.
+  reparar(autor, estacion, de, pos, inv) {
+    const { e, motivo } = this.estacionAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    if (e.obra) return { ok: false, motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
+    const b = typeof de === 'string' ? inv.buscar(de) : { motivo: 'Ahí no hay nada.' };
+    if (b.motivo || !b.cosa) return { ok: false, motivo: b.motivo || 'Ahí no hay nada.' };
+    const c = b.cosa;
+    if (!seRepara(c.tipo)) return { ok: false, motivo: 'Eso no se repara.' };
+    const rp = REPARAR[c.tipo];
+    if (ESTACIONES[e.tipo].uso !== rp.uso) return { ok: false, motivo: `Eso se repara en ${conQue(rp.uso)}.` };
+    if (!desgasteDe(c).usado) return { ok: false, motivo: 'Está como nuevo: no le hace falta.' };
+    if (rp.requiere && !rp.requiere.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: textoRequiere(rp) };
+    const f = cuentasEstacion(rp.gasta, e.deposito).faltan;
+    if (Object.keys(f).length) return { ok: false, motivo: textoFaltan(f).replace('Te falta', 'Falta en la estación'), faltan: f };
+    for (const [tipo, n] of Object.entries(rp.gasta)) { e.deposito[tipo] -= n; if (!e.deposito[tipo]) delete e.deposito[tipo]; }
+    const g = repararCosa(c);
+    return { ok: true, estacion: e.id, reparado: { objeto: c.tipo, ...g }, usado: { encima: {}, suelo: {}, estacion: { ...rp.gasta } } };
+  }
+
   // ---------- el fuego (src/logica/fuego.js) ----------
   fuegoAlLado(estacion, pos) {
     const { e, motivo } = this.estacionAlLado(estacion, pos);
@@ -600,6 +633,7 @@ export class Fabricacion {
     if (!tiene(RECETAS, receta)) return { ok: false, motivo: 'Esa receta no existe.' };
     const rc = RECETAS[receta];
     if (rc.fuera) return { ok: false, motivo: 'Eso aún no se puede hacer: pide piel, y aún no hay caza.' };
+    if (rc.requiere && !rc.requiere.some(t => inv.cuantos(t) > 0)) return { ok: false, motivo: textoRequiere(rc) };
     let cola, max = COLA_MANOS, enEst = null;
     if (rc.uso === 'manos') {
       if (estacion) return { ok: false, motivo: 'Eso se hace con las manos.' };
@@ -660,17 +694,22 @@ export class Fabricacion {
     if (!mios.length) return { ok: false, motivo: cola.some(c => c.autor === autor) ? 'Aún no está terminado.' : 'Aquí no tienes nada.' };
     const dados = [];
     let sinSitio = false;
+    // lo que se estropea (la carne cruda) dura desde que se terminó
+    const rasgos = (t, c) => (seEstropea(t) ? { hasta: c.fin + VIDA[t] } : null);
     for (const c of mios) {
-      const rc = RECETAS[c.receta], m = inv.meterDonde(rc.da, rc.n);
-      if (!m.ok && suelo) {
-        const o = suelo.dejar({ tipo: rc.da, n: rc.n }, pos.x, pos.z, ahora, autor, !!enTierras);
-        cola.splice(cola.indexOf(c), 1);
-        dados.push({ objeto: rc.da, cantidad: rc.n, alSuelo: o.id });
-        continue;
-      }
-      if (!m.ok) { sinSitio = true; continue; }
+      const rc = RECETAS[c.receta], m = inv.meterDonde(rc.da, rc.n, undefined, rasgos(rc.da, c));
+      if (!m.ok && !suelo) { sinSitio = true; continue; }
       cola.splice(cola.indexOf(c), 1);
-      dados.push({ objeto: rc.da, cantidad: rc.n, donde: m.donde });
+      if (!m.ok) dados.push({ objeto: rc.da, cantidad: rc.n, alSuelo: suelo.dejar({ tipo: rc.da, n: rc.n, ...(rasgos(rc.da, c) || {}) }, pos.x, pos.z, ahora, autor, !!enTierras).id });
+      else dados.push({ objeto: rc.da, cantidad: rc.n, donde: m.donde });
+      // lo que da además (la piel de la liebre): donde quepa; si no cabe, a tus pies (o, sin suelo, también a tus pies:
+      // a lo que no cupo al cargar, que cae al suelo en cuanto lo hay)
+      for (const [t, n] of Object.entries(rc.tambien || {})) {
+        const m2 = inv.meterDonde(t, n, undefined, rasgos(t, c));
+        if (m2.ok) dados.push({ objeto: t, cantidad: n, donde: m2.donde });
+        else if (suelo) dados.push({ objeto: t, cantidad: n, alSuelo: suelo.dejar({ tipo: t, n }, pos.x, pos.z, ahora, autor, !!enTierras).id });
+        else { inv.apartado.push({ tipo: t, n }); dados.push({ objeto: t, cantidad: n, apartado: true }); }
+      }
     }
     if (!dados.length) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
     return { ok: true, dados, quedan: sinSitio };
@@ -752,7 +791,7 @@ export function migrarFabricacion(datos) {
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion', 'desmontar_estacion'];
 export const DEL_FUEGO = ['encender_fuego', 'echar_fuego', 'brasas_fuego'];
 export const DE_LA_CAMA = ['ligar_cama', 'dormir'];
-export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', ...DEL_FUEGO, ...DE_LA_CAMA];
+export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', 'reparar', ...DEL_FUEGO, ...DE_LA_CAMA];
 export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false, alMuro = () => null) {
   let res;
   const a = accion;
@@ -763,7 +802,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!TIPOS_FABRICACION.includes(a.tipo)) res = { ok: false, motivo: 'Acción desconocida.' };
   else if (!Number.isFinite(a.x) || !Number.isFinite(a.z) || !est(a.estacion) || (a.tipo === 'fabricar' && !txt(a.receta))
     || ((a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && (!txt(a.estacion) || (a.cantidad !== undefined && a.cantidad !== null && !Number.isInteger(a.cantidad))))
-    || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
+    || (a.tipo === 'reparar' && (!txt(a.estacion) || !txt(a.de))) || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
     || ((OBRA_ESTACION.includes(a.tipo) || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo)) && !txt(a.estacion)) || (a.tipo === 'echar_fuego' && !txt(a.objeto)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
     || (a.tipo === 'colocar_estacion' && a.y !== undefined && a.y !== null && !Number.isFinite(a.y))
     || (a.tipo === 'colocar_estacion' && a.giro !== undefined && a.giro !== null && !Number.isFinite(a.giro))) res = { ok: false, motivo: 'Datos no válidos.' };
@@ -782,6 +821,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     else if (a.tipo === 'desmontar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.desmontarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'quitar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.quitarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'depositar_estacion') res = fab.depositar(a.autor, a.estacion, a.de, a.cantidad, pos, inv);
+    else if (a.tipo === 'reparar') res = fab.reparar(a.autor, a.estacion, a.de, pos, inv);
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
     else if (a.tipo === 'encender_fuego') res = fab.encenderFuego(a.autor, a.estacion, pos, inv, ahora);
     else if (a.tipo === 'echar_fuego') res = fab.echarFuego(a.autor, a.estacion, a.objeto, pos, inv, ahora);
@@ -794,7 +834,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   const e = registro.anotar(accion || {}, res);
   e.ahora = ahora;
   if (res.ok) {
-    e.resultado = res.ligada ? { estacion: res.estacion, ligada: true } : res.dormir ? { estacion: res.estacion, dormir: true } : res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
+    e.resultado = res.reparado ? { estacion: res.estacion, reparado: { ...res.reparado } } : res.ligada ? { estacion: res.estacion, ligada: true } : res.dormir ? { estacion: res.estacion, dormir: true } : res.brasas ? { estacion: res.estacion, brasas: true, hasta: res.hasta } : res.echado ? { estacion: res.estacion, echado: { ...res.echado }, ...(res.encendida ? { ardiendo: true } : {}) }
       : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado }, ...(res.avivada ? { avivada: true } : {}) }
       : res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.desmontada ? { estacion: res.estacion, desmontada: true, devuelto: { ...res.devuelto }, guardado: { ...res.guardado } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
       : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }

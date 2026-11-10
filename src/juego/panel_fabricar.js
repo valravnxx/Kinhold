@@ -135,9 +135,11 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const pend = sinModelo(x.da) ? ` <em class="fab-pend-t">${esc(tr('sin modelo aún'))}</em>` : '';
     const da = x.n > 1 ? `${x.n} × ${nombre(x.da)}` : nombre(x.da);
     const chips = [`<span class="fab-chip">${x.uso === 'manos' ? `<span class="fab-svg">${MANO_SVG}</span>` : `<span class="fab-ic">${img('est_' + estacionDeUso(x.uso))}</span>`}${esc(dondeUso(x.uso))}</span>`,
-      `<span class="fab-chip">${esc(segundos(x.s))}</span>`, ...(x.da !== x.receta || x.n > 1 ? [`<span class="fab-chip">${esc(tr('da {d}', { d: da }))}</span>`] : [])];
+      `<span class="fab-chip">${esc(segundos(x.s))}</span>`, ...(x.da !== x.receta || x.n > 1 || x.tambien ? [`<span class="fab-chip">${esc(tr('da {d}', { d: x.tambien ? [da, ...Object.entries(x.tambien).map(([t, n]) => n > 1 ? `${n} × ${nombre(t)}` : nombre(t))].join(' + ') : da }))}</span>`] : [])];
     const despues = x.grupo === 'despues';
-    const mats = Object.entries(x.gasta).map(([t, n]) => filaMaterial(t, n, despues ? null : x.de[t], despues ? 0 : x.faltan[t] || 0, despues)).join('');
+    // la herramienta que pide (despiezar: la lasca), que se lleva y no se gasta (9 nov)
+    const herr = (x.requiere || []).map(t => `<div class="fab-mat${x.sinHerramienta ? ' fab-falta' : ''}">${icono(t)}<div><b>${esc(nombre(t))}</b><small>${esc(tr(x.sinHerramienta ? 'hay que llevarla (no se gasta)' : 'la llevas (no se gasta)'))}</small></div><span class="fab-n">${x.sinHerramienta ? '0/1' : '1/1'}</span></div>`).join('');
+    const mats = Object.entries(x.gasta).map(([t, n]) => filaMaterial(t, n, despues ? null : x.de[t], despues ? 0 : x.faltan[t] || 0, despues)).join('') + herr;
     let botones = '';
     if (x.grupo === 'ya') botones = `<button class="fab-hacer fab-btn" data-receta="${x.receta}"${x.estacion ? ` data-estacion="${esc(x.estacion)}"` : ''}>${esc(tr('Hacer'))} · ${esc(segundos(x.s))}</button>`;
     else if (despues) botones = `<p class="fab-gris">${esc(tr('Hace falta {e} a tu lado.', { e: tr(x.conQue) }))}</p>`;
@@ -165,6 +167,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
       }
       if (Object.keys(x.faltan).length) botones += `<button class="fab-btn fab-no" disabled>${esc(tr('Te falta: {c}', { c: cosas(x.faltan) }))}</button>`;
       if (x.apagada) botones += `<p class="fab-gris">${esc(tr('El fuego está apagado: enciéndelo arriba.'))}</p>`;
+      if (x.sinHerramienta) botones += `<button class="fab-btn fab-no" disabled>${esc(tr('Hace falta llevar: {c}', { c: x.requiere.map(t => nombre(t).toLowerCase()).join(' o ') }))}</button>`;
     }
     const titMats = x.estacion ? tr('Lo que pide (de lo que está en la estación)') : tr('Lo que pide');
     return `<div class="fab-grande">${img(x.da)}</div><h3 class="fab-titulo">${esc(tr(x.nombre))}${pend}</h3>

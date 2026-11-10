@@ -5862,5 +5862,91 @@
   "pruebas": "Revisor en la nube: lógica (con la prueba nueva del arma de la mano y del lanzar, rota a propósito —el arma no sale de la mano—: falla; las del combate y de las tierras del rey, puestas al día: el arma ya no se elige con «equipar»), recorrido entero (con la caza en el modo arma), combate en el mundo, pelear en cualquier sitio, desconectarse y las liebres, bien. La de navegador del modo arma y la caza, aquí (PC y móvil, bien; rota a propósito —el arma no mira la mano—: falla) después de arreglar dos cosas que la nube sacó: el navegador mandaba el punto apuntado sin su altura cuando su copia creía flojo el tiro (con pocos fotogramas), y la prueba tiene que volver a acercarse a la liebre antes de cada lanzamiento. Tras unir main (solo textos a mano), lógica del arma, del combate y de la fauna otra vez aquí, bien",
   "capturas": "capturas/demo-v168",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T05:23:31+00:00",
+  "fin": "2026-11-10T06:51:11+00:00",
+  "titulo": "P4: despiezar y asar la liebre (demo v169)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Despiezar la liebre: con la lasca de sílex encima y la liebre cazada a tus pies, Usar dice «Despiezar la liebre» (también en el panel de fabricar, con las manos); la lasca no se gasta. Da carne cruda y una piel pequeña",
+   "Con la piel vuelven la honda y el odre, que esperaban un origen; la prueba de los orígenes sigue la piel desde la caza con la lanza",
+   "Asar: la carne cruda se deja en la hoguera o en el hogar encendidos y se asa; la asada sacia mucho más que la cruda",
+   "La carne cruda se estropea: pasadas unas horas desaparece de donde esté (encima o en el suelo) y te avisa. Lo lleva el servidor",
+   "Modelos de la carne cruda y de la asada sobre una hoja, e iconos nuevos (v15)",
+   "Retomado de la sesión de ayer (a medias): unido con el modo arma de la v168, la liebre se caza lanzando la lanza y luego se despieza",
+   "Recorrido de jugador: tras cazar la liebre, la despieza junto a la hoguera de la orilla (si al morir se le rompió la lasca, talla otra con una piedra de más allá), asa la carne y se la come",
+   "En el recorrido, la lanza se mantenía tensa 7,6 s del reloj del servidor (por el reloj acelerado de la prueba) y el pulso le temblaba: casi nunca daba; ahora la tensa lo justo. Y la fibra de los cordeles de la cama, si la de al lado ya está cogida, la busca más allá",
+   "Decisiones provisionales en el registro de la demo (v169): los tiempos de despiezar y asar, lo que sacia cada carne y lo que dura la cruda",
+   "Aún mal: la carne es pequeña y de lejos se distingue poco; sin tarjeta gráfica, en la captura del móvil la tapa el personaje, así que solo se publica la del PC"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la de despiezar y asar; rota a propósito —la carne no se estropea—: falla), recorrido 238/238, despiezar y asar en navegador (PC y móvil; rota a propósito aquí —Usar no ofrece despiezar—: falla), panel de fabricación, panel de inventario, objetos en el suelo, la cama ligada, los avisos de las necesidades, el mazo de piedra y la demo única, bien. La primera vuelta de la lógica se quedó colgada en la nube instalando el navegador; repetida, bien",
+  "capturas": "capturas/demo-v169",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T07:41:38+01:00",
+  "fin": "2026-11-10T12:53:03+01:00",
+  "titulo": "Los personajes de Meshy en el juego (demo v172)",
+  "hito": "meshy",
+  "hecho": [
+   "El jugador, los demás jugadores, los luchadores del duelo y el visor son ya el hombre o la mujer de valravnx hechos en Meshy; fuera el del taller, el de Quaternius y el muñeco de bloques",
+   "Esqueleto de la API de Meshy y 59 animaciones de su biblioteca, unidas en un .glb por sexo de unos 3,6 MB (herramientas/meshy/unir_personaje.mjs), los de andar sin avanzar",
+   "8 movimientos hechos a partir de texto con Text to Motion de Meshy (al hombro, empujar la carretilla, arrastrar, talar, picar y en brazos): la biblioteca no los trae; 16 créditos cada uno",
+   "Los pies, en el suelo: el modelo los trae 17 y 19 cm hundidos y se suben al cargar (lo vio valravnx)",
+   "Aún sin ropa por capas ni personalización: queda como tarea del hito, poco a poco",
+   "Al talar y al picar (movimientos nuevos a dos manos), el mango pasa por las dos manos en cada fotograma; manos abiertas",
+   "Aún mal (valravnx lo ve igual): el golpe de talar sube las manos junto a la cara y el hacha roza la cabeza; valravnx elige el bueno en Meshy"
+  ],
+  "pruebas": "Visor de personajes y en la nube construcción, demo, carretilla, rastra, tala, duelo, pelear en el mundo y cama correctas; en «lo que llevas se ve puesto» falla aún que la mano quede encima del tronco al hombro (hombre y mujer, por pocos cm). Publicado igual porque lo pidió valravnx («publícalos aun así, quiero verlos»)",
+  "capturas": "capturas/demo-v172",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T07:30:41+00:00",
+  "fin": "2026-11-10T09:54:51+00:00",
+  "titulo": "P4: herramientas y armas que se gastan (demo v170)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Las herramientas y las armas se gastan con el uso (documento de sistemas, apartado 10): cada cosa lleva los usos que lleva y va con ella a donde vaya (las manos, el suelo, el guardado); al acabarse, se rompe y te avisa",
+   "El hacha se gasta con cada golpe de tala: la de piedra aguanta 168 golpes (los de 3 árboles adultos; unos 21 jóvenes) y la de hierro 420 (30 adultos)",
+   "Un arma se gasta con cada golpe que alcanza o que para (unos 50 la de madera o piedra: la lanza, el palo cavador, el mazo; unos 400 la de hierro), y la lanza lanzada al dar a una presa. Lo cuenta el servidor, con su autor en el registro",
+   "La ficha del equipo dice cuántos usos le quedan, con su barra (en rojo cuando queda poco)",
+   "Recorrido de jugador: el hacha de piedra se gasta talando; la casa pide 16 árboles jóvenes y un adulto, así que se le rompe talando el adulto y se hace otra junto a la casa con lo que recoge (fibra, cordeles, piedras, una rama y una piedra de tallar nueva)",
+   "Hacerse otra hacha lleva su rato y el hambre subía hasta matarle de hambre en la cama ligada (perdía el cinturón con la lasca): ahora, con hambre, come bayas y setas de alrededor después de beber, como haría un jugador",
+   "Decisiones provisionales en el registro de la demo (v170): el hacha por golpes de tala (tronzar y partir no la gastan), qué golpes gastan un arma y qué no se gasta así"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la nueva de las herramientas que se gastan; rota a propósito —el hacha no se gasta—: falla; y en la del modo arma, la lanza que da a la liebre y el palo que alcanza se gastan; rota a propósito en el servidor: falla), tala de los árboles, la demo única y el panel de inventario (la ficha con el desgaste, PC y móvil; a la primera fallaba porque la prueba dejaba el hacha en la mano: arreglado), bien. El recorrido 240/240 (aquí, buscando por qué moría de hambre, y en la nube)",
+  "capturas": "capturas/demo-v170",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T09:31:00+00:00",
+  "fin": "2026-11-10T11:53:40+00:00",
+  "titulo": "Discord y Ko-fi en la web",
+  "hito": "infra",
+  "hecho": [
+   "Tablero «Comunidad» al pie de la web, debajo de todas las pestañas: el enlace al Discord oficial y un mensaje para apoyar el desarrollo en Ko-fi.",
+   "Los textos de la página de Ko-fi, listos para pegar."
+  ],
+  "pruebas": "La web generada y mirada en PC y móvil, en español y ruso.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T10:24:28+00:00",
+  "fin": "2026-11-10T11:22:29+00:00",
+  "titulo": "P4: reparar en su puesto con su material (demo v171)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Se repara en su puesto con su material (documento de sistemas, apartado 10): con la herramienta gastada en la mano, junto a su puesto y con su material dejado en él, Usar → «Reparar». Lo hace el servidor, con su autor en el registro",
+   "Lo de piedra, en la piedra de tallar con un cordel: el hacha de piedra recupera la mitad de su vida (84 golpes) y el mazo de piedra, 25. Lo de madera, en el banco de tronco: la lanza endurecida, con fibra y llevando la lasca de sílex (no se gasta), recupera 25",
+   "La ficha del equipo dice dónde se repara y con qué",
+   "Recorrido de jugador: antes del árbol adulto al hacha ya no le quedan sus golpes (lleva 16 jóvenes), así que se hace un cordel, lo deja en una piedra de tallar y la repara; tala el adulto sin que se le rompa",
+   "Decisiones provisionales en el registro de la demo (v171): reparar es en el acto, cuánto recupera cada cosa y con qué, sin pasar de nueva; el palo cavador no se repara (se hace otro con una rama); lo de hierro espera a la fragua",
+   "La ropa y la armadura aún no se gastan, así que no hay nada que reparar en ellas: tarea nueva en este hito para que se gasten y se reparen"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la reparación en la prueba de las herramientas que se gastan; rota a propósito —reparar no gasta el material—: falla), el recorrido (también aquí, 242/242), el panel de fabricación (el menú del clic derecho ofrece «Reparar: hacha de piedra» junto a la piedra de tallar y el servidor la repara), el panel de inventario (la ficha dice dónde se repara), la demo única y la cama ligada (la pedía fabricacion.js; no hacía falta, ya estaba lanzada), bien. No comprobado: el menú de reparar en el móvil (es el mismo menú del clic derecho, ya probado en el móvil con otras cosas). Otra rama activa (personajes, del chat) toca main.js, registro.js y las traducciones: main no había cambiado, se une sin tocar nada a mano",
+  "capturas": "capturas/demo-v171",
+  "estado": "ok"
  }
 ]
