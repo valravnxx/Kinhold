@@ -244,7 +244,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima
     if (j.alHombro && j.mh && j.mh.meshy && !globalThis.__sinBrazosMeshy) {
       const p = llevado.agarreHombro();
-      if (p) { const b = brazos(); if (!antes) { j.raiz.updateMatrixWorld(true); ejes(b); } nudillosA(b.r, p, polo('r').addScaledVector(_u, 1.4)); }
+      if (p) { const b = brazos(); if (!antes) { j.raiz.updateMatrixWorld(true); ejes(b); } nudillosA(b.r, p, new THREE.Vector3().addScaledVector(_f, 1).addScaledVector(_u, 0.6).addScaledVector(_l, -0.3)); } // (el codo delante, a la altura del hombro: la mano cae sobre el tronco)
     }
   };
   return j;

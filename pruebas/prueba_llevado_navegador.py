@@ -216,7 +216,7 @@ with sync_playwright() as pw:
         pg.wait_for_function('window.__kinhold !== undefined && window.__kinhold.jugador.mh', timeout=180000)
         if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
         pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
-        comprobar(f'{disp}: la mujer, elegida (se cargan su cuerpo y sus animaciones de cargar)', any('mh_mujer.glb' in u for u in pedidos) and any('mh_mujer_extra.glb' in u for u in pedidos))
+        comprobar(f'{disp}: la mujer, elegida (se carga la de Meshy, con sus animaciones)', any('meshy-v1/mujer.glb' in u for u in pedidos))
         equipar(pg, {'hombro': C('tronco_corto')})
         m = pg.evaluate(MEDIR)
         if disp == 'pc':
