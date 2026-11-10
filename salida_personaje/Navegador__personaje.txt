@@ -1,0 +1,77 @@
+Vista pc
+  OK   sale el personaje de Meshy
+  OK   cuerpo: se ve el personaje — desviación 48
+  OK   cara: se ve el personaje — desviación 55
+  OK   perfil: se ve el personaje — desviación 60
+  OK   espalda: se ve el personaje — desviación 34
+  OK   las vistas son distintas
+  OK   personaje dentro de presupuesto (≤ 36 mil triángulos) — 2978
+  OK   ya no se ofrecen las bases de antes
+  OK   los interruptores quitan sombras y escenario — [False, False]
+  OK   sin desplazamiento horizontal — 1280px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #opciones dentro de la pantalla
+  OK   las notas se abren
+  OK   (mujer) el botón cambia el personaje
+  OK   (mujer) se ve — 5.9
+  OK   (mujer) se ve la cara — 29.7
+  OK   (mujer) los pies en el suelo, ni hundidos ni en el aire — 0.8 cm
+  OK   (mujer) al andar se mueven piernas y brazos — 0.221 m
+  OK   (mujer) andar y correr con zancada natural y poco bote — correr 4.27 m/s, andar 1.34 m/s, bote 6 cm
+  FALLA (mujer) las 59 animaciones de Meshy se cargan — 67 clips
+  OK   (mujer) «Más animaciones» tiene sus botones — 48
+  OK   (mujer) con cada animación el cuerpo no se desarma
+  OK   (mujer) al picar, el pico en la mano; al talar, el hacha; con la espada, nada — {'tipo': 'pico', 'mano': [1.3613892060348836, 1.3040334073821405, 4.982924931247702], 'cabeza': [1.8293455930687759, 1.1557268365150044, 4.734888768166646], 'largo': 0.549999961203776} / {'tipo': 'hacha', 'mano': [1.2459612951372794, 1.2327643745740327, 5.02168356343569], 'cabeza': [1.77592541408927, 1.1993395166138938, 4.8784327951500455], 'largo': 0.5499999737460379} / None
+  OK   (hombre) el botón cambia el personaje
+  OK   (hombre) se ve — 7.0
+  OK   (hombre) se ve la cara — 26.6
+  OK   (hombre) los pies en el suelo, ni hundidos ni en el aire — 0.3 cm
+  OK   (hombre) al andar se mueven piernas y brazos — 0.083 m
+  OK   (hombre) andar y correr con zancada natural y poco bote — correr 4.51 m/s, andar 1.36 m/s, bote 7 cm
+  FALLA (hombre) las 59 animaciones de Meshy se cargan — 67 clips
+  OK   (hombre) «Más animaciones» tiene sus botones — 48
+  OK   (hombre) con cada animación el cuerpo no se desarma
+  OK   (hombre) al picar, el pico en la mano; al talar, el hacha; con la espada, nada — {'tipo': 'pico', 'mano': [1.290867650850065, 1.426729046148903, 4.938216174664933], 'cabeza': [1.7621504481731336, 1.2405224367643128, 4.724394838807693], 'largo': 0.5499999455444852} / {'tipo': 'hacha', 'mano': [1.175406201822011, 1.3536139666549305, 4.976746676591873], 'cabeza': [1.706414830324754, 1.274797736191794, 4.857089730405074], 'largo': 0.5499999513632093} / None
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'castano', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'makehuman'}
+  OK   sin errores en consola (pc)
+Vista movil
+  OK   sale el personaje de Meshy
+  OK   cuerpo: se ve el personaje — desviación 46
+  OK   cara: se ve el personaje — desviación 53
+  OK   perfil: se ve el personaje — desviación 57
+  OK   espalda: se ve el personaje — desviación 48
+  OK   las vistas son distintas
+  OK   personaje dentro de presupuesto (≤ 36 mil triángulos) — 2978
+  OK   en el móvil el panel empieza cerrado
+  OK   ya no se ofrecen las bases de antes
+  OK   los interruptores quitan sombras y escenario — [False, False]
+  OK   sin desplazamiento horizontal — 390px
+  OK   #estilos dentro de la pantalla
+  OK   #inferior dentro de la pantalla
+  OK   #opciones dentro de la pantalla
+  OK   las notas se abren
+  OK   (mujer) el botón cambia el personaje
+  OK   (mujer) se ve — 3.3
+  OK   (mujer) se ve la cara — 18.4
+  OK   (mujer) los pies en el suelo, ni hundidos ni en el aire — 0.8 cm
+  OK   (mujer) al andar se mueven piernas y brazos — 0.221 m
+  OK   (mujer) andar y correr con zancada natural y poco bote — correr 4.27 m/s, andar 1.34 m/s, bote 6 cm
+  FALLA (mujer) las 59 animaciones de Meshy se cargan — 67 clips
+  OK   (mujer) «Más animaciones» tiene sus botones — 48
+  OK   (mujer) con cada animación el cuerpo no se desarma
+  OK   (mujer) al picar, el pico en la mano; al talar, el hacha; con la espada, nada — {'tipo': 'pico', 'mano': [1.3613892060348836, 1.3040334073821405, 4.982924931247702], 'cabeza': [1.8293455930687759, 1.1557268365150044, 4.734888768166646], 'largo': 0.549999961203776} / {'tipo': 'hacha', 'mano': [1.2459612951372794, 1.2327643745740327, 5.02168356343569], 'cabeza': [1.77592541408927, 1.1993395166138938, 4.8784327951500455], 'largo': 0.5499999737460379} / None
+  OK   (hombre) el botón cambia el personaje
+  OK   (hombre) se ve — 4.2
+  OK   (hombre) se ve la cara — 9.3
+  OK   (hombre) los pies en el suelo, ni hundidos ni en el aire — 0.3 cm
+  OK   (hombre) al andar se mueven piernas y brazos — 0.083 m
+  OK   (hombre) andar y correr con zancada natural y poco bote — correr 4.51 m/s, andar 1.36 m/s, bote 7 cm
+  FALLA (hombre) las 59 animaciones de Meshy se cargan — 67 clips
+  OK   (hombre) «Más animaciones» tiene sus botones — 48
+  OK   (hombre) con cada animación el cuerpo no se desarma
+  OK   (hombre) al picar, el pico en la mano; al talar, el hacha; con la espada, nada — {'tipo': 'pico', 'mano': [1.290867650850065, 1.426729046148903, 4.938216174664933], 'cabeza': [1.7621504481731336, 1.2405224367643128, 4.724394838807693], 'largo': 0.5499999455444852} / {'tipo': 'hacha', 'mano': [1.175406201822011, 1.3536139666549305, 4.976746676591873], 'cabeza': [1.706414830324754, 1.274797736191794, 4.857089730405074], 'largo': 0.5499999513632093} / None
+  OK   recuerda vista y personaje al recargar — {'luz': 'manana', 'vista': 'perfil', 'modo': 'quieto', 'sexo': 'hombre', 'ropa': 'campesino', 'pelo': 'largo', 'colorPelo': 'castano', 'piel': 'clara', 'barba': 'si', 'calidad': 'alta', 'sombras': True, 'escena': True, 'base': 'makehuman'}
+  OK   sin errores en consola (movil)
+
+Resultado: 4 fallos: (mujer) las 59 animaciones de Meshy se cargan, (hombre) las 59 animaciones de Meshy se cargan, (mujer) las 59 animaciones de Meshy se cargan, (hombre) las 59 animaciones de Meshy se cargan
