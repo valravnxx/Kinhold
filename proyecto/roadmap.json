@@ -1669,9 +1669,9 @@
     },
     {
      "nombre": "La ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»): cada prenda lleva su desgaste, lo cuenta el servidor, se ve en su ficha y se repara con lo suyo (la de cuero, con piel y cordel; la de lino y lana, con lo que dé hilo, que aún no tiene origen: buscárselo o esconderlo); lo que el documento no fija, provisional y en el registro",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-10T14:26:34+00:00",
-     "rama": "trabajo/20261110-1426"
+     "fin": "2026-11-10T16:07:23+00:00"
     },
     {
      "nombre": "Recorrido entero de un primer día, sin arcón, en el recorrido de jugador: entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo; y prueba de valravnx entre dos",
@@ -3903,6 +3903,13 @@
      "archivo": "jugar/demo/v173.html",
      "capturas": "capturas/demo-v173",
      "notas": "El hombre anda como un hombre (el paso tranquilo de Meshy, con los pies separados) y los dos esperan quietos, sin mirar a los lados"
+    },
+    {
+     "v": "v174",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v174.html",
+     "capturas": "capturas/demo-v174",
+     "notas": "La ropa y la armadura se gastan y se reparan: cada prenda lleva su desgaste, que cuenta el servidor (con el uso y con los golpes que hieren donde cubre); su ficha dice lo que le queda y cómo se repara; la de lino y la de lana se zurcen con una fibra y la de cuero con piel y cordel, puestas, en el banco de tronco"
     }
    ]
   },

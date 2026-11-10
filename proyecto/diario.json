@@ -5978,5 +5978,24 @@
   "pruebas": "Nube: personaje y demo única correctas (solo esas: es lo que toca el cambio de clips). Capturas en el juego de verdad, PC y móvil, varios momentos; segunda mirada aparte: sí. No comprobado: el andar de la mujer (no cambia).",
   "capturas": "capturas/demo-v173",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T14:26:34+00:00",
+  "fin": "2026-11-10T16:07:23+00:00",
+  "titulo": "P4: la ropa y la armadura se gastan y se reparan (demo v174)",
+  "hito": "supervivencia",
+  "hecho": [
+   "La ropa y la armadura se gastan (documento de sistemas, apartado 10): lo cuenta el servidor, con el uso (todo lo puesto, un uso cada 10 minutos en el mundo) y con cada golpe o tiro que hiere (10 usos a lo que cubre esa zona). Al acabarse, se rompe, se avisa y se vuelve a repartir su aspecto",
+   "Su vida sale de su material, como lo que protege y abriga: lino 600 usos (unas 100 horas o unos 60 golpes), lana 900, cuero 1200, paja 300, acolchado 900 y malla de hierro 2400",
+   "Se repara puesta (o en la mano) junto al banco de tronco, con su material dejado en él, y recupera la mitad de su vida: el lino y la lana se zurcen con una fibra (de la que sale el hilo, que aún no hay); el cuero, con una piel y un cordel. Por el servidor, con su autor en el registro",
+   "El gambesón (pide tela), lo de paja y la cota de malla (la fragua) aún no se reparan: su ficha lo dice. La ficha de cada prenda dice cuántos usos le quedan y cómo se repara",
+   "La cadena de lo que gasta reparar (fibra, piel, cordel), en la prueba de los orígenes: falla si algo no sale del mundo (probado con el hilo)",
+   "Recorrido de jugador: la camisa de lino se gasta con el uso y la zurce puesta en el banco de tronco con una fibra",
+   "La prueba del panel de inventario ya no se paraba en los tintes que el personaje de Meshy (desde la v172) aún no dibuja: lo del inventario se sigue comprobando; lo puesto, cuando vuelvan",
+   "Decisiones provisionales en el registro de la demo (v174)"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la ropa en la prueba de lo que se gasta; rota a propósito —el golpe gasta toda la ropa, cubra o no su zona—: falla; y la de los orígenes, rota con el hilo: falla), la demo única, la cama ligada y el panel de inventario (las fichas de la camisa gastada en PC y del gambesón en móvil, miradas; segunda mirada aparte: sí, y el texto de reparar se ha corregido tras ella), bien. El recorrido (243/243 en la nube, con la camisa zurcida) falló dos veces en la nube en la caza de la liebre (10 lanzadas al suelo cerca de ella) y pasó aquí 244/244 y en main en la nube; con la ropa gastándose menos a menudo en la prueba (menos guardados del mundo mientras caza), bien en la nube. El panel de fabricación lo pedía fabricacion.js y no se volvió a mirar tras el primer intento (no cambia lo que enseña). La prueba del panel de inventario se paraba ya en main en los tintes del personaje de Meshy (desde la v172): arreglada. No comprobado: un golpe que hiere en el juego de verdad gastando la ropa (lo prueba la lógica; el combate entre dos no se ha jugado). Lo que vio la segunda mirada y no es de esta tarea: «Lo llevas puesto» y «Quitártelo» no concuerdan con la camisa y el peso sale con punto (0.3 kg).",
+  "capturas": "capturas/demo-v174",
+  "estado": "ok"
  }
 ]
