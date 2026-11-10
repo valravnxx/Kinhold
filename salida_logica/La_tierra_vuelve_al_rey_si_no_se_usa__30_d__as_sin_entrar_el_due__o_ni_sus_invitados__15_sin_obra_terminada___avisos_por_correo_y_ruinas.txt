@@ -1,0 +1,46 @@
+Lógica pura
+  OK   Ana tiene una obra terminada; Bruno, solo una a medias
+  OK   al día siguiente, nada — {"liberar":[],"avisar":[]}
+  OK   Bruno (15 días, sin obra terminada): aviso de la semana a los 8 días y medio — [{"dueno":"jugador:bruno","que":"semana","quedan":561600000,"dias":15}]
+  OK   el aviso de la semana, una sola vez
+  OK   Bruno: el del último día a los 14,2 días — [{"dueno":"jugador:bruno","que":"ultimo","quedan":69120000,"dias":15}]
+  OK   Bruno: a los 15 días, a liberar; Ana, no — [{"dueno":"jugador:bruno","desde":1793491200000,"dias":15}]
+  OK   Ana: si entra su invitada el día 20, el día 25 no hay aviso — {"liberar":[{"dueno":"jugador:bruno","desde":1793491200000,"dias":15}],"avisar":[]}
+  OK   Ana: el día 31 tampoco se libera (cuenta desde que entró Carla)
+  OK   Ana: aviso de la semana el día 43,5 (30 días desde el 20) — [{"dueno":"jugador:ana","que":"semana","quedan":561600000,"dias":30}]
+  OK   si entra Ana, los avisos vuelven a empezar (el de la semana otra vez) — [{"dueno":"jugador:ana","que":"semana","quedan":345600000,"dias":30}]
+  OK   y el del último día
+  OK   se guarda y se recupera igual
+  OK   Ana: a los 30 días desde que entró, a liberar
+  OK   sin nada apuntado: empiezan a contar desde la primera revisión (nada se libera de golpe)
+La acción del rey
+  OK   un jugador no puede devolver la tierra de otro — Eso solo lo hace el rey.
+  OK   ni la suya (para eso está quitar el mojón) — Eso solo lo hace el rey.
+  OK   el rey sí: el mojón y los invitados se van — {"ok":true,"ruinas":{"construcciones":1,"piezas":1,"muebles":0}}
+  OK   lo construido se queda (ruina) — {"construcciones":1,"piezas":1,"muebles":0}
+  OK   y cualquiera puede desmontarlo
+  OK   dos veces no
+  OK   la zona se puede volver a reclamar
+  OK   (y ya es de quien la reclama: Bruno no desmonta)
+  OK   rehecho desde el registro da el mismo mundo
+En el servidor de verdad
+  OK   Ana crea su cuenta y confirma el correo — {"tipo":"cuenta","id":2,"que":"verificar","ok":true,"admin":false,"correo":{"correo":"a***@e***.com","verificado":true}}
+  OK   Ana pone su mojón — {"tipo":"resultado","id":5,"ok":true}
+  OK   un jugador tramposo que manda la acción del rey no consigue nada — {"tipo":"resultado","id":1,"ok":false,"motivo":"Acción desconocida."}
+  OK   el servidor apunta cuándo estuvo Ana en el mundo
+  OK   el día 8,5 llega a su correo el aviso de la semana — [{"para":"ana@ejemplo.com","usuario":"Ana","tipo":"tierra_semana","idioma":"es","dias":7}]
+  OK   una sola vez
+  OK   el día 14,5, el del último día — [{"para":"ana@ejemplo.com","usuario":"Ana","tipo":"tierra_ultimo","idioma":"es","dias":1}]
+  OK   el día 15 su tierra vuelve al rey
+  OK   a los conectados les llega la acción del rey — [{"n":5,"autor":"rey","tipo":"tierra_al_rey","datos":{"dueno":"jugador:3e67fd13"},"ok":true}]
+  OK   y su copia del mundo queda igual que la del servidor
+  OK   en tierras.jsonl: los dos avisos y la tierra devuelta, con la cuenta — [{"t":"2026-11-10T10:35:13.118Z","que":"aviso","aviso":"semana","dueno":"jugador:3e67fd13","cuenta":"Ana","dias":15,"quedan":7,"correo":"a***@e***.com"},{"t":"2026-11-10T10:35:13.119Z","que":"aviso","aviso":"ultimo","dueno":"jugador:3e67fd13","cuenta":"Ana","dias":15,"quedan":1,"correo":"a***@e***.com"},{"t":"2026-11-10T10:35:13.119Z","que":"al_rey","dueno":"jugador:3e67fd13","cuenta":"Ana","desde":"2026-11-10T10:35:12.735Z","dias":15,"ok":true,"ruinas":{"construcciones":0,"piezas":0,"muebles":0}}]
+  OK   en el mundo, la acción del rey
+  OK   tras reiniciar, sigue libre
+  OK   Ana vuelve con su ficha
+  OK   Ana reclama otra vez su zona — {"tipo":"resultado","id":2,"ok":true}
+  OK   (con una obra terminada en su tierra)
+  OK   con obra terminada, el día 20 sigue siendo suya
+  OK   el día 30, al rey
+
+41 bien, 0 mal
