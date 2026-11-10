@@ -1,18 +1,58 @@
 {
- "accion": "modelos",
- "tope": 300,
- "cosas": [
-  {"nombre": "arbol_adulto", "alto": 9.0, "tri": 5000,
-   "cosa": "A mature broadleaf oak tree about 9 metres tall, made like a model-railway miniature tree: a thick gnarled bark-covered trunk with a slight lean, roots gripping the ground, a few strong branches, and a broad crown built from 6 to 9 large solid rounded clumps of foliage, like dense sculpted foam tufts with a fine leafy texture; no individual leaves, no thin twigs, no gaps of sky through the clumps."},
-  {"nombre": "arbol_joven", "alto": 4.0, "tri": 2500,
-   "cosa": "A young slender broadleaf tree about 4 metres tall, made like a model-railway miniature tree: a thin straight trunk no thicker than a wrist, two or three short side branches, and a small crown of 3 to 5 solid rounded clumps of foliage like dense foam tufts with a fine leafy texture; no individual leaves or thin twigs."},
-  {"nombre": "arbusto", "alto": 1.4, "tri": 1800,
-   "cosa": "A wild hazel bush about 1.4 metres tall, made like a model-railway miniature shrub: a few short woody stems at the base under 3 or 4 solid rounded clumps of green foliage, like dense foam tufts with a fine leafy texture; no individual leaves."},
-  {"nombre": "arbusto_bayas", "alto": 1.2, "tri": 2000,
-   "cosa": "A low wild berry bush about 1.2 metres tall, made like a model-railway miniature shrub: one dense rounded mound of dark green foliage built from a few solid clumps, like foam tufts with a fine leafy texture, on short woody twigs at the base; no berries, no individual leaves."},
-  {"nombre": "matorral", "alto": 0.9, "tri": 1500,
-   "cosa": "A low thicket of wild scrub about 0.9 metres tall and 1.5 metres wide, made like a model-railway miniature: a low lumpy mound of solid clumps of olive-green and brownish foliage, like dense foam tufts, with a few short dry woody sticks poking out; no individual leaves or thin stems."},
-  {"nombre": "roca_mediana", "alto": 0.9, "tri": 900,
-   "cosa": "A medium weathered grey limestone boulder about 0.9 metres tall, irregular rounded blocky shape with a few cracks, pale grey stone with small lichen spots and a little green moss at its base; solid, no sand-coloured or brown stone."}
+ "accion": "movimientos",
+ "tope": 250,
+ "rigs": {
+  "hombre": "01a1c400-3606-749b-8eac-18ddd73d327b",
+  "mujer": "01a1c413-8d19-7071-a886-06fed325e0ec"
+ },
+ "movimientos": [
+  {
+   "nombre": "hombro_andar",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. walks forward at a calm normal pace carrying a heavy wooden log balanced on his right shoulder; the right hand reaches up and holds the log on top of the shoulder, elbow raised forward; the left arm swings naturally; body slightly bent under the weight",
+   "duracion": 4,
+   "modo": "prime"
+  },
+  {
+   "nombre": "hombro_quieto",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. stands still carrying a heavy wooden log balanced on his right shoulder; the right hand reaches up and holds the log on top of the shoulder, elbow raised forward; left arm relaxed at the side; slight breathing and weight shift",
+   "duracion": 4,
+   "modo": "prime"
+  },
+  {
+   "nombre": "empujar_andar",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. walks forward at a slow steady pace pushing a loaded wooden wheelbarrow: both hands grip the two handles low in front at hip height, arms almost straight, shoulders square, torso leaning slightly forward",
+   "duracion": 4,
+   "modo": "prime"
+  },
+  {
+   "nombre": "empujar_quieto",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. stands still holding a loaded wooden wheelbarrow in front: both hands grip the two handles low at hip height, arms almost straight, shoulders square, torso leaning slightly forward, slight breathing",
+   "duracion": 4,
+   "modo": "prime"
+  },
+  {
+   "nombre": "arrastrar",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. walks forward slowly dragging a heavy wooden sledge behind him: both hands hold two poles behind the back at hip height, torso leaning forward, effortful steps",
+   "duracion": 4,
+   "modo": "prime"
+  },
+  {
+   "nombre": "talar",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. stands with feet apart beside a tree trunk and chops it with a two-handed axe: repeated strong horizontal swings at waist height from the right shoulder into the trunk in front, back to the start, again",
+   "duracion": 3,
+   "modo": "prime"
+  },
+  {
+   "nombre": "picar",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. stands with feet apart and strikes a rock on the ground in front with a pickaxe held in both hands: raises it over the right shoulder and swings it down hard, repeated",
+   "duracion": 3,
+   "modo": "prime"
+  },
+  {
+   "nombre": "cargar_brazos",
+   "prompt": "A medieval peasant, natural realistic motion, seamless loop. walks forward at a calm pace carrying a heavy bundle of firewood in both arms held in front of the chest, elbows bent, hands under the bundle, back straight",
+   "duracion": 4,
+   "modo": "prime"
+  }
  ]
 }

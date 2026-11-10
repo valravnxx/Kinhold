@@ -11,6 +11,10 @@
 #     a salida/ van la imagen, el .glb y sus cuatro vistas; no empieza si pasaría del tope de créditos (unos 40 por cosa)
 #     cada personaje se riggea por la API (5 créditos; la animación solo admite un rig hecho por la API) y se le ponen las
 #     animaciones de la biblioteca de 10 en 10 (3 créditos cada una); no empieza si pasaría del tope de créditos
+#   {"accion": "movimientos", "tope": 250, "rigs": {"hombre": "<rig_task_id>", "mujer": "…"}, "movimientos": [{"nombre": "hombro_andar",
+#     "prompt": "…", "duracion": 4, "modo": "prime"}]}
+#     cada movimiento: Text to Motion (prime 10 créditos, swift 3; de 2 a 10 s) y, con su motion_task_id, la Animation API
+#     lo pasa al esqueleto de cada personaje (el rig hecho por la API); a salida/ van <personaje>_<nombre>.glb
 # Lo que sale va a salida/ y vuelve por la rama meshy/<ejecución>.
 import base64, json, os, sys, time, urllib.request
 
@@ -141,6 +145,27 @@ if pedido.get('accion') == 'modelos':
             for lado, u in (m.get('thumbnail_urls') or {}).items(): baja(u, f'{SAL}/{n}_vista_{lado}.png')
         informe.append({'nombre': n, 'alto': c.get('alto'), 'imagen_id': im['id'], 'modelo_id': m.get('id'), 'estado': m.get('status'), 'error': m.get('task_error'),
                         'creditos': (im.get('consumed_credits') or 0) + (m.get('consumed_credits') or 0)})
+    json.dump(informe, open(f'{SAL}/informe.json', 'w'), ensure_ascii=False, indent=1)
+    print('saldo al acabar', pide('/v1/balance'))
+if pedido.get('accion') == 'movimientos':
+    movs = pedido['movimientos']; rigs = pedido['rigs']
+    coste = sum((10 if m.get('modo', 'prime') == 'prime' else 3) + 3 * len(rigs) for m in movs)
+    print(f'coste previsto: unos {coste} créditos (tope {pedido.get("tope")})')
+    if coste > pedido.get('tope', 0) or coste > saldo.get('balance', 0): print('NO: pasa del tope o del saldo'); sys.exit(1)
+    informe = []
+    for m in movs:
+        n = m['nombre']
+        t = espera('/v1/text-to-motion/' + manda('/v1/text-to-motion', {'prompt': m['prompt'][:400], 'mode': m.get('modo', 'prime'), 'duration': m.get('duracion', 4)})['result'])
+        print(n, 'movimiento', t.get('status'), t.get('task_error'), 'créditos', t.get('consumed_credits'))
+        r = {'nombre': n, 'movimiento': t.get('status'), 'error': t.get('task_error'), 'creditos': t.get('consumed_credits') or 0}
+        if t.get('status') == 'SUCCEEDED':
+            for quien, rid in rigs.items():
+                a = espera('/v1/animations/' + manda('/v1/animations', {'rig_task_id': rid, 'motion_task_id': t['id']})['result'])
+                print(' ', quien, a.get('status'), a.get('task_error'), 'créditos', a.get('consumed_credits'))
+                r[quien] = a.get('status'); r['creditos'] += a.get('consumed_credits') or 0
+                glb = (a.get('result') or {}).get('animation_glb_url')
+                if glb: r[quien + '_glb'] = baja(glb, f'{SAL}/{quien}_{n}.glb')
+        informe.append(r)
     json.dump(informe, open(f'{SAL}/informe.json', 'w'), ensure_ascii=False, indent=1)
     print('saldo al acabar', pide('/v1/balance'))
 if pedido.get('accion') == 'biblioteca':
