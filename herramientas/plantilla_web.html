@@ -356,6 +356,21 @@ td .numh{font-family:var(--titulos);font-weight:700;color:var(--rubrica);margin-
 .docs a b::first-letter{color:var(--rubrica);font-size:1.5em}
 .docs a span{display:block;color:var(--tinta2);font-style:italic;margin:4px 0 0 8px;font-size:17px}
 
+/* ---- comunidad: Discord y Ko-fi, encima del pie ---- */
+.comunidad{max-width:760px;margin:34px auto 0;padding:18px 26px 20px;border-radius:5px;text-align:center;color:var(--crema);
+  background:linear-gradient(180deg,rgba(255,225,180,.2),transparent 40%,rgba(0,0,0,.2)), var(--madera-clara);
+  box-shadow:inset 0 0 0 2px rgba(40,20,6,.5), 0 8px 14px rgba(0,0,0,.5);text-shadow:0 1px 2px #000}
+.comunidad h2{margin:0;font:800 26px var(--titulos);color:var(--oro-claro);letter-spacing:.03em}
+.comunidad p{margin:8px auto 14px;max-width:34em;font-size:18px;line-height:1.4}
+.comunidad .botones{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.comunidad .botones a{display:inline-flex;align-items:center;gap:9px;padding:10px 18px;border-radius:4px;text-decoration:none;
+  font:700 17px var(--titulos);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.5);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25), 0 3px 6px rgba(0,0,0,.45)}
+.comunidad .botones a:hover{filter:brightness(1.12)}
+.comunidad .botones svg{width:22px;height:22px;flex:none;fill:currentColor}
+.comunidad .discord{background:#5865f2}
+.comunidad .kofi{background:var(--rubrica)}
+@media (max-width:760px){.comunidad{padding:16px 16px 18px}.comunidad .botones a{flex:1 1 100%;justify-content:center}}
+
 /* ---- pie: una tabla clavada ---- */
 footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14px;border-radius:5px;color:var(--crema);font-style:italic;font-size:16px;
   background:var(--clavo) 10px 50%/12px 12px no-repeat, var(--clavo) calc(100% - 10px) 50%/12px 12px no-repeat,
@@ -501,6 +516,14 @@ footer{max-width:640px;margin:34px auto 0;text-align:center;padding:12px 30px 14
       <a href="diseno/analisis.html" data-doc="analisis"><b data-t="doc_ana_t"></b><span data-t="doc_ana"></span></a>
     </div>
   </div><div class="rollo"><i class="pomo izq"></i><i class="pomo der"></i></div></div></section>
+  <div class="comunidad" id="comunidad">
+    <h2 data-t="t_comunidad"></h2>
+    <p data-t="comunidad"></p>
+    <div class="botones">
+      <a class="discord" href="https://discord.gg/frKTaM5NNY" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.4C.6 9 0 13.6.3 18.1a19.9 19.9 0 0 0 6 3l1.3-2.1a13 13 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12 0l.5.4c-.7.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8.5 15.4c-1.2 0-2.1-1.1-2.1-2.4s.9-2.4 2.1-2.4 2.2 1.1 2.1 2.4c0 1.3-.9 2.4-2.1 2.4Zm7 0c-1.2 0-2.1-1.1-2.1-2.4s.9-2.4 2.1-2.4 2.2 1.1 2.1 2.4c0 1.3-.9 2.4-2.1 2.4Z"/></svg><span data-t="b_discord"></span></a>
+      <a class="kofi" href="https://ko-fi.com/kinhold" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h14v2h1.5a3.5 3.5 0 0 1 0 7H17a6 6 0 0 1-6 5H9a6 6 0 0 1-6-6V6Zm14 4v3h1.5a1.5 1.5 0 0 0 0-3H17ZM10 16.2l3.3-3.2a1.9 1.9 0 0 0-2.7-2.7l-.6.6-.6-.6A1.9 1.9 0 0 0 6.7 13l3.3 3.2Z"/></svg><span data-t="b_kofi"></span></a>
+    </div>
+  </div>
   <footer data-t="pie"></footer>
 </div>
 <div id="visor" hidden><img alt=""></div>
@@ -523,6 +546,7 @@ const UI = {
     doc_gdd: 'Documento de diseño: visión, mundo, sistemas y orden de hitos.', doc_sis_t: 'Sistemas y contenido', doc_sis: 'Recursos, recetas, piezas, estaciones y valores.',
     doc_rev_t: 'Revisión del 29 oct', doc_rev: 'Qué hay, cómo encaja, qué falta y el plan por fases que manda ahora.',
     doc_ana_t: 'Análisis del GDD', doc_ana: 'Lo que faltaba, propuestas y preguntas respondidas.', doc_cod_t: 'Código', doc_cod: 'Repositorio en GitHub.',
+    t_comunidad: 'Comunidad', comunidad: 'Kinhold es un proyecto independiente, hecho a la vista de todos. Entra en el Discord para jugar con otros, contar lo que encuentres y decir hacia dónde quieres que vaya. Si te gusta lo que ves, puedes apoyar el desarrollo en Ko-fi: cada aporte va al servidor y al arte del juego.', b_discord: 'Únete al Discord', b_kofi: 'Apóyalo en Ko-fi',
     pie: 'Esta página se genera sola con cada cambio del repositorio.',
     estado: { hecho: 'Hecho', en_curso: 'En curso', revision: 'Esperando tu revisión', espera_decision: 'Espera tu decisión', pendiente: 'Pendiente', congelado: 'Congelado', fallo: 'Falló' },
     r_hitos: 'hitos terminados', r_tareas: 'tareas hechas (de las ya desglosadas)', r_trabajo: 'de trabajo registrado',
@@ -549,6 +573,7 @@ const UI = {
     doc_gdd: 'Design document: vision, world, systems and milestone order.', doc_sis_t: 'Systems and content', doc_sis: 'Resources, recipes, pieces, workstations and values.',
     doc_rev_t: '29 Oct review', doc_rev: 'What there is, how it fits together, what is missing and the phased plan that now leads.',
     doc_ana_t: 'GDD analysis', doc_ana: 'What was missing, proposals and answered questions.', doc_cod_t: 'Code', doc_cod: 'Repository on GitHub.',
+    t_comunidad: 'Community', comunidad: 'Kinhold is an independent project, made in the open. Join the Discord to play with others, share what you find and say where you want it to go. If you like what you see, you can support development on Ko-fi: every contribution goes to the server and the game’s art.', b_discord: 'Join the Discord', b_kofi: 'Support on Ko-fi',
     pie: 'This page is generated automatically with every change to the repository.',
     estado: { hecho: 'Done', en_curso: 'In progress', revision: 'Awaiting your review', espera_decision: 'Awaiting your decision', pendiente: 'Pending', congelado: 'Frozen', fallo: 'Failed' },
     r_hitos: 'milestones finished', r_tareas: 'tasks done (of those broken down so far)', r_trabajo: 'of logged work',
@@ -575,6 +600,7 @@ const UI = {
     doc_gdd: 'Дизайн-документ: замысел, мир, системы и порядок этапов.', doc_sis_t: 'Системы и содержание', doc_sis: 'Ресурсы, рецепты, детали, станки и значения.',
     doc_rev_t: 'Обзор от 29 окт.', doc_rev: 'Что есть, как всё связано, чего не хватает и план по фазам, который теперь главный.',
     doc_ana_t: 'Разбор GDD', doc_ana: 'Чего не хватало, предложения и вопросы с ответами.', doc_cod_t: 'Код', doc_cod: 'Репозиторий на GitHub.',
+    t_comunidad: 'Сообщество', comunidad: 'Kinhold — независимый проект, который создаётся у всех на виду. Заходите в Discord, чтобы играть вместе, делиться находками и говорить, куда двигаться дальше. Если вам нравится то, что вы видите, поддержите разработку на Ko-fi: каждый вклад идёт на сервер и графику игры.', b_discord: 'Войти в Discord', b_kofi: 'Поддержать на Ko-fi',
     pie: 'Эта страница создаётся автоматически при каждом изменении в репозитории.',
     estado: { hecho: 'Готово', en_curso: 'В работе', revision: 'Ждёт твоей проверки', espera_decision: 'Ждёт твоего решения', pendiente: 'Ожидает', congelado: 'Заморожено', fallo: 'Сбой' },
     r_hitos: 'этапов завершено', r_tareas: 'задач выполнено (из уже расписанных)', r_trabajo: 'учтённой работы',

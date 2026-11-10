@@ -5918,5 +5918,17 @@
   "pruebas": "Revisor en la nube: lógica (con la reparación en la prueba de las herramientas que se gastan; rota a propósito —reparar no gasta el material—: falla), el recorrido (también aquí, 242/242), el panel de fabricación (el menú del clic derecho ofrece «Reparar: hacha de piedra» junto a la piedra de tallar y el servidor la repara), el panel de inventario (la ficha dice dónde se repara), la demo única y la cama ligada (la pedía fabricacion.js; no hacía falta, ya estaba lanzada), bien. No comprobado: el menú de reparar en el móvil (es el mismo menú del clic derecho, ya probado en el móvil con otras cosas). Otra rama activa (personajes, del chat) toca main.js, registro.js y las traducciones: main no había cambiado, se une sin tocar nada a mano",
   "capturas": "capturas/demo-v171",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T09:31:00+00:00",
+  "fin": "2026-11-10T11:53:40+00:00",
+  "titulo": "Discord y Ko-fi en la web",
+  "hito": "infra",
+  "hecho": [
+   "Tablero «Comunidad» al pie de la web, debajo de todas las pestañas: el enlace al Discord oficial y un mensaje para apoyar el desarrollo en Ko-fi.",
+   "Los textos de la página de Ko-fi, listos para pegar."
+  ],
+  "pruebas": "La web generada y mirada en PC y móvil, en español y ruso.",
+  "estado": "ok"
  }
 ]
