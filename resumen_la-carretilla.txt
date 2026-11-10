@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2548 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2882 KB
+
+== Construir demo única
+      3184 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4135 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 2952 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2543 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2897 KB
+dist/kinhold_trozos.html 2557 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la carretilla
+  OK   móvil: «Aparcar» de abajo la deja — Aparcas la carretilla fuera de tus tierras: cualquiera puede coger lo que lleva.
+  OK   sin errores en la consola (móvil)
+
+1 FALLOS: las agarraderas quedan en los puños (a menos de 8 cm de los nudillos), quieto
+!! FALLA: python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/carretilla
+
+HAY FALLOS
+tardó 122 s
