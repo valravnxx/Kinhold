@@ -30,17 +30,18 @@ const HUESOS = {
 };
 // las animaciones del juego y la de Meshy que hace de cada una (por sexo, si cambia)
 export const CLIPS_MESHY = {
-  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'Heavy_Hammer_Swing',
-  guardia: 'Combat_Stance', golpe: 'Right_Hand_Sword_Slash', parar: 'Sword_Parry', cargar: 'Carry_Heavy_Object_Walk', recoger: 'Collect_Object',
-  minar: 'Heavy_Hammer_Swing', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
+  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'mov_talar',
+  guardia: 'Combat_Stance', golpe: 'Right_Hand_Sword_Slash', parar: 'Sword_Parry', cargar: 'mov_cargar_brazos', recoger: 'Collect_Object',
+  minar: 'mov_picar', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
   cogerDeMesa: 'Female_Crouch_Pick_Up_Place_Side', agacharse: 'Male_Bend_Over_Pick_Up', comer: 'Stand_and_Drink', abrirCofre: 'open_door',
   golpeLigero1: 'Left_Slash', golpeLigero2: 'Thrust_Slash', golpePesado1: 'Charged_Upward_Slash', pararDos: 'Two_Handed_Parry', bloquear: 'Block1',
   rodar: 'Roll_Dodge', esquivar: 'Stand_Dodge', empujado: 'Hit_Reaction', derribado: 'Knock_Down', morir: 'dying_backwards', muerto: 'Dead',
   disparar: 'Archery_Shot', lanzar: 'Crouch_Pull_and_Throw', andarAtras: 'Walk_Backward', andarDeprisa: 'Quick_Walk', correrDeprisa: 'RunFast',
   saltar: 'Regular_Jump', trepar: 'Climb_Stairs', escalera: 'Ladder_Climb_Loop', nadarQuieto: 'Swim_Idle', nadar: 'Swim_Forward',
-  // (al hombro y empujando la carretilla, las piernas de andar y los brazos puestos donde agarran: src/juego/personaje.js)
-  hombro: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, hombroQuieto: 'Idle', arrastrar: 'Carry_Heavy_Object_Walk', empujar: 'Push_and_Walk_Forward',
-  empujarCarretilla: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, empujarQuieto: 'Idle',
+  // (las «mov_», hechas con Text to Motion de Meshy, 10 nov: lo que la biblioteca no trae; los brazos se ajustan además donde
+  // agarran: src/juego/personaje.js)
+  hombro: 'mov_hombro_andar', hombroQuieto: 'mov_hombro_quieto', arrastrar: 'mov_arrastrar', empujar: 'Push_and_Walk_Forward',
+  empujarCarretilla: 'mov_empujar_andar', empujarQuieto: 'mov_empujar_quieto',
   tumbarse: 'Stand_to_Sit_Transition_M', dormido: 'Sleep_Normally', levantarse: 'Wake_Up_and_Look_Up', sentado: 'Sit_Cross_Legged_on_Floor',
   brazosCruzados: 'Idle_02', mirarAlrededor: 'Axe_Breathe_and_Look_Around', saludar: 'Wave_One_Hand', asentir: 'Agree_Gesture',
   charlar: 'Stand_and_Chat', reverencia: 'Formal_Bow', herido: 'Injured_Walk', agazapado: 'Cautious_Crouch_Walk_Forward',
@@ -95,15 +96,6 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
   const acciones = {};
   for (const clip of g.animations) acciones[clip.name] = mezclador.clipAction(clip);
   for (const [id, c] of Object.entries(CLIPS_MESHY)) { const n = typeof c === 'string' ? c : c[sexo]; if (acciones[n]) acciones[id] = acciones[n]; }
-  // parado con la carretilla o con el tronco al hombro, la postura de andar quieta (el primer instante, con el cuerpo de
-  // frente: el «Idle» de Meshy va con el tronco girado y una mano no llega a su agarradera)
-  {
-    const andar = acciones.andar?.getClip();
-    if (andar) for (const id of ['empujarQuieto', 'hombroQuieto']) {
-      const quieto = THREE.AnimationUtils.subclip(andar, id, 0, 2, 30);
-      acciones[id] = mezclador.clipAction(quieto);
-    }
-  }
   // las de una vez (tumbarse, levantarse, morir…) se quedan en la última postura
   for (const id of ['tumbarse', 'levantarse', 'morir', 'derribado']) if (acciones[id]) { acciones[id].setLoop(THREE.LoopOnce, 1); acciones[id].clampWhenFinished = true; }
 
@@ -112,7 +104,7 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
   const velocidad = {};
   {
     const mz = new THREE.AnimationMixer(modelo), pie = [hueso.ball_l, hueso.ball_r], v = new THREE.Vector3();
-    for (const id of ['andar', 'correr']) {
+    for (const id of ['andar', 'correr', 'hombro', 'empujarCarretilla', 'arrastrar', 'cargar']) {
       const clip = acciones[id]?.getClip(); if (!clip || !pie[0]) continue;
       const a = mz.clipAction(clip).play(), N = 120, m = [];
       for (let i = 0; i <= N; i++) {

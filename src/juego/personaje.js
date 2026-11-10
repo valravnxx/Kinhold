@@ -143,19 +143,19 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
     // arrastrando la rastra (src/juego/rastra.js): inclinado, con las manos atrás en las varas; quieto, la misma postura
     if (j.arrastra && j.mh.acciones.arrastrar) {
-      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
+      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.arrastrar || j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
     // empujando la carretilla (src/juego/carretilla.js): algo inclinado, con los brazos bajos en las varas, andando o
     // quieto (la de empujar del taller, taller-carga-v3); sin ella, como al llevar algo en brazos
     } else if (j.empuja && j.mh.acciones.empujarCarretilla) {
-      if (velocidad > 0.1) { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6); m = 'empujarCarretilla'; } else m = 'empujarQuieto';
+      if (velocidad > 0.1) { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.empujarCarretilla || j.mh.velocidad.andar || 1), 0.5, 1.6); m = 'empujarCarretilla'; } else m = 'empujarQuieto';
     } else if (j.empuja && j.mh.acciones.cargar) {
-      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'cargar';
+      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.cargar || j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'cargar';
     } else if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
     // un tronco al hombro: la mano derecha arriba sujetándolo y el cuerpo algo inclinado, andando o quieto (taller-carga-v3).
     // Corriendo, la misma de andar, más deprisa (con el tronco al hombro no se corre suelto)
     else if (j.alHombro && m !== 'talar' && j.mh.acciones.hombro) {
       if (m === 'quieto') m = 'hombroQuieto';
-      else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
+      else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.hombro || j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
     }
     // dormir en la cama ligada (P4): se tumba (y se queda tumbado) y, al despertar, se levanta (taller-dormir-v1)
     // (tumbado del todo, la de dormir: los brazos a lo largo del cuerpo, no levantados como acaba la de tumbarse)
