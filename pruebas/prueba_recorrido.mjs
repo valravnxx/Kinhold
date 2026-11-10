@@ -1241,12 +1241,15 @@ try {
     // lo que lleva, a la pila (a sus pies, en p)
     const aLaPila = async (p) => { await J.andar(p.x, p.z); await soltarManos(); };
     // n cordeles a la pila de p: fibra de las plantas de alrededor (3 por cordel), con las manos, uno a uno
+    const motivosCordel = [];   // (por qué no sale un cordel, si no sale: para decirlo en la salida)
     const cordelesA = async (p, n) => {
       const plantas = alrededor(p, 150);
       for (let k = 0; k < n + 3 && enPila('cordel', p) < n; k++) {
         for (const q of libres(plantas, ['ortiga', 'hierba_larga'])) { if (J.cuantos('fibra') >= 3) break; probados.add(q.id); await recoger(q); }
+        // las plantas de al lado, ya cogidas (vuelven en una estación): más allá, como haría un jugador
+        if (J.cuantos('fibra') < 3) for (const q of libres(alrededor(p, 400), ['ortiga', 'hierba_larga'])) { if (J.cuantos('fibra') >= 3) break; probados.add(q.id); await recoger(q); }
         const rc = await J.objeto({ tipo: 'fabricar', receta: 'cordel', x: J.pos.x, z: J.pos.z });
-        if (!rc.ok) continue;
+        if (!rc.ok) { motivosCordel.push(`${rc.motivo} (fibra ${J.cuantos('fibra')}; ${enMano()})`); continue; }
         adelantar(); await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z });
         const sobra = manos.find(l => J.inv.lugares[l]?.tipo === 'fibra');
         if (sobra) await J.objeto({ tipo: 'soltar_suelo', de: sobra, x: J.pos.x, z: J.pos.z });
@@ -1324,7 +1327,7 @@ try {
     for (let n = 0; n < 4; n++) { const c = J.inv.lugares.espalda?.dentro?.[n]; if (c && c.tipo === 'junco') { const m1 = await J.objeto({ tipo: 'mover', de: `espalda/${n}`, a: 'mano:der' }); const m2 = await J.objeto({ tipo: 'soltar_suelo', de: 'mano:der', x: J.pos.x, z: J.pos.z }); for (const m of [m1, m2]) if (!m.ok) motivosJunco.push(m.motivo); } }
     comprobar('deja los juncos en el suelo de su casa', enPila('junco', D) >= 8, `${enPila('junco', D)} · ${enMano()} · ${[...new Set(motivosJunco)].join('; ')} · hombro: ${J.inv.lugares.hombro?.tipo || '–'}`);
     const nc2 = await cordelesA(D, 2);
-    comprobar('y le trae 2 cordeles de fibra', nc2 >= 2, `${nc2} cordeles`);
+    comprobar('y le trae 2 cordeles de fibra', nc2 >= 2, `${nc2} cordeles · ${[...new Set(motivosCordel)].join('; ')}`);
     await J.andar(D.x, D.z);
     r = await ponerPuesto('cama_juncos', r2(C.x + 0.5), C.z);
     const cama = r.id;
@@ -1449,7 +1452,10 @@ try {
         const q = await acercarse(l.id); if (!q) continue;
         await pausa(800 * RELOJ);   // quieto: alerta
         const v = s.fauna.de(l.id) || q;
-        combate({ que: 'tensar' }); await pausa(950 * RELOJ);
+        // tensa algo más de lo que tarda la lanza (0,8 s del reloj del servidor) y suelta: sin pasarse, que si la mantiene
+        // tensa más de 2,5 s le tiembla el pulso (src/combate/logica.js, temblorDesde). Antes esperaba 950 ms de verdad
+        // (7,6 s del servidor con el reloj acelerado): el temblor le torcía cada tiro hasta 15° y casi nunca daba
+        combate({ que: 'tensar' }); await pausa(1400);
         combate({ que: 'soltar', x: v.x, y: T.suelo(v.x, v.z) - T.suelo(J2.pos.x, J2.pos.z), z: v.z }); lanzadas++;
         tiros.push({ v: { x: v.x, z: v.z, e: v.estado }, L: LJ() && { x: LJ().x, z: LJ().z, c: Math.round(LJ().cansancio), a: LJ().accion }, n: caidas.length });
         await pausa(2000 * RELOJ);
