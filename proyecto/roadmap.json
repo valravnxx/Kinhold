@@ -1548,6 +1548,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "El andar del hombre y el reposo de los dos, más neutros (de la biblioteca de Meshy)",
+     "estado": "en_curso",
+     "inicio": "2026-11-10T14:44:40+01:00",
+     "rama": "trabajo/20261110-1500-andar"
     }
    ]
   },
