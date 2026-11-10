@@ -1494,8 +1494,9 @@ try {
       if (muertaAqui) {
         // lo que hay para recoger a mano por aquí (sílex, piedra, ramas), como en el mundo
         const dist2 = (a) => Math.hypot(a.x - J2.pos.x, a.z - J2.pos.z);
-        const aqui = recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + J2.pos.x - 120, z0: O.z + J2.pos.z - 120, x1: O.x + J2.pos.x + 120, z1: O.z + J2.pos.z + 120 }).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
-        const recogerAqui = async (tipo, da) => { for (const p of cerca(aqui.filter(q => q.tipo === tipo), J2.pos).slice(0, 12)) { await J2.andar(p.x + 0.4, p.z); const q = await J2.objeto({ tipo: 'recoger', punto: p.id, x: J2.pos.x, z: J2.pos.z, px: p.x, pz: p.z, clase: p.tipo }); if (q.ok && J2.cuantos(da)) return true; } return false; };
+        const aqui = recogidaEn(T.paisaje, T.alt, T.semilla, { x0: O.x + J2.pos.x - 250, z0: O.z + J2.pos.z - 250, x1: O.x + J2.pos.x + 250, z1: O.z + J2.pos.z + 250 }).map(p => ({ id: p.id, tipo: p.tipo, x: r2(p.x - O.x), z: r2(p.z - O.z) }));
+        // (las de al lado de la orilla ya las cogió para la pila de piedras: vuelven en semanas; las busca más allá)
+        const recogerAqui = async (tipo, da) => { for (const p of cerca(aqui.filter(q => q.tipo === tipo), J2.pos).slice(0, 40)) { await J2.andar(p.x + 0.4, p.z); const q = await J2.objeto({ tipo: 'recoger', punto: p.id, x: J2.pos.x, z: J2.pos.z, px: p.x, pz: p.z, clase: p.tipo }); if (q.ok && J2.cuantos(da)) return true; } return false; };
         // traer algo: si no lo lleva, lo de su suelo más cercano; si no hay, se recoge de por aquí
         const traer = async (tipo, punto) => {
           if (J2.cuantos(tipo)) return true;
