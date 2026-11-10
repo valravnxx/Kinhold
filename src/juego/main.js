@@ -1927,6 +1927,10 @@ function pasoRastras() {
   const mia = miRastra();
   jugador.arrastra = !!mia && !esCarr(mia); jugador.empuja = esCarr(mia);
   if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, Date.now()); r.j.arrastra = !!o && !esCarr(o); r.j.empuja = esCarr(o); }
+  // las agarraderas de la carretilla que empuja cada uno, para sus manos (src/juego/personaje.js)
+  const agarraderas = (autor) => { const c = sueloObjetos.grupo.children.find(o => o.name === 'suelo_carretilla' && o.userData.arrastra === autor); return c ? c.userData.agarraderas || null : null; };
+  jugador.agarraderas = jugador.empuja ? agarraderas(yoSuelo()) : null;
+  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.agarraderas = r.j.empuja ? agarraderas(autor) : null;
 }
 // Una acción de la rastra o la carretilla: en línea, al servidor (se espera su respuesta); sin red, aquí con la misma lógica.
 function accionRastra(a, alSalir) {

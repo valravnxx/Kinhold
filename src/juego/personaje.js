@@ -9,6 +9,7 @@ import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
 export { carpetaMeshy };
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
 import { crearLlevado } from './llevado.js';
+import { nudillosA } from '../personajes/ik.js';
 import { loteHachaPiedra, loteMazoPiedra } from './modelos_objetos.js';
 
 // Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
@@ -198,6 +199,53 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (j.mh) llevado.poner(l);
   };
   j.listo.then(() => { ponerHacha(); if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
-  j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
+  // los brazos donde agarran (los de Meshy no traen esas posturas): lo grande en brazos, delante del pecho y entre las dos
+  // manos; las agarraderas de la carretilla; y el tronco al hombro, con la mano derecha encima
+  const _p = new THREE.Vector3(), _q = new THREE.Vector3(), _f = new THREE.Vector3(), _l = new THREE.Vector3(), _u = new THREE.Vector3();
+  const brazos = () => {
+    const h = j.mh.hueso;
+    return { r: { sup: h.upperarm_r, inf: h.lowerarm_r, mano: h.hand_r, nudillo: h.middle_01_r }, l: { sup: h.upperarm_l, inf: h.lowerarm_l, mano: h.hand_l, nudillo: h.middle_01_l } };
+  };
+  // adelante (del pie a la punta), a la izquierda (del hombro derecho al izquierdo) y arriba, en el mundo
+  const ejes = (b) => {
+    const h = j.mh.hueso;
+    _f.subVectors(h.ball_l.getWorldPosition(_p), h.foot_l.getWorldPosition(_q)).setY(0).normalize();
+    _l.subVectors(b.l.sup.getWorldPosition(_p), b.r.sup.getWorldPosition(_q)).setY(0).normalize();
+    _u.set(0, 1, 0);
+  };
+  const polo = (lado) => new THREE.Vector3().addScaledVector(_l, lado === 'l' ? 0.6 : -0.6).addScaledVector(_u, -1).addScaledVector(_f, -0.35);
+  const colocarBrazos = () => {
+    if (!j.mh || !j.mh.meshy || !j.mh.raiz.visible || globalThis.__sinBrazosMeshy /* solo para comprobar que las pruebas fallan */) return false;
+    const b = brazos(); if (!b.r.sup || !b.l.sup || !j.mh.hueso.ball_l) return false;
+    j.raiz.updateMatrixWorld(true);
+    ejes(b);
+    if (j.empuja && j.agarraderas && j.agarraderas.length >= 2) {
+      // cada mano, a la agarradera que tiene más cerca
+      const ag = j.agarraderas.map(a => a.getWorldPosition(new THREE.Vector3()));
+      const mr = b.r.mano.getWorldPosition(_p);
+      const [ar, al] = ag[0].distanceTo(mr) <= ag[1].distanceTo(mr) ? [ag[0], ag[1]] : [ag[1], ag[0]];
+      nudillosA(b.r, ar, polo('r')); nudillosA(b.l, al, polo('l'));
+      return true;
+    }
+    if (j.cargaDos && !j.empuja) {
+      // delante del pecho, a 35 cm, y las manos a sus lados (a 20 cm del centro)
+      const pecho = (j.mh.hueso.spine_03 || j.mh.hueso.spine_02).getWorldPosition(new THREE.Vector3());
+      const c = pecho.addScaledVector(_f, 0.35).addScaledVector(_u, -0.22);
+      nudillosA(b.r, c.clone().addScaledVector(_l, -0.2), polo('r'));
+      nudillosA(b.l, c.clone().addScaledVector(_l, 0.2), polo('l'));
+      return true;
+    }
+    return false;
+  };
+  j.animar = (...a) => {
+    animarCuerpo(...a);
+    const antes = colocarBrazos();
+    llevado.paso();
+    // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima
+    if (j.alHombro && j.mh && j.mh.meshy && !globalThis.__sinBrazosMeshy) {
+      const p = llevado.agarreHombro();
+      if (p) { const b = brazos(); if (!antes) { j.raiz.updateMatrixWorld(true); ejes(b); } nudillosA(b.r, p, polo('r').addScaledVector(_u, 1.4)); }
+    }
+  };
   return j;
 }

@@ -552,7 +552,7 @@ export function crearLlevado(j) {
     // al hombro
     if (l.hombro && cH && cE) {
       const L = nuevoLote(), h = hombroDe(-1), t = l.hombro;
-      let hueso = pecho;
+      let hueso = pecho, agarre = null;
       if (t === 'tronco_corto' || t === 'tronco_delgado') {
         // el delgado (7 nov: la madera de la casa humilde), igual pero más fino y más largo: con el mismo centro, así la
         // mano de la animación del taller lo sujeta igual por encima (queda 1 cm más alto sobre el hombro)
@@ -565,6 +565,9 @@ export function crearLlevado(j) {
           const x = s.x + TRONCO_HOMBRO.x, z = s.z + TRONCO_HOMBRO.z;
           troncoCorto(L, x, s.y + TRONCO_HOMBRO.y, z, largo, r, 'z');
           hueso = H.clavicle_r;
+          // donde van los nudillos de la mano derecha: encima del tronco, algo por delante del hombro (los personajes de
+          // Meshy no traen la postura: el brazo se pone ahí, src/juego/personaje.js)
+          agarre = v3(x, s.y + TRONCO_HOMBRO.y + r + 0.015, z + 0.06);
         } else troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, largo, r, 'z');
       } else if (t === 'saco') {
         // el saco lleno, echado sobre el hombro derecho y colgando a la espalda; la boca atada por delante
@@ -587,7 +590,9 @@ export function crearLlevado(j) {
           L.add(cajaR(0.21, 0.09, 0.02, 0.01), CUERO_OSC, abajo.x + 0.06, abajo.y - 0.05, abajo.z + 0.01, { y: 1.35 }, { tex: 'liso' });
         }
       }
-      grupo.add(pieza(L, 'hombro', I, hueso, invRaiz));
+      const g = pieza(L, 'hombro', I, hueso, invRaiz);
+      if (agarre) g.userData.agarre = agarre;
+      grupo.add(g);
     }
 
     // en las manos (el hacha la pone el personaje)
@@ -629,6 +634,13 @@ export function crearLlevado(j) {
       montar(ultimo);
     },
     rehacer() { huella = ''; this.poner(ultimo); },
+    // dónde agarra la mano derecha lo que va al hombro (en el mundo), o null
+    agarreHombro() {
+      const g = grupo.children.find(o => o.userData.agarre);
+      if (!g || !grupo.visible) return null;
+      g.updateWorldMatrix(true, false);
+      return g.userData.agarre.clone().applyMatrix4(g.matrixWorld);
+    },
     paso() {
       if (!j.mh) return;
       grupo.visible = j.mh.nivel < OCULTO && j.mh.raiz.visible !== false;

@@ -38,8 +38,9 @@ export const CLIPS_MESHY = {
   rodar: 'Roll_Dodge', esquivar: 'Stand_Dodge', empujado: 'Hit_Reaction', derribado: 'Knock_Down', morir: 'dying_backwards', muerto: 'Dead',
   disparar: 'Archery_Shot', lanzar: 'Crouch_Pull_and_Throw', andarAtras: 'Walk_Backward', andarDeprisa: 'Quick_Walk', correrDeprisa: 'RunFast',
   saltar: 'Regular_Jump', trepar: 'Climb_Stairs', escalera: 'Ladder_Climb_Loop', nadarQuieto: 'Swim_Idle', nadar: 'Swim_Forward',
-  hombro: 'Carry_Heavy_Object_Walk', hombroQuieto: 'Idle', arrastrar: 'Carry_Heavy_Object_Walk', empujar: 'Push_and_Walk_Forward',
-  empujarCarretilla: 'Push_and_Walk_Forward', empujarQuieto: 'Idle',
+  // (al hombro y empujando la carretilla, las piernas de andar y los brazos puestos donde agarran: src/juego/personaje.js)
+  hombro: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, hombroQuieto: 'Idle', arrastrar: 'Carry_Heavy_Object_Walk', empujar: 'Push_and_Walk_Forward',
+  empujarCarretilla: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, empujarQuieto: 'Idle',
   tumbarse: 'Stand_to_Sit_Transition_M', dormido: 'Sleep_Normally', levantarse: 'Wake_Up_and_Look_Up', sentado: 'Sit_Cross_Legged_on_Floor',
   brazosCruzados: 'Idle_02', mirarAlrededor: 'Axe_Breathe_and_Look_Around', saludar: 'Wave_One_Hand', asentir: 'Agree_Gesture',
   charlar: 'Stand_and_Chat', reverencia: 'Formal_Bow', herido: 'Injured_Walk', agazapado: 'Cautious_Crouch_Walk_Forward',
@@ -118,6 +119,19 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
     }
     mz.uncacheRoot(modelo);
   }
+  // los pies, en el suelo: el modelo de Meshy trae la planta unos 17-19 cm por debajo de su origen (valravnx, 10 nov:
+  // «los pies muy hundidos en el suelo»). Se mide lo más bajo del cuerpo ya en la postura de quieto (con los huesos) y
+  // se sube eso.
+  {
+    const mz = new THREE.AnimationMixer(modelo), clip = acciones.quieto?.getClip();
+    if (clip) { mz.clipAction(clip).play(); mz.setTime(0); }
+    modelo.updateMatrixWorld(true);
+    let bajo = Infinity;
+    modelo.traverse(n => { if (n.isSkinnedMesh) { n.computeBoundingBox(); bajo = Math.min(bajo, n.boundingBox.clone().applyMatrix4(n.matrixWorld).min.y); } });
+    mz.stopAllAction(); mz.uncacheRoot(modelo);
+    if (Number.isFinite(bajo)) modelo.position.y -= bajo;
+    modelo.traverse(n => { if (n.isSkinnedMesh) n.boundingBox = null; });
+  }
 
   let actual = null;
   const poner = (id, mezcla = 0.25) => {
@@ -134,10 +148,12 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
     clips: g.animations.map(c => c.name),
     // aún sin ropa por capas, aspecto, tintes ni hechuras: el modelo se ve como lo hizo valravnx
     capas: [], hechuras: {}, tintes: null, aspecto: null, tenibles: [], capasPosibles: [], tocados: [],
-    ponerCapas() {}, ponerAspecto() {}, ponerTintes() {}, ponerHechuras() {}, corteDe: () => -100, vueloCapa: () => ({ x: 0, z: 0, onda: 0 }),
+    // (lo que lleva puesto se apunta, para el resto del juego, aunque aún no se vea)
+    ponerCapas(l) { resultado.capas = Array.isArray(l) ? [...l] : []; }, ponerAspecto() {}, ponerTintes() {}, ponerHechuras() {}, corteDe: () => -100, vueloCapa: () => ({ x: 0, z: 0, onda: 0 }),
     // niveles de detalle (src/logica/detalle.js): con unos 3.000 triángulos no hace falta otra malla; lejos de la vista, no se dibuja
     nivel: 0,
     ponerNivel(n) { resultado.nivel = n; raiz.visible = n < OCULTO; },
   };
+  resultado.ponerCapas(o.capas);
   return resultado;
 }

@@ -163,7 +163,7 @@ with sync_playwright() as p:
         try: pg.wait_for_function('window.__rendimiento.medida().personajes >= 9', timeout=120000 if not MUTAR_REND else 5000)
         except Exception: pass
         m8 = medir(pg, nombre, 'construir_9', 9)
-        comprobar('construir: con 8 más hay más triángulos', m8['triangulos'] > m0['triangulos'] * 1.3, f"{m0['triangulos']} → {m8['triangulos']}")
+        comprobar('construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno)', m8['triangulos'] > m0['triangulos'] + 8000, f"{m0['triangulos']} → {m8['triangulos']}")
         abrirPanel(pg, 'construir')
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_rendimiento.png')
         pg.click('#btnDemoFps')

@@ -161,7 +161,8 @@ paso "Navegador: combate en el mundo" python3 pruebas/prueba_combate_mundo_naveg
 paso "Navegador: pelear en cualquier sitio del mundo" python3 pruebas/prueba_pelear_mundo_navegador.py dist/kinhold_demo.html "$C/pelear_mundo"
 paso "Navegador: pruebas de estilo" python3 pruebas/prueba_estilo_navegador.py dist/kinhold_estilo.html "$C/estilo"
 paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/kinhold_personaje.html "$C/personaje"
-paso "Navegador: animaciones para cargar" python3 pruebas/prueba_anim_carga_navegador.py dist/kinhold_personaje.html "$C/anim_carga"
+# (la de navegador de las animaciones de cargar del taller, fuera desde el 10 nov: el visor ya enseña los personajes de
+# Meshy, sin las animaciones del taller; las del taller siguen publicadas y la de lógica de arriba las sigue mirando)
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: lo que se recoge en el mundo" python3 pruebas/prueba_recogida_mundo_navegador.py dist/kinhold_demo.html "$C/recogida_mundo"

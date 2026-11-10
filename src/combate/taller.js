@@ -7,6 +7,7 @@
 // del cuerpo o de la ropa, donde entra el golpe, y siguen al hueso.
 import * as THREE from 'three';
 import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
+import { girarHueso, brazoHacia } from '../personajes/ik.js';
 import { textura } from '../mundo/estilos.js';
 
 export const CAPAS_ARMADURA = { lino: [], gambeson: ['gambeson'], malla: ['gambeson', 'cota'] };
@@ -14,34 +15,6 @@ export const CAPAS_ARMADURA = { lino: [], gambeson: ['gambeson'], malla: ['gambe
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const _a = V(0, 0, 0), _b = V(0, 0, 0), _c = V(0, 0, 0), _d = V(0, 0, 0), _e = V(0, 0, 0);
 const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
-
-// Gira un hueso (en el mundo) para que la dirección hueso→punto `de` pase a apuntar a `hacia`
-function girarHueso(hueso, de, hacia) {
-  const p = hueso.getWorldPosition(_a);
-  const u = _b.copy(de).sub(p), w = _c.copy(hacia).sub(p);
-  if (u.lengthSq() < 1e-10 || w.lengthSq() < 1e-10) return;
-  _q.setFromUnitVectors(u.normalize(), w.normalize());
-  hueso.getWorldQuaternion(_q2);
-  hueso.parent.getWorldQuaternion(_q3);
-  hueso.quaternion.copy(_q3.invert().multiply(_q.multiply(_q2)));
-  hueso.updateMatrixWorld(true);
-}
-
-// Cinemática inversa de dos huesos (brazo y antebrazo): la muñeca va a `objetivo`; el codo, hacia `polo`
-function brazoHacia(b, objetivo, polo) {
-  const S = b.sup.getWorldPosition(V(0, 0, 0)), E0 = b.inf.getWorldPosition(V(0, 0, 0)), H0 = b.mano.getWorldPosition(V(0, 0, 0));
-  const la = S.distanceTo(E0), lb = E0.distanceTo(H0);
-  const dir = objetivo.clone().sub(S);
-  const d = THREE.MathUtils.clamp(dir.length(), Math.abs(la - lb) + 1e-3, (la + lb) * 0.999);
-  const n = dir.normalize();
-  const cos = (la * la + d * d - lb * lb) / (2 * la * d), sen = Math.sqrt(Math.max(0, 1 - cos * cos));
-  const perp = polo.clone().sub(n.clone().multiplyScalar(polo.dot(n)));
-  if (perp.lengthSq() < 1e-8) perp.set(0, -1, 0);
-  perp.normalize();
-  const codo = S.clone().addScaledVector(n, la * cos).addScaledVector(perp, la * sen);
-  girarHueso(b.sup, E0, codo);
-  girarHueso(b.inf, b.mano.getWorldPosition(_d), S.clone().addScaledVector(n, d));
-}
 
 // Gira la mano lo mínimo para que los dedos queden atravesados al eje del arma (que la rodeen)
 function cerrarMano(b, eje) {
