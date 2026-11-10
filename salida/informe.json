@@ -1,0 +1,60 @@
+[
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Walking 2",
+   "Casual Walk",
+   "Casual Walk",
+   "Idle 1",
+   "Idle 2",
+   "Idle 3",
+   "Idle 4",
+   "Idle 5",
+   "Idle 6",
+   "Idle 7"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Idle 8",
+   "Idle 9",
+   "Idle 15"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 9
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Walking 2",
+   "Casual Walk",
+   "Casual Walk",
+   "Idle 1",
+   "Idle 2",
+   "Idle 3",
+   "Idle 4",
+   "Idle 5",
+   "Idle 6",
+   "Idle 7"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Idle 8",
+   "Idle 9",
+   "Idle 15"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 9
+ }
+]
