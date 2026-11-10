@@ -152,6 +152,7 @@ function ponerModo(m) { estado.modo = m; if (pj) pj.poner(m); mostrarHerramienta
 // al trabajar, la herramienta del trabajo en la mano (el hacha al talar, el pico al picar); si no, ninguna
 function mostrarHerramienta() {
   for (const [k, h] of Object.entries(pj?.herramientas || {})) if (h) h.visible = HERRAMIENTA_DE[estado.modo] === k;
+  if (pj?.cerrarMano) pj.cerrarMano('r', HERRAMIENTA_DE[estado.modo] ? 1 : 0);
 }
 function marcar(tipo, v) { for (const b of document.querySelectorAll(`[data-${tipo}]`)) b.classList.toggle('sel', b.dataset[tipo] === v); }
 

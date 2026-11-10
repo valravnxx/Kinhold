@@ -412,6 +412,8 @@ function seguir(grupo, raiz) {
       o.matrixWorldNeedsUpdate = true; o.userData.largoManos = largo;
       continue;
     }
+    const sh = o.userData.sobreHombro;
+    if (sh) { sh.hueso.getWorldPosition(_a).applyMatrix4(_inv).sub(sh.de); o.matrix.makeTranslation(_a.x, _a.y, _a.z); o.matrixWorldNeedsUpdate = true; continue; }
     const h = o.userData.hueso; if (!h) continue;
     o.matrix.multiplyMatrices(_inv, h.matrixWorld).multiply(o.userData.desfase);
     o.matrixWorldNeedsUpdate = true;
@@ -566,8 +568,7 @@ export function crearLlevado(j) {
           const ms = mh.meshy ? { x: -0.035, y: 0.025, z: 0.04 } : { x: 0, y: 0, z: 0 };
           const x = s.x + TRONCO_HOMBRO.x + ms.x, z = s.z + TRONCO_HOMBRO.z + ms.z, yT = s.y + TRONCO_HOMBRO.y + ms.y;
           troncoCorto(L, x, yT, z, largo, r, 'z');
-          // (en los de Meshy, al pecho: su clavícula gira mucho de una animación a otra y el tronco se cruzaba)
-          hueso = mh.meshy ? pecho : H.clavicle_r;
+          hueso = H.clavicle_r;
           // donde van los nudillos de la mano derecha: encima del tronco, algo por delante del hombro (los personajes de
           // Meshy no traen la postura: el brazo se pone ahí, src/juego/personaje.js)
           agarre = v3(x, yT + r + 0.01, z + 0.04);
@@ -595,6 +596,9 @@ export function crearLlevado(j) {
       }
       const g = pieza(L, 'hombro', I, hueso, invRaiz);
       if (agarre) g.userData.agarre = agarre;
+      // (en los de Meshy el tronco no gira con ningún hueso: va recto, siguiendo solo dónde está el hombro derecho; sus
+      // animaciones doblan mucho el pecho y la clavícula, y el tronco atado a ellos se cruzaba)
+      if (agarre && mh.meshy && H.upperarm_r) { g.userData.hueso = null; g.userData.sobreHombro = { hueso: H.upperarm_r, de: H.upperarm_r.getWorldPosition(v3(0, 0, 0)).applyMatrix4(invRaiz) }; }
       grupo.add(g);
     }
 

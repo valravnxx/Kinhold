@@ -123,7 +123,7 @@ with sync_playwright() as p:
             # las 59 de la biblioteca de Meshy: se cargan, y los botones de «Más animaciones» ponen cada una
             n_clips = pg.evaluate(f'{E}.diag().pj.clips.length')
             if os.environ.get('MUTAR'): n_clips = 9
-            comprobar(f'({sexo}) las 59 animaciones de Meshy se cargan', n_clips == 59, f'{n_clips} clips')
+            comprobar(f'({sexo}) las 67 animaciones de Meshy se cargan (59 de su biblioteca y 8 hechas con texto)', n_clips == 67, f'{n_clips} clips')
             botones = pg.evaluate("[...document.querySelectorAll('#anims-extra [data-modo]')].map(b => b.dataset.modo)")
             comprobar(f'({sexo}) «Más animaciones» tiene sus botones', len(botones) >= 30, str(len(botones)))
             HUESOS = ['pelvis', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r']

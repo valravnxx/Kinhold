@@ -170,6 +170,8 @@ export function animarTaller(u, L, dt, velocidad, manos, eje) {
   if (m !== t.modo) { mh.poner(m, 0.2); t.modo = m; }
   mh.acciones[m].timeScale = ritmo;
   mh.mezclador.update(dt);
+  // (los de Meshy: la mano del arma cerrada en O; la otra, si va a dos manos)
+  if (mh.cerrarMano) { mh.cerrarMano('r', 1); mh.cerrarMano('l', manos && manos.i ? 1 : 0); }
   // el clip de guardia trae la mano izquierda abierta (es de espada de una mano): se cierra como la derecha
   if (manos && manos.i && eje && eje.i) for (const [i, d] of t.dedos) i.quaternion.copy(d.quaternion);
   u.cuerpo.parent.updateMatrixWorld(true);

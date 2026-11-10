@@ -18,6 +18,7 @@ import { meshopt } from '@gltf-transform/functions';
 import * as THREE from 'three';
 
 const [entrada, salida] = process.argv.slice(2);
+const JUNTAR = 0.7; // lo que se acerca cada dedo al centro de la mano (de lado)
 await MeshoptDecoder.ready; await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder, 'meshopt.encoder': MeshoptEncoder });
 const doc = await io.read(entrada);
@@ -44,6 +45,7 @@ for (const l of mismo.values()) for (const a of l) for (const b of l) if (a !== 
 const B = skin.listJoints().length; // las juntas nuevas van detrás: la k-ésima es la B + k
 const nuevas = []; // { nombre, padre (junta de la mano) o padreNueva (k), pos, giro, signo }
 const pesos = new Map(); // vértice → [[junta, peso]…]
+const marcas = []; // puntos sin peso, hijos de la mano: { nombre, mano, pos }
 const informe = {};
 for (const [lado, L] of [['l', 'Left'], ['r', 'Right']]) {
   const hi = iDe(L + 'Hand'), fi = iDe(L + 'ForeArm');
@@ -100,7 +102,18 @@ for (const [lado, L] of [['l', 'Left'], ['r', 'Right']]) {
   // el pulgar: lo de la mano por delante del índice que no es dedo, más allá de la muñeca
   const sIndice = Math.max(...dedos[0].map(i => pos[i].clone().sub(H).dot(w)));
   const pulgar = mano.filter(i => !enDedo.has(i) && pos[i].clone().sub(H).dot(w) > sIndice + 0.004 && t.get(i) > tmax * 0.15);
-  const cadenas = dedos.map((c, k) => [NOMBRES[k], c]);
+  // (valravnx, 10 nov: «junta todos los dedos menos el pulgar en una manopla»): los cuatro, una sola cadena (middle_…),
+  // que se dobla entera; el índice y el meñique quedan como puntos de referencia en la mano (para poner lo que se coge)
+  const cadenas = [['middle', dedos.flat()]];
+  // los cuatro dedos, juntos de lado (cada uno hacia el centro de la mano), para que se vean como una manopla
+  {
+    const todos = dedos.flat(), sc = todos.reduce((x, i) => x + pos[i].clone().sub(H).dot(w), 0) / todos.length;
+    for (const i of todos) { const si = pos[i].clone().sub(H).dot(w); pos[i].addScaledVector(w, (sc - si) * JUNTAR); P.setElement(i, pos[i].toArray()); }
+  }
+  for (const [k, nombre] of [[0, 'index'], [3, 'pinky']]) {
+    const c = [...dedos[k]].sort((p, q) => pos[p].distanceTo(H) - pos[q].distanceTo(H));
+    marcas.push({ nombre: `${nombre}_01_${lado}`, mano: hi, pos: centro(c.slice(0, Math.max(3, c.length >> 2))) });
+  }
   if (pulgar.length >= 3) cadenas.push(['thumb', pulgar]);
   informe[L] = { dedos: dedos.map(c => c.length), pulgar: pulgar.length, nudillos_cm: +(corte * 100).toFixed(1), largo_cm: +(tmax * 100).toFixed(1) };
   for (const [nombre, c] of cadenas) {
@@ -152,6 +165,11 @@ for (const b of nuevas) {
   (b.padre !== null ? nodoMano(b.padre) : nuevas[b.padreNueva].nodo).addChild(b.nodo);
   ibm.push(...mundo.clone().invert().toArray());
 }
+for (const m of marcas) {
+  const M = mundoDe(m.mano), q = new THREE.Quaternion(), s = new THREE.Vector3(); M.decompose(new THREE.Vector3(), q, s);
+  const local = new THREE.Vector3().copy(m.pos).applyMatrix4(M.clone().invert());
+  juntas()[m.mano].addChild(doc.createNode(m.nombre).setTranslation(local.toArray()));
+}
 for (const b of nuevas) skin.addJoint(b.nodo);
 skin.getInverseBindMatrices().setArray(new Float32Array(ibm));
 // los pesos de los vértices de los dedos (la junta de la mano, o B + k de las nuevas)
@@ -163,4 +181,4 @@ for (const [i, p] of pesos) for (let k = 0; k < 4; k++) { Jn[i * 4 + k] = p[k] ?
 J.setArray(Jn); W.setArray(Wn).setNormalized(false);
 await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 await io.write(salida, doc);
-console.log(JSON.stringify(informe), 'huesos nuevos', nuevas.length);
+console.log(JSON.stringify(informe), 'huesos nuevos', nuevas.length, 'marcas', marcas.length);

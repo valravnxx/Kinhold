@@ -30,9 +30,9 @@ const HUESOS = {
 };
 // las animaciones del juego y la de Meshy que hace de cada una (por sexo, si cambia)
 export const CLIPS_MESHY = {
-  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'mov_talar',
+  quieto: 'Idle', andar: { hombre: 'Quick_Walk', mujer: 'Walking_Woman' }, correr: 'Run_02', talar: 'Heavy_Hammer_Swing',
   guardia: 'Combat_Stance', golpe: 'Right_Hand_Sword_Slash', parar: 'Sword_Parry', cargar: 'mov_cargar_brazos', recoger: 'Collect_Object',
-  minar: 'mov_picar', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
+  minar: 'Heavy_Hammer_Swing', segar: 'Reaping_Swing', cogerFruta: 'Female_Stand_Pick_Fruit_Basket', plantar: 'Pull_Radish',
   cogerDeMesa: 'Female_Crouch_Pick_Up_Place_Side', agacharse: 'Male_Bend_Over_Pick_Up', comer: 'Stand_and_Drink', abrirCofre: 'open_door',
   golpeLigero1: 'Left_Slash', golpeLigero2: 'Thrust_Slash', golpePesado1: 'Charged_Upward_Slash', pararDos: 'Two_Handed_Parry', bloquear: 'Block1',
   rodar: 'Roll_Dodge', esquivar: 'Stand_Dodge', empujado: 'Hit_Reaction', derribado: 'Knock_Down', morir: 'dying_backwards', muerto: 'Dead',
@@ -87,10 +87,21 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
     triangulos += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
   });
   const hueso = {};
-  modelo.traverse(n => { if (n.isBone) hueso[n.name] = n; });
+  // (los dedos: la manopla middle_01…03 y el pulgar, hechos con herramientas/meshy/poner_dedos.mjs, y los puntos index_01
+  // y pinky_01 de la mano)
+  modelo.traverse(n => { if (n.isBone || /^(index|pinky|middle|thumb)_0\d_[lr]$/.test(n.name)) hueso[n.name] = n; });
   for (const [k, v] of Object.entries(HUESOS)) if (hueso[v]) hueso[k] = hueso[v];
   hueso.Head = hueso.Head || hueso.head;
-  ponerDedos(hueso, modelo);
+  if (!hueso.middle_01_r) ponerDedos(hueso, modelo); // (los .glb sin dedos)
+  // cerrar la mano (valravnx, 10 nov: «una manopla… haciendo una O cuando agarre algo de asta»): la manopla se dobla por
+  // sus tres tramos y el pulgar la mitad; k de 0 (abierta) a 1 (cerrada)
+  const giran = { l: [], r: [] };
+  modelo.traverse(n => { const e = n.userData && n.userData.cerrar; if (!e) return; const l = n.name.endsWith('_l') ? 'l' : 'r'; giran[l].push({ n, eje: new THREE.Vector3(...e), signo: n.userData.signo, q0: n.quaternion.clone(), pulgar: n.name.startsWith('thumb') }); });
+  const cierre = { l: -1, r: -1 }, _qc = new THREE.Quaternion();
+  const cerrarMano = (lado, k) => {
+    if (cierre[lado] === k) return; cierre[lado] = k;
+    for (const g of giran[lado]) g.n.quaternion.copy(g.q0).multiply(_qc.setFromAxisAngle(g.eje, g.signo * k * (g.pulgar ? 0.5 : 0.95)));
+  };
 
   const mezclador = new THREE.AnimationMixer(modelo);
   const acciones = {};
@@ -145,6 +156,7 @@ export async function crearPersonajeMeshy(op = {}, base = 'recursos/personajes/m
   poner('quieto', 0);
 
   const resultado = {
+    cerrarMano, tieneDedos: giran.r.length > 0,
     raiz, modelo, mezclador, acciones, poner, triangulos, triangulosNivel: triangulos, velocidad, hueso, opciones: o, meshy: true,
     clips: g.animations.map(c => c.name),
     // aún sin ropa por capas, aspecto, tintes ni hechuras: el modelo se ve como lo hizo valravnx

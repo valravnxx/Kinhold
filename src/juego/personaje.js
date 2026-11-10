@@ -249,6 +249,13 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   };
   j.animar = (...a) => {
     animarCuerpo(...a);
+    // las manos cerradas en O sobre lo que agarran (el hacha o lo que va en la mano, el tronco al hombro, la carretilla,
+    // lo que se lleva en brazos); abiertas si no
+    if (j.mh && j.mh.cerrarMano) {
+      const l = j.llevadoPedido;
+      j.mh.cerrarMano('r', (j.hacha && j.hacha.visible) || (l && l.der) || j.empuja || j.cargaDos || j.alHombro || j.arrastra ? 1 : 0);
+      j.mh.cerrarMano('l', (l && l.izq) || j.empuja || j.cargaDos || j.arrastra ? 1 : 0);
+    }
     const antes = colocarBrazos();
     llevado.paso();
     // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima
