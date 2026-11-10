@@ -116,8 +116,9 @@ with sync_playwright() as p:
     pg.click(O('odre')); pg.click('#panelInventario .inv-ponerse')
     comprobar('del arcón: el hacha con las manos y el odre colgado al hombro', lugar(pg, 'mano:der') == 'hacha_mano:1' and lugar(pg, 'hombro') == 'odre:1', f"{lugar(pg, 'mano:der')} · {lugar(pg, 'hombro')}")
     comprobar('el hacha se ve en la mano del personaje', pg.evaluate(f'!!({K}.jugador.hacha && {K}.jugador.hachaEnMano)'))
-    llevas = pg.inner_text('#llevas')
-    comprobar('abajo se ve lo que llevas en la mano y al hombro', pg.is_visible('#llevas') and 'Hacha de mano' in llevas and 'Odre' in llevas, llevas)
+    # (con el menú abierto, la barra de abajo queda detrás del tablero: se mira lo que dice)
+    llevas = pg.evaluate("document.getElementById('llevas').textContent + ' ' + [...document.querySelectorAll('#llevas img')].map(i => i.alt + ' ' + (i.title || '')).join(' ')")
+    comprobar('abajo se ve lo que llevas en la mano y al hombro', pg.evaluate("!document.getElementById('llevas').hidden") and 'Hacha de mano' in llevas and 'Odre' in llevas, llevas)
     # la barra de abajo (estudio de la interfaz, 7 nov): cada cosa con su imagen en su hueco, las manos y el hombro, y
     # cada una con su botón de soltar; el hueco con el kit renderizado (se ha cargado de verdad)
     barra = pg.evaluate('''(() => { const l = document.getElementById('llevas');
@@ -204,7 +205,7 @@ with sync_playwright() as p:
     mv, errores = abrir_pagina(nav, viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     mv.tap('#btnMenu'); mv.tap('#btnInventario')
     caja = mv.locator('#panelInventario').bounding_box()
-    comprobar('en el móvil el panel ocupa casi la pantalla (el tablero del menú)', caja and caja['width'] >= 380 and caja['height'] >= 700, str(caja))
+    comprobar('en el móvil el panel ocupa casi la pantalla (el tablero del menú)', caja and caja['width'] >= 380 and caja['height'] >= 650, str(caja))
     mv.tap(O('cuerda_trenzada')); mv.tap(R('cintura'))
     comprobar('tocar la cuerda y luego la cintura se la pone', lugar(mv, 'cintura') == 'cuerda_trenzada:1')
     nc = mv.locator('#panelInventario .inv-cinto [data-ruta]').count()

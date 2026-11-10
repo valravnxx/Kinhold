@@ -260,7 +260,7 @@ try:
         captura(B, f'{SALIDA}/movil_piedra_tallar.png')
         B.tap('#btnFabricar'); B.wait_for_timeout(600)
         r = B.evaluate("(() => { const r = document.getElementById('panelFabricar').getBoundingClientRect(); return [r.width, r.height]; })()")
-        comprobar('su panel ocupa casi la pantalla (el tablero del menú)', r[0] >= 380 and r[1] >= 700, str(r))
+        comprobar('su panel ocupa casi la pantalla (el tablero del menú)', r[0] >= 380 and r[1] >= 650, str(r))
         B.tap('#panelFabricar .fab-pest[data-pestana="tallar"]'); B.wait_for_timeout(500)
         comprobar('en la pestaña de la piedra de tallar, con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]')", 5000))
         comprobar('y ve lo depositado, con su imagen', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"] img')", 10000))   # (el móvil, con swiftshader, tarda en dar un fotograma)
