@@ -1644,7 +1644,9 @@
     },
     {
      "nombre": "Herramientas y armas que se gastan (documento de sistemas, apartado 10: el hacha de piedra, unos 3 árboles adultos; un arma de madera o piedra, unos 50 golpes): cada uso lo cuenta el servidor, se ve en la ficha del equipo y, al acabarse, se rompe. Recorrido: el hacha de piedra se gasta talando",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-10T07:30:41+00:00",
+     "rama": "trabajo/20261110-0730"
     },
     {
      "nombre": "Reparar en su puesto con su material (documento de sistemas, apartado 10): lo de piedra en la piedra de tallar, lo de madera en el banco de tronco, la ropa con lo suyo; lo que el documento no fija (cuánto material y cuánto recupera), provisional y en el registro. Recorrido: el jugador repara el hacha antes de que se rompa",
