@@ -5901,5 +5901,22 @@
   "pruebas": "Revisor en la nube: lógica (con la nueva de las herramientas que se gastan; rota a propósito —el hacha no se gasta—: falla; y en la del modo arma, la lanza que da a la liebre y el palo que alcanza se gastan; rota a propósito en el servidor: falla), tala de los árboles, la demo única y el panel de inventario (la ficha con el desgaste, PC y móvil; a la primera fallaba porque la prueba dejaba el hacha en la mano: arreglado), bien. El recorrido 240/240 (aquí, buscando por qué moría de hambre, y en la nube)",
   "capturas": "capturas/demo-v170",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-10T10:24:28+00:00",
+  "fin": "2026-11-10T11:22:29+00:00",
+  "titulo": "P4: reparar en su puesto con su material (demo v171)",
+  "hito": "supervivencia",
+  "hecho": [
+   "Se repara en su puesto con su material (documento de sistemas, apartado 10): con la herramienta gastada en la mano, junto a su puesto y con su material dejado en él, Usar → «Reparar». Lo hace el servidor, con su autor en el registro",
+   "Lo de piedra, en la piedra de tallar con un cordel: el hacha de piedra recupera la mitad de su vida (84 golpes) y el mazo de piedra, 25. Lo de madera, en el banco de tronco: la lanza endurecida, con fibra y llevando la lasca de sílex (no se gasta), recupera 25",
+   "La ficha del equipo dice dónde se repara y con qué",
+   "Recorrido de jugador: antes del árbol adulto al hacha ya no le quedan sus golpes (lleva 16 jóvenes), así que se hace un cordel, lo deja en una piedra de tallar y la repara; tala el adulto sin que se le rompa",
+   "Decisiones provisionales en el registro de la demo (v171): reparar es en el acto, cuánto recupera cada cosa y con qué, sin pasar de nueva; el palo cavador no se repara (se hace otro con una rama); lo de hierro espera a la fragua",
+   "La ropa y la armadura aún no se gastan, así que no hay nada que reparar en ellas: tarea nueva en este hito para que se gasten y se reparen"
+  ],
+  "pruebas": "Revisor en la nube: lógica (con la reparación en la prueba de las herramientas que se gastan; rota a propósito —reparar no gasta el material—: falla), el recorrido (también aquí, 242/242), el panel de fabricación (el menú del clic derecho ofrece «Reparar: hacha de piedra» junto a la piedra de tallar y el servidor la repara), el panel de inventario (la ficha dice dónde se repara), la demo única y la cama ligada (la pedía fabricacion.js; no hacía falta, ya estaba lanzada), bien. No comprobado: el menú de reparar en el móvil (es el mismo menú del clic derecho, ya probado en el móvil con otras cosas). Otra rama activa (personajes, del chat) toca main.js, registro.js y las traducciones: main no había cambiado, se une sin tocar nada a mano",
+  "capturas": "capturas/demo-v171",
+  "estado": "ok"
  }
 ]

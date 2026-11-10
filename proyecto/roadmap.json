@@ -1650,9 +1650,13 @@
     },
     {
      "nombre": "Reparar en su puesto con su material (documento de sistemas, apartado 10): lo de piedra en la piedra de tallar, lo de madera en el banco de tronco, la ropa con lo suyo; lo que el documento no fija (cuánto material y cuánto recupera), provisional y en el registro. Recorrido: el jugador repara el hacha antes de que se rompa",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-10T10:25:15+00:00",
-     "rama": "trabajo/20261110-1024"
+     "fin": "2026-11-10T11:22:29+00:00"
+    },
+    {
+     "nombre": "La ropa y la armadura se gastan y se reparan (documento de sistemas, apartado 10: «se desgasta al recibir golpes y con el uso; se repara en su estación con su material»): cada prenda lleva su desgaste, lo cuenta el servidor, se ve en su ficha y se repara con lo suyo (la de cuero, con piel y cordel; la de lino y lana, con lo que dé hilo, que aún no tiene origen: buscárselo o esconderlo); lo que el documento no fija, provisional y en el registro",
+     "estado": "pendiente"
     },
     {
      "nombre": "Recorrido entero de un primer día, sin arcón, en el recorrido de jugador: entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo; y prueba de valravnx entre dos",
@@ -3863,6 +3867,13 @@
      "archivo": "jugar/demo/v170.html",
      "capturas": "capturas/demo-v170",
      "notas": "v170: las herramientas y las armas se gastan. Cada golpe al talar gasta el hacha: la de piedra aguanta unos 3 árboles adultos (o unos 21 jóvenes) y la de hierro unos 30. Cada golpe que alcanza o que se para gasta el arma de la mano (unos 50 la de madera o piedra: la lanza, el palo cavador, el mazo; unos 400 la de hierro), y la lanza lanzada se gasta al dar a una presa. Lo cuenta el servidor; la ficha del equipo dice cuántos usos le quedan, con su barra, y al acabarse se rompe y te avisa."
+    },
+    {
+     "v": "v171",
+     "fecha": "2026-11-10",
+     "archivo": "jugar/demo/v171.html",
+     "capturas": "capturas/demo-v171",
+     "notas": "Reparar en su puesto con su material: el hacha y el mazo de piedra en la piedra de tallar con un cordel dejado en ella, la lanza endurecida en el banco de tronco con fibra (llevando la lasca); desde el menú de Usar junto al puesto, lo hace el servidor; la ficha del equipo dice dónde y con qué"
     }
    ]
   },
