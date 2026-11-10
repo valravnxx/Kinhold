@@ -1,0 +1,216 @@
+[
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Idle",
+   "Idle 1",
+   "Axe Breathe and Look Around",
+   "Casual Walk",
+   "Walking Woman",
+   "Quick Walk",
+   "Walk Backward",
+   "Run 2",
+   "Run Fast",
+   "Carry Heavy Object Walk"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Carry Water Bucket Walk",
+   "Injured Walk",
+   "Cautious Crouch Walk Forward",
+   "Regular Jump",
+   "Jump Over Obstacle",
+   "Climb Stairs",
+   "Ladder Climb Loop",
+   "Swim Idle",
+   "Swim Forward",
+   "Male Bend Over Pick Up"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Female Crouch Pick Up Place Side",
+   "Collect Object",
+   "Pull Radish",
+   "Female Stand Pick Fruit Basket",
+   "Stand and Drink",
+   "Sit and Drink",
+   "Open Door",
+   "Push and Walk Forward",
+   "Step Forward and Push",
+   "Charged Axe Chop"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Heavy Hammer Swing",
+   "Reaping Swing",
+   "Stand to Sit Transition Male",
+   "Sit to Stand Transition Male",
+   "Sit Cross-legged on Floor",
+   "Kneel on One Knee and Stand",
+   "Sleep Normally",
+   "Wake Up and Look Up",
+   "Combat Idel",
+   "Thrust Slash"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Left Slash",
+   "Right-hand Sword Slash",
+   "Charged Upward Slash",
+   "Sword Parry",
+   "Two-handed Parry",
+   "Block1",
+   "Roll Dodge",
+   "Stand Dodge",
+   "Hit Reaction",
+   "Knock Down"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "hombre",
+  "lote": [
+   "Dying Backwards",
+   "Dead",
+   "Crouch Pull and Throw",
+   "Archery Shot",
+   "Wave One Hand",
+   "Agree Gesture",
+   "Stand and Chat",
+   "Formal Bow",
+   "Sit Lie Bed"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 27
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Idle",
+   "Idle 1",
+   "Axe Breathe and Look Around",
+   "Casual Walk",
+   "Walking Woman",
+   "Quick Walk",
+   "Walk Backward",
+   "Run 2",
+   "Run Fast",
+   "Carry Heavy Object Walk"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Carry Water Bucket Walk",
+   "Injured Walk",
+   "Cautious Crouch Walk Forward",
+   "Regular Jump",
+   "Jump Over Obstacle",
+   "Climb Stairs",
+   "Ladder Climb Loop",
+   "Swim Idle",
+   "Swim Forward",
+   "Male Bend Over Pick Up"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Female Crouch Pick Up Place Side",
+   "Collect Object",
+   "Pull Radish",
+   "Female Stand Pick Fruit Basket",
+   "Stand and Drink",
+   "Sit and Drink",
+   "Open Door",
+   "Push and Walk Forward",
+   "Step Forward and Push",
+   "Charged Axe Chop"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Heavy Hammer Swing",
+   "Reaping Swing",
+   "Stand to Sit Transition Male",
+   "Sit to Stand Transition Male",
+   "Sit Cross-legged on Floor",
+   "Kneel on One Knee and Stand",
+   "Sleep Normally",
+   "Wake Up and Look Up",
+   "Combat Idel",
+   "Thrust Slash"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Left Slash",
+   "Right-hand Sword Slash",
+   "Charged Upward Slash",
+   "Sword Parry",
+   "Two-handed Parry",
+   "Block1",
+   "Roll Dodge",
+   "Stand Dodge",
+   "Hit Reaction",
+   "Knock Down"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 30
+ },
+ {
+  "personaje": "mujer",
+  "lote": [
+   "Dying Backwards",
+   "Dead",
+   "Crouch Pull and Throw",
+   "Archery Shot",
+   "Wave One Hand",
+   "Agree Gesture",
+   "Stand and Chat",
+   "Formal Bow",
+   "Sit Lie Bed"
+  ],
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 27
+ }
+]
