@@ -136,6 +136,7 @@ paso "Noticias del desarrollo en Discord" node pruebas/prueba_discord_noticias.m
 paso "Navegador: construcción" python3 pruebas/prueba_navegador.py dist/kinhold_demo.html "$C/construccion"
 paso "Navegador: quitar el mojón" python3 pruebas/prueba_quitar_mojon_navegador.py dist/kinhold_demo.html "$C/quitar_mojon"
 paso "Navegador: el menú con pestañas (tablero, pestañas, pie y arriba solo Menú)" python3 pruebas/prueba_menu_navegador.py dist/kinhold_demo.html "$C/menu"
+paso "Navegador: construir con el acabado nuevo (Poner | Quitar, la planta arriba, las piezas con su imagen y su coste, deshacer)" python3 pruebas/prueba_construir_menu_navegador.py dist/kinhold_demo.html "$C/construir_menu"
 paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_posprocesado_navegador.py dist/kinhold_posprocesado.html "$C/posprocesado"
 paso "Navegador: el perfil gráfico en el juego" python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html "$C/graficos_juego"
 paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py dist/kinhold_demo.html "$C/cielo"

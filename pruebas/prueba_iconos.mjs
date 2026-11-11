@@ -13,7 +13,8 @@ import { readFileSync, existsSync, statSync } from 'fs';
 import { RECETAS, ESTACIONES, PARA } from '../src/logica/fabricacion.js';
 import { CATALOGO } from '../src/logica/inventario.js';
 import { PRENDAS } from '../src/logica/prendas.js';
-import { CARPETA_ICONOS, CARPETA_INTERFAZ } from '../src/logica/iconos.js';
+import { CARPETA_ICONOS, CARPETA_INTERFAZ, CARPETA_PIEZAS } from '../src/logica/iconos.js';
+import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 
 const MUTAR = process.env.MUTAR;
 const carpeta = 'docs/' + CARPETA_ICONOS;
@@ -70,6 +71,19 @@ for (const l of ['en', 'ru']) {
   ok([...plantilla.matchAll(/recursos\/(interfaz-v\d+)\//g)].every(m => m[1] + '/' === CARPETA_INTERFAZ.replace('recursos/', '')), 'la plantilla usa la misma carpeta del kit que el código');
   for (const n of pide) {
     const f = kit + n, hay = existsSync(f) && !(MUTAR === '6' && n === 'hueco.webp');
+    ok(hay, `existe ${f}`);
+    if (hay) { const b = readFileSync(f); ok(b.toString('ascii', 8, 12) === 'WEBP' && b.length > 800, `${n} es una imagen WebP de verdad`); }
+  }
+}
+
+// las imágenes del menú de construir (sacar.py conjunto=piezas): cada pieza y cada mueble de este tramo con la suya
+// (rota a propósito con MUTAR=7: falta la del muro de zarzo)
+{
+  const dir = 'docs/' + CARPETA_PIEZAS;
+  const piden = [...Object.entries(PIEZAS).filter(([t, d]) => t !== 'mojon' && enEsteTramo(d)).map(([t]) => 'pz_' + t), ...Object.entries(DECORACION).filter(([, d]) => enEsteTramo(d)).map(([t]) => 'deco_' + t)];
+  ok(piden.length >= 15, `el menú de construir enseña ${piden.length} piezas y muebles`);
+  for (const n of piden) {
+    const f = dir + n + '.webp', hay = existsSync(f) && !(MUTAR === '7' && n === 'pz_muro_zarzo');
     ok(hay, `existe ${f}`);
     if (hay) { const b = readFileSync(f); ok(b.toString('ascii', 8, 12) === 'WEBP' && b.length > 800, `${n} es una imagen WebP de verdad`); }
   }

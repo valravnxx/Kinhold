@@ -70,6 +70,7 @@ export const TOCA = {
   'despiezar-y-asar': [/^src\/logica\/comida\.js$/, /^src\/juego\/modelos_objetos\.js$/, /^pruebas\/prueba_comida_navegador\.py$/],
   'el-modo-arma-con-lo-de-la-mano-y-cazar-con-la-lanza': [/^src\/logica\/arma_mano\.js$/, /^src\/juego\/(fauna|combate_mundo)\.js$/, /^src\/combate\/modelos\.js$/, /^pruebas\/prueba_caza_navegador\.py$/],
   'entrar-con-la-cuenta': [/^src\/mundo\/(pantalla_cuenta|eleccion|conexion)\.js$/, /^src\/logica\/(cuentas|correo|fichas)\.js$/],
+  'construir-con-el-acabado-nuevo': [/^docs\/recursos\/piezas-v\d+\//, /^herramientas\/iconos\//, /^pruebas\/prueba_construir_menu_navegador\.py$/],
   'web': [/^herramientas\/(construir_web\.mjs|plantilla_web\.html)$/],
 };
 

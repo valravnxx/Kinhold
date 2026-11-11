@@ -155,10 +155,25 @@ body.construyendo #llevas{display:none}
 #modos button img{width:20px;height:20px}
 #modos button .k{order:-1}
 #modos button.sel{box-shadow:inset 0 0 0 1px rgba(255,225,160,.95),0 0 0 2px #c19a55}
-#modos [data-modo=mover],#modos [data-modo=desmontar]{display:none}
-body.construyendo #modos [data-modo],body.desmontando #modos [data-modo]{display:flex}
-body.construyendo:not(.tactil-ui) #modos{bottom:calc(118px + env(safe-area-inset-bottom,0px))} /* encima de la barra de piezas */
+#modos [data-modo=mover],#modos [data-modo=desmontar],#modos #controlPlanta,#modos #btnDeshacer,#modos .nom-poner{display:none}
+#modos .poq{display:flex}
+/* Construir (estudio de la interfaz, 7 nov): arriba, en el centro, «Poner | Quitar» (X), la planta, deshacer lo último y
+   terminar; las piezas, abajo, con su imagen y su coste */
+body:is(.construyendo,.desmontando) #modos{top:calc(14px + env(safe-area-inset-top,0px));bottom:auto;left:50%;right:auto;transform:translateX(-50%);gap:8px;padding:6px 8px;border-radius:10px;background:linear-gradient(rgba(18,11,5,.5),rgba(18,11,5,.5)),url(../../recursos/interfaz-v1/tablero.webp) center/900px auto #24170c;box-shadow:inset 0 0 0 1px rgba(193,154,85,.6),0 6px 16px rgba(0,0,0,.5);white-space:nowrap}
+body:is(.construyendo,.desmontando) #modos [data-modo],body:is(.construyendo,.desmontando) #modos #btnDeshacer{display:flex}
+body:is(.construyendo,.desmontando) #modos .nom-poner{display:inline}
+body:is(.construyendo,.desmontando) #modos [data-modo=construir] .nom{display:none}
+body:is(.construyendo,.desmontando) #modos .poq{gap:0;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(193,154,85,.75),0 2px 5px rgba(0,0,0,.45);background:rgba(10,6,3,.55)}
+body:is(.construyendo,.desmontando) #modos .poq button{box-shadow:none;background:none;border-radius:6px;color:#cdbb9a;padding:6px 12px}
+body:is(.construyendo,.desmontando) #modos .poq button.sel{color:#2a1a0b;background:linear-gradient(#f0cf8a,#c99a4c);text-shadow:none;box-shadow:inset 0 0 0 1px rgba(255,236,190,.8)}
+body:is(.construyendo,.desmontando) #modos .poq button.sel img{filter:brightness(.25) sepia(1)}
+body.construyendo #modos #controlPlanta{display:flex}
+#modos #controlPlanta{background:rgba(10,6,3,.55);box-shadow:inset 0 0 0 1px rgba(193,154,85,.55);border-radius:7px;padding:2px;gap:2px}
+#modos #controlPlanta span{min-width:74px;text-align:center;font:16px 'Alegreya SC',Georgia,serif;font-variant-numeric:lining-nums;color:#f0cf8a}
+#modos #controlPlanta button{min-width:0;width:30px;height:30px;padding:0;justify-content:center;font-size:13px;color:#f1e6cf;border:0;border-radius:5px;background:linear-gradient(#5a4128,#2e2013);box-shadow:inset 0 0 0 1px rgba(240,207,138,.45)}
+#modos #btnDeshacer:disabled{opacity:.45}
 #acciones button{min-width:96px}
+body.construyendo #acciones{bottom:calc(var(--alto-barra,170px) + 12px)}
 body:not(.tactil-ui) #btnUsar{display:none}
 #btnUsar .ic,#btnUsar .verbo,#btnUsar .prog{display:none}
 #acciones{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(178px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;align-items:flex-end}
@@ -184,20 +199,30 @@ body.tactil-ui #menuUsar button img{width:32px;height:32px}
 #controlPlanta span{min-width:62px;text-align:center}
 #acciones #controlPlanta button{min-width:0;padding:6px 10px}
 
-#barra{position:fixed;left:0;right:0;bottom:0;background:var(--panel);padding:8px max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));border-top:1px solid var(--linea)}
-#pestanas{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
-#pestanas button{white-space:nowrap;padding:5px 10px;font-size:12.5px}
-#piezas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin}
-.pieza{display:flex;flex-direction:column;align-items:flex-start;min-width:150px;max-width:180px;text-align:left}
+#barra{position:fixed;left:0;right:0;bottom:0;padding:6px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(18,11,5,.55),rgba(18,11,5,.62)),url(../../recursos/interfaz-v1/tablero.webp) top center/1536px auto #24170c;box-shadow:inset 0 1px 0 rgba(193,154,85,.7),inset 0 2px 0 rgba(0,0,0,.5),0 -6px 18px rgba(0,0,0,.45)}
+#pestanas{display:flex;gap:2px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+#pestanas button{flex:0 0 auto;white-space:nowrap;padding:4px 10px;font:15px 'Alegreya SC',Georgia,serif;color:#cdbb9a;background:none;border:0;border-radius:0;border-bottom:2px solid transparent;text-shadow:0 1px 1px #000;min-width:0}
+#pestanas button.sel{color:#f0cf8a;border-bottom-color:#d9a441}
+#piezas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding:2px 2px 2px}
+.pieza{position:relative;display:flex;flex-direction:column;align-items:center;flex:0 0 auto;width:118px;min-width:0;max-width:none;padding:4px 5px 6px;text-align:center;border-radius:10px;background:#2e261e;border:1px solid rgba(193,154,85,.35);box-shadow:inset 0 1px 0 rgba(255,230,180,.08),0 2px 5px rgba(0,0,0,.4);color:#f3e6c8}
+.pieza .pz-img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.pieza b{font:500 13.5px/1.12 'Alegreya SC',Georgia,serif;color:#f3e6c8;min-height:30px;display:flex;align-items:center;justify-content:center}
 .pieza small{color:var(--muted);font-size:11.5px;margin-top:2px}
-.pieza.sel small{color:#3a2c18}
+.pieza .pz-coste{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:3px}
+.pieza .cc{display:inline-flex;align-items:center;gap:1px;padding:0 4px 0 1px;border-radius:9px;background:rgba(0,0,0,.35);font:600 12px/18px system-ui,sans-serif;color:#efe2c6}
+.pieza .cc img{width:18px;height:18px;object-fit:contain}
+.pieza .cc i{font-style:normal;font-weight:400;color:#a99a80;font-size:10.5px;margin-left:1px}
+.pieza .cc.falta{background:rgba(120,24,18,.55);color:#ff9b8e;box-shadow:inset 0 0 0 1px rgba(224,87,79,.6)}
+.pieza .cc.falta i{color:#f0a89e}
+.pieza.sel{background:#3b2c1a;border-color:#f0c46a;box-shadow:0 0 0 1px #f0c46a,0 0 10px rgba(240,196,106,.35)}
+.pieza.sel small{color:var(--muted)}
 
 #confirmar{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom,0px));z-index:8;transform:translateX(-50%);background:var(--panel);padding:10px;border-radius:12px;display:flex;gap:8px}
 #btnConfirmar{background:var(--rojo);color:#fff;border-color:transparent}
 
 #joystick{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(36,30,24,.35);border:2px solid rgba(241,232,216,.3);touch-action:none}
 #pomo{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(241,232,216,.75)}
-body.construyendo #joystick{bottom:calc(178px + env(safe-area-inset-bottom,0px));width:100px;height:100px}
+body.construyendo #joystick{bottom:calc(var(--alto-barra,170px) + 8px);width:100px;height:100px}
 body.construyendo #pomo{left:25px;top:25px}
 
 .panel{position:fixed;inset:60px 12px auto 12px;margin:auto;max-width:620px;max-height:70vh;overflow:auto;background:var(--panel);border-radius:14px;padding:14px 16px;border:1px solid var(--linea)}
@@ -513,7 +538,17 @@ body.construyendo #pomo{left:25px;top:25px}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir]{position:fixed;right:calc(42px + env(safe-area-inset-right,0px));top:auto;bottom:calc(272px + env(safe-area-inset-bottom,0px));width:56px;height:56px;padding:0;justify-content:center;border-radius:50%;background:url(../../recursos/interfaz-v1/boton.webp) center/contain no-repeat;box-shadow:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] img{width:52%;height:52%}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] .nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-  .pieza{min-width:128px}
+  /* construir en el móvil: arriba a la derecha del Menú, en dos filas si no cabe; Deshacer y Terminar, solo con su icono */
+  body.tactil-ui:is(.construyendo,.desmontando) #modos{left:auto;right:calc(8px + env(safe-area-inset-right,0px));transform:none;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;align-items:center;max-width:calc(100vw - 86px);padding:5px 6px;gap:6px}
+  body.tactil-ui:is(.construyendo,.desmontando) #modos :is(#btnDeshacer,[data-modo=mover]){padding:6px 9px}
+  body.tactil-ui:is(.construyendo,.desmontando) #modos :is(#btnDeshacer,[data-modo=mover]) .nom{display:none}
+  body.tactil-ui:is(.construyendo,.desmontando) #modos button img{width:22px;height:22px}
+  .pieza{width:100px;padding:3px 4px 5px}
+  .pieza .pz-img{width:42px;height:42px}
+  .pieza b{font-size:12px;min-height:28px}
+  .pieza .cc{font-size:11px}
+  .pieza .cc img{width:16px;height:16px}
+  body.construyendo #acciones{bottom:calc(var(--alto-barra,170px) + 10px)}
   /* en el móvil, fabricar y el equipo van a pantalla completa */
   #panelFabricar{inset:0;width:auto;max-width:none;max-height:none;height:100%;border-radius:0;border:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-areas:"cab" "nav" "centro" "pie";padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
   .fab-pestanas{flex-direction:row;border-right:0;border-bottom:1px solid var(--linea);padding:7px 8px;overflow-x:auto}
@@ -655,12 +690,12 @@ body.construyendo #pomo{left:25px;top:25px}
 <div id="accionEtq" hidden></div>
 <div id="accionLista" hidden></div>
 <div id="modos">
-  <button data-modo="construir"><img src="../../recursos/interfaz-v1/g_construir.webp" alt=""><span class="nom">Construir</span><span class="k">B</span></button>
-  <button data-modo="desmontar"><img src="../../recursos/interfaz-v1/g_quitar.webp" alt=""><span class="nom">Desmontar</span><span class="k">X</span></button>
-  <button data-modo="mover"><img src="../../recursos/interfaz-v1/g_cerrar.webp" alt=""><span class="nom">Terminar</span><span class="k">Esc</span></button>
+  <div class="poq"><button data-modo="construir"><img src="../../recursos/interfaz-v1/g_construir.webp" alt=""><span class="nom">Construir</span><span class="nom-poner">Poner</span><span class="k">B</span></button><button data-modo="desmontar"><img src="../../recursos/interfaz-v1/g_quitar.webp" alt=""><span class="nom">Quitar</span><span class="k">X</span></button></div>
+  <div id="controlPlanta"><button id="btnBaja" title="Bajar de planta">▼</button><span id="planta">Planta 0</span><button id="btnSube" title="Subir de planta">▲</button></div>
+  <button id="btnDeshacer" title="Deshacer lo último (Ctrl+Z)"><img src="../../recursos/interfaz-v1/g_deshacer.webp" alt=""><span class="nom">Deshacer</span></button>
+  <button data-modo="mover" title="Terminar (Esc)"><img src="../../recursos/interfaz-v1/g_cerrar.webp" alt=""><span class="nom">Terminar</span><span class="k">Esc</span></button>
 </div>
 <div id="acciones">
-  <div id="controlPlanta"><button id="btnBaja">▼</button><span id="planta">Planta 0</span><button id="btnSube">▲</button></div>
   <button id="btnGirar">Girar</button>
   <button id="btnColocar" class="sel">Colocar</button>
   <button id="btnUsar"><img class="ic" alt=""><span class="verbo">Usar</span><svg class="prog" hidden viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="51" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="5"/><circle class="lleno" cx="55" cy="55" r="51" fill="none" stroke="#f0c46e" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 400"/></svg></button>

@@ -7,4 +7,7 @@ export const CARPETA_ICONOS = 'recursos/iconos-v15/';   // (v15, 9 nov: la carne
 // (src/plantilla.html, con la misma carpeta) y la barra de abajo. Los recursos publicados no se cambian: si se vuelven
 // a sacar, van a otra carpeta (interfaz-v2…) y se cambia aquí y en la plantilla. Lo comprueba pruebas/prueba_iconos.mjs.
 export const CARPETA_INTERFAZ = 'recursos/interfaz-v1/';
+// Las imágenes de las piezas de construir (pz_<pieza>), los muebles (deco_<mueble>) y el mojón, para el menú de construir:
+// herramientas/iconos/sacar.py <carpeta> conjunto=piezas. Como las otras, publicadas no se cambian.
+export const CARPETA_PIEZAS = 'recursos/piezas-v1/';
 export const CARPETA_FUENTES = 'recursos/fuentes/v1/';   // las letras del juego (EB Garamond, Alegreya SC): src/plantilla.html las carga

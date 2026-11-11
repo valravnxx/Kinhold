@@ -26,11 +26,11 @@ import { crearFauna } from './fauna.js';
 import { armaDeMano } from '../logica/arma_mano.js';
 import { reparacionDe, desgasteDe } from '../logica/desgaste.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
-import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
+import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
 import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
-import { CARPETA_INTERFAZ } from '../logica/iconos.js';
+import { CARPETA_INTERFAZ, CARPETA_PIEZAS } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
 import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
@@ -77,6 +77,13 @@ function colocarAviso() {
   if (!a || !sup) return;
   // (en PC, el aviso va arriba en el centro, a la altura de los botones redondos; lo de tu tierra queda a la izquierda)
   const hud = document.getElementById('hudBotones');
+  // construyendo, debajo de la barra de arriba (Poner | Quitar, la planta…), que va donde iba el aviso
+  if (modos && document.body.matches('.construyendo,.desmontando')) {
+    a.style.top = Math.ceil(modos.getBoundingClientRect().bottom) + 8 + 'px';
+    if (innerWidth > 640) a.style.left = a.style.transform = a.style.maxWidth = '';
+    else { a.style.left = '10px'; a.style.transform = 'none'; a.style.maxWidth = innerWidth - 20 + 'px'; }
+    return;
+  }
   if (innerWidth > 640 && hud) { a.style.top = Math.ceil(hud.getBoundingClientRect().top) + 4 + 'px'; a.style.left = a.style.transform = a.style.maxWidth = ''; return; }
   a.style.top = Math.ceil(sup.getBoundingClientRect().bottom) + 8 + 'px';
   const izq = 10, der = modos && !modos.hidden ? modos.getBoundingClientRect().left - 8 : innerWidth - 10;
@@ -100,6 +107,43 @@ let panelSalida = null;   // el de «¿Dónde empiezas?» (elegirSalidaPanel, m�
 let arconServidor = false;
 const hayArcon = () => !enLinea || arconServidor;
 const $ = (id) => document.getElementById(id);
+
+// Deshacer lo último que pusiste (estudio de la interfaz, 7 nov; Ctrl+Z o el botón de arriba): si sigue ahí y no tiene
+// nada encima que caería, se quita como en Quitar (lo que le hubieras llevado vuelve entero: una obra a medias aún no lo
+// ha gastado). Solo lo último: otra vez, ya no hay nada que deshacer.
+function buscarUltimo(u) {
+  let mejor = null, dm = MODULO * 1.5;
+  for (const c of mundo.construcciones) {
+    const p = c.piezas.get(u.clave);
+    if (!p || p.tipo !== u.tipo) continue;
+    const m = centroMundo(c, p), d = Math.hypot(m.x - u.x, m.z - u.z);
+    if (d < dm) { dm = d; mejor = { c, p }; }
+  }
+  return mejor;
+}
+function deshacer() {
+  const u = estado.ultimo;
+  if (!u) { mostrarAviso(tr('No hay nada que deshacer.')); return; }
+  if (u.clase === 'puesto') {
+    const e = Object.values(fabCliente.estaciones).find(e => e.tipo === u.tipo && e.obra && Math.hypot(e.x - u.x, e.z - u.z) < 0.5);
+    estado.ultimo = null; actualizarUI();
+    if (!e) { mostrarAviso(tr('Ya no está: no hay nada que deshacer.'), true); return; }
+    hacerFabricacion({ tipo: 'desmontar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Deshecho: {p}.', { p: tr(ESTACIONES[u.tipo].nombre).toLowerCase() }));
+    });
+    return;
+  }
+  const h = buscarUltimo(u);
+  if (!h) { estado.ultimo = null; actualizarUI(); mostrarAviso(tr('Ya no está: no hay nada que deshacer.'), true); return; }
+  const pre = mundo.previsualizarDesmontaje(h.c, u.clave, yoAutor());
+  if (pre.ok && pre.caen.length) { mostrarAviso(tr('No se puede deshacer: caería lo que tiene encima. Quítalo antes.'), true); return; }
+  const r = accion({ tipo: 'desmontar', construccion: h.c.id, clave: u.clave });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  estado.ultimo = null;
+  guardar(); reconstruir(); evaluarColocacion(); actualizarUI();
+  mostrarAviso(tr('Deshecho: {p}.', { p: tr(PIEZAS[u.tipo].nombre).toLowerCase() }));
+}
 
 // ---------------- Estado ----------------
 let mundo = EN_LINEA ? new Mundo() : cargar();
@@ -849,6 +893,7 @@ function colocar() {
     const tipo = estado.sel.tipo;
     hacerFabricacion({ tipo: 'colocar_estacion', estacion: tipo, x: redondoMm(ca.x), z: redondoMm(ca.z), y: redondoMm(ca.y), giro: +(ca.giro ?? estado.rotDeco ?? 0).toFixed(3) }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      estado.ultimo = { clase: 'puesto', tipo, x: ca.x, z: ca.z }; actualizarUI();
       mostrarAviso(tr('Marco puesto: llévale {c} y trabaja en él (Usar).', { c: Object.entries(ESTACIONES[tipo].coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }));
     });
     return;
@@ -861,7 +906,9 @@ function colocar() {
   if (r.ok) {
     if (ca.tipo === 'mojon') { estado.sel = { clase: 'pieza', tipo: 'cim_piedra' }; marcarSeleccion(); }
     if (ca.tipo === 'nivelar') { estado.alturaBrocha = ca.y; estado.ultimaBrocha = { x: ca.x, z: ca.z }; }
-    guardar(); reconstruir(); evaluarColocacion();
+    // lo último que se puso, para deshacerlo (las piezas y los marcos de los puestos; el mojón se quita en Quitar)
+    estado.ultimo = ca.tipo === 'pieza' ? { clase: 'pieza', tipo: ca.datos.pieza, clave: ca.v.clave, x: ca.datos.x, z: ca.datos.z } : null;
+    guardar(); reconstruir(); evaluarColocacion(); actualizarUI();
     if (r.obra) mostrarAviso(t('marcoPuesto'));
   } else mostrarAviso(tr(r.motivo), true);
 }
@@ -1045,6 +1092,8 @@ addEventListener('blur', () => teclas.clear());
 document.addEventListener('visibilitychange', () => { if (document.hidden) teclas.clear(); });
 addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  // Ctrl+Z construyendo: deshacer lo último que pusiste
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key || '').toLowerCase() === 'z' && (estado.modo === 'construir' || estado.modo === 'desmontar')) { e.preventDefault(); deshacer(); return; }
   if (e.ctrlKey || e.metaKey || e.altKey) return; // atajos del navegador (Ctrl+W, etc.): no mueven
   const k = nombreTecla(e);
   // Intro: escribir en el chat de texto (las teclas pulsadas se sueltan: mientras se escribe no se mueve)
@@ -1054,7 +1103,8 @@ addEventListener('keydown', (e) => {
   teclas.add(k);
   if (k === 'r') girar();
   if (k === 'b') cambiarModo(estado.modo === 'construir' ? 'mover' : 'construir');
-  if (k === 'x') cambiarModo(estado.modo === 'desmontar' ? 'mover' : 'desmontar');
+  // X: «Poner | Quitar» (estudio de la interfaz, 7 nov): construyendo, pasa a quitar y vuelve a poner; fuera, entra a quitar
+  if (k === 'x') cambiarModo(estado.modo === 'desmontar' ? 'construir' : 'desmontar');
   if (k === 'pageup' || k === '+') cambiarPlanta(1);
   if (k === 'pagedown' || k === '-') cambiarPlanta(-1);
   if (k === 'f') usar();
@@ -1185,6 +1235,8 @@ const joy = { activo: false, id: null, cx: 0, cy: 0, vx: 0, vy: 0 };
 
 // ---------------- Acciones ----------------
 function cambiarModo(m) {
+  // sin mojón, construir se abre en la pestaña Tierra con el mojón elegido (estudio de la interfaz, 7 nov)
+  if (m === 'construir' && estado.modo !== 'construir' && !miMojon()) { estado.sel = { clase: 'mojon', tipo: 'mojon' }; categoria = 'tierra'; construirBarra(); }
   estado.modo = m;
   estado.pendienteDesmontar = null;
   $('confirmar').hidden = true;
@@ -2623,6 +2675,7 @@ function paso() {
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
   pintarAccion();
+  refrescarBarra();
   if (menuJuego) menuJuego.sincronizar();
 
   moverGente(dt);
@@ -2643,6 +2696,28 @@ const CATEGORIAS = [
   ['tejado', t('catTejados')], ['acceso', t('catAcceso')], ['exterior', t('catExterior')], ['puestos', tr('Puestos de trabajo')], ['almacenajes', tr('Almacenajes')], ['camas', tr('Camas')], ['deco', t('catDeco')],
 ];
 let categoria = 'base';
+// Lo que tienes de cada cosa para construir (estudio de la interfaz, 7 nov: «el coste en iconos, en rojo lo que no tienes,
+// y lo que hay en tu tierra»): lo que llevas encima más lo almacenado en tu tierra (en línea, en los almacenajes de la
+// zona de tu mojón; sin servidor, el arcón de pruebas). La obra no coge de lo almacenado sola: es lo que hay a mano.
+function almacenadoEnTierra() {
+  const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null, hay = {};
+  if (zona === null) return hay;
+  for (const e of Object.values(fabCliente.estaciones)) if (esAlmacen(e.tipo) && !e.obra && mundo.tierraDe(e.x, e.z) === zona)
+    for (const [k, n] of Object.entries(e.deposito || {})) hay[k] = (hay[k] || 0) + n;
+  return hay;
+}
+function tienesObjeto(tipo, enTierra) {
+  const arcon = enLinea ? 0 : (mundo.materiales[MATERIAL_DE_OBJETO[tipo]] ?? 0);
+  return inventario().cuantos(tipo) + (enTierra[tipo] || 0) + arcon;
+}
+const RAIZ_PIEZAS = '../../' + CARPETA_PIEZAS;
+function imagenEntrada(e) {
+  if (e.clase === 'mojon') return '../../' + CARPETA_INTERFAZ + 'g_mojon.webp';
+  if (e.clase === 'nivelar') return '../../' + CARPETA_INTERFAZ + 'g_construir.webp';
+  if (e.clase === 'puesto') return carpetaIconos() + 'est_' + e.tipo + '.webp';
+  return RAIZ_PIEZAS + (e.clase === 'deco' ? 'deco_' : 'pz_') + e.tipo + '.webp';
+}
+const catPuesto = k => esAlmacen(k) ? 'almacenajes' : esCama(k) ? 'camas' : 'puestos';
 function construirBarra() {
   const tabs = $('pestanas'); tabs.innerHTML = '';
   for (const [id, nombre] of CATEGORIAS) {
@@ -2653,20 +2728,26 @@ function construirBarra() {
     tabs.appendChild(b);
   }
   const lista = $('piezas'); lista.innerHTML = '';
-  const catPuesto = k => esAlmacen(k) ? 'almacenajes' : esCama(k) ? 'camas' : 'puestos';
   const entradas = categoria === 'puestos' || categoria === 'almacenajes' || categoria === 'camas'
     ? Object.entries(ESTACIONES).filter(([k]) => catPuesto(k) === categoria).map(([k, d]) => ({ clase: 'puesto', tipo: k, def: d }))
     : categoria === 'deco'
     ? Object.entries(DECORACION).filter(([, d]) => enEsteTramo(d)).map(([k, d]) => ({ clase: 'deco', tipo: k, def: d }))
     : Object.entries(PIEZAS).filter(([, d]) => d.cat === categoria && enEsteTramo(d)).map(([k, d]) => ({ clase: k === 'mojon' ? 'mojon' : 'pieza', tipo: k, def: d }));
   if (categoria === 'tierra') entradas.push({ clase: 'nivelar', tipo: 'brocha', def: { nombre: 'Brocha de nivelar', coste: {} }, nota: tr('alisa el suelo') });
+  const enTierra = enLinea ? almacenadoEnTierra() : {};
   for (const e of entradas) {
     const b = document.createElement('button');
     b.className = 'pieza' + (estado.sel.tipo === e.tipo ? ' sel' : '');
-    const coste = e.nota || (e.clase === 'puesto'
-      ? Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(' · ') + ' · ' + tr(DONDE[e.def.donde]).toLowerCase()
-      : Object.entries(e.def.coste).map(([m, n]) => `${n} ${tr(MATERIALES[m]).toLowerCase()}`).join(' · '));
-    b.innerHTML = `<b>${tr(e.def.nombre)}</b><small>${coste}</small>`;
+    // el coste, en iconos: cuánto pide y, pequeño, cuánto tienes (en rojo si no llega)
+    const costes = Object.entries(e.def.coste || {}).map(([m, n]) => {
+      const tipo = e.clase === 'puesto' ? m : OBJETO_DE_MATERIAL[m];
+      const nom = e.clase === 'puesto' ? tr(CATALOGO[m].nombre) : tr(MATERIALES[m]);
+      const hay = tipo ? tienesObjeto(tipo, enTierra) : 0;
+      return `<span class="cc${hay < n ? ' falta' : ''}" title="${n} ${nom.toLowerCase()} · ${tr('tienes {n}', { n: hay })}"><img src="${carpetaIconos()}${tipo}.webp" alt="${nom}" loading="lazy">${n}<i>/${hay}</i></span>`;
+    }).join('');
+    const pie = e.nota ? `<small>${e.nota}</small>` : e.clase === 'mojon' ? `<small>${tr('tu tierra')}</small>` : `<span class="pz-coste">${costes}</span>`;
+    b.innerHTML = `<img class="pz-img" src="${imagenEntrada(e)}" alt="" loading="lazy"><b>${tr(e.def.nombre)}</b>${pie}`;
+    b.title = tr(e.def.nombre) + (e.clase === 'puesto' ? ' · ' + tr(DONDE[e.def.donde]).toLowerCase() : '');
     if (e.clase === 'nivelar') b.id = 'btnBrocha';
     b.onclick = () => {
       estado.sel = { clase: e.clase, tipo: e.tipo };
@@ -2677,8 +2758,24 @@ function construirBarra() {
     };
     lista.appendChild(b);
   }
+  if (estado.modo === 'construir') document.documentElement.style.setProperty('--alto-barra', $('barra').offsetHeight + 'px');
 }
-function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? 'puestos' : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
+// lo que tienes cambia (coges, dejas, entregas): el coste se vuelve a pintar solo si cambia algo (se mira cada medio
+// segundo, no en cada fotograma; rehacer los botones a cada rato se comería los clics)
+let ultimaBarra = 0;
+function refrescarBarra() {
+  if (estado.modo !== 'construir' || performance.now() - ultimaBarra < 500) return;
+  ultimaBarra = performance.now();
+  const enTierra = enLinea ? almacenadoEnTierra() : {};
+  const tipos = new Set([...Object.values(OBJETO_DE_MATERIAL), ...Object.values(ESTACIONES).flatMap(d => Object.keys(d.coste || {}))]);
+  const firma = categoria + ':' + [...tipos].map(t => tienesObjeto(t, enTierra)).join(',');
+  if (firma === refrescarBarra.firma) return;
+  refrescarBarra.firma = firma;
+  const desplaza = $('piezas').scrollLeft;
+  construirBarra();
+  $('piezas').scrollLeft = desplaza;
+}
+function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? catPuesto(estado.sel.tipo) : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
 
 // El contador de arriba (valravnx, 1 nov): en línea, solo dentro de tu tierra (la zona de tu mojón) y con lo que tienes
 // almacenado en ella; fuera, no sale. Lo almacenado es lo guardado en los almacenajes de la base de tu tierra (7 nov:
@@ -2827,10 +2924,13 @@ function actualizarUI() {
   $('barra').hidden = estado.modo !== 'construir';
   $('btnColocar').hidden = !(estado.modo === 'construir' && estado.esTactil);
   $('btnGirar').hidden = estado.modo !== 'construir';
-  $('controlPlanta').hidden = estado.modo !== 'construir';
+  $('btnDeshacer').disabled = !estado.ultimo;
   document.body.classList.toggle('construyendo', estado.modo === 'construir');
   document.body.classList.toggle('desmontando', estado.modo === 'desmontar');
   $('planta').textContent = `${t('planta')} ${estado.planta}`;
+  // lo alto de la barra de las piezas: encima van el joystick y Girar/Colocar (en el móvil)
+  if (estado.modo === 'construir') document.documentElement.style.setProperty('--alto-barra', $('barra').offsetHeight + 'px');
+  colocarAviso();
   if (!miMojon() && estado.modo !== 'construir') mostrarAviso(t('consejoMojon'));
 }
 let temporizadorAviso = null;
@@ -2850,6 +2950,7 @@ $('btnGirar').onclick = girar;
 $('btnColocar').onclick = colocar;
 $('btnSube').onclick = () => cambiarPlanta(1);
 $('btnBaja').onclick = () => cambiarPlanta(-1);
+$('btnDeshacer').onclick = () => deshacer();
 $('btnUsar').onclick = () => { if (estado.listaPorToque) { estado.listaPorToque = false; return; } cerrarMenuUsar(); usar(); };
 // la lista de lo demás que hay al alcance, solo cuando se pide: Alt en PC; mantener pulsado el botón de acción en el móvil
 function alternarLista() {
