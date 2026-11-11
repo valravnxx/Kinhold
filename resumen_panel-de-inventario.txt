@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2616 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2953 KB
+
+== Construir demo única
+      3288 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4249 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3020 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2611 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2973 KB
+dist/kinhold_trozos.html 2625 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: panel de inventario
+  OK   en el móvil, lo que llevas se ve abajo sin salirse de la pantalla — {'x': 162, 'y': 771, 'width': 127, 'height': 47}
+  OK   sin errores en la página (móvil)
+
+FALLAN 3: clic derecho en lo de tus pies lo coge a la mano, en el móvil el panel ocupa casi la pantalla (el tablero del menú), móvil: mantener el dedo en el tronco de las manos lo deja a tus pies
+!! FALLA: python3 pruebas/prueba_inventario_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/inventario
+
+HAY FALLOS
+tardó 562 s
