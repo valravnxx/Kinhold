@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2603 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2939 KB
+
+== Construir demo única
+      3282 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4226 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3006 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2597 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2959 KB
+dist/kinhold_trozos.html 2611 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: niveles de detalle del personaje
+  FALLA demo: con niveles, menos triángulos (≤ 70 %) — 293716 → 293716
+  FALLA demo: con niveles, menos llamadas de dibujo — 95 → 95
+  OK   demo: sin errores en la consola
+FALLOS: nivel medio: como mucho el 55 % de los triángulos, nivel lejos: como mucho el 25 %, nivel lejos: una sola pieza (texturas juntas), nivel lejos: menos llamadas de dibujo, lejos: al cambiar de ropa se rehace la malla, demo: con niveles, menos triángulos (≤ 70 %), demo: con niveles, menos llamadas de dibujo, nivel medio: como mucho el 55 % de los triángulos, nivel lejos: como mucho el 25 %, nivel lejos: una sola pieza (texturas juntas), nivel lejos: menos llamadas de dibujo, lejos: al cambiar de ropa se rehace la malla, demo: con niveles, menos triángulos (≤ 70 %), demo: con niveles, menos llamadas de dibujo
+!! FALLA: python3 pruebas/prueba_detalle_navegador.py dist/kinhold_personaje.html dist/kinhold_demo.html /tmp/kinhold_capturas/detalle
+
+HAY FALLOS
+tardó 200 s
