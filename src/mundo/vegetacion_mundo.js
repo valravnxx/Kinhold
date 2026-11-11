@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { modelosPlantas, despejarMallas } from './decorado.js';
 import { modelosEspecies, ESPECIES, radioTronco, tamanoArbol } from './especies.js';
-import { naturaleza, hayNaturaleza } from './naturaleza_meshy.js';
+import { naturaleza, hayNaturaleza, detalleNaturaleza } from './naturaleza_meshy.js';
 import { material } from './estilos.js';
 import { ROCAS_COLOR, lin } from './color_suelo.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
@@ -51,7 +51,15 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
   // con los de Meshy (src/mundo/naturaleza_meshy.js), una banda más: los de cerca con su textura, los de media distancia
   // con el color en los vértices y menos triángulos (si no, de 60 m para dentro eran cientos de árboles de 8000)
   const meshy = hayNaturaleza(), medio = meshy ? modelosEspecies({ nivel: 'medio' }) : entero, jovenM = meshy ? modelosEspecies({ nivel: 'medio', joven: true }) : jovenE;
-  const CERCA = meshy ? (movil ? 16 : 24) : medidas.sombra;
+  // hasta dónde va cada modelo: según el perfil gráfico (src/posprocesado/perfiles.js, «naturaleza»), que el juego pone
+  // con ponerDetalleNaturaleza; sin él, 16 m en el móvil y 24 en PC, y sin el de más detalle
+  // (se mira otra vez en cada poner: el perfil puede cambiar en juego y los de más detalle llegan después)
+  let CERCA, ALTO, alto, jovenA;
+  const mirarDetalle = () => {
+    const det = detalleNaturaleza(); CERCA = meshy ? (det.cerca ?? (movil ? 16 : 24)) : medidas.sombra; ALTO = meshy ? det.alto : 0;
+    alto = ALTO ? modelosEspecies({ nivel: 'alto' }) : entero; jovenA = ALTO ? modelosEspecies({ nivel: 'alto', joven: true }) : jovenE;
+  };
+  mirarDetalle();
   const M = (n) => naturaleza(n);   // las plantas y las rocas de Meshy (null: las de código)
 
   // Los trozos hechos: clave → { i, j, arboles (obstáculos), piedras, hierba? { hierba, flores, matas } }
@@ -143,6 +151,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
   const api = { enPie: () => true, mataEnPie: () => true, rocaEnPie: () => true, alLlegar: null, alIrse: null };   // (mataEnPie(id): si no está desbrozada; rocaEnPie(id): si no está rota)
   const cero = new THREE.Matrix4().makeScale(0, 0, 0);
   function poner(P) {
+    mirarDetalle();
     const nuevas = [], nuevasMallas = [];
     const dist = (e) => Math.hypot(e.x - P.x, e.z - P.z), enCuadro = (e) => Math.abs(e.x - P.x) <= C && Math.abs(e.z - P.z) <= C;
     const H = medidas.hierba;
@@ -165,13 +174,13 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     for (const a of deArboles) { a.malla = null; a.instancia = -1; }
     // bandas por especie: los de cerca (con sombra), enteros con sombra, enteros sin sombra y sencillos (sin sombra); con
     // los de Meshy, la banda de los de cerca es la única con textura y las dos siguientes van con el modelo «medio»
-    const banda = (e) => { const d = dist(e); return d < CERCA ? 3 : d < medidas.sombra ? 0 : d < medidas.arbolEntero ? 1 : 2; };
+    const banda = (e) => { const d = dist(e); return d < ALTO ? 4 : d < CERCA ? 3 : d < medidas.sombra ? 0 : d < medidas.arbolEntero ? 1 : 2; };
     // (y cada especie, en jóvenes y adultos: el joven tiene su propio modelo, src/mundo/especies.js)
     for (const especie of ESPECIES) for (const joven of [false, true]) {
-      for (const b of [3, 0, 1, 2]) {
+      for (const b of [4, 3, 0, 1, 2]) {
         const lista = arboles.filter(e => e.especie === especie && (e.edad === 'joven') === joven && banda(e) === b);
         if (!lista.length) continue;
-        const mod = (b === 3 ? (joven ? jovenE : entero) : b < 2 ? (joven ? jovenM : medio) : (joven ? jovenS : sencillo))[especie];
+        const mod = (b === 4 ? (joven ? jovenA : alto) : b === 3 ? (joven ? jovenE : entero) : b < 2 ? (joven ? jovenM : medio) : (joven ? jovenS : sencillo))[especie];
         const im = new THREE.InstancedMesh(mod.geo, mod.mats, lista.length);
         lista.forEach((e, k) => {
           o.position.set(e.x, e.y, e.z); o.rotation.set(0, e.giro, 0); o.scale.setScalar(e.escala); o.updateMatrix();
@@ -179,7 +188,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
           e.malla = im; e.instancia = k; e.matriz = o.matrix.clone();
           im.setMatrixAt(k, api.enPie(e) ? o.matrix : cero); im.setColorAt(k, c.setScalar(e.tono));
         });
-        im.castShadow = b === 0 || b === 3; im.receiveShadow = b < 2 || b === 3; im.name = ['arboles_', 'arbolesMedios_', 'arbolesLejos_', 'arbolesCerca_'][b] + especie + (joven ? '_joven' : '');
+        im.castShadow = b === 0 || b >= 3; im.receiveShadow = b < 2 || b >= 3; im.name = ['arboles_', 'arbolesMedios_', 'arbolesLejos_', 'arbolesCerca_', 'arbolesAlto_'][b] + especie + (joven ? '_joven' : '');
         nuevas.push(im);
       }
     }
@@ -205,7 +214,10 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // (con los de Meshy, una de cada tres matas es una mata de helechos: se desbroza igual)
     const heM = M('helechos'), esHelecho = (e) => heM && (Math.floor(Math.abs(e.x * 7.31 + e.z * 3.17)) % 3 === 0);
     const matasM = matas.filter(e => !esHelecho(e)), helechos = matas.filter(esHelecho);
-    instancias(matasM, (mM ? mM.cerca : pl.matorral).geo, (mM ? mM.cerca : pl.matorral).mats, 'matorrales', e => c.setScalar(e.tono), { sombra: true, obst: matasM.map(e => e.ob) });
+    // (en los perfiles altos, las de al lado con el modelo de más detalle)
+    const matasA = mM && ALTO ? matasM.filter(e => dist(e) < ALTO) : [], matasC = matasA.length ? matasM.filter(e => dist(e) >= ALTO) : matasM;
+    instancias(matasC, (mM ? mM.cerca : pl.matorral).geo, (mM ? mM.cerca : pl.matorral).mats, 'matorrales', e => c.setScalar(e.tono), { sombra: true, obst: matasC.map(e => e.ob) });
+    if (matasA.length) instancias(matasA, mM.alto.geo, mM.alto.mats, 'matorralesAlto', e => c.setScalar(e.tono), { sombra: true, obst: matasA.map(e => e.ob) });
     if (heM) instancias(helechos, heM.cerca.geo, heM.cerca.mats, 'helechos', e => c.setScalar(e.tono), { sombra: true, obst: helechos.map(e => e.ob), subir: () => 0.03 });
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía
     // anaranjada), hundidas 0,2 m como en el mapa; no se esconden al construir (chocan, como antes)
@@ -217,8 +229,9 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       const tinte = e => colorRoca(e).lerp(blanco, 0.45), suben = e => (e.canto ? e.tam * 0.27 : 0.12);
       const grandes = pM ? piedras.filter(e => !e.canto && e.tam >= 1.2) : [], cantos = cM ? piedras.filter(e => e.canto) : [];
       const resto = piedras.filter(e => !grandes.includes(e) && !cantos.includes(e));
-      const RC = movil ? 18 : 25;   // (las de más allá, con el modelo de media distancia)
-      instancias(resto.filter(e => dist(e) < RC), rM.cerca.geo, rM.cerca.mats, 'rocas', tinte, { sombra: true, esconder: false, subir: suben });
+      const RC = CERCA;   // (las de más allá, con el modelo de media distancia; las de al lado, en los perfiles altos, con el de más detalle)
+      instancias(resto.filter(e => dist(e) < ALTO), rM.alto.geo, rM.alto.mats, 'rocasAlto', tinte, { sombra: true, esconder: false, subir: suben });
+      instancias(resto.filter(e => dist(e) >= ALTO && dist(e) < RC), rM.cerca.geo, rM.cerca.mats, 'rocas', tinte, { sombra: true, esconder: false, subir: suben });
       instancias(resto.filter(e => dist(e) >= RC), rM.medio.geo, rM.medio.mats, 'rocasLejos', tinte, { sombra: true, esconder: false, subir: suben });
       if (pM) instancias(grandes, pM.cerca.geo, pM.cerca.mats, 'rocasGrandes', tinte, { sombra: true, esconder: false, subir: suben });
       if (cM) instancias(cantos, cM.cerca.geo, cM.cerca.mats, 'cantos', tinte, { sombra: true, esconder: false, subir: suben });

@@ -19,6 +19,8 @@ import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
+import { perfil as perfilGrafico } from '../posprocesado/perfiles.js';
+import { ponerDetalleNaturaleza, cargarAltoNaturaleza } from '../mundo/naturaleza_meshy.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
 import { armaDeMano } from '../logica/arma_mano.js';
@@ -254,6 +256,15 @@ function mirarTierras() {
 // En el mundo de verdad, lo que crece en cada sitio de Whitholm (src/mundo/vegetacion_mundo.js): las siete especies de
 // árbol, la hierba y las piedras, con las reglas del mapa y siempre en el mismo sitio.
 // (window.__mutarVegetacion: solo para romper la prueba a propósito, con otra semilla en cada carga)
+// el detalle de la naturaleza de Meshy según el perfil gráfico (valravnx, 11 nov: en gráficos máximos, con más detalle
+// y hasta más lejos): antes de hacerla y, al cambiar de perfil, otra vez
+// (los modelos de más detalle se bajan aparte y solo si el perfil los usa; al llegar, se rehace la naturaleza)
+function detalleDe(id) {
+  const d = perfilGrafico(id).naturaleza; ponerDetalleNaturaleza(d);
+  if (d && d.alto) cargarAltoNaturaleza().then((ok) => { if (ok && decorado && decorado.rehacer) decorado.rehacer(); });
+}
+detalleDe(graficos.perfil);
+graficos.alCambiar((id) => { detalleDe(id); if (decorado && decorado.rehacer) decorado.rehacer(); });
 const decorado = mundoJ ? crearVegetacionMundo({ mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarVegetacion ? Math.floor(Math.random() * 1e6) : 0) })
   : crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
     hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,

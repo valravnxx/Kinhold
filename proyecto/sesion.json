@@ -11,5 +11,11 @@
   "tarea": "El acopio de troncos de valravnx (Meshy) en el juego, en lugar del de código",
   "hito": "meshy",
   "rama": "trabajo/20261111-1223-acopio"
+ },
+ "chat:trabajo/20261111-0920-naturaleza": {
+  "inicio": "2026-11-11T12:54:00+01:00",
+  "tarea": "La naturaleza de Meshy según el perfil gráfico: más detalle y más lejos en los perfiles altos",
+  "hito": "meshy",
+  "rama": "trabajo/20261111-0920-naturaleza"
  }
 }

@@ -19,7 +19,7 @@ export const LISTA_NATURALEZA = [...ESPECIES_MESHY, ...ESPECIES_MESHY.map(e => e
 // la carpeta, al lado de la de los personajes que da cada prototipo (src/mundo/eleccion.js: recursosTaller)
 export const carpetaNaturaleza = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/personajes\/[^/]*\/?$/, 'naturaleza/meshy-v1/');
 
-let cargados = null, cargando = null;
+let cargados = null, cargando = null, carpetaCargada = null, cargandoAlto = null, version = 0;
 // las plantas finas (hojas de una sola capa), por las dos caras
 const DOS_CARAS = new Set(['hierba_larga', 'ortigas', 'juncos', 'helechos']);
 const modelo = (g, nombre, cosa) => {
@@ -52,14 +52,34 @@ export function cargarNaturaleza(carpeta) {
   const r = {};
   cargando = Promise.all(LISTA_NATURALEZA.map(n => l.loadAsync(carpeta + n + '.glb').then(g => {
     const cerca = modelo(g, 'cerca', n); if (!cerca) return;
-    r[n] = { cerca, medio: modelo(g, 'medio', n) || cerca, lejos: modelo(g, 'lejos', n) || cerca };
+    r[n] = { cerca, alto: cerca, medio: modelo(g, 'medio', n) || cerca, lejos: modelo(g, 'lejos', n) || cerca };
     // la medida de verdad: [radio de lo ancho, alto] (para no dibujar las copas que tapan al personaje)
     const b = new THREE.Box3().setFromBufferAttribute(cerca.geo.attributes.position);
     r[n].medida = [Math.max(b.max.x - b.min.x, b.max.z - b.min.z) / 2, b.max.y];
-  }).catch(() => {}))).then(() => { cargados = r; return Object.keys(r).length; });
+  }).catch(() => {}))).then(() => { cargados = r; carpetaCargada = carpeta; return Object.keys(r).length; });
   return cargando;
 }
 
 // El de Meshy de esa cosa ({ cerca, medio, lejos, medida }), o null (sin cargar, o no llegó): el de código.
 export const naturaleza = (nombre) => (cargados && cargados[nombre]) || null;
 export const hayNaturaleza = () => !!(cargados && Object.keys(cargados).length);
+
+// El detalle según el perfil gráfico (src/posprocesado/perfiles.js, «naturaleza»): hasta qué distancia va el modelo de
+// cerca (con textura) y hasta cuál el de más detalle («alto», 0: nunca). Lo pone el juego al elegir el perfil.
+let detalle = { cerca: null, alto: 0 };
+export const ponerDetalleNaturaleza = (d) => { detalle = { cerca: (d && d.cerca) ?? null, alto: (d && d.alto) || 0 }; };
+export const detalleNaturaleza = () => detalle;
+
+// Los de más detalle (<nombre>_alto.glb), aparte: solo los bajan los perfiles gráficos que los usan, cuando se eligen.
+// Mientras no llegan, en su sitio va el de cerca. Devuelve una promesa (true si ha llegado alguno).
+export function cargarAltoNaturaleza() {
+  if (cargandoAlto) return cargandoAlto;
+  if (!cargados || !carpetaCargada) return Promise.resolve(false);
+  const l = new GLTFLoader(); l.setMeshoptDecoder(MeshoptDecoder);
+  let alguno = false;
+  cargandoAlto = Promise.all(Object.keys(cargados).map(n => l.loadAsync(carpetaCargada + n + '_alto.glb').then(g => {
+    const m = modelo(g, 'alto', n); if (m) { cargados[n].alto = m; alguno = true; }
+  }).catch(() => {}))).then(() => { if (alguno) version++; return alguno; });
+  return cargandoAlto;
+}
+export const versionNaturaleza = () => version;   // (cambia al llegar los de más detalle: src/mundo/especies.js rehace los suyos)
