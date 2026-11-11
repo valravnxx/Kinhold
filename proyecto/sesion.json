@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-11T22:23:07+00:00",
+  "tarea": "Las necesidades con los medallones de latón del estudio (sobre los avisos de P4): medio transparentes si van bien; la que va mal, más grande, con flecha y nombre; la ficha en dos líneas; el frío escarcha los bordes de la pantalla",
+  "hito": "interfaz",
+  "rama": "trabajo/20261111-2222"
+ },
  "B": null
 }
