@@ -532,6 +532,10 @@ body.construyendo #pomo{left:25px;top:25px}
   .fab-btn{padding:13px 14px}
   .fab-enc{min-width:0;flex:1}
   #panelFabricar .fab-pestanas{border-right:0;border-bottom:1px solid rgba(217,164,65,.22);padding:8px 6px;gap:6px}
+  /* las pestañas de los sitios, en dos o tres filas que se ven enteras (al deslizarlas de lado se cortaban los nombres) */
+  body.hub-abierto #panelFabricar .fab-pestanas{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none;padding:8px 6px}
+  #panelFabricar .fab-pest{flex:1 1 auto}
+  #panelFabricar .fab-pie{padding:8px 16px 0}
   #panelFabricar .fab-pest{grid-template-columns:auto auto;justify-items:start;align-items:center;text-align:left;width:auto;padding:5px 8px;gap:2px 5px}
   #panelFabricar .fab-pest>.fab-ic,#panelFabricar .fab-pest>.fab-svg{display:none}
   #panelFabricar .fab-pest b{font-size:14px;white-space:nowrap}
