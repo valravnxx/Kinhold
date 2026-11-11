@@ -17,6 +17,7 @@ SALIDA = sys.argv[4] if len(sys.argv) > 4 else 'capturas/idioma'
 # el visor de personaje y la construcción (su jugador es el personaje del taller) cargan sus modelos de
 # ../../recursos/personajes/: se sirven como en la web
 sitio = tempfile.mkdtemp()
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
 # (los tres desde el mismo sitio: el idioma elegido se guarda en el navegador y tiene que valer en todos)
 for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('estilo', ESTILO)):
     os.makedirs(f'{sitio}/jugar/{carpeta}'); shutil.copy(html, f'{sitio}/jugar/{carpeta}/prueba.html')

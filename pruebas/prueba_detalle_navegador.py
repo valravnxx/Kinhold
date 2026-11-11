@@ -16,6 +16,7 @@ DEMO = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else os.path.join(RAIZ, 
 SALIDA = sys.argv[3] if len(sys.argv) > 3 else 'capturas_detalle'
 os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
 os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(PERSONAJE, f'{sitio}/jugar/personaje/prueba.html')
 shutil.copy(DEMO, f'{sitio}/jugar/demo/prueba.html')
