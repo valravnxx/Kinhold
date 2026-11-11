@@ -1730,9 +1730,10 @@
     },
     {
      "nombre": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-09T09:09:01+01:00",
-     "rama": "trabajo/20261109-0909"
+     "rama": "trabajo/20261109-0909",
+     "fin": "2026-11-11T10:40:28+00:00"
     },
     {
      "nombre": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
@@ -3921,6 +3922,13 @@
      "archivo": "jugar/demo/v174.html",
      "capturas": "capturas/demo-v174",
      "notas": "La ropa y la armadura se gastan y se reparan: cada prenda lleva su desgaste, que cuenta el servidor (con el uso y con los golpes que hieren donde cubre); su ficha dice lo que le queda y cómo se repara; la de lino y la de lana se zurcen con una fibra y la de cuero con piel y cordel, puestas, en el banco de tronco"
+    },
+    {
+     "v": "v175",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v175.html",
+     "capturas": "capturas/demo-v175",
+     "notas": "v175: el menú con pestañas (estudio de la interfaz del 7 nov, aprobado por valravnx: «un solo menú con pestañas»). Arriba, en el mundo, solo quedan Menú (Tab) y, en línea, Hablar; en PC, en tu tierra, también tu mojón. Menú abre un tablero de roble encima del mundo desenfocado, con las pestañas Equipo, Fabricar, Construir, Mapa y Tu tierra (en el móvil, botones redondos) y, al pie, Ajustes (con los fps), Ayuda, Decisiones, el idioma y Salir; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas, y Admin, solo para el admin. Las teclas de siempre (I, H, M, B) abren su pestaña; Esc o la cruz lo cierran. Tu tierra dice dónde está tu mojón y quién puede construir, o, sin mojón, lleva a ponerlo. Lo que se desplaza dentro del tablero se desvanece abajo para que se vea que sigue."
     }
    ]
   },

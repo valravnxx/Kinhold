@@ -25,7 +25,7 @@ for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):
     if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
     if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -81,12 +81,13 @@ with sync_playwright() as p:
         pg.evaluate(f"""(() => {{ const k = {K}, m = k.miMojon, mu = k.mundo;
           mu.mojones['prueba-vecina'] = {{ x: m.x + 2200, z: m.z }}; mu.mojones['prueba-otro'] = {{ x: m.x - 2200, z: m.z + 300 }};
           mu.invitados['prueba-vecina'] = [k.yo]; }})()""")
-        # el botón «Mapa», a la vista y dentro de la pantalla
+        # la pestaña «Mapa» del menú con pestañas, a la vista y dentro de la pantalla
+        (pg.tap if movil else pg.click)('#btnMenu'); pg.wait_for_timeout(300)
         caja = pg.evaluate("(() => { const b = document.getElementById('btnMapa'); if (!b || b.hidden) return null; const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })()")
         comprobar('el botón «Mapa» se ve y cabe en la pantalla', caja is not None and caja[0] >= 0 and caja[2] <= vista['width'] and caja[1] >= 0, str(caja))
         # abrir: con M en el PC, con el botón en el móvil
         if movil: pg.tap('#btnMapa')
-        else: pg.keyboard.press('m')
+        else: pg.keyboard.press('Escape'); pg.keyboard.press('m')
         pg.wait_for_timeout(600)
         comprobar('se abre (' + ('botón' if movil else 'M') + ')', pg.evaluate(f'{K}.mapaRey.abierto'))
         # el papel pintado (no en blanco) y la marca donde estás
@@ -168,8 +169,8 @@ with sync_playwright() as p:
         rey = z.get('rey') or []
         comprobar('salen las cuatro zonas del rey (la gran veta, la ciudad con su salida, y las salidas de Lindholt y de Motdale)', len(rey) == 4 and sorted(r['por'] for r in rey) == ['ciudad', 'salida', 'salida', 'veta'], str(rey))
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_zona_rey.png')
-        # cerrar: M o Esc en el PC, ✕ en el móvil
-        if movil: pg.tap('#mapaRey .mr-cerrar')
+        # cerrar: M o Esc en el PC, ✕ en el móvil (la cruz del menú con pestañas)
+        if movil: pg.tap('#hubCerrar')
         else: pg.keyboard.press('Escape')
         pg.wait_for_timeout(300)
         comprobar('se cierra (' + ('✕' if movil else 'Esc') + ')', not pg.evaluate(f'{K}.mapaRey.abierto'))

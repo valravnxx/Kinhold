@@ -25,7 +25,7 @@ for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'meshy-v2', '
     if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
     if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -83,7 +83,7 @@ def recorrido(pg, nombre, pref):
     comprobar(f'{nombre}: se sigue viendo el cielo de la página (no sale negro)', sum(c0) / 3 > 120, str(c0))
     pg.screenshot(timeout=180000, path=f'{SALIDA}/{pref}_1_movil-1.png')
     # el panel: el perfil y los seis botones
-    pg.evaluate("document.getElementById('btnDemoFps').click()"); pg.wait_for_timeout(1300)
+    pg.evaluate("document.getElementById('btnMenu').click(); document.getElementById('btnAjustes').click(); document.getElementById('btnDemoFps').click()"); pg.wait_for_timeout(1300)   # (en Ajustes, al pie del menú)
     txt = pg.inner_text('#demoRend')
     comprobar(f'{nombre}: el panel de rendimiento dice el perfil', 'Móvil básico' in txt and 'pasadas' in txt, txt[:200].replace('\n', ' · '))
     comprobar(f'{nombre}: y tiene los seis perfiles para elegir', pg.evaluate("document.querySelectorAll('#demoRend [data-perfil]').length") == 6)
