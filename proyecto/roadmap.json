@@ -1774,7 +1774,9 @@
     },
     {
      "nombre": "La pestaña «Tu tierra»: cada almacenaje con lo que tiene (la obra no coge de ahí sola), quién puede construir y «Quitarle», y cuándo vuelve al rey si no se usa",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-11T20:22:52+00:00",
+     "rama": "trabajo/20261111-2022"
     },
     {
      "nombre": "Las necesidades con los medallones de latón del estudio (sobre los avisos de P4): medio transparentes si van bien; la que va mal, más grande, con flecha y nombre; la ficha en dos líneas; el frío escarcha los bordes de la pantalla",

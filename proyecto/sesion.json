@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-11T20:22:52+00:00",
+  "tarea": "La pestaña «Tu tierra»: cada almacenaje con lo que tiene (la obra no coge de ahí sola), quién puede construir y «Quitarle», y cuándo vuelve al rey si no se usa",
+  "hito": "interfaz",
+  "rama": "trabajo/20261111-2022"
+ },
  "B": null
 }
