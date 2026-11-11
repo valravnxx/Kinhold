@@ -3230,7 +3230,11 @@ function pintarTierra(forzar = false) {
     if (mapaRey) html += `<p><button class="boton-t" id="tierraMapa">${tr('Verla en el mapa')}</button></p>`;
   }
   if (!forzar && html === htmlTierra) return;
-  htmlTierra = html; p.innerHTML = html;
+  htmlTierra = html;
+  // (lo que se desplaza va dentro: el marco del tablero se queda quieto)
+  const sc = p.querySelector('.tierra-scroll'), arriba = sc ? sc.scrollTop : 0;
+  p.innerHTML = `<div class="tierra-scroll">${html}</div>`;
+  p.querySelector('.tierra-scroll').scrollTop = arriba;
   if ($('tierraPoner')) $('tierraPoner').onclick = () => { menuJuego.cerrar(); cambiarModo('construir'); estado.sel = { clase: 'mojon', tipo: 'mojon' }; marcarSeleccion(); evaluarColocacion(); };
   if ($('tierraMapa')) $('tierraMapa').onclick = () => { menuJuego.abrir('mapa'); const t = { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z }; mapaRey.centrarEn(t.x / 1000, t.z / 1000, 6); };
   for (const b of p.querySelectorAll('[data-quitar]')) b.onclick = () => { invitarATierra(b.dataset.quitar, false); pintarTierra(true); };
