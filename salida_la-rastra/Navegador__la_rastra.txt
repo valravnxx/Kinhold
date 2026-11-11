@@ -1,0 +1,39 @@
+PC: la rastra sale del arcón al suelo y se carga
+  OK   del arcón sale la rastra al suelo, delante de ti — La rastra está en el suelo, delante de ti: Usar la engancha.
+  OK   no desaparece
+  OK   no se coge con las manos
+  OK   Usar junto a ella con un tronco corto en las manos lo carga — Cargas en la rastra: 1 × Tronco corto. Lleva 1.
+  OK   el menú ofrece cargar 2 de la pila del suelo (caben 3) — ['Arrastrar la rastra (1 × Tronco corto)', 'Cargar en la rastra: 2 × Tronco corto', 'Descargar la rastra (1 × Tronco corto)']
+  OK   lleva 3 troncos cortos y queda 1 en la pila — Cargas en la rastra: 2 × Tronco corto. Lleva 3.
+  OK   la carga se ve en la rastra
+  OK   cargar queda en el registro con su autor
+PC: arrastrarla
+  OK   con algo en las manos no se engancha — Para arrastrarla necesitas las dos manos libres.
+  OK   con las manos libres, Usar la engancha — Arrastras la rastra (3 × Tronco corto). Vas despacio; Usar la suelta.
+  OK   cargada con tres troncos vas despacio (al 50 %) — 0.5
+  OK   abajo sale «Arrastras: Rastra» con Soltar
+  OK   al andar, la rastra va detrás (a 1,6 m) — 1.60
+  OK   detrás de verdad: al otro lado de hacia donde anda
+  OK   el personaje la arrastra con su animación — arrastrar
+  OK   arrastrándola no se coge nada con las manos
+PC: soltarla y volver
+  OK   Usar la suelta donde se ve — 6.4,4 / [6.400000000000006, 4]
+  OK   y vuelves a andar a tu paso
+  OK   ya no te sigue
+  OK   al recargar sigue donde la dejaste, con lo que lleva
+  OK   descargada, los 3 troncos caen a su lado — Descargas la rastra: 3 × Tronco corto en el suelo.
+  OK   un montón de piedras: 24 — Cargas en la rastra: 24 × Piedra. Lleva 24.
+  OK   en la rastra van 5 de tronco_delgado — Cargas en la rastra: 5 × Tronco delgado. Lleva 5.
+  OK   y se ven puestos en ella (tronco_delgado)
+  OK   en la rastra van 12 de vara — Cargas en la rastra: 12 × Vara. Lleva 12.
+  OK   y se ven puestos en ella (vara)
+  OK   el fardo atado lleva juncos — [{'ok': True}, {'ok': True}]
+  OK   sin errores en la consola (PC)
+Móvil: desde el panel y con los botones
+  OK   móvil: en el arcón, la rastra sale con «Dejarlo en el suelo»
+  OK   móvil: la deja en el suelo
+  OK   móvil: el botón Usar la engancha — Arrastras la rastra (vacía). Vas despacio; Usar la suelta.
+  OK   móvil: «Soltar» de abajo la deja — Dejas la rastra: se queda aquí, con lo que lleve.
+  OK   sin errores en la consola (móvil)
+
+TODO CORRECTO
