@@ -53,7 +53,7 @@ export function montarAvisos(op = {}) {
 #avisosNec .med:last-child .nom{left:auto;right:0;transform:none}
 #avisosNec .med .nom{position:absolute;top:100%;margin-top:1px;left:50%;transform:translateX(-50%);font:16px 'Alegreya SC',Georgia,serif;white-space:nowrap;pointer-events:none;
   text-shadow:0 1px 1px #000,0 0 3px #000,0 0 10px rgba(0,0,0,.75)}
-#fichaNec{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));width:310px;z-index:31;padding:22px 24px 20px;border-radius:4px;isolation:isolate;
+#fichaNec{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));width:340px;z-index:31;padding:22px 24px 20px;border-radius:4px;isolation:isolate;
   color:#f1e6cf;font:16px/1.3 'EB Garamond',Georgia,serif;text-shadow:0 1px 1px #000;box-shadow:0 12px 30px rgba(0,0,0,.55);
   background:linear-gradient(rgba(18,11,5,.35),rgba(18,11,5,.35)),radial-gradient(ellipse at 50% 40%,rgba(30,18,9,.15),rgba(14,8,4,.55)),url(${KIT}tablero.webp) top center/1024px auto repeat-y #24170c}
 #fichaNec::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border:20px solid transparent;border-image:url(${KIT}marco.webp) 52 / 20px stretch}
@@ -65,15 +65,17 @@ export function montarAvisos(op = {}) {
   font:17px 'Alegreya SC',Georgia,serif;color:#fff5df;background:linear-gradient(#b48a45,#6e4f22);box-shadow:inset 0 0 0 1px rgba(255,230,170,.8),inset 0 1px 0 rgba(255,240,200,.5),0 3px 8px rgba(0,0,0,.5)}
 #fichaNec .sentarse kbd{font:600 12px 'EB Garamond',serif;border:1px solid rgba(255,240,200,.55);border-radius:3px;padding:0 4px;opacity:.85}
 body.hub-abierto #fichaNec{display:none}
-#escarchaNec{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity 1.2s;
-  background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 60%,rgba(190,215,240,.2) 76%,rgba(225,238,252,.6) 100%)}
+#escarchaNec{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 1.2s;
+  background:radial-gradient(ellipse 72% 66% at 50% 50%,transparent 55%,rgba(200,224,248,.28) 72%,rgba(232,243,255,.82) 100%)}
 @media (max-width:640px){
   #avisosNec{right:calc(12px + env(safe-area-inset-right,0px));top:calc(16px + env(safe-area-inset-top,0px));gap:7px}
   #fichaNec{left:calc(10px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));width:auto}
 }`;
   document.head.appendChild(estilo);
+  // la escarcha, justo encima del mundo y debajo de todo lo demás (botones, manos…): detrás del lienzo del juego
   const escarcha = document.createElement('div'); escarcha.id = 'escarchaNec';
-  document.body.appendChild(escarcha);
+  const lienzo = document.querySelector('body > canvas');
+  if (lienzo) lienzo.after(escarcha); else document.body.prepend(escarcha);
   const col = document.createElement('div'); col.id = 'avisosNec'; col.hidden = true;
   document.body.appendChild(col);
   const ficha = document.createElement('div'); ficha.id = 'fichaNec'; ficha.hidden = true;
@@ -102,9 +104,9 @@ body.hub-abierto #fichaNec{display:none}
     if (bs) bs.onclick = (ev) => { ev.stopPropagation(); op.sentarse(); };
     // debajo de los medallones y de su nombre (con la medida del grande: el tamaño cambia con una transición)
     const r = col.getBoundingClientRect();
-    ficha.style.top = `${Math.round(r.top + (movil() ? 52 : 58) + 24)}px`;
+    ficha.style.top = `${Math.round(r.top + (movil() ? 52 : 58) + 30)}px`;
   }
-  function abrir(k) { abierta = k; ficha.hidden = false; ficha.dataset.que = k; pintarFicha(); }
+  function abrir(k) { abierta = k; ficha.hidden = false; ficha.dataset.que = k; pintar(actual); }
   function cerrar() { abierta = null; ficha.hidden = true; }
   document.addEventListener('pointerdown', (e) => { if (abierta && !ficha.contains(e.target) && !col.contains(e.target)) cerrar(); });
 
@@ -112,12 +114,13 @@ body.hub-abierto #fichaNec{display:none}
   function pintar(n) {
     actual = n;
     col.hidden = !n;
-    escarcha.style.opacity = n ? String(Math.max(0, Math.min(1, (n.frio - AVISO) / (MAXIMO - AVISO)))) : '0';
+    escarcha.style.opacity = n ? String(Math.sqrt(Math.max(0, Math.min(1, (n.frio - AVISO) / (MAXIMO - AVISO))))) : '0';
     if (!n) { cerrar(); return; }
     const ahora = performance.now();
     if (ahora - tAntes > 3000) { for (const k of NECESIDADES) antes[k] = antes.ultimo ? antes.ultimo[k] : n[k]; antes.ultimo = { ...n }; tAntes = ahora; }
     const base = movil() ? 40 : 44, grande = movil() ? 52 : 58;
-    const peor = NECESIDADES.reduce((a, k) => n[k] > n[a] ? k : a, NECESIDADES[0]);
+    // la que peor va (si empatan, la de la ficha abierta): solo esa crece del todo y lleva el nombre
+    const peor = NECESIDADES.reduce((a, k) => n[k] > n[a] || (n[k] === n[a] && k === abierta) ? k : a, NECESIDADES[0]);
     for (const k of NECESIDADES) {
       const b = botones[k], v = Math.max(0, Math.min(MAXIMO, n[k])), est = estadoDe(v), c = tonoDe(k, est);
       const circ = b.querySelector('circle');
@@ -126,7 +129,7 @@ body.hub-abierto #fichaNec{display:none}
       circ.style.filter = `drop-shadow(0 0 2.5px ${c})`;
       const img = b.querySelector('img'), src = `${KIT}${iconoDe(k, est)}.webp`;
       if (img.getAttribute('src') !== src) img.setAttribute('src', src);
-      b.style.setProperty('--t', `${est === 'mal' ? grande : base}px`);
+      b.style.setProperty('--t', `${est !== 'mal' ? base : k === peor ? grande : base + 4}px`);
       b.style.setProperty('--c', c);
       b.classList.toggle('quieto', est === 'bien');
       b.classList.toggle('fuerte', est === 'mal');
