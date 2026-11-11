@@ -104,10 +104,16 @@ def recorrido(pg, nombre, pref, movil):
     comprobar(f'{nombre}: al pulsar la sed, su ficha en dos líneas: qué te pasa y cómo se quita (beber en el río)', bool(f) and lineas == 2 and 'Bebe' in f and 'río' in f, f)
     comprobar(f'{nombre}: la ficha cabe en la pantalla y no pisa los medallones ni su nombre', bool(rf) and rf[0] >= 0 and rf[2] <= W and rf[1] >= 0 and rf[3] <= H and not any(pisan(c, rf) for c in circ), str(rf))
     # la escarcha del frío
-    poner(pg, {'frio': 100}); pg.wait_for_timeout(1400)
-    e1 = pg.evaluate("+getComputedStyle(document.getElementById('escarchaNec')).opacity")
-    poner(pg, {'frio': 0}); pg.wait_for_timeout(1400)
-    e0 = pg.evaluate("+getComputedStyle(document.getElementById('escarchaNec')).opacity")
+    # (va con una transición: se mira adónde va, y que llegue, con margen para la máquina lenta)
+    opac = "(() => { const e = document.getElementById('escarchaNec'); return [+e.style.opacity, +getComputedStyle(e).opacity]; })()"
+    poner(pg, {'frio': 100})
+    try: pg.wait_for_function("+getComputedStyle(document.getElementById('escarchaNec')).opacity > 0.95", timeout=8000)
+    except Exception: pass
+    e1 = min(pg.evaluate(opac))
+    poner(pg, {'frio': 0})
+    try: pg.wait_for_function("+getComputedStyle(document.getElementById('escarchaNec')).opacity < 0.05", timeout=8000)
+    except Exception: pass
+    e0 = max(pg.evaluate(opac))
     comprobar(f'{nombre}: el frío escarcha los bordes de la pantalla (sin frío, nada; helado, del todo)', e1 > 0.95 and e0 < 0.05, f'helado {e1}, sin frío {e0}')
     poner(pg, {'sed': 50, 'hambre': 30, 'cansancio': 80})
     pg.screenshot(path=f'{SALIDA}/{pref}_1_ficha_sed.png', timeout=180000)
