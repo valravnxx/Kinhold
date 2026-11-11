@@ -33,10 +33,12 @@ const NOMBRE_SITIO = Object.fromEntries([...IZQUIERDA, ...DERECHA, ...MANOS_HOMB
 // La silueta de lo que va en cada hueco vacío: una prenda de ese sitio (dibujada) o la imagen de una cosa que va ahí,
 // apagadas; las manos, una mano abierta.
 const SILUETA = { 'ropa:cabeza': 'capucha_lana', 'ropa:sobre': 'manto_lana', 'ropa:abrigo': 'tunica_lana', 'ropa:exterior': 'cota_malla',
-  'ropa:interior': 'camisa_lino', 'ropa:piernas': 'calzas_lana', 'ropa:pies': 'botas_cuero', cintura: 'cinto_cuero', espalda: 'zurron', hombro: 'saco' };
+  'ropa:interior': 'camisa_lino', 'ropa:piernas': 'calzas_lana', 'ropa:pies': 'botas_cuero', cintura: 'cinto_cuero', espalda: 'zurron' };
 // las manos (y los guantes): una mano abierta, dibujada aquí (no hay cosa que vaya en ellas siempre)
 const MANO_SVG = '<svg viewBox="0 0 100 100" class="ic-prenda"><path fill="#d8cbb4" d="M38 96 L34 64 L19 50 C14 45 19 37 26 42 L36 51 L36 21 C36 14 45 14 45 21 L46 45 L47 14 C47 7 56 7 56 14 L57 45 L59 19 C59 12 67 12 67 19 L66 49 L69 31 C69 24 77 25 76 31 L73 62 C71 78 67 86 65 96 Z"/></svg>';
 const SILUETA_MANO = new Set(['mano:der', 'mano:izq', 'ropa:guantes']);
+// el hombro: un saco atado con su correa (la imagen del saco, apagada, no se entendía)
+const SACO_SVG = '<svg viewBox="0 0 100 100" class="ic-prenda"><path fill="none" stroke="#d8cbb4" stroke-width="5" stroke-linecap="round" d="M40 30 C34 12 70 6 74 24"/><path fill="#d8cbb4" d="M41 28 L59 28 L56 36 C74 42 84 60 82 76 C80 90 68 94 50 94 C32 94 20 90 18 76 C16 60 26 42 44 36 Z"/></svg>';
 
 // Grupos del arcón de pruebas, sacados del catálogo. Los materiales de obra van aparte, contados (el arcón de pruebas
 // tiene lo que antes era el montón común de la construcción).
@@ -137,7 +139,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   }
   function hacer(a) {
     const r = deArcon(a) || accion(a);
-    if (r.ok) { avisar(''); alCambiar(); retratoHecho = false; } else avisar(motivo(r.motivo), true);   // con otra ropa, otro retrato
+    if (r.ok) { avisar(''); alCambiar(); retratoOtraVez(); } else avisar(motivo(r.motivo), true);   // con otra ropa, otro retrato
     return r;
   }
   const dejar = () => { sel = null; moviendo = false; };
@@ -154,7 +156,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   function delSueloA(id, ruta) {
     if (!cogerSuelo) return;
     const r = cogerSuelo(id, ruta);
-    if (r && r.ok) { avisar(r.enviado ? '' : tr('Lo coges del suelo.')); alCambiar(); retratoHecho = false; }
+    if (r && r.ok) { avisar(r.enviado ? '' : tr('Lo coges del suelo.')); alCambiar(); retratoOtraVez(); }
     else if (r && r.motivo) avisar(motivo(r.motivo), true);
   }
   // Lo que pasa al soltar lo elegido en la ruta (al tocar con «Mover…», en un hueco vacío o al arrastrar).
@@ -203,7 +205,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   function alSueloDe() {
     if (!sel || sel.de !== 'inv' || !soltarSuelo) return;
     const r = soltarSuelo(sel.ruta);
-    if (r && r.ok) { avisar(r.enviado ? '' : tr('Lo dejas en el suelo.')); alCambiar(); retratoHecho = false; }
+    if (r && r.ok) { avisar(r.enviado ? '' : tr('Lo dejas en el suelo.')); alCambiar(); retratoOtraVez(); }
     else if (r && r.motivo) avisar(motivo(r.motivo), true);
     dejar();
   }
@@ -241,6 +243,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   }
   // la silueta apagada de lo que va en un sitio vacío
   function silueta(ruta) {
+    if (ruta === 'hombro') return `<span class="eq-sil">${SACO_SVG}</span>`;
     if (SILUETA_MANO.has(ruta)) return `<span class="eq-sil">${ruta === 'mano:izq' ? MANO_SVG.replace('<path', '<path transform="matrix(-1 0 0 1 100 0)"') : MANO_SVG}</span>`;
     const t = SILUETA[ruta];
     if (!t) return '';
@@ -293,6 +296,11 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     firmaSuelo = firma();
   }
   let retratoHecho = false;
+  // la ropa nueva tarda un poco en cargarse puesta en el personaje: el retrato se rehace ahora y al rato
+  function retratoOtraVez() {
+    retratoHecho = false;
+    for (const ms of [700, 1800, 3500]) setTimeout(() => { if (!panel.hidden) { retratoHecho = false; pintarRetrato(); } }, ms);
+  }
   function pintarRetrato() {
     if (retratoHecho || !retrato) return;
     if (getComputedStyle(q('.eq-ropa')).display === 'none') return;   // (móvil, en la otra pestaña)
