@@ -1,0 +1,20 @@
+[
+ {
+  "nombre": "fresno",
+  "alto": 9.2,
+  "imagen_id": "01a1c9cd-d0b9-7060-992d-15cce004805f",
+  "modelo_id": "01a1c9ce-33c1-77fb-8305-f697b9ff9367",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "encina",
+  "alto": 5.5,
+  "imagen_id": "01a1c9cf-f1a9-7613-92eb-779e5cc656dc",
+  "modelo_id": "01a1c9d0-747a-71d8-a204-3fa4a9470a1d",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
