@@ -243,13 +243,13 @@ function bayasSobre(geo) {
     const radial = Math.hypot(m.x, m.z), hacia = (n.x * m.x + n.z * m.z) / (radial || 1);
     if (m.y > H * 0.35 && radial > R * 0.55 && n.y > -0.15 && (hacia > 0.3 || n.y > 0.6)) sitios.push([m.clone(), n.clone()]);
   }
-  const quiero = 70, paso = Math.max(1, Math.floor(sitios.length / quiero));
+  const quiero = 50, paso = Math.max(1, Math.floor(sitios.length / quiero));
   return geoLote(L => {
     for (let k = 0, q = 0; k < sitios.length && q < quiero; k += paso, q++) {
       const [p, nn] = sitios[k], color = q % 6 === 5 ? BAYA_VERDE : q % 2 ? BAYA_ROJA : BAYA_NEGRA, c0 = p.clone().addScaledVector(nn, 0.02);
       for (let j = 0; j < 3; j++) {
-        const ab = j * 2.1 + q, db = j ? 0.034 : 0;
-        L.add(new THREE.IcosahedronGeometry(0.03, 0), color, c0.x + Math.cos(ab) * db, c0.y - j * 0.014, c0.z + Math.sin(ab) * db, null, { escala: new THREE.Vector3(1, 1.1, 1), sinSuelo: true, tex: 'liso', brillo: 1.2 });
+        const ab = j * 2.1 + q, db = j ? 0.026 : 0;
+        L.add(new THREE.IcosahedronGeometry(0.022, 0), color, c0.x + Math.cos(ab) * db, c0.y - j * 0.014, c0.z + Math.sin(ab) * db, null, { escala: new THREE.Vector3(1, 1.1, 1), sinSuelo: true, tex: 'liso', brillo: 1.2 });
       }
     }
   }, { rangoSuelo: 0.6 });

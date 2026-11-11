@@ -1,27 +1,171 @@
 {
  "_": "Cómo se prepara cada modelo de la naturaleza de Meshy para el juego (herramientas/meshy/preparar_naturaleza.mjs): [alto (o ancho con --ancho), triángulos de cerca, de media distancia y de lejos, opciones]. Los altos, los de los modelos de código (src/mundo/especies.js y decorado.js) para que todo siga a la misma medida.",
- "abeto": [10.5, 8000, 2000, 500, "--pie --hundir=0.05"],
- "pino": [9.5, 8000, 2000, 500, "--pie --hundir=0.05"],
- "abedul": [9.0, 8000, 2000, 500, "--pie --hundir=0.05"],
- "roble": [7.5, 8000, 2000, 500, "--pie --hundir=0.05"],
- "haya": [10.8, 8000, 2000, 500, "--pie --hundir=0.05"],
- "fresno": [9.2, 8000, 2000, 500, "--pie --hundir=0.05"],
- "encina": [5.5, 8000, 2000, 500, "--pie --hundir=0.05"],
- "abeto_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "pino_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "abedul_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "roble_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "haya_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "fresno_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "encina_joven": [4.0, 4000, 1000, 300, "--pie --hundir=0.03"],
- "matorral": [0.8, 2500, 600, 200, "--tex=512 --hundir=0.03"],
- "arbusto_bayas": [0.95, 4000, 1000, 300, "--tex=512 --hundir=0.03"],
- "roca": [2.4, 2000, 500, 150, "--ancho --tex=512"],
- "pena": [2.8, 3000, 800, 200, "--ancho --tex=512"],
- "canto": [2.4, 600, 200, 80, "--ancho --tex=512"],
- "hierba": [0.3, 400, 150, 60, "--tex=256 --suelo=0.08"],
- "flores": [0.28, 400, 150, 60, "--tex=256 --suelo=0.08"],
- "ortigas": [0.8, 1500, 400, 120, "--tex=512"],
- "juncos": [1.3, 1500, 400, 120, "--tex=512"],
- "helechos": [0.7, 1500, 400, 120, "--tex=512"]
+ "abeto": [
+  10.5,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "pino": [
+  9.5,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "abedul": [
+  9.0,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "roble": [
+  7.5,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "haya": [
+  10.8,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "fresno": [
+  9.2,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "encina": [
+  5.5,
+  8000,
+  2000,
+  500,
+  "--pie --hundir=0.05"
+ ],
+ "abeto_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "pino_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "abedul_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "roble_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "haya_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "fresno_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "encina_joven": [
+  4.0,
+  4000,
+  1000,
+  300,
+  "--pie --hundir=0.03"
+ ],
+ "matorral": [
+  0.8,
+  2500,
+  600,
+  200,
+  "--tex=512 --hundir=0.03"
+ ],
+ "arbusto_bayas": [
+  0.95,
+  4000,
+  1000,
+  300,
+  "--tex=512 --hundir=0.03"
+ ],
+ "roca": [
+  2.4,
+  2000,
+  500,
+  150,
+  "--ancho --tex=512"
+ ],
+ "pena": [
+  2.8,
+  3000,
+  800,
+  200,
+  "--ancho --tex=512"
+ ],
+ "canto": [
+  2.4,
+  600,
+  200,
+  80,
+  "--ancho --tex=512"
+ ],
+ "hierba": [
+  0.3,
+  1000,
+  400,
+  120,
+  "--tex=512 --suelo=0.08"
+ ],
+ "flores": [
+  0.28,
+  1500,
+  500,
+  150,
+  "--tex=512 --suelo=0.08"
+ ],
+ "ortigas": [
+  0.8,
+  6000,
+  1500,
+  400,
+  "--tex=512"
+ ],
+ "juncos": [
+  1.3,
+  3000,
+  1000,
+  300,
+  "--tex=512"
+ ],
+ "helechos": [
+  0.7,
+  3000,
+  1000,
+  300,
+  "--tex=512"
+ ]
 }

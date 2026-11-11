@@ -197,9 +197,10 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // (con los de Meshy: la hierba y las flores, en su versión de media distancia, que son miles; las flores llevan su
     // color y se tiñen solo un poco del de cada una)
     const hM = M('hierba'), fM = M('flores'), mM = M('matorral'), blanco = new THREE.Color(1, 1, 1);
-    if (hM) instancias(hierba, hM.medio.geo, hM.medio.mats, 'hierba', e => c.setScalar(e.tono));
+    const HC = movil ? 9 : 14;   // (la hierba de Meshy: la de cerca entera, la de más allá con menos triángulos)
+    if (hM) { instancias(hierba.filter(e => dist(e) < HC), hM.cerca.geo, hM.cerca.mats, 'hierbaCerca', e => c.setScalar(e.tono)); instancias(hierba.filter(e => dist(e) >= HC), hM.medio.geo, hM.medio.mats, 'hierba', e => c.setScalar(e.tono)); }
     else instancias(hierba, pl.mata, material('doble'), 'hierba', e => c.setScalar(e.tono));
-    if (fM) instancias(flores, fM.medio.geo, fM.medio.mats, 'flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65));
+    if (fM) { instancias(flores.filter(e => dist(e) < HC), fM.cerca.geo, fM.cerca.mats, 'floresCerca', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); instancias(flores.filter(e => dist(e) >= HC), fM.medio.geo, fM.medio.mats, 'flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); }
     else instancias(flores, pl.flor, material('fijo'), 'flores', e => c.set(FLORES[e.color]));
     instancias(matas, (mM ? mM.cerca : pl.matorral).geo, (mM ? mM.cerca : pl.matorral).mats, 'matorrales', e => c.setScalar(e.tono), { sombra: true, obst: matas.map(e => e.ob) });
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía

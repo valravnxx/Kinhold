@@ -19,7 +19,9 @@ export const LISTA_NATURALEZA = [...ESPECIES_MESHY, ...ESPECIES_MESHY.map(e => e
 export const carpetaNaturaleza = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/personajes\/[^/]*\/?$/, 'naturaleza/meshy-v1/');
 
 let cargados = null, cargando = null;
-const modelo = (g, nombre) => {
+// las plantas finas (hojas de una sola capa), por las dos caras
+const DOS_CARAS = new Set(['hierba', 'flores', 'ortigas', 'juncos', 'helechos']);
+const modelo = (g, nombre, cosa) => {
   const o = g.scene.getObjectByName(nombre); if (!o) return null;
   const m = o.isMesh ? o : o.getObjectByProperty('isMesh', true); if (!m) return null;
   const map = m.material.map || null;
@@ -36,7 +38,7 @@ const modelo = (g, nombre) => {
   }
   geo.applyMatrix4(m.matrixWorld);
   geo.computeBoundingSphere(); geo.computeBoundingBox();
-  return { geo, mats: new THREE.MeshLambertMaterial({ map, vertexColors: true }) };
+  return { geo, mats: new THREE.MeshLambertMaterial({ map, vertexColors: true, side: DOS_CARAS.has(cosa) ? THREE.DoubleSide : THREE.FrontSide }) };
 };
 
 // Carga todos (a la vez); devuelve cuántos han llegado. Nunca falla: lo que no llega se queda en código.
@@ -47,8 +49,8 @@ export function cargarNaturaleza(carpeta) {
   const l = new GLTFLoader(); l.setMeshoptDecoder(MeshoptDecoder);
   const r = {};
   cargando = Promise.all(LISTA_NATURALEZA.map(n => l.loadAsync(carpeta + n + '.glb').then(g => {
-    const cerca = modelo(g, 'cerca'); if (!cerca) return;
-    r[n] = { cerca, medio: modelo(g, 'medio') || cerca, lejos: modelo(g, 'lejos') || cerca };
+    const cerca = modelo(g, 'cerca', n); if (!cerca) return;
+    r[n] = { cerca, medio: modelo(g, 'medio', n) || cerca, lejos: modelo(g, 'lejos', n) || cerca };
     // la medida de verdad: [radio de lo ancho, alto] (para no dibujar las copas que tapan al personaje)
     const b = new THREE.Box3().setFromBufferAttribute(cerca.geo.attributes.position);
     r[n].medida = [Math.max(b.max.x - b.min.x, b.max.z - b.min.z) / 2, b.max.y];
