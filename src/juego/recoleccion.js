@@ -16,6 +16,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex, material } from '../mundo/estilos.js';
 import { cil, copa } from '../mundo/decorado.js';
+import { naturaleza } from '../mundo/naturaleza_meshy.js';
 import { Recoleccion, repartirPuntos, RECOLECTABLES, cargarRecoleccion, guardarRecoleccion, ejecutarRecoleccion } from '../logica/recoleccion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from '../logica/recogida_mundo.js';
 import { alturaMundo } from '../logica/whitholm.js';
@@ -219,9 +220,39 @@ export function modelosRecoleccion() {
 
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
+  // (11 nov) las plantas de Meshy, si han llegado (src/mundo/naturaleza_meshy.js): ortigas, juncos, la hierba larga (la
+  // mata de hierba, más alta) y el arbusto de las bayas, con las bayas puestas por su cara de fuera
+  const M = (n, k = 1) => { const m = naturaleza(n); if (!m) return null; const geo = k === 1 ? m.cerca.geo : m.cerca.geo.clone().scale(k, k, k); return [{ geo, mat: m.cerca.mats }]; };
+  const arbustoM = naturaleza('arbusto_bayas'), bayasM = arbustoM ? bayasSobre(arbustoM.cerca.geo) : null;
   // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo
-  return (cache = { ramas, piedra, silex, ortiga, hierba_larga: hierbaLarga, juncos, barro, yesquero, pena,
-    bayas: [...arbusto.map(m => ({ ...m, siempre: true })), ...bayas], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas] });
+  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba', 2.6) || hierbaLarga, juncos: M('juncos') || juncos, barro, yesquero, pena,
+    bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas] });
+}
+
+// Las bayas sobre el arbusto de Meshy: racimos de tres en la cara de fuera de la mata (lo que mira hacia fuera y no
+// hacia abajo, en el tercio de fuera y de la mitad para arriba), siempre los mismos sitios (cada n triángulos)
+function bayasSobre(geo) {
+  const pos = geo.attributes.position, idx = geo.index, nt = (idx ? idx.count : pos.count) / 3;
+  let R = 0, H = 0; for (let i = 0; i < pos.count; i++) { R = Math.max(R, Math.hypot(pos.getX(i), pos.getZ(i))); H = Math.max(H, pos.getY(i)); }
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), n = new THREE.Vector3(), m = new THREE.Vector3(), sitios = [];
+  const v = (k, t) => t.fromBufferAttribute(pos, idx ? idx.getX(k) : k);
+  for (let t = 0; t < nt; t++) {
+    v(3 * t, a); v(3 * t + 1, b); v(3 * t + 2, c);
+    m.copy(a).add(b).add(c).divideScalar(3);
+    n.subVectors(c, b).cross(a.clone().sub(b)).normalize();
+    const radial = Math.hypot(m.x, m.z), hacia = (n.x * m.x + n.z * m.z) / (radial || 1);
+    if (m.y > H * 0.35 && radial > R * 0.55 && n.y > -0.15 && (hacia > 0.3 || n.y > 0.6)) sitios.push([m.clone(), n.clone()]);
+  }
+  const quiero = 70, paso = Math.max(1, Math.floor(sitios.length / quiero));
+  return geoLote(L => {
+    for (let k = 0, q = 0; k < sitios.length && q < quiero; k += paso, q++) {
+      const [p, nn] = sitios[k], color = q % 6 === 5 ? BAYA_VERDE : q % 2 ? BAYA_ROJA : BAYA_NEGRA, c0 = p.clone().addScaledVector(nn, 0.02);
+      for (let j = 0; j < 3; j++) {
+        const ab = j * 2.1 + q, db = j ? 0.034 : 0;
+        L.add(new THREE.IcosahedronGeometry(0.03, 0), color, c0.x + Math.cos(ab) * db, c0.y - j * 0.014, c0.z + Math.sin(ab) * db, null, { escala: new THREE.Vector3(1, 1.1, 1), sinSuelo: true, tex: 'liso', brillo: 1.2 });
+      }
+    }
+  }, { rangoSuelo: 0.6 });
 }
 
 const CERO = new THREE.Matrix4().makeScale(0, 0, 0);

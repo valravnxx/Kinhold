@@ -17,9 +17,12 @@ import { motivoClave } from '../logica/cuentas.js';
 import { motivoCorreo, codigoValido, CODIGO_CIFRAS } from '../logica/correo.js';
 import { guardarFicha, fichaGuardada, conDireccionFicha } from '../mundo/conexion.js';
 import { direccionServidor } from '../mundo/direccion_servidor.js';
+import { cargarNaturaleza, carpetaNaturaleza } from '../mundo/naturaleza_meshy.js';
+import { recursosTaller } from '../mundo/eleccion.js';
 
 const MODOS = {
-  construir: { carga: () => import('../juego/main.js'), menu: '#menu', nombre: 'Jugar' },
+  // (la naturaleza de Meshy se carga antes de entrar: el mundo la pone al empezar; si no llega, la de código)
+  construir: { carga: () => cargarNaturaleza(carpetaNaturaleza(recursosTaller())).then(() => import('../juego/main.js')), menu: '#menu', nombre: 'Jugar' },
   personaje: { carga: () => import('../personaje/main.js'), menu: '#estilos', nombre: 'Personaje' },
 };
 const $ = (id) => document.getElementById(id);

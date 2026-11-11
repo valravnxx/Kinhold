@@ -33,6 +33,8 @@ shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in ['v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'meshy-v2', 'taller-dormir-v1', 'taller-sentarse-v1']:
     o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
     if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
+# la naturaleza de Meshy (11 nov), como en la web: esta prueba mira el mundo con ella
+if os.path.isdir(os.path.join(RAIZ, 'docs/recursos/naturaleza')): shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
 for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
@@ -152,11 +154,14 @@ with sync_playwright() as p:
           let h = 0; for (const ch of firma) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
           return {{ cuenta: c, arboles: arb.length, especies: [...new Set(arb.map(o => o.especie))], buenas: arb.every(o => ESP.includes(o.especie)),
             agua, cerca: Math.min(...arb.map(o => Math.hypot(o.x, o.z - 2))), talables: arb.filter(o => o.id && k.talaV.porId.has(o.id)).length, firma: h,
-            mallas: ESP.filter(e => ['arboles_', 'arbolesMedios_', 'arbolesLejos_'].some(n => ['', '_joven'].some(j => k.escena.getObjectByName(n + e + j)))),
+            mallas: ESP.filter(e => ['arboles_', 'arbolesMedios_', 'arbolesLejos_', 'arbolesCerca_'].some(n => ['', '_joven'].some(j => k.escena.getObjectByName(n + e + j)))),
             jovenes: arb.filter(o => o.edad === 'joven').length, adultos: arb.filter(o => o.edad === 'adulto').length,
+            meshy: (() => {{ const l = []; k.escena.traverse(o => {{ if (o.isInstancedMesh && /^arbolesCerca_/.test(o.name)) {{ o.geometry.computeBoundingBox(); l.push([o.name, +o.geometry.boundingBox.max.y.toFixed(1)]); }} }}); return l; }})(),
             mallasJoven: arb.filter(o => o.edad === 'joven' && o.malla).every(o => o.malla.name.endsWith('_joven')) }}; }})()""")
         print('  lo que crece:', json.dumps({x: v[x] for x in ['cuenta', 'especies', 'agua', 'cerca', 'talables', 'firma']}))
         c = v['cuenta']
+        if os.path.isdir(os.path.join(RAIZ, 'docs/recursos/naturaleza')):   # (11 nov) los de cerca, de Meshy, a su alto de verdad (de 3 a 12 m)
+            comprobar('los árboles de cerca son los de Meshy, a su alto', len(v['meshy']) > 0 and all(3 <= a <= 12 for _, a in v['meshy']), json.dumps(v['meshy']))
         comprobar('hay árboles, de las especies del mundo, cada una con su malla', v['arboles'] > 20 and v['buenas'] and sorted(v['mallas']) == sorted(v['especies']), ', '.join(v['especies']))
         comprobar('hay árboles jóvenes y adultos, y los jóvenes con su propio modelo', v['jovenes'] > 3 and v['adultos'] > 3 and v['mallasJoven'], f"{v['jovenes']} jóvenes, {v['adultos']} adultos")
         comprobar('hay hierba, matas y piedras', c['hierba'] > 300 and c['matas'] > 5 and c['piedras'] > 10, f"{c['hierba']} hierba, {c['flores']} flores, {c['matas']} matas, {c['piedras']} piedras")
