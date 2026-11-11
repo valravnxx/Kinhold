@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2674 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3011 KB
+
+== Construir demo única
+      3457 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4345 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3078 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2669 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3032 KB
+dist/kinhold_trozos.html 2683 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: los avisos de las necesidades
+  OK   móvil: sin errores en la página
+  OK   en inglés, la ficha sale en inglés — ThirstAt the maximum you will tire twice as fast.Drink: at the bank of a river or a lake.
+
+FALLAN: PC: el frío escarcha los bordes de la pantalla (sin frío, nada; helado, del todo)
+!! FALLA: python3 pruebas/prueba_avisos_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/avisos
+
+HAY FALLOS
+tardó 243 s
