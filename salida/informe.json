@@ -1,0 +1,16 @@
+[
+ {
+  "nombre": "abedul",
+  "alto": 9.0,
+  "modelo_id": "01a1c9b5-5e39-7392-998d-377bd93a4041",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "haya_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9b6-9cd9-7036-a149-6092154cef95",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ }
+]
