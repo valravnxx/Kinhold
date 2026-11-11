@@ -1,0 +1,61 @@
+Vista pc
+    nivel 0: {'nivel': 0, 'triangulos': 2978, 'piezas': 1, 'dibujados': 23}
+    nivel 1: {'nivel': 1, 'triangulos': 2978, 'piezas': 1, 'dibujados': 23}
+    nivel 2: {'nivel': 2, 'triangulos': 2978, 'piezas': 1, 'dibujados': 23}
+  FALLA nivel medio: como mucho el 55 % de los triángulos — 2978 → 2978
+  FALLA nivel lejos: como mucho el 25 % — 2978 → 2978
+  FALLA nivel lejos: una sola pieza (texturas juntas) — 1 → 1
+  FALLA nivel lejos: menos llamadas de dibujo — 23 → 23
+  OK   nivel 1: la misma silueta que de cerca — 1.00 de 3280 px
+  OK   nivel 2: la misma silueta que de cerca — 1.00 de 3280 px
+  OK   nivel lejos: el mismo color de media que de cerca — [124, 96, 69] → [124, 96, 69]
+  OK   más lejos: no se dibuja — {'nivel': 3, 'triangulos': 2978, 'piezas': 1}
+  OK   de vuelta a cerca: entero otra vez — {'nivel': 0, 'triangulos': 2978, 'piezas': 1}
+  FALLA lejos: al cambiar de ropa se rehace la malla — 2978 → {'nivel': 2, 'triangulos': 2978, 'piezas': 1}
+  OK   visor: sin errores en la consola
+  OK   demo: el panel dice cuántos hay en cada nivel — a:
+Móvil básico ★
+Móvil medio
+Móvil alto y tableta
+PC básico
+PC medio
+PC alto
+
+★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.
+    sin niveles: 445786 triángulos, 175 dibujos, 1 fps; con: 446362, 178, 1 fps; niveles [7, 6, 8, 0]
+  OK   demo: sin niveles, todos enteros — [21, 0, 0, 0]
+  OK   demo: con niveles hay gente en medio y lejos — [7, 6, 8, 0]
+  FALLA demo: con niveles, menos triángulos (≤ 70 %) — 445786 → 446362
+  FALLA demo: con niveles, menos llamadas de dibujo — 175 → 178
+  OK   demo: sin errores en la consola
+Vista movil
+    nivel 0: {'nivel': 0, 'triangulos': 2978, 'piezas': 1, 'dibujados': 23}
+    nivel 1: {'nivel': 1, 'triangulos': 2978, 'piezas': 1, 'dibujados': 23}
+    nivel 2: {'nivel': 2, 'triangulos': 2978, 'piezas': 1, 'dibujados': 23}
+  FALLA nivel medio: como mucho el 55 % de los triángulos — 2978 → 2978
+  FALLA nivel lejos: como mucho el 25 % — 2978 → 2978
+  FALLA nivel lejos: una sola pieza (texturas juntas) — 1 → 1
+  FALLA nivel lejos: menos llamadas de dibujo — 23 → 23
+  OK   nivel 1: la misma silueta que de cerca — 1.00 de 3073 px
+  OK   nivel 2: la misma silueta que de cerca — 1.00 de 3073 px
+  OK   nivel lejos: el mismo color de media que de cerca — [125, 96, 69] → [125, 96, 69]
+  OK   más lejos: no se dibuja — {'nivel': 3, 'triangulos': 2978, 'piezas': 1}
+  OK   de vuelta a cerca: entero otra vez — {'nivel': 0, 'triangulos': 2978, 'piezas': 1}
+  FALLA lejos: al cambiar de ropa se rehace la malla — 2978 → {'nivel': 2, 'triangulos': 2978, 'piezas': 1}
+  OK   visor: sin errores en la consola
+  OK   demo: el panel dice cuántos hay en cada nivel — a:
+Móvil básico ★
+Móvil medio
+Móvil alto y tableta
+PC básico
+PC medio
+PC alto
+
+★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.
+    sin niveles: 293716 triángulos, 95 dibujos, 3 fps; con: 293716, 95, 3 fps; niveles [8, 5, 8, 0]
+  OK   demo: sin niveles, todos enteros — [21, 0, 0, 0]
+  OK   demo: con niveles hay gente en medio y lejos — [8, 5, 8, 0]
+  FALLA demo: con niveles, menos triángulos (≤ 70 %) — 293716 → 293716
+  FALLA demo: con niveles, menos llamadas de dibujo — 95 → 95
+  OK   demo: sin errores en la consola
+FALLOS: nivel medio: como mucho el 55 % de los triángulos, nivel lejos: como mucho el 25 %, nivel lejos: una sola pieza (texturas juntas), nivel lejos: menos llamadas de dibujo, lejos: al cambiar de ropa se rehace la malla, demo: con niveles, menos triángulos (≤ 70 %), demo: con niveles, menos llamadas de dibujo, nivel medio: como mucho el 55 % de los triángulos, nivel lejos: como mucho el 25 %, nivel lejos: una sola pieza (texturas juntas), nivel lejos: menos llamadas de dibujo, lejos: al cambiar de ropa se rehace la malla, demo: con niveles, menos triángulos (≤ 70 %), demo: con niveles, menos llamadas de dibujo
