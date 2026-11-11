@@ -1759,9 +1759,10 @@
     },
     {
      "nombre": "Fabricar con el acabado nuevo, en su pestaña: cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo) y «Hacer ×3»; lo que está en marcha, con su barra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T13:28:08+00:00",
-     "rama": "trabajo/20261111-1330"
+     "rama": "trabajo/20261111-1330",
+     "fin": "2026-11-11T16:38:11+00:00"
     },
     {
      "nombre": "Construir: «Poner | Quitar» (X) y la planta arriba (desmontar, dentro de construir); las piezas con su imagen y el coste en iconos (en rojo lo que no tienes) y lo que hay en tu tierra; deshacer lo último; sin mojón, se abre en la pestaña Tierra",
@@ -3977,6 +3978,13 @@
      "archivo": "jugar/demo/v179.html",
      "capturas": "capturas/demo-v179",
      "notas": "Más detalle en los gráficos altos: los árboles, las matas y las rocas de Meshy van con su modelo de cerca hasta más lejos y, al lado, con uno de más detalle"
+    },
+    {
+     "v": "v180",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v180.html",
+     "capturas": "capturas/demo-v180",
+     "notas": "Fabricar con el acabado nuevo, en su pestaña del menú: tablero de roble y cartas con filo de latón; cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo, en la estación) y cuánto hay; en una estación, «×3» encarga tres seguidas; lo que está en marcha, con su barra. En el móvil, las pestañas de los sitios en filas enteras."
     }
    ]
   },

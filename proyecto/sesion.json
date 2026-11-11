@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-11T15:24:36+00:00",
-  "tarea": "Fabricar con el acabado nuevo, en su pestaña: cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo) y «Hacer ×3»; lo que está en marcha, con su barra",
-  "hito": "interfaz",
-  "rama": "trabajo/20261111-1330"
- },
+ "A": null,
  "B": null
 }

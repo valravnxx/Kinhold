@@ -6108,5 +6108,21 @@
   "pruebas": "La nube no pudo instalar el navegador en ninguna de sus máquinas (no resolvía los servidores de Ubuntu), dos veces. Aquí: lógica de fabricación 197/197 (y rota a propósito, falla), recorrido 243/243, demo única correcta; el panel de fabricación, lo nuevo correcto, pero fallan aquí la tala y la reparación por esperas y la parte del móvil no llega a entrar (esta máquina dibuja a menos de 3 fotogramas por segundo). No comprobado en la nube.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-11T15:24:36+00:00",
+  "fin": "2026-11-11T16:38:11+00:00",
+  "titulo": "La interfaz nueva: Fabricar con el acabado nuevo (demo v180)",
+  "hito": "interfaz",
+  "hecho": [
+   "El panel de fabricar con el acabado del estudio, en su pestaña del menú: tablero de roble, letra del menú, cartas oscuras con filo de latón y, debajo del nombre, «ya» (y para cuántas), lo que falta o dónde se hace.",
+   "Cada sitio dice si está a tu lado o a cuántos pasos está el más cercano; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo, en la estación) y cuánto hay de lo que pide («3 de 3»); lo que está en marcha, con su barra y lo que le queda.",
+   "«×3» solo en las estaciones y si caben tres en su cola: con las manos se hace una cosa a la vez, y el servidor rechazaba la segunda («Ya estás haciendo otra cosa»).",
+   "En el móvil, las pestañas de los sitios en filas que se ven enteras (antes se deslizaban de lado y se cortaban los nombres) y el pie con su margen.",
+   "Las pruebas en la nube ya no se cuelgan si los servidores de Ubuntu no responden (dos veces hoy): Chromium sin sus paquetes del sistema, la letra sin instalar y Caddy de sus versiones en GitHub."
+  ],
+  "pruebas": "Revisor en la nube, sin el recorrido ni la cama ligada (el cambio en la lógica de fabricar solo añade cuántas veces se puede hacer; no toca la tala ni la cama). Lógica de fabricación 197/197 (aquí y en la nube); la demo única, bien; el panel de fabricación, todo correcto en la última vuelta (con «a 9 pasos» lejos de la piedra de tallar y lo que está en marcha en el móvil, nuevos en la prueba; no comprobado rompiéndolos a propósito). En la lógica fallan dos comprobaciones de systemd-analyze en la máquina de la nube (avisos de sus propios servicios, CPUAccounting), que este cambio no toca; aquí, 27/27. El tamaño del tablero en el móvil se mide ahora con su margen (370 de 390). Sin la letra Inter en la nube (apt no respondía). Segunda mirada aparte de las capturas: sí. Para pulir: más margen abajo a «En marcha» y a la ficha en el móvil, el contraste de «×3» y el título largo de «Lo que pide» en el móvil.",
+  "capturas": "capturas/demo-v180",
+  "estado": "ok"
  }
 ]
