@@ -669,7 +669,7 @@ const matsObra = new Map();
 function matObra(base, nivel) {
   const b = Array.isArray(base) ? base[0] : base, k = nivel + ':' + (b?.map?.uuid || 'liso') + (b?.vertexColors ? 'v' : '');
   if (!matsObra.has(k)) matsObra.set(k, new THREE.MeshLambertMaterial({ color: 0xd8ccb4, emissive: 0x1a140c, vertexColors: !!b?.vertexColors,
-    map: b?.map || null, transparent: true, opacity: 0.42 + 0.12 * nivel, depthWrite: false }));
+    map: b?.map || null, transparent: true, opacity: (b?.map && !b?.vertexColors ? 0.22 : 0.42) + 0.12 * nivel, depthWrite: false }));   // los de Meshy (textura clara), más tenues
   return matsObra.get(k);
 }
 const vara = (a, b, r, mat) => {

@@ -19,6 +19,7 @@ shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/rec
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v2'), f'{sitio}/recursos/personajes/meshy-v2')  # los personajes de Meshy
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1'), f'{sitio}/recursos/estaciones-meshy-v1')  # el acopio y el mojón de valravnx (Meshy), como en la web
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-dormir-v1'), f'{sitio}/recursos/personajes/taller-dormir-v1')  # tumbarse y levantarse
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-sentarse-v1'), f'{sitio}/recursos/personajes/taller-sentarse-v1')  # sentarse en el suelo
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
