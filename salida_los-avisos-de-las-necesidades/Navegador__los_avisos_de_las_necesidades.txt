@@ -1,0 +1,36 @@
+  OK   PC: sin necesidades, ningún círculo
+  OK   PC: con sed 50, hambre 30 y cansancio 80 salen la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   PC: el del cansancio, en fuerte (desde 75); cada uno con su color — [['sed', False, '#3f7fd0'], ['cansancio', True, '#9a958c']]
+  OK   PC: los círculos no tapan ningún botón y caben en la pantalla — [[1122, 312, 1162, 352], [1121.5926513671875, 359.5926513671875, 1162.4073486328125, 400.4073486328125]]
+  OK   PC: al pulsar la sed, su ficha: cómo estás, qué te pasa y cómo se quita (beber del río) — Sed · 50%Aún aguantas; al máximo te cansarás el doble y si sigues sin beber, al rato mueres.Bebe agua de un río o de un lago: «Usar» en la orilla.
+  OK   PC: la ficha cabe en la pantalla — [854, 306, 1114, 465.34375]
+  OK   PC: se cierra al pulsar fuera
+  OK   PC: con las cuatro, los cuatro círculos
+  OK   PC: la ficha del cansancio lleva el botón para sentarse — Sentarte a descansarZ
+  OK   PC: el botón cabe dentro de la ficha y la ficha en la pantalla — [867, 579.625, 1101, 611.8125] en [854, 448.5, 1114, 622.8125]
+  OK   PC: al pulsarlo se sienta, con su animación (en el suelo), y el botón pasa a «Levantarte» — {"s": true, "modo": "sentado", "boton": "LevantarteZ"}
+  OK   PC: al moverse se levanta
+  OK   PC: con Z se sienta otra vez, y con Z se levanta
+  OK   PC: (levantado)
+  OK   PC: rendido no corre (a paso de andar); descansado, sí — rendido 3.60, descansado 6.00, andando 3.60 m/s
+  OK   PC: helado, anda más despacio — 2.88 contra 3.60 m/s
+  OK   PC: en la salida no hay agua al lado
+  OK   PC: hay una orilla cerca de la salida — {'x': 319.5997502295783, 'z': 416.5105036528985}
+  OK   PC: junto al agua, con sed, «Usar» bebe: la sed baja — 40
+  OK   PC: sin errores en la página
+  OK   móvil: sin necesidades, ningún círculo
+  OK   móvil: con sed 50, hambre 30 y cansancio 80 salen la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   móvil: el del cansancio, en fuerte (desde 75); cada uno con su color — [['sed', False, '#3f7fd0'], ['cansancio', True, '#9a958c']]
+  OK   móvil: los círculos no tapan ningún botón y caben en la pantalla — [[314, 160, 344, 190], [348.55950927734375, 158.5595245361328, 381.44049072265625, 191.4404754638672]]
+  OK   móvil: al pulsar la sed, su ficha: cómo estás, qué te pasa y cómo se quita (beber del río) — Sed · 50%Aún aguantas; al máximo te cansarás el doble y si sigues sin beber, al rato mueres.Bebe agua de un río o de un lago: «Usar» en la orilla.
+  OK   móvil: la ficha cabe en la pantalla — [120, 198, 380, 357.34375]
+  OK   móvil: se cierra al pulsar fuera
+  OK   móvil: con las cuatro, los cuatro círculos
+  OK   móvil: la ficha del cansancio lleva el botón para sentarse — Sentarte a descansar
+  OK   móvil: el botón cabe dentro de la ficha y la ficha en la pantalla — [133, 330.84375, 367, 363.03125] en [120, 199.71875, 380, 374.03125]
+  OK   móvil: al pulsarlo se sienta, con su animación (en el suelo), y el botón pasa a «Levantarte» — {"s": true, "modo": "sentado", "boton": "Levantarte"}
+  OK   móvil: al moverse se levanta
+  OK   móvil: sin errores en la página
+  OK   en inglés, la ficha sale en inglés — Thirst · 60%You can still hold on; at the maximum you will tire twice as fast and if you still do not drink, after a while you die.Drink water from a river or a lake: «Use» on the bank.
+
+Todo correcto
