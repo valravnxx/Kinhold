@@ -1774,9 +1774,10 @@
     },
     {
      "nombre": "La pestaña «Tu tierra»: cada almacenaje con lo que tiene (la obra no coge de ahí sola), quién puede construir y «Quitarle», y cuándo vuelve al rey si no se usa",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T20:22:52+00:00",
-     "rama": "trabajo/20261111-2022"
+     "rama": "trabajo/20261111-2022",
+     "fin": "2026-11-11T21:55:18+00:00"
     },
     {
      "nombre": "Las necesidades con los medallones de latón del estudio (sobre los avisos de P4): medio transparentes si van bien; la que va mal, más grande, con flecha y nombre; la ficha en dos líneas; el frío escarcha los bordes de la pantalla",
@@ -3998,6 +3999,13 @@
      "archivo": "jugar/demo/v181.html",
      "capturas": "capturas/demo-v181",
      "notas": "Construir con el acabado nuevo: arriba, en una barra de roble, «Poner | Quitar» (X), la planta, Deshacer (Ctrl+Z) y Terminar; abajo, las piezas con su imagen y el coste en iconos, con cuánto tienes y en rojo lo que no te llega; deshacer quita lo último que pusiste; sin mojón, construir se abre en la pestaña Tierra"
+    },
+    {
+     "v": "v182",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v182.html",
+     "capturas": "capturas/demo-v182",
+     "notas": "La pestaña «Tu tierra» con el acabado nuevo: cada almacenaje con lo que tiene, quién puede construir con «Quitarle» y cuándo vuelve al rey si no se usa"
     }
    ]
   },
