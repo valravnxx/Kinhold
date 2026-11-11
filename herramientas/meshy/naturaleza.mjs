@@ -1,13 +1,13 @@
 // Prepara un modelo de naturaleza de Meshy (árbol, mata, planta o roca) para el mundo (src/mundo/naturaleza_meshy.js):
 //   node herramientas/meshy/naturaleza.mjs <entrada.glb> <salida.glb> <alto_m> <tri_cerca> <tri_medio> <tri_lejos> [opciones]
-// opciones: --lejos-cono (la de lejos, una silueta de conos hecha aquí), --sin-textura (también la de cerca con el color en los vértices), --peso-uv=<n> (cuánto cuesta estirar la textura al simplificar; la haya, 2), --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
+// opciones: --alto-textura (con --sin-textura, la de más detalle sí con textura), --lejos-cono (la de lejos, una silueta de conos hecha aquí), --sin-textura (también la de cerca con el color en los vértices), --peso-uv=<n> (cuánto cuesta estirar la textura al simplificar; la haya, 2), --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
 //           --tex=<px> (la textura, 1024 por defecto), --suelo=<m> (hasta dónde oscurece el pie: la oclusión de contacto).
-// Deja tres mallas: «cerca» (con su textura), «medio» y «lejos» (con el color de la textura en los vértices y menos triángulos), con el pie en y = 0, a su alto
+// Deja cuatro mallas: «alto» (la de más detalle, para los perfiles gráficos altos), «cerca» (con su textura), «medio» y «lejos» (con el color de la textura en los vértices y menos triángulos), con el pie en y = 0, a su alto
 // de verdad, una sola textura (el color, en WebP; sin brillo ni relieve, que el juego usa luz difusa) y el pie más oscuro
 // horneado en el color de los vértices, como lo de código (src/mundo/estilos.js, Lote). Con meshopt, como los personajes.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { flatten, join, weld, prune, dedup, textureCompress, transformMesh, simplifyPrimitive, weldPrimitive, compactPrimitive, meshopt } from '@gltf-transform/functions';
+import { cloneDocument, flatten, join, weld, prune, dedup, textureCompress, transformMesh, simplifyPrimitive, weldPrimitive, compactPrimitive, meshopt } from '@gltf-transform/functions';
 import { MeshoptSimplifier, MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 
@@ -72,7 +72,7 @@ const fijos = (p) => {
   return l;
 };
 const PESO_UV = Number(op['peso-uv'] || process.env.PESO_UV || 0.5);   // (cuánto cuesta estirar la textura al juntar: con 0,5 la haya salía con rayas claras)
-let costuras = false;   // (si la de cerca se ha tenido que juntar por las costuras de la textura: puede verse con rayas)
+let costuras = false, sinCosturas = false;   // (sinCosturas: no juntar nunca por las costuras: la haya de más detalle)   // (si la de cerca se ha tenido que juntar por las costuras de la textura: puede verse con rayas)
 const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false) => {
   weldPrimitive(p);
   const t = triangulos(p); if (t <= tope) return p;
@@ -89,7 +89,7 @@ const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false)
       paso(0.08, []);
       if (triangulos(p) <= tope * 1.5) return;   // (si las costuras no le dejan bajar, también por ellas: arbusto de las bayas)
     }
-    if (!permisivo && process.env.SIN_COSTURAS) return;
+    if (!permisivo && (process.env.SIN_COSTURAS || sinCosturas)) return;
     paso(err, ['Permissive']); if (!permisivo) costuras = true;
   };
   const lock = fijos(p);
@@ -105,6 +105,10 @@ const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false)
 // simplificar la copa le caían trozos de corteza encima (rayas claras): entonces también la de cerca va con el color
 // en los vértices, tomado de la malla entera, sin simplificar
 const SIN_TEX = !!op['sin-textura'];
+// la de más detalle («alto», para los perfiles gráficos altos y de cerca; valravnx, 11 nov): --alto=<n> triángulos, o
+// tres veces los de cerca
+const TRI_ALTO = Number(op.alto || TRI_CERCA * 3);
+let pAlto = SIN_TEX ? null : reducir(otra(prim), TRI_ALTO);
 let pCerca = SIN_TEX ? otra(prim) : reducir(otra(prim), TRI_CERCA);
 const pColor = otra(pCerca);
 // el color de la textura en cada vértice de las de media distancia y lejos (sin textura)
@@ -126,7 +130,9 @@ if (texColor) {
   pColor.setMaterial(doc.createMaterial('sinTextura').setMetallicFactor(0).setRoughnessFactor(1));
 }
 oscurecerPie(pCerca, null); oscurecerPie(pColor, colorVert);
-if (SIN_TEX) pCerca = reducir(otra(pColor), TRI_CERCA, true, 0.012, 1.6);
+if (SIN_TEX && op['alto-textura']) { sinCosturas = true; pAlto = reducir(otra(prim), TRI_ALTO); sinCosturas = false; oscurecerPie(pAlto, null); }   // (la de más detalle, con su textura y sin juntar por las costuras: sin rayas)
+if (SIN_TEX) { if (!op['alto-textura']) pAlto = reducir(otra(pColor), TRI_ALTO, true, 0.006, 1.6); pCerca = reducir(otra(pColor), TRI_CERCA, true, 0.012, 1.6); }
+else oscurecerPie(pAlto, null);
 const pMedio = reducir(otra(pColor), TRI_MEDIO, true, 0.012, 2.2),   // (a media distancia el tronco se ve: se le deja más)
   pLejos = reducir(otra(pColor), TRI_LEJOS, true, 0.04, Number(op['holgura-lejos'] || 1.3), !!op.tosco);   // (de lejos se puede perder algo fino)
 // --lejos-cono (el pino joven, 11 nov: de ramas sueltas, simplificado salía en esquirlas): la de lejos es una silueta
@@ -156,12 +162,19 @@ if (op['lejos-cono']) {
   for (const s of pLejos.listSemantics()) if (!['POSITION', 'COLOR_0'].includes(s)) pLejos.setAttribute(s, null);
   pLejos.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(I)).setBuffer(buf));
 }
-for (const p of [pCerca, pMedio, pLejos]) compactPrimitive(p);   // (fuera los vértices que ya no usa ningún triángulo)
+for (const p of [pAlto, pCerca, pMedio, pLejos]) compactPrimitive(p);   // (fuera los vértices que ya no usa ningún triángulo)
 for (const node of root.listNodes()) node.dispose();
 for (const m of root.listMeshes()) m.dispose();
 const escena = root.listScenes()[0] || doc.createScene();
-for (const [nombre, p] of [['cerca', pCerca], ['medio', pMedio], ['lejos', pLejos]]) escena.addChild(doc.createNode(nombre).setMesh(doc.createMesh(nombre).addPrimitive(p)));
+for (const [nombre, p] of [['alto', pAlto], ['cerca', pCerca], ['medio', pMedio], ['lejos', pLejos]]) escena.addChild(doc.createNode(nombre).setMesh(doc.createMesh(nombre).addPrimitive(p)));
 const tex = Number(op.tex || 1024);
-await doc.transform(prune(), textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [tex, tex], quality: 85 }), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
-await io.write(salida, doc);
-console.log(JSON.stringify({ salida, antes, cerca: triangulos(pCerca), medio: triangulos(pMedio), lejos: triangulos(pLejos), costuras, alto: ALTO, escala: +k.toFixed(4), pie: op.pie ? [+(k * (cx - (x0 + x1) / 2)).toFixed(2), +(k * (cz - (z0 + z1) / 2)).toFixed(2)] : null }));
+const nAlto = triangulos(pAlto);
+// la de más detalle, en su propio archivo (<nombre>_alto.glb): solo la bajan los perfiles gráficos que la usan
+const docAlto = cloneDocument(doc);
+for (const n of docAlto.getRoot().listNodes()) if (n.getName() !== 'alto') { n.getMesh() && n.getMesh().dispose(); n.dispose(); }
+for (const n of root.listNodes()) if (n.getName() === 'alto') { n.getMesh().dispose(); n.dispose(); }
+for (const [d, ruta] of [[doc, salida], [docAlto, salida.replace(/\.glb$/, '_alto.glb')]]) {
+  await d.transform(prune(), textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [tex, tex], quality: 85 }), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
+  await io.write(ruta, d);
+}
+console.log(JSON.stringify({ salida, antes, alto_: nAlto, cerca: triangulos(pCerca), medio: triangulos(pMedio), lejos: triangulos(pLejos), costuras, alto: ALTO, escala: +k.toFixed(4), pie: op.pie ? [+(k * (cx - (x0 + x1) / 2)).toFixed(2), +(k * (cz - (z0 + z1) / 2)).toFixed(2)] : null }));

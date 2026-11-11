@@ -140,7 +140,7 @@ with sync_playwright() as p:
         comprobar('la brocha tiene su botón en Construir → Tierra', pg.locator('#btnBrocha').count() == 1)
         pg.click('#btnBrocha')
         PLANTAS = f"""([x, z, R]) => {{ const k = {K}, r = [], M = new (k.escena.matrix.constructor)();
-          for (const im of k.decorado.raiz.children) {{ if (!im.isInstancedMesh || !['hierba', 'flores', 'matorrales', 'helechos'].includes(im.name)) continue;
+          for (const im of k.decorado.raiz.children) {{ if (!im.isInstancedMesh || !['hierba', 'flores', 'matorrales', 'matorralesAlto', 'helechos'].includes(im.name)) continue;
             for (let q = 0; q < im.count; q++) {{ im.getMatrixAt(q, M); const e = M.elements; if (Math.abs(e[0]) + Math.abs(e[5]) < 1e-6) continue;
               const px = e[12], py = e[13], pz = e[14]; if (Math.hypot(px - x, pz - z) < R) r.push([im.name, px, py, pz]); }} }}
           return r; }}"""

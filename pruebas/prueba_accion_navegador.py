@@ -70,7 +70,7 @@ def ir(pg, p, dist=3.6, pitch=0.45):
     pg.wait_for_timeout(2500)
 
 # si hay un ejemplar de la malla de los matorrales puesto en (x, z)
-EN_MALLA = f"""([x, z]) => {{ const k = {K}; const ims = k.decorado.raiz.children.filter(c => c.name === 'matorrales' || c.name === 'helechos');   // (11 nov: con Meshy, una de cada tres matas es de helechos)
+EN_MALLA = f"""([x, z]) => {{ const k = {K}; const ims = k.decorado.raiz.children.filter(c => ['matorrales', 'matorralesAlto', 'helechos'].includes(c.name));   // (11 nov: con Meshy, una de cada tres matas es de helechos, y las de al lado, en los perfiles altos, van aparte)
   const m = new k.camara.matrixWorld.constructor(), v = new k.camara.position.constructor();
   for (const im of ims) for (let i = 0; i < im.count; i++) {{ im.getMatrixAt(i, m); if (Math.abs(m.determinant()) < 1e-9) continue; v.setFromMatrixPosition(m); if (Math.hypot(v.x - x, v.z - z) < 0.05) return true; }}
   return false; }}"""

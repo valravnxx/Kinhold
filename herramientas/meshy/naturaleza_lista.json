@@ -33,7 +33,7 @@
   8000,
   2000,
   500,
-  "--pie --hundir=0.05 --sin-textura"
+  "--pie --hundir=0.05 --sin-textura --alto-textura"
  ],
  "fresno": [
   9.2,
