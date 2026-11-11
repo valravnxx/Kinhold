@@ -69,5 +69,16 @@ comprobar('móvil que hace 38 fps en el medio (30 con margen) pero no en el alto
 comprobar('un móvil muy rápido no pasa a los de PC', elegirPorMedida({ 'movil-1': 2, 'movil-2': 3, 'movil-3': 4, 'pc-1': 5, 'pc-2': 6, 'pc-3': 7 }, true) === 'movil-3');
 comprobar('si no llega a ninguno, el más bajo', elegirPorMedida({ 'movil-1': 90, 'movil-2': 120 }, true) === 'movil-1');
 
+// la naturaleza de Meshy (valravnx, 11 nov: «¿por qué has dejado el modelo hiperlowpoly en gráficos máximos?»): cada
+// perfil lleva su detalle y, en cada familia, el de arriba llega igual o más lejos con el modelo de cerca y el de más detalle
+const NAT = globalThis.process?.env?.MUTAR === 'naturaleza' ? PERFILES.map(p => ({ ...p, naturaleza: { cerca: 12, alto: 0 } })) : PERFILES;
+for (const fam of ['movil', 'pc']) {
+  const l = NAT.filter(p => p.id.startsWith(fam));
+  comprobar(`naturaleza en ${fam === 'movil' ? 'móvil' : 'PC'}: cada perfil, igual o más detalle que el anterior, y el más alto más que el más bajo`,
+    l.every(p => p.naturaleza && p.naturaleza.cerca > 0) && l.every((p, i) => !i || (p.naturaleza.cerca >= l[i - 1].naturaleza.cerca && p.naturaleza.alto >= l[i - 1].naturaleza.alto))
+      && l.at(-1).naturaleza.cerca > l[0].naturaleza.cerca && l.at(-1).naturaleza.alto > l[0].naturaleza.alto, l.map(p => p.id + ' ' + JSON.stringify(p.naturaleza)).join(' · '));
+}
+comprobar('naturaleza: el PC alto lleva el modelo de cerca hasta 60 m y el de más detalle hasta 30', NAT[5].naturaleza.cerca >= 60 && NAT[5].naturaleza.alto >= 30);
+
 console.log(`\n${ok} bien, ${mal} mal`);
 process.exit(mal ? 1 : 0);
