@@ -1,0 +1,38 @@
+[
+ {
+  "nombre": "haya",
+  "alto": 10.8,
+  "imagen_id": "01a1ca42-8da4-72ca-8083-120250c86fc0",
+  "modelo_id": "01a1ca42-f1a3-7539-856f-f0b8271ea651",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "haya_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1ca49-beec-71af-a1f9-d1966cc28b49",
+  "modelo_id": "01a1ca4a-21c7-773b-8be2-eeb9be6a18d1",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "pino_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1ca4c-1c51-7112-abed-18143ee30b9e",
+  "modelo_id": "01a1ca4c-7fab-7059-b5ff-8a9b599ada88",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "matorral",
+  "alto": 0.9,
+  "imagen_id": "01a1ca55-88fc-7473-b7ae-d7f9ffc9fb1c",
+  "modelo_id": "01a1ca55-eb65-718b-ad11-d6b23c6bff07",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
