@@ -1,0 +1,14 @@
+Vista pc
+  OK   pc: en línea
+  OK   pc: mientras está, se le ve y sin símbolo
+  OK   pc: al cortarse, el símbolo de desconectado sale encima de él — [3, 1.0821722091305617, -5, True]
+  OK   pc: y no desaparece: se queda donde estaba
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea
+  OK   movil: mientras está, se le ve y sin símbolo
+  OK   movil: al cortarse, el símbolo de desconectado sale encima de él — [-3, 0.8246647118904633, -5, True]
+  OK   movil: y no desaparece: se queda donde estaba
+  OK   movil: sin errores en la página
+
+Todo bien
