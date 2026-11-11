@@ -1750,9 +1750,10 @@
     },
     {
      "nombre": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T11:29:03+00:00",
-     "rama": "trabajo/20261111-1127"
+     "rama": "trabajo/20261111-1127",
+     "fin": "2026-11-11T12:37:42+00:00"
     },
     {
      "nombre": "Fabricar con el acabado nuevo, en su pestaña: cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo) y «Hacer ×3»; lo que está en marcha, con su barra",
@@ -3951,6 +3952,13 @@
      "archivo": "jugar/demo/v176.html",
      "capturas": "capturas/demo-v176",
      "notas": "La naturaleza de Meshy: las siete especies de árbol, adultas y jóvenes, el matorral, los helechos, el arbusto de las bayas, las ortigas, los juncos, la hierba larga y las rocas, con el aspecto de maqueta en miniatura"
+    },
+    {
+     "v": "v177",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v177.html",
+     "capturas": "capturas/demo-v177",
+     "notas": "El equipo en tres columnas: Ropa (con tu personaje), Lo que llevas (las manos, el hombro y cada bolsa abierta a la vez, con sus huecos) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo; tocar ahí con algo tuyo elegido para dejarlo). En el móvil, dos pestañas: «Lo que llevas» y «Ropa». Los huecos vacíos enseñan, apagada, la silueta de lo que va. La ficha, abajo, con lo principal y «Mover…»; clic derecho o mantener el dedo: a la mano, o al suelo si ya está en la mano."
     }
    ]
   },
