@@ -1,0 +1,44 @@
+[
+ {
+  "nombre": "abeto",
+  "alto": 10.5,
+  "modelo_id": "01a1c9b2-6f7f-7751-bbcc-2f8b2d9d1bcc",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "pino",
+  "alto": 9.5,
+  "modelo_id": "01a1c9b4-1849-757e-86cb-69b85f425b16",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "haya",
+  "alto": 10.8,
+  "modelo_id": "01a1c9bc-2b4d-70db-a0e3-bd1c55869ae1",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "fresno",
+  "alto": 9.2,
+  "modelo_id": "01a1c9ce-33c1-77fb-8305-f697b9ff9367",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "encina",
+  "alto": 5.5,
+  "modelo_id": "01a1c9d0-747a-71d8-a204-3fa4a9470a1d",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "roble",
+  "alto": 7.5,
+  "modelo_id": "01a1c5aa-577f-7276-8814-1504e4f43c81",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ }
+]
