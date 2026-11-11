@@ -1766,9 +1766,10 @@
     },
     {
      "nombre": "Construir: «Poner | Quitar» (X) y la planta arriba (desmontar, dentro de construir); las piezas con su imagen y el coste en iconos (en rojo lo que no tienes) y lo que hay en tu tierra; deshacer lo último; sin mojón, se abre en la pestaña Tierra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T17:24:58+00:00",
-     "rama": "trabajo/20261111-1724"
+     "rama": "trabajo/20261111-1724",
+     "fin": "2026-11-11T18:40:58+00:00"
     },
     {
      "nombre": "La pestaña «Tu tierra»: cada almacenaje con lo que tiene (la obra no coge de ahí sola), quién puede construir y «Quitarle», y cuándo vuelve al rey si no se usa",
@@ -3987,6 +3988,13 @@
      "archivo": "jugar/demo/v180.html",
      "capturas": "capturas/demo-v180",
      "notas": "Fabricar con el acabado nuevo, en su pestaña del menú: tablero de roble y cartas con filo de latón; cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo, en la estación) y cuánto hay; en una estación, «×3» encarga tres seguidas; lo que está en marcha, con su barra. En el móvil, las pestañas de los sitios en filas enteras."
+    },
+    {
+     "v": "v181",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v181.html",
+     "capturas": "capturas/demo-v181",
+     "notas": "Construir con el acabado nuevo: arriba, en una barra de roble, «Poner | Quitar» (X), la planta, Deshacer (Ctrl+Z) y Terminar; abajo, las piezas con su imagen y el coste en iconos, con cuánto tienes y en rojo lo que no te llega; deshacer quita lo último que pusiste; sin mojón, construir se abre en la pestaña Tierra"
     }
    ]
   },

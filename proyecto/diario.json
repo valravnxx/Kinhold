@@ -6124,5 +6124,22 @@
   "pruebas": "Revisor en la nube, sin el recorrido ni la cama ligada (el cambio en la lógica de fabricar solo añade cuántas veces se puede hacer; no toca la tala ni la cama). Lógica de fabricación 197/197 (aquí y en la nube); la demo única, bien; el panel de fabricación, todo correcto en la última vuelta (con «a 9 pasos» lejos de la piedra de tallar y lo que está en marcha en el móvil, nuevos en la prueba; no comprobado rompiéndolos a propósito). En la lógica fallan dos comprobaciones de systemd-analyze en la máquina de la nube (avisos de sus propios servicios, CPUAccounting), que este cambio no toca; aquí, 27/27. El tamaño del tablero en el móvil se mide ahora con su margen (370 de 390). Sin la letra Inter en la nube (apt no respondía). Segunda mirada aparte de las capturas: sí. Para pulir: más margen abajo a «En marcha» y a la ficha en el móvil, el contraste de «×3» y el título largo de «Lo que pide» en el móvil.",
   "capturas": "capturas/demo-v180",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T17:24:58+00:00",
+  "fin": "2026-11-11T18:40:58+00:00",
+  "titulo": "La interfaz nueva: construir con el acabado nuevo (demo v181)",
+  "hito": "interfaz",
+  "hecho": [
+   "Arriba, en una barra de roble, «Poner | Quitar» (la X pasa de uno a otro: quitar ya no es un modo aparte), la planta, Deshacer y Terminar; en el móvil, en dos filas debajo del Menú.",
+   "Abajo, cada pieza, puesto, almacenaje y mueble con su imagen (sacadas de sus modelos: docs/recursos/piezas-v1) y el coste en iconos: cuánto pide y cuánto tienes (lo que llevas y lo almacenado en tu tierra), en rojo lo que no te llega.",
+   "Deshacer (o Ctrl+Z) quita lo último que pusiste si sigue ahí y no tiene nada encima que caería; lo que le hubieras llevado vuelve entero.",
+   "Sin mojón, construir se abre en la pestaña Tierra con el mojón elegido.",
+   "Una segunda mirada a las capturas dijo que aún no (los iconos del coste no se leían, el aviso de deshacer se borraba al momento, quitando salían los huecos de las manos); arreglado antes de publicar.",
+   "Las pruebas de nivelar y del idioma ya sirven el acopio y el mojón de Meshy (daban 404 desde la v178)."
+  ],
+  "pruebas": "En la nube: construir con el acabado nuevo (nueva; rota a propósito con MUTAR=1, falla), construcción, quitar el mojón, el menú con pestañas, la acción a la vista, la demo única, los avisos y nivelar, bien. Fallan, sin tocar este cambio: en «juego en inglés», las opciones del personaje en inglés (página del personaje); en «lógica», prueba_nube.mjs por avisos de systemd de la máquina de GitHub. Los grupos de las demás pruebas de navegador no se pasaron: en ellas solo cambia la línea que copia la carpeta de imágenes. Una petición de más grupos al PC de valravnx (pc-pedido/mwceugxrfu02) salió por error y no se pudo borrar.",
+  "capturas": "capturas/demo-v181",
+  "estado": "ok"
  }
 ]
