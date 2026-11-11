@@ -1571,9 +1571,9 @@
     },
     {
      "nombre": "La naturaleza de Meshy según el perfil gráfico: más detalle y más lejos en los perfiles altos",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T12:54:00+01:00",
-     "rama": "trabajo/20261111-0920-naturaleza"
+     "fin": "2026-11-11T14:47:08+01:00"
     }
    ]
   },
@@ -3970,6 +3970,13 @@
      "archivo": "jugar/demo/v178.html",
      "capturas": "capturas/demo-v178",
      "notas": "El acopio de troncos y el mojón que hizo valravnx en Meshy, en lugar de los de código: el acopio con sus durmientes en el suelo y los troncos apilados encima, tenue mientras se levanta; el mojón, de la misma altura, sobre su parche de tierra. Bajados para el móvil y cargados una vez para todos."
+    },
+    {
+     "v": "v179",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v179.html",
+     "capturas": "capturas/demo-v179",
+     "notas": "Más detalle en los gráficos altos: los árboles, las matas y las rocas de Meshy van con su modelo de cerca hasta más lejos y, al lado, con uno de más detalle"
     }
    ]
   },

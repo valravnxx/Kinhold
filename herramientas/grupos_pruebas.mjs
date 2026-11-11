@@ -50,7 +50,6 @@ export const TOCA = {
   'pelear-en-cualquier-sitio-del-mundo': [/^src\/juego\/combate_mundo\.js$/],
   'pruebas-de-estilo': [/^src\/estilo\//, /^construir_estilo\.mjs$/],
   'personaje': [/^src\/personaje\//, /^src\/personajes\//, /^src\/logica\/(aspecto|hechura|tintes)\.js$/, /^herramientas\/taller\//, /^construir_personaje\.mjs$/],
-  'animaciones-para-cargar': [/^src\/personajes\/medidas_carga\.js$/],
   'la-demo-en-el-mundo': [/^src\/mundo\/(mundo_juego|terreno_trozos|trozo_suelo|rendimiento)\.js$/, /^src\/demo\/rendimiento\.js$/],
   'lo-que-se-recoge-en-el-mundo': [/^src\/logica\/recogida_mundo\.js$/, /^src\/mundo\/rocas\.js$/],
   'construir-a-la-altura-del-suelo': [/^src\/logica\/nivelado\.js$/],
