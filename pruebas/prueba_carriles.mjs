@@ -41,6 +41,13 @@ const b3 = el(r3, { ...s3 }, 'B');
 comprobar('un carril cortado deja su tarea a medias: el otro carril la retoma desde su rama', b3 && b3.hito === 'h2' && b3.tarea === 'h2-2' && b3.retoma && b3.rama === 'trabajo/a', JSON.stringify(b3));
 const a3b = el(r3, s3, 'A');
 comprobar('el carril cortado retoma su tarea a medias', a3b && a3b.retoma && a3b.tarea === 'h2-2', JSON.stringify(a3b));
+// el carril cortado no retoma su tarea si en ese hito ya trabaja otro agente vivo (un chat la siguió): coge otro hito
+// (MUTAR_RETOMA=1 quita esta regla: tiene que fallar)
+{
+  const sc = { ...s3, 'chat:trabajo/c': { inicio: hace(10), tarea: 'h2-3', hito: 'h2', rama: 'trabajo/c' } };
+  const a3c = elegir(r3, sc, 'A', ahora);
+  comprobar('el carril cortado no retoma en un hito donde trabaja otro agente vivo', a3c && a3c.hito === 'h3', JSON.stringify(a3c));
+}
 // latido: un carril que empezó hace mucho pero subió un avance hace poco sigue vivo
 const s4 = { A: { ...leerCarriles(s3).A, ultimo: hace(5) } };
 const b4 = el(r3, s4, 'B');
