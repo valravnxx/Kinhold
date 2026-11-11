@@ -1,0 +1,24 @@
+  OK   PC: hay matorrales cerca de la salida — {'id': 'matorral:-35,73', 'x': -3.4907147431804333, 'z': 7.280971656364272}
+  OK   PC: junto a uno, se ve en la malla y estorba
+  OK   PC: sin hacha ni lasca, Usar no lo desbroza
+  OK   PC: es lo que se desbroza al lado — {'id': 'matorral:-35,73', 'tipo': 'matorral', 'x': -3.4907147431804333, 'z': 7.280971656364272}
+  OK   PC: (un hacha de piedra en la mano) — {'ok': True}
+  OK   PC: con el hacha, Usar se pone a desbrozar (a golpes, como al talar)
+  OK   PC: el matorral desaparece (ni en la malla ni estorbando)
+  OK   PC: y donde estaba quedan de 2 a 4 ramas (y como mucho una vara) — 3 ramas, 0 varas
+  OK   PC: al recargar la página sigue desbrozado
+  OK   PC: un arbusto de bayas también se desbroza: se van el arbusto y sus bayas — {'recoger_bayas_planta': True, 'recoger_bayas': True} → {'recoger_bayas_planta': False, 'recoger_bayas': False}
+  OK   PC: sin errores en la página
+  OK   móvil: hay matorrales cerca de la salida — {'id': 'matorral:-35,73', 'x': -3.4907147431804333, 'z': 7.280971656364272}
+  OK   móvil: junto a uno, se ve en la malla y estorba
+  OK   móvil: sin hacha ni lasca, Usar no lo desbroza
+  OK   móvil: es lo que se desbroza al lado — {'id': 'matorral:-35,73', 'tipo': 'matorral', 'x': -3.4907147431804333, 'z': 7.280971656364272}
+  OK   móvil: (un hacha de piedra en la mano) — {'ok': True}
+  OK   móvil: con el hacha, Usar se pone a desbrozar (a golpes, como al talar)
+  OK   móvil: el matorral desaparece (ni en la malla ni estorbando)
+  OK   móvil: y donde estaba quedan de 2 a 4 ramas (y como mucho una vara) — 3 ramas, 0 varas
+  OK   móvil: al recargar la página sigue desbrozado
+  OK   móvil: un arbusto de bayas también se desbroza: se van el arbusto y sus bayas — {'recoger_bayas_planta': True, 'recoger_bayas': True} → {'recoger_bayas_planta': False, 'recoger_bayas': False}
+  OK   móvil: sin errores en la página
+
+Todo correcto

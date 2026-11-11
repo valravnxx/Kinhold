@@ -1,0 +1,36 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2626 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2962 KB
+
+== Construir demo única
+      3293 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4259 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3029 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2620 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 2983 KB
+dist/kinhold_trozos.html 2634 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: desbrozar matorrales y arbustos
+  OK   móvil: un arbusto de bayas también se desbroza: se van el arbusto y sus bayas — {'recoger_bayas_planta': True, 'recoger_bayas': True} → {'recoger_bayas_planta': False, 'recoger_bayas': False}
+  OK   móvil: sin errores en la página
+
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 222 s
