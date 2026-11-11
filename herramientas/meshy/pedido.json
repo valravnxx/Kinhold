@@ -1,1 +1,41 @@
-{"accion": "biblioteca"}
+{
+ "accion": "modelos",
+ "tope": 100,
+ "cosas": [
+  {
+   "nombre": "arbol_adulto",
+   "alto": 9.0,
+   "tri": 24000,
+   "cosa": "A mature broadleaf oak tree about 9 metres tall, made like a model-railway miniature tree: a thick gnarled bark-covered trunk with a slight lean, roots gripping the ground, a few strong branches, and a broad crown built from 6 to 8 large smooth rounded clumps of green foliage. Smooth softly rounded surfaces like flocked foam balls on a scale model, with only a fine painted leaf texture on them; no spiky or ragged edges, no individual leaves, no thin twigs.",
+   "id": "01a1c5aa-577f-7276-8814-1504e4f43c81"
+  },
+  {
+   "nombre": "arbol_joven",
+   "alto": 4.0,
+   "tri": 10000,
+   "cosa": "A young slender broadleaf tree about 4 metres tall, made like a model-railway miniature tree: a thin straight trunk no thicker than a wrist, two or three short side branches, and a small crown of 3 to 5 smooth rounded clumps of foliage, every clump the same fresh muted green and evenly lit, none dark or shadowed. Smooth softly rounded surfaces like flocked foam balls on a scale model, with only a fine painted leaf texture on them; no spiky or ragged edges, no individual leaves, no thin twigs."
+  },
+  {
+   "nombre": "arbusto",
+   "alto": 1.4,
+   "tri": 10000,
+   "cosa": "A wild hazel bush about 1.4 metres tall, made like a model-railway miniature shrub: a few short woody stems at the base under 3 or 4 smooth rounded clumps of fresh green foliage. Smooth softly rounded surfaces like flocked foam balls on a scale model, with only a fine painted leaf texture on them; no spiky or ragged edges, no individual leaves, no thin twigs.",
+   "id": "01a1c5af-be40-73bb-ae8e-b2bd66f346b1"
+  },
+  {
+   "nombre": "arbusto_bayas",
+   "alto": 1.2,
+   "tri": 10000,
+   "cosa": "A low wild berry bush about 1.2 metres tall, made like a model-railway miniature shrub: one dense rounded mound of dark green foliage built from a few smooth clumps, on short woody stems at the base; no berries. Smooth softly rounded surfaces like flocked foam balls on a scale model, with only a fine painted leaf texture on them; no spiky or ragged edges, no individual leaves, no thin twigs.",
+   "id": "01a1c5b2-100f-7383-9d38-9ca026d056ef"
+  },
+  {
+   "nombre": "matorral",
+   "alto": 0.9,
+   "tri": 8000,
+   "cosa": "A low thicket of wild scrub about 0.9 metres tall and 1.5 metres wide, made like a model-railway miniature: a low lumpy mound of smooth rounded clumps of living muted green foliage (sage and moss green, a few lighter yellow-green tips), with two or three short dry grey-brown sticks poking out. Smooth softly rounded surfaces like flocked foam balls on a scale model, with only a fine painted leaf texture on them; no spiky or ragged edges, no individual leaves, no thin twigs, no bare earth."
+  }
+ ],
+ "textura_prompt": false,
+ "remallado": false
+}

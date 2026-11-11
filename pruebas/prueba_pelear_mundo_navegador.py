@@ -15,6 +15,7 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_pelear_mundo'
 os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):

@@ -18,6 +18,7 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_accion'
 os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'meshy-v2']:
@@ -69,9 +70,9 @@ def ir(pg, p, dist=3.6, pitch=0.45):
     pg.wait_for_timeout(2500)
 
 # si hay un ejemplar de la malla de los matorrales puesto en (x, z)
-EN_MALLA = f"""([x, z]) => {{ const k = {K}; const im = k.decorado.raiz.children.find(c => c.name === 'matorrales'); if (!im) return false;
+EN_MALLA = f"""([x, z]) => {{ const k = {K}; const ims = k.decorado.raiz.children.filter(c => c.name === 'matorrales' || c.name === 'helechos');   // (11 nov: con Meshy, una de cada tres matas es de helechos)
   const m = new k.camara.matrixWorld.constructor(), v = new k.camara.position.constructor();
-  for (let i = 0; i < im.count; i++) {{ im.getMatrixAt(i, m); if (Math.abs(m.determinant()) < 1e-9) continue; v.setFromMatrixPosition(m); if (Math.hypot(v.x - x, v.z - z) < 0.05) return true; }}
+  for (const im of ims) for (let i = 0; i < im.count; i++) {{ im.getMatrixAt(i, m); if (Math.abs(m.determinant()) < 1e-9) continue; v.setFromMatrixPosition(m); if (Math.hypot(v.x - x, v.z - z) < 0.05) return true; }}
   return false; }}"""
 ESTORBA = f"([x, z]) => {K}.decorado.obstaculos.some(o => o.mata && !o.oculto && Math.hypot(o.x - x, o.z - z) < 0.05)"
 EN_SUELO = f"([x, z, t]) => {K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === t && Math.hypot(o.x - x, o.z - z) < 1).reduce((n, o) => n + o.cosa.n, 0)"

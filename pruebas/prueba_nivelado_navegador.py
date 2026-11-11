@@ -15,6 +15,7 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_nivelado'
 os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):
@@ -139,7 +140,7 @@ with sync_playwright() as p:
         comprobar('la brocha tiene su botón en Construir → Tierra', pg.locator('#btnBrocha').count() == 1)
         pg.click('#btnBrocha')
         PLANTAS = f"""([x, z, R]) => {{ const k = {K}, r = [], M = new (k.escena.matrix.constructor)();
-          for (const im of k.decorado.raiz.children) {{ if (!im.isInstancedMesh || !['hierba', 'flores', 'matorrales'].includes(im.name)) continue;
+          for (const im of k.decorado.raiz.children) {{ if (!im.isInstancedMesh || !['hierba', 'flores', 'matorrales', 'helechos'].includes(im.name)) continue;
             for (let q = 0; q < im.count; q++) {{ im.getMatrixAt(q, M); const e = M.elements; if (Math.abs(e[0]) + Math.abs(e[5]) < 1e-6) continue;
               const px = e[12], py = e[13], pz = e[14]; if (Math.hypot(px - x, pz - z) < R) r.push([im.name, px, py, pz]); }} }}
           return r; }}"""
