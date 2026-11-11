@@ -6093,5 +6093,20 @@
   "pruebas": "Comprobado en el juego: con el PC alto, los robles de al lado con 24 000 triángulos y los de hasta 60 m con su textura; al pasar al móvil básico se rehace con los sencillos. Perfiles 28/28 (rota a propósito: 3 mal). Nube: desbrozar, bosque de cerca, mazo y la demo en el mundo, bien. No comprobado: fotogramas en un PC o un móvil de verdad.",
   "capturas": "capturas/demo-v179",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T13:28:08+00:00",
+  "fin": "2026-11-11T15:04:59+00:00",
+  "titulo": "Fabricar con el acabado nuevo (sin publicar: las pruebas no se pudieron pasar)",
+  "hito": "interfaz",
+  "hecho": [
+   "Hecho en la rama trabajo/20261111-1330, sin publicar: el panel de fabricar con el acabado del estudio (tablero de roble, letra del menú, cartas con filo de latón y debajo del nombre «ya», lo que falta o dónde se hace).",
+   "Cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material («en las manos», «en el zurrón de piel», «en el suelo») y «3 de 3»; «×3» encarga tres seguidas si hay para tres; lo que está en marcha, con su barra.",
+   "Una segunda mirada a las capturas dijo que aún no: en el móvil se cortan las pestañas de los sitios y faltan capturas de «a N pasos», del zurrón y del suelo, y de lo que está en marcha en el móvil.",
+   "La prueba de la demo única servía sin el acopio y el mojón de Meshy y las notas de la v178 estaban sin traducir (los dos, de main): arreglado en la rama."
+  ],
+  "pruebas": "La nube no pudo instalar el navegador en ninguna de sus máquinas (no resolvía los servidores de Ubuntu), dos veces. Aquí: lógica de fabricación 197/197 (y rota a propósito, falla), recorrido 243/243, demo única correcta; el panel de fabricación, lo nuevo correcto, pero fallan aquí la tala y la reparación por esperas y la parte del móvil no llega a entrar (esta máquina dibuja a menos de 3 fotogramas por segundo). No comprobado en la nube.",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]
