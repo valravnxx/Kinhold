@@ -1,0 +1,56 @@
+[
+ {
+  "nombre": "abeto_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c9b2-053b-7628-989b-9910f41a755f",
+  "modelo_id": "01a1c9b2-67e3-74a1-9645-c604d432a0b1",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "pino_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c9b3-34e2-77e8-9b95-2e0627f79001",
+  "modelo_id": "01a1c9b3-9781-7546-b793-5e3d07394f39",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "abedul_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c9b4-e9b7-717e-b393-428940a2cab2",
+  "modelo_id": "01a1c9b5-4bbf-71af-bd54-f670db026889",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "haya_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c9b6-39ff-73a6-91c8-20665cc2660a",
+  "modelo_id": "01a1c9b6-9cd9-7036-a149-6092154cef95",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "fresno_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c9b9-b9a9-74f3-82f0-e5ad3c03e489",
+  "modelo_id": "01a1c9ba-1c9f-7685-9a66-05722b6ac926",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "encina_joven",
+  "alto": 4.0,
+  "imagen_id": "01a1c9bb-eea0-70f6-b1ff-4ffac612fcc4",
+  "modelo_id": "01a1c9bc-513e-7040-b742-0c36432bcb88",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
