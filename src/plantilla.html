@@ -324,9 +324,9 @@ body.construyendo #pomo{left:25px;top:25px}
 .eq-col{overflow:auto;min-height:0;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .eq-col+.eq-col{border-left:1px solid var(--linea)}
 #panelInventario .eq-col>h3{margin:0;font:600 13px/1.2 Georgia,"Times New Roman",serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acento)}
-.inv-figura{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;gap:4px 8px;align-items:stretch;width:100%;margin:0 auto;flex:1;min-height:330px}
-.eq-ropa .inv-c{width:62px;height:62px}
-.eq-cab>div{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 14px}
+.inv-figura{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;gap:4px 8px;align-items:stretch;width:100%;margin:0 auto;flex:1;min-height:290px}
+.eq-ropa .inv-c{width:58px;height:58px}
+.eq-cab>div:first-child{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 14px}
 #panelInventario .eq-cab h2{margin:0}
 .inv-col{display:flex;flex-direction:column;justify-content:space-between;gap:6px;padding:4px 0}
 .inv-retrato{position:static;inset:auto;touch-action:auto;width:100%;min-width:0;height:100%;min-height:320px;display:block;background:radial-gradient(ellipse at 50% 92%,rgba(0,0,0,.28),transparent 38%),radial-gradient(ellipse at 50% 40%,rgba(241,232,216,.07),transparent 70%);border-radius:12px}
@@ -382,7 +382,7 @@ body.construyendo #pomo{left:25px;top:25px}
 .eq-sel-cerrar{position:absolute;right:10px;top:10px;width:28px;height:28px;padding:0;border-radius:8px;font-size:14px;line-height:1}
 .eq-sel-cerrar::before{content:"✕"}
 .inv-sel .fab-chips{display:flex;flex-wrap:wrap;gap:6px}
-.inv-botones{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.inv-sel .inv-botones{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:0}
 .inv-botones .fab-btn,.inv-botones .fab-btn2{text-align:center;width:auto;flex:0 1 auto;padding:8px 14px}
 .inv-botones .inv-mover.sel{border-color:#f0c46a;box-shadow:0 0 0 2px #f0c46a}
 .eq-pie{grid-area:pie;border-top:1px solid var(--linea);padding:6px 14px 8px}
@@ -475,6 +475,8 @@ body.construyendo #pomo{left:25px;top:25px}
     grid-template-columns:72px minmax(0,1fr);gap:6px 12px;align-items:start;min-height:0}
   #panelInventario.eq-con-sel .inv-sel{display:grid}
   #panelInventario.eq-con-sel .eq-centro{padding-bottom:50vh}
+  /* dentro del tablero del menú, la ficha va dentro del marco (no debajo de él) */
+  body.hub-abierto #panelInventario .inv-sel{position:absolute;left:18px;right:18px;bottom:18px;max-height:62%;border:1px solid rgba(217,164,65,.35);border-radius:14px}
   .inv-sel .eq-grande{height:72px}
   .inv-sel .eq-grande .ic-prenda{padding:8px}
   .inv-sel .fab-titulo{font-size:16px}

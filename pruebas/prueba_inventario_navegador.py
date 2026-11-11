@@ -91,7 +91,7 @@ with sync_playwright() as p:
     # el equipo en tres columnas (11 nov): Ropa | Lo que llevas | A tus pies, y los huecos vacíos con su silueta
     cols = pg.evaluate("[...document.querySelectorAll('#panelInventario .eq-col')].map(c => { const r = c.getBoundingClientRect(); return [c.classList[1], Math.round(r.x), Math.round(r.width)]; })")
     comprobar('tres columnas, una al lado de otra: Ropa, Lo que llevas y A tus pies', [c[0] for c in cols] == ['eq-ropa', 'eq-llevas', 'eq-pies'] and cols[0][1] < cols[1][1] < cols[2][1] and all(c[2] > 200 for c in cols), str(cols))
-    comprobar('los huecos vacíos enseñan la silueta de lo que va (la cabeza y la mano izquierda)', pg.locator(R('ropa:cabeza') + ' .eq-sil svg').count() == 1 and pg.locator(R('mano:izq') + ' .eq-sil img').count() == 1)
+    comprobar('los huecos vacíos enseñan la silueta de lo que va (la cabeza y la mano izquierda)', pg.locator(R('ropa:cabeza') + ' .eq-sil svg').count() == 1 and pg.locator(R('mano:izq') + ' .eq-sil svg').count() == 1)
     pg.screenshot(path=f'{SALIDA}/01_pc_inventario_inicial.png')
 
     pg.drag_and_drop(O('cinto_cuero'), R('cintura'))

@@ -19,7 +19,6 @@ import { PRENDAS } from '../logica/prendas.js';
 import { RECETAS, PARA } from '../logica/fabricacion.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { carpetaIconos } from './panel_fabricar.js';
-import { CARPETA_INTERFAZ } from '../logica/iconos.js';
 import { tr } from '../idioma.js';
 
 // Los cuadros del equipo, a los dos lados del personaje, de arriba abajo más o menos a la altura de lo que visten.
@@ -32,10 +31,12 @@ const BOLSAS = [['cintura', 'Cintura'], ['espalda', 'Espalda']];
 export const CUADROS_EQUIPO = [...IZQUIERDA, ...DERECHA, ...BOLSAS].map(([r]) => r);
 const NOMBRE_SITIO = Object.fromEntries([...IZQUIERDA, ...DERECHA, ...MANOS_HOMBRO, ...BOLSAS]);
 // La silueta de lo que va en cada hueco vacío: una prenda de ese sitio (dibujada) o la imagen de una cosa que va ahí,
-// apagadas; las manos, con su icono del kit de la interfaz (docs/recursos/interfaz-v1).
+// apagadas; las manos, una mano abierta.
 const SILUETA = { 'ropa:cabeza': 'capucha_lana', 'ropa:sobre': 'manto_lana', 'ropa:abrigo': 'tunica_lana', 'ropa:exterior': 'cota_malla',
   'ropa:interior': 'camisa_lino', 'ropa:piernas': 'calzas_lana', 'ropa:pies': 'botas_cuero', cintura: 'cinto_cuero', espalda: 'zurron', hombro: 'saco' };
-const SILUETA_KIT = { 'mano:der': 'g_amanos', 'mano:izq': 'g_amanos', 'ropa:guantes': 'g_amanos' };
+// las manos (y los guantes): una mano abierta, dibujada aquí (no hay cosa que vaya en ellas siempre)
+const MANO_SVG = '<svg viewBox="0 0 100 100" class="ic-prenda"><path fill="#d8cbb4" d="M38 96 L34 64 L19 50 C14 45 19 37 26 42 L36 51 L36 21 C36 14 45 14 45 21 L46 45 L47 14 C47 7 56 7 56 14 L57 45 L59 19 C59 12 67 12 67 19 L66 49 L69 31 C69 24 77 25 76 31 L73 62 C71 78 67 86 65 96 Z"/></svg>';
+const SILUETA_MANO = new Set(['mano:der', 'mano:izq', 'ropa:guantes']);
 
 // Grupos del arcón de pruebas, sacados del catálogo. Los materiales de obra van aparte, contados (el arcón de pruebas
 // tiene lo que antes era el montón común de la construcción).
@@ -89,7 +90,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   let moviendo = false;    // tras «Mover…»: el siguiente toque dice adónde
   let pestana = 'llevas';  // en el móvil: «Lo que llevas» o «Ropa»
   let aviso = { txt: '', error: false };
-  const base = carpetaIconos(), kit = '../../' + CARPETA_INTERFAZ;
+  const base = carpetaIconos();
   let indice = {}, pedido = false;   // las imágenes: cuáles aún no tienen su modelo (se piden al abrir)
   const cargarIndice = () => { if (pedido || typeof fetch !== 'function') return; pedido = true; fetch(base + 'indice.json').then(r => r.ok ? r.json() : null).then(j => { if (j && j.iconos) { indice = j.iconos; arconHecho = false; pintar(); } }).catch(() => {}); };
 
@@ -240,7 +241,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   }
   // la silueta apagada de lo que va en un sitio vacío
   function silueta(ruta) {
-    if (SILUETA_KIT[ruta]) return `<span class="eq-sil"><img src="${esc(kit + SILUETA_KIT[ruta] + '.webp')}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"></span>`;
+    if (SILUETA_MANO.has(ruta)) return `<span class="eq-sil">${ruta === 'mano:izq' ? MANO_SVG.replace('<path', '<path transform="matrix(-1 0 0 1 100 0)"') : MANO_SVG}</span>`;
     const t = SILUETA[ruta];
     if (!t) return '';
     return `<span class="eq-sil">${PRENDAS[t] ? svgPrenda(t) : `<img src="${esc(base + t + '.webp')}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`}</span>`;
@@ -251,7 +252,7 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     const b = inv().buscar(ruta), c = b.cosa;
     const elegido = sel && sel.de === 'inv' && sel.ruta === ruta;
     const bloqueada = ruta.startsWith('mano:') && !c && inv().manoBloqueada(ruta);
-    const destino = sel && !elegido && (moviendo || !c) && !bloqueada;
+    const destino = sel && moviendo && !elegido && !bloqueada;   // (tras «Mover…»: dónde se puede tocar)
     const clase = ['inv-c', c ? 'lleno' : 'vacio', elegido ? 'sel' : '', destino ? 'destino' : '', c && def(c).huecos ? 'contenedor' : '', bloqueada ? 'bloqueada' : '', extra].join(' ');
     const dentro = c ? `${imagen(c.tipo, c)}<span class="inv-nom">${esc(nombreDe(c))}</span>${c.n > 1 ? `<b class="inv-n">${c.n}</b>` : ''}` : `${silueta(ruta)}<span class="inv-et">${esc(etiqueta)}</span>`;
     const tit = c ? `${nombreDe(c)} (${tr(NOMBRE_TAM[def(c).tam])})` : etiqueta;
