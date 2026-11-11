@@ -4,6 +4,7 @@
 // formas redondeadas, color con oclusión horneado en los vértices y texturas por código (src/mundo/estilos.js),
 // todo junto en una malla por textura (todas las piezas y los muebles ya lo están).
 import * as THREE from 'three';
+import { conMeshy } from './meshy_objetos.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MODULO, ALTURA } from '../logica/piezas.js';
@@ -861,8 +862,13 @@ function trampilla() {
 }
 
 // ---------- Mojón, con el estilo v5 ----------
-// Piedras apiladas (caras planas, como las de los cimientos) y una vara con un trapo atado
+// El que hizo valravnx en Meshy (11 nov; src/mundo/meshy_objetos.js): piedras apiladas sobre un parche de tierra, con
+// una estaca y un trapo rojo. Hasta que llega, el de código: piedras apiladas (caras planas, como las de los cimientos)
+// y una vara con un trapo atado. Lo que se elige al tocarlo (userData.ref, main.js) se pasa a las mallas nuevas.
 export function mojon() {
+  return conMeshy('mojon', mojonCodigo, g => { const ref = g.userData.ref; if (ref) g.traverse(o => { o.userData.ref = ref; }); });
+}
+function mojonCodigo() {
   const L = loteSuelo();
   // las grandes con más caras (detalle 1, como las rocas de la prueba v5); las pequeñas del pie, con 20 bastan
   const piedraM = (r, x, y, z, s, color) => L.add(new THREE.IcosahedronGeometry(1, r > 0.15 ? 1 : 0), color, x, y, z,

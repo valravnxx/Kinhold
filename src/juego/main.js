@@ -661,6 +661,7 @@ function objDe(c, key) { const r = registroMallas.find(m => m.c === c && m.key =
 // ---------------- Fantasma de colocación ----------------
 let fantasma = null, fantasmaTipo = null, fantasmaForma = null;
 function velarFantasma() {
+  fantasma.userData.fantasma = true;   // (el de Meshy, si llega después, no lo cambia: src/mundo/meshy_objetos.js)
   fantasma.traverse(o => { if (o.isMesh) { o.userData.matBase = o.material; o.material = matVelo(o.material, 'ok'); o.castShadow = false; o.renderOrder = 2; } });
 }
 // el remate de tejado cambia de forma según los tramos de al lado (limatesa o limahoya): el fantasma también
