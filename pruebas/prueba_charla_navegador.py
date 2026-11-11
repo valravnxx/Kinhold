@@ -4,7 +4,9 @@
 #   - al decirlo, el bocadillo sale sobre tu cabeza (lo que ha aceptado el servidor) y le llega al otro, contigo de autor;
 #   - lo que dice el otro sale sobre su cabeza;
 #   - Esc deja lo escrito sin decirlo; hablar a chorro: el aviso del servidor;
-#   - el bocadillo se va al rato.
+#   - el bocadillo se va al rato;
+#   - las ocho frases rápidas: se ven enteras en el cuadro, un toque y se dice (por la red, solo su número) y a cada uno
+#     le sale en su lengua (el móvil va en inglés: lo que el otro dice como frase 7 le sale «Watch out!»).
 # Uso: python3 pruebas/prueba_charla_navegador.py <html de la demo> <carpeta_capturas>
 # MUTAR=1: el navegador no pone los bocadillos: tiene que fallar.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
@@ -16,6 +18,8 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_charla'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = os.environ.get('MUTAR', '') == '1'
+EN = json.load(open(os.path.join(RAIZ, 'src/idiomas/en.json'), encoding='utf-8'))
+FRASES = ['¡Hola!', 'Sí', 'No', 'Gracias', 'Ven aquí', 'Espera', '¡Ayuda!', '¡Cuidado!']   # (src/logica/charla.js)
 
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo')
@@ -42,7 +46,7 @@ import {{ terrenoWhitholm }} from './src/logica/terreno_servidor.js';
 const y = terrenoWhitholm().suelo({OTRO[0]}, {OTRO[1]});
 const ws = new WebSocket('ws://127.0.0.1:{PUERTO}');
 ws.on('open', () => setInterval(() => ws.send(JSON.stringify({{ tipo: 'estado', x: {OTRO[0]}, y, z: {OTRO[1]}, giro: 0, anim: 'quieto' }})), 200));
-createInterface({{ input: process.stdin }}).on('line', (t) => ws.send(JSON.stringify({{ tipo: 'decir', texto: t }})));
+createInterface({{ input: process.stdin }}).on('line', (t) => ws.send(JSON.stringify(t.startsWith('#frase ') ? {{ tipo: 'decir', frase: +t.slice(7) }} : {{ tipo: 'decir', texto: t }})));
 ws.on('message', (d) => {{ const m = JSON.parse(d.toString()); if (m.tipo === 'bienvenida') console.log('yo ' + m.autor);
   if (m.tipo === 'dicho') console.log('dicho ' + JSON.stringify(m)); }});"""
 bot = subprocess.Popen(['node', '--input-type=module', '-e', BOT], cwd=RAIZ, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -89,7 +93,9 @@ try:
             pg = ctx.new_page()
             err = []
             pg.on('pageerror', lambda e, err=err: err.append(str(e)))
-            pg.goto(URL, wait_until='domcontentloaded', timeout=180000)
+            lengua = 'en' if movil else 'es'
+            T = (lambda t: EN.get(t, t)) if lengua == 'en' else (lambda t: t)
+            pg.goto(URL + '&lang=' + lengua, wait_until='domcontentloaded', timeout=180000)
             try: pg.wait_for_function("!!document.getElementById('pantallaCuenta')", timeout=20000); crear_y_confirmar(pg, codigos, 'charla' + nombre)
             except Exception: pass
             listo = esperar(pg, f"{K} && {K}.mundoListo && {K}.charla && {K}.yo && !document.getElementById('pantallaCuenta')", 300000)
@@ -104,10 +110,14 @@ try:
             frase = 'Buenas, ¿subimos hoy el muro de zarzo de la casa? Traigo varas y barro del río, tú pon el cimiento' if nombre == 'pc' else 'Voy a por varas al bosque de allí y vuelvo enseguida con barro del río para el muro'
             if movil:
                 pg.tap('#btnHablar')
+                # (en el móvil se abre sin teclado, para que se vean las frases; se toca el campo para escribir)
+                sin_teclado = esperar(pg, f"{K}.charla.abierta && document.activeElement && document.activeElement.id !== 'charlaTexto'", 5000)
+                comprobar(f'{nombre}: «Hablar» abre el cuadro sin sacar el teclado (se ven las frases)', sin_teclado)
+                pg.tap('#charlaTexto')
             else:
                 pg.keyboard.press('Enter')
             abierta = esperar(pg, f"{K}.charla.abierta && document.activeElement && document.activeElement.id === 'charlaTexto'", 5000)
-            comprobar(f'{nombre}: {"«Hablar»" if movil else "Intro"} abre el cuadro para escribir', abierta)
+            comprobar(f'{nombre}: {"«Hablar» y tocar el campo" if movil else "Intro"} abre el cuadro para escribir', abierta)
             pg.keyboard.type(frase + ' wasd', delay=20)
             for _ in range(5): pg.keyboard.press('Backspace')
             pg.wait_for_timeout(800)
@@ -146,7 +156,7 @@ try:
             # Esc: lo escrito no se dice
             pg.wait_for_timeout(1200)
             n1 = len(OYE)
-            if movil: pg.tap('#btnHablar')
+            if movil: pg.tap('#btnHablar'); esperar(pg, f"{K}.charla.abierta", 3000); pg.tap('#charlaTexto')
             else: pg.keyboard.press('Enter')
             esperar(pg, f"{K}.charla.abierta", 3000)
             pg.keyboard.type('esto no', delay=20); pg.keyboard.press('Escape')
@@ -156,11 +166,44 @@ try:
             # segundo entre una y otra y el servidor, con razón, dejaba las dos): la segunda no pasa y se avisa
             pg.evaluate(f"""(() => {{ const c = {K}.charla, f = document.getElementById('charlaCaja'), t = document.getElementById('charlaTexto');
               for (const x of ['una', 'dos']) {{ c.abrir(); t.value = x; f.requestSubmit(); }} }})()""")
-            aviso = esperar(pg, "!document.getElementById('aviso').hidden && document.getElementById('aviso').textContent.includes('Más despacio')", 5000)
+            despacio = T('Más despacio: espera un poco antes de volver a hablar.')[:12]
+            aviso = esperar(pg, f"!document.getElementById('aviso').hidden && document.getElementById('aviso').textContent.includes({json.dumps(despacio)})", 5000)
             comprobar(f'{nombre}: hablar a chorro: el servidor no lo deja y se avisa', aviso and pg.evaluate(f"{K}.charla.bocadillos.get({json.dumps(yo)})") == 'una')
             # y el bocadillo se va al rato (el de «una»: 4,2 s)
             se_va = esperar(pg, f"!{K}.charla.bocadillos.has({json.dumps(yo)}) && ![...document.querySelectorAll('#charlaBocadillos .charlaBocadillo')].some(e => e.dataset.autor === {json.dumps(yo)})", 15000)
             comprobar(f'{nombre}: el bocadillo se va al rato', se_va)
+            # las ocho frases rápidas: enteras y en tu lengua en el cuadro
+            pg.wait_for_timeout(1200)
+            if movil: pg.tap('#btnHablar')
+            else: pg.keyboard.press('Enter')
+            esperar(pg, f"{K}.charla.abierta", 3000)
+            pg.wait_for_timeout(300)
+            botones = pg.evaluate("""() => [...document.querySelectorAll('#charlaFrases button')].map(b => { const r = b.getBoundingClientRect();
+              return { t: b.textContent, x0: r.left, x1: r.right, y0: r.top, y1: r.bottom, cabe: b.scrollWidth <= b.clientWidth + 1 && b.scrollHeight <= b.clientHeight + 1 }; })""")
+            W, H = vista['width'], vista['height']
+            comprobar(f'{nombre}: las ocho frases rápidas, en tu lengua', [b['t'] for b in botones] == [T(f) for f in FRASES], str([b['t'] for b in botones]))
+            comprobar(f'{nombre}: enteras y dentro de la pantalla (sin cortar el texto)', len(botones) == 8 and all(b['cabe'] and b['x0'] >= 0 and b['x1'] <= W and b['y0'] >= 0 and b['y1'] <= H for b in botones), str(botones[:2]))
+            captura(pg, f'{SALIDA}/{nombre}_frases.png')
+            try: pg.locator('#charlaCaja').screenshot(path=f'{SALIDA}/{nombre}_frases_cerca.png')
+            except Exception as e: print('  (sin captura de cerca:', str(e)[:80], ')')
+            # un toque en «Ven aquí» (la 4): se dice, y por la red va solo su número
+            n2 = len(OYE)
+            if movil: pg.tap('#charlaFrases button[data-frase="4"]')
+            else: pg.click('#charlaFrases button[data-frase="4"]')
+            sale = esperar(pg, f"{K}.charla.bocadillos.get({json.dumps(yo)}) === {json.dumps(T('Ven aquí'))}", 5000)
+            comprobar(f'{nombre}: un toque en «{T("Ven aquí")}» y se dice (y el cuadro se cierra)', sale and not pg.evaluate(f'{K}.charla.abierta'))
+            for _ in range(30):
+                if len(OYE) > n2: break
+                time.sleep(0.1)
+            nuevo = OYE[n2:]
+            comprobar(f'{nombre}: al otro le llega su número, no el texto', any(d['autor'] == yo and d.get('frase') == 4 and 'texto' not in d for d in nuevo), json.dumps(nuevo, ensure_ascii=False))
+            # y lo que el otro dice como frase rápida, a ti te sale en tu lengua
+            pg.wait_for_timeout(1100)
+            bot_dice('#frase 7')
+            sale = esperar(pg, f"{K}.charla.bocadillos.get({json.dumps(AUTOR_BOT)}) === {json.dumps(T('¡Cuidado!'))}", 5000)
+            comprobar(f'{nombre}: la frase rápida del otro te sale en tu lengua («{T("¡Cuidado!")}»)', sale, str(pg.evaluate(f"[...{K}.charla.bocadillos]")))
+            pg.wait_for_timeout(500)
+            captura(pg, f'{SALIDA}/{nombre}_frase_dicha.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()
             time.sleep(1.2)

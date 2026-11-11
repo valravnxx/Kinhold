@@ -5,16 +5,19 @@
 //   - no se puede hablar a chorro (una frase por segundo, 6 en 20 s);
 //   - le llega a quien está a 50 m o menos, y al que habla; al de 200 m, no;
 //   - el autor es el de la conexión (lo que diga el mensaje no cuenta);
-//   - lo vacío no vale; lo dicho queda en charla.jsonl.
+//   - lo vacío no vale; lo dicho queda en charla.jsonl;
+//   - las ocho frases rápidas van por su número ({ frase }) y llegan por su número (cada navegador la pone en su lengua);
+//     un número que no es de ninguna frase no vale.
 // Ejecutar: node pruebas/prueba_charla.mjs
 // MUTAR=1: un servidor que se lo reparte a todos (también al de lejos): debe FALLAR.
 // MUTAR=2: un servidor que deja hablar a chorro: debe FALLAR.
+// MUTAR=3: un servidor que reparte la frase rápida como texto (en español para todos): debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { limpiarTexto, duracionBocadillo, LimitadorCharla, quienOye, validarDicho, LARGO_MAX, ALCANCE, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
+import { limpiarTexto, FRASES, validarFrase, duracionBocadillo, LimitadorCharla, quienOye, validarDicho, LARGO_MAX, ALCANCE, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
 
 const MUTAR = process.env.MUTAR || '';
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -53,12 +56,17 @@ comprobar('el bocadillo dura entre 4 y 12 s, más cuanto más largo', duracionBo
 }
 comprobar('lo que llega al navegador se comprueba otra vez', validarDicho({ autor: 'x', texto: ' hola‮ ' }).texto === 'hola' && validarDicho({ autor: 'x', texto: '' }) === null && validarDicho({ texto: 'hola' }) === null);
 
+comprobar('ocho frases rápidas, distintas', FRASES.length === 8 && new Set(FRASES).size === 8 && FRASES.every(f => limpiarTexto(f) === f));
+comprobar('el número de una frase: de 0 a 7, entero; lo demás no vale', validarFrase(0) === 0 && validarFrase(7) === 7 && [8, -1, 1.5, '3', null, undefined, NaN].every(n => validarFrase(n) === null));
+comprobar('una frase rápida llega al navegador por su número (y uno que no es ninguna, no)', JSON.stringify(validarDicho({ autor: 'x', frase: 3 })) === '{"autor":"x","frase":3}' && validarDicho({ autor: 'x', frase: 9 }) === null && validarDicho({ autor: 'x', frase: '1' }) === null);
+
 console.log('Con el servidor de verdad');
 let ruta = join(raiz, 'servidor/servidor.mjs'), copia = null;
-if (MUTAR === '1' || MUTAR === '2') {
+if (MUTAR === '1' || MUTAR === '2' || MUTAR === '3') {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('const oyen = quienOye(autor, posiciones);', 'const oyen = [...conexionDe.keys()];')
-    : fuente.replace('if (!charla.admitir(autor, reloj()))', 'if (false)');
+    : MUTAR === '2' ? fuente.replace('if (!charla.admitir(autor, reloj()))', 'if (false)')
+    : fuente.replace("enviar(c, frase !== null ? { tipo: 'dicho', autor, frase } :", "enviar(c, false ? 0 :");
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_charla.mjs');
   writeFileSync(copia, mutada);
@@ -102,6 +110,26 @@ try {
   comprobar('B contesta y A lo recibe tal cual (como texto: el navegador no lo pone como HTML)', a.dichos.some(d => d.autor === b.yo && d.texto === '<b>hola</b>'));
   const reg = existsSync(join(dir, 'charla.jsonl')) ? readFileSync(join(dir, 'charla.jsonl'), 'utf8').trim().split('\n').map(l => JSON.parse(l)) : [];
   comprobar('lo dicho queda en charla.jsonl, con su autor, dónde y a cuántos llegó', reg.length === 2 && reg[0].autor === a.yo && reg[0].texto === 'Buenas, vecino' && reg[0].x === 0 && reg[0].oyen === 2 && reg[1].autor === b.yo, JSON.stringify(reg));
+  // las frases rápidas: por su número, y llegan por su número (sin el texto: cada uno la pone en su lengua)
+  await pausa(1100);
+  a.mandar({ tipo: 'decir', frase: 4, texto: 'otra cosa' });
+  await pausa(300);
+  const fA = (x) => x.dichos.filter(d => d.autor === a.yo && d.frase !== undefined);
+  comprobar('una frase rápida le llega a B por su número, sin texto', fA(b).length === 1 && fA(b)[0].frase === 4 && fA(b)[0].texto === undefined, JSON.stringify(b.dichos.slice(-1)));
+  comprobar('y a A (lo aceptado); a C, lejos, no', fA(a).length === 1 && fA(a)[0].frase === 4 && c.dichos.length === 0);
+  await pausa(1100);
+  for (const f of [8, -1, 2.5, '1', null]) a.mandar({ tipo: 'decir', frase: f });
+  await pausa(300);
+  comprobar('un número que no es de ninguna frase no vale', fA(b).length === 1 && a.errores.filter(e => e === MOTIVO_VACIO).length === 5, JSON.stringify(a.errores));
+  await pausa(1100);
+  a.mandar({ tipo: 'decir', frase: 7 });
+  await pausa(300);
+  comprobar('las frases rápidas también cuentan para no hablar a chorro… y la siguiente pasa', fA(b).length === 2 && fA(b)[1].frase === 7);
+  a.mandar({ tipo: 'decir', frase: 1 });
+  await pausa(300);
+  comprobar('…pero no otra antes de un segundo', fA(b).length === 2 && a.errores.includes(MOTIVO_DESPACIO));
+  const reg2 = readFileSync(join(dir, 'charla.jsonl'), 'utf8').trim().split('\n').map(l => JSON.parse(l));
+  comprobar('y en charla.jsonl, con su número y lo que dice en español', reg2.length === 4 && reg2[2].frase === 4 && reg2[2].texto === FRASES[4] && reg2[3].frase === 7, JSON.stringify(reg2.slice(2)));
   for (const x of [a, b, c]) x.ws.close();
 } finally {
   await srv.cerrar();

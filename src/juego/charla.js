@@ -2,12 +2,14 @@
 // jugador, y desaparecer al rato»). Lo que se dice va al servidor (src/juego/en_linea.js → { tipo: 'decir' }), que lo
 // comprueba y lo reparte a los de cerca (src/logica/charla.js); aquí solo se escribe y se dibuja:
 //   - el cuadro para escribir: Intro en el PC (o el botón «Hablar», el de los móviles); Intro lo dice, Esc lo deja.
-//     Mientras se escribe, las teclas no mueven al personaje.
+//     Mientras se escribe, las teclas no mueven al personaje. Encima del cuadro, las ocho frases rápidas (FRASES): un
+//     toque y se dice; por la red va su número y a cada uno le sale en su lengua. En el móvil el cuadro se abre sin
+//     teclado (para que se vean las frases): se toca el campo para escribir.
 //   - el bocadillo sobre la cabeza del que habla (también el tuyo, cuando el servidor lo devuelve: lo que ves es lo que
 //     ha aceptado), que sigue a su personaje y se va al rato (duracionBocadillo), apagándose en el último segundo. Uno
 //     por persona: lo nuevo sustituye a lo anterior. Más lejos de lo que se oye, no se ve.
 import * as THREE from 'three';
-import { LARGO_MAX, ALCANCE, duracionBocadillo, validarDicho } from '../logica/charla.js';
+import { LARGO_MAX, ALCANCE, FRASES, duracionBocadillo, validarDicho } from '../logica/charla.js';
 import { tr } from '../idioma.js';
 
 const ALTO_CABEZA = 1.92;   // m sobre los pies: el bocadillo, justo encima de la cabeza (más alto parecía del de detrás)
@@ -22,24 +24,34 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
   capa.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:14;overflow:hidden';
   document.body.appendChild(capa);
 
+  // (el aspecto, en src/plantilla.html: #charlaCaja, el tablero de roble como la barra de construir; las frases, de cuero)
   const caja = document.createElement('form');
   caja.id = 'charlaCaja'; caja.hidden = true;
-  caja.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;' +
-    'width:min(520px,calc(100vw - 32px));display:flex;gap:6px;background:var(--panel,rgba(36,30,24,.86));border:1px solid var(--linea,rgba(241,232,216,.15));' +
-    'border-radius:12px;padding:6px;box-shadow:0 6px 24px #0005';
-  caja.innerHTML = `<input id="charlaTexto" autocomplete="off" enterkeyhint="send" maxlength="${LARGO_MAX * 2}" ` +
-    'style="flex:1;min-width:0;font:15px system-ui,sans-serif;color:#f1e8d8;background:rgba(0,0,0,.25);border:1px solid rgba(241,232,216,.18);border-radius:8px;padding:8px 10px;outline:none">' +
-    '<button id="charlaDecir" type="submit" style="font:inherit;font-weight:600;color:#241b10;background:#d9a441;border:0;border-radius:8px;padding:0 14px"></button>';
+  caja.innerHTML = '<div id="charlaFrases"></div><div class="fila">' +
+    `<input id="charlaTexto" autocomplete="off" enterkeyhint="send" maxlength="${LARGO_MAX * 2}">` +
+    '<button id="charlaDecir" type="submit"></button></div>';
   document.body.appendChild(caja);
-  const texto = caja.querySelector('#charlaTexto'), decir = caja.querySelector('#charlaDecir');
-  const ponerTextos = () => { texto.placeholder = tr('Di algo… (Intro para decirlo, Esc para dejarlo)'); decir.textContent = tr('Decir'); if (boton) { if (boton.querySelector('img')) { boton.title = tr('Hablar'); boton.setAttribute('aria-label', tr('Hablar')); } else boton.textContent = tr('Hablar'); } };
+  const texto = caja.querySelector('#charlaTexto'), decir = caja.querySelector('#charlaDecir'), frases = caja.querySelector('#charlaFrases');
+  const botonesFrase = FRASES.map((f, n) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.frase = String(n);
+    b.onclick = () => { if (enLinea && enLinea.decirFrase) enLinea.decirFrase(n); cerrar(); };
+    frases.appendChild(b);
+    return b;
+  });
+  const ponerTextos = () => {
+    texto.placeholder = tr('Di algo… (Intro para decirlo, Esc para dejarlo)'); decir.textContent = tr('Decir');
+    botonesFrase.forEach((b, n) => { b.textContent = tr(FRASES[n]); });
+    if (boton) { if (boton.querySelector('img')) { boton.title = tr('Hablar'); boton.setAttribute('aria-label', tr('Hablar')); } else boton.textContent = tr('Hablar'); }
+  };
   ponerTextos();
 
   function abrir() {
     if (!enLinea || enLinea.estado !== 'conectado') { avisar(tr('Sin conexión con el servidor: no se puede hablar.'), true); return; }
     alAbrir();
     caja.hidden = false; texto.value = '';
-    texto.focus();
+    // (en el móvil, sin sacar el teclado: taparía las frases; se toca el campo para escribir)
+    if (!document.body.classList.contains('tactil-ui')) texto.focus();
   }
   function cerrar() { caja.hidden = true; texto.blur(); }
   caja.onsubmit = (e) => {
@@ -76,7 +88,8 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
   if (enLinea) enLinea.escucharDicho((m) => {
     if (m.tipo === 'dicho_error') { avisar(tr(m.motivo), true); return; }
     const d = validarDicho(m);
-    if (d && !globalThis.__mutarCharla) poner(d.autor, d.texto);   // (la prueba lo rompe a propósito: sin bocadillos)
+    // (una frase rápida llega por su número: aquí sale en tu lengua)
+    if (d && !globalThis.__mutarCharla) poner(d.autor, d.frase !== undefined ? tr(FRASES[d.frase]) : d.texto);   // (la prueba lo rompe a propósito: sin bocadillos)
   });
 
   const v = new THREE.Vector3();

@@ -164,6 +164,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     escucharMuerte: (f) => { escuchasMuerte.add(f); return () => escuchasMuerte.delete(f); },
     // el chat de texto: decir algo (lo comprueba y lo reparte el servidor) y escuchar lo que se dice cerca
     decir: (texto) => cli.estado === 'conectado' && cli.enviar({ tipo: 'decir', texto }),
+    decirFrase: (frase) => cli.estado === 'conectado' && cli.enviar({ tipo: 'decir', frase }),
     escucharDicho: (f) => { escuchasDicho.add(f); return () => escuchasDicho.delete(f); },
     get yo() { return cli.yo; },
     get estado() { return cli.estado; },

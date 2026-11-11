@@ -5,6 +5,8 @@
 //   - LimitadorCharla: como mucho una frase cada ESPERA_MIN ms y RAFAGA en VENTANA ms por autor (sin mandar a chorro).
 //   - quienOye: le llega a quien está a ALCANCE m o menos del que habla (y a él mismo).
 //   - duracionBocadillo: lo que se ve el bocadillo, más cuanto más largo (entre 4 y 12 s); luego se va.
+//   - FRASES: las ocho frases rápidas (estudio de la interfaz, aprobado el 7 nov: «ocho frases rápidas que llegan a cada
+//     uno en su lengua»). Por la red va solo su número ({ tipo: 'decir', frase }); cada navegador la pone en su idioma.
 
 export const LARGO_MAX = 120;      // letras como mucho por frase
 export const ALCANCE = 50;         // m: quien está más lejos no lo oye (ni ve el bocadillo)
@@ -25,6 +27,12 @@ export function limpiarTexto(t) {
   const letras = Array.from(s);
   return letras.length > LARGO_MAX ? letras.slice(0, LARGO_MAX).join('').trim() : s;
 }
+
+// Las ocho frases rápidas, en español (la clave de la traducción: src/idiomas/*.json). El orden es su número en la red:
+// no se cambia ni se quita ninguna (un navegador viejo diría otra cosa); las nuevas, al final.
+export const FRASES = Object.freeze(['¡Hola!', 'Sí', 'No', 'Gracias', 'Ven aquí', 'Espera', '¡Ayuda!', '¡Cuidado!']);
+// el número de una frase rápida, o null si no es ninguna
+export const validarFrase = (n) => (Number.isInteger(n) && n >= 0 && n < FRASES.length ? n : null);
 
 // cuánto se ve el bocadillo (ms): 4 s y 70 ms por letra, como mucho 12 s (la frase más larga, 120 letras, llega al tope)
 export const duracionBocadillo = (texto) => Math.min(12000, 4000 + 70 * Array.from(texto || '').length);
@@ -54,9 +62,11 @@ export function quienOye(autor, posiciones, alcance = ALCANCE) {
   return oyen;
 }
 
-// lo que reparte el servidor ({ tipo: 'dicho', autor, texto }), comprobado otra vez al llegar al navegador
+// lo que reparte el servidor ({ tipo: 'dicho', autor, texto } o, si es una frase rápida, { tipo: 'dicho', autor, frase }),
+// comprobado otra vez al llegar al navegador: { autor, texto } o { autor, frase }
 export function validarDicho(m) {
   if (!m || typeof m.autor !== 'string' || !m.autor || m.autor.length > 64) return null;
+  if (m.frase !== undefined) { const frase = validarFrase(m.frase); return frase === null ? null : { autor: m.autor, frase }; }
   const texto = limpiarTexto(m.texto);
   return texto ? { autor: m.autor, texto } : null;
 }

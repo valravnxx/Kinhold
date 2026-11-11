@@ -26,7 +26,8 @@
 //   lleva los de los que ya están (aspectos).
 //   Charla (chat de texto, src/logica/charla.js): el cliente manda { tipo: 'decir', texto }; el servidor lo limpia, mira
 //   que no hable a chorro y lo reparte, con el autor de la conexión, a quien está a ALCANCE m (y al que habla):
-//   { tipo: 'dicho', autor, texto }. Si no vale: { tipo: 'error', motivo }. Lo dicho queda en charla.jsonl, junto al mundo.
+//   { tipo: 'dicho', autor, texto }. Las frases rápidas (FRASES) van por su número: { tipo: 'decir', frase } y
+//   { tipo: 'dicho', autor, frase }, y cada navegador la pone en su idioma. Si no vale: { tipo: 'error', motivo }. Lo dicho queda en charla.jsonl, junto al mundo.
 //   Combate (src/logica/combate_servidor.js): cada conexión tiene un luchador; el cliente manda intenciones
 //   { tipo: 'combate', que, … } y el servidor lleva los tiempos y resuelve golpes y flechas con el autor de la
 //   conexión. A todos: { tipo: 'combate', eventos } en el mismo orden, y cada tic (50 ms) { tipo: 'luchadores',
@@ -141,7 +142,7 @@ import { ponerZonas } from '../src/logica/construccion.js';
 import { salidaInicio, SALIDAS_INICIO } from '../src/logica/whitholm.js';
 import { dejarSobra } from '../src/logica/suelo.js';
 import { Abandono, AUTOR_REY } from '../src/logica/abandono.js';
-import { limpiarTexto, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
+import { limpiarTexto, validarFrase, FRASES, LimitadorCharla, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../src/logica/charla.js';
 import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades, saciar as saciarNecesidad, delCombate, alientoMinimo, hayAguaCerca, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe } from '../src/logica/necesidades.js';
 import { puestasDe, abrigo as abrigoDe } from '../src/logica/prendas.js';
 import { horaDe } from '../src/logica/cielo.js';
@@ -943,16 +944,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       }
       if (msg && msg.tipo === 'decir') {
         // el chat de texto: limpio, sin hablar a chorro, y a quien está cerca del que habla
-        const texto = limpiarTexto(msg.texto);
+        // (una frase rápida va por su número: a cada uno le llega en su lengua)
+        const frase = msg.frase !== undefined ? validarFrase(msg.frase) : null;
+        const texto = msg.frase !== undefined ? (frase === null ? null : FRASES[frase]) : limpiarTexto(msg.texto);
         if (!texto) return enviar(ws, { tipo: 'error', motivo: MOTIVO_VACIO });
         if (!charla.admitir(autor, reloj())) return enviar(ws, { tipo: 'error', motivo: MOTIVO_DESPACIO });
         const posiciones = new Map();
         for (const a of conexionDe.keys()) { const e = presencia.ultimo.get(a); if (e) posiciones.set(a, e); }
         const yo = presencia.ultimo.get(autor) || null;
         const oyen = quienOye(autor, posiciones);
-        try { appendFileSync(archivoCharla, JSON.stringify({ t: Date.now(), autor, cuenta: usuarioDe(autor), x: yo ? Math.round(yo.x) : null, z: yo ? Math.round(yo.z) : null, texto, oyen: oyen.length }) + '\n'); }
+        try { appendFileSync(archivoCharla, JSON.stringify({ t: Date.now(), autor, cuenta: usuarioDe(autor), x: yo ? Math.round(yo.x) : null, z: yo ? Math.round(yo.z) : null, texto, ...(frase !== null ? { frase } : {}), oyen: oyen.length }) + '\n'); }
         catch (e) { registrar(`no se pudo apuntar la charla: ${e && e.message}`); }
-        for (const a of oyen) { const c = conexionDe.get(a); if (c) enviar(c, { tipo: 'dicho', autor, texto }); }
+        for (const a of oyen) { const c = conexionDe.get(a); if (c) enviar(c, frase !== null ? { tipo: 'dicho', autor, frase } : { tipo: 'dicho', autor, texto }); }
         return;
       }
       if (msg && msg.tipo === 'cuenta') {
