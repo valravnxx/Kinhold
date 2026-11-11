@@ -17,7 +17,7 @@ os.makedirs(SALIDA, exist_ok=True)
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'taller-dormir-v1', 'taller-sentarse-v1']:
+for c in ['v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'meshy-v2', 'taller-dormir-v1', 'taller-sentarse-v1']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
@@ -172,7 +172,7 @@ with sync_playwright() as p:
         try: pg.wait_for_function('window.__rendimiento.medida().personajes >= 9', timeout=120000 if not MUTAR_REND else 5000)
         except Exception: pass
         m8 = medir(pg, nombre, 'construir_9', 9)
-        comprobar('construir: con 8 más hay más triángulos', m8['triangulos'] > m0['triangulos'] * 1.3, f"{m0['triangulos']} → {m8['triangulos']}")
+        comprobar('construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno)', m8['triangulos'] > m0['triangulos'] + 8000, f"{m0['triangulos']} → {m8['triangulos']}")
         abrirPanel(pg, 'construir')
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_rendimiento.png')
         pg.click('#btnDemoFps')

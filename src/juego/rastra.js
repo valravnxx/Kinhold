@@ -158,6 +158,8 @@ function moverCarretilla(obj, quien, altura, sitios) {
   const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
   inclinarCarretilla(obj, !!p);
   if (!p) { delete obj.userData.sigue; return; }
+  // las agarraderas, para que las manos de quien la empuja vayan a ellas (src/juego/personaje.js)
+  if (!obj.userData.agarraderas) { obj.userData.agarraderas = []; obj.traverse(n => { if (n.name === 'agarradera') obj.userData.agarraderas.push(n); }); }
   const x = p.x + Math.sin(p.giro) * DELANTE_CARRETILLA, z = p.z + Math.cos(p.giro) * DELANTE_CARRETILLA;
   const antes = obj.userData.sigue;
   if (antes) rodarCarretilla(obj, (x - antes.x) * Math.sin(p.giro) + (z - antes.z) * Math.cos(p.giro));

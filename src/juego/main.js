@@ -21,7 +21,8 @@ import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
-import { CAZA, SE_LANZA } from '../logica/caza.js';
+import { armaDeMano } from '../logica/arma_mano.js';
+import { reparacionDe, desgasteDe } from '../logica/desgaste.js';
 import { crearObjetosEnLinea } from './objetos_en_linea.js';
 import { cargarInventarios, guardarInventarios, ejecutarInventario, CATALOGO, OBJETO_DE_MATERIAL } from '../logica/inventario.js';
 import { montarPanelInventario } from './panel_inventario.js';
@@ -29,7 +30,7 @@ import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
@@ -290,6 +291,10 @@ let panelFabricar = null; // se monta más abajo, con el de inventario
 let menuJuego = null;     // el menú con pestañas (src/juego/menu_juego.js), que se monta al final
 const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion, estacionesV,
   alEncargos: (d) => { if (panelFabricar) panelFabricar.ponerEncargos(d); },
+  // lo que se te ha estropeado encima (la carne cruda, 9 nov; src/logica/comida.js)
+  alEstropear: (e) => { for (const t of Object.keys(e)) mostrarAviso(tr('Se te ha estropeado: {c}.', { c: tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase() }), true); },
+  // lo que se te ha roto al gastarse del todo en el combate o al cazar (10 nov; src/logica/desgaste.js)
+  alRomper: (t) => mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase() }), true),
   alCambiar: (que) => { if (que === 'inventario' && typeof pintarTodoInventario === 'function') pintarTodoInventario(); if (que === 'suelo' && typeof pintarLlevas === 'function') pintarLlevas(); if ((que === 'suelo' || que === 'estaciones') && panelFabricar) panelFabricar.pintar(); if (que === 'matas' && decorado.rehacer) decorado.rehacer(); } }) : null;
 
 // ---------------- Personaje y cámara ----------------
@@ -1506,6 +1511,17 @@ function pasoPuesto() {
     mostrarAviso(`${t('construyendo')} ${Math.round(100 * r.progreso)} %`);
   });
 }
+// Reparar en su puesto (10 nov): lo de la mano de, con lo depositado en el puesto e; lo hace el servidor
+function repararEn(e, de) {
+  hacerFabricacion({ tipo: 'reparar', estacion: e.id, de, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) {
+      const f = r.faltan && Object.entries(r.faltan).map(([t, n]) => `${n} ${tr(CATALOGO[t] ? CATALOGO[t].nombre : t).toLowerCase()}`).join(', ');
+      mostrarAviso(f ? tr('Falta dejar en el puesto: {c}.', { c: f }) : tr(r.motivo), true); return;
+    }
+    const rp = r.reparado;
+    mostrarAviso(rp ? tr('Reparado: {c}. Le quedan {q} usos de {v}.', { c: tr(CATALOGO[rp.objeto].nombre).toLowerCase(), q: rp.vida - rp.usado, v: rp.vida }) : tr('Reparado.'));
+  });
+}
 function usarFuego(e, a) {
   hacerFabricacion({ ...a, estacion: e.id, x: pj.x, z: pj.z }, (r) => {
     mostrarAviso(!r.ok ? tr(r.motivo) : r.avivada ? tr('Avivas el fuego: vuelve la llama.') : a.tipo === 'encender_fuego' ? tr('El fuego prende.') : a.tipo === 'brasas_fuego' ? tr('Cubres el fuego con su ceniza: queda en brasas.') : tr('Echas al fuego: 1 {c}.', { c: tr(CATALOGO[a.objeto].nombre).toLowerCase() }), !r.ok);
@@ -1591,8 +1607,8 @@ function accionPrincipal() {
   if (ob && !subirAndamio) return accionObra(ob);
   // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
   if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
-  // con la lanza en la mano y una liebre a tiro delante, Usar la lanza hacia ella (P4)
-  if (!it && pj.k === 0 && lanzaEnMano() && liebreATiro()) { const l = liebreATiro(); return A(tr('Lanzar la lanza'), 'lanza_endurecida', l, lanzar, { alto: 0.4 }); }
+  // con la lasca encima y una liebre cazada a tus pies, despiezarla (9 nov)
+  if (!it && pj.k === 0 && inventario().cuantos('lasca_silex') > 0 && liebreAlLado()) { const l = liebreAlLado(); return A(tr('Despiezar la liebre'), 'liebre', l, despiezar, { alto: 0.2 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
@@ -1679,6 +1695,12 @@ function opcionesUsar() {
       else ops.push({ texto: tr('Dormir: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => dormir(e) });
     } else {
       ops.push({ texto: tr(esAlmacen(e.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+      // reparar lo que llevas en la mano o puesto (la ropa), gastado, en su puesto (10 nov; src/logica/desgaste.js): con lo
+      // depositado en él
+      for (const l of ['mano:der', 'mano:izq', ...Object.keys(inventario().lugares).filter(r => r.startsWith('ropa:'))]) {
+        const c = inventario().lugares[l], d = c && desgasteDe(c), rp = c && reparacionDe(c.tipo);
+        if (d && d.usado && rp && rp.uso === ESTACIONES[e.tipo].uso) ops.push({ texto: tr('Reparar: {c}', { c: tr(CATALOGO[c.tipo].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => repararEn(e, l) });
+      }
       // la hoguera: encenderla (con yesca y el taladro de fuego) y echarle una rama o una leña de lo que llevas
       if (ESTACIONES[e.tipo].fuego && e.fuego) {
         const st = estadoFuego(e.fuego, Date.now()), inv = inventario();
@@ -1708,8 +1730,8 @@ function opcionesUsar() {
     const db = desbrozableCercano();
     if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
   }
-  // con la lanza en la mano, lanzarla hacia donde miras (o a la liebre que tengas a tiro delante) (P4)
-  if (pj.k === 0 && lanzaEnMano()) ops.push({ texto: tr('Lanzar la lanza'), pos: liebreATiro() || { x: pj.x + Math.sin(pj.rot) * 3, z: pj.z + Math.cos(pj.rot) * 3 }, alto: 0.4, hacer: lanzar });
+  // la liebre cazada a tus pies: despiezarla (con la lasca; sin ella, el servidor dice qué falta) (9 nov)
+  if (pj.k === 0 && liebreAlLado()) ops.push({ texto: tr('Despiezar la liebre'), pos: liebreAlLado(), alto: 0.2, hacer: despiezar });
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
@@ -1818,29 +1840,6 @@ function usarInteractivo(it) {
 // Beber del río con las manos (P4; src/logica/necesidades.js): con agua a tu lado (río, lago o mar) y en el suelo. En
 // línea, el trago lo da el servidor (mira dónde te tiene y si hay agua ahí); sin servidor (las pruebas), aquí.
 const aguaAlLado = () => !!mundoJ && pj.k === 0 && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z);
-// Cazar (P4, 9 nov; src/logica/caza.js): con la lanza endurecida en la mano, se lanza hacia donde miras; si delante (a
-// menos de 30° y de su alcance) hay una liebre, hacia ella. El servidor la echa a volar y decide si acierta; dónde cae
-// la lanza (y la liebre muerta) llega con el suelo. Decisión provisional (registro y diario): el cono de 30°, para que
-// en el móvil se pueda apuntar sin precisión de ratón; la liebre que huye puede escaparse igual.
-function lanzaEnMano() { const inv = inventario(); for (const r of ['mano:der', 'mano:izq']) { const c = inv.lugares[r]; if (c && SE_LANZA.has(c.tipo)) return r; } return null; }
-function liebreATiro(cono = 0.52) {
-  if (!fauna) return null;
-  let mejor = null;
-  for (const [id, l] of fauna.liebres) {
-    const d = Math.hypot(l.x - pj.x, l.z - pj.z);
-    if (d > CAZA.ALCANCE || d < 0.8) continue;
-    let a = Math.atan2(l.x - pj.x, l.z - pj.z) - pj.rot; a = Math.atan2(Math.sin(a), Math.cos(a));
-    if (Math.abs(a) <= cono && (!mejor || d < mejor.d)) mejor = { id, x: l.x, z: l.z, d };
-  }
-  return mejor;
-}
-function lanzar() {
-  const de = lanzaEnMano();
-  if (!de) { mostrarAviso(tr('Necesitas la lanza en la mano para lanzarla.'), true); return; }
-  if (!objetosRed) { mostrarAviso(tr('Sin conexión con el servidor.'), true); return; }
-  const l = liebreATiro(); if (l) pj.rot = Math.atan2(l.x - pj.x, l.z - pj.z);
-  objetosRed.mandar({ tipo: 'lanzar', de, x: pj.x, z: pj.z, dir: pj.rot }, (r) => { if (!r.ok) mostrarAviso(tr(r.motivo), true); });
-}
 function beber() {
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
@@ -1854,6 +1853,16 @@ function beber() {
   mostrarAviso(tr('Bebes agua con las manos.'));
 }
 // Comer (P4): una unidad de lo que llevas (bayas, setas…). En línea, por el servidor; sin servidor (pruebas), aquí.
+// Despiezar la liebre cazada (9 nov; src/logica/comida.js): la receta de las manos, con la liebre del suelo a tu lado y
+// la lasca encima; al terminar, se recoge sola la carne cruda y la piel (como desde el panel de fabricar).
+function liebreAlLado() { const o = sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now()).find(x => x.cosa.tipo === 'liebre'); return o ? { x: o.x, z: o.z, id: o.id } : null; }
+function despiezar() {
+  hacerFabricacion({ tipo: 'fabricar', receta: 'despiezar_liebre', estacion: null, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    mostrarAviso(tr('Despiezando la liebre…'));
+    setTimeout(() => hacerFabricacion({ tipo: 'recoger_fabricado', estacion: null, x: pj.x, z: pj.z }, (q) => { if (!q.ok) mostrarAviso(tr(q.motivo), true); }), RECETAS.despiezar_liebre.s * 1000 + 400);
+  });
+}
 const comidaQueLlevas = () => Object.keys(NUTRE).filter(t => inventario().cuantos(t) > 0);
 function comer(tipo) {
   if (objetosRed) {
@@ -1960,6 +1969,10 @@ function pasoRastras() {
   const mia = miRastra();
   jugador.arrastra = !!mia && !esCarr(mia); jugador.empuja = esCarr(mia);
   if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, Date.now()); r.j.arrastra = !!o && !esCarr(o); r.j.empuja = esCarr(o); }
+  // las agarraderas de la carretilla que empuja cada uno, para sus manos (src/juego/personaje.js)
+  const agarraderas = (autor) => { const c = sueloObjetos.grupo.children.find(o => o.name === 'suelo_carretilla' && o.userData.arrastra === autor); return c ? c.userData.agarraderas || null : null; };
+  jugador.agarraderas = jugador.empuja ? agarraderas(yoSuelo()) : null;
+  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.agarraderas = r.j.empuja ? agarraderas(autor) : null;
 }
 // Una acción de la rastra o la carretilla: en línea, al servidor (se espera su respuesta); sin red, aquí con la misma lógica.
 function accionRastra(a, alSalir) {
@@ -2255,6 +2268,12 @@ function golpeTala() {
 function avisoTala(a, r) {
   // lo que llevas talado, para el aro de la acción (el primer golpe dice cuántos faltan)
   if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
+  // el hacha se ha gastado del todo con este golpe (src/logica/desgaste.js): se rompe y se deja de talar
+  if (r.seRompe) {
+    estado.talando = null;
+    mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[r.seRompe] ? CATALOGO[r.seRompe].nombre : r.seRompe).toLowerCase() }), true);
+    if (!r.cae) return;
+  }
   // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
   if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
@@ -2902,6 +2921,8 @@ const combate = crearCombateMundo({
   // el duelo con lo que llevas (7 nov): lo que frena un golpe sale de las prendas que llevas puestas; en línea las pone
   // el servidor, de su inventario (esto es solo la copia del navegador hasta que llega su foto)
   prendasActuales: () => puestasDe(inventario().lugares),
+  // y el arma, lo que llevas en la mano (valravnx, 9 nov; src/logica/arma_mano.js)
+  armaMano: () => armaDeMano(inventario().lugares), lugares: () => inventario().lugares,
   modo: () => estado.modo, alturaEn: (x, z) => decorado.altura(x, z),
   registro: { anotar: (a, r) => registroAcciones.anotar(a, r) }, esTactil: estado.esTactil,
   red: () => enLinea,   // en línea, lo que haces con el arma va también al servidor (pelear con los demás)
@@ -3240,7 +3261,7 @@ window.__kinhold = {
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
-  beber, aguaAlLado, comer, lanzar, liebreATiro, accionPrincipal,
+  beber, aguaAlLado, comer, accionPrincipal, despiezar, liebreAlLado,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)

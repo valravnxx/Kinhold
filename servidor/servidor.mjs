@@ -18,9 +18,8 @@
 //   cambiado: { tipo: 'estados', t, jugadores }. Al irse alguien: { tipo: 'sale', autor }. La bienvenida
 //   lleva también t y presentes (dónde está cada uno).
 //   Liebres (src/logica/fauna.js): las mueve el servidor; a cada uno, las de sus trozos: { tipo: 'fauna', liebres, fuera }.
-//   Cazar (src/logica/caza.js): la acción de objeto 'lanzar' saca la lanza de la mano; el servidor la echa a volar y a
-//   quien tiene su trozo le manda { tipo: 'lanza', id, autor, x, z, dir, vel, alcance }; cuando cae (cada 100 ms la
-//   adelanta), { tipo: 'lanza_cae', id, x, z, liebre? } y el suelo (la lanza y, si acertó, la liebre muerta).
+//   Cazar (9 nov): en el modo arma, con la lanza o una piedra en la mano, se lanza apuntando (combate: tensar y soltar);
+//   lo lanzado puede dar a una liebre (el evento «flecha» con resultado «presa»): cae muerta y queda en el suelo.
 //   Aspecto (cuerpo y ropa del taller, y la personalización de src/logica/aspecto.js): el cliente lo manda al
 //   conectar, { tipo: 'aspecto', sexo, capas, aspecto }; el
 //   servidor lo comprueba (validarAspecto) y lo reparte a los demás, { tipo: 'aspecto', autor, sexo, capas, aspecto }. La bienvenida
@@ -152,7 +151,9 @@ import { Cuerpos, despojar, repartir, sitiosAlrededor, necesidadesAlVolver, reap
 import { RECUPERAR_SANGRE } from '../src/combate/logica.js';
 import { NADO } from '../src/logica/nado.js';
 import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
-import { Lanzas } from '../src/logica/caza.js';
+import { estropearInventario, estropearSuelo } from '../src/logica/comida.js';
+import { armaDeMano, loQueSeLanza } from '../src/logica/arma_mano.js';
+import { gastar, gastarCosa, gastarRopa, GASTA_AL_DAR, GASTA_AL_PARAR, GOLPE_ROPA, USO_ROPA_MS } from '../src/logica/desgaste.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
 export const LATIDO = 10000;    // ms entre pings
@@ -186,7 +187,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
+  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, usoRopa = USO_ROPA_MS, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
   fauna: entornoFauna = terreno && terreno.fauna, ticoFauna = 200 } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
@@ -417,7 +418,18 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
 
   // combate: el reloj es el del servidor; antes de cada intención se avanza hasta ahora
   // Strandvang, tierras del rey: ahí no se hiere a otro jugador (tierras: en(x, z) de src/logica/tierras_rey.js)
-  const combate = new CombateServidor({ semilla, tierras: tierras || null });
+  // el arma es lo de la mano (valravnx, 9 nov; src/logica/arma_mano.js): lo que se lanza sale de su inventario al soltar
+  // (la lanza entera, una piedra de la pila; las dos caen al suelo); con el terreno, alturas sobre el suelo y liebres
+  const combate = new CombateServidor({ semilla, tierras: tierras || null,
+    mundo: { suelo: terreno ? (x, z) => terreno.suelo(x, z) : null, presas: () => (fauna ? fauna.todas() : []) },
+    alLanzar: (autor) => {
+      const inv = objetos.invs.de(autor), q = loQueSeLanza(inv.lugares);
+      if (!q) return null;
+      const r = inv.sacar(q.mano, q.cuanto);
+      if (!r.ok) return null;
+      guardarObjetos(); enviar(conexionDe.get(autor), { tipo: 'inventario', inventario: objetos.inventarioDe(autor) }); repartirLlevado(autor);
+      return { tipo: r.cosa.tipo, n: r.cosa.n, gasta: q.gasta, ...(r.cosa.usado ? { usado: r.cosa.usado } : {}) };
+    } });
   // Desconectarse (GDD, apartado 6; src/logica/dormidos.js): quien se va se queda dormido en el mundo, donde estaba, y los
   // demás lo ven tumbado con su símbolo de desconectado (su presencia sigue, con la animación DESCONECTADO). En su tierra
   // (o en la de quien le ha invitado), protegido enseguida, y a su cama ligada si la tiene; fuera, su luchador sigue en
@@ -536,14 +548,63 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     }
   };
   // el duelo con lo que llevas (7 nov): lo que le protege es la ropa que tiene puesta en su inventario del servidor
-  const vestirLuchador = (autor) => combate.vestir(autor, puestasDe(objetos.invs.de(autor).lugares));
+  // y su arma, lo que lleva en la mano (valravnx, 9 nov: antes, siempre la espada larga)
+  const vestirLuchador = (autor) => { const l = objetos.invs.de(autor).lugares; combate.vestir(autor, puestasDe(l)); combate.armar(autor, armaDeMano(l)); };
   const t0 = reloj();
   let muriendo = false;   // (morir no vuelve a mirar las muertes)
   const ponerAlDia = () => { combate.avanzarHasta((reloj() - t0) / 1000); if (!muriendo) { muriendo = true; try { revisarMuertes(); } finally { muriendo = false; } } };
+  // La ropa y la armadura que se gastan (10 nov; src/logica/desgaste.js, gastarRopa): con los golpes que hieren y con
+  // el uso. Lo que se acaba, se rompe: se le avisa, se vuelve a vestir su luchador y se reparte su aspecto.
+  const gastarRopaDe = (autor, n, zona = null) => {
+    const l = gastarRopa(objetos.invs.de(autor), n, zona);
+    if (!l.length) return;
+    guardarObjetos();
+    const rotas = l.filter(g => g.roto), ws = conexionDe.get(autor);
+    if (ws) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor), ...(rotas.length ? { roto: rotas[0].tipo } : {}) });
+    if (rotas.length) {
+      repartirLlevado(autor);
+      for (const g of rotas) appendFileSync(archivoObjetosReg, JSON.stringify({ autor, tipo: 'se_rompe', objeto: g.tipo, ahora: Date.now() }) + '\n');
+    }
+  };
+  const puestaDe = new Map();   // autor → ms que lleva la ropa puesta en el mundo desde el último uso contado
   let escritas = 0;
   const repartirCombate = () => {
     const eventos = combate.sacarEventos();
     if (eventos.length) for (const ws of clientes.keys()) enviar(ws, { tipo: 'combate', eventos });
+    // lo lanzado que cae (P4, 9 nov): la lanza y la piedra quedan en el suelo donde acaban; la liebre a la que da,
+    // muerta, sale de la fauna y queda en el suelo para despiezarla
+    let suelo = false;
+    // herramientas y armas que se gastan (10 nov; src/logica/desgaste.js): el golpe que alcanza gasta el arma de quien lo
+    // da, y el que se para, también la de quien lo para; la lanza lanzada, al dar a una presa. Al acabarse, se rompe.
+    const gastarArma = (autor) => {
+      const inv = objetos.invs.de(autor), m = armaDeMano(inv.lugares).mano, g = m ? gastar(inv, m) : null;
+      if (!g) return;
+      guardarObjetos();
+      const ws = conexionDe.get(autor);
+      if (ws) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor), ...(g.roto ? { roto: g.tipo } : {}) });
+      if (g.roto) { repartirLlevado(autor); appendFileSync(archivoObjetosReg, JSON.stringify({ autor, tipo: 'se_rompe', objeto: g.tipo, ahora: Date.now() }) + '\n'); }
+    };
+    for (const e of eventos) {
+      if (e.tipo !== 'golpe' || !e.objetivo) continue;
+      if (GASTA_AL_DAR.has(e.resultado)) gastarArma(e.autor);
+      if (GASTA_AL_PARAR.has(e.resultado)) gastarArma(e.objetivo);
+    }
+    // la ropa y la armadura (10 nov): el golpe o lo lanzado que hiere gasta lo que cubre esa zona a quien lo recibe
+    for (const e of eventos) if ((e.tipo === 'golpe' || e.tipo === 'flecha') && e.objetivo && e.zona && objetos.invs.de(e.objetivo)) gastarRopaDe(e.objetivo, GOLPE_ROPA, e.zona);
+    for (const e of eventos) {
+      if (e.tipo !== 'flecha') continue;
+      const ahora = Date.now(), enT = (x, z) => !!mundo.tierraDe(x, z);
+      const lanzado = e.objeto && !e.objeto.gasta ? { tipo: e.objeto.tipo, n: e.objeto.n, ...(e.objeto.usado ? { usado: e.objeto.usado } : {}) } : null;
+      const roto = lanzado && e.presa ? gastarCosa(lanzado) : null;   // la lanza que da a una presa se gasta
+      if (roto && roto.roto) { const ws = conexionDe.get(e.autor); if (ws) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(e.autor), roto: lanzado.tipo }); appendFileSync(archivoObjetosReg, JSON.stringify({ autor: e.autor, tipo: 'se_rompe', objeto: lanzado.tipo, ahora }) + '\n'); }
+      else if (lanzado) { objetos.suelo.dejar(lanzado, e.x, e.z, ahora, e.autor, enT(e.x, e.z)); suelo = true; }
+      if (e.presa && fauna) {
+        const l = fauna.de(e.presa);
+        if (l && fauna.matar(e.presa)) { objetos.suelo.dejar({ tipo: 'liebre', n: 1 }, l.x, l.z, ahora, e.autor, enT(l.x, l.z)); suelo = true; }
+        appendFileSync(archivoObjetosReg, JSON.stringify({ autor: e.autor, tipo: 'caza', presa: e.presa, arma: e.arma, ok: !!l, ahora }) + '\n');
+      }
+    }
+    if (suelo) { guardarObjetos(); repartirSuelo(Date.now()); }
     // quién ha peleado (un golpe o una flecha dada o recibida): si se desconecta en el minuto siguiente, más tiempo atacable
     for (const e of eventos) if (e.objetivo && (e.tipo === 'golpe' || e.tipo === 'flecha')) { const t = Date.now(); ultimaPelea.set(e.autor, t); ultimaPelea.set(e.objetivo, t); }
     const nuevas = combate.registro.entradas.filter(e => e.n > escritas);
@@ -588,27 +649,6 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     } catch (e) { registrar(`error en la fauna: ${e && e.message}`); }
   }, ticoFauna) : null;
 
-  // Las lanzas que vuelan (P4, 9 nov; src/logica/caza.js): cada 100 ms se adelantan con las liebres donde están; la que
-  // cae deja la lanza en el suelo y, si dio en una liebre, la liebre muerta (sale de la fauna) a su lado.
-  const lanzas = new Lanzas({ pisable: entornoFauna && entornoFauna.pisable ? entornoFauna.pisable : () => true });
-  const aQuienVe = (x, z, autor, msg) => { const k = trozoDe(x, z); for (const [ws, a] of clientes) if (a === autor || vista.tiene(a, k)) enviar(ws, msg); };
-  const echarLanza = (autor, l) => { const f = lanzas.lanzar({ autor, ...l }); aQuienVe(f.x, f.z, autor, { tipo: 'lanza', ...f }); };
-  const ticLanzas = setInterval(() => {
-    if (!lanzas.vuelan.length) return;
-    try {
-      const ahora = Date.now(), caen = lanzas.avanzar(0.1, fauna ? fauna.todas() : []);
-      for (const c of caen) {
-        const enT = (x, z) => !!mundo.tierraDe(x, z);
-        objetos.suelo.dejar(c.cosa, c.x, c.z, ahora, c.autor, enT(c.x, c.z));
-        if (c.liebre && fauna && fauna.matar(c.liebre)) objetos.suelo.dejar({ tipo: 'liebre', n: 1 }, c.lx, c.lz, ahora, c.autor, enT(c.lx, c.lz));
-        else c.liebre = null;
-        const e = { autor: c.autor, tipo: 'lanza_cae', lanza: c.lanza, x: c.x, z: c.z, liebre: c.liebre, ahora };
-        appendFileSync(archivoObjetosReg, JSON.stringify(e) + '\n');
-        aQuienVe(c.x, c.z, c.autor, { tipo: 'lanza_cae', id: c.lanza, x: c.x, z: c.z, ...(c.liebre ? { liebre: c.liebre } : {}) });
-      }
-      if (caen.length) { guardarObjetos(); repartirSuelo(ahora); }
-    } catch (e) { registrar(`error en las lanzas: ${e && e.message}`); }
-  }, 100);
 
   // las necesidades de los conectados: el tiempo, lo que corren (la distancia que el servidor les ha visto andar desde
   // el tic anterior) y lo que cargan suelto
@@ -666,6 +706,11 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           if (L.sangre <= 0) { L.sangre = 0; L.caer(motivoNecesidades(n)); }
         }
       }
+      // la ropa puesta se gasta con el uso (10 nov): un uso cada usoRopa ms en el mundo (USO_ROPA_MS; las pruebas, menos) (solo quien ya está en él)
+      if (e && (!terreno || posiciones.has(a))) {
+        const p = (puestaDe.get(a) || 0) + Math.min(dt, 10) * 1000;
+        if (p >= usoRopa) { puestaDe.set(a, p - usoRopa); gastarRopaDe(a, 1); } else puestaDe.set(a, p);
+      }
       necesidades.set(a, n);
       necesidadesCambiadas = true;
       enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidades.get(a)) });
@@ -690,7 +735,24 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     for (const [a, x] of apartados) if (x.hasta <= ahora) apartados.delete(a);
     // lo soltado fuera de las tierras desaparece pasada su hora
     const t = Date.now();
-    if (objetos.limpiar(t)) { guardarObjetos(); repartirSuelo(t); }
+    let sueloCambia = objetos.limpiar(t) > 0, guardar = sueloCambia;
+    // la carne cruda se estropea (P4, 9 nov; src/logica/comida.js): la de lo que lleva cada uno y la del suelo
+    try {
+      for (const [a, inv] of Object.entries(objetos.invs.jugadores)) {
+        const e = estropearInventario(inv, t);
+        if (!e.cambia) continue;
+        guardar = true;
+        if (Object.keys(e.estropeadas).length) {
+          const ws = conexionDe.get(a);
+          if (ws) { enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(a), estropeadas: e.estropeadas }); repartirLlevado(a); }
+          appendFileSync(archivoObjetosReg, JSON.stringify({ autor: a, tipo: 'estropeado', estropeadas: e.estropeadas, ahora: t }) + '\n');
+        }
+      }
+      const s = estropearSuelo(objetos.suelo, t);
+      if (s.cambia) { guardar = true; if (Object.keys(s.estropeadas).length) sueloCambia = true; }
+    } catch (e) { registrar(`error al estropear: ${e && e.message}`); }
+    if (guardar) guardarObjetos();
+    if (sueloCambia) repartirSuelo(t);
   }, latido);
 
   // La tierra que no se usa vuelve al rey (src/logica/abandono.js): cada revisarCada ms (y cuando lo pide una prueba, con
@@ -1174,7 +1236,6 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
         enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
         enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
         if (r.ok) repartirLlevado(autor);
-        if (r.ok && r.lanzada) echarLanza(autor, r.lanzada);   // la lanza, a volar (P4)
         if (r.ok) cansar(autor, msg.accion.tipo);   // talar, trocear, fabricar y recoger cansan (src/logica/necesidades.js)
         // dormir en la cama ligada: hasta que se mueva de donde se tumbó (el tic de las necesidades)
         if (r.ok && msg.accion.tipo === 'dormir') { const c = objetos.fab.estaciones[msg.accion.estacion]; if (c) durmiendo.set(autor, { x: c.x, z: c.z, t: reloj() }); }
@@ -1281,9 +1342,9 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   });
 
   return {
-    wss, mundo, terreno, fauna, lanzas, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
+    wss, mundo, terreno, fauna, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); clearInterval(ticLanzas); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
   };
 }
 

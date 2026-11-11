@@ -111,7 +111,7 @@ export class Suelo {
       if (n !== undefined && (!Number.isInteger(n) || n < 1 || n > c.n)) return { ok: false, motivo: 'Cantidad no válida.' };
       cant = n !== undefined ? n : Math.min(c.n, this.cabe(inv, c.tipo));
       if (cant < 1) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
-      r = inv.meterDonde(c.tipo, cant, a); // primero en la ruta a, si se da; lo que no quepa ahí, donde quepa
+      r = inv.meterDonde(c.tipo, cant, a, Number.isFinite(c.hasta) ? { hasta: c.hasta } : null); // primero en la ruta a, si se da; lo que no quepa ahí, donde quepa
     }
     if (!r.ok) return r;
     c.n -= cant;

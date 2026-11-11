@@ -14,7 +14,7 @@ RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sitio = tempfile.mkdtemp()
 os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['taller-v24', 'taller-carga-v3', 'taller-dormir-v1', 'taller-sentarse-v1']:
+for c in ['taller-v24', 'taller-carga-v3', 'meshy-v2', 'taller-dormir-v1', 'taller-sentarse-v1']:
     shutil.copytree(os.path.join(RAIZ, f'docs/recursos/personajes/{c}'), f'{sitio}/recursos/personajes/{c}')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk

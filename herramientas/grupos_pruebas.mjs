@@ -20,7 +20,7 @@ export const ESENCIALES = [];   // (8 nov: ninguna de siempre; cada una, solo si
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
 export const TOCA = {
   'logica': [/^src\/logica\//, /^src\/combate\/logica\.js$/, /^servidor\//, /^pruebas\/prueba_(?!recorrido)[^/]*\.mjs$/],
-  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|caza|fauna)\.js$/, /^servidor\/servidor\.mjs$/, /^pruebas\/prueba_recorrido\.mjs$/],
+  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste)\.js$/, /^servidor\/servidor\.mjs$/, /^pruebas\/prueba_recorrido\.mjs$/],
   'demo-unica': [/^src\/demo\//, /^src\/plantilla\.html$/, /^construir_demo\.mjs$/, /^src\/mundo\/(cliente|conexion|mundo_juego)\.js$/],
   'construccion': [/^src\/logica\/(construccion|piezas|obras_red)\.js$/, /^src\/mundo\/modelos\.js$/],
   'quitar-el-mojon': [/^src\/logica\/(construccion|abandono)\.js$/],
@@ -68,7 +68,8 @@ export const TOCA = {
   'dormido-al-desconectarse': [/^src\/logica\/dormidos\.js$/, /^src\/juego\/en_linea\.js$/, /^pruebas\/prueba_desconectado_navegador\.py$/],
   'morir-y-que-te-saqueen': [/^src\/logica\/muerte\.js$/, /^pruebas\/prueba_muerte_navegador\.py$/],
   'las-liebres': [/^src\/(logica|juego)\/fauna\.js$/, /^pruebas\/prueba_fauna_navegador\.py$/],
-  'cazar-con-la-lanza': [/^src\/logica\/caza\.js$/, /^src\/juego\/fauna\.js$/, /^pruebas\/prueba_caza_navegador\.py$/],
+  'despiezar-y-asar': [/^src\/logica\/comida\.js$/, /^src\/juego\/modelos_objetos\.js$/, /^pruebas\/prueba_comida_navegador\.py$/],
+  'el-modo-arma-con-lo-de-la-mano-y-cazar-con-la-lanza': [/^src\/logica\/arma_mano\.js$/, /^src\/juego\/(fauna|combate_mundo)\.js$/, /^src\/combate\/modelos\.js$/, /^pruebas\/prueba_caza_navegador\.py$/],
   'entrar-con-la-cuenta': [/^src\/mundo\/(pantalla_cuenta|eleccion|conexion)\.js$/, /^src\/logica\/(cuentas|correo|fichas)\.js$/],
   'web': [/^herramientas\/(construir_web\.mjs|plantilla_web\.html)$/],
 };

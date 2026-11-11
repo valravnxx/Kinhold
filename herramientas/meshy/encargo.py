@@ -1,0 +1,125 @@
+# Kinhold — los encargos a Meshy, en GitHub Actions (.github/workflows/meshy.yml). La clave llega en MESHY_API_KEY (secreto
+# del repositorio) y nunca se escribe en ningún archivo. Lee herramientas/meshy/pedido.json:
+#   {"accion": "saldo"}    cuántos créditos quedan
+#   {"accion": "listar"}   los modelos ya hechos (en la web o por la API): sus datos, la imagen y el .glb, a salida/
+#   {"accion": "biblioteca"} la biblioteca de animaciones de Meshy (gratis), a salida/biblioteca.json
+#   {"accion": "animar", "tope": 400, "personajes": [{"nombre": "hombre", "glb": "herramientas/meshy/entrada/hombre.glb",
+#     "alto": 1.75}], "acciones": [{"id": 0, "nombre": "Idle"}, …]}
+#     cada personaje se riggea por la API (5 créditos; la animación solo admite un rig hecho por la API) y se le ponen las
+#     animaciones de la biblioteca de 10 en 10 (3 créditos cada una); no empieza si pasaría del tope de créditos
+# Lo que sale va a salida/ y vuelve por la rama meshy/<ejecución>.
+import base64, json, os, sys, time, urllib.request
+
+CLAVE = os.environ.get('MESHY_API_KEY', '')
+API = 'https://api.meshy.ai/openapi'
+SAL = 'salida'
+os.makedirs(SAL, exist_ok=True)
+
+def pide(ruta):
+    r = urllib.request.Request(API + ruta, headers={'Authorization': 'Bearer ' + CLAVE})
+    with urllib.request.urlopen(r, timeout=60) as f:
+        return json.load(f)
+
+def manda(ruta, cuerpo):
+    r = urllib.request.Request(API + ruta, data=json.dumps(cuerpo).encode(), method='POST',
+                               headers={'Authorization': 'Bearer ' + CLAVE, 'Content-Type': 'application/json'})
+    with urllib.request.urlopen(r, timeout=300) as f:
+        return json.load(f)
+
+def espera(ruta, maximo=1800):
+    t0 = time.time()
+    while True:
+        t = pide(ruta)
+        if t.get('status') in ('SUCCEEDED', 'FAILED', 'CANCELED') or time.time() - t0 > maximo: return t
+        time.sleep(8)
+
+def urls(o, camino=''):
+    # todas las direcciones de archivos de un resultado, con su camino (para bajarlas con nombre)
+    if isinstance(o, dict):
+        for k, v in o.items(): yield from urls(v, f'{camino}.{k}' if camino else k)
+    elif isinstance(o, list):
+        for i, v in enumerate(o): yield from urls(v, f'{camino}.{i}')
+    elif isinstance(o, str) and o.startswith('http') and any(x in o.split('?')[0] for x in ('.glb', '.fbx')):
+        yield camino, o
+
+def baja(url, destino):
+    try:
+        with urllib.request.urlopen(url, timeout=120) as f, open(destino, 'wb') as d:
+            d.write(f.read())
+        return os.path.getsize(destino)
+    except Exception as e:
+        return f'error {e}'
+
+def listar():
+    todo = []
+    for tipo in ['text-to-3d', 'image-to-3d', 'multi-image-to-3d', 'retexture', 'remesh', 'rigging', 'text-to-image', 'image-to-image']:
+        ver = 'v2' if tipo == 'text-to-3d' else 'v1'
+        for pag in range(1, 6):
+            try:
+                l = pide(f'/{ver}/{tipo}?page_size=50&page_num={pag}&sort_by=-created_at')
+            except Exception as e:
+                todo.append({'tipo': tipo, 'error': str(e)}); break
+            if not l: break
+            for t in l:
+                t['_tipo'] = tipo
+                todo.append(t)
+            if len(l) < 50: break
+    resumen = []
+    for t in todo:
+        if 'error' in t: resumen.append(t); continue
+        i = t.get('id', '?')
+        r = {'tipo': t['_tipo'], 'id': i, 'estado': t.get('status'), 'creado': t.get('created_at'), 'prompt': (t.get('prompt') or t.get('texture_prompt') or '')[:300],
+             'modelo': t.get('ai_model'), 'creditos': t.get('consumed_credits')}
+        urls = t.get('model_urls') or {}
+        if t.get('status') == 'SUCCEEDED':
+            if t.get('thumbnail_url'): r['imagen'] = baja(t['thumbnail_url'], f'{SAL}/{i}.png')
+            glb = urls.get('glb') or t.get('rigged_character_glb_url') or (t.get('result') or {}).get('rigged_character_glb_url')
+            if glb: r['glb'] = baja(glb, f'{SAL}/{i}.glb')
+            if t.get('image_urls'):
+                for n, u in enumerate(t['image_urls'][:4]): r[f'img{n}'] = baja(u, f'{SAL}/{i}_{n}.png')
+        resumen.append(r)
+    json.dump(resumen, open(f'{SAL}/lista.json', 'w'), ensure_ascii=False, indent=1)
+    print(f'{len(resumen)} tareas')
+    for r in resumen: print(json.dumps(r, ensure_ascii=False)[:300])
+
+pedido = json.load(open('herramientas/meshy/pedido.json'))
+if not CLAVE:
+    print('FALTA la clave: no hay secreto MESHY_API_KEY'); open(f'{SAL}/saldo.txt', 'w').write('sin clave'); sys.exit(1)
+saldo = pide('/v1/balance'); open(f'{SAL}/saldo.txt', 'w').write(json.dumps(saldo)); print('saldo', saldo)
+if pedido.get('accion') == 'listar': listar()
+if pedido.get('accion') == 'animar':
+    acciones = pedido['acciones']; pers = pedido['personajes']
+    coste = len(pers) * (5 + 3 * len(acciones))
+    print(f'coste previsto: {coste} créditos (tope {pedido.get("tope")})')
+    if coste > pedido.get('tope', 0) or coste > saldo.get('balance', 0): print('NO: pasa del tope o del saldo'); sys.exit(1)
+    informe = []
+    for p in pers:
+        d = 'data:application/octet-stream;base64,' + base64.b64encode(open(p['glb'], 'rb').read()).decode()
+        rid = manda('/v1/rigging', {'model_url': d, 'height_meters': p.get('alto', 1.7)})['result']
+        rig = espera(f'/v1/rigging/{rid}')
+        print(p['nombre'], 'rig', rig.get('status'), rig.get('task_error'), 'créditos', rig.get('consumed_credits'))
+        json.dump(rig, open(f'{SAL}/{p["nombre"]}_rig.json', 'w'), ensure_ascii=False, indent=1)
+        if rig.get('status') != 'SUCCEEDED': informe.append({'personaje': p['nombre'], 'rig': rig.get('status'), 'error': rig.get('task_error')}); continue
+        for c, u in urls(rig.get('result') or {}): print(' ', c, baja(u, f'{SAL}/{p["nombre"]}_rig_{c.replace(".", "_")}.{u.split("?")[0].rsplit(".", 1)[1]}'))
+        for n in range(0, len(acciones), 10):
+            lote = acciones[n:n + 10]
+            aid = manda('/v1/animations', {'rig_task_id': rid, 'action_ids': [a['id'] for a in lote]})['result']
+            a = espera(f'/v1/animations/{aid}')
+            print(p['nombre'], 'animaciones', n, a.get('status'), a.get('task_error'), 'créditos', a.get('consumed_credits'))
+            json.dump(a, open(f'{SAL}/{p["nombre"]}_anim_{n:02d}.json', 'w'), ensure_ascii=False, indent=1)
+            for c, u in urls(a.get('result') or {}):
+                print(' ', c, baja(u, f'{SAL}/{p["nombre"]}_anim_{n:02d}_{c.replace(".", "_")}.{u.split("?")[0].rsplit(".", 1)[1]}'))
+            informe.append({'personaje': p['nombre'], 'lote': [x['nombre'] for x in lote], 'estado': a.get('status'), 'error': a.get('task_error'), 'creditos': a.get('consumed_credits')})
+    json.dump(informe, open(f'{SAL}/informe.json', 'w'), ensure_ascii=False, indent=1)
+    print('saldo al acabar', pide('/v1/balance'))
+if pedido.get('accion') == 'biblioteca':
+    todo = []
+    for pag in range(1, 40):
+        try: l = pide(f'/v1/animations/library?page_size=100&page_num={pag}')
+        except Exception as e: print('error', e); break
+        items = l if isinstance(l, list) else (l.get('result') or l.get('items') or l.get('data') or [])
+        if not items: break
+        todo += items
+        if len(items) < 100: break
+    json.dump(todo, open(f'{SAL}/biblioteca.json', 'w'), ensure_ascii=False, indent=1)
+    print(len(todo), 'animaciones')

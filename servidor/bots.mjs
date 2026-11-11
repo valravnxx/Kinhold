@@ -36,7 +36,7 @@ import { LINEAS, ESPEJO } from '../src/combate/logica.js';
 export const FASE = 20;          // s de cada fase (andar, construir, pelear)
 export const CADA = 100;         // ms entre estados
 export const VELOCIDAD = 1.4;    // m/s andando
-export const DISTANCIA_PELEA = 1.4;  // m a los que se ponen dos rivales
+export const DISTANCIA_PELEA = 0.8;  // m a los que se ponen dos rivales (9 nov: pelean a puños, sin nada en la mano; antes 1,4 con la espada)
 export const FASES = ['andar', 'construir', 'pelear'];
 export const PIEZAS_BOT = ['cim_piedra', 'cim_tronco'];   // lo que levantan (cimientos: van en cualquier sitio llano)
 

@@ -46,6 +46,7 @@
 //    al talarlo (se pierde lo que tenía).
 //  - A 1,8 m del tronco como mucho (como al talar).
 import { CATALOGO } from './inventario.js';
+import { gastar } from './desgaste.js';
 
 const DIA = 24 * 3600 * 1000;
 export const SEMANA = 7 * DIA;
@@ -169,8 +170,10 @@ export class Tala {
       e.bx = (e.bx || 0) + Math.sin(lado) * enBoca; e.bz = (e.bz || 0) + Math.cos(lado) * enBoca; e.bp = (e.bp || 0) + enBoca;
     }
     e.golpes++; e.parte = antes + 1 / total;
+    // cada golpe gasta el hacha (documento de sistemas, apartado 10; src/logica/desgaste.js): al acabarse, se rompe
+    const g = gastar(inv, h.ruta), gasto = g ? { desgaste: { usado: g.usado, vida: g.vida }, ...(g.roto ? { seRompe: h.tipo } : {}) } : {};
     if (e.parte < 1 - 1e-9) {
-      const r = { ok: true, cae: false, golpes: e.golpes, faltan: Math.max(1, Math.round((1 - e.parte) * total)), hacha: h.tipo };
+      const r = { ok: true, cae: false, golpes: e.golpes, faltan: Math.max(1, Math.round((1 - e.parte) * total)), hacha: h.tipo, ...gasto };
       // el golpe que termina la boca dice si la hay (y hacia dónde caerá) o si los golpes no la han hecho de un lado
       if (enBoca > 0 && e.bp >= PARTE_BOCA - 1e-9) { const b = bocaDe(e); r.boca = b ? b.dir : null; }
       return r;
@@ -179,7 +182,7 @@ export class Tala {
     const sx = Math.sin(dir), sz = Math.cos(dir), en = t => ({ x: redondo(a.x + sx * t), z: redondo(a.z + sz * t) });
     const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.7) }, { tipo: d.menudo, n: ramas, ...en(d.largo + 1.1) }];
     this.estado[id] = { golpes: 0, parte: 0, veces: (e.veces || 0) + 1, caido: ahora, vuelve: ahora + d.vuelve, dir: redondo(dir) };  // sin boca: la siguiente vez, otra
-    return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, dir: redondo(dir), por, deja, vuelve: ahora + d.vuelve };
+    return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, dir: redondo(dir), por, deja, vuelve: ahora + d.vuelve, ...gasto };
   }
 
   // Lo que se le puede hacer al árbol id en pie: { descortezar, sangrar, resina: 'lista' | 'sangrando' | null }.
@@ -293,6 +296,7 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   e.ahora = ahora;
   if (r.ok && a.tipo !== 'talar') e.resultado = { objeto: r.objeto, cantidad: r.cantidad };
   else if (r.ok) e.resultado = r.cae ? { cae: true, deja: r.deja.map(o => ({ tipo: o.tipo, n: o.n })) } : { golpes: r.golpes };
+  if (r.ok && r.seRompe) e.resultado.seRompe = r.seRompe;   // el hacha se ha roto con este golpe
   return r;
 }
 

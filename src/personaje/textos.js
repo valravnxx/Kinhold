@@ -18,6 +18,8 @@ export const ANIMS_EXTRA = {
   empujar: 'Empujar', cogerDeMesa: 'Coger de una mesa', // solo con taller-anim-v2
   hombro: 'Al hombro', hombroQuieto: 'Al hombro, quieto', arrastrar: 'Arrastrar', // las de taller-carga-v3
   empujarCarretilla: 'Empujar la carretilla', empujarQuieto: 'Empujar la carretilla, quieto',
+  // las de Meshy (src/personajes/meshy.js: CLIPS_MESHY) que no tenía el taller
+  recoger: 'Recoger', segar: 'Segar', agacharse: 'Agacharse a coger', pararDos: 'Parar a dos manos', bloquear: 'Cubrirse', rodar: 'Rodar', esquivar: 'Esquivar', derribado: 'Derribado', morir: 'Morir', muerto: 'Muerto', andarDeprisa: 'Andar deprisa', correrDeprisa: 'Correr deprisa', saltar: 'Saltar', escalera: 'Subir una escalera', nadarQuieto: 'Flotar', nadar: 'Nadar', dormido: 'Dormido', sentado: 'Sentado en el suelo', mirarAlrededor: 'Mirar alrededor', saludar: 'Saludar', asentir: 'Asentir', charlar: 'Charlar', reverencia: 'Reverencia', herido: 'Andar herido', agazapado: 'Andar agazapado',
   Sword_Block_2: 'Parar con la espada (otra)', // la de las extra que se llama igual que una básica
 };
 // tabla de lo que frena la ropa (filas: zona que se mira; columnas: tipo de golpe de src/logica/prendas.js)

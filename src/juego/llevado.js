@@ -34,7 +34,7 @@ const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -1
 const azar = (s) => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
 // ---------- medir el cuerpo ----------
-const BRAZO = /upperarm|lowerarm|hand|thumb|index|middle|ring|pinky|metacarpal/;
+const BRAZO = /upperarm|lowerarm|hand|thumb|index|middle|ring|pinky|metacarpal|Arm$|Hand$/; // (Arm, ForeArm y Hand: el esqueleto de Meshy)
 const CABEZA = /(pelo|barba|ojo|iris|cejas|orejas|vello|cofia|dientes|lengua)/;
 // Puntos del cuerpo vestido, en el espacio de `raiz` (el del personaje), sin brazos ni cabeza. También la altura del
 // cinturón del taller si se ve (va sobre la última prenda ceñida).
@@ -46,7 +46,7 @@ function medir(mh, raiz) {
     if (!o.isSkinnedMesh || !o.visible || o.userData.herramienta || CABEZA.test(o.name)) return;
     const g = o.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
     if (!pos || !si) return;
-    const huesos = o.skeleton.bones.map(b => BRAZO.test(b.name) ? 2 : /head|neck/.test(b.name) ? 1 : 0);
+    const huesos = o.skeleton.bones.map(b => BRAZO.test(b.name) ? 2 : /head|neck/i.test(b.name) ? 1 : 0);
     m.multiplyMatrices(inv, o.matrixWorld);
     const esCinturon = /_cinturon_/.test(o.name), paso = pos.count > 12000 ? 2 : 1;
     for (let i = 0; i < pos.count; i += paso) {
@@ -412,6 +412,8 @@ function seguir(grupo, raiz) {
       o.matrixWorldNeedsUpdate = true; o.userData.largoManos = largo;
       continue;
     }
+    const sh = o.userData.sobreHombro;
+    if (sh) { sh.hueso.getWorldPosition(_a).applyMatrix4(_inv).sub(sh.de); o.matrix.makeTranslation(_a.x, _a.y, _a.z); o.matrixWorldNeedsUpdate = true; continue; }
     const h = o.userData.hueso; if (!h) continue;
     o.matrix.multiplyMatrices(_inv, h.matrixWorld).multiply(o.userData.desfase);
     o.matrixWorldNeedsUpdate = true;
@@ -552,7 +554,7 @@ export function crearLlevado(j) {
     // al hombro
     if (l.hombro && cH && cE) {
       const L = nuevoLote(), h = hombroDe(-1), t = l.hombro;
-      let hueso = pecho;
+      let hueso = pecho, agarre = null;
       if (t === 'tronco_corto' || t === 'tronco_delgado') {
         // el delgado (7 nov: la madera de la casa humilde), igual pero más fino y más largo: con el mismo centro, así la
         // mano de la animación del taller lo sujeta igual por encima (queda 1 cm más alto sobre el hombro)
@@ -562,9 +564,14 @@ export function crearLlevado(j) {
         // La mano derecha lo sujeta por encima (la animación del taller, taller-carga-v3, con las mismas medidas).
         const s = H.upperarm_r && H.clavicle_r && !globalThis.__troncoComoAntes /* solo para comprobar que la prueba falla */ ? H.upperarm_r.getWorldPosition(v3(0, 0, 0)).applyMatrix4(invRaiz) : null;
         if (s) {
-          const x = s.x + TRONCO_HOMBRO.x, z = s.z + TRONCO_HOMBRO.z;
-          troncoCorto(L, x, s.y + TRONCO_HOMBRO.y, z, largo, r, 'z');
+          // (en los de Meshy, algo más afuera, más alto y más adelante: su hombro es más estrecho y va más atrás que el del taller)
+          const ms = mh.meshy ? { x: -0.035, y: 0.025, z: 0.04 } : { x: 0, y: 0, z: 0 };
+          const x = s.x + TRONCO_HOMBRO.x + ms.x, z = s.z + TRONCO_HOMBRO.z + ms.z, yT = s.y + TRONCO_HOMBRO.y + ms.y;
+          troncoCorto(L, x, yT, z, largo, r, 'z');
           hueso = H.clavicle_r;
+          // donde van los nudillos de la mano derecha: encima del tronco, algo por delante del hombro (los personajes de
+          // Meshy no traen la postura: el brazo se pone ahí, src/juego/personaje.js)
+          agarre = v3(x, yT + r + 0.035, z + 0.04);
         } else troncoCorto(L, h.x - 0.045, h.y + 0.085, h.z - 0.1, largo, r, 'z');
       } else if (t === 'saco') {
         // el saco lleno, echado sobre el hombro derecho y colgando a la espalda; la boca atada por delante
@@ -587,7 +594,12 @@ export function crearLlevado(j) {
           L.add(cajaR(0.21, 0.09, 0.02, 0.01), CUERO_OSC, abajo.x + 0.06, abajo.y - 0.05, abajo.z + 0.01, { y: 1.35 }, { tex: 'liso' });
         }
       }
-      grupo.add(pieza(L, 'hombro', I, hueso, invRaiz));
+      const g = pieza(L, 'hombro', I, hueso, invRaiz);
+      if (agarre) g.userData.agarre = agarre;
+      // (en los de Meshy el tronco no gira con ningún hueso: va recto, siguiendo solo dónde está el hombro derecho; sus
+      // animaciones doblan mucho el pecho y la clavícula, y el tronco atado a ellos se cruzaba)
+      if (agarre && mh.meshy && H.upperarm_r) { g.userData.hueso = null; g.userData.sobreHombro = { hueso: H.upperarm_r, de: H.upperarm_r.getWorldPosition(v3(0, 0, 0)).applyMatrix4(invRaiz) }; }
+      grupo.add(g);
     }
 
     // en las manos (el hacha la pone el personaje)
@@ -629,6 +641,13 @@ export function crearLlevado(j) {
       montar(ultimo);
     },
     rehacer() { huella = ''; this.poner(ultimo); },
+    // dónde agarra la mano derecha lo que va al hombro (en el mundo), o null
+    agarreHombro() {
+      const g = grupo.children.find(o => o.userData.agarre);
+      if (!g || !grupo.visible) return null;
+      g.updateWorldMatrix(true, false);
+      return g.userData.agarre.clone().applyMatrix4(g.matrixWorld);
+    },
     paso() {
       if (!j.mh) return;
       grupo.visible = j.mh.nivel < OCULTO && j.mh.raiz.visible !== false;

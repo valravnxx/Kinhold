@@ -5,7 +5,8 @@
 // Ejecutar: node pruebas/prueba_combate_servidor.mjs
 // Con MUTAR=1 se prueba un servidor que se fía del autor que manda el cliente en sus intenciones: debe FALLAR.
 // Con MUTAR_MODOS=1, un combate que vuelve a aceptar las intenciones de la liza y de las guardias: debe FALLAR.
-// Con MUTAR_ROPA=1, un servidor que no viste al luchador con lo que lleva puesto en el inventario: debe FALLAR.
+// Con MUTAR_ROPA=1, un servidor que no viste al luchador con lo que lleva puesto en el inventario ni le da el arma de su
+// mano: debe FALLAR.
 import { WebSocket } from 'ws';
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
@@ -44,8 +45,8 @@ const golpe = (c, a, linea) => ic(c, a, { que: 'cargar', linea }).ok && ic(c, a,
 // A en el origen mirando a +z; B a 1,5 m delante, mirándole; los dos con el arma sacada
 function pareja(opc = {}) {
   const c = new CombateServidor({ semilla: 5, ...opc });
-  c.entrar('jugador:a', { z: 0, rot: 0 });
-  c.entrar('jugador:b', { z: 1.5, rot: Math.PI });
+  c.entrar('jugador:a', { arma: 'espada_larga', z: 0, rot: 0 });   // (con una espada en la mano)
+  c.entrar('jugador:b', { arma: 'espada_larga', z: 1.5, rot: Math.PI });
   for (const x of ['jugador:a', 'jugador:b']) ic(c, x, { que: 'arma', sacada: true });
   return c;
 }
@@ -116,7 +117,8 @@ function pareja(opc = {}) {
     && c.luchadores['jugador:a'].accion === 'libre' && !('liza' in c.luchadores['jugador:a']));
   comprobar('quien no está en el combate no puede nada', !ic(c, 'jugador:x', { que: 'cargar', linea: 'alto' }).ok);
   ic(c, 'jugador:a', { que: 'cargar', linea: 'alto' });
-  comprobar('no se cambia de arma a mitad de un golpe', !ic(c, 'jugador:a', { que: 'equipar', arma: 'arco' }).ok);
+  // el arma es lo de la mano (valravnx, 9 nov): equipar ya no la cambia (la pone el servidor desde el inventario: armar)
+  comprobar('equipar ya no cambia el arma: es lo de la mano', ic(c, 'jugador:a', { que: 'equipar', arma: 'arco' }).ok && c.luchadores['jugador:a'].arma !== 'arco');
   c.luchadores['jugador:b'].caer('prueba');
   comprobar('fuera de combate no se puede atacar', !ic(c, 'jugador:b', { que: 'cargar', linea: 'alto' }).ok);
 }
@@ -145,7 +147,8 @@ function pareja(opc = {}) {
   // arco: A se aparta 12 m, tensa del todo y suelta al pecho de B
   const c = pareja();
   c.colocar('jugador:b', 0, 12, Math.PI);
-  comprobar('coger el arco estando libre', c.intencion('jugador:a', { tipo: 'combate', que: 'equipar', arma: 'arco' }).ok);
+  c.armar('jugador:a', { arma: 'arco' });
+  comprobar('con el arco en la mano (lo pone el servidor)', c.luchadores['jugador:a'].arma === 'arco');
   comprobar('tensar', c.intencion('jugador:a', { tipo: 'combate', que: 'tensar' }).ok);
   c.avanzar(1.1);
   comprobar('soltar apuntando al rival', c.intencion('jugador:a', { tipo: 'combate', que: 'soltar', x: 0, y: 1.2, z: 12 }).ok);
@@ -171,7 +174,7 @@ function pareja(opc = {}) {
 {
   // todos se dan con todos (ya no hay liza aparte), y volver a empezar sano: no a mitad de una pelea
   const c = pareja();
-  c.entrar('jugador:obra', { z: 1.5, x: 0.6, rot: Math.PI });   // otro, que no ha sacado el arma, delante de A
+  c.entrar('jugador:obra', { arma: 'espada_larga', z: 1.5, x: 0.6, rot: Math.PI });   // otro, que no ha sacado el arma, delante de A
   c.colocar('jugador:b', 0, 30, Math.PI);
   golpe(c, 'jugador:a', 'alto');
   c.avanzar(1);
@@ -239,8 +242,8 @@ function pareja(opc = {}) {
 console.log('Pelear en el mundo');
 {
   const c = new CombateServidor({ semilla: 5 });
-  c.entrar('jugador:a', { z: 0, rot: 0 });
-  c.entrar('jugador:b', { z: 1.5, rot: Math.PI });
+  c.entrar('jugador:a', { arma: 'espada_larga', z: 0, rot: 0 });   // (con una espada en la mano)
+  c.entrar('jugador:b', { arma: 'espada_larga', z: 1.5, rot: Math.PI });
   const La = c.luchadores['jugador:a'], Lb = c.luchadores['jugador:b'];
   const ic = (a, m) => c.intencion(a, { tipo: 'combate', ...m });
   comprobar('sin el arma sacada no se carga un golpe', !ic('jugador:a', { que: 'cargar', linea: 'alto' }).ok && La.accion === 'libre');
@@ -294,7 +297,7 @@ if (MUTAR) {
 }
 if (process.env.MUTAR_ROPA === '1') {
   const fuente = readFileSync(ruta, 'utf8');
-  const mutada = fuente.replace('const vestirLuchador = (autor) => combate.vestir(', 'const vestirLuchador = (autor) => (() => {})(');
+  const mutada = fuente.replace('const vestirLuchador = (autor) => {', 'const vestirLuchador = (autor) => { return;');
   if (mutada === fuente) { console.log('No se pudo mutar el servidor'); process.exit(1); }
   copia = join(raiz, 'servidor/.servidor_mutado_combate.mjs');
   writeFileSync(copia, mutada);
@@ -344,7 +347,10 @@ try {
   const a = A.bienvenida.autor, b = B.bienvenida.autor;
   comprobar('la bienvenida trae los luchadores (cada jugador tiene el suyo)', B.bienvenida.luchadores.some(l => l.autor === a) && B.bienvenida.luchadores.some(l => l.autor === b) && typeof B.bienvenida.tc === 'number');
 
-  // los dos sacan el arma
+  // el arma es lo de la mano (valravnx, 9 nov): los dos cogen una espada (del arcón de pruebas) y la sacan
+  for (const C of [A, B]) C.mandar({ tipo: 'objeto', id: 900, accion: { tipo: 'coger', objeto: 'espada', cantidad: 1, a: 'mano:der' } });
+  await pausa(400);
+  comprobar('con la espada en la mano, su arma es la espada (lo pone el servidor)', s.combate.luchadores[a].arma === 'espada_larga' && s.combate.luchadores[b].arma === 'espada_larga', `${s.combate.luchadores[a].arma}`);
   A.mandar({ tipo: 'combate', que: 'arma', sacada: true }); B.mandar({ tipo: 'combate', que: 'arma', sacada: true });
   // se colocan frente a frente por la presencia
   A.mandar({ tipo: 'estado', x: 0, y: 0, z: 0, giro: 0, anim: 'quieto' });
@@ -384,9 +390,9 @@ try {
 
   // A coge el arco, se aparta y tira a B
   await pausa(800);
-  A.mandar({ tipo: 'combate', que: 'equipar', arma: 'arco' });
+  s.combate.armar(a, { arma: 'arco' });   // (el arma es lo de la mano: aquí la pone la prueba)
   A.mandar({ tipo: 'estado', x: 0, y: 0, z: -10, giro: 0, anim: 'quieto' });
-  B.mandar({ tipo: 'combate', que: 'equipar', arma: 'arco' });   // sin escudo, para que la flecha entre
+  s.combate.armar(b, { arma: 'arco' });   // sin escudo, para que la flecha entre
   await pausa(300);
   A.mandar({ tipo: 'combate', que: 'tensar' });
   await pausa(1200);
@@ -410,7 +416,7 @@ try {
   comprobar('el archivo del mundo no se mezcla con el combate', !existsSync(archivo) || !readFileSync(archivo, 'utf8').includes('"golpe"'));
 
   // otra vez con espada: A guarda el arma y la vuelve a sacar, y golpea cargando
-  for (const C of [A, B]) C.mandar({ tipo: 'combate', que: 'equipar', arma: 'espada_larga' });
+  for (const x of [a, b]) s.combate.armar(x, { arma: 'espada_larga' });
   A.mandar({ tipo: 'estado', x: 0, y: 0, z: 0, giro: 0, anim: 'quieto' });
   A.mandar({ tipo: 'combate', que: 'reiniciar' }); B.mandar({ tipo: 'combate', que: 'reiniciar' });   // sanos (si alguno cayó)
   A.mandar({ tipo: 'combate', que: 'arma', sacada: false });
@@ -431,7 +437,7 @@ try {
   const mismas = (autor) => JSON.stringify(s.combate.luchadores[autor].puestas) === JSON.stringify(puestasDe(s.objetos.invs.de(autor).lugares));
   comprobar('el luchador lleva lo que tiene puesto en el inventario del servidor', mismas(a) && mismas(b), s.combate.luchadores[b].puestas.join(', '));
   const antes = s.combate.luchadores[b].puestas.length;
-  B.mandar({ tipo: 'objeto', id: 77, accion: { tipo: 'quitarse', lugar: 'ropa:interior', a: 'mano:der' } });
+  B.mandar({ tipo: 'objeto', id: 77, accion: { tipo: 'quitarse', lugar: 'ropa:interior', a: 'mano:izq' } });   // (en la derecha lleva la espada)
   await B.esperar(m => m.tipo === 'resultado_objeto' && m.id === 77 && m.ok);
   await pausa(300);
   const fb = lb(A);

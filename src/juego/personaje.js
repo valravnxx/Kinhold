@@ -1,14 +1,15 @@
-// Kinhold — el jugador de la construcción: el personaje del taller propio (MakeHuman vestido por código, con las
-// animaciones de Quaternius) con camisa y calzas de lino y descalzo, como empieza según el GDD (los pies descalzos
-// están desde la taller-v12).
-// Mientras se carga (o si no se puede cargar, p. ej. abriendo el html suelto sin servidor) se ve el muñeco inicial.
+// Kinhold — el jugador (y los demás jugadores en línea): el hombre o la mujer de Meshy (src/personajes/meshy.js), con
+// sus animaciones de la biblioteca de Meshy (valravnx, 10 nov: fuera los modelos de antes, el del taller, el de
+// Quaternius y el muñeco de bloques). Mientras se carga no se ve nada (sale en un momento).
 import * as THREE from 'three';
-import { mat, cajaR, deMano } from '../mundo/modelos.js';
+import { cajaR, deMano } from '../mundo/modelos.js';
 import { Lote } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
-import { crearPersonajeMH } from '../personajes/makehuman.js';
+import { crearPersonajeMeshy, carpetaMeshy } from '../personajes/meshy.js';
+export { carpetaMeshy };
 import { NIVELES, OCULTO, RADIO_VISTA, nivelDetalle, pixelesEnPantalla } from '../logica/detalle.js';
 import { crearLlevado } from './llevado.js';
+import { nudillosA, girarHueso } from '../personajes/ik.js';
 import { loteHachaPiedra, loteMazoPiedra } from './modelos_objetos.js';
 
 // Niveles de detalle (src/logica/detalle.js): cada personaje mira lo alto que sale en pantalla desde la cámara que se
@@ -31,64 +32,6 @@ function nivelPara(j) {
   if (!_f.intersectsSphere(_e.set(_p, RADIO_VISTA))) return OCULTO;
   const px = pixelesEnPantalla(_p.distanceTo(c.position), innerHeight, c.fov);
   return nivelDetalle(px, j.mh.nivel);
-}
-
-const PIEL = 0xd6a77a, LINO = 0xd9cfb8, LINO_OSC = 0xbfb498, PELO = 0x4a3324, CORDEL = 0x8a7a55;
-
-
-function pieza(geo, color, x, y, z) {
-  const m = new THREE.Mesh(geo, mat(color));
-  m.position.set(x, y, z);
-  m.castShadow = true;
-  return m;
-}
-
-// muñeco provisional (el de siempre), solo mientras carga el del taller
-function crearMuneco() {
-  const g = new THREE.Group();
-  const cuerpo = new THREE.Group();
-  g.add(cuerpo);
-  const piernas = [];
-  for (const lado of [-1, 1]) {
-    const cadera = new THREE.Group();
-    cadera.position.set(lado * 0.12, 0.9, 0);
-    cadera.add(pieza(new THREE.BoxGeometry(0.17, 0.78, 0.2), LINO_OSC, 0, -0.39, 0));
-    cadera.add(pieza(new THREE.BoxGeometry(0.15, 0.1, 0.26), PIEL, 0, -0.85, 0.04));
-    cuerpo.add(cadera);
-    piernas.push(cadera);
-  }
-  cuerpo.add(pieza(new THREE.BoxGeometry(0.46, 0.62, 0.26), LINO, 0, 1.22, 0));
-  cuerpo.add(pieza(new THREE.BoxGeometry(0.48, 0.06, 0.28), CORDEL, 0, 0.93, 0));
-  const brazos = [];
-  for (const lado of [-1, 1]) {
-    const hombro = new THREE.Group();
-    hombro.position.set(lado * 0.3, 1.48, 0);
-    hombro.add(pieza(new THREE.BoxGeometry(0.13, 0.42, 0.14), LINO, 0, -0.21, 0));
-    hombro.add(pieza(new THREE.BoxGeometry(0.11, 0.24, 0.12), PIEL, 0, -0.52, 0));
-    cuerpo.add(hombro);
-    brazos.push(hombro);
-  }
-  const cabeza = new THREE.Group();
-  cabeza.position.set(0, 1.62, 0);
-  cabeza.add(pieza(new THREE.BoxGeometry(0.1, 0.1, 0.1), PIEL, 0, 0.02, 0));
-  cabeza.add(pieza(new THREE.IcosahedronGeometry(0.15, 0), PIEL, 0, 0.2, 0));
-  cabeza.add(pieza(new THREE.IcosahedronGeometry(0.155, 0), PELO, 0, 0.26, -0.03));
-  cuerpo.add(cabeza);
-  g.userData = { piernas, brazos, cuerpo, fase: 0 };
-  return g;
-}
-function animarMuneco(g, velocidad, dt) {
-  const u = g.userData;
-  if (velocidad > 0.1) {
-    u.fase += dt * velocidad * 2.4;
-    const a = Math.sin(u.fase) * Math.min(0.7, velocidad * 0.16);
-    u.piernas[0].rotation.x = a; u.piernas[1].rotation.x = -a;
-    u.brazos[0].rotation.x = -a * 0.8; u.brazos[1].rotation.x = a * 0.8;
-    u.cuerpo.position.y = Math.abs(Math.cos(u.fase)) * 0.03;
-  } else {
-    for (const p of [...u.piernas, ...u.brazos]) p.rotation.x *= 0.8;
-    u.cuerpo.position.y *= 0.8;
-  }
 }
 
 // Hacha de talar con el estilo v5 (como la del tocón de la prueba): mango de fresno con veta, algo curvado y más
@@ -152,11 +95,13 @@ export function empunar(mh, modelo) {
   const pm = loc(med), f = pm.clone().normalize();                       // hacia los nudillos
   const y = loc(ind).sub(loc(men)); y.addScaledVector(f, -y.dot(f)).normalize(); // del meñique al índice
   const x = new THREE.Vector3().crossVectors(y, f);
-  modelo.matrix.makeBasis(x, y, f).setPosition(pm.multiplyScalar(1.15));
+  // (los de Meshy traen marcado el agarre: en la palma, junto a los nudillos; herramientas/meshy/poner_dedos.mjs)
+  modelo.matrix.makeBasis(x, y, f).setPosition(h.agarre_r ? loc(h.agarre_r) : pm.multiplyScalar(1.15));
   modelo.matrix.decompose(modelo.position, modelo.quaternion, modelo.scale);
   // la mano tiene la escala del esqueleto: la herramienta se deja a su tamaño de verdad
   const e = new THREE.Vector3(); mano.getWorldScale(e); modelo.scale.divideScalar(e.x || 1);
   modelo.visible = false;
+  modelo.userData.agarreUnaMano = { p: modelo.position.clone(), q: modelo.quaternion.clone(), s: modelo.scale.clone() };
   // no es del cuerpo: los niveles de detalle (src/personajes/detalle.js) no la tocan ni la cuentan
   modelo.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
   mano.add(modelo);
@@ -175,25 +120,21 @@ export function modeloHachaDe(tipo) {
   return g;
 }
 
-// Devuelve { raiz, animar(velocidad, dt, talando), cargado(), modo(), mh }. `recursos`: carpeta de los .glb del taller.
-// `sexo`, `capas` y `aspecto`: los del personaje elegido en el visor (por defecto, hombre con camisa y calzas, descalzo).
-// `ropa`: { tintes, hechuras } de lo que lleva puesto (src/logica/hechura.js: vestidoDe); sin ella, los de siempre.
+// Devuelve { raiz, animar(velocidad, dt, talando), mh }. `recursos`: la carpeta de personajes del taller
+// (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v2. `sexo`: el del personaje elegido.
+// `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
 const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
-  const muneco = crearMuneco();
-  raiz.add(muneco);
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
-  // cargas: las animaciones de llevar al hombro, arrastrar y empujar hechas en el taller (taller-carga-v3, unos 100 KB)
-  j.listo = crearPersonajeMH({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras, cargas: true }, recursos).then(mh => {
-    raiz.remove(muneco);
+  j.listo = crearPersonajeMeshy({ sexo, capas, aspecto, tintes: ropa.tintes, hechuras: ropa.hechuras }, carpetaMeshy(recursos)).then(mh => {
     raiz.add(mh.raiz);
     j.mh = mh;
     j.hacha = empunar(mh, modeloHachaDe(j.tipoHacha)); j.hachaPuesta = j.tipoHacha;
     cuenta.add(j);
-  }).catch(e => { j.error = e.message || String(e); console.warn('Personaje del taller no cargado, sigue el muñeco:', e); });
+  }).catch(e => { j.error = e.message || String(e); console.warn('Personaje no cargado:', e); });
   j.animar = (velocidad, dt, talando = false) => {
-    if (!j.mh) { animarMuneco(muneco, velocidad, dt); return; }
+    if (!j.mh) return;
     // andar despacio (joystick a medias), correr a partir de 1,8 m/s; la animación se acelera con la velocidad,
     // hasta 1,6× (más rápido se ve atropellado; a 6 m/s los pies resbalan algo)
     let m = 'quieto', ritmo = 1;
@@ -204,19 +145,19 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
     // arrastrando la rastra (src/juego/rastra.js): inclinado, con las manos atrás en las varas; quieto, la misma postura
     if (j.arrastra && j.mh.acciones.arrastrar) {
-      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
+      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.arrastrar || j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'arrastrar';
     // empujando la carretilla (src/juego/carretilla.js): algo inclinado, con los brazos bajos en las varas, andando o
     // quieto (la de empujar del taller, taller-carga-v3); sin ella, como al llevar algo en brazos
     } else if (j.empuja && j.mh.acciones.empujarCarretilla) {
-      if (velocidad > 0.1) { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6); m = 'empujarCarretilla'; } else m = 'empujarQuieto';
+      if (velocidad > 0.1) { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.empujarCarretilla || j.mh.velocidad.andar || 1), 0.5, 1.6); m = 'empujarCarretilla'; } else m = 'empujarQuieto';
     } else if (j.empuja && j.mh.acciones.cargar) {
-      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'cargar';
+      ritmo = velocidad > 0.1 ? THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.cargar || j.mh.velocidad.andar || 1), 0.5, 1.6) : 0; m = 'cargar';
     } else if (j.cargaDos && m !== 'talar' && j.mh.acciones.cargar) { m = 'cargar'; if (velocidad <= 0.1) ritmo = 0; }
     // un tronco al hombro: la mano derecha arriba sujetándolo y el cuerpo algo inclinado, andando o quieto (taller-carga-v3).
     // Corriendo, la misma de andar, más deprisa (con el tronco al hombro no se corre suelto)
     else if (j.alHombro && m !== 'talar' && j.mh.acciones.hombro) {
       if (m === 'quieto') m = 'hombroQuieto';
-      else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
+      else { ritmo = THREE.MathUtils.clamp(velocidad / (j.mh.velocidad.hombro || j.mh.velocidad.andar || 1), 0.6, 1.8); m = 'hombro'; }
     }
     // dormir en la cama ligada (P4): se tumba (y se queda tumbado) y, al despertar, se levanta (taller-dormir-v1)
     // (tumbado del todo, la de dormir: los brazos a lo largo del cuerpo, no levantados como acaba la de tumbarse)
@@ -260,6 +201,100 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (j.mh) llevado.poner(l);
   };
   j.listo.then(() => { ponerHacha(); if (j.mh && j.llevadoPedido) llevado.poner(j.llevadoPedido); });
-  j.animar = (...a) => { animarCuerpo(...a); llevado.paso(); };
+  // los brazos donde agarran (los de Meshy no traen esas posturas): lo grande en brazos, delante del pecho y entre las dos
+  // manos; las agarraderas de la carretilla; y el tronco al hombro, con la mano derecha encima
+  const _p = new THREE.Vector3(), _q = new THREE.Vector3(), _f = new THREE.Vector3(), _l = new THREE.Vector3(), _u = new THREE.Vector3();
+  const brazos = () => {
+    const h = j.mh.hueso;
+    return { r: { sup: h.upperarm_r, inf: h.lowerarm_r, mano: h.hand_r, nudillo: h.middle_01_r }, l: { sup: h.upperarm_l, inf: h.lowerarm_l, mano: h.hand_l, nudillo: h.middle_01_l } };
+  };
+  // adelante (del pie a la punta), a la izquierda (del hombro derecho al izquierdo) y arriba, en el mundo
+  const ejes = (b) => {
+    const h = j.mh.hueso;
+    _f.subVectors(h.ball_l.getWorldPosition(_p), h.foot_l.getWorldPosition(_q)).setY(0).normalize();
+    _l.subVectors(b.l.sup.getWorldPosition(_p), b.r.sup.getWorldPosition(_q)).setY(0).normalize();
+    _u.set(0, 1, 0);
+  };
+  const polo = (lado) => new THREE.Vector3().addScaledVector(_l, lado === 'l' ? 0.6 : -0.6).addScaledVector(_u, -1).addScaledVector(_f, -0.35);
+  const colocarBrazos = () => {
+    if (!j.mh || !j.mh.meshy || !j.mh.raiz.visible || globalThis.__sinBrazosMeshy /* solo para comprobar que las pruebas fallan */) return false;
+    const b = brazos(); if (!b.r.sup || !b.l.sup || !j.mh.hueso.ball_l) return false;
+    j.raiz.updateMatrixWorld(true);
+    ejes(b);
+    if (j.empuja && j.agarraderas && j.agarraderas.length >= 2) {
+      // cada mano, a la agarradera que tiene más cerca
+      const ag = j.agarraderas.map(a => a.getWorldPosition(new THREE.Vector3()));
+      const mr = b.r.mano.getWorldPosition(_p);
+      const [ar, al] = ag[0].distanceTo(mr) <= ag[1].distanceTo(mr) ? [ag[0], ag[1]] : [ag[1], ag[0]];
+      // el cuerpo de frente a las varas y, si los brazos no llegan, echado hacia delante (los de Meshy los tienen cortos)
+      const h = j.mh.hueso, pecho = h.spine_03 || h.spine_02;
+      if (pecho && h.spine_01) {
+        const c = pecho.getWorldPosition(new THREE.Vector3()), sr = b.r.sup.getWorldPosition(new THREE.Vector3());
+        const quiero = sr.clone().sub(c); quiero.addScaledVector(_f, -quiero.dot(_f));
+        girarHueso(pecho, sr, c.clone().add(quiero));
+        const alcance = 0.95 * (b.r.sup.getWorldPosition(_p).distanceTo(b.r.inf.getWorldPosition(_q)) + b.r.inf.getWorldPosition(_p).distanceTo(b.r.mano.getWorldPosition(_q)) + 0.085);
+        const falta = Math.max(ar.distanceTo(b.r.sup.getWorldPosition(_p)), al.distanceTo(b.l.sup.getWorldPosition(_q))) - alcance;
+        if (falta > 0) { const k = Math.min(falta * 1.3, 0.35), c2 = pecho.getWorldPosition(new THREE.Vector3()); girarHueso(h.spine_01, c2, c2.clone().addScaledVector(_f, k).addScaledVector(_u, -k * 0.4)); }
+      }
+      nudillosA(b.r, ar, polo('r')); nudillosA(b.l, al, polo('l'));
+      return true;
+    }
+    if (j.cargaDos && !j.empuja) {
+      // delante del pecho, a 35 cm, y las manos a sus lados (a 20 cm del centro)
+      const pecho = (j.mh.hueso.spine_03 || j.mh.hueso.spine_02).getWorldPosition(new THREE.Vector3());
+      const c = pecho.addScaledVector(_f, 0.35).addScaledVector(_u, -0.22);
+      nudillosA(b.r, c.clone().addScaledVector(_l, -0.2), polo('r'));
+      nudillosA(b.l, c.clone().addScaledVector(_l, 0.2), polo('l'));
+      return true;
+    }
+    return false;
+  };
+  j.animar = (...a) => {
+    animarCuerpo(...a);
+    // con el hacha o el pico trabajando (los de Meshy, con la animación a dos manos): el mango pasa por las dos manos en
+    // cada fotograma, la izquierda junto al pomo, la cabeza más allá de la derecha y el filo hacia delante (antes iba fijo a
+    // la mano derecha y la cabeza se metía en la del personaje: lo vio la revisión de las capturas)
+    if (j.mh && j.mh.meshy && j.hacha && j.hacha.visible && (j.modo === 'talar' || j.modo === 'minar') && j.mh.hueso.agarre_l && !globalThis.__unaMano) {
+      const h = j.mh.hueso, mano = h.hand_r;
+      j.raiz.updateMatrixWorld(true);
+      const aR = h.agarre_r.getWorldPosition(new THREE.Vector3()), aL = h.agarre_l.getWorldPosition(new THREE.Vector3());
+      // el mango, de la mano izquierda (junto al pomo) a la derecha, y la cabeza más allá; con las manos muy juntas la línea
+      // entre ellas no vale y se sigue con la de antes (guardada respecto a la mano derecha, para que gire con ella)
+      const y = aR.clone().sub(aL);
+      const giroMano = new THREE.Quaternion(); mano.getWorldQuaternion(giroMano);
+      if (y.length() >= 0.1) { y.normalize(); j.hacha.userData.ejeLocal = y.clone().applyQuaternion(giroMano.clone().invert()); }
+      else if (j.hacha.userData.ejeLocal) y.copy(j.hacha.userData.ejeLocal).applyQuaternion(giroMano);
+      if (y.lengthSq() > 1e-6) {
+        y.normalize();
+        const z = new THREE.Vector3(0, 0, 1).transformDirection(j.raiz.matrixWorld); z.addScaledVector(y, -z.dot(y));
+        if (z.lengthSq() < 1e-6) z.set(0, 1, 0).addScaledVector(y, -y.y);
+        z.normalize();
+        const x = new THREE.Vector3().crossVectors(y, z);
+        const mundo = new THREE.Matrix4().makeBasis(x, y, z).setPosition(aL.clone().addScaledVector(y, 0.05)); // a 5 cm del origen (el pomo está a −0,1)
+        const local = mano.matrixWorld.clone().invert().multiply(mundo);
+        local.decompose(j.hacha.position, j.hacha.quaternion, j.hacha.scale);
+        const e = new THREE.Vector3(); mano.getWorldScale(e); j.hacha.scale.set(1 / e.x, 1 / e.y, 1 / e.z);
+        j.hacha.userData.aDosManos = true;
+      }
+    } else if (j.hacha && j.hacha.userData.aDosManos && j.hacha.userData.agarreUnaMano) {
+      // de vuelta a una mano: como lo puso empunar
+      j.hacha.userData.aDosManos = false;
+      j.hacha.position.copy(j.hacha.userData.agarreUnaMano.p); j.hacha.quaternion.copy(j.hacha.userData.agarreUnaMano.q); j.hacha.scale.copy(j.hacha.userData.agarreUnaMano.s);
+    }
+    // las manos cerradas en O sobre lo que agarran (el hacha o lo que va en la mano, el tronco al hombro, la carretilla,
+    // lo que se lleva en brazos); abiertas si no
+    if (j.mh && j.mh.cerrarMano) {
+      const l = j.llevadoPedido;
+      j.mh.cerrarMano('r', (j.hacha && j.hacha.visible) || (l && l.der) || j.empuja || j.cargaDos || j.alHombro || j.arrastra ? 1 : 0);
+      j.mh.cerrarMano('l', (l && l.izq) || j.empuja || j.cargaDos || j.arrastra ? 1 : 0);
+    }
+    const antes = colocarBrazos();
+    llevado.paso();
+    // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima
+    if (j.alHombro && j.mh && j.mh.meshy && !globalThis.__sinBrazosMeshy) {
+      const p = llevado.agarreHombro();
+      if (p) { const b = brazos(); if (!antes) { j.raiz.updateMatrixWorld(true); ejes(b); } nudillosA(b.r, p, new THREE.Vector3().addScaledVector(_f, 1).addScaledVector(_u, 0.6).addScaledVector(_l, -0.3)); } // (el codo delante, a la altura del hombro: la mano cae sobre el tronco)
+    }
+  };
   return j;
 }

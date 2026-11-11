@@ -14,6 +14,7 @@ os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
 shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v2'), f'{sitio}/recursos/personajes/meshy-v2')  # los personajes de Meshy
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-dormir-v1'), f'{sitio}/recursos/personajes/taller-dormir-v1')  # tumbarse y levantarse
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-sentarse-v1'), f'{sitio}/recursos/personajes/taller-sentarse-v1')  # sentarse en el suelo
 import re as _re
@@ -1087,18 +1088,17 @@ with sync_playwright() as p:
     esperar(pg, 900)
     pg.screenshot(path=f'{SALIDA}/26_muebles_estanteria_antorcha_de_cerca.png')
 
-    print('PC: personaje del taller (camisa y calzas de lino; anda, corre y tala)')
+    print('PC: el personaje de Meshy (anda, corre y tala)')
     try:
         pg.wait_for_function(f'{K}.jugador.mh || {K}.jugador.error', timeout=180000)
     except Exception:
         pass
     mh = ev(f"!!{K}.jugador.mh")
-    comprobar('carga el personaje del taller (no el muñeco)', mh, ev(f"{K}.jugador.error || ''"))
+    comprobar('carga el personaje de Meshy (valravnx, 10 nov: fuera el taller y el muñeco de bloques)', mh and ev(f"!!{K}.jugador.mh.meshy"), ev(f"{K}.jugador.error || ''"))
     if mh:
-        vis = ev(f"""(() => {{ const v = {{}}; {K}.jugador.mh.modelo.traverse(n => {{ if (n.isMesh) v[n.name] = n.visible; }}); return v; }})()""")
-        comprobar('lleva camisa y calzas', vis.get('hombre_capa_camisa') and vis.get('hombre_capa_calzas'))
-        comprobar('sin túnica ni armadura, y descalzo (como empieza el GDD: se ven los pies, no los zapatos)', vis.get('hombre_pies') and not vis.get('hombre_capa_zapatos') and not any(vis.get(f'hombre_capa_{c}') for c in ['tunica', 'gambeson', 'cota', 'sobreveste']),
-                  ', '.join(k for k, x in vis.items() if x))
+        # sin muñeco de bloques: en el jugador solo está el modelo de Meshy (y lo que lleva)
+        cajas = ev(f"""(() => {{ let n = 0; {K}.jugador.raiz.traverse(o => {{ if (o.isMesh && o.geometry.type === 'BoxGeometry' && !o.userData.herramienta) n++; }}); return n; }})()""")
+        comprobar('sin el muñeco de bloques', cajas == 0, f'{cajas} cajas')
         # con un tronco en brazos (lo deja aquí lo de llevar material a las obras) anda con la animación de llevar en brazos;
         # lo de abajo es con las manos vacías
         brazos = ev(f"(() => {{ const K = {K}, j = K.jugador, l = K.inventario.lugares; l['mano:der'] = {{ tipo: 'tronco_corto', n: 1 }}; l['mano:izq'] = null; K.vestir(); j.animar(1.0, 0.016, false); const m = j.modo; l['mano:der'] = null; K.vestir(); return m; }})()")
@@ -1108,7 +1108,7 @@ with sync_playwright() as p:
         # a 3,6 m/s (la velocidad normal) la carrera va casi a su ritmo natural (medido al cargar): sin resbalar ni cámara lenta
         nat = ev(f'{K}.jugador.mh.velocidad.correr || 0')
         r36 = float(modos[1].split(':')[1])
-        comprobar('la animación se acelera con la velocidad (a su medida natural, tope 1,6×)', nat > 0 and abs(r36 - 3.6 / nat) < 0.02 and 0.8 < r36 < 1.3 and modos[2].endswith('1.60'),
+        comprobar('la animación se acelera con la velocidad (a su medida natural, tope 1,6×)', nat > 0 and abs(r36 - 3.6 / nat) < 0.02 and 0.7 < r36 < 1.3 and abs(float(modos[2].split(':')[1]) - min(1.6, 6 / nat)) < 0.02,
                   f"{', '.join(modos)} · natural {nat:.2f} m/s")
         # junto a un árbol, con un hacha en la mano: Usar tala; moverse lo para (la tala entera: prueba_tala_navegador.py)
         ev(f"""(() => {{ const K = {K}; K.cambiarModo('mover'); K.accionInventario({{ tipo: 'coger', objeto: 'hacha_mano', cantidad: 1, a: 'mano:der' }}); const a = K.obstaculos.filter(o => o.arbol).sort((p, q) => Math.hypot(p.x, p.z) - Math.hypot(q.x, q.z))[0];
