@@ -1515,7 +1515,9 @@
     },
     {
      "nombre": "El mojón de valravnx (Meshy) en el juego, en lugar del de código",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-11T12:23:12+01:00",
+     "fin": "2026-11-11T13:59:43+01:00"
     },
     {
      "nombre": "Objetos y estaciones con Meshy: hoguera, hogar, banco de tronco, piedra de tallar, camas, cesto y almacenajes, y las herramientas en la mano (hacha de piedra, lasca, mazo, cuchillo)",
@@ -1563,9 +1565,9 @@
     },
     {
      "nombre": "El acopio de troncos de valravnx (Meshy) en el juego, en lugar del de código",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T12:23:12+01:00",
-     "rama": "trabajo/20261111-1223-acopio"
+     "fin": "2026-11-11T13:59:43+01:00"
     },
     {
      "nombre": "La naturaleza de Meshy según el perfil gráfico: más detalle y más lejos en los perfiles altos",
@@ -1750,13 +1752,16 @@
     },
     {
      "nombre": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T11:29:03+00:00",
-     "rama": "trabajo/20261111-1127"
+     "rama": "trabajo/20261111-1127",
+     "fin": "2026-11-11T12:37:42+00:00"
     },
     {
      "nombre": "Fabricar con el acabado nuevo, en su pestaña: cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo) y «Hacer ×3»; lo que está en marcha, con su barra",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-11T13:28:08+00:00",
+     "rama": "trabajo/20261111-1330"
     },
     {
      "nombre": "Construir: «Poner | Quitar» (X) y la planta arriba (desmontar, dentro de construir); las piezas con su imagen y el coste en iconos (en rojo lo que no tienes) y lo que hay en tu tierra; deshacer lo último; sin mojón, se abre en la pestaña Tierra",
@@ -3951,6 +3956,20 @@
      "archivo": "jugar/demo/v176.html",
      "capturas": "capturas/demo-v176",
      "notas": "La naturaleza de Meshy: las siete especies de árbol, adultas y jóvenes, el matorral, los helechos, el arbusto de las bayas, las ortigas, los juncos, la hierba larga y las rocas, con el aspecto de maqueta en miniatura"
+    },
+    {
+     "v": "v177",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v177.html",
+     "capturas": "capturas/demo-v177",
+     "notas": "El equipo en tres columnas: Ropa (con tu personaje), Lo que llevas (las manos, el hombro y cada bolsa abierta a la vez, con sus huecos) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo; tocar ahí con algo tuyo elegido para dejarlo). En el móvil, dos pestañas: «Lo que llevas» y «Ropa». Los huecos vacíos enseñan, apagada, la silueta de lo que va. La ficha, abajo, con lo principal y «Mover…»; clic derecho o mantener el dedo: a la mano, o al suelo si ya está en la mano."
+    },
+    {
+     "v": "v178",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v178.html",
+     "capturas": "capturas/demo-v178",
+     "notas": "El acopio de troncos y el mojón que hizo valravnx en Meshy, en lugar de los de código: el acopio con sus durmientes en el suelo y los troncos apilados encima, tenue mientras se levanta; el mojón, de la misma altura, sobre su parche de tierra. Bajados para el móvil y cargados una vez para todos."
     }
    ]
   },

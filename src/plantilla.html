@@ -65,7 +65,7 @@ body.hub-abierto #mapaRey .mr-botones{top:calc(var(--hub-t) - 8px)}
 body.hub-abierto #mapaRey .mr-cerrar{display:none}
 body.hub-abierto #mapaRey .mr-ayuda{bottom:calc(var(--hub-b) + 70px)}
 /* lo que se desplaza dentro del tablero se desvanece abajo, para que se vea que sigue (y no parezca cortado) */
-body.hub-abierto :is(.eq-tuyo,.inv-arcon,.inv-sel,.fab-pestanas,.fab-centro,.fab-ficha){-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),rgba(0,0,0,.4));mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),rgba(0,0,0,.4));padding-bottom:22px}
+body.hub-abierto :is(.eq-col,.fab-pestanas,.fab-pestanas,.fab-centro,.fab-ficha){-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),rgba(0,0,0,.4));mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),rgba(0,0,0,.4));padding-bottom:22px}
 body.hub-abierto .panel .cerrar,body.hub-abierto #panelInventario .eq-cab .cerrar,body.hub-abierto #panelFabricar .fab-cab .cerrar{display:none}
 body.hub-abierto .panel h2{font:24px 'Alegreya SC',Georgia,serif;color:#f0cf8a;margin:0 0 10px}
 body.hub-abierto :is(#panelAjustes,#panelTierra,#panelRegistro,#panelAyuda){font:16.5px/1.4 'EB Garamond',Georgia,serif;color:#f1e6cf}
@@ -310,7 +310,7 @@ body.construyendo #pomo{left:25px;top:25px}
 .fab-recoger{align-self:flex-start;font-size:12px;padding:4px 12px;border-radius:8px;border:0;background:#9cc27a;color:#1d2614;font-weight:700}
 /* panel de equipo (src/juego/panel_inventario.js; valravnx, 7 nov: con las imágenes y el estilo del panel de fabricar) */
 #panelInventario{background:#211b15;max-width:1120px;width:calc(100vw - 24px);height:min(760px,calc(100vh - 66px));max-height:none;inset:52px 12px auto 12px;z-index:20;padding:0;overflow:hidden;
-  display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab cab" "centro ficha" "pie pie";border-color:rgba(217,164,65,.28);box-shadow:0 16px 50px rgba(0,0,0,.5)}
+  display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"cab" "centro" "ficha" "pie";border-color:rgba(217,164,65,.28);box-shadow:0 16px 50px rgba(0,0,0,.5)}
 #panelInventario[hidden]{display:none}
 #panelInventario h3{margin:0 0 6px;font-size:14px;color:var(--acento)}
 #panelInventario h4{margin:8px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
@@ -318,47 +318,73 @@ body.construyendo #pomo{left:25px;top:25px}
 .eq-cab h2{margin:0;font:600 19px/1.2 Georgia,"Times New Roman",serif;color:var(--ink)}
 .eq-cab small{color:var(--muted);font-size:12px}
 #panelInventario .eq-cab .cerrar{position:static;margin-left:auto;width:36px;height:36px;padding:0;flex:none}
-.eq-centro{grid-area:centro;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px)}
-#panelInventario.eq-sin-arcon .eq-centro{grid-template-columns:minmax(0,1fr)}
-.eq-tuyo{overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:12px;min-height:0}
-.inv-figura{display:grid;grid-template-columns:76px minmax(0,1fr) 76px;gap:4px 8px;align-items:stretch;max-width:520px;width:100%;margin:0 auto}
+/* las tres columnas: Ropa | Lo que llevas | A tus pies (en el móvil, dos pestañas) */
+.eq-pestanas{display:none}
+.eq-centro{grid-area:centro;min-height:0;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.85fr)}
+.eq-col{overflow:auto;min-height:0;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.eq-col+.eq-col{border-left:1px solid var(--linea)}
+#panelInventario .eq-col>h3{margin:0;font:600 13px/1.2 Georgia,"Times New Roman",serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acento)}
+.inv-figura{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;gap:4px 8px;align-items:stretch;width:100%;margin:0 auto;flex:1;min-height:290px}
+.eq-ropa .inv-c{width:58px;height:58px}
+.eq-cab>div:first-child{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 14px}
+#panelInventario .eq-cab h2{margin:0}
 .inv-col{display:flex;flex-direction:column;justify-content:space-between;gap:6px;padding:4px 0}
-.inv-retrato{position:static;inset:auto;touch-action:auto;width:100%;min-width:0;height:430px;display:block;background:radial-gradient(ellipse at 50% 92%,rgba(0,0,0,.28),transparent 38%),radial-gradient(ellipse at 50% 40%,rgba(241,232,216,.07),transparent 70%);border-radius:12px}
+.inv-retrato{position:static;inset:auto;touch-action:auto;width:100%;min-width:0;height:100%;min-height:320px;display:block;background:radial-gradient(ellipse at 50% 92%,rgba(0,0,0,.28),transparent 38%),radial-gradient(ellipse at 50% 40%,rgba(241,232,216,.07),transparent 70%);border-radius:12px}
 .inv-sitio,.inv-mano{display:flex;flex-direction:column;align-items:center;gap:2px}
 .inv-sitio small,.inv-mano small{font-size:10px;color:var(--muted);white-space:nowrap}
-.eq-filas{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px}
-.eq-manos,.inv-cinto{display:flex;flex-direction:column;align-items:center;gap:3px}
-.eq-manos>small,.inv-cinto>small{font-size:11px;color:var(--acento);font-weight:600}
-.eq-manos>div,.inv-cinto>div{display:flex;gap:8px}
+.eq-manos{display:flex;gap:10px;flex-wrap:wrap}
+.eq-bolsas{display:flex;flex-direction:column;gap:10px}
+.eq-puestas{display:flex;gap:10px}
+.eq-bolsa{background:rgba(20,15,11,.35);border:1px solid var(--linea);border-radius:10px;padding:7px 8px 8px}
+.eq-bolsa.eq-dentro{margin-left:14px}
+.eq-bolsa-cab{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:0 0 6px;font-size:12px;color:var(--ink)}
+.eq-admite{font-size:11px;color:var(--muted)}
+.eq-bolsa-huecos{display:flex;flex-wrap:wrap;gap:6px}
+.eq-pies{transition:box-shadow .15s}
+.eq-pies.destino{box-shadow:inset 0 0 0 2px rgba(240,196,106,.55);background:rgba(240,196,106,.05);cursor:pointer}
+.eq-suelo-cosas{display:flex;flex-wrap:wrap;gap:8px}
+.eq-suelo-nota{margin:0}
 .inv-c{width:68px;height:68px;padding:0;border-radius:10px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;font-size:10px;line-height:1.1;position:relative;overflow:hidden;background:#2b231c;border:1px solid var(--linea);color:var(--ink)}
 .inv-c .eq-ic{position:absolute;inset:0;border-radius:0}
 .inv-c .eq-ic img,.inv-c .eq-ic svg{width:100%;height:100%}
 .inv-c .ic-prenda{padding:9px;box-sizing:border-box;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
 .inv-c .fab-pend{display:none}
-.inv-c.vacio{background:rgba(30,25,20,.55);border-style:dashed}
+.inv-c.vacio{background:rgba(30,25,20,.55)}
+/* la silueta de lo que va en el hueco vacío: apagada, sin color */
+.eq-sil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.2;filter:grayscale(1) brightness(1.5)}
+.eq-sil img,.eq-sil svg{width:100%;height:100%;object-fit:contain}
+.eq-sil .ic-prenda{padding:10px;box-sizing:border-box}
 .inv-c.lleno{border-color:rgba(217,164,65,.4)}
 .inv-c.contenedor{box-shadow:inset 0 -3px 0 rgba(217,164,65,.55)}
-.inv-c.abierto{outline:2px solid rgba(217,164,65,.6)}
 .inv-c.sel{border-color:#f0c46a;box-shadow:0 0 0 2px #f0c46a}
+.inv-c.destino{border:1px dashed rgba(240,196,106,.75)}
 .inv-c.bloqueada{opacity:.45}
 .inv-c:hover{border-color:#f0c46a}
 .inv-c.mini{width:56px;height:56px}
-.inv-et{color:var(--muted);font-size:9.5px;text-align:center}
+.inv-et{position:absolute;left:0;right:0;bottom:3px;color:var(--muted);font-size:9.5px;text-align:center}
 .inv-nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .inv-n{position:absolute;right:4px;bottom:1px;font-size:12px;text-shadow:0 1px 2px #000}
-.inv-huecos{border-top:1px solid var(--linea);padding-top:10px}
 .inv-rejilla{display:flex;flex-wrap:wrap;gap:8px}
 .inv-nota{color:var(--muted);font-size:12px;margin:2px 0 6px}
-.inv-atras{padding:1px 8px;margin-right:6px}
-.inv-sel{grid-area:ficha;border-left:1px solid var(--linea);padding:12px 16px;overflow:auto;display:flex;flex-direction:column;gap:8px;position:relative}
-.inv-sel .eq-grande{height:150px;flex:none;border-radius:12px}
-.inv-sel .eq-grande .ic-prenda{width:100%;height:100%;padding:16px;box-sizing:border-box;filter:drop-shadow(0 4px 4px rgba(0,0,0,.45))}
+/* la ficha: abajo, a lo ancho; la imagen, lo principal y los botones */
+.inv-sel{grid-area:ficha;border-top:1px solid var(--linea);padding:8px 44px 8px 16px;box-sizing:border-box;display:grid;grid-template-columns:88px minmax(0,1fr) minmax(0,auto);gap:4px 16px;align-items:center;position:relative}
+.inv-sel .eq-grande{height:88px;flex:none;border-radius:12px}
+.inv-sel .eq-grande .ic-prenda{width:100%;height:100%;padding:10px;box-sizing:border-box;filter:drop-shadow(0 4px 4px rgba(0,0,0,.45))}
+.eq-sel-txt{min-width:0;display:flex;flex-direction:column;gap:4px}
+.eq-sel-txt .fab-titulo{margin:0}
+.eq-sel-txt .fab-para{margin:0}
+.eq-sel-txt .inv-nota{margin:0}
+.eq-sel-acc{display:flex;flex-direction:column;gap:4px;max-width:420px}
+.eq-pista{margin:0}
 .eq-donde{margin:0;font-size:13px;color:var(--ink)}
-.eq-vacia{margin:auto 0;text-align:center}
-.eq-sel-cerrar{display:none}
+.eq-vacia{grid-column:1/-1;margin:0;text-align:center}
+#panelInventario.eq-con-sel .inv-sel{min-height:112px}
+.eq-sel-cerrar{position:absolute;right:10px;top:10px;width:28px;height:28px;padding:0;border-radius:8px;font-size:14px;line-height:1}
+.eq-sel-cerrar::before{content:"✕"}
 .inv-sel .fab-chips{display:flex;flex-wrap:wrap;gap:6px}
-.inv-botones{margin-top:4px}
-.inv-botones .fab-btn2{text-align:center}
+.inv-sel .inv-botones{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:0}
+.inv-botones .fab-btn,.inv-botones .fab-btn2{text-align:center;width:auto;flex:0 1 auto;padding:8px 14px}
+.inv-botones .inv-mover.sel{border-color:#f0c46a;box-shadow:0 0 0 2px #f0c46a}
 .eq-pie{grid-area:pie;border-top:1px solid var(--linea);padding:6px 14px 8px}
 .inv-aviso{min-height:18px;margin:0 0 3px;font-size:12.5px;color:var(--verde)}
 .inv-aviso.error{color:var(--rojo)}
@@ -367,7 +393,7 @@ body.construyendo #pomo{left:25px;top:25px}
 .eq-desgaste{display:flex;align-items:center;gap:10px;margin:2px 0;font-size:12.5px;color:var(--ink)}
 .eq-desgaste>span:first-child{flex:none}
 .eq-desgaste .eq-poco i{background:var(--rojo)}
-.inv-arcon{overflow:auto;min-height:0;border-left:1px solid var(--linea);padding:12px 12px}
+.inv-arcon{border-top:1px solid var(--linea);padding:10px 0 0;margin-top:4px}
 .inv-arcon[hidden]{display:none}
 .inv-grupo>div{display:flex;flex-wrap:wrap;gap:6px}
 .inv-objeto{display:flex;align-items:center;gap:7px;text-align:left;padding:3px 10px 3px 3px;font-size:11.5px;border-radius:9px;background:#2b231c;border:1px solid var(--linea)}
@@ -434,23 +460,31 @@ body.construyendo #pomo{left:25px;top:25px}
   .fab-enc{min-width:0;flex:1}
   #panelInventario{inset:0;width:auto;max-width:none;height:100%;border-radius:0;border:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab" "centro" "pie";padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
   .eq-cab small{display:none}
+  /* dos pestañas: «Lo que llevas» (con lo de tus pies) y «Ropa» */
+  .eq-pestanas{display:flex;gap:4px;margin-left:6px}
+  .eq-pest{padding:7px 12px;font-size:13.5px;border-radius:9px}
+  .eq-pest.sel{border-color:#f0c46a;color:#f0cf8a;box-shadow:inset 0 -2px 0 #f0c46a}
   .eq-centro{display:block;overflow:auto;padding:8px 10px}
-  .eq-tuyo{overflow:visible;padding:0}
-  .inv-arcon{overflow:visible;border-left:0;border-top:1px solid var(--linea);padding:10px 0 0;margin-top:10px}
+  .eq-col{overflow:visible;padding:0 0 10px}
+  .eq-col+.eq-col{border-left:0;border-top:1px solid var(--linea);padding-top:10px}
+  #panelInventario.eq-tab-llevas .eq-ropa,#panelInventario.eq-tab-ropa :is(.eq-llevas,.eq-pies){display:none}
+  #panelInventario.eq-tab-llevas .eq-llevas{border-top:0;padding-top:0}
+  #panelInventario.eq-tab-ropa .eq-ropa{border-top:0}
   /* la ficha, abajo y sin velo (lo de arriba sigue a mano para llevarlo a otro sitio) */
-  .inv-sel{position:fixed;left:0;right:0;bottom:0;max-height:46%;z-index:3;border:0;border-top:1px solid rgba(217,164,65,.35);border-radius:18px 18px 0 0;background:#2b231c;box-shadow:0 -12px 40px rgba(0,0,0,.6);padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));display:none;
-    grid-template-columns:72px minmax(0,1fr);gap:4px 12px;align-content:start}
+  .inv-sel{position:fixed;left:0;right:0;bottom:0;max-height:52%;overflow:auto;z-index:3;border:0;border-top:1px solid rgba(217,164,65,.35);border-radius:18px 18px 0 0;background:#2b231c;box-shadow:0 -12px 40px rgba(0,0,0,.6);padding:16px 14px calc(12px + env(safe-area-inset-bottom,0px));display:none;
+    grid-template-columns:72px minmax(0,1fr);gap:6px 12px;align-items:start;min-height:0}
   #panelInventario.eq-con-sel .inv-sel{display:grid}
-  #panelInventario.eq-con-sel .eq-centro{padding-bottom:46vh}
-  .inv-sel>*{grid-column:2}
-  .inv-sel .eq-grande{grid-column:1;grid-row:1/4;height:72px}
+  #panelInventario.eq-con-sel .eq-centro{padding-bottom:50vh}
+  /* dentro del tablero del menú, la ficha va dentro del marco (no debajo de él) */
+  body.hub-abierto #panelInventario .inv-sel{position:absolute;left:18px;right:18px;bottom:18px;max-height:62%;border:1px solid rgba(217,164,65,.35);border-radius:14px}
+  .inv-sel .eq-grande{height:72px}
   .inv-sel .eq-grande .ic-prenda{padding:8px}
   .inv-sel .fab-titulo{font-size:16px}
   .inv-sel .fab-para{display:none}
-  .inv-sel .inv-botones{grid-column:1/3;flex-direction:row;flex-wrap:wrap}
+  .eq-sel-acc{grid-column:1/3;max-width:none}
   .inv-sel .inv-botones button{flex:1 1 40%;padding:10px 8px}
-  .inv-sel>.inv-nota{grid-column:1/3;margin:0}
-  .inv-sel .eq-sel-cerrar{display:block;position:absolute;left:50%;top:5px;transform:translateX(-50%);width:54px;height:7px;padding:0;border:0;border-radius:5px;background:#5b4e40}
+  .inv-sel .eq-sel-cerrar{position:absolute;left:50%;top:5px;right:auto;transform:translateX(-50%);width:54px;height:7px;padding:0;border:0;border-radius:5px;background:#5b4e40}
+  .inv-sel .eq-sel-cerrar::before{content:none}
   .inv-figura{grid-template-columns:70px minmax(0,1fr) 70px}
   .inv-c{width:62px;height:62px}
   /* móvil: a la derecha del joystick, sin pisarlo (ni con el botón de soltar, que sobresale 9 px) */

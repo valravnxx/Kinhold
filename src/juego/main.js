@@ -44,6 +44,7 @@ import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
+import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
 import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano } from '../logica/recoleccion.js';
@@ -672,6 +673,7 @@ function objDe(c, key) { const r = registroMallas.find(m => m.c === c && m.key =
 // ---------------- Fantasma de colocación ----------------
 let fantasma = null, fantasmaTipo = null, fantasmaForma = null;
 function velarFantasma() {
+  fantasma.userData.fantasma = true;   // (el de Meshy, si llega después, no lo cambia: src/mundo/meshy_objetos.js)
   fantasma.traverse(o => { if (o.isMesh) { o.userData.matBase = o.material; o.material = matVelo(o.material, 'ok'); o.castShadow = false; o.renderOrder = 2; } });
 }
 // el remate de tejado cambia de forma según los tramos de al lado (limatesa o limahoya): el fantasma también
@@ -1921,21 +1923,23 @@ function usarArbol(a, tipo) {
 }
 
 // Coger del suelo lo que se soltó (todo, o de una pila lo que quepa).
-function cogerDelSuelo(o) {
+// a (opcional): la ruta de lo que llevas donde va (desde el panel de equipo); sin ella, donde quepa.
+function cogerDelSuelo(o, a) {
   if (objetosRed) { // en línea, del suelo del servidor
     pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
-    objetosRed.mandar({ tipo: 'coger_suelo', objeto: o.id, x: pj.x, z: pj.z }, (r) => {
+    objetosRed.mandar({ tipo: 'coger_suelo', objeto: o.id, x: pj.x, z: pj.z, ...(a ? { a } : {}) }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
       mostrarAviso(tr('Coges del suelo: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }) + (r.queda ? ' ' + tr('Quedan {n}.', { n: r.queda }) : ''));
     });
-    return;
+    return { ok: true, enviado: true };
   }
-  const r = sueloObjetos.coger(inventarios, registroAcciones, AUTOR_LOCAL, o.id, pj.x, pj.z);
-  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  const r = sueloObjetos.coger(inventarios, registroAcciones, AUTOR_LOCAL, o.id, pj.x, pj.z, Date.now(), a);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarInventarios(almacen, inventarios);
   panelInventario.pintar(); pintarLlevas(); vestir();
   pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
   mostrarAviso(tr('Coges del suelo: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }) + (r.queda ? ' ' + tr('Quedan {n}.', { n: r.queda }) : ''));
+  return r;
 }
 // Soltar al suelo, a tus pies, lo que hay en un lugar del inventario.
 function soltarAlSuelo(de) {
@@ -2870,6 +2874,9 @@ $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltad
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
 const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta), comer: (t) => comer(t), comestible,
+  // «A tus pies» (el equipo en tres columnas): lo del suelo a dos pasos (sin la rastra ni la carretilla), y cogerlo
+  suelo: () => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_COGER).filter(o => !esVehiculo(o.cosa.tipo)),
+  cogerSuelo: (id, a) => { const o = sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_COGER).find(x => String(x.id) === String(id)); return o ? cogerDelSuelo(o, a) : { ok: false, motivo: 'Está demasiado lejos.' }; },
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => (hayArcon() ? mundo.materiales : null), hayArcon,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con

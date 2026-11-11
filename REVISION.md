@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 11 nov — valravnx en la sesión del carril A: el botón de Admin
+«se ha quitado el boton de admin menu de la interfaz, dame una forma de acceder a el». → Respondido: desde la v175 el botón «Admin» ya no está arriba; con la cuenta de admin sale al pie del menú (Menú o Tab, abajo, junto a Salir), y en PC también con F9 (F10, la cámara libre). Si con la cuenta de admin tampoco sale ahí, es un fallo y va como tarea.
+
 ### 11 nov — valravnx en el chat: P4 aprobado
 
 «Del paso P4 solo queda esto: Recorrido entero de un primer día, sin arcón… y prueba de valravnx entre dos. Lo he comprobado a mano, cierra todo P4, apruebo revisión.» → Las dos tareas que quedaban, hechas con su aprobación, y el hito P4 «Un primer día con sentido», `hecho`.

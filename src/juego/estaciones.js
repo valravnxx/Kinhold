@@ -19,6 +19,7 @@
 //  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
 //    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
 //    almohada de juncos).
+// El acopio de troncos, el que hizo valravnx en Meshy (11 nov; src/mundo/meshy_objetos.js); hasta que llega, el de código.
 // Lo depositado en cada una (valravnx, 6 nov) se ve puesto, con los mismos modelos que lo del suelo: encima de la losa
 // de la piedra de tallar y del tajo del banco (lo que no cabe encima, al pie); junto a la hoguera, alrededor del
 // círculo de piedras. Cada tipo, su montón.
@@ -37,6 +38,7 @@ import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
 import { modeloHacha } from './personaje.js';
 import { modeloHachaPiedra, modeloMazoPiedra } from './modelos_objetos.js';
+import { conMeshy, hayMeshy, precargarMeshy } from '../mundo/meshy_objetos.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const mallas = L => {
@@ -199,6 +201,16 @@ function varaEntre(L, a, b, r) {
 // El acopio de troncos: dos durmientes de vara en el suelo (los troncos no tocan la tierra) y dos pares de estacas que
 // sujetan la pila por los lados. Los troncos van a lo largo de X, entre las estacas.
 const ACOPIO = { x: 1.05, z: 0.46, alto: 1.05 };
+// El de Meshy (src/mundo/meshy_objetos.js): al llegar, con la misma obra puesta si está a medio hacer, y lo depositado se
+// rehace en el siguiente refresco, encima de sus durmientes (0,10 de alto).
+const SUELO_ACOPIO_MESHY = 0.1;
+function deMeshy(cual, deCodigo) {
+  return (id) => conMeshy(cual, () => deCodigo(id), g => {
+    const o = g.parent; if (!o) return;
+    if (o.userData.nivel != null) vestirObra(o, o.userData.nivel);
+    o.userData.firma = undefined;
+  });
+}
 function acopioTroncos(id) {
   const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 });
   for (const sx of [-1, 1]) {
@@ -415,7 +427,7 @@ function camaJuncos(id) {
 // Dónde se tumba quien duerme en cada cama (en sus ejes: a lo largo de X, con la cabeza hacia -X) y a qué altura del
 // suelo queda el cuerpo: en el refugio, sobre el lecho de ramaje (al fondo); en la cama de juncos, encima del colchón.
 export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
-export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: acopioTroncos, pila_piedras: pilaPiedras, lenera,
+export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
   refugio_ramas: refugioRamas, cama_juncos: camaJuncos };
 
@@ -425,7 +437,7 @@ const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_
 function llenoAcopio(dep, id) {
   const L = new Lote({ rangoSuelo: 0.6, variacion: 0.07 }), lista = [];
   for (const t of ['tronco_largo', 'tronco_delgado', 'tronco_corto']) for (let i = 0; i < (dep[t] || 0); i++) lista.push(t);
-  let y = 0.07, i = 0;
+  let y = hayMeshy('acopio_troncos') ? SUELO_ACOPIO_MESHY : 0.07, i = 0;   // encima de los durmientes
   while (i < lista.length) {
     const fila = lista.slice(i, i + 4), rMax = Math.max(...fila.map(t => TRONCO[t][1]));
     fila.forEach((t, k) => {
@@ -657,7 +669,7 @@ const matsObra = new Map();
 function matObra(base, nivel) {
   const b = Array.isArray(base) ? base[0] : base, k = nivel + ':' + (b?.map?.uuid || 'liso') + (b?.vertexColors ? 'v' : '');
   if (!matsObra.has(k)) matsObra.set(k, new THREE.MeshLambertMaterial({ color: 0xd8ccb4, emissive: 0x1a140c, vertexColors: !!b?.vertexColors,
-    map: b?.map || null, transparent: true, opacity: 0.42 + 0.12 * nivel, depthWrite: false }));
+    map: b?.map || null, transparent: true, opacity: (b?.map && !b?.vertexColors ? 0.22 : 0.42) + 0.12 * nivel, depthWrite: false }));   // los de Meshy (textura clara), más tenues
   return matsObra.get(k);
 }
 const vara = (a, b, r, mat) => {
@@ -694,6 +706,7 @@ function vestirObra(o, nivel) {
 
 // Dibuja las estaciones de fab (una Fabricacion, la del servidor en línea) sobre el terreno. refrescar() al cambiar.
 export function crearEstaciones({ raiz, altura, fab }) {
+  precargarMeshy();   // que estén antes de hacer falta (el acopio y el mojón)
   const grupo = new THREE.Group(); grupo.name = 'estaciones'; raiz.add(grupo);
   const vistas = new Map(); // id → objeto
   // el fuego de una estación (solo la que lo tiene, levantada): se rehace si cambia lo que se ve
