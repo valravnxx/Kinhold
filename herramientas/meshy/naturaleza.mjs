@@ -1,6 +1,6 @@
 // Prepara un modelo de naturaleza de Meshy (árbol, mata, planta o roca) para el mundo (src/mundo/naturaleza_meshy.js):
 //   node herramientas/meshy/naturaleza.mjs <entrada.glb> <salida.glb> <alto_m> <tri_cerca> <tri_medio> <tri_lejos> [opciones]
-// opciones: --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
+// opciones: --peso-uv=<n> (cuánto cuesta estirar la textura al simplificar; la haya, 2), --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
 //           --tex=<px> (la textura, 1024 por defecto), --suelo=<m> (hasta dónde oscurece el pie: la oclusión de contacto).
 // Deja tres mallas: «cerca» (con su textura), «medio» y «lejos» (con el color de la textura en los vértices y menos triángulos), con el pie en y = 0, a su alto
 // de verdad, una sola textura (el color, en WebP; sin brillo ni relieve, que el juego usa luz difusa) y el pie más oscuro
@@ -71,6 +71,8 @@ const fijos = (p) => {
   const l = new Uint8Array(m); for (let i = 0; i < m; i++) if (Math.hypot(a[3 * i], a[3 * i + 2]) < R && a[3 * i + 1] < H * 0.85) l[i] = 1;
   return l;
 };
+const PESO_UV = Number(op['peso-uv'] || process.env.PESO_UV || 0.5);   // (cuánto cuesta estirar la textura al juntar: con 0,5 la haya salía con rayas claras)
+let costuras = false;   // (si la de cerca se ha tenido que juntar por las costuras de la textura: puede verse con rayas)
 const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false) => {
   weldPrimitive(p);
   const t = triangulos(p); if (t <= tope) return p;
@@ -82,12 +84,13 @@ const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false)
   if (uvA) for (let i = 0; i < n; i++) { uvA.getElement(i, e); uv[2 * i] = e[0]; uv[2 * i + 1] = e[1]; }
   const antes = idx(), sinFijar = new Uint8Array(n);
   const hacer = (lock) => {
-    const paso = (error, flags) => { const [nuevo] = MeshoptSimplifier.simplifyWithAttributes(idx(), pos, 3, uv, 2, [0.5, 0.5], lock, Math.floor(tope) * 3, error, flags); p.getIndices().setArray(new Uint32Array(nuevo)); };
+    const paso = (error, flags) => { const [nuevo] = MeshoptSimplifier.simplifyWithAttributes(idx(), pos, 3, uv, 2, [PESO_UV, PESO_UV], lock, Math.floor(tope) * 3, error, flags); p.getIndices().setArray(new Uint32Array(nuevo)); };
     if (!permisivo) {
       paso(0.08, []);
       if (triangulos(p) <= tope * 1.5) return;   // (si las costuras no le dejan bajar, también por ellas: arbusto de las bayas)
     }
-    paso(err, ['Permissive']);
+    if (!permisivo && process.env.SIN_COSTURAS) return;
+    paso(err, ['Permissive']); if (!permisivo) costuras = true;
   };
   const lock = fijos(p);
   if (sloppy) {   // (--tosco: de lejos, bultos que juntan lo pequeño en vez de quitarlo; el abedul, de hojas sueltas)
@@ -128,4 +131,4 @@ for (const [nombre, p] of [['cerca', pCerca], ['medio', pMedio], ['lejos', pLejo
 const tex = Number(op.tex || 1024);
 await doc.transform(prune(), textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [tex, tex], quality: 85 }), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 await io.write(salida, doc);
-console.log(JSON.stringify({ salida, antes, cerca: triangulos(pCerca), medio: triangulos(pMedio), lejos: triangulos(pLejos), alto: ALTO, escala: +k.toFixed(4), pie: op.pie ? [+(k * (cx - (x0 + x1) / 2)).toFixed(2), +(k * (cz - (z0 + z1) / 2)).toFixed(2)] : null }));
+console.log(JSON.stringify({ salida, antes, cerca: triangulos(pCerca), medio: triangulos(pMedio), lejos: triangulos(pLejos), costuras, alto: ALTO, escala: +k.toFixed(4), pie: op.pie ? [+(k * (cx - (x0 + x1) / 2)).toFixed(2), +(k * (cz - (z0 + z1) / 2)).toFixed(2)] : null }));
