@@ -401,9 +401,12 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
   const delArcon = (t) => { const m = t.dataset.muestra !== undefined ? MUESTRAS[+t.dataset.muestra] : null;
     return { de: 'arcon', tipo: t.dataset.tipo, ...(m ? { muestra: +t.dataset.muestra, rasgos: m.rasgos } : {}) }; };
   // ---- eventos: clic, clic derecho, mantener, arrastrar y soltar ----
-  let trasMantener = false;
+  // cuándo se hizo lo último de clic derecho o de mantener: el clic que lo sigue (al levantar el dedo) no cuenta, y en
+  // el móvil, si el navegador también da su «clic derecho» al mantener, no se hace dos veces
+  let mantenidoEn = -1e9;
+  const reciente = (ms = 900) => performance.now() - mantenidoEn < ms;
   panel.addEventListener('click', (e) => {
-    if (trasMantener) { trasMantener = false; return; }   // (el clic que sigue a mantener el dedo)
+    if (reciente()) return;   // (el clic que sigue a mantener el dedo)
     const t = e.target.closest('button');
     if (!t) {
       // un toque en «A tus pies» (o en el arcón) con algo tuyo elegido: se deja ahí
@@ -434,13 +437,13 @@ export function montarPanelInventario({ panel, boton, inventario, accion, alCamb
     else if (t.classList.contains('inv-dejar')) dejar();
     pintar();
   });
-  const rapidoDe = (e) => e.target.closest('button[data-ruta],button[data-suelo],button[data-tipo]');
-  panel.addEventListener('contextmenu', (e) => { const t = rapidoDe(e); if (!t) return; e.preventDefault(); rapido(t); });
   let reloj = null;
+  const rapidoDe = (e) => e.target.closest('button[data-ruta],button[data-suelo],button[data-tipo]');
+  panel.addEventListener('contextmenu', (e) => { const t = rapidoDe(e); if (!t) return; e.preventDefault(); clearTimeout(reloj); reloj = null; if (reciente(1500)) return; rapido(t); });
   panel.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse') return;
     const t = rapidoDe(e); if (!t) return;
-    clearTimeout(reloj); reloj = setTimeout(() => { reloj = null; trasMantener = true; rapido(t); if (navigator.vibrate) navigator.vibrate(15); }, MANTENER_MS);
+    clearTimeout(reloj); reloj = setTimeout(() => { reloj = null; mantenidoEn = performance.now(); rapido(t); if (navigator.vibrate) navigator.vibrate(15); }, MANTENER_MS);
   });
   for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) panel.addEventListener(ev, () => { clearTimeout(reloj); reloj = null; });
   panel.addEventListener('dragstart', (e) => {
