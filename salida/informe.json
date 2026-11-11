@@ -1,0 +1,74 @@
+[
+ {
+  "nombre": "roca",
+  "alto": 1.0,
+  "imagen_id": "01a1c9b2-3f16-7430-b432-2b75daabc5a4",
+  "modelo_id": "01a1c9b2-be2e-7761-ad9b-5e1f0f1d9140",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "pena",
+  "alto": 2.4,
+  "imagen_id": "01a1c9b3-c56d-7525-af47-bfcfaaf67b70",
+  "modelo_id": "01a1c9b4-63ec-7534-9579-de2ea5e388a4",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "canto",
+  "alto": 0.45,
+  "imagen_id": "01a1c9b5-ac5d-767a-aac1-2713484fa160",
+  "modelo_id": "01a1c9b6-2b87-726a-88f5-8276eea2dd42",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "hierba",
+  "alto": 0.35,
+  "imagen_id": "01a1c9b6-ef47-745f-be5a-f66c9977a49f",
+  "modelo_id": "01a1c9b7-4eea-70a5-b0ac-92f255ad7c99",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "flores",
+  "alto": 0.3,
+  "imagen_id": "01a1c9ba-7cd1-7661-aa47-7dc47972e011",
+  "modelo_id": "01a1c9ba-dc53-7643-956a-2065883d4259",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "ortigas",
+  "alto": 0.8,
+  "imagen_id": "01a1c9bc-e786-7444-9c94-ceb9873bfd90",
+  "modelo_id": "01a1c9bd-4711-7724-a2c1-9c81c5cd37e2",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "juncos",
+  "alto": 1.2,
+  "imagen_id": "01a1c9c3-d77c-7540-92c2-0508a2e1cf74",
+  "modelo_id": "01a1c9c4-3727-71ec-815a-fac335b72322",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "helechos",
+  "alto": 0.7,
+  "imagen_id": "01a1c9c6-a942-7704-bc31-a46b9e5c6014",
+  "modelo_id": "01a1c9c7-08e4-7292-8269-947c453c0301",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
