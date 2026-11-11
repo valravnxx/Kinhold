@@ -1,0 +1,33 @@
+Vista pc
+  OK   la demo arranca sin error — None
+  OK   sabe qué son las tierras del rey
+  OK   apareces en Strandvang
+  OK   al aparecer dentro, el cartel de entrar — Entras en Strandvang, tierras del reyAquí nadie puede herir a otro jugador.
+  OK   el cartel cabe en la pantalla — [474.5234375, 128, 805.4765625, 191.1875]
+  OK   al cruzar a Motdale, el cartel de salir — Sales de Strandvang, tierras del reyFuera de sus lindes, otros jugadores pueden herirte.
+  OK   el cartel se va solo a los pocos segundos
+  OK   al volver, otra vez el de entrar
+  OK   sin errores en la página
+Vista movil
+  OK   la demo arranca sin error — None
+  OK   sabe qué son las tierras del rey
+  OK   apareces en Strandvang
+  OK   al aparecer dentro, el cartel de entrar — Entras en Strandvang, tierras del reyAquí nadie puede herir a otro jugador.
+  OK   el cartel cabe en la pantalla — [46.875, 337.59375, 343.125, 397.375]
+  OK   al cruzar a Motdale, el cartel de salir — Sales de Strandvang, tierras del reyFuera de sus lindes, otros jugadores pueden herirte.
+  OK   el cartel se va solo a los pocos segundos
+  OK   al volver, otra vez el de entrar
+  OK   sin errores en la página
+Vista pc_en
+  OK   la demo arranca sin error — None
+  OK   sabe qué son las tierras del rey
+  OK   apareces en Strandvang
+  OK   al aparecer dentro, el cartel de entrar — Entering Strandvang, the king's landsHere no one can wound another player.
+  OK   el cartel cabe en la pantalla — [471.7265625, 128, 808.2734375, 191.1875]
+  OK   al cruzar a Motdale, el cartel de salir — Leaving Strandvang, the king's landsBeyond its bounds, other players can wound you.
+  OK   el cartel se va solo a los pocos segundos
+  OK   al volver, otra vez el de entrar
+  OK   en inglés no falta ningún texto — []
+  OK   sin errores en la página
+
+Todo bien
