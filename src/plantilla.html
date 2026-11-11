@@ -79,6 +79,22 @@ body.hub-abierto :is(#hudBotones,#materiales,#modos,#btnUsar,#btnFabricar,#accio
 .tierra-sub{color:#bba98a;font-style:italic}
 .seccion-t{font:15px 'Alegreya SC',Georgia,serif;color:#d8bf8e;letter-spacing:.06em;display:flex;align-items:center;gap:8px;margin:14px 0 6px}
 .seccion-t:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(193,154,85,.6),transparent)}
+body.hub-abierto #panelTierra{overflow:hidden;display:flex;flex-direction:column}
+#panelTierra .tierra-scroll{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),rgba(0,0,0,.4));mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),rgba(0,0,0,.4));padding-bottom:22px}
+.tierra-alms{display:flex;flex-direction:column;gap:6px}
+.tierra-alm{display:flex;gap:10px;align-items:center;padding:6px 8px;border-radius:5px;background:rgba(20,12,6,.35);box-shadow:inset 0 0 0 1px rgba(193,154,85,.25)}
+.tierra-alm .alm-img{width:46px;height:46px;flex:none;object-fit:contain}
+.tierra-alm b{font:16px 'Alegreya SC',Georgia,serif;color:#f1e6cf}
+.tierra-dist{color:#bba98a;font-size:14px;font-variant-numeric:lining-nums}
+.alm-cosas{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.alm-cosas .cc{display:inline-flex;align-items:center;gap:2px;padding:0 6px 0 2px;border-radius:10px;background:rgba(240,222,184,.14);box-shadow:inset 0 0 0 1px rgba(240,222,184,.18);font:600 14px/22px 'EB Garamond',Georgia,serif;font-variant-numeric:lining-nums;color:#f3e6c8}
+.alm-cosas .cc img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 1px rgba(255,244,220,.9)) drop-shadow(0 0 2px rgba(255,236,200,.45))}
+.tierra-nota{margin:8px 0 0;padding:6px 10px;border-left:3px solid #b48a45;background:rgba(180,138,69,.12);color:#e8d6b0;font-size:15px}
+.tierra-quien{display:flex;flex-direction:column;gap:4px}
+.tierra-inv{display:flex;align-items:center;gap:10px;min-height:38px;padding:2px 8px;border-radius:5px;background:rgba(20,12,6,.25)}
+.tierra-inv b{min-width:96px}
+.tierra-inv .tierra-dist{flex:1}
+.tierra-inv .boton-t{padding:4px 12px;font-size:15px}
 #ajustesRend #btnDemoFps{font:17px 'Alegreya SC',Georgia,serif}
 #ajustesRend #demoRend{position:static;width:auto;max-height:none!important;margin-top:10px;background:rgba(10,6,3,.4);border-color:rgba(193,154,85,.35)}
 /* Fabricar, en el móvil: botón redondo del kit en el arco del pulgar (construyendo, arriba a la izquierda de la barra) */

@@ -9,7 +9,8 @@ import { crearJugador, camaraDetalle, usarDetalle, detalleEncendido, nivelesEnUs
 import { personajeElegido, recursosTaller } from '../mundo/eleccion.js';
 import { REGISTRO, VERSION } from './registro.js';
 import { t } from './textos.js';
-import { tr, traducirPagina, botonesIdioma } from '../idioma.js';
+import { tr, traducirPagina, botonesIdioma, idioma } from '../idioma.js';
+import { tieneObraTerminada, DIAS as DIAS_ABANDONO, DIAS_SIN_OBRA, DIA as DIA_MS } from '../logica/abandono.js';
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
@@ -32,7 +33,7 @@ import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ, CARPETA_PIEZAS } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO } from '../logica/fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO, cabeEn } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
@@ -2581,7 +2582,7 @@ function paso() {
   const dt = Math.min(reloj.getDelta(), 0.05);
   if (mundoJ) pasoMundo();
   // el contador de arriba sigue a donde estás (entras o sales de tu tierra) y a lo que cambia en el suelo
-  if (enLinea && performance.now() - ultimoMateriales > 500) { ultimoMateriales = performance.now(); pintarMateriales(); }
+  if (enLinea && performance.now() - ultimoMateriales > 500) { ultimoMateriales = performance.now(); pintarMateriales(); if (!$('panelTierra').hidden) pintarTierra(); }
   // entrada de movimiento relativa a la cámara
   let ax = 0, az = 0;
   if (teclas.has('w') || teclas.has('arrowup')) az -= 1;
@@ -3164,26 +3165,79 @@ redimensionar();
 // Las pestañas son los paneles de siempre (y la de Tu tierra, aquí); al pie, Ajustes, Ayuda y Decisiones. El menú
 // mira en cada fotograma cuál está abierto (src/juego/menu_juego.js).
 const RAIZ_KIT = '../../' + CARPETA_INTERFAZ;
-// Tu tierra: si tienes mojón y dónde, quién puede construir en ella y, si no tienes, cómo ponerlo
-function pintarTierra() {
+// Tu tierra (estudio de la interfaz, 2.6): si tienes mojón y dónde; cada almacenaje con lo que tiene (la obra no coge de
+// ahí sola); quién puede construir en ella, con «Quitarle» a cada uno; y cuándo vuelve al rey si no se usa. Los
+// almacenajes son los que te llegan del servidor (los trozos de tu alrededor): estando en tu tierra se ven los de cerca.
+// Los invitados no llevan nombre en el juego (no se enseña el usuario de la cuenta): «Invitado 1, 2…» y dónde está si se
+// le ve (decisión provisional, 11 nov).
+let htmlTierra = null;
+function pintarTierra(forzar = false) {
   const p = $('panelTierra'), m = miMojon();
   const img = (g) => `<img src="${RAIZ_KIT}${g}.webp" alt="">`;
+  let html;
   if (!m) {
-    p.innerHTML = `<h2>${tr('Tu tierra')}</h2><div class="tierra-fila">${img('g_mojon')}<div><b>${tr('Aún no tienes tierra.')}</b><div class="tierra-sub">${tr('Pon tu mojón donde quieras vivir: la zona entera donde lo pongas es tuya, y solo tú (y a quien invites) construyes en ella.')}</div></div></div>`
+    html = `<h2>${tr('Tu tierra')}</h2><div class="tierra-fila">${img('g_mojon')}<div><b>${tr('Aún no tienes tierra.')}</b><div class="tierra-sub">${tr('Pon tu mojón donde quieras vivir: la zona entera donde lo pongas es tuya, y solo tú (y a quien invites) construyes en ella.')}</div></div></div>`
       + `<p><button class="boton-t prim" id="tierraPoner">${tr('Poner el mojón')}</button></p>`;
-    $('tierraPoner').onclick = () => { menuJuego.cerrar(); cambiarModo('construir'); estado.sel = { clase: 'mojon', tipo: 'mojon' }; marcarSeleccion(); evaluarColocacion(); };
-    return;
+  } else {
+    const yo = yoAutor(), zona = mundo.tierraDe(m.x, m.z), esMia = (x, z) => zona !== null && mundo.tierraDe(x, z) === zona;
+    const dentro = esMia(pj.x, pj.z);
+    const d = Math.round(Math.hypot(m.x - pj.x, m.z - pj.z));
+    html = `<h2>${tr('Tu tierra')}</h2><div class="tierra-fila">${img('g_mojon')}<div><b>${dentro ? tr('Estás en tu tierra.') : tr('Tu mojón está a {d} m de aquí.', { d })}</b>`
+      + `<div class="tierra-sub">${tr('Es tuya la zona entera donde está tu mojón.')}</div></div></div>`;
+    // lo almacenado: cada almacenaje terminado de tu tierra, con lo que guarda
+    html += `<div class="seccion-t">${tr('Lo almacenado')}</div>`;
+    const alms = Object.values(fabCliente.estaciones).filter(e => esAlmacen(e.tipo) && !e.obra && esMia(e.x, e.z))
+      .map(e => ({ e, d: Math.hypot(e.x - pj.x, e.z - pj.z) })).sort((a, b) => a.d - b.d);
+    if (!dentro && !alms.length) html += `<p class="tierra-sub">${tr('Ve a tu tierra para ver lo que guardan sus almacenajes.')}</p>`;
+    else if (!alms.length) html += `<p class="tierra-sub">${tr('Aún no tienes almacenajes terminados. Se levantan desde Construir, en la pestaña Almacenajes.')}</p>`;
+    else {
+      html += '<div class="tierra-alms">';
+      for (const { e, d: de } of alms) {
+        const def = ESTACIONES[e.tipo], dep = e.deposito || {};
+        const ks = Object.keys(dep).filter(k => CATALOGO[k] && dep[k] > 0).sort((a, b) => dep[b] - dep[a]);
+        const n = ks.reduce((t, k) => t + dep[k], 0);
+        const cosas = ks.length ? ks.map(k => `<span class="cc" title="${dep[k]} ${tr(CATALOGO[k].nombre).toLowerCase()}"><img src="${carpetaIconos()}${k}.webp" alt="" loading="lazy">${dep[k]}</span>`).join('')
+          : `<span class="tierra-sub">${tr('vacío')}</span>`;
+        html += `<div class="tierra-alm"><img class="alm-img" src="${carpetaIconos()}est_${e.tipo}.webp" alt="" loading="lazy"><div><b>${tr(def.nombre)}</b>`
+          + ` <span class="tierra-dist">${tr('{n} de {c}', { n, c: cabeEn(e.tipo) })} · ${tr('a {d} m', { d: Math.round(de) })}</span><div class="alm-cosas">${cosas}</div></div></div>`;
+      }
+      html += '</div>';
+    }
+    html += `<p class="tierra-nota">${tr('La obra no coge de aquí sola: saca lo que vayas a usar y llévalo.')}</p>`;
+    // quién puede construir: tú y tus invitados, cada uno con «Quitarle»
+    const inv = mundo.invitadosDe(yo);
+    html += `<div class="seccion-t">${tr('Quién puede construir en ella')}</div>`;
+    html += `<div class="tierra-quien"><div class="tierra-inv"><b>${tr('Tú')}</b><span class="tierra-dist">${tr('dueño')}</span></div>`;
+    inv.forEach((a, i) => {
+      const r = enLinea && enLinea.remotos.get(a);
+      const donde = r ? tr('a {d} m de ti', { d: Math.round(Math.hypot(r.x - pj.x, r.z - pj.z)) }) : tr('no está a la vista');
+      html += `<div class="tierra-inv"><b>${tr('Invitado {n}', { n: i + 1 })}</b><span class="tierra-dist">${donde}</span><button class="boton-t" data-quitar="${a}">${tr('Quitarle')}</button></div>`;
+    });
+    html += '</div>';
+    if (!inv.length) html += `<p class="tierra-sub">${tr('Para invitar a alguien, ponte a su lado y elige «Invitar a tu tierra».')}</p>`;
+    // cuándo vuelve al rey: el plazo empieza otra vez cada vez que entráis tú o tus invitados (src/logica/abandono.js)
+    // (lejos de tu tierra no llegan sus obras: sin ver una terminada, no se sabe si son 30 días o 15)
+    const obra = tieneObraTerminada(mundo, yo), sabido = obra || dentro;
+    const dias = obra ? DIAS_ABANDONO : DIAS_SIN_OBRA;
+    html += `<div class="seccion-t">${tr('Si no se usa')}</div>`;
+    if (sabido) {
+      const fecha = new Date(Date.now() + dias * DIA_MS).toLocaleDateString(idioma, { day: 'numeric', month: 'long' });
+      html += `<p>${tr('Mientras entréis tú o tus invitados, sigue siendo tuya. Si pasan {d} días sin que entre nadie, vuelve al rey: el mojón se va y lo construido queda como ruina.', { d: dias })}`
+        + (!obra ? ` <span class="tierra-sub">${tr('Son {d} porque aún no hay ninguna obra terminada; con una, {t}.', { d: DIAS_SIN_OBRA, t: DIAS_ABANDONO })}</span>` : '') + `</p>`
+        + `<p>${tr('Si nadie entra desde hoy, volvería al rey el {f}.', { f: fecha })}</p>`;
+    } else html += `<p>${tr('Mientras entréis tú o tus invitados, sigue siendo tuya. Si pasan {d} días sin que entre nadie ({s} si aún no hay ninguna obra terminada), vuelve al rey: el mojón se va y lo construido queda como ruina.', { d: DIAS_ABANDONO, s: DIAS_SIN_OBRA })}</p>`;
+    html += `<p class="tierra-sub">${tr('Te avisamos por correo una semana antes y el último día.')}</p>`;
+    if (mapaRey) html += `<p><button class="boton-t" id="tierraMapa">${tr('Verla en el mapa')}</button></p>`;
   }
-  const zona = mundo.tierraDe(m.x, m.z), dentro = zona !== null && mundo.tierraDe(pj.x, pj.z) === zona;
-  const d = Math.round(Math.hypot(m.x - pj.x, m.z - pj.z));
-  const nombre = (a) => (enLinea && enLinea.remotos.get(a) && enLinea.remotos.get(a).nombre) || tr('un vecino');
-  const inv = mundo.invitadosDe(yoAutor());
-  p.innerHTML = `<h2>${tr('Tu tierra')}</h2><div class="tierra-fila">${img('g_mojon')}<div><b>${dentro ? tr('Estás en tu tierra.') : tr('Tu mojón está a {d} m de aquí.', { d })}</b>`
-    + `<div class="tierra-sub">${tr('Es tuya la zona entera donde está tu mojón.')}</div></div></div>`
-    + `<div class="seccion-t">${tr('Quién puede construir en ella')}</div>`
-    + `<p>${inv.length ? [tr('Tú'), ...inv.map(nombre)].join(' · ') : tr('Solo tú. Para invitar a alguien, ponte a su lado y elige «Invitar a tu tierra».')}</p>`
-    + (mapaRey ? `<p><button class="boton-t" id="tierraMapa">${tr('Verla en el mapa')}</button></p>` : '');
+  if (!forzar && html === htmlTierra) return;
+  htmlTierra = html;
+  // (lo que se desplaza va dentro: el marco del tablero se queda quieto)
+  const sc = p.querySelector('.tierra-scroll'), arriba = sc ? sc.scrollTop : 0;
+  p.innerHTML = `<div class="tierra-scroll">${html}</div>`;
+  p.querySelector('.tierra-scroll').scrollTop = arriba;
+  if ($('tierraPoner')) $('tierraPoner').onclick = () => { menuJuego.cerrar(); cambiarModo('construir'); estado.sel = { clase: 'mojon', tipo: 'mojon' }; marcarSeleccion(); evaluarColocacion(); };
   if ($('tierraMapa')) $('tierraMapa').onclick = () => { menuJuego.abrir('mapa'); const t = { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z }; mapaRey.centrarEn(t.x / 1000, t.z / 1000, 6); };
+  for (const b of p.querySelectorAll('[data-quitar]')) b.onclick = () => { invitarATierra(b.dataset.quitar, false); pintarTierra(true); };
 }
 menuJuego = montarMenuJuego({
   hub: $('hub'), boton: $('btnMenu'), cerrarBoton: $('hubCerrar'),
@@ -3192,7 +3246,7 @@ menuJuego = montarMenuJuego({
     fabricar: panelFabricar,
     construir: { ir: () => cambiarModo('construir') },
     ...(mapaRey ? { mapa: { abrir: () => mapaRey.abrir(), cerrar: () => mapaRey.cerrar(), abierto: () => mapaRey.abierto && !($('panelAdmin') && !$('panelAdmin').hidden) } } : {}),   // (el del admin usa el mapa a su manera)
-    tierra: { abrir: () => { pintarTierra(); $('panelTierra').hidden = false; }, cerrar: () => { $('panelTierra').hidden = true; }, abierto: () => !$('panelTierra').hidden },
+    tierra: { abrir: () => { pintarTierra(true); $('panelTierra').hidden = false; }, cerrar: () => { $('panelTierra').hidden = true; }, abierto: () => !$('panelTierra').hidden },
   },
   pie: {
     ajustes: { boton: $('btnAjustes'), panel: $('panelAjustes') },
