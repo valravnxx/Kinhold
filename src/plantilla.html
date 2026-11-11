@@ -168,13 +168,16 @@ body.construyendo #llevas,body.desmontando #llevas{display:none}
 #accionLista button .k{margin-left:auto}
 #modos{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center}
 /* hablar (src/juego/charla.js): el tablero de roble con las ocho frases rápidas de cuero y, debajo, el campo para escribir */
-#charlaCaja{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;width:min(540px,calc(100vw - 32px));box-sizing:border-box;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:10px;background:linear-gradient(rgba(18,11,5,.5),rgba(18,11,5,.5)),url(../../recursos/interfaz-v1/tablero.webp) center/900px auto #24170c;box-shadow:inset 0 0 0 1px rgba(193,154,85,.6),0 6px 16px rgba(0,0,0,.5)}
+#charlaCaja{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom,0px));z-index:30;width:min(540px,calc(100vw - 32px));box-sizing:border-box;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:10px;background:linear-gradient(rgba(18,11,5,.5),rgba(18,11,5,.5)),url(../../recursos/interfaz-v1/tablero.webp) center/900px auto #24170c;box-shadow:inset 0 0 0 1px rgba(193,154,85,.6),0 6px 16px rgba(0,0,0,.5)}
 #charlaCaja[hidden]{display:none}
 #charlaFrases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 #charlaFrases button{min-width:0;min-height:38px;padding:4px 6px;font:16px/1.15 'EB Garamond',Georgia,serif;color:#f1e6cf;border:0;background:url(../../recursos/interfaz-v1/cuero.webp) center/cover #2a1a0e;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55),0 3px 8px rgba(0,0,0,.5);border-radius:6px;text-shadow:0 1px 1px #000;overflow-wrap:anywhere;cursor:pointer}
 #charlaFrases button:hover{box-shadow:inset 0 0 0 1px rgba(226,190,120,.9),0 3px 8px rgba(0,0,0,.5)}
 #charlaFrases button:active{transform:scale(.96)}
 #charlaCaja .fila{display:flex;gap:6px}
+/* en el móvil, arriba, bajo los botones: no tapa el joystick ni la acción, y el teclado no lo tapa a él */
+body.tactil-ui #charlaCaja{top:calc(84px + env(safe-area-inset-top,0px));bottom:auto;width:calc(100vw - 24px);padding:8px}
+body.tactil-ui #charlaFrases button{font-size:15px;padding:4px 2px;min-height:40px}
 #charlaTexto{flex:1;min-width:0;font:15px system-ui,sans-serif;color:#f1e8d8;background:rgba(0,0,0,.35);border:1px solid rgba(193,154,85,.4);border-radius:6px;padding:8px 10px;outline:none}
 #charlaDecir{min-width:0;font:600 16px 'EB Garamond',Georgia,serif;color:#241b10;background:#d9a441;border:0;border-radius:6px;padding:0 16px;box-shadow:inset 0 0 0 1px rgba(255,230,170,.5),0 3px 8px rgba(0,0,0,.5)}
 #modos button{display:flex;align-items:center;gap:6px;min-width:0;padding:6px 11px;font:16px 'EB Garamond',Georgia,serif;color:#f1e6cf;border:0;background:url(../../recursos/interfaz-v1/cuero.webp) center/cover #2a1a0e;box-shadow:inset 0 0 0 1px rgba(193,154,85,.55),0 3px 8px rgba(0,0,0,.5);border-radius:6px;text-shadow:0 1px 1px #000}

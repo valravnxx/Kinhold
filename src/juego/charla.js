@@ -40,7 +40,7 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
     return b;
   });
   const ponerTextos = () => {
-    texto.placeholder = tr('Di algo… (Intro para decirlo, Esc para dejarlo)'); decir.textContent = tr('Decir');
+    texto.placeholder = document.body.classList.contains('tactil-ui') ? tr('Di algo…') : tr('Di algo… (Intro para decirlo, Esc para dejarlo)'); decir.textContent = tr('Decir');
     botonesFrase.forEach((b, n) => { b.textContent = tr(FRASES[n]); });
     if (boton) { if (boton.querySelector('img')) { boton.title = tr('Hablar'); boton.setAttribute('aria-label', tr('Hablar')); } else boton.textContent = tr('Hablar'); }
   };
@@ -49,6 +49,7 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
   function abrir() {
     if (!enLinea || enLinea.estado !== 'conectado') { avisar(tr('Sin conexión con el servidor: no se puede hablar.'), true); return; }
     alAbrir();
+    ponerTextos();   // (el aviso del campo, corto en el móvil: se mira al abrir)
     caja.hidden = false; texto.value = '';
     // (en el móvil, sin sacar el teclado: taparía las frases; se toca el campo para escribir)
     if (!document.body.classList.contains('tactil-ui')) texto.focus();
