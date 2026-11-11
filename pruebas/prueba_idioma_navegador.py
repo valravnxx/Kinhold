@@ -18,6 +18,7 @@ SALIDA = sys.argv[4] if len(sys.argv) > 4 else 'capturas/idioma'
 # ../../recursos/personajes/: se sirven como en la web
 sitio = tempfile.mkdtemp()
 shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
+shutil.copytree(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1'), f'{sitio}/recursos/estaciones-meshy-v1')  # el acopio y el mojón de valravnx (Meshy), como en la web
 # (los tres desde el mismo sitio: el idioma elegido se guarda en el navegador y tiene que valer en todos)
 for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('estilo', ESTILO)):
     os.makedirs(f'{sitio}/jugar/{carpeta}'); shutil.copy(html, f'{sitio}/jugar/{carpeta}/prueba.html')
