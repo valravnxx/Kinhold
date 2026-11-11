@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 11 nov — valravnx en la sesión del carril A: el hito de Meshy, solo a mano
+«pasa a siguiente hito, deja el de meshy a solo manual» (tras cerrar la prueba de estilo de la naturaleza, ya en el mundo desde la v176). → El hito «El arte con Meshy» lleva `"lleva": "chat"`: los carriles ya no cogen nada de él; lo que entre de Meshy lo manda valravnx y se mete a mano con él. Los carriles siguen con el hito siguiente, «La interfaz nueva».
+
 ### 11 nov — valravnx en la sesión del carril A: el botón de Admin
 «se ha quitado el boton de admin menu de la interfaz, dame una forma de acceder a el». → Respondido: desde la v175 el botón «Admin» ya no está arriba; con la cuenta de admin sale al pie del menú (Menú o Tab, abajo, junto a Salir), y en PC también con F9 (F10, la cámara libre). Si con la cuenta de admin tampoco sale ahí, es un fallo y va como tarea.
 
