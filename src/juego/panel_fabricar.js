@@ -23,7 +23,7 @@
 // El panel no cambia nada por su cuenta: manda la acción con hacer(accion, alResultado) (en línea, al servidor, que
 // pone el autor) y espera la respuesta. Es provisional hasta que se rehaga todo el HUD (GDD).
 import { CATALOGO } from '../logica/inventario.js';
-import { RECETAS, USOS, ESTACIONES, PARA, ALCANCE_ESTACION, totalDeposito, estacionesDeUso, conQue, esAlmacen, cabeEn, guardaTipo } from '../logica/fabricacion.js';
+import { RECETAS, USOS, ESTACIONES, PARA, ALCANCE_ESTACION, COLA_ESTACION, totalDeposito, estacionesDeUso, conQue, esAlmacen, cabeEn, guardaTipo } from '../logica/fabricacion.js';
 import { CARPETA_ICONOS } from '../logica/iconos.js';
 import { estadoFuego, ARDE, COMO, BRASAS_LENTO, YESCAS, HERRAMIENTA_FUEGO } from '../logica/fuego.js';
 import { tr } from '../idioma.js';
@@ -170,10 +170,15 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const mats = Object.entries(x.gasta).map(([t, n]) => filaMaterial(t, n, despues ? null : x.de[t], despues ? 0 : x.faltan[t] || 0, despues, inv)).join('') + herr;
     let botones = '';
     if (x.grupo === 'ya') {
-      // «Hacer» y «×3» (tres seguidas, si hay para tres: cada una se encarga al servidor después de la anterior)
-      const est3 = x.estacion ? ` data-estacion="${esc(x.estacion)}"` : '', tres = x.veces >= 3;
+      // «Hacer» y «×3» (tres seguidas, si hay para tres: cada una se encarga al servidor después de la anterior). Solo en
+      // una estación: con las manos se hace una cosa a la vez (COLA_MANOS), y la cola de la estación tiene que tener
+      // sitio para las tres (COLA_ESTACION)
+      const est3 = x.estacion ? ` data-estacion="${esc(x.estacion)}"` : '';
+      const e = x.estacion ? fab.estaciones[x.estacion] : null, t0 = ahora();
+      const hueco = e ? COLA_ESTACION - (e.cola || []).filter(c => c.fin > t0).length : 0;
+      const tres = x.veces >= 3 && hueco >= 3;
       botones = `<div class="fab-hacer-fila"><button class="fab-hacer fab-btn" data-receta="${x.receta}"${est3}>${esc(tr('Hacer'))} · ${esc(segundos(x.s))}</button>`
-        + `<button class="fab-hacer3 fab-btn2" data-receta="${x.receta}"${est3}${tres ? '' : ' disabled'} title="${esc(tres ? tr('Hacer tres seguidas') : tr('Para tres no hay bastante: solo para {n}', { n: x.veces }))}">×3</button></div>`;
+        + (e ? `<button class="fab-hacer3 fab-btn2" data-receta="${x.receta}"${est3}${tres ? '' : ' disabled'} title="${esc(tres ? tr('Hacer tres seguidas') : x.veces < 3 ? tr('Para tres no hay bastante: solo para {n}', { n: x.veces }) : tr('En la cola de la estación no caben tres'))}">×3</button>` : '') + `</div>`;
     }
     else if (despues) botones = `<p class="fab-gris">${esc(tr('Hace falta {e} a tu lado.', { e: tr(x.conQue) }))}</p>`;
     else if (x.apagada && !Object.keys(x.faltan).length) botones = `<button class="fab-btn fab-no" disabled>${esc(tr('El fuego está apagado: enciéndelo arriba.'))}</button>`;
