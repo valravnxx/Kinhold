@@ -94,7 +94,10 @@ jobs:
       - name: Navegador y Python
         run: |
           python -m pip install -q playwright==1.63.0 pillow numpy
-          if [ "$RUNNER_OS" = Windows ]; then python -m playwright install chromium; else python -m playwright install --with-deps chromium; fi
+          # (11 nov: dos veces seguidas los servidores de Ubuntu no respondían y el paso se quedaba colgado; las máquinas
+          # de GitHub ya traen casi todo lo que necesita Chromium, así que, si apt no responde en 4 minutos, sin él)
+          if [ "$RUNNER_OS" = Windows ]; then python -m playwright install chromium
+          else timeout 240 python -m playwright install --with-deps chromium || { echo "apt no responde: Chromium sin sus paquetes del sistema"; python -m playwright install chromium; }; fi
       - name: En el PC, python3 es python y la tarjeta gráfica de verdad
         if: runner.os == 'Windows'
         run: |
@@ -104,13 +107,16 @@ jobs:
       - name: Letra Inter por defecto (como en las sesiones, para que las capturas salgan iguales)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y -q fonts-inter
+          timeout 120 sudo apt-get install -y -q -o Acquire::Retries=1 -o Acquire::http::Timeout=20 fonts-inter || echo "apt no responde: sin la letra Inter"
           mkdir -p ~/.config/fontconfig
           printf '<?xml version="1.0"?>\n<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n<fontconfig>\n%s</fontconfig>\n' "$(for f in sans-serif system-ui serif; do printf '<alias><family>%s</family><prefer><family>Inter</family></prefer></alias>\n' $f; done)" > ~/.config/fontconfig/fonts.conf
           fc-cache -f >/dev/null; fc-match sans-serif; fc-match system-ui
       - name: Caddy (solo lógica)
         if: matrix.grupo == 'logica' && runner.os == 'Linux'
-        run: sudo apt-get install -y -q caddy
+        run: |
+          timeout 120 sudo apt-get install -y -q -o Acquire::Retries=1 -o Acquire::http::Timeout=20 caddy || {
+            echo "apt no responde: Caddy de sus versiones en GitHub"
+            curl -fsSL https://github.com/caddyserver/caddy/releases/download/v2.8.4/caddy_2.8.4_linux_amd64.tar.gz | sudo tar -xz -C /usr/local/bin caddy; caddy version; }
       - name: Pruebas del grupo
         id: pruebas
         run: |

@@ -282,6 +282,10 @@ console.log('Todas las recetas a la vista: lo que puedes ya, lo que casi y lo qu
   comprobar('con ellos depositados, ya, y dice que salen de la estación', de('lasca_silex').grupo === 'ya' && de('lasca_silex').de.silex.sitios.estacion === 1 && de('lasca_silex').de.piedra.estacion === 1 && !de('lasca_silex').de.silex.sitios.suelo, JSON.stringify(de('lasca_silex')));
   comprobar('y el hacha, casi', de('hacha_piedra').grupo === 'casi');
   comprobar('lo de las manos sigue con lo que llevas y el suelo (el cordel, ya)', de('cordel').grupo === 'ya' && de('cordel').de.fibra.encima === 3);
+  comprobar('y dice cuántas veces se puede hacer ya: el cordel, 1 (3 fibras); la lasca, 1 (lo depositado); el hacha, 0', de('cordel').veces === 1 && de('lasca_silex').veces === 1 && de('hacha_piedra').veces === 0, `${de('cordel').veces} ${de('lasca_silex').veces} ${de('hacha_piedra').veces}`);
+  inv.meterDonde('fibra', 6);
+  l = fab.lista({ x: 0, z: 0 }, inv, suelo, T0);
+  comprobar('con 9 fibras, el cordel 3 veces («Hacer ×3»)', de('cordel').veces === 3, String(de('cordel').veces));
 }
 
 console.log('Depositar en las estaciones y volver a coger');

@@ -353,7 +353,8 @@ export class Fabricacion {
   //  - «ya»: tiene su estación al lado (o es con las manos) y no le falta nada (en la estación, depositado en ella);
   //  - «casi»: tiene su estación al lado, pero le falta algo (faltan: lo que falta depositar en ella);
   //  - «despues»: le falta la estación de su uso (conQue dice cuál).
-  // Cada una dice de dónde sale cada material (de: { tipo: { encima, suelo } }) y en qué estación se haría.
+  // Cada una dice de dónde sale cada material (de: { tipo: { encima, suelo } }), en qué estación se haría y cuántas
+  // veces se podría hacer ya (veces).
   lista(pos, inv, suelo, ahora) {
     const cerca = sueloCerca(suelo, pos, ahora);
     return Object.entries(RECETAS).filter(([, rc]) => !rc.fuera).map(([receta, rc]) => {   // (lo de fuera del tramo, no)
@@ -362,7 +363,9 @@ export class Fabricacion {
       const apagada = !!(e && ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora));
       const sinHerramienta = !!rc.requiere && !rc.requiere.some(t => inv.cuantos(t) > 0);
       const grupo = rc.uso !== 'manos' && !e ? 'despues' : Object.keys(f).length || apagada || sinHerramienta ? 'casi' : 'ya';
-      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}),
+      // cuántas veces se podría hacer ahora mismo con lo que hay (el panel: «Hacer ×3»)
+      const veces = grupo !== 'ya' ? 0 : Math.min(...Object.entries(rc.gasta).map(([t, n]) => Math.floor((e ? ((e.deposito || {})[t] || 0) : enInventario(inv, t) + enSuelo(cerca, t)) / n)));
+      return { receta, nombre: rc.nombre, uso: rc.uso, grupo, veces, estacion: e ? e.id : null, conQue: rc.uso === 'manos' ? '' : conQue(rc.uso), gasta: { ...rc.gasta }, da: rc.da, n: rc.n, s: rc.s, de, faltan: f, ...(apagada ? { apagada: true } : {}),
         ...(rc.requiere ? { requiere: [...rc.requiere], ...(sinHerramienta ? { sinHerramienta: true } : {}) } : {}), ...(rc.tambien ? { tambien: { ...rc.tambien } } : {}) };
     });
   }

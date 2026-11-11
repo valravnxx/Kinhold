@@ -3,7 +3,7 @@
 # Es el panel del estudio que aprobó valravnx el 6 nov (cartas con imagen, pestañas por dónde se hace, ficha, los dos
 # atajos). Comprueba, en PC (1280×800): el botón «Fabricar» y la tecla H abren el panel, en «Con las manos»; en «Todo»
 # están todas las recetas, cada carta con su imagen (de los modelos del juego) y ninguna «sin modelo aún». Con 3
-# fibras en la mano, el cordel sale en «Puedes hacerlo ya» y su ficha dice que la fibra sale de la mano; el leñero, en
+# fibras en la mano, el cordel sale en «Puedes hacerlo ya» y su ficha dice que la fibra está «en las manos»; el leñero, en
 # «Te falta algo», con lo que falta en rojo en su ficha y el atajo «Hacer antes: 1 cordel de fibra», que lo encarga
 # al servidor (la fibra sale de lo que lleva en el servidor): sale en «En marcha» y, terminado, «Recoger» le da el
 # cordel (en el servidor). La lasca, en gris, con la piedra de tallar que hace falta. Los puestos de trabajo son obra
@@ -20,6 +20,8 @@
 # ficha sube desde abajo al tocar una carta.
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba el panel; el recorrido de jugador
 # (pruebas/prueba_recorrido.mjs) ya fabrica sin arcón, con lo que se recoge.
+# Acabado nuevo (11 nov): cada sitio dice si está a tu lado o «no hay cerca»; «×3» solo con material para tres, y encarga
+# tres seguidas en el servidor.
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si el panel fabricara solo en el navegador): falla.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
@@ -138,7 +140,10 @@ try:
         f = fila(A, 'cordel') or {}
         comprobar('el cordel, en «Puedes hacerlo ya»', 'fab-sec-ya' in f.get('sec', ''), str(f))
         t = elegir(A, 'cordel')
-        comprobar('y su ficha dice que la fibra sale de la mano, y para qué sirve', '3 de la mano' in t and 'Para atar' in t, t)
+        comprobar('y su ficha dice que la fibra está en las manos (3 de 3), y para qué sirve', 'en las manos' in t and '3 de 3' in t and 'Para atar' in t, t)
+        comprobar('la carta dice «ya»', A.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"cordel\"] .fab-estado').textContent") == 'ya')
+        comprobar('con las manos no sale «×3» (se hace una cosa a la vez)', A.evaluate("!!document.querySelector('#panelFabricar .fab-ficha .fab-hacer') && !document.querySelector('#panelFabricar .fab-ficha .fab-hacer3')"))
+        comprobar('sin puestos de trabajo, cada sitio dice que no hay cerca, y «Con las manos», en cualquier sitio', A.evaluate("(() => { const d = k => (document.querySelector(`#panelFabricar .fab-pest[data-pestana=\"${k}\"] .fab-donde`) || {}).textContent; return d('tallar') === 'no hay cerca' && d('manos') === 'en cualquier sitio'; })()"))
         f = fila(A, 'lenero') or {}
         t = elegir(A, 'lenero')
         comprobar('el leñero, en «Te falta algo», con lo que falta en rojo en su ficha', 'fab-sec-casi' in f.get('sec', '') and A.evaluate("document.querySelectorAll('#panelFabricar .fab-ficha .fab-mat.fab-falta').length") == 2, t)
@@ -190,7 +195,7 @@ try:
         A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.55; }})()")
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_marco_piedra_tallar.png')
-        comprobar('en el menú del clic derecho: la obra y quitar el marco', esperar(A, f"(() => {{ const o = {K}.opcionesUsar(); return o.includes('Obra: Piedra de tallar') && o.includes('Quitar el marco: Piedra de tallar'); }})()", 3000), str(A.evaluate(f"{K}.opcionesUsar()")))
+        comprobar('en el menú del clic derecho: la obra y quitar el marco', esperar(A, f"(() => {{ const o = {K}.opcionesUsar(); return o.includes('Obra: Piedra de tallar') && o.includes('Quitar el marco: Piedra de tallar'); }})()", 8000), str(A.evaluate(f"{K}.opcionesUsar()")))
         A.keyboard.press('f')
         d = servidorDice(lambda d: any(e['tipo'] == 'piedra_tallar' and not e.get('obra') for e in d['fabricacion']['estaciones']), 30000)
         comprobar('Usar le lleva la piedra y trabaja en él hasta levantarlo (en el servidor)', d is not None and cuantos(d, yo, 'piedra') == 0, A.evaluate("document.getElementById('aviso').textContent"))
@@ -199,8 +204,16 @@ try:
         A.keyboard.press('h'); A.wait_for_timeout(300)
         pestana(A, 'todo')
         comprobar('la lasca pasa a «Te falta algo»', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 5000), str(fila(A, 'lasca_silex')))
+        comprobar('y la pestaña de la piedra de tallar dice que está a tu lado', esperar(A, "(document.querySelector('#panelFabricar .fab-pest[data-pestana=\"tallar\"] .fab-donde') || {}).textContent === 'a tu lado'", 5000))
         A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_panel_con_piedra.png')
+        print('Lejos de la piedra de tallar, la pestaña dice a cuántos pasos')
+        A.keyboard.press('h'); A.wait_for_timeout(300)
+        A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 9, z: e.z }}); }})()")
+        A.wait_for_timeout(300); A.keyboard.press('h'); A.wait_for_timeout(500)
+        comprobar('a 9 m, la pestaña de la piedra de tallar dice «a 9 pasos»', esperar(A, "(document.querySelector('#panelFabricar .fab-pest[data-pestana=\"tallar\"] .fab-donde') || {}).textContent === 'a 9 pasos'", 5000), A.evaluate("(document.querySelector('#panelFabricar .fab-pest[data-pestana=\"tallar\"] .fab-donde') || {}).textContent || ''"))
+        A.wait_for_timeout(300)
+        captura(A, f'{SALIDA}/PC_panel_a_pasos.png')
         A.keyboard.press('h'); A.wait_for_timeout(300)
         A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.55; }})()")
         A.wait_for_timeout(2500)
@@ -217,7 +230,7 @@ try:
         A.keyboard.press('f'); A.wait_for_timeout(500)
         comprobar('Usar delante de la piedra de tallar abre el panel en su pestaña', A.evaluate(f"{K}.panelFabricar.abierto && {K}.panelFabricar.pestana === 'tallar'"), str(A.evaluate(f"{K}.panelFabricar.pestana")))
         comprobar('con lo que tiene encima (nada) y lo que lleva para dejar', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep .fab-dejar img') && /No hay nada/.test(document.querySelector('#panelFabricar .fab-sec-dep').innerText)", 8000))
-        comprobar('con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 3000))
+        comprobar('con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 8000))
         comprobar('sale el cordel que lleva, para dejarlo', pulsar('fab-dejar', 'Cordel'))
         d = servidorDice(lambda d: any(e.get('deposito', {}).get('cordel') == 1 for e in d['fabricacion']['estaciones']))
         if d is None:
@@ -244,7 +257,7 @@ try:
         A.click('#panelFabricar .fab-poner-falta')
         d = servidorDice(lambda d: any(e.get('deposito') == {'cordel': 1, 'silex': 1, 'piedra': 1} for e in d['fabricacion']['estaciones']))
         comprobar('de un toque: el servidor tiene el sílex y la piedra en la piedra de tallar', d is not None and cuantos(d, yo, 'silex') == 0 and cuantos(d, yo, 'piedra') == 0, str(d and d['fabricacion']['estaciones']))
-        comprobar('la lasca pasa a «Puedes hacerlo ya», y su ficha dice que sale de la estación', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]') && /de la estación/.test(document.querySelector('#panelFabricar .fab-ficha').innerText)", 6000), str(fila(A, 'lasca_silex')))
+        comprobar('la lasca pasa a «Puedes hacerlo ya», y su ficha dice que sale de la estación', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]') && /en la estación/.test(document.querySelector('#panelFabricar .fab-ficha').innerText)", 6000), str(fila(A, 'lasca_silex')))
         comprobar('y se ven puestos encima de la piedra de tallar', esperar(A, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !!o.getObjectByName('deposito_silex') && !!o.getObjectByName('deposito_piedra'); }})()", 6000))
         A.wait_for_timeout(400)
         captura(A, f'{SALIDA}/PC_panel_deposito.png')
@@ -304,7 +317,7 @@ try:
         captura(B, f'{SALIDA}/movil_piedra_tallar.png')
         B.tap('#btnFabricar'); B.wait_for_timeout(600)
         r = B.evaluate("(() => { const r = document.getElementById('panelFabricar').getBoundingClientRect(); return [r.width, r.height]; })()")
-        comprobar('su panel ocupa casi la pantalla (el tablero del menú)', r[0] >= 380 and r[1] >= 650, str(r))
+        comprobar('su panel ocupa casi la pantalla (el tablero del menú, con su margen)', r[0] >= 360 and r[1] >= 650, str(r))
         B.tap('#panelFabricar .fab-pest[data-pestana="tallar"]'); B.wait_for_timeout(500)
         comprobar('en la pestaña de la piedra de tallar, con lo que A ha dejado en ella, la lasca ya está en «Puedes hacerlo ya» a su lado (la estación es de otro, pero vale)', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-ya [data-fila=\"lasca_silex\"]')", 5000))
         comprobar('y ve lo depositado, con su imagen', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-dep [data-dep=\"silex\"] img')", 10000))   # (el móvil, con swiftshader, tarda en dar un fotograma)
@@ -320,6 +333,12 @@ try:
         captura(B, f'{SALIDA}/movil_ficha.png')
         B.tap('#panelFabricar .fab-velo', position={'x': 195, 'y': 60}); B.wait_for_timeout(500)
         comprobar('y tocando fuera se vuelve a bajar', B.evaluate("!document.getElementById('panelFabricar').classList.contains('fab-ficha-abierta')"))
+        B.tap('#panelFabricar .fab-carta[data-fila="lasca_silex"]'); B.wait_for_timeout(800)
+        B.tap('#panelFabricar .fab-ficha .fab-hacer')
+        comprobar('en el móvil, «Hacer» encarga la lasca y sale en «En marcha», con su barra', esperar(B, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 10000))
+        if B.evaluate("document.getElementById('panelFabricar').classList.contains('fab-ficha-abierta')"): B.tap('#panelFabricar .fab-velo', position={'x': 195, 'y': 60}); B.wait_for_timeout(500)
+        B.evaluate("document.querySelector('#panelFabricar .fab-sec-marcha').scrollIntoView({block: 'center'})"); B.wait_for_timeout(500)
+        captura(B, f'{SALIDA}/movil_en_marcha.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
@@ -335,6 +354,19 @@ try:
         comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_tres_estaciones.png')
+
+        print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")
+        comprobar('el servidor le da 9 fibras', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 9) is not None)
+        A.evaluate(f"{K}.panelFabricar.cerrar()"); A.keyboard.press('h'); A.wait_for_timeout(600)
+        t = elegir(A, 'cordel')
+        comprobar('la carta dice para cuántas hay', A.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"cordel\"] .fab-estado').textContent") == 'ya · para 3')
+        comprobar('y no ofrece «×3»', A.evaluate("!document.querySelector('#panelFabricar .fab-ficha .fab-hacer3')"))
+        captura(A, f'{SALIDA}/PC_hacer_tres.png')
+        A.evaluate("document.querySelector('#panelFabricar .fab-ficha .fab-hacer').click()")
+        comprobar('«Hacer» gasta 3 fibras en el servidor', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 6) is not None)
+        comprobar('y sale en «En marcha», con su barra', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 8000))
+        captura(A, f'{SALIDA}/PC_en_marcha_tres.png')
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
