@@ -5997,5 +5997,35 @@
   "pruebas": "Revisor en la nube: lógica (con la ropa en la prueba de lo que se gasta; rota a propósito —el golpe gasta toda la ropa, cubra o no su zona—: falla; y la de los orígenes, rota con el hilo: falla), la demo única, la cama ligada y el panel de inventario (las fichas de la camisa gastada en PC y del gambesón en móvil, miradas; segunda mirada aparte: sí, y el texto de reparar se ha corregido tras ella), bien. El recorrido (243/243 en la nube, con la camisa zurcida) falló dos veces en la nube en la caza de la liebre (10 lanzadas al suelo cerca de ella) y pasó aquí 244/244 y en main en la nube; con la ropa gastándose menos a menudo en la prueba (menos guardados del mundo mientras caza), bien en la nube. El panel de fabricación lo pedía fabricacion.js y no se volvió a mirar tras el primer intento (no cambia lo que enseña). La prueba del panel de inventario se paraba ya en main en los tintes del personaje de Meshy (desde la v172): arreglada. No comprobado: un golpe que hiere en el juego de verdad gastando la ropa (lo prueba la lógica; el combate entre dos no se ha jugado). Lo que vio la segunda mirada y no es de esta tarea: «Lo llevas puesto» y «Quitártelo» no concuerdan con la camisa y el peso sale con punto (0.3 kg).",
   "capturas": "capturas/demo-v174",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T09:43:57+00:00",
+  "fin": "2026-11-11T10:40:28+00:00",
+  "titulo": "La interfaz nueva: el menú con pestañas (demo v175)",
+  "hito": "interfaz",
+  "hecho": [
+   "Arriba, en el mundo, solo Menú (Tab) y, en línea, Hablar; en PC, en tu tierra, el mojón.",
+   "Menú abre un tablero de roble encima del mundo desenfocado, con las pestañas Equipo, Fabricar, Construir, Mapa y Tu tierra (en el móvil, botones redondos).",
+   "Al pie, Ajustes (con los fps), Ayuda, Decisiones, el idioma y Salir; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin.",
+   "Tu tierra dice dónde está tu mojón y quién puede construir, o lleva a ponerlo.",
+   "Acabado tras la segunda mirada: lo que se desplaza se desvanece abajo, un velo sobre la veta del roble, el pie quieto en el mapa y márgenes en el móvil.",
+   "Retomada desde su rama (a medias desde el 9 nov) a petición de valravnx en la sesión, y unida con main."
+  ],
+  "pruebas": "Revisor en la nube: 30 grupos; bien el menú con pestañas, el inventario, la fabricación, la demo única, el mapa del rey y el idioma (los dos últimos, tras abrir el menú en sus pruebas). Fallan sin tocarlos este cambio: la tabla de grupos (nombra «animaciones-para-cargar», que no es grupo), systemd-analyze en la máquina de la nube, la mano del tronco al hombro (lo que llevas se ve puesto), los niveles de detalle del personaje y las opciones del prototipo del personaje en inglés; no comprobado si fallan igual en main. La prueba del menú, también aquí tras el último retoque. Segunda mirada aparte de las capturas: sí. Choques: la rama del chat de la naturaleza toca cuatro pruebas y src/demo/main.js en otras líneas.",
+  "capturas": "capturas/demo-v175",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T11:33:31+01:00",
+  "fin": "2026-11-11T11:33:31+01:00",
+  "titulo": "P4 «Un primer día con sentido», aprobado por valravnx",
+  "hito": "supervivencia",
+  "hecho": [
+   "valravnx ha comprobado a mano el recorrido entero de un primer día (entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo) y la prueba entre dos, y aprueba la revisión (11 nov).",
+   "Las dos últimas tareas, cerradas con su aprobación, y el hito P4, hecho."
+  ],
+  "pruebas": "Probado a mano por valravnx; sin pruebas aquí (lo que valravnx ya probó a mano no se vuelve a probar).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

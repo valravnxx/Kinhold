@@ -54,6 +54,7 @@ import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
+import { montarMenuJuego } from './menu_juego.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -61,7 +62,7 @@ botonesIdioma(document.getElementById('menu'));
 // En el móvil, los botones de modo van debajo del menú de arriba; en otros idiomas (ruso) el menú
 // ocupa más filas, así que se colocan según lo que mida de verdad en vez de a una altura fija.
 function colocarModos() {
-  const modos = document.getElementById('modos'), menu = document.getElementById('menu');
+  const modos = document.getElementById('modos'), menu = document.getElementById('hudBotones');
   if (!modos || !menu) return;
   if (innerWidth > 640) { modos.style.top = ''; return; }
   modos.style.top = Math.max(120, Math.ceil(menu.getBoundingClientRect().bottom) + 10) + 'px';
@@ -71,8 +72,10 @@ function colocarModos() {
 function colocarAviso() {
   const a = document.getElementById('aviso'), sup = document.getElementById('superior'), modos = document.getElementById('modos');
   if (!a || !sup) return;
+  // (en PC, el aviso va arriba en el centro, a la altura de los botones redondos; lo de tu tierra queda a la izquierda)
+  const hud = document.getElementById('hudBotones');
+  if (innerWidth > 640 && hud) { a.style.top = Math.ceil(hud.getBoundingClientRect().top) + 4 + 'px'; a.style.left = a.style.transform = a.style.maxWidth = ''; return; }
   a.style.top = Math.ceil(sup.getBoundingClientRect().bottom) + 8 + 'px';
-  if (innerWidth > 640) { a.style.left = a.style.transform = a.style.maxWidth = ''; return; }
   const izq = 10, der = modos && !modos.hidden ? modos.getBoundingClientRect().left - 8 : innerWidth - 10;
   a.style.left = izq + 'px'; a.style.transform = 'none'; a.style.maxWidth = Math.max(140, der - izq) + 'px';
 }
@@ -285,6 +288,7 @@ const rastras = new Rastras(sueloObjetos.suelo);
 const fabCliente = new Fabricacion();
 const estacionesV = crearEstaciones({ raiz: escena, altura: decorado.altura, fab: fabCliente });
 let panelFabricar = null; // se monta más abajo, con el de inventario
+let menuJuego = null;     // el menú con pestañas (src/juego/menu_juego.js), que se monta al final
 const objetosRed = EN_LINEA ? crearObjetosEnLinea({ inventarios, autor: AUTOR_LOCAL, sueloObjetos, talaV, recoleccion, estacionesV,
   alEncargos: (d) => { if (panelFabricar) panelFabricar.ponerEncargos(d); },
   // lo que se te ha estropeado encima (la carne cruda, 9 nov; src/logica/comida.js)
@@ -1017,7 +1021,7 @@ function piezaBajo(clientX, clientY) {
 // (o cualquier otra) W escribe «ц» y antes no movía (lo vio valravnx el 27 oct). Lo que no está en la tabla
 // (+, - y demás) sigue por la letra. Al perder el foco se sueltan todas, para que ninguna se quede pulsada.
 const TECLAS_FISICAS = {
-  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', KeyH: 'h', KeyZ: 'z', Space: ' ',
+  KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyB: 'b', KeyX: 'x', KeyF: 'f', KeyI: 'i', KeyM: 'm', KeyC: 'c', KeyH: 'h', KeyZ: 'z', Space: ' ', Tab: 'tab',
   ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
   ShiftLeft: 'shift', ShiftRight: 'shift', PageUp: 'pageup', PageDown: 'pagedown', Escape: 'escape',
   NumpadAdd: '+', NumpadSubtract: '-',
@@ -1032,6 +1036,8 @@ addEventListener('keydown', (e) => {
   const k = nombreTecla(e);
   // Intro: escribir en el chat de texto (las teclas pulsadas se sueltan: mientras se escribe no se mueve)
   if (k === 'enter' && charla && !charla.abierta) { e.preventDefault(); charla.abrir(); return; }
+  // Tab: el menú (en PC; su botón, arriba a la izquierda)
+  if (k === 'tab') { e.preventDefault(); if (menuJuego && !e.repeat) menuJuego.alternar(); return; }
   teclas.add(k);
   if (k === 'r') girar();
   if (k === 'b') cambiarModo(estado.modo === 'construir' ? 'mover' : 'construir');
@@ -1046,7 +1052,7 @@ addEventListener('keydown', (e) => {
   if (k === 'f9' && panelAdmin) { e.preventDefault(); panelAdmin.alternar(); }
   if (k === 'f10' && panelAdmin && panelAdmin.admin) { e.preventDefault(); alternarCamaraLibre(); }
   if (k === ' ' && camLibre.activa) e.preventDefault();   // que Espacio suba la cámara y no mueva la página
-  if (k === 'escape') { if (mapaRey && mapaRey.abierto) mapaRey.cerrar(); else cambiarModo('mover'); }
+  if (k === 'escape') { if (menuJuego && menuJuego.abierto) menuJuego.cerrar(); else if (mapaRey && mapaRey.abierto) mapaRey.cerrar(); else cambiarModo('mover'); }
 });
 addEventListener('keyup', (e) => {
   teclas.delete(nombreTecla(e));
@@ -2602,6 +2608,7 @@ function paso() {
   if (estado.talando && (estado.golpeEn -= dt) <= 0) golpeTala();
   sueloObjetos.paso(); // desaparece lo soltado hace más de una hora fuera de tus tierras
   pintarAccion();
+  if (menuJuego) menuJuego.sincronizar();
 
   moverGente(dt);
   if (fauna) fauna.paso(dt, pj);
@@ -2718,9 +2725,11 @@ function pintarAccion() {
   const ahora = performance.now();
   const etq = $('accionEtq'), lista = $('accionLista'), btn = $('btnUsar');
   const ocultar = estado.modo !== 'mover' || document.body.classList.contains('combate') || !menuUsar.hidden
-    || (panelFabricar && panelFabricar.abierto && estado.esTactil) || (panelInventario && panelInventario.abierto && estado.esTactil);
+    || (panelFabricar && panelFabricar.abierto && estado.esTactil) || (panelInventario && panelInventario.abierto && estado.esTactil) || (menuJuego && menuJuego.abierto);
   if (ahora >= accionHasta) {
     accionHasta = ahora + 150;
+    // el mojón de arriba (en PC, en tu tierra): abre la pestaña Tu tierra
+    { const mo = miMojon(), z = mo ? mundo.tierraDe(mo.x, mo.z) : null; $('btnMojon').hidden = estado.esTactil || z === null || mundo.tierraDe(pj.x, pj.z) !== z; }
     accionVista = ocultar ? null : accionPrincipal();
     // la lista: lo demás que hay al alcance (lo mismo que el clic derecho), sin repetir la acción de Usar. Solo cuando se
     // pide (valravnx, 8 nov: «salen solos, siendo un caos… toggle con alt o click derecho, pero no todo el rato»): Alt en
@@ -2865,7 +2874,7 @@ const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: coma
     .map(([a, m]) => ({ x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z, dueno: a, tuya: a === yo, invita: a !== yo && mundo.invitadosDe(a).includes(yo) })); },
   zonasRey: zonasRey ? zonasRey.lista : [],   // las zonas del rey, de oro viejo
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
-if ($('btnMapa')) { $('btnMapa').hidden = !mapaRey; $('btnMapa').onclick = () => mapaRey && mapaRey.alternar(); }
+if ($('btnMapa')) $('btnMapa').hidden = !mapaRey;   // (la pestaña del menú; la abre src/juego/menu_juego.js)
 // El personaje lleva puesto lo que dice el inventario (valravnx, 29 oct: el inventario es el equipo). La ropa elegida
 // en el visor de personaje entra en el inventario una vez por cada elección; después manda el inventario.
 const SEXO = elegido ? elegido.sexo : 'hombre';
@@ -3013,8 +3022,6 @@ $('btnRellenar').onclick = () => { accion({ tipo: 'rellenar', cantidad: 50 }); g
     mundo = new Mundo(); registroAcciones = new RegistroAcciones(); guardar(); reconstruir(); cambiarModo('mover');
   };
 }
-$('btnRegistro').onclick = () => { $('panelRegistro').hidden = !$('panelRegistro').hidden; $('panelAyuda').hidden = true; };
-$('btnAyuda').onclick = () => { $('panelAyuda').hidden = !$('panelAyuda').hidden; $('panelRegistro').hidden = true; };
 for (const b of document.querySelectorAll('.cerrar')) b.onclick = () => { b.closest('.panel').hidden = true; };
 $('listaRegistro').innerHTML = REGISTRO.map(r => `<li>${tr(r)}</li>`).join('');
 $('version').textContent = tr(VERSION);
@@ -3032,6 +3039,51 @@ function redimensionar() {
 }
 addEventListener('resize', redimensionar);
 redimensionar();
+// ---------------- El menú con pestañas (estudio de la interfaz, 7 nov) ----------------
+// Las pestañas son los paneles de siempre (y la de Tu tierra, aquí); al pie, Ajustes, Ayuda y Decisiones. El menú
+// mira en cada fotograma cuál está abierto (src/juego/menu_juego.js).
+const RAIZ_KIT = '../../' + CARPETA_INTERFAZ;
+// Tu tierra: si tienes mojón y dónde, quién puede construir en ella y, si no tienes, cómo ponerlo
+function pintarTierra() {
+  const p = $('panelTierra'), m = miMojon();
+  const img = (g) => `<img src="${RAIZ_KIT}${g}.webp" alt="">`;
+  if (!m) {
+    p.innerHTML = `<h2>${tr('Tu tierra')}</h2><div class="tierra-fila">${img('g_mojon')}<div><b>${tr('Aún no tienes tierra.')}</b><div class="tierra-sub">${tr('Pon tu mojón donde quieras vivir: la zona entera donde lo pongas es tuya, y solo tú (y a quien invites) construyes en ella.')}</div></div></div>`
+      + `<p><button class="boton-t prim" id="tierraPoner">${tr('Poner el mojón')}</button></p>`;
+    $('tierraPoner').onclick = () => { menuJuego.cerrar(); cambiarModo('construir'); estado.sel = { clase: 'mojon', tipo: 'mojon' }; marcarSeleccion(); evaluarColocacion(); };
+    return;
+  }
+  const zona = mundo.tierraDe(m.x, m.z), dentro = zona !== null && mundo.tierraDe(pj.x, pj.z) === zona;
+  const d = Math.round(Math.hypot(m.x - pj.x, m.z - pj.z));
+  const nombre = (a) => (enLinea && enLinea.remotos.get(a) && enLinea.remotos.get(a).nombre) || tr('un vecino');
+  const inv = mundo.invitadosDe(yoAutor());
+  p.innerHTML = `<h2>${tr('Tu tierra')}</h2><div class="tierra-fila">${img('g_mojon')}<div><b>${dentro ? tr('Estás en tu tierra.') : tr('Tu mojón está a {d} m de aquí.', { d })}</b>`
+    + `<div class="tierra-sub">${tr('Es tuya la zona entera donde está tu mojón.')}</div></div></div>`
+    + `<div class="seccion-t">${tr('Quién puede construir en ella')}</div>`
+    + `<p>${inv.length ? [tr('Tú'), ...inv.map(nombre)].join(' · ') : tr('Solo tú. Para invitar a alguien, ponte a su lado y elige «Invitar a tu tierra».')}</p>`
+    + (mapaRey ? `<p><button class="boton-t" id="tierraMapa">${tr('Verla en el mapa')}</button></p>` : '');
+  if ($('tierraMapa')) $('tierraMapa').onclick = () => { menuJuego.abrir('mapa'); const t = { x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z }; mapaRey.centrarEn(t.x / 1000, t.z / 1000, 6); };
+}
+menuJuego = montarMenuJuego({
+  hub: $('hub'), boton: $('btnMenu'), cerrarBoton: $('hubCerrar'),
+  pestanas: {
+    equipo: panelInventario,
+    fabricar: panelFabricar,
+    construir: { ir: () => cambiarModo('construir') },
+    ...(mapaRey ? { mapa: { abrir: () => mapaRey.abrir(), cerrar: () => mapaRey.cerrar(), abierto: () => mapaRey.abierto && !($('panelAdmin') && !$('panelAdmin').hidden) } } : {}),   // (el del admin usa el mapa a su manera)
+    tierra: { abrir: () => { pintarTierra(); $('panelTierra').hidden = false; }, cerrar: () => { $('panelTierra').hidden = true; }, abierto: () => !$('panelTierra').hidden },
+  },
+  pie: {
+    ajustes: { boton: $('btnAjustes'), panel: $('panelAjustes') },
+    ayuda: { boton: $('btnAyuda'), panel: $('panelAyuda') },
+    registro: { boton: $('btnRegistro'), panel: $('panelRegistro') },
+  },
+});
+$('btnMojon').onclick = () => menuJuego.abrir('tierra');
+// el mapa, bajo las pestañas y encima del pie del menú (salvo con el panel del admin, que lo usa a pantalla entera)
+if (mapaRey) mapaRey.ponerMargen(() => ($('panelAdmin') && !$('panelAdmin').hidden ? { arriba: 0, abajo: 0 } : innerWidth > 640 ? { arriba: 84, abajo: 50 } : { arriba: 88, abajo: 76 }));
+for (const [id, t] of [['btnMenu', 'Menú'], ['btnMojon', 'Tu tierra'], ['hubCerrar', 'Volver']]) { $(id).title = tr(t); $(id).setAttribute('aria-label', tr(t)); }
+$('btnFabricar').setAttribute('aria-label', tr('Fabricar'));
 construirBarra();
 reconstruir();
 actualizarUI();

@@ -183,12 +183,14 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
   const vista = { s: 1, x: 0, y: 0 };   // px por km y dónde cae el km (0, 0)
   const kmAPant = (x, y) => [vista.x + x * vista.s, vista.y + y * vista.s];
   const pantAKm = (x, y) => [(x - vista.x) / vista.s, (y - vista.y) / vista.s];
+  let margen = () => ({ arriba: 0, abajo: 0 });
   let capa = null;   // { pintar(ctx, { kmAPant, s, etiqueta }), clic(x, z) en m del mundo, alCerrar() }
   function encuadrar() {
-    const W = innerWidth, H = innerHeight, cu = datos.cuadro, m = 8;
+    // (margen: lo que tapan arriba y abajo las pestañas y el pie del menú del juego, que lo pone con ponerMargen)
+    const W = innerWidth, cu = datos.cuadro, m = 8, mg = margen(), H = innerHeight - mg.arriba - mg.abajo;
     vista.s = Math.min((W - 2 * m) / (cu.x1 - cu.x0), (H - 2 * m) / (cu.y1 - cu.y0));
     vista.x = (W - (cu.x1 - cu.x0) * vista.s) / 2 - cu.x0 * vista.s;
-    vista.y = (H - (cu.y1 - cu.y0) * vista.s) / 2 - cu.y0 * vista.s;
+    vista.y = mg.arriba + (H - (cu.y1 - cu.y0) * vista.s) / 2 - cu.y0 * vista.s;
     vista.base = vista.s;
   }
   function limitar() {
@@ -558,6 +560,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
 
   return {
     abrir, cerrar, alternar, preparar, centrarEnMi, centrarEn, zoom, pantAKm,
+    ponerMargen(f) { margen = f; },
     ponerCapa(c) {
       capa = c; lienzo.style.cursor = c && c.clic ? 'crosshair' : '';
       // la del panel del admin pide el continente; sin ella, la isla (si ya está abierto, se vuelve a encuadrar)

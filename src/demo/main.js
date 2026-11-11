@@ -71,7 +71,10 @@ if (redirige) {
   const b = document.createElement('button');
   b.id = 'btnDemoMenu'; b.textContent = 'Menú';
   b.onclick = () => { location.href = enlace(null); };
-  if (caja) caja.prepend(b); else { b.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9'; document.body.appendChild(b); }
+  // en el juego, el menú con pestañas (src/juego/menu_juego.js) lo lleva al pie, el último, como «Salir»
+  const pieJuego = caja && caja.closest('#hubPie');
+  if (pieJuego) { b.textContent = tr('Salir'); caja.append(b); }
+  else if (caja) caja.prepend(b); else { b.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9'; document.body.appendChild(b); }
   window.__demo = { modo, listo: false };
   window.__rendimiento = { medida: medidaRendimiento, gente: (n) => genteDePrueba() && genteDePrueba().poner(n),
     detalle: (si) => genteDePrueba()?.detalle?.(si), niveles: () => genteDePrueba()?.niveles?.() };

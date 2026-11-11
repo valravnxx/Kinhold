@@ -30,7 +30,7 @@ _ICONOS = _re.search(r"CARPETA_ICONOS = '([^']+)'", open(os.path.join(RAIZ, 'src
 shutil.copytree(os.path.join(RAIZ, 'docs', _ICONOS), f'{sitio}/{_ICONOS}')  # las imágenes de cada cosa
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
+for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
     if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
 class Silencioso(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -73,7 +73,7 @@ with sync_playwright() as p:
     print('PC: arrastrar del arcón a la silueta y a los huecos')
     pg, errores = abrir_pagina(nav, viewport={'width': 1280, 'height': 800})
     pg.wait_for_function(f'{K}.jugador.mh', timeout=120000)
-    pg.click('#btnInventario')
+    pg.click('#btnMenu'); pg.click('#btnInventario')   # (el menú con pestañas: arriba, «Menú»; la pestaña Equipo)
     comprobar('el botón abre el panel', pg.is_visible('#panelInventario'))
     n = pg.locator('#panelInventario .inv-sitio').count()
     comprobar('10 cuadros de equipo (espalda, cintura y 8 capas de ropa)', n == 10, str(n))
@@ -118,8 +118,9 @@ with sync_playwright() as p:
     pg.click(O('odre')); pg.click('#panelInventario .inv-ponerse')
     comprobar('del arcón: el hacha con las manos y el odre colgado al hombro', lugar(pg, 'mano:der') == 'hacha_mano:1' and lugar(pg, 'hombro') == 'odre:1', f"{lugar(pg, 'mano:der')} · {lugar(pg, 'hombro')}")
     comprobar('el hacha se ve en la mano del personaje', pg.evaluate(f'!!({K}.jugador.hacha && {K}.jugador.hachaEnMano)'))
-    llevas = pg.inner_text('#llevas')
-    comprobar('abajo se ve lo que llevas en la mano y al hombro', pg.is_visible('#llevas') and 'Hacha de mano' in llevas and 'Odre' in llevas, llevas)
+    # (con el menú abierto, la barra de abajo queda detrás del tablero: se mira lo que dice)
+    llevas = pg.evaluate("document.getElementById('llevas').textContent + ' ' + [...document.querySelectorAll('#llevas img')].map(i => i.alt + ' ' + (i.title || '')).join(' ')")
+    comprobar('abajo se ve lo que llevas en la mano y al hombro', pg.evaluate("!document.getElementById('llevas').hidden") and 'Hacha de mano' in llevas and 'Odre' in llevas, llevas)
     # la barra de abajo (estudio de la interfaz, 7 nov): cada cosa con su imagen en su hueco, las manos y el hombro, y
     # cada una con su botón de soltar; el hueco con el kit renderizado (se ha cargado de verdad)
     barra = pg.evaluate('''(() => { const l = document.getElementById('llevas');
@@ -228,9 +229,9 @@ with sync_playwright() as p:
     # ---------- Móvil: se toca, a pantalla completa ----------
     print('Móvil: tocar y pantalla completa')
     mv, errores = abrir_pagina(nav, viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
-    mv.tap('#btnInventario')
+    mv.tap('#btnMenu'); mv.tap('#btnInventario')
     caja = mv.locator('#panelInventario').bounding_box()
-    comprobar('en el móvil el panel ocupa la pantalla', caja and caja['width'] >= 389 and caja['height'] >= 843, str(caja))
+    comprobar('en el móvil el panel ocupa casi la pantalla (el tablero del menú)', caja and caja['width'] >= 380 and caja['height'] >= 650, str(caja))
     mv.tap(O('cuerda_trenzada')); mv.tap(R('cintura'))
     comprobar('tocar la cuerda y luego la cintura se la pone', lugar(mv, 'cintura') == 'cuerda_trenzada:1')
     nc = mv.locator('#panelInventario .inv-cinto [data-ruta]').count()
@@ -268,7 +269,7 @@ with sync_playwright() as p:
     comprobar('móvil: la ficha del gambesón dice lo que le queda (300 de 900) y que aún no se repara', '300' in gasto and '900' in gasto and 'Aún no se puede reparar' in mv.inner_text('#panelInventario'), gasto)
     mv.screenshot(path=f'{SALIDA}/07b_movil_ficha_ropa_gastada.png')
     mv.tap('#panelInventario .inv-dejar') if mv.locator('#panelInventario .inv-dejar').count() else None
-    mv.tap('#panelInventario .inv-cerrar')
+    mv.tap('#hubCerrar')   # (la cruz del menú con pestañas)
     comprobar('el ✕ cierra el panel', not mv.is_visible('#panelInventario'))
     caja = mv.locator('#llevas').bounding_box()
     comprobar('en el móvil, lo que llevas se ve abajo sin salirse de la pantalla', caja and caja['x'] >= 0 and caja['x'] + caja['width'] <= 390 and 'Tronco corto' in mv.inner_text('#llevas'), str(caja))

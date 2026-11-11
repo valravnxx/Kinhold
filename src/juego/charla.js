@@ -32,7 +32,7 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
     '<button id="charlaDecir" type="submit" style="font:inherit;font-weight:600;color:#241b10;background:#d9a441;border:0;border-radius:8px;padding:0 14px"></button>';
   document.body.appendChild(caja);
   const texto = caja.querySelector('#charlaTexto'), decir = caja.querySelector('#charlaDecir');
-  const ponerTextos = () => { texto.placeholder = tr('Di algo… (Intro para decirlo, Esc para dejarlo)'); decir.textContent = tr('Decir'); if (boton) boton.textContent = tr('Hablar'); };
+  const ponerTextos = () => { texto.placeholder = tr('Di algo… (Intro para decirlo, Esc para dejarlo)'); decir.textContent = tr('Decir'); if (boton) { if (boton.querySelector('img')) { boton.title = tr('Hablar'); boton.setAttribute('aria-label', tr('Hablar')); } else boton.textContent = tr('Hablar'); } };
   ponerTextos();
 
   function abrir() {
