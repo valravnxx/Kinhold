@@ -197,12 +197,16 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // (con los de Meshy: la hierba y las flores, en su versión de media distancia, que son miles; las flores llevan su
     // color y se tiñen solo un poco del de cada una)
     const hM = M('hierba'), fM = M('flores'), mM = M('matorral'), blanco = new THREE.Color(1, 1, 1);
-    const HC = movil ? 9 : 14;   // (la hierba de Meshy: la de cerca entera, la de más allá con menos triángulos)
-    if (hM) { instancias(hierba.filter(e => dist(e) < HC), hM.cerca.geo, hM.cerca.mats, 'hierbaCerca', e => c.setScalar(e.tono)); instancias(hierba.filter(e => dist(e) >= HC), hM.medio.geo, hM.medio.mats, 'hierba', e => c.setScalar(e.tono)); }
+    const HC = movil ? 7 : 10;   // (la hierba de Meshy, que son miles: la de cerca entera, la de más allá con muy pocos triángulos)
+    if (hM) { instancias(hierba.filter(e => dist(e) < HC), hM.cerca.geo, hM.cerca.mats, 'hierbaCerca', e => c.setScalar(e.tono)); instancias(hierba.filter(e => dist(e) >= HC), hM.lejos.geo, hM.lejos.mats, 'hierba', e => c.setScalar(e.tono)); }
     else instancias(hierba, pl.mata, material('doble'), 'hierba', e => c.setScalar(e.tono));
-    if (fM) { instancias(flores.filter(e => dist(e) < HC), fM.cerca.geo, fM.cerca.mats, 'floresCerca', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); instancias(flores.filter(e => dist(e) >= HC), fM.medio.geo, fM.medio.mats, 'flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); }
+    if (fM) { instancias(flores.filter(e => dist(e) < HC), fM.cerca.geo, fM.cerca.mats, 'floresCerca', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); instancias(flores.filter(e => dist(e) >= HC), fM.lejos.geo, fM.lejos.mats, 'flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); }
     else instancias(flores, pl.flor, material('fijo'), 'flores', e => c.set(FLORES[e.color]));
-    instancias(matas, (mM ? mM.cerca : pl.matorral).geo, (mM ? mM.cerca : pl.matorral).mats, 'matorrales', e => c.setScalar(e.tono), { sombra: true, obst: matas.map(e => e.ob) });
+    // (con los de Meshy, una de cada tres matas es una mata de helechos: se desbroza igual)
+    const heM = M('helechos'), esHelecho = (e) => heM && (Math.floor(Math.abs(e.x * 7.31 + e.z * 3.17)) % 3 === 0);
+    const matasM = matas.filter(e => !esHelecho(e)), helechos = matas.filter(esHelecho);
+    instancias(matasM, (mM ? mM.cerca : pl.matorral).geo, (mM ? mM.cerca : pl.matorral).mats, 'matorrales', e => c.setScalar(e.tono), { sombra: true, obst: matasM.map(e => e.ob) });
+    if (heM) instancias(helechos, heM.cerca.geo, heM.cerca.mats, 'helechos', e => c.setScalar(e.tono), { sombra: true, obst: helechos.map(e => e.ob), subir: () => 0.03 });
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía
     // anaranjada), hundidas 0,2 m como en el mapa; no se esconden al construir (chocan, como antes)
     const colorRoca = e => { const k = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza, t = (v) => 0.5 * lin(v) / 0.4 + 0.5 * 0.8; return c.setRGB(t(k[0]), t(k[1]), t(k[2])); };
@@ -213,7 +217,9 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       const tinte = e => colorRoca(e).lerp(blanco, 0.45), suben = e => (e.canto ? e.tam * 0.27 : 0.12);
       const grandes = pM ? piedras.filter(e => !e.canto && e.tam >= 1.2) : [], cantos = cM ? piedras.filter(e => e.canto) : [];
       const resto = piedras.filter(e => !grandes.includes(e) && !cantos.includes(e));
-      instancias(resto, rM.cerca.geo, rM.cerca.mats, 'rocas', tinte, { sombra: true, esconder: false, subir: suben });
+      const RC = movil ? 18 : 25;   // (las de más allá, con el modelo de media distancia)
+      instancias(resto.filter(e => dist(e) < RC), rM.cerca.geo, rM.cerca.mats, 'rocas', tinte, { sombra: true, esconder: false, subir: suben });
+      instancias(resto.filter(e => dist(e) >= RC), rM.medio.geo, rM.medio.mats, 'rocasLejos', tinte, { sombra: true, esconder: false, subir: suben });
       if (pM) instancias(grandes, pM.cerca.geo, pM.cerca.mats, 'rocasGrandes', tinte, { sombra: true, esconder: false, subir: suben });
       if (cM) instancias(cantos, cM.cerca.geo, cM.cerca.mats, 'cantos', tinte, { sombra: true, esconder: false, subir: suben });
       instancias(cascotes, rM.medio.geo, rM.medio.mats, 'cascotes', e => tinte(e).multiplyScalar(e.tono), { sombra: true, esconder: false, subir: () => 0.05 });

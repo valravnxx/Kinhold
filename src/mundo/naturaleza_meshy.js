@@ -1,6 +1,7 @@
 // Kinhold — la naturaleza de Meshy (valravnx, 10 y 11 nov: el arte del juego, con Meshy; «todos los tipos de árboles,
 // todos los tipos de arbustos, los tipos de roca y todo eso»): las siete especies de árbol, adultas y jóvenes, el
-// matorral, el arbusto de las bayas, las rocas, la hierba, las flores y las plantas que se recogen, en
+// matorral, el arbusto de las bayas, los helechos, las rocas y las plantas que se recogen (la hierba y las flores del
+// suelo siguen de código: son miles y las de Meshy no bajaban a tan pocos triángulos), en
 // docs/recursos/naturaleza/meshy-v1/ (herramientas/meshy/naturaleza.mjs: cada .glb con tres mallas, «cerca» con su
 // textura, «medio» y «lejos» con el color en los vértices, el pie en y = 0 y a la medida del juego).
 //
@@ -13,14 +14,14 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 
 export const ESPECIES_MESHY = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
 export const LISTA_NATURALEZA = [...ESPECIES_MESHY, ...ESPECIES_MESHY.map(e => e + '_joven'),
-  'matorral', 'arbusto_bayas', 'roca', 'pena', 'canto', 'hierba', 'flores', 'ortigas', 'juncos', 'helechos'];
+  'matorral', 'arbusto_bayas', 'roca', 'pena', 'canto', 'hierba_larga', 'ortigas', 'juncos', 'helechos'];
 
 // la carpeta, al lado de la de los personajes que da cada prototipo (src/mundo/eleccion.js: recursosTaller)
 export const carpetaNaturaleza = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/personajes\/[^/]*\/?$/, 'naturaleza/meshy-v1/');
 
 let cargados = null, cargando = null;
 // las plantas finas (hojas de una sola capa), por las dos caras
-const DOS_CARAS = new Set(['hierba', 'flores', 'ortigas', 'juncos', 'helechos']);
+const DOS_CARAS = new Set(['hierba_larga', 'ortigas', 'juncos', 'helechos']);
 const modelo = (g, nombre, cosa) => {
   const o = g.scene.getObjectByName(nombre); if (!o) return null;
   const m = o.isMesh ? o : o.getObjectByProperty('isMesh', true); if (!m) return null;

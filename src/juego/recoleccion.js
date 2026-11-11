@@ -220,12 +220,12 @@ export function modelosRecoleccion() {
 
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
-  // (11 nov) las plantas de Meshy, si han llegado (src/mundo/naturaleza_meshy.js): ortigas, juncos, la hierba larga (la
-  // mata de hierba, más alta) y el arbusto de las bayas, con las bayas puestas por su cara de fuera
-  const M = (n, k = 1) => { const m = naturaleza(n); if (!m) return null; const geo = k === 1 ? m.cerca.geo : m.cerca.geo.clone().scale(k, k, k); return [{ geo, mat: m.cerca.mats }]; };
+  // (11 nov) las plantas de Meshy, si han llegado (src/mundo/naturaleza_meshy.js): ortigas, juncos, la hierba larga (con sus
+  // espigas) y el arbusto de las bayas, con las bayas puestas por su cara de fuera
+  const M = (n) => { const m = naturaleza(n); return m ? [{ geo: m.cerca.geo, mat: m.cerca.mats }] : null; };
   const arbustoM = naturaleza('arbusto_bayas'), bayasM = arbustoM ? bayasSobre(arbustoM.cerca.geo) : null;
   // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo
-  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba', 2.6) || hierbaLarga, juncos: M('juncos') || juncos, barro, yesquero, pena,
+  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('juncos') || juncos, barro, yesquero, pena,
     bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas] });
 }
 
