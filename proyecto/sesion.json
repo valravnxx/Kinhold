@@ -1,9 +1,9 @@
 {
  "A": {
-  "inicio": "2026-11-10T16:26:08+00:00",
-  "tarea": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
-  "hito": "meshy",
-  "rama": "trabajo/20261110-0652-meshy"
+  "inicio": "2026-11-11T11:29:03+00:00",
+  "tarea": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
+  "hito": "interfaz",
+  "rama": "trabajo/20261111-1127"
  },
  "B": null,
  "chat:trabajo/20261111-0920-naturaleza": {

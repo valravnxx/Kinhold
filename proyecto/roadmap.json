@@ -1743,7 +1743,9 @@
     },
     {
      "nombre": "El equipo en tres columnas: Ropa, Lo que llevas (manos, hombro y cada bolsa abierta a la vez) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo, soltar ahí para dejarlo); en el móvil, las pestañas «Lo que llevas» y «Ropa»; los huecos vacíos con la silueta de lo que va; la ficha con lo principal y «Mover…»; clic derecho o mantener: a la mano o al suelo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-11T11:29:03+00:00",
+     "rama": "trabajo/20261111-1127"
     },
     {
      "nombre": "Fabricar con el acabado nuevo, en su pestaña: cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo) y «Hacer ×3»; lo que está en marcha, con su barra",
