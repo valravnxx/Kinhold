@@ -19,6 +19,8 @@ import { crearDecorado } from '../mundo/decorado.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
+import { perfil as perfilGrafico } from '../posprocesado/perfiles.js';
+import { ponerDetalleNaturaleza, cargarAltoNaturaleza } from '../mundo/naturaleza_meshy.js';
 import { conectarEnLinea } from './en_linea.js';
 import { crearFauna } from './fauna.js';
 import { armaDeMano } from '../logica/arma_mano.js';
@@ -42,6 +44,7 @@ import { PRENDAS, prendasDeCapas, puestasDe } from '../logica/prendas.js';
 import { vestidoDe, rasgosPrenda } from '../logica/hechura.js';
 import { crearRecoleccion, crearRecoleccionMundo } from './recoleccion.js';
 import { crearSuelo } from './suelo.js';
+import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
 import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano } from '../logica/recoleccion.js';
@@ -253,6 +256,15 @@ function mirarTierras() {
 // En el mundo de verdad, lo que crece en cada sitio de Whitholm (src/mundo/vegetacion_mundo.js): las siete especies de
 // árbol, la hierba y las piedras, con las reglas del mapa y siempre en el mismo sitio.
 // (window.__mutarVegetacion: solo para romper la prueba a propósito, con otra semilla en cada carga)
+// el detalle de la naturaleza de Meshy según el perfil gráfico (valravnx, 11 nov: en gráficos máximos, con más detalle
+// y hasta más lejos): antes de hacerla y, al cambiar de perfil, otra vez
+// (los modelos de más detalle se bajan aparte y solo si el perfil los usa; al llegar, se rehace la naturaleza)
+function detalleDe(id) {
+  const d = perfilGrafico(id).naturaleza; ponerDetalleNaturaleza(d);
+  if (d && d.alto) cargarAltoNaturaleza().then((ok) => { if (ok && decorado && decorado.rehacer) decorado.rehacer(); });
+}
+detalleDe(graficos.perfil);
+graficos.alCambiar((id) => { detalleDe(id); if (decorado && decorado.rehacer) decorado.rehacer(); });
 const decorado = mundoJ ? crearVegetacionMundo({ mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarVegetacion ? Math.floor(Math.random() * 1e6) : 0) })
   : crearDecorado({ semilla: 7, llano: 60, lejos: 230, arboles: 220, bosqueDesde: 28, bosqueHasta: 175,
     hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
@@ -1911,21 +1923,23 @@ function usarArbol(a, tipo) {
 }
 
 // Coger del suelo lo que se soltó (todo, o de una pila lo que quepa).
-function cogerDelSuelo(o) {
+// a (opcional): la ruta de lo que llevas donde va (desde el panel de equipo); sin ella, donde quepa.
+function cogerDelSuelo(o, a) {
   if (objetosRed) { // en línea, del suelo del servidor
     pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
-    objetosRed.mandar({ tipo: 'coger_suelo', objeto: o.id, x: pj.x, z: pj.z }, (r) => {
+    objetosRed.mandar({ tipo: 'coger_suelo', objeto: o.id, x: pj.x, z: pj.z, ...(a ? { a } : {}) }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
       mostrarAviso(tr('Coges del suelo: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }) + (r.queda ? ' ' + tr('Quedan {n}.', { n: r.queda }) : ''));
     });
-    return;
+    return { ok: true, enviado: true };
   }
-  const r = sueloObjetos.coger(inventarios, registroAcciones, AUTOR_LOCAL, o.id, pj.x, pj.z);
-  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  const r = sueloObjetos.coger(inventarios, registroAcciones, AUTOR_LOCAL, o.id, pj.x, pj.z, Date.now(), a);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarInventarios(almacen, inventarios);
   panelInventario.pintar(); pintarLlevas(); vestir();
   pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
   mostrarAviso(tr('Coges del suelo: {n} × {c}.', { n: r.cantidad, c: tr(CATALOGO[r.objeto].nombre) }) + (r.queda ? ' ' + tr('Quedan {n}.', { n: r.queda }) : ''));
+  return r;
 }
 // Soltar al suelo, a tus pies, lo que hay en un lugar del inventario.
 function soltarAlSuelo(de) {
@@ -2860,6 +2874,9 @@ $('btnCancelar').onclick = () => { $('confirmar').hidden = true; limpiarResaltad
 // Panel de inventario (hito 2): lo que llevas encima y un arcón de pruebas para coger equipo.
 // El arcón de pruebas tiene también los materiales de obra (el montón común de antes): se cogen con acciones del mundo.
 const panelInventario = montarPanelInventario({ panel: $('panelInventario'), boton: $('btnInventario'), inventario, accion: accionInventario, alSuelo: arconAlSuelo, soltarSuelo: (ruta) => soltarAlSuelo(ruta), comer: (t) => comer(t), comestible,
+  // «A tus pies» (el equipo en tres columnas): lo del suelo a dos pasos (sin la rastra ni la carretilla), y cogerlo
+  suelo: () => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_COGER).filter(o => !esVehiculo(o.cosa.tipo)),
+  cogerSuelo: (id, a) => { const o = sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_COGER).find(x => String(x.id) === String(id)); return o ? cogerDelSuelo(o, a) : { ok: false, motivo: 'Está demasiado lejos.' }; },
   accionArcon: (a) => { const r = accion(a); if (r.ok) { guardar(); actualizarUI(); } return r; }, materialesArcon: () => (hayArcon() ? mundo.materiales : null), hayArcon,
   alCambiar: () => { pintarLlevas(); vestir(); }, retrato: (lienzo) => dibujarRetrato(renderer, jugador.mh, lienzo) });
 // El mapa del rey (valravnx, 31 oct): Whitholm, la isla del rey, cartografiada; lo llevas desde que apareces y se abre con

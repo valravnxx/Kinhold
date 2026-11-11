@@ -7,7 +7,7 @@
 // es para los miles de árboles de lejos.
 import * as THREE from 'three';
 import { cil, copa, pisoPino, modeloLote } from './decorado.js';
-import { naturaleza, hayNaturaleza } from './naturaleza_meshy.js';
+import { naturaleza, hayNaturaleza, versionNaturaleza } from './naturaleza_meshy.js';
 
 export const ESPECIES = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
 // el radio del pie del tronco de cada especie a escala 1 (m): para chocar con él y para su tocón al talarlo
@@ -146,13 +146,13 @@ const JOVEN = {
 
 const cache = {};
 // { abeto: { geo, mats }, pino: …, … }; sencillo: con menos caras, para los árboles de lejos. joven: los árboles jóvenes.
-// Con los de Meshy cargados (src/mundo/naturaleza_meshy.js), los suyos: nivel «cerca» (con textura), «medio» o «lejos»
+// Con los de Meshy cargados (src/mundo/naturaleza_meshy.js), los suyos: nivel «alto» o «cerca» (con textura), «medio» o «lejos»
 // (sencillo, si no se dice); la especie que no haya llegado, la de código.
 export function modelosEspecies({ sencillo = false, joven = false, nivel = null } = {}) {
-  const n = nivel || (sencillo ? 'lejos' : 'cerca'), k = n + (joven ? 'j' : '') + (hayNaturaleza() ? 'm' : '');
+  const n = nivel || (sencillo ? 'lejos' : 'cerca'), k = n + (joven ? 'j' : '') + (hayNaturaleza() ? 'm' + versionNaturaleza() : '');
   return (cache[k] ||= Object.fromEntries(ESPECIES.map(e => {
     const m = naturaleza(joven ? e + '_joven' : e);
     if (m) { (joven ? TAMANO_JOVEN : TAMANO_ESPECIE)[e] = m.medida; return [e, m[n]]; }   // (la copa de verdad, para destapar)
-    return [e, modeloLote((L) => (joven ? JOVEN : HACER)[e](L, n !== 'cerca'))];
+    return [e, modeloLote((L) => (joven ? JOVEN : HACER)[e](L, n === 'medio' || n === 'lejos'))];
   })));
 }
