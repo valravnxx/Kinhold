@@ -1,6 +1,6 @@
 // Prepara un modelo de naturaleza de Meshy (árbol, mata, planta o roca) para el mundo (src/mundo/naturaleza_meshy.js):
 //   node herramientas/meshy/naturaleza.mjs <entrada.glb> <salida.glb> <alto_m> <tri_cerca> <tri_medio> <tri_lejos> [opciones]
-// opciones: --peso-uv=<n> (cuánto cuesta estirar la textura al simplificar; la haya, 2), --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
+// opciones: --lejos-cono (la de lejos, una silueta de conos hecha aquí), --sin-textura (también la de cerca con el color en los vértices), --peso-uv=<n> (cuánto cuesta estirar la textura al simplificar; la haya, 2), --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
 //           --tex=<px> (la textura, 1024 por defecto), --suelo=<m> (hasta dónde oscurece el pie: la oclusión de contacto).
 // Deja tres mallas: «cerca» (con su textura), «medio» y «lejos» (con el color de la textura en los vértices y menos triángulos), con el pie en y = 0, a su alto
 // de verdad, una sola textura (el color, en WebP; sin brillo ni relieve, que el juego usa luz difusa) y el pie más oscuro
@@ -94,14 +94,19 @@ const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false)
   };
   const lock = fijos(p);
   if (sloppy) {   // (--tosco: de lejos, bultos que juntan lo pequeño en vez de quitarlo; el abedul, de hojas sueltas)
-    const [nuevo] = MeshoptSimplifier.simplifySloppy(antes, pos, 3, lock || sinFijar, Math.floor(tope) * 3, 0.08);
+    const [nuevo] = MeshoptSimplifier.simplifySloppy(antes, pos, 3, lock || sinFijar, Math.floor(tope) * 3, Number(op['error-tosco'] || 0.08));
     p.getIndices().setArray(new Uint32Array(nuevo)); return p;
   }
   if (lock) { hacer(lock); if (triangulos(p) <= tope * holgura) return p; p.getIndices().setArray(antes); }   // (si lo fijo no deja bajar, sin fijar: el roble, de tronco gordo, o el abeto)
   hacer(sinFijar);
   return p;
 };
-const pCerca = reducir(otra(prim), TRI_CERCA), pColor = otra(pCerca);
+// --sin-textura (la haya, 11 nov): la textura es casi toda verde con las islas de la corteza sueltas por ella, y al
+// simplificar la copa le caían trozos de corteza encima (rayas claras): entonces también la de cerca va con el color
+// en los vértices, tomado de la malla entera, sin simplificar
+const SIN_TEX = !!op['sin-textura'];
+let pCerca = SIN_TEX ? otra(prim) : reducir(otra(prim), TRI_CERCA);
+const pColor = otra(pCerca);
 // el color de la textura en cada vértice de las de media distancia y lejos (sin textura)
 const texColor = mat && mat.getBaseColorTexture();
 let colorVert = null;
@@ -121,8 +126,36 @@ if (texColor) {
   pColor.setMaterial(doc.createMaterial('sinTextura').setMetallicFactor(0).setRoughnessFactor(1));
 }
 oscurecerPie(pCerca, null); oscurecerPie(pColor, colorVert);
+if (SIN_TEX) pCerca = reducir(otra(pColor), TRI_CERCA, true, 0.012, 1.6);
 const pMedio = reducir(otra(pColor), TRI_MEDIO, true, 0.012, 2.2),   // (a media distancia el tronco se ve: se le deja más)
   pLejos = reducir(otra(pColor), TRI_LEJOS, true, 0.04, Number(op['holgura-lejos'] || 1.3), !!op.tosco);   // (de lejos se puede perder algo fino)
+// --lejos-cono (el pino joven, 11 nov: de ramas sueltas, simplificado salía en esquirlas): la de lejos es una silueta
+// cerrada hecha aquí, el tronco y la copa en cuatro troncos de cono con el ancho de la copa a cada altura, del color
+// medio de cada parte
+if (op['lejos-cono']) {
+  const a = pColor.getAttribute('POSITION').getArray(), c = pColor.getAttribute('COLOR_0').getArray(), m = a.length / 3;
+  let H = 0; for (let i = 0; i < m; i++) H = Math.max(H, a[3 * i + 1]);
+  const N = 4, base = H * 0.12, bandas = Array.from({ length: N }, () => []), colC = [0, 0, 0], colT = [0, 0, 0]; let nC = 0, nT = 0;
+  for (let i = 0; i < m; i++) {
+    const y = a[3 * i + 1], r = Math.hypot(a[3 * i], a[3 * i + 2]);
+    if (y < base || r < H * 0.012) { colT[0] += c[3 * i]; colT[1] += c[3 * i + 1]; colT[2] += c[3 * i + 2]; nT++; continue; }
+    bandas[Math.min(N - 1, Math.floor((y - base) / (H - base) * N))].push(r);
+    colC[0] += c[3 * i]; colC[1] += c[3 * i + 1]; colC[2] += c[3 * i + 2]; nC++;
+  }
+  const radio = bandas.map(l => { l.sort((x, z) => x - z); return l.length ? l[Math.floor(l.length * 0.85)] : 0; });
+  const P = [], C = [], I = [], L = 8;
+  const anillo = (y, r, col) => { const k = P.length / 3; for (let j = 0; j < L; j++) { const t = j / L * Math.PI * 2; P.push(Math.cos(t) * r, y, Math.sin(t) * r); C.push(...col); } return k; };
+  const unir = (k0, k1) => { for (let j = 0; j < L; j++) { const j2 = (j + 1) % L; I.push(k0 + j, k1 + j, k0 + j2, k0 + j2, k1 + j, k1 + j2); } };
+  const ct = colT.map(v => v / Math.max(1, nT)), cc = colC.map(v => v / Math.max(1, nC));
+  const rt = H * 0.018; unir(anillo(-0.05, rt, ct), anillo(base + 0.1, rt, ct));
+  let prev = anillo(base, Math.max(rt, radio[0] * 0.6), cc);
+  for (let b = 0; b < N; b++) { const k = anillo(base + (H - base) * (b + 1) / N, b === N - 1 ? 0.001 : Math.max(radio[b + 1] || 0, radio[b] * 0.7), cc); unir(prev, k); prev = k; }
+  const buf = root.listBuffers()[0];
+  pLejos.setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(P)).setBuffer(buf));
+  pLejos.setAttribute('COLOR_0', doc.createAccessor().setType('VEC3').setArray(new Float32Array(C)).setBuffer(buf));
+  for (const s of pLejos.listSemantics()) if (!['POSITION', 'COLOR_0'].includes(s)) pLejos.setAttribute(s, null);
+  pLejos.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(I)).setBuffer(buf));
+}
 for (const p of [pCerca, pMedio, pLejos]) compactPrimitive(p);   // (fuera los vértices que ya no usa ningún triángulo)
 for (const node of root.listNodes()) node.dispose();
 for (const m of root.listMeshes()) m.dispose();

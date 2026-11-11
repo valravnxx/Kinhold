@@ -30,10 +30,10 @@
  ],
  "haya": [
   10.8,
-  12000,
+  8000,
   2000,
   500,
-  "--pie --hundir=0.05 --peso-uv=2"
+  "--pie --hundir=0.05 --sin-textura"
  ],
  "fresno": [
   9.2,
@@ -61,7 +61,7 @@
   4000,
   1000,
   300,
-  "--hundir=0.03 --tosco"
+  "--hundir=0.03 --lejos-cono"
  ],
  "abedul_joven": [
   4.0,

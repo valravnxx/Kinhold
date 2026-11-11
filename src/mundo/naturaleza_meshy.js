@@ -38,6 +38,7 @@ const modelo = (g, nombre, cosa) => {
     geo.setAttribute(k, new THREE.BufferAttribute(f, a.itemSize));
   }
   geo.applyMatrix4(m.matrixWorld);
+  if (!geo.attributes.normal) geo.computeVertexNormals();   // (la silueta de lejos del pino joven, hecha sin normales)
   geo.computeBoundingSphere(); geo.computeBoundingBox();
   return { geo, mats: new THREE.MeshLambertMaterial({ map, vertexColors: true, side: DOS_CARAS.has(cosa) ? THREE.DoubleSide : THREE.FrontSide }) };
 };
