@@ -99,7 +99,7 @@ function literalesEnTr(src) {
     i = j;
   }
 }
-for (const f of ['src/posprocesado/main.js', 'src/posprocesado/perfiles.js', 'src/juego/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/mundo/cliente.js', 'src/mundo/pantalla_cuenta.js', 'src/juego/panel_inventario.js', 'src/juego/combate_mundo.js', 'src/juego/panel_fabricar.js']) {
+for (const f of ['src/posprocesado/main.js', 'src/posprocesado/perfiles.js', 'src/juego/main.js', 'src/estilo/main.js', 'src/personaje/main.js', 'src/demo/main.js', 'src/demo/rendimiento.js', 'src/mina/main.js', 'src/mapa/main.js', 'src/mapa/cerca.js', 'src/juego/en_linea.js', 'src/mundo/cliente.js', 'src/mundo/pantalla_cuenta.js', 'src/juego/panel_inventario.js', 'src/juego/combate_mundo.js', 'src/juego/panel_fabricar.js', 'src/juego/avisos_necesidades.js']) {
   const src = leer(f);
   literalesEnTr(src);
   // títulos y opciones de los grupos del panel del personaje: grupo('clave', valores, 'Título')

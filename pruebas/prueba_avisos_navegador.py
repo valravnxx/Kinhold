@@ -1,11 +1,14 @@
-# Prueba en navegador (Chromium sin pantalla) de los avisos de las necesidades (P4; src/juego/avisos_necesidades.js).
+# Prueba en navegador (Chromium sin pantalla) de las necesidades en pantalla (P4; src/juego/avisos_necesidades.js; con
+# los medallones de latón del estudio de la interfaz desde el 11 nov).
 # En el mundo de verdad (Whitholm), sin servidor: las necesidades se ponen como si llegaran del servidor
 # (__kinhold.ponerNecesidades; solo se dibujan y se notan en esta página). En PC (1280×800) y móvil (390×844):
-#   - sin necesidades, ningún círculo; con sed 50, hambre 30 y cansancio 80, salen el de la sed y el del cansancio (desde
-#     40), el del cansancio en fuerte (desde 75), cada uno con su color; el hambre a 30, no;
-#   - los círculos no tapan los botones (los de modo, «Usar», los de arriba) y caben en la pantalla;
-#   - al pulsar el de la sed, su ficha: cómo estás (50 %), qué te pasa y cómo se quita (beber del río); se cierra al
-#     pulsar fuera;
+#   - sin necesidades, ningún medallón; con sed 50, hambre 30 y cansancio 80, los cuatro: la sed en aviso (ámbar) y el
+#     cansancio mal (rojo, más grande y con su nombre), y el hambre y el frío, que van bien, medio transparentes (verde,
+#     y el frío con el medallón del calor);
+#   - los medallones no tapan los botones (los de modo, «Usar», los de arriba) y caben en la pantalla, con su nombre;
+#   - al pulsar el de la sed, su ficha en dos líneas: qué te pasa y cómo se quita (beber en el río); cabe en la pantalla
+#     y no pisa los medallones; se cierra al pulsar fuera;
+#   - el frío escarcha los bordes de la pantalla: sin frío nada; helado, del todo;
 #   - los efectos: con el cansancio al máximo no se corre (Mayúsculas + W: a paso de andar), sin él sí; con el frío al
 #     máximo se anda más despacio (torpe);
 #   - beber del río: en la salida no hay agua al lado; en una orilla, con sed, «Usar» bebe y la sed baja;
@@ -78,32 +81,44 @@ def recorrido(pg, nombre, pref, movil):
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
     entrar(pg)
-    comprobar(f'{nombre}: sin necesidades, ningún círculo', pg.evaluate(f'{K}.avisosNec.visibles.length') == 0)
+    comprobar(f'{nombre}: sin necesidades, ningún medallón', pg.evaluate(f'{K}.avisosNec.visibles.length') == 0 and pg.evaluate("document.getElementById('avisosNec').hidden"))
     poner(pg, {'sed': 50, 'hambre': 30, 'cansancio': 80})
     vis = pg.evaluate(f'{K}.avisosNec.visibles')
-    comprobar(f'{nombre}: con sed 50, hambre 30 y cansancio 80 salen la sed y el cansancio (desde 40)', vis == ['sed', 'cansancio'], str(vis))
-    fuerte = pg.evaluate("[...document.querySelectorAll('#avisosNec .aviso-nec')].filter(b => !b.hidden).map(b => [b.dataset.que, b.classList.contains('fuerte'), getComputedStyle(b).getPropertyValue('--c').trim()])")
-    comprobar(f'{nombre}: el del cansancio, en fuerte (desde 75); cada uno con su color', fuerte == [['sed', False, '#3f7fd0'], ['cansancio', True, '#9a958c']], str(fuerte))
+    comprobar(f'{nombre}: con sed 50, hambre 30 y cansancio 80, en aviso la sed y el cansancio (desde 40)', vis == ['sed', 'cansancio'], str(vis))
+    pg.wait_for_timeout(500)   # (el tamaño cambia con una transición)
+    meds = pg.evaluate("[...document.querySelectorAll('#avisosNec .med')].map(b => [b.dataset.que, b.dataset.estado, b.classList.contains('quieto'), getComputedStyle(b).getPropertyValue('--c').trim(), Math.round(b.getBoundingClientRect().width), b.querySelector('.nom').textContent, b.querySelector('img').getAttribute('src').split('/').pop()])")
+    base, grande = (40, 52) if movil else (44, 58)
+    esperado = [['hambre', 'bien', True, '#7fb383', base, '', 'g_hambre.webp'], ['sed', 'aviso', False, '#e2aa4c', base, '', 'g_sed.webp'],
+                ['frio', 'bien', True, '#d39a55', base, '', 'g_calor.webp'], ['cansancio', 'mal', False, '#d9583a', grande, 'Cansancio', 'g_cansancio.webp']]
+    comprobar(f'{nombre}: los cuatro medallones: los que van bien, medio transparentes; la sed en ámbar; el cansancio, rojo, más grande y con su nombre', meds == esperado, str(meds))
     W, H = pg.evaluate('[innerWidth, innerHeight]')
-    circ = pg.evaluate("[...document.querySelectorAll('#avisosNec .aviso-nec')].filter(b => !b.hidden).map(b => { const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })")
+    circ = pg.evaluate("[...document.querySelectorAll('#avisosNec .med, #avisosNec .med .nom')].filter(b => b.offsetParent !== null && b.getBoundingClientRect().width > 0).map(b => { const r = b.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })")
     botones = pg.evaluate("[...document.querySelectorAll('#modos button, #acciones button, #menu button, #materiales, #btnFabricar')].filter(e => e.offsetParent !== null).map(e => { const r = e.getBoundingClientRect(); return [e.id || e.textContent.trim().slice(0, 12), [r.left, r.top, r.right, r.bottom]]; })")
     tapan = [b[0] for b in botones for c in circ if pisan(c, b[1])]
-    comprobar(f'{nombre}: los círculos no tapan ningún botón y caben en la pantalla', not tapan and all(c[0] >= 0 and c[2] <= W and c[1] >= 0 and c[3] <= H for c in circ), f'tapan {tapan}' if tapan else str(circ))
+    comprobar(f'{nombre}: los medallones no tapan ningún botón y caben en la pantalla, con su nombre', not tapan and all(c[0] >= 0 and c[2] <= W and c[1] >= 0 and c[3] <= H for c in circ), f'tapan {tapan}' if tapan else str(circ))
     # la ficha de la sed
     pg.click('#avisosNec .aviso-nec[data-que="sed"]'); pg.wait_for_timeout(400)
     f = pg.evaluate("(() => { const f = document.getElementById('fichaNec'); return f.hidden ? null : f.textContent; })()")
     rf = rect(pg, '#fichaNec')
-    comprobar(f'{nombre}: al pulsar la sed, su ficha: cómo estás, qué te pasa y cómo se quita (beber del río)', bool(f) and '50%' in f and 'beber' in f and 'río' in f, f)
-    comprobar(f'{nombre}: la ficha cabe en la pantalla', bool(rf) and rf[0] >= 0 and rf[2] <= W and rf[1] >= 0 and rf[3] <= H, str(rf))
+    lineas = pg.evaluate("document.querySelectorAll('#fichaNec p').length")
+    comprobar(f'{nombre}: al pulsar la sed, su ficha en dos líneas: qué te pasa y cómo se quita (beber en el río)', bool(f) and lineas == 2 and 'Bebe' in f and 'río' in f, f)
+    comprobar(f'{nombre}: la ficha cabe en la pantalla y no pisa los medallones ni su nombre', bool(rf) and rf[0] >= 0 and rf[2] <= W and rf[1] >= 0 and rf[3] <= H and not any(pisan(c, rf) for c in circ), str(rf))
+    # la escarcha del frío
+    poner(pg, {'frio': 100}); pg.wait_for_timeout(1400)
+    e1 = pg.evaluate("+getComputedStyle(document.getElementById('escarchaNec')).opacity")
+    poner(pg, {'frio': 0}); pg.wait_for_timeout(1400)
+    e0 = pg.evaluate("+getComputedStyle(document.getElementById('escarchaNec')).opacity")
+    comprobar(f'{nombre}: el frío escarcha los bordes de la pantalla (sin frío, nada; helado, del todo)', e1 > 0.95 and e0 < 0.05, f'helado {e1}, sin frío {e0}')
+    poner(pg, {'sed': 50, 'hambre': 30, 'cansancio': 80})
     pg.screenshot(path=f'{SALIDA}/{pref}_1_ficha_sed.png', timeout=180000)
     pg.mouse.click(W * 0.3, H * 0.6); pg.wait_for_timeout(400)
     comprobar(f'{nombre}: se cierra al pulsar fuera', pg.evaluate("document.getElementById('fichaNec').hidden"))
     poner(pg, {'sed': 85, 'hambre': 60, 'frio': 45, 'cansancio': 100})
     pg.screenshot(path=f'{SALIDA}/{pref}_2_cuatro.png', timeout=180000)
-    comprobar(f'{nombre}: con las cuatro, los cuatro círculos', pg.evaluate(f'{K}.avisosNec.visibles.length') == 4)
+    comprobar(f'{nombre}: con las cuatro en aviso, ninguno medio transparente', pg.evaluate(f'{K}.avisosNec.visibles.length') == 4 and pg.evaluate("document.querySelectorAll('#avisosNec .med.quieto').length") == 0)
     # descansar sentado (8 nov): el botón de la ficha del cansancio
     if MUTAR == '3': pg.evaluate(f'(() => {{ const a = {K}.jugador.mh && {K}.jugador.mh.acciones; if (a) delete a.sentado; }})()')
-    pg.evaluate("document.querySelector('#avisosNec .aviso-nec[data-que=\"cansancio\"]').click()"); pg.wait_for_timeout(400)   # (en fuerte late: nunca está quieto para el clic de Playwright)
+    pg.evaluate("document.querySelector('#avisosNec .aviso-nec[data-que=\"cansancio\"]').click()"); pg.wait_for_timeout(400)
     boton = pg.evaluate("(() => { const b = document.querySelector('#fichaNec .sentarse'); return b ? b.textContent : null; })()")
     comprobar(f'{nombre}: la ficha del cansancio lleva el botón para sentarse', bool(boton) and 'Sentarte' in boton, str(boton))
     rb = rect(pg, '#fichaNec .sentarse'); rf = rect(pg, '#fichaNec')

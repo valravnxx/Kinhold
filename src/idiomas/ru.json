@@ -2672,5 +2672,21 @@
  "Te avisamos por correo una semana antes y el último día.": "Мы напишем тебе на почту за неделю и в последний день.",
  "v182: la pestaña «Tu tierra» con el acabado nuevo (estudio de la interfaz del 7 nov, 2.6). Lo almacenado: cada almacenaje terminado de tu tierra con su imagen, cuánto tiene de lo que le cabe («40 de 40»), a cuántos metros está y lo que guarda en iconos, y el recordatorio de que la obra no coge de ahí sola. Quién puede construir: tú y cada invitado, con dónde está si se le ve y el botón «Quitarle». Y cuándo vuelve al rey si no se usa: 30 días sin que entre nadie (15 si aún no hay ninguna obra terminada), la fecha en que volvería si nadie entra desde hoy y que llega un correo una semana antes y el último día.": "v182: вкладка «Твоя земля» в новом оформлении (исследование интерфейса от 7 ноября, 2.6). На хранении: каждое готовое хранилище на твоей земле с картинкой, сколько в нём лежит из того, что помещается («40 из 40»), в скольких метрах оно и что в нём, значками, и напоминание, что стройка сама оттуда не берёт. Кто может строить: ты и каждый гость, где он, если его видно, и кнопка «Убрать». И когда земля вернётся королю, если ею не пользоваться: 30 дней, когда никто не заходит (15, если ещё нет ни одной готовой постройки), дата, когда она вернётся, если с сегодняшнего дня никто не зайдёт, и что письмо придёт за неделю и в последний день.",
  "v182, provisional: los invitados salen como «Invitado 1, 2…» (en el juego no se enseña el usuario de la cuenta). Los almacenajes que se ven son los que te llegan del servidor, los de cerca; lejos de tu tierra, la pestaña dice que vayas a ella para verlos, y el plazo sale con las dos cifras (30 o 15), porque desde lejos no se sabe si hay obra terminada.": "v182, временно: гости показаны как «Гость 1, 2…» (имя учётной записи в игре не показывается). Видны те хранилища, что присылает сервер, — ближние; вдали от твоей земли вкладка предлагает пойти туда, чтобы их увидеть, а срок показан обеими цифрами (30 или 15), потому что издалека неизвестно, есть ли готовая постройка.",
- "Demo única · v182 (La pestaña Tu tierra)": "Единое демо · v182 (Вкладка «Твоя земля»)"
+ "Demo única · v182 (La pestaña Tu tierra)": "Единое демо · v182 (Вкладка «Твоя земля»)",
+ "Come:": "Поешь:",
+ "bayas, setas o carne de caza (asada sacia más).": "ягоды, грибы или мясо дичи (жареное сытнее).",
+ "Bebe:": "Попей:",
+ "en la orilla de un río o de un lago.": "на берегу реки или озера.",
+ "Caliéntate:": "Согрейся:",
+ "junto al fuego, bajo techo o con más ropa.": "у огня, под крышей или в одежде потеплее.",
+ "Descansa:": "Отдохни:",
+ "siéntate o duerme.": "сядь или поспи.",
+ "Al máximo no podrás correr ni golpear fuerte.": "На пределе не сможешь бегать и сильно бить.",
+ "Helado: te mueves torpe y te cansas el doble.": "Замёрз: двигаешься неуклюже и устаёшь вдвое быстрее.",
+ "Al máximo te moverás torpe.": "На пределе будешь двигаться неуклюже.",
+ "Vas templado.": "Тебе тепло.",
+ "Te cansas el doble y, si no bebes, al rato mueres.": "Устаёшь вдвое быстрее и, если не попьёшь, скоро умрёшь.",
+ "Te cansas el doble y, si no comes, al rato mueres.": "Устаёшь вдвое быстрее и, если не поешь, скоро умрёшь.",
+ "Al máximo te cansarás el doble.": "На пределе будешь уставать вдвое быстрее.",
+ "Vas bien.": "Всё в порядке."
 }

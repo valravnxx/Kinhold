@@ -2672,5 +2672,21 @@
  "Te avisamos por correo una semana antes y el último día.": "We will email you a week before and on the last day.",
  "v182: la pestaña «Tu tierra» con el acabado nuevo (estudio de la interfaz del 7 nov, 2.6). Lo almacenado: cada almacenaje terminado de tu tierra con su imagen, cuánto tiene de lo que le cabe («40 de 40»), a cuántos metros está y lo que guarda en iconos, y el recordatorio de que la obra no coge de ahí sola. Quién puede construir: tú y cada invitado, con dónde está si se le ve y el botón «Quitarle». Y cuándo vuelve al rey si no se usa: 30 días sin que entre nadie (15 si aún no hay ninguna obra terminada), la fecha en que volvería si nadie entra desde hoy y que llega un correo una semana antes y el último día.": "v182: the “Your land” tab with the new finish (interface study of 7 Nov, 2.6). In storage: each finished store on your land with its picture, how much it holds of what fits (“40 of 40”), how many metres away it is and what it keeps, as icons, plus the reminder that building work does not take from there on its own. Who can build: you and each guest, with where they are if they are in sight and a “Remove” button. And when it goes back to the king if unused: 30 days with nobody coming in (15 if nothing has been finished yet), the date it would go back if nobody comes in from today, and that an email arrives a week before and on the last day.",
  "v182, provisional: los invitados salen como «Invitado 1, 2…» (en el juego no se enseña el usuario de la cuenta). Los almacenajes que se ven son los que te llegan del servidor, los de cerca; lejos de tu tierra, la pestaña dice que vayas a ella para verlos, y el plazo sale con las dos cifras (30 o 15), porque desde lejos no se sabe si hay obra terminada.": "v182, provisional: guests show as “Guest 1, 2…” (the game does not show the account's username). The stores shown are the ones the server sends you, the nearby ones; far from your land, the tab tells you to go there to see them, and the time limit shows both figures (30 or 15), because from far away it is not known whether anything is finished.",
- "Demo única · v182 (La pestaña Tu tierra)": "Single demo · v182 (The Your land tab)"
+ "Demo única · v182 (La pestaña Tu tierra)": "Single demo · v182 (The Your land tab)",
+ "Come:": "Eat:",
+ "bayas, setas o carne de caza (asada sacia más).": "berries, mushrooms or game meat (roasted fills you more).",
+ "Bebe:": "Drink:",
+ "en la orilla de un río o de un lago.": "at the bank of a river or a lake.",
+ "Caliéntate:": "Warm up:",
+ "junto al fuego, bajo techo o con más ropa.": "by the fire, under a roof or with more clothes.",
+ "Descansa:": "Rest:",
+ "siéntate o duerme.": "sit down or sleep.",
+ "Al máximo no podrás correr ni golpear fuerte.": "At the maximum you won't be able to run or strike hard.",
+ "Helado: te mueves torpe y te cansas el doble.": "Frozen: you move clumsily and tire twice as fast.",
+ "Al máximo te moverás torpe.": "At the maximum you will move clumsily.",
+ "Vas templado.": "You are warm enough.",
+ "Te cansas el doble y, si no bebes, al rato mueres.": "You tire twice as fast and, if you don't drink, you will soon die.",
+ "Te cansas el doble y, si no comes, al rato mueres.": "You tire twice as fast and, if you don't eat, you will soon die.",
+ "Al máximo te cansarás el doble.": "At the maximum you will tire twice as fast.",
+ "Vas bien.": "You are fine."
 }
