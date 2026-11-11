@@ -9,6 +9,8 @@
 # El acopio de troncos y la leñera (y, desde el 8 nov, el soporte de varas, el almiar, el hoyo de barro y el cesto) se
 # miran llenos de cerca (solo para mirarlos: se dibujan en este navegador; su
 # lógica y el servidor, en pruebas/prueba_fabricacion.mjs y pruebas/prueba_objetos_servidor.mjs).
+# Con todo eso, la pestaña «Tu tierra» (la interfaz nueva, 11 nov): la pila con lo que tiene, el otro invitado con
+# «Quitarle» (y quitárselo) y cuándo vuelve al rey si no se usa, en PC y en el móvil.
 # El material sale del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba los almacenajes en el juego; el recorrido
 # de jugador (pruebas/prueba_recorrido.mjs) levanta la pila y guarda en ella sin arcón, con lo que se recoge.
 # Con el giro que se le da al ponerla (Girar seis veces: 90°), el servidor la guarda y se dibuja así; y al final se
@@ -285,6 +287,29 @@ try:
         encuadre(B, 'cesto', 2.6, 0.6, 0.3, 0.5, -1.2); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cesto.png')
         B.evaluate(f"{K}.__mirar = []; {K}.estacionesV.poner(Object.values({K}.fabCliente.estaciones).filter(e => !e.id.includes(':mirar')))")
+
+        print('La pestaña «Tu tierra» (la interfaz nueva): lo almacenado, quién construye y «Quitarle», cuándo vuelve al rey')
+        yoB = B.evaluate(f"{K}.enLinea.red.yo")
+        r = A.evaluate(f"{K}.accion({{ tipo: 'invitar', a: '{yoB}' }})")
+        comprobar('invita al otro a su tierra', bool(r and r.get('ok')), str(r))
+        TIERRA = "document.getElementById('panelTierra').innerText"
+        A.evaluate("document.getElementById('btnMenu').click()"); A.wait_for_timeout(300)
+        A.evaluate("document.getElementById('tabTierra').click()"); A.wait_for_timeout(800)
+        txt = A.evaluate(TIERRA)
+        comprobar('Tu tierra: la pila de piedras con lo que tiene (40 de 40, 40 piedras)', esperar(A, f"/Pila de piedras/.test({TIERRA}) && /40 de 40/.test({TIERRA}) && !!document.querySelector('#panelTierra .alm-cosas img[src*=\"piedra\"]')", 5000), txt[:400])
+        comprobar('recuerda que la obra no coge de ahí sola', 'no coge de aquí sola' in txt, txt[:400])
+        comprobar('quién puede construir: tú y el invitado, con «Quitarle»', esperar(A, f"/Invitado 1/.test({TIERRA}) && !!document.querySelector('#panelTierra [data-quitar=\"{yoB}\"]')", 6000), A.evaluate(TIERRA)[:600])
+        comprobar('y cuándo vuelve al rey (15 días: aún no hay obra terminada; con fecha)', '15 días' in txt and 'volvería al rey el' in txt and 'una semana antes' in txt, txt[-500:])
+        captura(A, f'{SALIDA}/PC_tu_tierra.png')
+        A.set_viewport_size({'width': 390, 'height': 844}); A.wait_for_timeout(1200)
+        comprobar('en el móvil, sin salirse de lado', A.evaluate("document.documentElement.scrollWidth <= innerWidth + 1 && [...document.querySelectorAll('#panelTierra .tierra-inv, #panelTierra .tierra-alm')].every(e => e.scrollWidth <= e.clientWidth + 1)"))
+        captura(A, f'{SALIDA}/movil_tu_tierra.png')
+        A.evaluate("document.getElementById('panelTierra').scrollTop = 1e4"); A.wait_for_timeout(300)
+        captura(A, f'{SALIDA}/movil_tu_tierra_abajo.png')
+        A.set_viewport_size({'width': 1280, 'height': 800}); A.wait_for_timeout(800)
+        A.evaluate(f"document.querySelector('#panelTierra [data-quitar=\"{yoB}\"]').click()")
+        comprobar('«Quitarle»: ya no puede construir (lo dice el servidor al otro)', esperar(B, f"!{K}.mundo.invitadosDe('{yo}').includes('{yoB}')", 8000) and esperar(A, f"!/Invitado 1/.test({TIERRA}) && /Para invitar a alguien/.test({TIERRA})", 5000), A.evaluate(TIERRA)[:600])
+        A.evaluate("document.getElementById('hubCerrar').click()"); A.wait_for_timeout(300)
 
         print('Desmontarla, desde Desmontar (el dueño, en PC)')
         pl = pila_servidor(json.load(open(OBJETOS)), yo)
