@@ -1,0 +1,17 @@
+  OK   rsync está en esta máquina — instalar.sh lo pone en el servidor
+  OK   con la carpeta del mundo vacía no se copia nada — La carpeta del mundo está vacía (/tmp/kinhold-copia-o05iWe/kinhold): no se copia nada
+  OK   se crea una cuenta en el servidor — {"tipo":"cuenta","id":1,"que":"crear","ok":true,"usuario":"Guardiana","autor":"jugador:06dc9fad","admin":false,"correo":{"correo":"c***@e***.com","verificado":false}}
+  OK   sin destino fuera: se copia en la máquina pero sale con error 3 y lo dice — código 3
+  OK   la copia lleva las cuentas y su registro, y no los .tmp — ./ ./cuentas.jsonl ./fichas.jsonl ./seguridad.jsonl
+  OK   con destino fuera (en copia.env), cada copia sale bien
+  OK   en la máquina quedan las 14 últimas — 14: kinhold-20261104-034100.tar.gz … kinhold-20261117-034100.tar.gz
+  OK   fuera, las mismas 14 y nada más — 14
+  OK   lo de fuera es igual byte a byte
+  OK   una copia rota no se restaura y no toca nada — La copia no se lee bien o está vacía: no se toca nada
+  OK   restaurar la última copia traída de fuera — Restaurado desde /tmp/kinhold-copia-o05iWe/copias/kinhold-20261117-034100.tar.gz
+  OK   los archivos son los mismos, byte a byte — cuentas.jsonl fichas.jsonl seguridad.jsonl
+  OK   el servidor arranca con lo restaurado y la cuenta entra con su contraseña — {"ok":true}
+  OK   y una contraseña mala sigue sin valer
+  OK   restaurar encima deja lo de antes al lado (kinhold.antes-<fecha>) — kinhold.antes-20261111-095732
+
+15 bien, 0 mal
