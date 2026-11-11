@@ -1,0 +1,274 @@
+PC
+  OK   construcción: idioma inglés con ?lang=en
+  OK   construcción: botón Build
+  OK   construcción: aviso en inglés — The wall needs a foundation or floor next to it, a wall below it, or posts at both ends.
+  OK   construcción PC (inglés): el aviso no tapa ningún botón
+  OK   construcción PC, construyendo: ningún texto sin traducir
+  OK   construcción PC, construyendo: no se ve español —  … Tab | In the chest | 957 | Build | B | Dismantle | X | Finish | Esc | ▼ | Floor 0 | ▲ | Rotate | Land | Base | Frame | Walls | Roofs | Access | Outdoor | Workstations | Storage | Beds | Furnishing | W
+  OK   construcción PC, ayuda: ningún texto sin traducir
+  OK   construcción PC, ayuda: no se ve español —  … Equipment | Craft | Build | Your land | Settings | Help | Decisions | + Materials | Restart | Exit | ES | EN | RU | Esc | Back | How to play this milestone | Press | Build | , tab | Land | , and place
+  OK   construcción PC, decisiones: ningún texto sin traducir
+  OK   construcción PC, decisiones: no se ve español —  … Equipment | Craft | Build | Your land | Settings | Help | Decisions | + Materials | Restart | Exit | ES | EN | RU | Esc | Back | Decisions made in this milestone | Milestone 1 · v44 | v44: building wi
+  OK   construcción: navegador en español → juego en español
+  OK   construcción: la partida sigue al cambiar de idioma
+  OK   construcción: el botón EN cambia a inglés
+  OK   construcción: la partida sigue tras el botón
+  OK   construcción: recuerda el inglés al volver
+  OK   construcción: el botón ES vuelve al español
+  OK   estilo: recuerda el inglés elegido
+  OK   estilo: botones en inglés — Morning
+Afternoon
+Blur
+ES
+EN
+RU
+2 fps · resolution 0.75× · 49.1k triangles · 21 draw calls
+  OK   estilo: medida en inglés — 2 fps · resolution 0.75× · 49.1k triangles · 21 draw calls
+  OK   estilo PC: ningún texto sin traducir
+  OK   estilo PC: no se ve español —  … Morning | Afternoon | Blur | ES | EN | RU | 2 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes
+  OK   estilo: notas en inglés — Style test · v10 (miniature realism; the notes don't cover the views)
+v10: the n
+  OK   estilo PC, notas: ningún texto sin traducir
+  OK   estilo PC, notas: no se ve español —  … Morning | Afternoon | Blur | ES | EN | RU | 2 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes | Style test · v10 (miniature realism; the notes don't cover the 
+  OK   estilo: el botón ES vuelve al español
+  OK   personaje: inglés con ?lang=en
+  FALLA personaje (makehuman): opciones en inglés — BODY
+Man
+Woman
+PERFORMANCE TEST (WATCH THE FPS AT THE TOP)
+Shadows
+Hut and ground
+ANIMATION
+Idle
+Walk
+Run
+Chop
+On guard
+
+  OK   personaje PC, makehuman: ningún texto sin traducir
+  OK   personaje PC, makehuman: no se ve español —  … Customise | Morning | Afternoon | ES | EN | RU | 1 fps · resolution 0.75× · character 3.0k triangles · scene 55.1k · 23 draw calls | Body | Face | Profile | Back | Feet | Notes | Body | Man | Woman | 
+  FALLA personaje (quaternius): opciones en inglés — BODY
+Man
+Woman
+PERFORMANCE TEST (WATCH THE FPS AT THE TOP)
+Shadows
+Hut and ground
+ANIMATION
+Idle
+Walk
+Run
+Chop
+On guard
+
+  OK   personaje PC, quaternius: ningún texto sin traducir
+  OK   personaje PC, quaternius: no se ve español —  … Customise | Morning | Afternoon | ES | EN | RU | 1 fps · resolution 0.75× · character 3.0k triangles · scene 55.1k · 23 draw calls | Body | Face | Profile | Back | Feet | Notes | Body | Man | Woman | 
+  FALLA personaje: capas en inglés — BODY
+Man
+Woman
+PERFORMANCE TEST (WATCH THE FPS AT THE TOP)
+Shadows
+Hut and ground
+ANIMATION
+Idle
+Walk
+Run
+Chop
+On guard
+Strike
+Carry
+MORE ANIMATIONS
+Shoot
+Dig with a pick
+Pick fruit
+Plant
+Light strike
+  OK   personaje: notas en inglés — Character · v37 (moustache and neck beard)
+v37: the moustache is thinner and les
+  OK   personaje PC, notas: ningún texto sin traducir
+  OK   personaje PC, notas: no se ve español —  … Customise | Morning | Afternoon | ES | EN | RU | 1 fps · resolution 0.75× · character 3.0k triangles · scene 55.1k · 23 draw calls | Body | Face | Profile | Back | Feet | Notes | Character · v37 (mous
+  OK   personaje: el botón ES vuelve al español
+  OK   personaje: el botón EN cambia a inglés
+  OK   sin errores (PC)
+móvil
+  OK   construcción: idioma inglés con ?lang=en
+  OK   construcción: botón Build
+  OK   construcción: aviso en inglés — The wall needs a foundation or floor next to it, a wall below it, or posts at both ends.
+  OK   construcción móvil (inglés): el aviso no tapa ningún botón
+  OK   construcción móvil, construyendo: ningún texto sin traducir
+  OK   construcción móvil, construyendo: no se ve español —  … In the chest | 957 | Craft | Build | Dismantle | Finish | ▼ | Floor 0 | ▲ | Rotate | Place | Land | Base | Frame | Walls | Roofs | Access | Outdoor | Workstations | Storage | Beds | Furnishing | Wattl
+  OK   construcción móvil, ayuda: ningún texto sin traducir
+  OK   construcción móvil, ayuda: no se ve español —  … Equipment | Craft | Build | Your land | Settings | Help | Decisions | + Materials | Restart | Exit | How to play this milestone | Press | Build | , tab | Land | , and place your | boundary stone | : y
+  OK   construcción móvil, decisiones: ningún texto sin traducir
+  OK   construcción móvil, decisiones: no se ve español —  … Equipment | Craft | Build | Your land | Settings | Help | Decisions | + Materials | Restart | Exit | Decisions made in this milestone | Milestone 1 · v44 | v44: building with what you carry. What you 
+  OK   construcción: navegador en español → juego en español
+  OK   construcción: la partida sigue al cambiar de idioma
+  OK   construcción: el botón EN cambia a inglés
+  OK   construcción: la partida sigue tras el botón
+  OK   construcción: recuerda el inglés al volver
+  OK   construcción: el botón ES vuelve al español
+  OK   estilo: recuerda el inglés elegido
+  OK   estilo: botones en inglés — Morning
+Afternoon
+Blur
+ES
+EN
+RU
+2 fps · resolution 1× · 49.1k triangles · 21 draw calls
+  OK   estilo: medida en inglés — 4 fps · resolution 0.75× · 49.1k triangles · 21 draw calls
+  OK   estilo móvil: ningún texto sin traducir
+  OK   estilo móvil: no se ve español —  … Morning | Afternoon | Blur | 4 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes
+  OK   estilo: notas en inglés — Style test · v10 (miniature realism; the notes don't cover the views)
+v10: the n
+  OK   estilo móvil, notas: ningún texto sin traducir
+  OK   estilo móvil, notas: no se ve español —  … Morning | Afternoon | Blur | 4 fps · resolution 0.75× · 49.1k triangles · 21 draw calls | Overview | Hut | Side | Notes | Style test · v10 (miniature realism; the notes don't cover the views) | v10: t
+  OK   estilo: el botón ES vuelve al español
+  OK   personaje: inglés con ?lang=en
+  FALLA personaje (makehuman): opciones en inglés — BODY
+Man
+Woman
+PERFORMANCE TEST (WATCH THE FPS AT THE TOP)
+Shadows
+Hut and ground
+ANIMATION
+Idle
+Walk
+Run
+Chop
+On guard
+
+  OK   personaje móvil, makehuman: ningún texto sin traducir
+  OK   personaje móvil, makehuman: no se ve español —  … Customise | Morning | Afternoon | 2 fps · resolution 0.5× · character 3.0k triangles · scene 55.1k · 23 draw calls | Body | Face | Profile | Back | Feet | Notes | Body | Man | Woman | Performance test
+  FALLA personaje (quaternius): opciones en inglés — BODY
+Man
+Woman
+PERFORMANCE TEST (WATCH THE FPS AT THE TOP)
+Shadows
+Hut and ground
+ANIMATION
+Idle
+Walk
+Run
+Chop
+On guard
+
+  OK   personaje móvil, quaternius: ningún texto sin traducir
+  OK   personaje móvil, quaternius: no se ve español —  … Customise | Morning | Afternoon | 2 fps · resolution 0.5× · character 3.0k triangles · scene 55.1k · 23 draw calls | Body | Face | Profile | Back | Feet | Notes | Body | Man | Woman | Performance test
+  FALLA personaje: capas en inglés — BODY
+Man
+Woman
+PERFORMANCE TEST (WATCH THE FPS AT THE TOP)
+Shadows
+Hut and ground
+ANIMATION
+Idle
+Walk
+Run
+Chop
+On guard
+Strike
+Carry
+MORE ANIMATIONS
+Shoot
+Dig with a pick
+Pick fruit
+Plant
+Light strike
+  OK   personaje: notas en inglés — Character · v37 (moustache and neck beard)
+v37: the moustache is thinner and les
+  OK   personaje móvil, notas: ningún texto sin traducir
+  OK   personaje móvil, notas: no se ve español —  … Customise | Morning | Afternoon | 2 fps · resolution 0.5× · character 3.0k triangles · scene 55.1k · 23 draw calls | Body | Face | Profile | Back | Feet | Notes | Character · v37 (moustache and neck b
+  OK   personaje: el botón ES vuelve al español
+  OK   personaje: el botón EN cambia a inglés
+  OK   sin errores (móvil)
+PC (ruso)
+  OK   ruso: construcción con ?lang=ru
+  OK   ruso: se ve el selector de idioma
+  OK   ruso: el menú de arriba no tapa los botones de modo — -747px
+  OK   ru construcción PC: ningún texto sin traducir
+  OK   ru construcción PC: no se ve español ni inglés —  … Tab | В сундуке | 960 | Строить | B | Оружие
+  OK   ru construcción PC: se ve cirílico — Tab | В сундуке | 960 | Строить | B | Оружие
+  OK   ru construcción PC: nada se sale por los lados — 0px de más
+  OK   ruso: aviso de construcción en ruso — Стене нужен фундамент или пол рядом, стена под ней или столбы на обоих концах.
+  OK   ru construcción PC: el aviso no tapa ningún botón
+  OK   ru construcción PC, construyendo: ningún texto sin traducir
+  OK   ru construcción PC, construyendo: no se ve español ni inglés —  … Tab | В сундуке | 957 | Строить | B | Разобрать | X | Готово | Esc | ▼ | Этаж 0 | ▲ | Повернуть | Земля | Основание | Каркас | Стены | Крыши | Проходы | Двор | Рабочие места | Хранилища | Постели | Об
+  OK   ru construcción PC, construyendo: se ve cirílico — Tab | В сундуке | 957 | Строить | B | Разобрать | X | Готово | Esc | ▼ | Этаж 0 | ▲ | Повернуть | Земля | Основание | Ка
+  OK   ru construcción PC, construyendo: nada se sale por los lados — 0px de más
+  OK   ru construcción PC, ayuda: ningún texto sin traducir
+  OK   ru construcción PC, ayuda: no se ve español ni inglés —  … Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | ES | EN | RU | Esc | Назад | Как играть в этом этапе | Нажмите | Строить | , вкладк
+  OK   ru construcción PC, ayuda: se ve cirílico — Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | ES 
+  OK   ru construcción PC, ayuda: nada se sale por los lados — 0px de más
+  OK   ru construcción PC, decisiones: ningún texto sin traducir
+  OK   ru construcción PC, decisiones: no se ve español ni inglés —  … Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | ES | EN | RU | Esc | Назад | Решения, принятые в этом этапе | Этап 1 · v44 | v44: с
+  OK   ru construcción PC, decisiones: se ve cirílico — Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | ES 
+  OK   ru construcción PC, decisiones: nada se sale por los lados — 0px de más
+  OK   ruso: el botón RU cambia a ruso y la partida sigue
+  OK   ruso: la prueba de estilo recuerda el ruso
+  OK   ru estilo PC: ningún texto sin traducir
+  OK   ru estilo PC: no se ve español ni inglés —  … Утро | День | Размытие | ES | EN | RU | 2 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки
+  OK   ru estilo PC: se ve cirílico — Утро | День | Размытие | ES | EN | RU | 2 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общи
+  OK   ru estilo PC: nada se sale por los lados — 0px de más
+  OK   ru estilo PC, notas: ningún texto sin traducir
+  OK   ru estilo PC, notas: no se ve español ni inglés —  … Утро | День | Размытие | ES | EN | RU | 2 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки | Проба стиля · v10 (миниатюрный реализм; замет
+  OK   ru estilo PC, notas: se ve cirílico — Утро | День | Размытие | ES | EN | RU | 2 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общи
+  OK   ru estilo PC, notas: nada se sale por los lados — 0px de más
+  OK   ru personaje PC, opciones: ningún texto sin traducir
+  OK   ru personaje PC, opciones: no se ve español ni inglés —  … Внешность | Утро | День | ES | EN | RU | 1 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Тело |
+  OK   ru personaje PC, opciones: se ve cirílico — Внешность | Утро | День | ES | EN | RU | 1 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 
+  OK   ru personaje PC, opciones: nada se sale por los lados — 0px de más
+  OK   ru personaje PC: ningún texto sin traducir
+  OK   ru personaje PC: no se ve español ni inglés —  … Внешность | Утро | День | ES | EN | RU | 1 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки
+  OK   ru personaje PC: se ve cirílico — Внешность | Утро | День | ES | EN | RU | 1 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 
+  OK   ru personaje PC: nada se sale por los lados — 0px de más
+  OK   ru personaje PC, notas: ningún texto sin traducir
+  OK   ru personaje PC, notas: no se ve español ni inglés —  … Внешность | Утро | День | ES | EN | RU | 1 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Персон
+  OK   ru personaje PC, notas: se ve cirílico — Внешность | Утро | День | ES | EN | RU | 1 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 
+  OK   ru personaje PC, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (PC)
+móvil (ruso)
+  OK   ruso: construcción con ?lang=ru
+  OK   ruso: se ve el selector de idioma
+  OK   ruso: el menú de arriba no tapa los botones de modo — -120px
+  OK   ru construcción móvil: ningún texto sin traducir
+  OK   ru construcción móvil: no se ve español ni inglés —  … В сундуке | 960 | Мастерить | Строить | Оружие | Использовать
+  OK   ru construcción móvil: se ve cirílico — В сундуке | 960 | Мастерить | Строить | Оружие | Использовать
+  OK   ru construcción móvil: nada se sale por los lados — 0px de más
+  OK   ruso: aviso de construcción en ruso — Стене нужен фундамент или пол рядом, стена под ней или столбы на обоих концах.
+  OK   ru construcción móvil: el aviso no tapa ningún botón
+  OK   ru construcción móvil, construyendo: ningún texto sin traducir
+  OK   ru construcción móvil, construyendo: no se ve español ni inglés —  … В сундуке | 957 | Мастерить | Строить | Разобрать | Готово | ▼ | Этаж 0 | ▲ | Повернуть | Поставить | Земля | Основание | Каркас | Стены | Крыши | Проходы | Двор | Рабочие места | Хранилища | Постели 
+  OK   ru construcción móvil, construyendo: se ve cirílico — В сундуке | 957 | Мастерить | Строить | Разобрать | Готово | ▼ | Этаж 0 | ▲ | Повернуть | Поставить | Земля | Основание 
+  OK   ru construcción móvil, construyendo: nada se sale por los lados — 0px de más
+  OK   ru construcción móvil, ayuda: ningún texto sin traducir
+  OK   ru construcción móvil, ayuda: no se ve español ni inglés —  … Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | Как играть в этом этапе | Нажмите | Строить | , вкладка | Земля | , и поставьте | м
+  OK   ru construcción móvil, ayuda: se ve cirílico — Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | Как
+  OK   ru construcción móvil, ayuda: nada se sale por los lados — 0px de más
+  OK   ru construcción móvil, decisiones: ningún texto sin traducir
+  OK   ru construcción móvil, decisiones: no se ve español ni inglés —  … Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | Решения, принятые в этом этапе | Этап 1 · v44 | v44: стройка тем, что несёшь с собо
+  OK   ru construcción móvil, decisiones: se ve cirílico — Снаряжение | Мастерить | Строить | Твоя земля | Настройки | Помощь | Решения | + Материалы | Начать заново | Выйти | Реш
+  OK   ru construcción móvil, decisiones: nada se sale por los lados — 0px de más
+  OK   ruso: el botón RU cambia a ruso y la partida sigue
+  OK   ruso: la prueba de estilo recuerda el ruso
+  OK   ru estilo móvil: ningún texto sin traducir
+  OK   ru estilo móvil: no se ve español ni inglés —  … Утро | День | Размытие | 4 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки
+  OK   ru estilo móvil: se ve cirílico — Утро | День | Размытие | 4 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина 
+  OK   ru estilo móvil: nada se sale por los lados — 0px de más
+  OK   ru estilo móvil, notas: ningún texto sin traducir
+  OK   ru estilo móvil, notas: no se ve español ni inglés —  … Утро | День | Размытие | 4 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина | Сбоку | Заметки | Проба стиля · v10 (миниатюрный реализм; заметки не закрывают
+  OK   ru estilo móvil, notas: se ve cirílico — Утро | День | Размытие | 4 fps · разрешение 0.75× · 49.1 тыс. треугольников · 21 вызовов отрисовки | Общий вид | Хижина 
+  OK   ru estilo móvil, notas: nada se sale por los lados — 0px de más
+  OK   ru personaje móvil, opciones: ningún texto sin traducir
+  OK   ru personaje móvil, opciones: no se ve español ni inglés —  … Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Тело | Мужчина | Женщ
+  OK   ru personaje móvil, opciones: se ve cirílico — Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отри
+  OK   ru personaje móvil, opciones: nada se sale por los lados — 0px de más
+  OK   ru personaje móvil: ningún texto sin traducir
+  OK   ru personaje móvil: no se ve español ni inglés —  … Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки
+  OK   ru personaje móvil: se ve cirílico — Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отри
+  OK   ru personaje móvil: nada se sale por los lados — 0px de más
+  OK   ru personaje móvil, notas: ningún texto sin traducir
+  OK   ru personaje móvil, notas: no se ve español ni inglés —  … Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отрисовки | Тело | Лицо | Профиль | Спина | Ступни | Заметки | Персонаж · v37 (усы и
+  OK   ru personaje móvil, notas: se ve cirílico — Внешность | Утро | День | 2 fps · разрешение 0.75× · персонаж 0.0 тыс. треугольников · сцена 49.1 тыс. · 21 вызовов отри
+  OK   ru personaje móvil, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (móvil)
+
+FALLAN 6: personaje (makehuman): opciones en inglés, personaje (quaternius): opciones en inglés, personaje: capas en inglés, personaje (makehuman): opciones en inglés, personaje (quaternius): opciones en inglés, personaje: capas en inglés
