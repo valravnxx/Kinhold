@@ -1557,9 +1557,9 @@
     },
     {
      "nombre": "La naturaleza entera con Meshy, en el mundo: las siete especies de árbol (adultas y jóvenes), los arbustos y matorrales, las plantas del suelo y las rocas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T09:19:06+01:00",
-     "rama": "trabajo/20261111-0920-naturaleza"
+     "fin": "2026-11-11T12:50:51+01:00"
     },
     {
      "nombre": "El acopio de troncos de valravnx (Meshy) en el juego, en lugar del de código",
@@ -3938,6 +3938,13 @@
      "archivo": "jugar/demo/v175.html",
      "capturas": "capturas/demo-v175",
      "notas": "v175: el menú con pestañas (estudio de la interfaz del 7 nov, aprobado por valravnx: «un solo menú con pestañas»). Arriba, en el mundo, solo quedan Menú (Tab) y, en línea, Hablar; en PC, en tu tierra, también tu mojón. Menú abre un tablero de roble encima del mundo desenfocado, con las pestañas Equipo, Fabricar, Construir, Mapa y Tu tierra (en el móvil, botones redondos) y, al pie, Ajustes (con los fps), Ayuda, Decisiones, el idioma y Salir; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas, y Admin, solo para el admin. Las teclas de siempre (I, H, M, B) abren su pestaña; Esc o la cruz lo cierran. Tu tierra dice dónde está tu mojón y quién puede construir, o, sin mojón, lleva a ponerlo. Lo que se desplaza dentro del tablero se desvanece abajo para que se vea que sigue."
+    },
+    {
+     "v": "v176",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v176.html",
+     "capturas": "capturas/demo-v176",
+     "notas": "La naturaleza de Meshy: las siete especies de árbol, adultas y jóvenes, el matorral, los helechos, el arbusto de las bayas, las ortigas, los juncos, la hierba larga y las rocas, con el aspecto de maqueta en miniatura"
     }
    ]
   },

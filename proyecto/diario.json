@@ -6027,5 +6027,22 @@
   "pruebas": "Probado a mano por valravnx; sin pruebas aquí (lo que valravnx ya probó a mano no se vuelve a probar).",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T09:19:06+01:00",
+  "fin": "2026-11-11T12:50:51+01:00",
+  "titulo": "La naturaleza de Meshy en el mundo (demo v176)",
+  "hito": "meshy",
+  "hecho": [
+   "Las siete especies de árbol, adultas y jóvenes, son modelos de Meshy (14 en total), a la medida de los de antes; el roble, el roble joven, el matorral y el arbusto de las bayas, de la prueba de estilo del 10 nov.",
+   "El matorral, las matas de helechos (una de cada tres matas), el arbusto de las bayas con las bayas por su cara de fuera, las ortigas, los juncos, la hierba larga, la roca, la peña de los pedregales y el canto rodado del río, también de Meshy.",
+   "Cada modelo en tres mallas (herramientas/meshy/naturaleza.mjs): de cerca con su textura, a media distancia y de lejos con el color de la textura en los vértices; en los árboles, el tronco fijo al simplificar para que no se pierda.",
+   "Una revisión aparte dijo que no dos veces (la haya parecía un chopo y tenía rayas claras, el pino joven era un palo con pompones, el matorral tenía palos, el abedul de lejos perdía el tronco): se pidieron otra vez la haya, la haya joven, el pino joven y el matorral, y se arregló lo demás; a la tercera, sí.",
+   "La hierba corta y las flores del suelo siguen de código: las de Meshy no bajaban a tan pocos triángulos sin romperse.",
+   "Las pruebas de navegador copian la naturaleza, como la web; las matas de helechos cuentan como matas al desbrozar."
+  ],
+  "pruebas": "Nube (revisor, 27 grupos): todo bien salvo «niveles de detalle del personaje», «lo que llevas se ve puesto» y «juego en inglés», que fallan igual en main (comprobado en la nube). Medido: de 2,5 a 4 veces más triángulos alrededor del jugador que con los de código (bosque: 946 000 en PC y 438 000 en móvil). No comprobado: los fotogramas en un móvil de verdad; la encina en el mundo (no hay encinares en Whitholm). Créditos de Meshy de la tanda: unos 1000 (de 1758 a 736).",
+  "capturas": "capturas/demo-v176",
+  "estado": "ok"
  }
 ]
