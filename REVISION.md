@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 11 nov — valravnx en el chat: P4 aprobado
+
+«Del paso P4 solo queda esto: Recorrido entero de un primer día, sin arcón… y prueba de valravnx entre dos. Lo he comprobado a mano, cierra todo P4, apruebo revisión.» → Las dos tareas que quedaban, hechas con su aprobación, y el hito P4 «Un primer día con sentido», `hecho`.
+
 ### 11 nov — valravnx en la sesión del carril A: seguir con la interfaz
 «sigue con el interfaz» (tras decirle que la naturaleza de Meshy la lleva el chat). → Se retoma la tarea a medias «El menú con pestañas…» del hito «La interfaz nueva», desde su rama `trabajo/20261109-0909`.
 

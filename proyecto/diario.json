@@ -5997,5 +5997,18 @@
   "pruebas": "Revisor en la nube: lógica (con la ropa en la prueba de lo que se gasta; rota a propósito —el golpe gasta toda la ropa, cubra o no su zona—: falla; y la de los orígenes, rota con el hilo: falla), la demo única, la cama ligada y el panel de inventario (las fichas de la camisa gastada en PC y del gambesón en móvil, miradas; segunda mirada aparte: sí, y el texto de reparar se ha corregido tras ella), bien. El recorrido (243/243 en la nube, con la camisa zurcida) falló dos veces en la nube en la caza de la liebre (10 lanzadas al suelo cerca de ella) y pasó aquí 244/244 y en main en la nube; con la ropa gastándose menos a menudo en la prueba (menos guardados del mundo mientras caza), bien en la nube. El panel de fabricación lo pedía fabricacion.js y no se volvió a mirar tras el primer intento (no cambia lo que enseña). La prueba del panel de inventario se paraba ya en main en los tintes del personaje de Meshy (desde la v172): arreglada. No comprobado: un golpe que hiere en el juego de verdad gastando la ropa (lo prueba la lógica; el combate entre dos no se ha jugado). Lo que vio la segunda mirada y no es de esta tarea: «Lo llevas puesto» y «Quitártelo» no concuerdan con la camisa y el peso sale con punto (0.3 kg).",
   "capturas": "capturas/demo-v174",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T11:33:31+01:00",
+  "fin": "2026-11-11T11:33:31+01:00",
+  "titulo": "P4 «Un primer día con sentido», aprobado por valravnx",
+  "hito": "supervivencia",
+  "hecho": [
+   "valravnx ha comprobado a mano el recorrido entero de un primer día (entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo) y la prueba entre dos, y aprueba la revisión (11 nov).",
+   "Las dos últimas tareas, cerradas con su aprobación, y el hito P4, hecho."
+  ],
+  "pruebas": "Probado a mano por valravnx; sin pruebas aquí (lo que valravnx ya probó a mano no se vuelve a probar).",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

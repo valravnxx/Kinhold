@@ -1567,7 +1567,7 @@
    "num": "P4",
    "nombre": "Un primer día con sentido",
    "jugable": "Día y noche; sed, hambre, frío y cansancio con sus avisos; la cama; morir y que te saqueen; liebres para cazar y asar; herramientas que se gastan y se reparan.",
-   "estado": "en_curso",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Planificar el hito con el GDD y el documento de sistemas: día y noche, sed (beber del río), hambre, frío y cansancio, cama ligada, morir y saqueo, liebres (despiece y asar en la hoguera o el hogar), durabilidad y reparar. Cada tarea de una sesión y con su parte en el recorrido de jugador",
@@ -1680,11 +1680,17 @@
     },
     {
      "nombre": "Recorrido entero de un primer día, sin arcón, en el recorrido de jugador: entrar, beber, comer bayas, hacer la lanza, cazar, despiezar y asar, calentarse de noche junto a la hoguera, dormir en la cama ligada, morir y recuperar lo suyo; y prueba de valravnx entre dos",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-11T11:33:31+01:00",
+     "fin": "2026-11-11T11:33:31+01:00",
+     "nota": "Probado a mano por valravnx y aprobado (11 nov): «lo he comprobado a mano, cierra todo p4, apruebo revisión»."
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-11T11:33:31+01:00",
+     "fin": "2026-11-11T11:33:31+01:00",
+     "nota": "Probado a mano por valravnx y aprobado (11 nov): «lo he comprobado a mano, cierra todo p4, apruebo revisión»."
     },
     {
      "nombre": "Estudio de la interfaz del juego para PC y móvil (valravnx, 7 nov: «que sea comoda y no ocupe tanto, debemos evitar que se llene todo de botones… enseñandomelas primero, sin meter al juego»): cómo lo hacen otros, lo que falla hoy y la propuesta en maquetas; valravnx decide",
