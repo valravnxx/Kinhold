@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-11T17:24:58+00:00",
+  "tarea": "Construir: «Poner | Quitar» (X) y la planta arriba (desmontar, dentro de construir); las piezas con su imagen y el coste en iconos (en rojo lo que no tienes) y lo que hay en tu tierra; deshacer lo último; sin mojón, se abre en la pestaña Tierra",
+  "hito": "interfaz",
+  "rama": "trabajo/20261111-1724"
+ },
  "B": null
 }

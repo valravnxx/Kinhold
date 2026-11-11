@@ -1766,7 +1766,9 @@
     },
     {
      "nombre": "Construir: «Poner | Quitar» (X) y la planta arriba (desmontar, dentro de construir); las piezas con su imagen y el coste en iconos (en rojo lo que no tienes) y lo que hay en tu tierra; deshacer lo último; sin mojón, se abre en la pestaña Tierra",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-11T17:24:58+00:00",
+     "rama": "trabajo/20261111-1724"
     },
     {
      "nombre": "La pestaña «Tu tierra»: cada almacenaje con lo que tiene (la obra no coge de ahí sola), quién puede construir y «Quitarle», y cuándo vuelve al rey si no se usa",
