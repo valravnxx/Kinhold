@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-11T23:22:49+00:00",
+  "tarea": "Hablar: el botón arriba, ocho frases rápidas que llegan a cada uno en su lengua (el servidor reparte el número de la frase) y escribir",
+  "hito": "interfaz",
+  "rama": "trabajo/20261111-2322"
+ },
  "B": null
 }
