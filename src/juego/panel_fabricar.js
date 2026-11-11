@@ -81,7 +81,8 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
 
   const ahora = () => Date.now();
   const lugar = () => { const p = posicion(); return { x: p.x, z: p.z }; };
-  const img = (t, cls = '') => `<img class="fab-img ${cls}" src="${esc(base + t + '.webp')}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
+  // (sin carga perezosa: las cartas de abajo, fuera de la vista, tienen que estar listas al desplazar; son pocas y pequeñas)
+  const img = (t, cls = '') => `<img class="fab-img ${cls}" src="${esc(base + t + '.webp')}" alt="" onerror="this.style.visibility='hidden'">`;
   const sinModelo = t => indice[t] && indice[t].propio === false;
   const icono = t => `<span class="fab-ic">${img(t)}${sinModelo(t) ? `<em class="fab-pend">${esc(tr('sin modelo aún'))}</em>` : ''}</span>`;
   const dondeUso = uso => uso === 'manos' ? tr('Con las manos') : tr(USOS[uso].nombre);

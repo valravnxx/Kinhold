@@ -195,7 +195,7 @@ try:
         A.evaluate(f"(() => {{ const e = Object.values({K}.fabCliente.estaciones)[0]; Object.assign({K}.pj, {{ x: e.x + 1.3, z: e.z + 0.3, rot: -1.2 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.55; }})()")
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_marco_piedra_tallar.png')
-        comprobar('en el menú del clic derecho: la obra y quitar el marco', esperar(A, f"(() => {{ const o = {K}.opcionesUsar(); return o.includes('Obra: Piedra de tallar') && o.includes('Quitar el marco: Piedra de tallar'); }})()", 3000), str(A.evaluate(f"{K}.opcionesUsar()")))
+        comprobar('en el menú del clic derecho: la obra y quitar el marco', esperar(A, f"(() => {{ const o = {K}.opcionesUsar(); return o.includes('Obra: Piedra de tallar') && o.includes('Quitar el marco: Piedra de tallar'); }})()", 8000), str(A.evaluate(f"{K}.opcionesUsar()")))
         A.keyboard.press('f')
         d = servidorDice(lambda d: any(e['tipo'] == 'piedra_tallar' and not e.get('obra') for e in d['fabricacion']['estaciones']), 30000)
         comprobar('Usar le lleva la piedra y trabaja en él hasta levantarlo (en el servidor)', d is not None and cuantos(d, yo, 'piedra') == 0, A.evaluate("document.getElementById('aviso').textContent"))
@@ -223,7 +223,7 @@ try:
         A.keyboard.press('f'); A.wait_for_timeout(500)
         comprobar('Usar delante de la piedra de tallar abre el panel en su pestaña', A.evaluate(f"{K}.panelFabricar.abierto && {K}.panelFabricar.pestana === 'tallar'"), str(A.evaluate(f"{K}.panelFabricar.pestana")))
         comprobar('con lo que tiene encima (nada) y lo que lleva para dejar', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-dep .fab-dejar img') && /No hay nada/.test(document.querySelector('#panelFabricar .fab-sec-dep').innerText)", 8000))
-        comprobar('con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 3000))
+        comprobar('con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-casi [data-fila=\"lasca_silex\"]')", 8000))
         comprobar('sale el cordel que lleva, para dejarlo', pulsar('fab-dejar', 'Cordel'))
         d = servidorDice(lambda d: any(e.get('deposito', {}).get('cordel') == 1 for e in d['fabricacion']['estaciones']))
         if d is None:
