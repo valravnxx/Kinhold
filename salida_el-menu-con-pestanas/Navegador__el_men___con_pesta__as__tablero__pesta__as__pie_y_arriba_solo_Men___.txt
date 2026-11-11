@@ -1,0 +1,37 @@
+PC
+  OK   PC: arriba solo «Menú» (nada de Equipo, Ayuda, idioma… a la vista) — []
+  OK   PC: sin mojón no sale el de tu tierra
+  OK   PC: «Menú» (Tab en PC) abre el tablero en Equipo
+  OK   PC: con las cinco pestañas — ['#btnInventario', '#tabFabricar', '#tabConstruir', '#btnMapa', '#tabTierra']
+  OK   PC: al pie, Ajustes, Ayuda, Decisiones, lo de pruebas, Salir y el idioma — ['Ajustes', 'Ayuda', 'Decisiones', '+ Materiales', 'Reiniciar', 'Salir', 'ES', 'EN', 'RU']
+  OK   PC: el equipo cabe entre las pestañas y el pie — panel {'l': 30, 't': 84, 'r': 1250, 'b': 750} · pestañas {'l': 377, 't': 18, 'r': 903, 'b': 74} · pie {'l': 30, 't': 761, 'r': 1250, 'b': 786}
+  OK   PC: la pestaña Fabricar cambia de panel (solo uno abierto)
+  OK   PC: fabricar cabe entre las pestañas y el pie — panel {'l': 30, 't': 84, 'r': 1250, 'b': 750} · pestañas {'l': 377, 't': 18, 'r': 903, 'b': 74} · pie {'l': 30, 't': 761, 'r': 1250, 'b': 786}
+  OK   PC: con su tecla (I) también, y se cierra el de antes
+  OK   PC: en Ajustes, los fps — 2 fps
+  OK   PC: el mapa, con sus botones bajo las pestañas — {'l': 1166.53125, 't': 76, 'r': 1270, 'b': 109.546875} {'l': 377, 't': 18, 'r': 903, 'b': 74}
+  OK   PC: Tu tierra, sin mojón, dice cómo ponerlo
+  OK   PC: «Poner el mojón» cierra el menú y entra a construir con el mojón
+  OK   PC: la pestaña Construir cierra el menú y entra a construir
+  OK   PC: Esc cierra el menú, y vuelve lo de arriba
+  OK   PC: sin errores en la página
+Móvil
+  OK   móvil: arriba solo «Menú» (nada de Equipo, Ayuda, idioma… a la vista) — []
+  OK   móvil: sin mojón no sale el de tu tierra
+  OK   móvil: «Menú» (Tab en PC) abre el tablero en Equipo
+  OK   móvil: con las cinco pestañas — ['#btnInventario', '#tabFabricar', '#tabConstruir', '#btnMapa', '#tabTierra']
+  OK   móvil: al pie, Ajustes, Ayuda, Decisiones, lo de pruebas, Salir y el idioma — ['Ajustes', 'Ayuda', 'Decisiones', '+ Materiales', 'Reiniciar', 'Salir', 'ES']
+  OK   móvil: el equipo cabe entre las pestañas y el pie — panel {'l': 4, 't': 88, 'r': 386, 'b': 768} · pestañas {'l': 6, 't': 8, 'r': 384, 'b': 73} · pie {'l': 6, 't': 784, 'r': 384, 'b': 836}
+  OK   móvil: las pestañas son botones redondos
+  OK   móvil: la pestaña Fabricar cambia de panel (solo uno abierto)
+  OK   móvil: fabricar cabe entre las pestañas y el pie — panel {'l': 4, 't': 88, 'r': 386, 'b': 768} · pestañas {'l': 6, 't': 8, 'r': 384, 'b': 73} · pie {'l': 6, 't': 784, 'r': 384, 'b': 836}
+  OK   móvil: en Ajustes, los fps — 6 fps
+  OK   móvil: el mapa, con sus botones bajo las pestañas — {'l': 276.53125, 't': 80, 'r': 380, 'b': 113.546875} {'l': 6, 't': 8, 'r': 384, 'b': 73}
+  OK   móvil: Tu tierra, sin mojón, dice cómo ponerlo
+  OK   móvil: «Poner el mojón» cierra el menú y entra a construir con el mojón
+  OK   móvil: la pestaña Construir cierra el menú y entra a construir
+  OK   móvil: el Fabricar del pulgar abre el menú en Fabricar
+  OK   móvil: la cruz cierra el menú, y vuelve lo de arriba
+  OK   móvil: sin errores en la página
+
+TODO BIEN
