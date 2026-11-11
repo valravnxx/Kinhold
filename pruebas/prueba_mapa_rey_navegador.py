@@ -169,8 +169,8 @@ with sync_playwright() as p:
         rey = z.get('rey') or []
         comprobar('salen las cuatro zonas del rey (la gran veta, la ciudad con su salida, y las salidas de Lindholt y de Motdale)', len(rey) == 4 and sorted(r['por'] for r in rey) == ['ciudad', 'salida', 'salida', 'veta'], str(rey))
         pg.screenshot(path=f'{SALIDA}/{nombre}_mapa_zona_rey.png')
-        # cerrar: M o Esc en el PC, ✕ en el móvil
-        if movil: pg.tap('#mapaRey .mr-cerrar')
+        # cerrar: M o Esc en el PC, ✕ en el móvil (la cruz del menú con pestañas)
+        if movil: pg.tap('#hubCerrar')
         else: pg.keyboard.press('Escape')
         pg.wait_for_timeout(300)
         comprobar('se cierra (' + ('✕' if movil else 'Esc') + ')', not pg.evaluate(f'{K}.mapaRey.abierto'))
