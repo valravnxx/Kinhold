@@ -6078,5 +6078,20 @@
   "pruebas": "Revisor en la nube: construcción, el hogar, la cama ligada y los colgaderos, bien (construcción, otra vez tras servir la carpeta nueva en las pruebas). Fallan el panel de fabricación (el tamaño del tablero y las imágenes de las cartas) y los almacenajes (el contador plegado), en comprobaciones que este cambio no toca; no comprobado si fallan igual en main. Segunda mirada aparte de las capturas: pidió la obra más tenue y el mojón más hundido, hecho. Queda: en laderas fuertes asoma un poco el borde del parche de tierra del mojón.",
   "capturas": "capturas/demo-v178",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T12:54:00+01:00",
+  "fin": "2026-11-11T14:47:08+01:00",
+  "titulo": "La naturaleza de Meshy según el perfil gráfico (demo v179)",
+  "hito": "meshy",
+  "hecho": [
+   "Cada perfil gráfico dice hasta dónde va el modelo de cerca con textura (de 12 m en el móvil básico a 60 en el PC alto) y hasta dónde uno de más detalle (de nada en los dos móviles bajos a 30 m en el PC alto).",
+   "Los de más detalle (tres veces los triángulos del de cerca) van en su propio archivo y solo se bajan si el perfil los usa; al cambiar de perfil, el bosque se rehace.",
+   "La haya de más detalle lleva su textura sin juntar por las costuras (sin las rayas claras).",
+   "La tabla de grupos de pruebas ya no nombra la prueba de las animaciones para cargar, quitada en la v172."
+  ],
+  "pruebas": "Comprobado en el juego: con el PC alto, los robles de al lado con 24 000 triángulos y los de hasta 60 m con su textura; al pasar al móvil básico se rehace con los sencillos. Perfiles 28/28 (rota a propósito: 3 mal). Nube: desbrozar, bosque de cerca, mazo y la demo en el mundo, bien. No comprobado: fotogramas en un PC o un móvil de verdad.",
+  "capturas": "capturas/demo-v179",
+  "estado": "ok"
  }
 ]
