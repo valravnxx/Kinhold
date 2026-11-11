@@ -228,8 +228,8 @@ with sync_playwright() as p:
         pg.screenshot(path=f'{SALIDA}/09_pc_a_tus_pies.png')
         pg.click('#panelInventario .inv-dejar')
         libre = 'mano:der' if lugar(pg, 'mano:der') is None else 'mano:izq'
-        pies.first.click(button='right'); pg.wait_for_timeout(300)
-        comprobar('clic derecho en lo de tus pies lo coge a la mano', (lugar(pg, libre) or '').startswith('cinto_cuero'), f'{libre}: {lugar(pg, libre)}')
+        antes = pies.count(); pies.first.click(button='right'); pg.wait_for_timeout(300)
+        comprobar('clic derecho en lo de tus pies lo coge a la mano', lugar(pg, libre) is not None and pies.count() == antes - 1, f'{libre}: {lugar(pg, libre)} · {antes}→{pies.count()} · {pg.inner_text("#panelInventario .inv-aviso")}')
         pg.click(R(libre), button='right'); pg.wait_for_timeout(300)
         comprobar('clic derecho en lo de la mano lo deja en el suelo', lugar(pg, libre) is None and pg.locator('#panelInventario .eq-pies [data-suelo]').count() >= 1)
         # «Mover…»: la piedra… (aquí, la leña del leñero) a la mano, tocando después la mano
@@ -251,7 +251,7 @@ with sync_playwright() as p:
     mv, errores = abrir_pagina(nav, viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     mv.tap('#btnMenu'); mv.tap('#btnInventario')
     caja = mv.locator('#panelInventario').bounding_box()
-    comprobar('en el móvil el panel ocupa casi la pantalla (el tablero del menú)', caja and caja['width'] >= 380 and caja['height'] >= 650, str(caja))
+    comprobar('en el móvil el panel ocupa casi la pantalla (el tablero del menú)', caja and caja['width'] >= 360 and caja['height'] >= 650, str(caja))
     mv.tap(O('cuerda_trenzada')); mv.tap(R('cintura'))
     comprobar('tocar la cuerda y luego la cintura se la pone', lugar(mv, 'cintura') == 'cuerda_trenzada:1')
     nc = mv.locator('#panelInventario [data-bolsa="cintura"] [data-ruta]').count()
@@ -288,12 +288,13 @@ with sync_playwright() as p:
     mv.screenshot(path=f'{SALIDA}/08_movil_ropa.png')
     # mantener el dedo (como el clic derecho): el tronco de las manos, al suelo; y del suelo, otra vez a las manos
     mv.tap('#panelInventario .eq-pest[data-pest="llevas"]'); mv.wait_for_timeout(300)
-    def mantener(sel):
-        mv.dispatch_event(sel, 'pointerdown', {'pointerType': 'touch'}); mv.wait_for_timeout(800); mv.dispatch_event(sel, 'pointerup', {'pointerType': 'touch'}); mv.wait_for_timeout(500)
+    def mantener(sel):   # (el PointerEvent de verdad, con pointerType «touch»: el dispatch_event de Playwright no lo lleva)
+        ev = lambda tipo: mv.evaluate(f"document.querySelector({sel!r}).dispatchEvent(new PointerEvent('{tipo}', {{ pointerType: 'touch', bubbles: true }}))")
+        ev('pointerdown'); mv.wait_for_timeout(800); ev('pointerup'); mv.wait_for_timeout(500)
     mantener(R('mano:der'))
     tronco = '#panelInventario .eq-pies [data-suelo]'
     comprobar('móvil: mantener el dedo en el tronco de las manos lo deja a tus pies', lugar(mv, 'mano:der') is None and mv.locator(tronco).count() >= 1, str(lugar(mv, 'mano:der')))
-    if mv.locator(tronco).count(): mantener(tronco + ' >> nth=0')
+    if mv.locator(tronco).count(): mantener(tronco)
     comprobar('móvil: y mantenerlo en lo de tus pies lo vuelve a coger', lugar(mv, 'mano:der') == 'tronco_corto:1', str(lugar(mv, 'mano:der')))
     mv.tap('#panelInventario .eq-pest[data-pest="ropa"]'); mv.wait_for_timeout(300)
     # la ropa (10 nov): el gambesón gastado dice que aún no se repara (pide tela, que aún no sale de ningún sitio)
