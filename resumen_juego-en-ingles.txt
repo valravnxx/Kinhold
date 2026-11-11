@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2649 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 2985 KB
+
+== Construir demo única
+      3403 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4312 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3052 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2643 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3006 KB
+dist/kinhold_trozos.html 2657 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: juego en inglés (también estilo y personaje)
+  OK   ru personaje móvil, notas: nada se sale por los lados — 0px de más
+  OK   ruso: sin errores (móvil)
+
+FALLAN 6: personaje (makehuman): opciones en inglés, personaje (quaternius): opciones en inglés, personaje: capas en inglés, personaje (makehuman): opciones en inglés, personaje (quaternius): opciones en inglés, personaje: capas en inglés
+!! FALLA: python3 pruebas/prueba_idioma_navegador.py dist/kinhold_demo.html dist/kinhold_estilo.html dist/kinhold_personaje.html /tmp/kinhold_capturas/idioma
+
+HAY FALLOS
+tardó 458 s
