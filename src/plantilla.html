@@ -209,7 +209,7 @@ body.construyendo #pomo{left:25px;top:25px}
 
 /* panel de fabricación (src/juego/panel_fabricar.js; estudio del panel aprobado por valravnx el 6 nov) */
 #panelFabricar{background:#211b15;max-width:1040px;width:calc(100vw - 24px);height:min(700px,calc(100vh - 66px));max-height:none;inset:52px 12px auto 12px;z-index:21;padding:0;overflow:hidden;
-  display:grid;grid-template-columns:150px minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab cab cab" "nav centro ficha" "pie pie pie";border-color:rgba(217,164,65,.28);box-shadow:0 16px 50px rgba(0,0,0,.5)}
+  display:grid;grid-template-columns:196px minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab cab cab" "nav centro ficha" "pie pie pie";border-color:rgba(217,164,65,.28);box-shadow:0 16px 50px rgba(0,0,0,.5)}
 #panelFabricar[hidden]{display:none}
 .fab-img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
 .fab-ic{position:relative;display:block;background:radial-gradient(circle at 50% 42%,#4a3e31 0%,#2f271f 62%,#271f19 100%);border-radius:9px;overflow:hidden}
@@ -308,6 +308,79 @@ body.construyendo #pomo{left:25px;top:25px}
 .fab-barra{height:6px;border-radius:3px;background:#1c1712;overflow:hidden}.fab-barra i{display:block;height:100%;width:0;background:var(--acento)}
 .fab-enc.fab-listo{border-color:rgba(156,194,122,.6)}
 .fab-recoger{align-self:flex-start;font-size:12px;padding:4px 12px;border-radius:8px;border:0;background:#9cc27a;color:#1d2614;font-weight:700}
+/* Fabricar con el acabado nuevo (estudio de la interfaz, 7 nov, 2.4): sobre el tablero de roble, letra de libro, las
+   cartas oscuras con el filo de latón, la ficha con su imagen al lado del nombre, «Hacer» de latón y «×3» al lado */
+#panelFabricar{font:15px/1.35 'EB Garamond',Georgia,serif;color:#efe3c8}
+#panelFabricar :is(button){font-family:inherit}
+#panelFabricar .fab-cab{background:none;border-bottom:1px solid rgba(217,164,65,.22);padding:4px 6px 10px}
+#panelFabricar .fab-cab h2{font:24px/1.1 'Alegreya SC',Georgia,serif;color:#f0cf8a;letter-spacing:.01em}
+#panelFabricar .fab-cab small{font-size:14px;color:#c9b894}
+#panelFabricar .fab-cab-ic .fab-ic{background:none}
+#panelFabricar .fab-pestanas{border-right:1px solid rgba(217,164,65,.22);padding:12px 12px 12px 4px;gap:8px}
+#panelFabricar .fab-pest{grid-template-columns:34px 1fr;padding:6px 8px;border:1px solid rgba(217,164,65,.22);border-radius:6px;background:rgba(14,8,3,.38);color:#d8c9ad}
+#panelFabricar .fab-pest .fab-ic,#panelFabricar .fab-pest .fab-svg{width:34px;height:34px;background:none}
+#panelFabricar .fab-pest .fab-svg svg{width:24px;height:24px}
+.fab-pest-txt{display:flex;flex-direction:column;min-width:0}
+#panelFabricar .fab-pest b{font:500 15px/1.15 'EB Garamond',Georgia,serif}
+.fab-donde{font-size:12.5px;font-style:italic;color:#a8987a;line-height:1.15}
+.fab-donde.fab-al-lado{color:#a9cf86;font-style:normal}
+#panelFabricar .fab-pest.fab-sel{background:linear-gradient(180deg,rgba(240,196,106,.16),rgba(240,196,106,.06));border-color:#d9a441;color:#f6e7c4;box-shadow:0 0 0 1px rgba(240,196,106,.25),0 0 12px rgba(240,196,106,.12)}
+#panelFabricar .fab-cuenta{position:static;align-self:center;background:none;color:#a9cf86;font:600 15px 'EB Garamond',Georgia,serif;padding:0}
+#panelFabricar .fab-pest{grid-template-columns:34px 1fr auto}
+#panelFabricar .fab-centro{padding:12px 16px}
+#panelFabricar .fab-sec h3{font:600 14px/1.2 'Alegreya SC',Georgia,serif;letter-spacing:.06em;text-transform:none;color:#e8c98a}
+#panelFabricar .fab-sec h3::after{background:linear-gradient(90deg,rgba(217,164,65,.45),transparent)}
+#panelFabricar .fab-cartas{grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px}
+#panelFabricar .fab-carta{border-radius:7px;padding:8px 8px 9px;background:rgba(14,8,3,.42);border:1px solid rgba(217,164,65,.2);color:#efe3c8}
+#panelFabricar .fab-carta .fab-ic{height:70px;background:none}
+#panelFabricar .fab-carta:hover{border-color:rgba(240,196,106,.55)}
+#panelFabricar .fab-carta.fab-ya{border-color:rgba(217,164,65,.38)}
+#panelFabricar .fab-carta.fab-ya::before{display:none}
+#panelFabricar .fab-carta.fab-sel{outline:0;border-color:#f0c46a;box-shadow:0 0 0 1px #f0c46a,0 0 14px rgba(240,196,106,.3)}
+#panelFabricar .fab-nom{font:500 15px/1.15 'Alegreya SC',Georgia,serif;min-height:0;margin-top:6px;color:#f3e6c8}
+.fab-estado{display:block;margin-top:3px;font-size:13.5px;line-height:1.15;color:#c9a865}
+.fab-ya .fab-estado{color:#a9cf86}
+.fab-despues .fab-estado{color:#8d8270;font-style:italic}
+#panelFabricar .fab-carta.fab-despues .fab-nom{color:#9b8f7a}
+#panelFabricar .fab-ficha{border-left:1px solid rgba(217,164,65,.22);padding:12px 6px 12px 18px;gap:10px}
+.fab-ficha-cab{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center}
+#panelFabricar .fab-grande{height:96px;background:none}
+#panelFabricar .fab-titulo{font:500 22px/1.15 'Alegreya SC',Georgia,serif;color:#f0cf8a}
+#panelFabricar .fab-para{font-size:15px;color:#c9b894}
+#panelFabricar .fab-chip{background:rgba(14,8,3,.38);border-color:rgba(217,164,65,.22);color:#d8c9ad;font-size:13.5px}
+#panelFabricar .fab-chip .fab-ic{background:none}
+#panelFabricar .fab-ficha h4{font:600 14px/1.2 'Alegreya SC',Georgia,serif;letter-spacing:.06em;text-transform:none;color:#e8c98a;display:flex;align-items:center;gap:8px}
+#panelFabricar .fab-ficha h4::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(217,164,65,.45),transparent)}
+#panelFabricar .fab-mats{gap:2px}
+#panelFabricar .fab-mat{grid-template-columns:38px 1fr auto;background:none;border-radius:0;border-bottom:1px solid rgba(217,164,65,.1);padding:5px 2px}
+#panelFabricar .fab-mat .fab-ic{width:38px;height:38px;background:none}
+.fab-mat-txt{min-width:0}
+#panelFabricar .fab-mat b{font-weight:500;font-size:16px;color:#f3e6c8;margin-right:6px}
+#panelFabricar .fab-mat small{display:inline;font-size:14px;color:#a8987a}
+#panelFabricar .fab-n{font:600 16px 'EB Garamond',Georgia,serif;color:#a9cf86}
+#panelFabricar .fab-mat.fab-falta .fab-n{color:#e8906f}
+#panelFabricar .fab-mat.fab-falta b{color:#f2c7b6}
+.fab-hacer-fila{display:flex;gap:10px}
+#panelFabricar .fab-btn{font:600 17px/1.1 'Alegreya SC',Georgia,serif;border-radius:4px;color:#2a1a0a;background:linear-gradient(180deg,#e6c17a,#b98a3c 55%,#9c7230);border:1px solid #f0d49a;box-shadow:inset 0 1px 0 rgba(255,240,200,.5),0 2px 4px rgba(0,0,0,.45);padding:11px 14px}
+#panelFabricar .fab-hacer{flex:1}
+#panelFabricar .fab-btn.fab-no{font:500 15px 'EB Garamond',Georgia,serif;background:rgba(14,8,3,.45);color:#a8987a;border:1px solid rgba(217,164,65,.2);box-shadow:none}
+#panelFabricar .fab-btn2{font:500 15px/1.2 'EB Garamond',Georgia,serif;border-radius:4px;border:1px solid rgba(217,164,65,.55);background:rgba(14,8,3,.45);color:#f0cf8a}
+#panelFabricar .fab-hacer3{flex:none;width:58px;text-align:center;font:600 17px 'EB Garamond',Georgia,serif}
+#panelFabricar .fab-hacer3:disabled{opacity:.45;cursor:default}
+#panelFabricar .fab-pie{background:none;border-top:1px solid rgba(217,164,65,.22);padding:8px 6px 0}
+#panelFabricar .fab-aviso{font-size:14.5px;color:#d8c9ad}
+#panelFabricar .fab-pie-tit{font:600 14px 'Alegreya SC',Georgia,serif;letter-spacing:.06em;text-transform:none;color:#e8c98a}
+#panelFabricar .fab-enc{background:rgba(14,8,3,.38);border-color:rgba(217,164,65,.2);border-radius:6px;min-width:260px}
+#panelFabricar .fab-enc .fab-ic{width:42px;height:42px;background:none}
+#panelFabricar .fab-enc b{font-size:15.5px;font-weight:500}
+#panelFabricar .fab-enc small{font-size:13.5px;color:#a8987a}
+#panelFabricar .fab-barra{height:5px;background:rgba(0,0,0,.5);box-shadow:inset 0 0 0 1px rgba(217,164,65,.15)}
+#panelFabricar .fab-barra i{background:linear-gradient(90deg,#9c7230,#e6c17a)}
+#panelFabricar .fab-recoger{font:600 14px 'Alegreya SC',Georgia,serif;border-radius:4px}
+#panelFabricar :is(.fab-bandeja,.fab-fuego){background:rgba(14,8,3,.38);border-color:rgba(217,164,65,.22);border-radius:6px}
+#panelFabricar .fab-hueco{border-color:rgba(217,164,65,.22);background:rgba(14,8,3,.3)}
+#panelFabricar .fab-hueco .fab-ic{background:none}
+#panelFabricar .fab-gris{font-size:14px;color:#a8987a}
 /* panel de equipo (src/juego/panel_inventario.js; valravnx, 7 nov: con las imágenes y el estilo del panel de fabricar) */
 #panelInventario{background:#211b15;max-width:1120px;width:calc(100vw - 24px);height:min(760px,calc(100vh - 66px));max-height:none;inset:52px 12px auto 12px;z-index:20;padding:0;overflow:hidden;
   display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"cab" "centro" "ficha" "pie";border-color:rgba(217,164,65,.28);box-shadow:0 16px 50px rgba(0,0,0,.5)}
@@ -458,6 +531,25 @@ body.construyendo #pomo{left:25px;top:25px}
   .fab-grande{height:96px}
   .fab-btn{padding:13px 14px}
   .fab-enc{min-width:0;flex:1}
+  #panelFabricar .fab-pestanas{border-right:0;border-bottom:1px solid rgba(217,164,65,.22);padding:8px 6px;gap:6px}
+  #panelFabricar .fab-pest{grid-template-columns:auto auto;justify-items:start;align-items:center;text-align:left;width:auto;padding:6px 10px;gap:2px 6px}
+  #panelFabricar .fab-pest>.fab-ic,#panelFabricar .fab-pest>.fab-svg{display:none}
+  #panelFabricar .fab-pest b{font-size:14px;white-space:nowrap}
+  .fab-donde{font-size:11.5px;white-space:nowrap}
+  #panelFabricar .fab-cartas{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  #panelFabricar .fab-carta .fab-ic{height:64px}
+  #panelFabricar .fab-nom{font-size:14px}
+  .fab-estado{font-size:12.5px}
+  #panelFabricar .fab-ficha{padding:22px 18px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(18,11,5,.6),rgba(18,11,5,.6)),url(../../recursos/interfaz-v1/tablero.webp) top center/900px auto repeat-y #24170c;border-left:0}
+  .fab-ficha-cab{grid-template-columns:78px minmax(0,1fr)}
+  #panelFabricar .fab-grande{height:78px}
+  #panelFabricar .fab-enc{min-width:0}
+  /* dentro del tablero del menú, la ficha sube dentro del marco (no debajo de él), como la del equipo */
+  body.hub-abierto #panelFabricar .fab-ficha{position:absolute;left:18px;right:18px;bottom:18px;max-height:72%;border:1px solid rgba(217,164,65,.35);border-radius:10px;-webkit-mask-image:none;mask-image:none;padding-bottom:16px;transform:translateY(calc(100% + 100vh))}
+  body.hub-abierto #panelFabricar.fab-ficha-abierta .fab-ficha{transform:none}
+  body.hub-abierto #panelFabricar.fab-ficha-abierta .fab-velo{position:absolute;border-radius:4px}
+  #panelFabricar .fab-mat b{font-size:15px}
+  #panelFabricar .fab-mat small{font-size:13px}
   #panelInventario{inset:0;width:auto;max-width:none;height:100%;border-radius:0;border:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab" "centro" "pie";padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
   .eq-cab small{display:none}
   /* dos pestañas: «Lo que llevas» (con lo de tus pies) y «Ropa» */
