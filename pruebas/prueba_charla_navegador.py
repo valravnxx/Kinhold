@@ -197,12 +197,11 @@ try:
                 time.sleep(0.1)
             nuevo = OYE[n2:]
             comprobar(f'{nombre}: al otro le llega su número, no el texto', any(d['autor'] == yo and d.get('frase') == 4 and 'texto' not in d for d in nuevo), json.dumps(nuevo, ensure_ascii=False))
-            # y lo que el otro dice como frase rápida, a ti te sale en tu lengua
-            pg.wait_for_timeout(1100)
+            # y lo que el otro dice como frase rápida, a ti te sale en tu lengua (enseguida: para la captura, con los dos
+            # bocadillos aún a la vista; el límite es de cada uno)
             bot_dice('#frase 7')
             sale = esperar(pg, f"{K}.charla.bocadillos.get({json.dumps(AUTOR_BOT)}) === {json.dumps(T('¡Cuidado!'))}", 5000)
             comprobar(f'{nombre}: la frase rápida del otro te sale en tu lengua («{T("¡Cuidado!")}»)', sale, str(pg.evaluate(f"[...{K}.charla.bocadillos]")))
-            pg.wait_for_timeout(500)
             captura(pg, f'{SALIDA}/{nombre}_frase_dicha.png')
             comprobar(f'{nombre}: sin errores en la página', not err, '; '.join(err[:3]))
             ctx.close()
