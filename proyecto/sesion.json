@@ -11,5 +11,11 @@
   "tarea": "La naturaleza entera con Meshy, en el mundo: las siete especies de árbol (adultas y jóvenes), los arbustos y matorrales, las plantas del suelo y las rocas",
   "hito": "meshy",
   "rama": "trabajo/20261111-0920-naturaleza"
+ },
+ "chat:trabajo/20261111-1223-acopio": {
+  "inicio": "2026-11-11T12:23:12+01:00",
+  "tarea": "El acopio de troncos de valravnx (Meshy) en el juego, en lugar del de código",
+  "hito": "meshy",
+  "rama": "trabajo/20261111-1223-acopio"
  }
 }
