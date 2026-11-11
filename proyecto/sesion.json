@@ -11,5 +11,11 @@
   "tarea": "La naturaleza entera con Meshy, en el mundo: las siete especies de árbol (adultas y jóvenes), los arbustos y matorrales, las plantas del suelo y las rocas",
   "hito": "meshy",
   "rama": "trabajo/20261111-0920-naturaleza"
+ },
+ "chat:trabajo/20261109-0909": {
+  "inicio": "2026-11-11T09:43:57+00:00",
+  "tarea": "El menú con pestañas (Equipo, Fabricar, Construir, Mapa y Tu tierra) en un tablero de roble encima del mundo desenfocado; arriba solo Menú y Hablar (y en PC, en tu tierra, el mojón); al pie, Ajustes, Ayuda, Decisiones, idioma y Salir; los fps, en Ajustes; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas; Admin, solo para el admin",
+  "hito": "interfaz",
+  "rama": "trabajo/20261109-0909"
  }
 }
