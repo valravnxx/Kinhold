@@ -86,6 +86,7 @@ export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) 
   // la clave es hito + tarea: «Revisión completa y publicación» se llama igual en todos los hitos
   const ocupados = new Set();
   for (const a of leerAgentes(sesion)) if (a.clave !== carril && ocupado(a, ahora)) ocupados.add(a.hito || hitoDeTarea(roadmap, a.tarea));
+  const porOtros = new Set(ocupados), ocupadosPorOtros = (id) => process.env.MUTAR_RETOMA ? false : porOtros.has(id);
   for (const h of roadmap.hitos) if ((h.tareas || []).some(t => t.estado === 'en_curso' && !huerfana.has(h.id + '\n' + t.nombre))) ocupados.add(h.id);
   // hitos que lleva a mano una sesión de chat con valravnx («lleva»: «chat»): los carriles no los tocan nunca
   for (const h of roadmap.hitos) if (h.lleva === 'chat') ocupados.add(h.id);
@@ -93,7 +94,8 @@ export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) 
   if (c[carril] && c[carril].tarea && !ocupado(c[carril], ahora) && !lleva.has(c[carril].tarea)) {
     const id = c[carril].hito || hitoDeTarea(roadmap, c[carril].tarea);
     const h = roadmap.hitos.find(x => x.id === id), t = h && h.tareas.find(x => x.nombre === c[carril].tarea && x.estado === 'en_curso');
-    if (t && h.lleva !== 'chat') return { hito: h.id, tarea: t.nombre, retoma: true, rama: c[carril].rama || t.rama || null };
+    // pero no si en su hito trabaja ya otro agente vivo (11 nov: el chat había seguido esa misma tarea en su rama)
+    if (t && h.lleva !== 'chat' && !ocupadosPorOtros(h.id)) return { hito: h.id, tarea: t.nombre, retoma: true, rama: c[carril].rama || t.rama || null };
   }
   const hayRevision = roadmap.hitos.some(h => h.estado === 'revision');
   const bloqueado = roadmap.hitos.some(h => h.bloquea && (h.tareas || []).some(t => t.estado === 'espera_decision'));

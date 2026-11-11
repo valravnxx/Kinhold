@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # para aligerar aquí los modelos sin remallar (herramientas/meshy/aligerar.mjs): las crudas no caben de vuelta
+      - name: Lo de node
+        run: npm ci --no-audit --no-fund --ignore-scripts && npm rebuild sharp || true
       - name: El encargo
         env:
           MESHY_API_KEY: ${{ secrets.MESHY_API_KEY }}
