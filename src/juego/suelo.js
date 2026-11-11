@@ -153,8 +153,9 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
       if (r.ok) { guardarlo(); refrescar(ahora); }
       return r;
     },
-    coger(invs, registro, autor, objeto, x, z, ahora = Date.now()) {
-      const r = ejecutarSuelo(suelo, invs, registro, { autor, tipo: 'coger_suelo', objeto, x, z }, ahora, enTierras);
+    // a (opcional): la ruta de lo que llevas donde va (el panel de equipo); sin ella, donde quepa
+    coger(invs, registro, autor, objeto, x, z, ahora = Date.now(), a = undefined) {
+      const r = ejecutarSuelo(suelo, invs, registro, { autor, tipo: 'coger_suelo', objeto, x, z, ...(a ? { a } : {}) }, ahora, enTierras);
       if (r.ok) { guardarlo(); refrescar(ahora); }
       return r;
     },
