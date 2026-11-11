@@ -1,0 +1,31 @@
+PC
+  OK   sin mojón, construir se abre en la pestaña Tierra con el mojón
+  OK   arriba: Poner, Quitar, Terminar, la planta y Deshacer — [True, True, True, True, True]
+  OK   la barra de arriba cabe en la pantalla, en la mitad de arriba — [314.5, 14, 965.5, 60]
+  OK   nada de lo de abajo queda tapado por la barra de las piezas — []
+  OK   mojón puesto
+  OK   cada muro con su imagen cargada — []
+  OK   y su coste en iconos
+  OK   sin varas, los muros de zarzo marcan en rojo lo que falta — [True, True, True]
+  OK   marco puesto y Deshacer encendido — piezas=1
+  OK   Deshacer quita el marco puesto — piezas=0
+  OK   y luego ya no hay nada que deshacer
+  OK   X: de poner a quitar
+  OK   X otra vez: vuelve a poner
+  OK   sin errores en la página
+móvil
+  OK   sin mojón, construir se abre en la pestaña Tierra con el mojón
+  OK   arriba: Poner, Quitar, Terminar, la planta y Deshacer — [True, True, True, True, True]
+  OK   la barra de arriba cabe en la pantalla, en la mitad de arriba — [78, 120, 382, 204]
+  OK   nada de lo de abajo queda tapado por la barra de las piezas — []
+  OK   mojón puesto
+  OK   cada muro con su imagen cargada — []
+  OK   y su coste en iconos
+  OK   sin varas, los muros de zarzo marcan en rojo lo que falta — [True, True, True]
+  OK   marco puesto y Deshacer encendido — piezas=1
+  OK   Deshacer quita el marco puesto — piezas=0
+  OK   y luego ya no hay nada que deshacer
+  OK   Quitar: a quitar
+  OK   Poner: vuelve a poner
+  OK   sin errores en la página
+TODO CORRECTO
