@@ -6170,5 +6170,22 @@
   "pruebas": "La nube no arrancaba (las ejecuciones de GitHub Actions se quedaron en cola más de 25 minutos, también la de la web): la prueba de los almacenajes, aquí, sin tarjeta gráfica. Todo lo de «Tu tierra» correcto en PC y en móvil, invitar y «Quitarle» por el servidor, sin errores en la consola. Falló una vez «y desplegado cuenta lo guardado» (el contador, que en el detalle ya salía desplegado con «40 piedra»: lentitud de esta máquina; no es de este cambio). Quitada la demo única: el cambio de la plantilla es solo el estilo de este panel, que mira la prueba de los almacenajes. No comprobado en captura: el desvanecido de abajo (solo estilo, el mismo del resto del menú), puesto después de la prueba, y la parte de abajo del panel en PC (sí en el móvil). No se ha roto la prueba nueva a propósito.",
   "capturas": "capturas/demo-v182",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T22:22:16+00:00",
+  "fin": "2026-11-11T22:55:45+00:00",
+  "titulo": "La interfaz nueva: las necesidades con los medallones de latón (demo v183)",
+  "hito": "interfaz",
+  "hecho": [
+   "Hambre, sed, frío y cansancio, con los medallones de latón del estudio de la interfaz, siempre arriba a la derecha: el aro dice lo que te queda y su color, cómo vas.",
+   "Las que van bien, medio transparentes y en verde; desde el aviso, en ámbar y con flecha (▼ empeora, ▲ mejora); la que peor va, en rojo, más grande y con su nombre.",
+   "Al pulsar un medallón, su ficha en un tablero de roble con marco, en dos líneas: qué te pasa y cómo se quita. La del cansancio sigue con el botón de sentarse.",
+   "El frío escarcha los bordes de la pantalla, más cuanto más frío, por encima del mundo y por debajo de los botones.",
+   "Provisional: sin frío, el medallón del calor (la llama, como en el estudio). Una segunda mirada aparte pidió que solo la peor crezca del todo y lleve el nombre, una ficha más ancha en PC y una escarcha más visible: hecho.",
+   "La prueba de las necesidades, al día con los medallones, la ficha en dos líneas y la escarcha (rota a propósito con MUTAR=1: falla)."
+  ],
+  "pruebas": "En la nube: las necesidades (PC, móvil e inglés) correctas. La lógica: todo bien salvo la prueba del servidor de internet (systemd-analyze se queja de archivos del propio sistema de la máquina de GitHub, CPUAccounting=); no toca este cambio y no comprobado si falla igual en main.",
+  "capturas": "capturas/demo-v183",
+  "estado": "ok"
  }
 ]

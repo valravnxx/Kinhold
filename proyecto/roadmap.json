@@ -1781,9 +1781,10 @@
     },
     {
      "nombre": "Las necesidades con los medallones de latón del estudio (sobre los avisos de P4): medio transparentes si van bien; la que va mal, más grande, con flecha y nombre; la ficha en dos líneas; el frío escarcha los bordes de la pantalla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T22:23:07+00:00",
-     "rama": "trabajo/20261111-2222"
+     "rama": "trabajo/20261111-2222",
+     "fin": "2026-11-11T22:55:45+00:00"
     },
     {
      "nombre": "Hablar: el botón arriba, ocho frases rápidas que llegan a cada uno en su lengua (el servidor reparte el número de la frase) y escribir",
@@ -4008,6 +4009,13 @@
      "archivo": "jugar/demo/v182.html",
      "capturas": "capturas/demo-v182",
      "notas": "La pestaña «Tu tierra» con el acabado nuevo: cada almacenaje con lo que tiene, quién puede construir con «Quitarle» y cuándo vuelve al rey si no se usa"
+    },
+    {
+     "v": "v183",
+     "fecha": "2026-11-11",
+     "archivo": "jugar/demo/v183.html",
+     "capturas": "capturas/demo-v183",
+     "notas": "Las necesidades con los medallones de latón del estudio: los cuatro arriba a la derecha, medio transparentes si van bien; la que peor va, en rojo, más grande, con flecha y nombre; al pulsarlo, su ficha en dos líneas en un tablero de roble; el frío escarcha los bordes de la pantalla."
     }
    ]
   },
