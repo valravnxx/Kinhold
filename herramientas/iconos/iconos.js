@@ -18,6 +18,8 @@ import { modeloHacha } from '../../src/juego/personaje.js';
 import { loteEnMano, loteEspalda } from '../../src/juego/llevado.js';
 import { CATALOGO } from '../../src/logica/inventario.js';
 import { PRENDAS } from '../../src/logica/prendas.js';
+import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco } from '../../src/mundo/modelos.js';
+import { PIEZAS, DECORACION, enEsteTramo } from '../../src/logica/piezas.js';
 
 const TAM = 256;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -77,6 +79,14 @@ const LLENOS = { acopio_troncos: { tronco_delgado: 7 }, pila_piedras: { piedra: 
 const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t)); return o; };
 for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };
 
+// Con ?conjunto=piezas (sacar.py … conjunto=piezas), solo las piezas de construir del tramo (pz_<pieza>), los muebles
+// (deco_<mueble>) y el mojón, para el menú de construir (estudio de la interfaz del 7 nov: «las piezas con su imagen»).
+if (new URLSearchParams(location.search).get('conjunto') === 'piezas') {
+  for (const k of Object.keys(fuentes)) delete fuentes[k];
+  for (const [t, d] of Object.entries(PIEZAS)) if (t !== 'mojon' && enEsteTramo(d)) fuentes['pz_' + t] = { propio: true, hacer: () => modeloPieza(t), estacion: true, dir: /^(tejado|remate)/.test(t) ? [0.5, 1.6, 1] : null };   // (los tejados, más desde arriba: de frente son una raya)
+  for (const [t, d] of Object.entries(DECORACION)) if (enEsteTramo(d)) fuentes['deco_' + t] = { propio: true, hacer: () => modeloDeco(t), estacion: true };
+  fuentes.mojon = { propio: true, hacer: () => modeloMojon(), estacion: true };
+}
 window.__iconos = {
   lista: Object.entries(fuentes).map(([nombre, f]) => ({ nombre, propio: f.propio })),
   foto(nombre) {
@@ -88,7 +98,7 @@ window.__iconos = {
     const plano = o.userData.plano, arriba = o.userData.arriba;
     const radio = plano ? Math.max(s.x, s.y) / 2 * 1.05 : arriba ? Math.max(s.x, s.z) / 2 * 1.02 : s.length() / 2;
     const d = radio / Math.tan(THREE.MathUtils.degToRad(camara.fov / 2)) * (plano || arriba ? 1 : 0.9);
-    const dir = plano ? new THREE.Vector3(0.12, 0.25, 1) : arriba ? new THREE.Vector3(0.05, 1, 0.45) : f.estacion ? new THREE.Vector3(0.75, 0.62, 1) : new THREE.Vector3(0.55, 0.75, 1);
+    const dir = f.dir ? new THREE.Vector3(...f.dir) : plano ? new THREE.Vector3(0.12, 0.25, 1) : arriba ? new THREE.Vector3(0.05, 1, 0.45) : f.estacion ? new THREE.Vector3(0.75, 0.62, 1) : new THREE.Vector3(0.55, 0.75, 1);
     camara.position.copy(c).addScaledVector(dir.normalize(), d); camara.lookAt(c); camara.updateProjectionMatrix();
     renderer.render(escena, camara);
     return renderer.domElement.toDataURL('image/png');

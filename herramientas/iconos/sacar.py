@@ -2,7 +2,8 @@
 # Uso: python3 herramientas/iconos/sacar.py docs/recursos/iconos-vN [hoja=/ruta/hoja.png]
 # Guarda <tipo>.webp (y est_<estación>.webp) de 192 px con el fondo transparente, más indice.json con cuáles aún no
 # tienen su modelo («propio»: false). Los recursos publicados no se cambian: si la carpeta ya tiene imágenes, para
-# (para un cambio, otra carpeta: iconos-v2…). Con hoja=, además una hoja con todas para mirarlas de un vistazo.
+# (para un cambio, otra carpeta: iconos-v2…). Con hoja=, además una hoja con todas para mirarlas de un vistazo. Con
+# conjunto=piezas, las de las piezas de construir, los muebles y el mojón (docs/recursos/piezas-vN).
 import sys, os, json, base64, io, subprocess, tempfile, threading, functools, http.server, socketserver
 from PIL import Image, ImageDraw
 from playwright.sync_api import sync_playwright
@@ -26,7 +27,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
     pg = b.new_page(viewport={'width': 300, 'height': 300}); err = []
     pg.on('pageerror', lambda e: err.append(str(e))); pg.on('console', lambda m: err.append(m.text) if m.type == 'error' else None)
-    pg.goto(f'http://127.0.0.1:{srv.server_address[1]}/index.html')
+    pg.goto(f'http://127.0.0.1:{srv.server_address[1]}/index.html' + (f"?conjunto={arg['conjunto']}" if 'conjunto' in arg else ''))
     pg.wait_for_function('window.__iconos', timeout=120000)
     for e in pg.evaluate('window.__iconos.lista'):
         n = e['nombre']
