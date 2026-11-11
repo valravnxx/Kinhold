@@ -60,16 +60,38 @@ const otra = (p) => { const q = p.clone(); for (const s of p.listSemantics()) q.
 // cerca: el simplificador normal (las costuras de las islas de la textura de Meshy quedan fijas: de 24 000 no baja de
 // unos 8000, que ya vale). Lejos: el color de la textura pasado a los vértices y sin textura, y entonces se puede juntar
 // por las costuras («Permissive») hasta muy pocos triángulos sin que el tronco salga verde.
-const reducir = (p, tope, permisivo) => {
+// En los árboles (--pie), el tronco no se toca: sus vértices quedan fijos (los de cerca del eje, hasta 2,5 veces el radio
+// del tronco), porque es fino y el simplificador lo quitaba entero antes que un bulto de la copa (11 nov: el abedul y la
+// haya joven salían sin tronco).
+const fijos = (p) => {
+  if (!op.pie) return null;
+  const a = p.getAttribute('POSITION').getArray(), m = a.length / 3, H = k * (y1 - y0), r = [];
+  for (let i = 0; i < m; i++) { const y = a[3 * i + 1]; if (y > H * 0.04 && y < H * 0.15) r.push(Math.hypot(a[3 * i], a[3 * i + 2])); }
+  r.sort((x, z) => x - z); const rt = r.length ? r[Math.floor(r.length * 0.5)] : 0, R = Math.max(H * 0.006, rt * 1.6);
+  const l = new Uint8Array(m); for (let i = 0; i < m; i++) if (Math.hypot(a[3 * i], a[3 * i + 2]) < R && a[3 * i + 1] < H * 0.85) l[i] = 1;
+  return l;
+};
+const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3) => {
   weldPrimitive(p);
   const t = triangulos(p); if (t <= tope) return p;
-  if (!permisivo) {
-    simplifyPrimitive(p, { simplifier: MeshoptSimplifier, ratio: tope / t, error: 0.08, lockBorder: false });
-    if (triangulos(p) <= tope * 1.5) return p;   // (si las costuras no le dejan bajar, también por ellas: arbusto de las bayas)
-  }
-  const idx = new Uint32Array(p.getIndices().getArray()), pos = new Float32Array(p.getAttribute('POSITION').getArray());
-  const [nuevo] = MeshoptSimplifier.simplify(idx, pos, 3, Math.floor(tope) * 3, 1, ['Permissive']);
-  p.getIndices().setArray(new Uint32Array(nuevo));
+  // primero, sin fijar nada, solo lo que no cambia la forma (error de 2 milésimas): el tronco queda con menos vértices
+  if (op.pie) simplifyPrimitive(p, { simplifier: MeshoptSimplifier, ratio: tope / t, error: 0.002, lockBorder: false });
+  if (triangulos(p) <= tope) return p;
+  const idx = () => new Uint32Array(p.getIndices().getArray()), pos = new Float32Array(p.getAttribute('POSITION').getArray()), n = pos.length / 3;
+  const uvA = p.getAttribute('TEXCOORD_0'), uv = new Float32Array(n * 2), e = [0, 0];
+  if (uvA) for (let i = 0; i < n; i++) { uvA.getElement(i, e); uv[2 * i] = e[0]; uv[2 * i + 1] = e[1]; }
+  const antes = idx(), sinFijar = new Uint8Array(n);
+  const hacer = (lock) => {
+    const paso = (error, flags) => { const [nuevo] = MeshoptSimplifier.simplifyWithAttributes(idx(), pos, 3, uv, 2, [0.5, 0.5], lock, Math.floor(tope) * 3, error, flags); p.getIndices().setArray(new Uint32Array(nuevo)); };
+    if (!permisivo) {
+      paso(0.08, []);
+      if (triangulos(p) <= tope * 1.5) return;   // (si las costuras no le dejan bajar, también por ellas: arbusto de las bayas)
+    }
+    paso(err, ['Permissive']);
+  };
+  const lock = fijos(p);
+  if (lock) { hacer(lock); if (triangulos(p) <= tope * holgura) return p; p.getIndices().setArray(antes); }   // (si lo fijo no deja bajar, sin fijar: el roble, de tronco gordo, o el abeto)
+  hacer(sinFijar);
   return p;
 };
 const pCerca = reducir(otra(prim), TRI_CERCA), pColor = otra(pCerca);
@@ -92,7 +114,8 @@ if (texColor) {
   pColor.setMaterial(doc.createMaterial('sinTextura').setMetallicFactor(0).setRoughnessFactor(1));
 }
 oscurecerPie(pCerca, null); oscurecerPie(pColor, colorVert);
-const pMedio = reducir(otra(pColor), TRI_MEDIO, true), pLejos = reducir(otra(pColor), TRI_LEJOS, true);
+const pMedio = reducir(otra(pColor), TRI_MEDIO, true, 0.012, 2.2),   // (a media distancia el tronco se ve: se le deja más)
+  pLejos = reducir(otra(pColor), TRI_LEJOS, true, 0.04);   // (de lejos se puede perder algo fino)
 for (const p of [pCerca, pMedio, pLejos]) compactPrimitive(p);   // (fuera los vértices que ya no usa ningún triángulo)
 for (const node of root.listNodes()) node.dispose();
 for (const m of root.listMeshes()) m.dispose();
