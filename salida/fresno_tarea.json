@@ -1,0 +1,29 @@
+{
+ "id": "01a1c9bf-96a9-7230-91eb-82ad00f570d2",
+ "type": "image-to-3d",
+ "name": "",
+ "art_style": "",
+ "object_prompt": "",
+ "style_prompt": "",
+ "negative_prompt": "",
+ "texture_prompt": "",
+ "texture_image_url": "",
+ "text_style_prompt": "",
+ "image_style_url": "",
+ "status": "FAILED",
+ "created_at": 1794386139260,
+ "progress": 99,
+ "started_at": 1794386139268,
+ "finished_at": 1794386514223,
+ "expires_at": 1794645714223,
+ "task_error": {
+  "type": "timeout",
+  "code": "timeout",
+  "message": "Your request took too long to process. Please retry. If this persists, try simplifying your input.",
+  "doc_url": "https://docs.meshy.ai/en/api/errors#timeout"
+ },
+ "model_url": "",
+ "thumbnail_url": "",
+ "texture_urls": null,
+ "consumed_credits": 0
+}
