@@ -1504,10 +1504,10 @@
     },
     {
      "nombre": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-10T06:52:29+01:00",
-     "rama": "trabajo/20261110-0652-meshy",
-     "nota": "Quinta tanda (10 nov, carril A), sin el remallado de Meshy: el follaje sale en matas redondas, sin esquirlas. Falta: una mata negra en el árbol joven, el matorral pardo, el verde oliva y las caras del árbol adulto. En la rama."
+     "nota": "Hecha dentro de la v176 (11 nov): los modelos de la prueba de estilo entraron en el mundo con la naturaleza entera; lo que faltaba se volvió a pedir allí. La rama ya no tiene nada que no esté en main.",
+     "fin": "2026-11-11T19:25:12+00:00"
     },
     {
      "nombre": "La naturaleza aprobada, en el mundo: árboles, arbustos, matorrales y rocas de Meshy en lugar de los de código, copiados de un mismo modelo (instancias) y con versiones más simples de lejos para que aguante el móvil; medir los fotogramas antes y después",

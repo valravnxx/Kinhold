@@ -3873,5 +3873,9 @@
  "Deshacer (o Ctrl+Z) quita lo último que pusiste si sigue ahí y no tiene nada encima que caería; lo que le hubieras llevado vuelve entero.": "Undo (or Ctrl+Z) removes the last thing you placed if it is still there and nothing on it would fall; whatever you had brought to it comes back whole.",
  "Sin mojón, construir se abre en la pestaña Tierra con el mojón elegido.": "Without a boundary stone, building opens on the Land tab with the boundary stone chosen.",
  "Una segunda mirada a las capturas dijo que aún no (los iconos del coste no se leían, el aviso de deshacer se borraba al momento, quitando salían los huecos de las manos); arreglado antes de publicar.": "A second look at the screenshots said not yet (the cost icons could not be read, the undo message vanished at once, when removing the hand slots showed); fixed before publishing.",
- "Las pruebas de nivelar y del idioma ya sirven el acopio y el mojón de Meshy (daban 404 desde la v178).": "The levelling and language tests now serve the Meshy log stack and boundary stone (they gave 404 since v178)."
+ "Las pruebas de nivelar y del idioma ya sirven el acopio y el mojón de Meshy (daban 404 desde la v178).": "The levelling and language tests now serve the Meshy log stack and boundary stone (they gave 404 since v178).",
+ "Roadmap: la prueba de estilo de la naturaleza, cerrada (ya está en la v176)": "Roadmap: the nature style test, closed (already in v176)",
+ "Sin código cambiado: solo la web (construir_web.mjs).": "No code changed: only the website (construir_web.mjs).",
+ "La tarea de la prueba de estilo de la naturaleza seguía a medias aunque sus modelos ya están en el mundo desde la v176: cerrada, sin gastar créditos de Meshy.": "The nature style test task was still half-done even though its models have been in the world since v176: closed, without spending Meshy credits.",
+ "Comprobado que su rama no tiene nada que no esté ya en main.": "Checked that its branch has nothing that is not already in main."
 }

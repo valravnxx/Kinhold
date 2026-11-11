@@ -6141,5 +6141,17 @@
   "pruebas": "En la nube: construir con el acabado nuevo (nueva; rota a propósito con MUTAR=1, falla), construcción, quitar el mojón, el menú con pestañas, la acción a la vista, la demo única, los avisos y nivelar, bien. Fallan, sin tocar este cambio: en «juego en inglés», las opciones del personaje en inglés (página del personaje); en «lógica», prueba_nube.mjs por avisos de systemd de la máquina de GitHub. Los grupos de las demás pruebas de navegador no se pasaron: en ellas solo cambia la línea que copia la carpeta de imágenes. Una petición de más grupos al PC de valravnx (pc-pedido/mwceugxrfu02) salió por error y no se pudo borrar.",
   "capturas": "capturas/demo-v181",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T19:23:39+00:00",
+  "fin": "2026-11-11T19:25:12+00:00",
+  "titulo": "Roadmap: la prueba de estilo de la naturaleza, cerrada (ya está en la v176)",
+  "hito": "meshy",
+  "hecho": [
+   "La tarea de la prueba de estilo de la naturaleza seguía a medias aunque sus modelos ya están en el mundo desde la v176: cerrada, sin gastar créditos de Meshy.",
+   "Comprobado que su rama no tiene nada que no esté ya en main."
+  ],
+  "pruebas": "Sin código cambiado: solo la web (construir_web.mjs).",
+  "estado": "ok"
  }
 ]

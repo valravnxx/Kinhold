@@ -3854,5 +3854,9 @@
  "Deshacer (o Ctrl+Z) quita lo último que pusiste si sigue ahí y no tiene nada encima que caería; lo que le hubieras llevado vuelve entero.": "Отменить (или Ctrl+Z) убирает последнее, что вы поставили, если оно ещё на месте и сверху ничего не упадёт; всё, что вы к нему принесли, возвращается целиком.",
  "Sin mojón, construir se abre en la pestaña Tierra con el mojón elegido.": "Без межевого камня строительство открывается на вкладке «Земля» с выбранным камнем.",
  "Una segunda mirada a las capturas dijo que aún no (los iconos del coste no se leían, el aviso de deshacer se borraba al momento, quitando salían los huecos de las manos); arreglado antes de publicar.": "Второй взгляд на снимки сказал «ещё нет» (значки стоимости не читались, сообщение об отмене сразу пропадало, при снятии были видны ячейки рук); исправлено до публикации.",
- "Las pruebas de nivelar y del idioma ya sirven el acopio y el mojón de Meshy (daban 404 desde la v178).": "Тесты выравнивания и языка теперь отдают штабель брёвен и межевой камень Meshy (с v178 давали 404)."
+ "Las pruebas de nivelar y del idioma ya sirven el acopio y el mojón de Meshy (daban 404 desde la v178).": "Тесты выравнивания и языка теперь отдают штабель брёвен и межевой камень Meshy (с v178 давали 404).",
+ "Roadmap: la prueba de estilo de la naturaleza, cerrada (ya está en la v176)": "Дорожная карта: пробный стиль природы закрыт (уже в v176)",
+ "Sin código cambiado: solo la web (construir_web.mjs).": "Код не менялся: только сайт (construir_web.mjs).",
+ "La tarea de la prueba de estilo de la naturaleza seguía a medias aunque sus modelos ya están en el mundo desde la v176: cerrada, sin gastar créditos de Meshy.": "Задача пробного стиля природы числилась незавершённой, хотя её модели уже в мире с v176: закрыта без траты кредитов Meshy.",
+ "Comprobado que su rama no tiene nada que no esté ya en main.": "Проверено, что в её ветке нет ничего, чего ещё нет в main."
 }
