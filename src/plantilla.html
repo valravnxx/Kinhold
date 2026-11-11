@@ -125,7 +125,7 @@ body.construyendo #btnFabricar,body.desmontando #btnFabricar{right:auto;left:cal
 #llevas .llevo>span{color:var(--muted)}
 #llevas .llevo button{padding:3px 9px;font-size:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-body.construyendo #llevas{display:none}
+body.construyendo #llevas,body.desmontando #llevas{display:none}
 
 /* La acción según lo que tienes delante (estudio de la interfaz del 7 nov): el verbo junto a la cosa, en una placa de
    cuero (con su tecla en PC), y un aro dorado en el suelo bajo ella (en la escena, src/juego/main.js); con varias cosas
@@ -200,17 +200,17 @@ body.tactil-ui #menuUsar button img{width:32px;height:32px}
 #acciones #controlPlanta button{min-width:0;padding:6px 10px}
 
 #barra{position:fixed;left:0;right:0;bottom:0;padding:6px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(18,11,5,.55),rgba(18,11,5,.62)),url(../../recursos/interfaz-v1/tablero.webp) top center/1536px auto #24170c;box-shadow:inset 0 1px 0 rgba(193,154,85,.7),inset 0 2px 0 rgba(0,0,0,.5),0 -6px 18px rgba(0,0,0,.45)}
-#pestanas{display:flex;gap:2px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+#pestanas{display:flex;gap:2px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,transparent,#000 6px,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to right,transparent,#000 6px,#000 calc(100% - 22px),transparent)}
 #pestanas button{flex:0 0 auto;white-space:nowrap;padding:4px 10px;font:15px 'Alegreya SC',Georgia,serif;color:#cdbb9a;background:none;border:0;border-radius:0;border-bottom:2px solid transparent;text-shadow:0 1px 1px #000;min-width:0}
 #pestanas button.sel{color:#f0cf8a;border-bottom-color:#d9a441}
-#piezas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding:2px 2px 2px}
+#piezas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding:2px 2px 2px;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
 .pieza{position:relative;display:flex;flex-direction:column;align-items:center;flex:0 0 auto;width:118px;min-width:0;max-width:none;padding:4px 5px 6px;text-align:center;border-radius:10px;background:#2e261e;border:1px solid rgba(193,154,85,.35);box-shadow:inset 0 1px 0 rgba(255,230,180,.08),0 2px 5px rgba(0,0,0,.4);color:#f3e6c8}
 .pieza .pz-img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
 .pieza b{font:500 13.5px/1.12 'Alegreya SC',Georgia,serif;color:#f3e6c8;min-height:30px;display:flex;align-items:center;justify-content:center}
 .pieza small{color:var(--muted);font-size:11.5px;margin-top:2px}
 .pieza .pz-coste{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:3px}
-.pieza .cc{display:inline-flex;align-items:center;gap:1px;padding:0 4px 0 1px;border-radius:9px;background:rgba(0,0,0,.35);font:600 12px/18px system-ui,sans-serif;color:#efe2c6}
-.pieza .cc img{width:18px;height:18px;object-fit:contain}
+.pieza .cc{display:inline-flex;align-items:center;gap:1px;padding:0 5px 0 1px;border-radius:9px;background:rgba(240,222,184,.14);box-shadow:inset 0 0 0 1px rgba(240,222,184,.18);font:600 13px/18px 'EB Garamond',Georgia,serif;font-variant-numeric:lining-nums;color:#f3e6c8}
+.pieza .cc img{width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 1px rgba(255,244,220,.9)) drop-shadow(0 0 2px rgba(255,236,200,.45))}
 .pieza .cc i{font-style:normal;font-weight:400;color:#a99a80;font-size:10.5px;margin-left:1px}
 .pieza .cc.falta{background:rgba(120,24,18,.55);color:#ff9b8e;box-shadow:inset 0 0 0 1px rgba(224,87,79,.6)}
 .pieza .cc.falta i{color:#f0a89e}
@@ -539,7 +539,7 @@ body.construyendo #pomo{left:25px;top:25px}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] img{width:52%;height:52%}
   body.tactil-ui:not(.construyendo):not(.desmontando) #modos [data-modo=construir] .nom{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   /* construir en el móvil: arriba a la derecha del Menú, en dos filas si no cabe; Deshacer y Terminar, solo con su icono */
-  body.tactil-ui:is(.construyendo,.desmontando) #modos{left:auto;right:calc(8px + env(safe-area-inset-right,0px));transform:none;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;align-items:center;max-width:calc(100vw - 86px);padding:5px 6px;gap:6px}
+  body.tactil-ui:is(.construyendo,.desmontando) #modos{left:auto;right:calc(8px + env(safe-area-inset-right,0px));transform:none;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;max-width:calc(100vw - 86px);padding:5px 6px;gap:6px}
   body.tactil-ui:is(.construyendo,.desmontando) #modos :is(#btnDeshacer,[data-modo=mover]){padding:6px 9px}
   body.tactil-ui:is(.construyendo,.desmontando) #modos :is(#btnDeshacer,[data-modo=mover]) .nom{display:none}
   body.tactil-ui:is(.construyendo,.desmontando) #modos button img{width:22px;height:22px}

@@ -142,7 +142,7 @@ function deshacer() {
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   estado.ultimo = null;
   guardar(); reconstruir(); evaluarColocacion(); actualizarUI();
-  mostrarAviso(tr('Deshecho: {p}.', { p: tr(PIEZAS[u.tipo].nombre).toLowerCase() }));
+  mostrarAviso(tr('Deshecho: {p}.', { p: tr(PIEZAS[u.tipo].nombre).toLowerCase() })); mostrarAviso.fijoHasta = performance.now() + 1800;
 }
 
 // ---------------- Estado ----------------
@@ -2935,6 +2935,8 @@ function actualizarUI() {
 }
 let temporizadorAviso = null;
 function mostrarAviso(txt, error = false) {
+  // lo que se acaba de hacer (deshacer) no lo borra el siguiente repaso de dónde apuntas
+  if (!txt && performance.now() < (mostrarAviso.fijoHasta || 0)) return;
   const a = $('aviso');
   a.textContent = txt;
   a.className = error ? 'error' : '';
