@@ -19,7 +19,7 @@
   8000,
   2000,
   500,
-  "--pie --hundir=0.05"
+  "--pie --hundir=0.05 --tosco"
  ],
  "roble": [
   7.5,

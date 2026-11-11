@@ -1,6 +1,6 @@
 // Prepara un modelo de naturaleza de Meshy (árbol, mata, planta o roca) para el mundo (src/mundo/naturaleza_meshy.js):
 //   node herramientas/meshy/naturaleza.mjs <entrada.glb> <salida.glb> <alto_m> <tri_cerca> <tri_medio> <tri_lejos> [opciones]
-// opciones: --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
+// opciones: --tosco (la de lejos en bultos), --holgura-lejos=<n> (en la de lejos, cuántas veces el tope se acepta para no perder el tronco: el abedul), --ancho (alto_m es el ancho, no el alto: las rocas), --pie (centra en el pie del tronco, no en la caja: los árboles inclinados), --hundir=<m> (lo mete en el suelo),
 //           --tex=<px> (la textura, 1024 por defecto), --suelo=<m> (hasta dónde oscurece el pie: la oclusión de contacto).
 // Deja tres mallas: «cerca» (con su textura), «medio» y «lejos» (con el color de la textura en los vértices y menos triángulos), con el pie en y = 0, a su alto
 // de verdad, una sola textura (el color, en WebP; sin brillo ni relieve, que el juego usa luz difusa) y el pie más oscuro
@@ -71,7 +71,7 @@ const fijos = (p) => {
   const l = new Uint8Array(m); for (let i = 0; i < m; i++) if (Math.hypot(a[3 * i], a[3 * i + 2]) < R && a[3 * i + 1] < H * 0.85) l[i] = 1;
   return l;
 };
-const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3) => {
+const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3, sloppy = false) => {
   weldPrimitive(p);
   const t = triangulos(p); if (t <= tope) return p;
   // primero, sin fijar nada, solo lo que no cambia la forma (error de 2 milésimas): el tronco queda con menos vértices
@@ -90,6 +90,10 @@ const reducir = (p, tope, permisivo, err = 0.012, holgura = 1.3) => {
     paso(err, ['Permissive']);
   };
   const lock = fijos(p);
+  if (sloppy) {   // (--tosco: de lejos, bultos que juntan lo pequeño en vez de quitarlo; el abedul, de hojas sueltas)
+    const [nuevo] = MeshoptSimplifier.simplifySloppy(antes, pos, 3, lock || sinFijar, Math.floor(tope) * 3, 0.08);
+    p.getIndices().setArray(new Uint32Array(nuevo)); return p;
+  }
   if (lock) { hacer(lock); if (triangulos(p) <= tope * holgura) return p; p.getIndices().setArray(antes); }   // (si lo fijo no deja bajar, sin fijar: el roble, de tronco gordo, o el abeto)
   hacer(sinFijar);
   return p;
@@ -115,7 +119,7 @@ if (texColor) {
 }
 oscurecerPie(pCerca, null); oscurecerPie(pColor, colorVert);
 const pMedio = reducir(otra(pColor), TRI_MEDIO, true, 0.012, 2.2),   // (a media distancia el tronco se ve: se le deja más)
-  pLejos = reducir(otra(pColor), TRI_LEJOS, true, 0.04);   // (de lejos se puede perder algo fino)
+  pLejos = reducir(otra(pColor), TRI_LEJOS, true, 0.04, Number(op['holgura-lejos'] || 1.3), !!op.tosco);   // (de lejos se puede perder algo fino)
 for (const p of [pCerca, pMedio, pLejos]) compactPrimitive(p);   // (fuera los vértices que ya no usa ningún triángulo)
 for (const node of root.listNodes()) node.dispose();
 for (const m of root.listMeshes()) m.dispose();
