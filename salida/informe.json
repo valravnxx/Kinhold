@@ -1,0 +1,51 @@
+[
+ {
+  "nombre": "abeto_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9b2-67e3-74a1-9645-c604d432a0b1",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "pino_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9b3-9781-7546-b793-5e3d07394f39",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "abedul_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9b5-4bbf-71af-bd54-f670db026889",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "haya_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9b6-9cd9-7036-a149-6092154cef95",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "fresno_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9ba-1c9f-7685-9a66-05722b6ac926",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "encina_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c9bc-513e-7040-b742-0c36432bcb88",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ },
+ {
+  "nombre": "roble_joven",
+  "alto": 4.0,
+  "modelo_id": "01a1c64c-71f1-713c-9b7c-4cdc376ce714",
+  "estado": "SUCCEEDED",
+  "creditos": 0
+ }
+]
