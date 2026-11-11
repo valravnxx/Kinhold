@@ -289,8 +289,13 @@ with sync_playwright() as p:
     # mantener el dedo (como el clic derecho): el tronco de las manos, al suelo; y del suelo, otra vez a las manos
     mv.tap('#panelInventario .eq-pest[data-pest="llevas"]'); mv.wait_for_timeout(300)
     def mantener(sel):   # (el PointerEvent de verdad, con pointerType «touch»: el dispatch_event de Playwright no lo lleva)
-        ev = lambda tipo: mv.evaluate(f"document.querySelector({sel!r}).dispatchEvent(new PointerEvent('{tipo}', {{ pointerType: 'touch', bubbles: true }}))")
-        ev('pointerdown'); mv.wait_for_timeout(800); ev('pointerup'); mv.wait_for_timeout(500)
+        ev = lambda tipo: mv.evaluate(f"(() => {{ const e = document.querySelector({sel!r}); if (e) e.dispatchEvent(new PointerEvent('{tipo}', {{ pointerType: 'touch', bubbles: true }})); }})()")   # (lo cogido ya no está)
+        # (sin tarjeta gráfica un fotograma tarda mucho y el reloj de mantener se retrasa: se espera a que cambie algo)
+        antes = mv.evaluate(f"JSON.stringify({K}.inventario.lugares)")
+        ev('pointerdown')
+        try: mv.wait_for_function(f"JSON.stringify({K}.inventario.lugares) !== {antes!r}", timeout=8000)
+        except Exception: pass
+        ev('pointerup'); mv.wait_for_timeout(500)
     mantener(R('mano:der'))
     tronco = '#panelInventario .eq-pies [data-suelo]'
     comprobar('móvil: mantener el dedo en el tronco de las manos lo deja a tus pies', lugar(mv, 'mano:der') is None and mv.locator(tronco).count() >= 1, str(lugar(mv, 'mano:der')))
