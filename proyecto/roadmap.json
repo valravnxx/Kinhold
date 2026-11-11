@@ -1487,7 +1487,7 @@
    "jugable": "Todo lo que se ve, con el aspecto de maqueta en miniatura: la naturaleza, los objetos y estaciones, las piezas de construir, los animales y los personajes, hechos con Meshy y aprobados uno a uno por valravnx.",
    "estado": "en_curso",
    "bloquea": false,
-   "nota": "valravnx, 10 nov: «no estamos consiguiendo ese estilo visual, solo un lowpoly generico y tirando a muy feo, asi que he decidido usar meshy para potenciar lo visual del juego»; «la cosa es ir reemplazando todo por lo de meshy poco a poco»; «tenemos tokens de meshy… nos vamos a centrar en ello mientras duren». Plan Premium; los encargos, por la API en automático; cada modelo pasa por valravnx. Se cambia por categorías enteras, en este orden: naturaleza, objetos y estaciones, piezas de construir, animales (el esqueleto lo hace valravnx), personajes.",
+   "nota": "valravnx, 10 nov: «no estamos consiguiendo ese estilo visual, solo un lowpoly generico y tirando a muy feo, asi que he decidido usar meshy para potenciar lo visual del juego»; «la cosa es ir reemplazando todo por lo de meshy poco a poco»; «tenemos tokens de meshy… nos vamos a centrar en ello mientras duren». Plan Premium; los encargos, por la API en automático; cada modelo pasa por valravnx. Se cambia por categorías enteras, en este orden: naturaleza, objetos y estaciones, piezas de construir, animales (el esqueleto lo hace valravnx), personajes. Créditos de Meshy, solo para la naturaleza (valravnx, 11 nov): los muebles y estaciones los manda él, y las animaciones las hace él; esas tareas, congeladas.",
    "tareas": [
     {
      "nombre": "Planificar el hito: la lista de todo lo que se ve en el juego (naturaleza, objetos y estaciones, piezas de construir, animales y personajes) con su tope de triángulos y de textura para el móvil, el orden por categorías enteras y los créditos de cada tanda (3.000 al mes, Premium)",
@@ -1519,11 +1519,11 @@
     },
     {
      "nombre": "Objetos y estaciones con Meshy: hoguera, hogar, banco de tronco, piedra de tallar, camas, cesto y almacenajes, y las herramientas en la mano (hacha de piedra, lasca, mazo, cuchillo)",
-     "estado": "pendiente"
+     "estado": "congelado"
     },
     {
      "nombre": "Piezas de construir con Meshy, prueba con la casa humilde entera (cimiento, postes, muro de tronco delgado, muro de zarzo con barro, tejado de juncos y puerta): cada pieza a su medida exacta para que encaje en la rejilla",
-     "estado": "pendiente"
+     "estado": "congelado"
     },
     {
      "nombre": "Personajes: el hombre y la mujer de valravnx (Meshy, con su esqueleto y andar y correr) como base del jugador; propuesta de cómo se viste por capas y se personaliza con ellos, para que valravnx decida",
@@ -1539,11 +1539,11 @@
     },
     {
      "nombre": "La ropa por capas y la personalización (complexión, cara, pelo, barba, piel) con los personajes de Meshy (valravnx, 10 nov: «poco a poco, sin prisa»)",
-     "estado": "pendiente"
+     "estado": "congelado"
     },
     {
      "nombre": "Animales: valravnx les hace el esqueleto y las animaciones en Meshy (quieto, andar, correr, morir; los nombres en inglés iguales en todos; mirando a +Z) y aquí se aligeran y se meten en el juego",
-     "estado": "pendiente"
+     "estado": "congelado"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -1551,9 +1551,8 @@
     },
     {
      "nombre": "El andar del hombre y el reposo de los dos, más neutros (de la biblioteca de Meshy)",
-     "estado": "en_curso",
-     "inicio": "2026-11-10T14:44:40+01:00",
-     "rama": "trabajo/20261110-1500-andar"
+     "estado": "congelado",
+     "inicio": "2026-11-10T14:44:40+01:00"
     },
     {
      "nombre": "La naturaleza entera con Meshy, en el mundo: las siete especies de árbol (adultas y jóvenes), los arbustos y matorrales, las plantas del suelo y las rocas",

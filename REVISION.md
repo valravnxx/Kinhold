@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 11 nov — valravnx en el chat: los créditos de Meshy, solo para la naturaleza
+
+«Anota no gastar demasiados créditos ahora mismo de Meshy. Solamente acaba todo el tema que tienes ya pendiente de lo que sería naturaleza, sobre todo. Y el tema de muebles te los iré enviando yo, porque al final es una cosa que el tema del arte quiero revisarlo a mano… Con cosas, lo de las animaciones y todo eso, también lo iré haciendo yo.» → Regla en `CLAUDE.md` («Créditos de Meshy, ahora solo para la naturaleza»). En el hito «El arte con Meshy» siguen la naturaleza (la prueba de estilo y meterla en el mundo), la tubería, las capturas para aprobar, el mojón (ya hecho por valravnx: solo meterlo) y la revisión; quedan `congelado` los objetos y estaciones (los manda él), las piezas de construir, la ropa por capas, los animales y el andar y el reposo de los personajes (las animaciones las hace él).
+
 ### 10 nov — valravnx en el chat: Discord y Ko-fi en la web
 
 - «en la web necesitamos el link al discord oficial de la comunidad, y un mensaje para pedir apoyo con el proyecto con kofi, ambos en la parte inferior, y hacer la web de kofi». Discord: https://discord.gg/frKTaM5NNY. Ko-fi: https://ko-fi.com/kinhold.
