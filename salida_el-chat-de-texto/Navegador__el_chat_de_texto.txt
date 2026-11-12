@@ -1,0 +1,43 @@
+Jugador simulado: jugador:7ba13a32
+Vista pc
+  OK   pc: en línea, con el chat de texto y el botón «Hablar»
+  OK   pc: Intro abre el cuadro para escribir
+  OK   pc: mientras se escribe, las teclas no mueven — [0, 0] → [0, 0]
+  FALLA pc: al decirlo sale el bocadillo con lo que has dicho
+  OK   pc: y se ve sobre tu cabeza — bocadillo {'texto': 'Buenas, ¿subimos hoy el muro de zarzo de la casa? Traigo varas y barro del río, tú pon el cimiento', 'x': 640, 'abajo': 315.6000061035156, 'w': 220, 'h': 86.75} · cabeza {'x': 640, 'y': 336.5762743645925}
+  OK   pc: le llega al otro, contigo de autor (por el servidor) — [{"tipo": "dicho", "autor": "jugador:e984fc5e", "texto": "Buenas, ¿subimos hoy el muro de zarzo de la casa? Traigo varas y barro del río, tú pon el cimiento"}]
+  OK   pc: lo que dice el otro sale sobre su cabeza — bocadillo {'texto': 'Aquí te espero', 'x': 640, 'abajo': 218.60000610351562, 'w': 118.109375, 'h': 32.1875} · cabeza {'x': 640, 'y': 284.088836426484}
+  OK   pc: los dos bocadillos a la vez, sin pisarse — [[530, 228.85000610351562, 750, 315.6000061035156], [580.9453125, 186.41250610351562, 699.0546875, 218.60000610351562]]
+  OK   pc: Esc lo deja sin decirlo
+  OK   pc: hablar a chorro: el servidor no lo deja y se avisa
+  OK   pc: el bocadillo se va al rato
+  OK   pc: las ocho frases rápidas, en tu lengua — ['¡Hola!', 'Sí', 'No', 'Gracias', 'Ven aquí', 'Espera', '¡Ayuda!', '¡Cuidado!']
+  OK   pc: enteras y dentro de la pantalla (sin cortar el texto) — [{'t': '¡Hola!', 'x0': 380, 'x1': 505.5, 'y0': 563, 'y1': 601, 'cabe': True}, {'t': 'Sí', 'x0': 511.5, 'x1': 637, 'y0': 563, 'y1': 601, 'cabe': True}]
+  (sin captura de cerca: Locator.screenshot: Timeout 21442ms exceeded.
+Call log:
+  - taking element scree )
+  OK   pc: un toque en «Ven aquí» y se dice (y el cuadro se cierra)
+  OK   pc: al otro le llega su número, no el texto — [{"tipo": "dicho", "autor": "jugador:e984fc5e", "frase": 4}]
+  OK   pc: la frase rápida del otro te sale en tu lengua («¡Cuidado!») — [['jugador:7ba13a32', '¡Cuidado!']]
+  OK   pc: sin errores en la página
+Vista movil
+  OK   movil: en línea, con el chat de texto y el botón «Hablar»
+  OK   movil: «Hablar» abre el cuadro sin sacar el teclado (se ven las frases)
+  OK   movil: «Hablar» y tocar el campo abre el cuadro para escribir
+  OK   movil: mientras se escribe, las teclas no mueven — [0, 0] → [0, 0]
+  OK   movil: al decirlo sale el bocadillo con lo que has dicho
+  OK   movil: y se ve sobre tu cabeza — bocadillo {'texto': 'Voy a por varas al bosque de allí y vuelvo enseguida con barro del río para el muro', 'x': 195, 'abajo': 333.3999938964844, 'w': 220, 'h': 68.5625} · cabeza {'x': 195, 'y': 355.0879694546451}
+  OK   movil: le llega al otro, contigo de autor (por el servidor) — [{"tipo": "dicho", "autor": "jugador:7676f18a", "texto": "Voy a por varas al bosque de allí y vuelvo enseguida con barro del río para el muro"}]
+  OK   movil: lo que dice el otro sale sobre su cabeza — bocadillo {'texto': 'Trae también barro', 'x': 195, 'abajo': 236.39999389648438, 'w': 148.078125, 'h': 32.1875} · cabeza {'x': 195, 'y': 299.7137224299406}
+  OK   movil: los dos bocadillos a la vez, sin pisarse — [[85, 246.64999389648438, 305, 333.3999938964844], [120.9609375, 204.21249389648438, 269.0390625, 236.39999389648438]]
+  OK   movil: Esc lo deja sin decirlo
+  OK   movil: hablar a chorro: el servidor no lo deja y se avisa
+  OK   movil: el bocadillo se va al rato
+  OK   movil: las ocho frases rápidas, en tu lengua — ['Hello!', 'Yes', 'No', 'Thanks', 'Come here', 'Wait', 'Help!', 'Watch out!']
+  OK   movil: enteras y dentro de la pantalla (sin cortar el texto) — [{'t': 'Hello!', 'x0': 20, 'x1': 103, 'y0': 92, 'y1': 132, 'cabe': True}, {'t': 'Yes', 'x0': 109, 'x1': 192, 'y0': 92, 'y1': 132, 'cabe': True}]
+  OK   movil: un toque en «Come here» y se dice (y el cuadro se cierra)
+  OK   movil: al otro le llega su número, no el texto — [{"tipo": "dicho", "autor": "jugador:7676f18a", "frase": 4}]
+  OK   movil: la frase rápida del otro te sale en tu lengua («Watch out!») — [['jugador:7676f18a', 'Come here'], ['jugador:7ba13a32', 'Watch out!']]
+  OK   movil: sin errores en la página
+
+1 fallos: pc: al decirlo sale el bocadillo con lo que has dicho
