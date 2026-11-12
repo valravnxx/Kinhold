@@ -6204,5 +6204,21 @@
   "pruebas": "En la nube: el chat de texto (PC y móvil en inglés) correcto, la demo única, el recorrido y dormido al desconectarse correctos. La lógica: todo bien salvo la prueba del servidor de internet (systemd-analyze se queja de archivos del sistema de la máquina de GitHub, CPUAccounting=), que no toca este cambio. Una pasada del chat falló una vez en PC en «al decirlo sale el bocadillo» (el bocadillo sí salió en la comprobación siguiente; lentitud de la máquina sin tarjeta gráfica) y las dos siguientes pasaron enteras. No comprobado en captura de PC: los bocadillos se van antes de que salga la captura en la nube.",
   "capturas": "capturas/demo-v184",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T01:36:20+00:00",
+  "fin": "2026-11-12T01:37:28+00:00",
+  "titulo": "La interfaz nueva: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "interfaz",
+  "hecho": [
+   "Repaso de lo que el hito prometía, tarea por tarea: la barra de abajo con el kit renderizado, la acción según lo que tienes delante, el menú con pestañas, el equipo en tres columnas, fabricar, construir, la pestaña «Tu tierra», las necesidades con los medallones de latón y hablar con las ocho frases rápidas; todo publicado y unido a main (la última, la demo v184).",
+   "En pruebas/prueba_origenes.mjs no queda nada pendiente: cada material que el juego enseña sale del mundo.",
+   "Capturas de las últimas versiones miradas otra vez (hablar en PC y las necesidades en el móvil): se leen bien y nada se pisa.",
+   "Lo que quedó provisional o sin comprobar, para la revisión: el retrato del equipo no enseña la ropa por capas (los personajes de Meshy la llevan en su malla); los invitados salen como «Invitado 1, 2…»; las ocho frases rápidas las elegí yo; talar y desbrozar siguen solos una vez empezados.",
+   "Todas las tareas del hito hechas: el hito pasa a revisión y no se empieza ninguno nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
