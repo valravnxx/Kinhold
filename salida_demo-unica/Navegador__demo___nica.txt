@@ -1,0 +1,83 @@
+Vista pc
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 103.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 1 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 822.2, 'peor': 825, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 22, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 121.3
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 1 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 746.5, 'peor': 777, 'triangulos': 764496, 'dibujados': 51, 'geometrias': 33, 'texturas': 25, 'memoriaJS': 22, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 0.36000000000000004}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 0.43200000000000005}
+  OK   construir: cargado también avanza — 0.43 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 1 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 764.8, 'peor': 771, 'triangulos': 810816, 'dibujados': 66, 'geometrias': 34, 'texturas': 36, 'memoriaJS': 22, 'personajes': 9, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 764496 → 810816
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	1 por segundo
+Cada fotograma	778.3 ms de 
+  OK   construir: el botón de medir y mandar al servidor — o lo lleva)
+Medida para el servidor
+
+Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Medir 10 s y mandarlo al servidor
+  OK   construir: la toma de 1 s trae fotogramas, peor, triángulos y llamadas — {'segundos': 2.3, 'fotogramas': 3, 'fps': 1.3, 'ms': 765.8, 'peor': 768, 'lentos': 3, 'triangulos': 810816, 'triangulosMax': 810816, 'llamadas': 66, 'llamadasMax': 66}
+  OK   construir: y lo que se sabe del aparato — {'navegador': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36', 'grafica': 'ANGLE (Google, Vu
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_demo_navegador.py", line 175, in <module>
+    pg.click('#demoRend [data-enviar]'); pg.wait_for_timeout(1500)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#demoRend [data-enviar]")
+    7 × locator resolved to <button data-enviar="">Medir 10 s y mandarlo al servidor</button>
+    - attempting click action
+      - waiting for element to be visible, enabled and stable
+    - element was detached from the DOM, retrying
+    - locator resolved to <button data-enviar="">Medir 10 s y mandarlo al servidor</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+
