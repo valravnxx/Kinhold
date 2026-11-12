@@ -11,23 +11,15 @@
 # Rota a propósito (8 nov): con la vegetación sin mirar lo roto (decorado.rocaEnPie siempre true), falla.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_rocas'
 MUTAR = os.environ.get('MUTAR')
 os.makedirs(SALIDA, exist_ok=True)
-sitio = tempfile.mkdtemp()
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
-os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'meshy-v2']:
-    o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=0&lang=es'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'

@@ -26,6 +26,7 @@
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
@@ -36,14 +37,8 @@ MUTAR = MUTAR_TODO == '1'
 ADMINS = ['valravnx', 'admmovil', 'admen', 'admbotpc', 'admbotmovil']   # la cuenta de admin de cada vista (la máquina dice sus correos: usuario@ejemplo.com, como los pone correo_prueba.py)
 OTRO = (1500.0, 900.0)   # dónde está el jugador simulado (m, relativos a la salida; lejos, para que tu marca no lo tape)
 
-sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/demo')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-os.symlink(os.path.join(RAIZ, 'docs/recursos'), f'{sitio}/recursos')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-web = socketserver.ThreadingTCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=web.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+web = servir(sitio)
 
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 SERVIDOR = os.path.join(RAIZ, 'servidor/servidor.mjs')

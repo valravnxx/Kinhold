@@ -11,20 +11,15 @@
 # MUTAR=1: el fuego en brasas se manda sin decir que está en brasas (como si no llegara): la prueba tiene que fallar.
 import sys, os, json, math, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_hogar'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
-sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/demo')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-os.symlink(os.path.join(RAIZ, 'docs/recursos'), f'{sitio}/recursos')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.ThreadingTCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'

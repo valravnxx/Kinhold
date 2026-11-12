@@ -12,25 +12,16 @@
 # Uso: python3 pruebas/prueba_menu_navegador.py <html> <carpeta_capturas>
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_menu'
 os.makedirs(SALIDA, exist_ok=True)
-sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['v1', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3']:
-    o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 import re
 ICONOS = re.search(r"CARPETA_ICONOS = 'recursos/([^/']+)/'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()).group(1)
-for c in ['interfaz-v1', ICONOS, 'fuentes', 'piezas-v1']:   # (la acción se ve con su imagen y su letra; construir, con las de las piezas)
-    shutil.copytree(os.path.join(RAIZ, f'docs/recursos/{c}'), f'{sitio}/recursos/{c}')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=0&lang=es'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'

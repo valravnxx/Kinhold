@@ -9,24 +9,14 @@
 # Uso: python3 pruebas/prueba_construir_menu_navegador.py <html> <carpeta_capturas>
 import sys, os, re, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_construir_menu'
 os.makedirs(SALIDA, exist_ok=True)
-sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in ['meshy-v2', 'taller-v24', 'taller-carga-v3', 'taller-dormir-v1', 'taller-sentarse-v1']:
-    o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
-for c in ['naturaleza', 'estaciones-meshy-v1']: shutil.copytree(os.path.join(RAIZ, f'docs/recursos/{c}'), f'{sitio}/recursos/{c}')
-for c in re.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES|PIEZAS) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
-    if not os.path.exists(f'{sitio}/{c}'): shutil.copytree(os.path.join(RAIZ, 'docs', c), f'{sitio}/{c}')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1&lang=es'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
