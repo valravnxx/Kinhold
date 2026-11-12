@@ -1,0 +1,22 @@
+Lógica:
+  OK   las liebres de un trozo son siempre las mismas — 0 en 0,0
+  OK   hay liebres en el prado y ninguna fuera de él (agua o bosque) — 60 en 169 trozos, 0 fuera
+  OK   en el bosque cerrado no sale ninguna — 0
+  OK   los trozos de alrededor tienen liebres vivas — 5
+  OK   sin nadie cerca pastan y dan saltos cortos, cerca de su querencia — pastar, saltar; hasta 15.7 m de casa
+  OK   con alguien a 15 m se pone alerta (quieta) — alerta
+  OK   alerta no se mueve
+  OK   con alguien a 5 m huye — huir
+  OK   corre a más de 9 m/s — 10.8 m/s
+  OK   se aleja de quien llega — de 5.0 a 26.7 m
+  OK   después se para (alerta) — alerta
+  OK   sin nadie cerca vuelve a pastar — pastar
+  OK   acorralada contra el agua, no se mete en ella — x 196.8
+  OK   las de un trozo sin nadie cerca se olvidan — 7 → 0
+Servidor:
+  OK   a los dos les llegan las liebres de alrededor — 2 (0 vivas al empezar)
+  OK   al acercarse uno, la liebre huye (lo dice el servidor) — huir, a 13.2 m de su sitio
+  OK   el otro la ve en el mismo sitio y haciendo lo mismo — 12.91, 73.8
+  OK   a quien se va lejos se le dice que esas liebres ya no están — 6 fuera
+
+18 bien, 0 mal
