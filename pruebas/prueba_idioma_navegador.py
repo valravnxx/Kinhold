@@ -7,6 +7,7 @@
 # MUTAR=1 → mete a propósito un texto en español en la página: la prueba tiene que fallar.
 import sys, os, re, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 CONSTR = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_demo.html')
@@ -16,23 +17,9 @@ SALIDA = sys.argv[4] if len(sys.argv) > 4 else 'capturas/idioma'
 
 # el visor de personaje y la construcción (su jugador es el personaje del taller) cargan sus modelos de
 # ../../recursos/personajes/: se sirven como en la web
-sitio = tempfile.mkdtemp()
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1'), f'{sitio}/recursos/estaciones-meshy-v1')  # el acopio y el mojón de valravnx (Meshy), como en la web
 # (los tres desde el mismo sitio: el idioma elegido se guarda en el navegador y tiene que valer en todos)
-for carpeta, html in (('personaje', PERSONAJE), ('construccion', CONSTR), ('estilo', ESTILO)):
-    os.makedirs(f'{sitio}/jugar/{carpeta}'); shutil.copy(html, f'{sitio}/jugar/{carpeta}/prueba.html')
-os.makedirs(f'{sitio}/recursos/personajes')
-for c in ('v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-v16', 'taller-v19', 'taller-v24', 'taller-anim-v1', 'taller-carga-v3', 'meshy-v2', 'taller-dormir-v1', 'taller-sentarse-v1'):
-    shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', c), f'{sitio}/recursos/personajes/{c}')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-# las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
-import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES|PIEZAS) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
-    if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'personaje': PERSONAJE, 'construccion': CONSTR, 'estilo': ESTILO})   # (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 URL_PERSONAJE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'
 URL_CONSTR = f'http://127.0.0.1:{srv.server_address[1]}/jugar/construccion/prueba.html?modo=construir&sinservidor=1&llano=1'
 URL_ESTILO = f'http://127.0.0.1:{srv.server_address[1]}/jugar/estilo/prueba.html'

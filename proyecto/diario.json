@@ -6411,5 +6411,41 @@
   ],
   "pruebas": "Comprobador de código, limpio. Revisor en la nube: cavar bien; lógica, todo bien salvo la prueba del servidor en internet (systemd-analyze de la máquina de GitHub, falla igual en main)",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T11:22:30+00:00",
+  "fin": "2026-11-12T12:40:14+00:00",
+  "titulo": "Una base común para las pruebas de navegador (P6, carril A)",
+  "hito": "orden",
+  "hecho": [
+   "Nuevo pruebas/sitio_prueba.py: monta el sitio de cada prueba como la web publicada (cada página en jugar/<carpeta>/prueba.html) y sirve los archivos en un puerto libre, en un solo sitio",
+   "Los recursos se enlazan desde docs/ en vez de copiarse carpeta a carpeta: una carpeta nueva de recursos ya no hay que añadirla prueba por prueba",
+   "51 pruebas de navegador pasan a usarla: 630 líneas menos de copias y servidores repetidos",
+   "Para las pruebas que comprueban que sin un recurso fallan (MUTAR_HOMBRO de lo que llevas puesto), el sitio puede dejar fuera una carpeta; comprobado que entonces da 404 y que borrar el sitio no toca docs/"
+  ],
+  "pruebas": "Comprobador de código, limpio. En la nube, una muestra de cada forma de montar el sitio: el día y la noche, el personaje y el posprocesado, bien; la hoguera, bien al repetirla (la primera vez falló «se apaga sola», y en main pasó). Fallan igual en main (comprobado en la nube): los niveles de detalle del personaje, las opciones del personaje en inglés, la mano al hombro de lo que llevas puesto y, en el panel de fabricar, la lista de puestos y talar con el hacha",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T11:50:53+01:00",
+  "fin": "2026-11-12T14:12:27+01:00",
+  "titulo": "El aspecto: la hierba densa (demo v189)",
+  "hito": "aspecto",
+  "hecho": [
+   "Segundo paso del hito «El aspecto» (valravnx: «primero haz el primer hito de la hierba»): en lugar de las briznas oscuras sueltas, una hierba densa alrededor del jugador (src/mundo/hierba_densa.js).",
+   "Cómo está hecha: el mundo en celdas de 8 m; en cada una, matas de tres hojas finas instanciadas (una llamada de dibujo por celda), siempre las mismas en el mismo sitio; se hacen dos celdas por fotograma como mucho y se sueltan las lejanas.",
+   "Cada mata lleva el color del suelo que tiene debajo (el de la malla del terreno), más oscura en el pie y algo más clara en la punta: se lee como una cubierta y no como puntitos. Donde el suelo no es verde (tierra, roca, arena, nieve, cauces) no se pone.",
+   "El viento la mueve en el sombreador (comprobado: con hierba cambian 13.000 píxeles entre dos momentos; sin ella, ninguno). Recibe las sombras y no las hace.",
+   "A lo lejos se va por partes: cada mata tiene su azar, quedan menos y más bajas, y de casi la mitad del radio para allá hay menos matas y más anchas. Sin línea de corte ni halo claro.",
+   "No hay hierba donde se ha construido ni al lado de lo que se recoge del suelo (la tapaba).",
+   "Según el perfil gráfico: el móvil básico no la lleva (sigue con las briznas); móvil medio, 22 m; móvil alto, 23 m; PC básico, 28 m; PC medio, 36 m; PC alto, 44 m. Unos 112 mil triángulos en el móvil medio y 350 mil en el PC medio, a tope.",
+   "Prueba de navegador nueva (grupo «la hierba densa») y comprobaciones en la de perfiles; rota a propósito una vez (sin hierba: 5 fallos).",
+   "Segunda mirada de un agente aparte, cinco rondas: cuatro dijeron que no (halo claro y línea de corte, hojas anchas como plantitas, el móvil ralo y con hojas tumbadas a lo lejos, la rama tapada) y se arregló; la quinta, que sí, con lo que queda: por la tarde las hojas quedan algo más oscuras que el suelo, en el móvil hay menos densidad y hojas más toscas que en PC, y el suelo liso entre las matas (que es el paso siguiente).",
+   "Decisión provisional: los radios y las densidades de cada perfil, y que la hierba no se pisa ni se siega todavía.",
+   "No comprobado: los fotogramas en aparatos reales (aquí no hay tarjeta gráfica); los mide valravnx en su PC y su móvil. Si pesa, se baja la densidad del perfil."
+  ],
+  "pruebas": "En la nube, el revisor pidió 6 grupos: la hierba densa (falló una vez por un umbral de la propia prueba, corregido, y bien al repetirla), el bosque de lejos visto de cerca, posprocesado y perfiles gráficos, el mazo de piedra y romper rocas y el perfil gráfico en el juego, bien; lógica, bien salvo las dos comprobaciones de systemd de la máquina de GitHub, que fallan igual sin este cambio. Aquí: el comprobador de código sin errores y prueba_perfiles_graficos 36/36. Capturas de la escena fija en PC y móvil, de día, de tarde y de noche, miradas una a una.",
+  "capturas": "capturas/demo-v189",
+  "estado": "ok"
  }
 ]

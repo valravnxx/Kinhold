@@ -9,16 +9,13 @@
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageChops, ImageStat
+from sitio_prueba import montar_sitio, servir
 
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_posprocesado.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_posprocesado'
 os.makedirs(SALIDA, exist_ok=True)
-sitio = tempfile.mkdtemp(); os.makedirs(f'{sitio}/jugar/posprocesado')
-shutil.copy(RUTA, f'{sitio}/jugar/posprocesado/prueba.html')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'posprocesado': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/posprocesado/prueba.html'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = bool(os.environ.get('MUTAR'))
