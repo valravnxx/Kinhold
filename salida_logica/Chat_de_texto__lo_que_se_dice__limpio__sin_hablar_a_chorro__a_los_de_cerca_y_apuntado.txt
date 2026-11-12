@@ -1,0 +1,37 @@
+Lógica pura
+  OK   un texto normal se queda igual
+  OK   sin espacios de sobra ni saltos de línea
+  OK   sin caracteres de control ni invisibles de dirección (con ellos se da la vuelta a lo que se lee)
+  OK   vacío, solo espacios o lo que no es texto: no vale
+  OK   como mucho 120 letras
+  OK   y un emoji no se parte por la mitad
+  OK   un mensaje enorme ni se mira
+  OK   el bocadillo dura entre 4 y 12 s, más cuanto más largo
+  OK   la primera frase pasa
+  OK   otra antes de un segundo, no
+  OK   pasado el segundo, sí; y otro jugador no cuenta
+  OK   como mucho 6 en 20 s — 6
+  OK   pasado el rato, vuelve a poder
+  OK   le llega al que habla y a quien está a 50 m o menos — ["a","b"]
+  OK   y al que habla aunque aún no tenga sitio
+  OK   lo que llega al navegador se comprueba otra vez
+  OK   ocho frases rápidas, distintas
+  OK   el número de una frase: de 0 a 7, entero; lo demás no vale
+  OK   una frase rápida llega al navegador por su número (y uno que no es ninguna, no)
+Con el servidor de verdad
+  OK   lo que dice A le llega a él (lo que ha aceptado el servidor) — [{"tipo":"dicho","autor":"jugador:9600bc05","texto":"Buenas, vecino"}]
+  OK   y a B, a 20 m — [{"tipo":"dicho","autor":"jugador:9600bc05","texto":"Buenas, vecino"}]
+  OK   pero no a C, a 200 m — []
+  OK   el autor es el de la conexión (aunque el mensaje diga otro)
+  OK   hablar otra vez antes de un segundo: no, y se le dice por qué — ["Más despacio: espera un poco antes de volver a hablar."]
+  OK   lo vacío o lo que no es texto no vale — ["Ese mensaje está vacío o no vale.","Ese mensaje está vacío o no vale."]
+  OK   B contesta y A lo recibe tal cual (como texto: el navegador no lo pone como HTML)
+  OK   lo dicho queda en charla.jsonl, con su autor, dónde y a cuántos llegó — [{"t":1794486649421,"autor":"jugador:9600bc05","cuenta":null,"x":0,"z":0,"texto":"Buenas, vecino","oyen":2},{"t":1794486651224,"autor":"jugador:472f6394","cuenta":null,"x":20,"z":0,"texto":"<b>hola</b>","oyen":2}]
+  OK   una frase rápida le llega a B por su número, sin texto — [{"tipo":"dicho","autor":"jugador:9600bc05","frase":4}]
+  OK   y a A (lo aceptado); a C, lejos, no
+  OK   un número que no es de ninguna frase no vale — ["Más despacio: espera un poco antes de volver a hablar.","Ese mensaje está vacío o no vale.","Ese mensaje está vacío o no vale.","Ese mensaje está vacío o no vale.","Ese mensaje está vacío o no vale.","Ese mensaje está vacío o no vale."]
+  OK   las frases rápidas también cuentan para no hablar a chorro… y la siguiente pasa
+  OK   …pero no otra antes de un segundo
+  OK   y en charla.jsonl, con su número y lo que dice en español — [{"t":1794486652624,"autor":"jugador:9600bc05","cuenta":null,"x":0,"z":0,"texto":"Ven aquí","frase":4,"oyen":2},{"t":1794486655426,"autor":"jugador:9600bc05","cuenta":null,"x":0,"z":0,"texto":"¡Cuidado!","frase":7,"oyen":2}]
+
+33 bien, 0 mal

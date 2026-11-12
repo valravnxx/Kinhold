@@ -1,0 +1,32 @@
+Lo que dice el GDD (apartado 6)
+  OK   fuera de tu tierra, 5 minutos atacable
+  OK   si peleaste en el último minuto, 15
+  OK   si la pelea fue hace más de un minuto, 5
+  OK   en tu tierra (o en la de quien te invita), protegido: nada
+  OK   fuera, se queda donde estaba y atacable
+  OK   antes de su hora, sigue atacable y no se mueve
+  OK   pasado su tiempo, ya no es atacable y, con cama, pasa a ella
+  OK   solo una vez
+  OK   en su tierra, protegido enseguida y en su cama
+  OK   sin cama, se queda donde estaba, ya protegido
+  OK   al despertar, deja de estar dormido
+Con el servidor de verdad (tiempos acortados: 1,5 s atacable, 4 s si peleó)
+  OK   al irse, los demás lo ven tumbado y desconectado donde estaba — {"autor":"jugador:1a579c0a","t":479,"x":60,"y":0,"z":40,"giro":0.5,"anim":"desconectado"}
+  OK   y no reciben «sale»: sigue en el mundo
+  OK   fuera de su tierra, su luchador sigue en el combate (atacable), con el arma guardada
+  OK   quien llega después también lo ve dormido
+  OK   pasado su tiempo, se aparta del combate: ya no se le puede hacer nada
+  OK   y sigue a la vista, dormido
+  OK   al volver con su ficha se despierta donde dormía — {"x":60,"y":0,"z":40,"giro":0.5}
+  OK   con su luchador como estaba (la herida)
+  OK   un navegador no se hace pasar por desconectado (queda «dormir») — dormir
+Si peleó en el último minuto, más tiempo atacable; y con cama ligada, a ella
+  OK   peleó hace nada: atacable el tiempo largo — 4000 ms
+  OK   mientras es atacable, sigue donde cayó (no en la cama)
+  OK   pasado su tiempo, pasa dormido a su cama (los demás lo ven allí) — {"autor":"jugador:1a579c0a","t":6869,"x":70,"y":0,"z":45,"giro":0.5,"anim":"desconectado"}
+  OK   y es donde aparecerá al volver
+En su tierra, protegido enseguida
+  OK   pone su mojón
+  OK   al irse en su tierra, dormido y protegido (fuera del combate) desde el primer momento
+
+26 correctas, 0 fallos
