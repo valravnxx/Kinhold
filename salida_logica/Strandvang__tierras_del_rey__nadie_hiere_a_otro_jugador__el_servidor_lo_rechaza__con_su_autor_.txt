@@ -1,0 +1,26 @@
+Las tierras del rey en el mapa de verdad
+  OK   se llaman Strandvang — Strandvang
+  OK   el sitio común de salida (Lindholt) no es tierra del rey — Lindholt
+  OK   la ciudad del rey sí
+  OK   un sitio de salida de Strandvang es tierra del rey — Strandvang
+  OK   y 400 m al oeste, en Motdale, ya no — Motdale
+  OK   un sitio sin número no es tierra del rey
+  OK   con otro 0 de la escena sale lo mismo
+El aviso al entrar y al salir
+  OK   al aparecer dentro, «entra»; al cruzar, «sale» y «entra»; quieto, nada — ["entra",null,"sale",null,"entra","sale"]
+  OK   al aparecer fuera, nada
+El servidor rechaza los golpes entre jugadores en Strandvang
+  OK   dentro, el golpe llega pero no hiere — tierras del rey, 0 heridas
+  OK   queda en el registro rechazado, con su autor y el motivo — {"n":1,"autor":"jugador:a","tipo":"golpe","datos":{"objetivo":"jugador:b","linea":"derecha"},"ok":false,"motivo":"En Strandvang, tierras del rey, nadie puede herir a otro jugador."}
+  OK   el evento lleva el motivo
+  OK   fuera (en Motdale), el mismo golpe hiere — herida
+  OK   ni desde dentro a quien está fuera — tierras del rey
+  OK   basta con que uno de los dos esté dentro — {"a":false,"b":true} tierras del rey
+  OK   la flecha tampoco hiere — tierras del rey
+  OK   y queda rechazada en el registro, con su autor
+  OK   fuera, la flecha hiere — blanco
+  OK   contra un NPC sí se pelea dentro
+  OK   entre dos jugadores dentro, no
+  OK   sin tierras (otro servidor), sí
+
+Tierras del rey: 21 bien, 0 mal
