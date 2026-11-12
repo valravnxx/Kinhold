@@ -1824,9 +1824,9 @@
     },
     {
      "nombre": "Crujido de aviso y daño: un crujido antes de caer; el servidor mira quién queda debajo al caer y le hiere según la parte del tronco, con su autor (también al compañero)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T03:24:03+00:00",
-     "rama": "trabajo/20261112-0324"
+     "fin": "2026-11-12T03:55:07+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -4033,6 +4033,13 @@
      "archivo": "jugar/demo/v184.html",
      "capturas": "capturas/demo-v184",
      "notas": "Hablar con las ocho frases rápidas: el botón «Hablar» de arriba (o Intro) abre un tablero de roble con ocho frases de cuero (¡Hola!, Sí, No, Gracias, Ven aquí, Espera, ¡Ayuda! y ¡Cuidado!) y el campo para escribir. Un toque y se dice; por la red va solo su número y a cada uno le sale en su lengua. En el móvil, arriba y sin teclado."
+    },
+    {
+     "v": "v186",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v186.html",
+     "capturas": "capturas/demo-v186",
+     "notas": "El árbol cruje y hiere: cuando le quedan dos golpes cruje (lo oyen todos los de alrededor) y tiembla; al soltarse suena el chasquido y, al caer, el golpe. A quien queda debajo cuando el tronco le llega le hiere el servidor (el tronco, en la cabeza o un brazo; la copa, en el torso), también al que lo tala: abre la boca de un lado y corta el resto por detrás del tocón."
     }
    ]
   },
