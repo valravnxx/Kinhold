@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2689 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3025 KB
+
+== Construir demo única
+      3457 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4363 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3092 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2683 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3046 KB
+dist/kinhold_trozos.html 2697 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el chat de texto
+  OK   movil: la frase rápida del otro te sale en tu lengua («Watch out!») — [['jugador:d8f1ec9f', 'Come here'], ['jugador:c9848aea', 'Watch out!']]
+  OK   movil: sin errores en la página
+
+1 fallos: pc: al decirlo sale el bocadillo con lo que has dicho
+!! FALLA: python3 pruebas/prueba_charla_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/charla
+
+HAY FALLOS
+tardó 971 s
