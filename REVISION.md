@@ -6,6 +6,11 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 12 nov 2026, 14:39 — por el chat
+
+- La hierba densa (demo v189): «en mi móvil va bien».
+- Mixamo: «veamos las animaciones de mixamo». Desde aquí no se llega a mixamo.com (pide cuenta de Adobe y la red no lo deja): valravnx baja los FBX y los pasa por el chat. Los FBX tal cual no entran en el repositorio (las condiciones no dejan repartir los archivos sueltos); la prueba se hace aquí y se le enseña antes de meter nada.
+
 ### 12 nov 2026 — por el chat: auditoría total y sus respuestas
 
 valravnx pidió una auditoría de todo (estado, hitos, qué funciona y qué no, el aspecto frente a la referencia, las animaciones, el código, si cambiar de motor y el camino a un juego comercial). Entregada en el chat. Sus respuestas (09:10):
