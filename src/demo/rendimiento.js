@@ -38,6 +38,9 @@ export function ponerRendimiento(boton) {
   b.id = 'btnDemoFps'; b.textContent = '… fps'; b.title = tr('Rendimiento');
   const panel = document.createElement('div');
   panel.id = 'demoRend'; panel.hidden = true;
+  const datos = document.createElement('div'), cajaEnvio = document.createElement('div');
+  panel.append(datos, cajaEnvio);
+  let htmlEnvio = '';
   // en el juego, en Ajustes (el menú con pestañas: estudio de la interfaz, 7 nov), con su detalle debajo
   const ajustes = document.getElementById('ajustesRend');
   if (ajustes) {
@@ -111,16 +114,20 @@ export function ponerRendimiento(boton) {
     ];
     // niveles de detalle de los personajes (src/logica/detalle.js): cuántos hay en cada uno
     if (g && g.niveles) { const n = g.niveles(); filas.push([tr('Niveles de detalle'), tr('cerca {a}, medio {b}, lejos {c}, sin dibujar {d}', { a: n[0], b: n[1], c: n[2], d: n[3] })]); }
-    panel.innerHTML = `<b>${tr('Rendimiento en este aparato')}</b><table>${filas.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`).join('')}</table>` +
+    datos.innerHTML = `<b>${tr('Rendimiento en este aparato')}</b><table>${filas.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`).join('')}</table>` +
       (g ? `<div class="gente">${tr('Personajes de prueba:')} ${GENTE.map(n => `<button data-gente="${n}" class="${g.cuantos() === n ? 'sel' : ''}">${n}</button>`).join('')}</div>` : '') +
       (g && g.detalle ? `<div class="gente">${tr('Niveles de detalle:')} <button data-detalle="1" class="${g.detalle() ? 'sel' : ''}">${tr('sí')}</button><button data-detalle="0" class="${g.detalle() ? '' : 'sel'}">${tr('no (todos enteros)')}</button></div>` : '') +
       (G ? `<div class="gente perfiles">${tr('Calidad gráfica:')} ${G.PERFILES.map(p => `<button data-perfil="${p.id}" class="${G.perfil === p.id ? 'sel' : ''}">${tr(p.nombre)}${p.id === G.sugerido ? ' ★' : ''}</button>`).join('')}</div>` +
         `<p>${tr('★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.')}</p>` +
-        (G.ponerMaqueta ? `<div class="gente">${tr('Desenfoque de maqueta:')} <button data-maqueta="1" class="${G.maqueta ? 'sel' : ''}">${tr('sí')}</button><button data-maqueta="0" class="${G.maqueta ? '' : 'sel'}">${tr('no')}</button>${G.puedeMaqueta ? '' : ` <small>${tr('(esta calidad no lo lleva)')}</small>`}</div>` : '') : '') +
-      bloqueEnvio();
-    const enviar = panel.querySelector('[data-enviar]:not([disabled])'); if (enviar) enviar.onclick = medirYMandar;
-    const ver = panel.querySelector('[data-vermandadas]'); if (ver) ver.onclick = verMandadas;
-    for (const x of panel.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
+        (G.ponerMaqueta ? `<div class="gente">${tr('Desenfoque de maqueta:')} <button data-maqueta="1" class="${G.maqueta ? 'sel' : ''}">${tr('sí')}</button><button data-maqueta="0" class="${G.maqueta ? '' : 'sel'}">${tr('no')}</button>${G.puedeMaqueta ? '' : ` <small>${tr('(esta calidad no lo lleva)')}</small>`}</div>` : '') : '');
+    // la medida al servidor, aparte: solo se rehace si cambia (si no, el botón se rehace cada segundo y se pierde el toque)
+    const html = bloqueEnvio();
+    if (html !== htmlEnvio) {
+      htmlEnvio = cajaEnvio.innerHTML = html;
+      const enviar = cajaEnvio.querySelector('[data-enviar]:not([disabled])'); if (enviar) enviar.onclick = medirYMandar;
+      const ver = cajaEnvio.querySelector('[data-vermandadas]'); if (ver) ver.onclick = verMandadas;
+    }
+    for (const x of datos.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
     for (const x of panel.querySelectorAll('[data-perfil]')) x.onclick = () => { G.poner(x.dataset.perfil); refrescar(); };
     for (const x of panel.querySelectorAll('[data-maqueta]')) x.onclick = () => { G.ponerMaqueta(x.dataset.maqueta === '1'); refrescar(); };
     for (const x of panel.querySelectorAll('[data-detalle]')) x.onclick = () => { g.detalle(x.dataset.detalle === '1'); refrescar(); };
