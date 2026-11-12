@@ -1,0 +1,36 @@
+PC
+  OK   PC: no hay botón Usar a la derecha (es la F)
+  OK   PC: ni Mover ni Desmontar fuera de construir
+  OK   PC: Construir sí se ve
+  OK   PC: hay un matorral suelto cerca
+  OK   PC: con el hacha al lado de un matorral, la acción es desbrozarlo — {'texto': 'Desbrozar: matorral', 'sub': None, 'apagada': False, 'x': -3.4907147431804333, 'z': 7.280971656364272}
+  OK   PC: la etiqueta lo dice — {'txt': 'F\nDesbrozar: matorral', 'x': 755.046875, 'y': 336.234375, 'ancho': 185, 'izq': 662.546875, 'der': 847.546875, 'k': True, 'apagada': False}
+  OK   PC: el aro está en el suelo bajo el matorral — {'v': True, 'x': -3.4907147431804333, 'y': -0.06828604229156723, 'z': 7.280971656364272}
+  OK   PC: la etiqueta está sobre la cosa (encima del aro en la pantalla) — etiqueta 755,336 · aro 746,509
+  OK   PC: dentro de la pantalla — {'txt': 'F\nDesbrozar: matorral', 'x': 755.046875, 'y': 336.234375, 'ancho': 185, 'izq': 662.546875, 'der': 847.546875, 'k': True, 'apagada': False}
+  OK   PC: con la tecla F en PC
+  OK   PC: la lista no sale sola; la etiqueta dice que hay más — {'txt': 'F\nCoger del suelo: 2 × Rama\nAlt\nmás', 'x': 640.25, 'y': 556.171875, 'ancho': 294, 'izq': 493.25, 'der': 787.25, 'k': True, 'apagada': False}
+  OK   PC: con unas ramas en el suelo, lo primero es cogerlas — {'texto': 'Coger del suelo: 2 × Rama', 'sub': None, 'apagada': False, 'x': -2.59, 'z': 7.98}
+  OK   PC: con Alt, la lista enseña también desbrozar — [{'t': 'Coger del suelo: 2 × Rama\nF', 'sel': True}, {'t': 'Desbrozar: matorral', 'sel': False}]
+  OK   PC: tocar una fila la hace (se pone a desbrozar)
+  OK   PC: construyendo, sin etiqueta ni aro
+  OK   PC: y se ven Terminar y Desmontar
+  OK   PC: sin errores en la página
+Móvil
+  OK   móvil: el botón de acción grande se ve
+  OK   móvil: ni Mover ni Desmontar fuera de construir
+  OK   móvil: Construir sí se ve
+  OK   móvil: hay un matorral suelto cerca
+  OK   móvil: con el hacha al lado de un matorral, la acción es desbrozarlo — {'texto': 'Desbrozar: matorral', 'sub': None, 'apagada': False, 'x': -3.4907147431804333, 'z': 7.280971656364272}
+  OK   móvil: sin etiqueta sobre la cosa (lo dice el botón de acción) — None
+  OK   móvil: el aro está en el suelo bajo el matorral — {'v': True, 'x': -3.4907147431804333, 'y': -0.06828604229156723, 'z': 7.280971656364272}
+  OK   móvil: el botón de acción dice el verbo — Desbrozar
+  OK   móvil: la lista no sale sola, ni la etiqueta — None
+  OK   móvil: con unas ramas en el suelo, lo primero es cogerlas — {'texto': 'Coger del suelo: 2 × Rama', 'sub': None, 'apagada': False, 'x': -2.59, 'z': 7.98}
+  OK   móvil: manteniendo pulsado el botón de acción, la lista enseña también desbrozar — [{'t': 'Coger del suelo: 2 × Rama', 'sel': True}, {'t': 'Desbrozar: matorral', 'sel': False}]
+  OK   móvil: tocar una fila la hace (se pone a desbrozar)
+  OK   móvil: construyendo, sin etiqueta ni aro
+  OK   móvil: y se ven Terminar y Desmontar
+  OK   móvil: sin errores en la página
+
+TODO BIEN
