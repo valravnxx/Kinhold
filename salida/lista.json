@@ -1,0 +1,494 @@
+{
+ "hierba": [
+  {
+   "id": "Grass004",
+   "nombre": "Grass 004",
+   "etiquetas": [
+    "004",
+    "4",
+    "dense",
+    "garden",
+    "grass",
+    "grass004",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Grass001",
+   "nombre": "Grass 001",
+   "etiquetas": [
+    "001",
+    "1",
+    "cover",
+    "dark",
+    "dense",
+    "fresh",
+    "garden",
+    "grass"
+   ]
+  },
+  {
+   "id": "Ground037",
+   "nombre": "Ground 037",
+   "etiquetas": [
+    "037",
+    "37",
+    "damp",
+    "earth",
+    "forest",
+    "grass",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Snow015",
+   "nombre": "Snow 015",
+   "etiquetas": [
+    "015",
+    "15",
+    "brown",
+    "cold",
+    "dirty",
+    "frozen",
+    "grass",
+    "green"
+   ]
+  },
+  {
+   "id": "Grass003",
+   "nombre": "Grass 003",
+   "etiquetas": [
+    "3",
+    "grass",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Grass002",
+   "nombre": "Grass 002",
+   "etiquetas": [
+    "2",
+    "grass",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Ground075",
+   "nombre": "Ground 075",
+   "etiquetas": [
+    "75",
+    "floor",
+    "frames",
+    "grass",
+    "ground",
+    "moss",
+    "parking",
+    "pattern"
+   ]
+  },
+  {
+   "id": "Ground003",
+   "nombre": "Ground 003",
+   "etiquetas": [
+    "3",
+    "dirt",
+    "grass",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Ground030",
+   "nombre": "Ground 030",
+   "etiquetas": [
+    "30",
+    "dirt",
+    "grass",
+    "ground",
+    "path",
+    "pathway",
+    "pebbles"
+   ]
+  },
+  {
+   "id": "Ground020",
+   "nombre": "Ground 020",
+   "etiquetas": [
+    "20",
+    "dirt",
+    "forest",
+    "grass",
+    "ground",
+    "leaves"
+   ]
+  }
+ ],
+ "tierra": [
+  {
+   "id": "Ground109",
+   "nombre": "Ground 109",
+   "etiquetas": [
+    "109",
+    "beige",
+    "brown",
+    "dirt",
+    "dry",
+    "ground",
+    "ground109",
+    "mud"
+   ]
+  },
+  {
+   "id": "Ground106",
+   "nombre": "Ground 106",
+   "etiquetas": [
+    "106",
+    "beige",
+    "brown",
+    "dirt",
+    "earth",
+    "forest",
+    "ground",
+    "ground106"
+   ]
+  },
+  {
+   "id": "Ground103",
+   "nombre": "Ground 103",
+   "etiquetas": [
+    "103",
+    "brown",
+    "dirt",
+    "earth",
+    "ground",
+    "natural",
+    "old",
+    "outdoor"
+   ]
+  },
+  {
+   "id": "Ground048",
+   "nombre": "Ground 048",
+   "etiquetas": [
+    "48",
+    "brown",
+    "dirt",
+    "ground",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground104",
+   "nombre": "Ground 104",
+   "etiquetas": [
+    "104",
+    "beige",
+    "brown",
+    "crumbly",
+    "dirt",
+    "earth",
+    "granular",
+    "ground"
+   ]
+  },
+  {
+   "id": "Ground082S",
+   "nombre": "Ground 082 S",
+   "etiquetas": [
+    "82",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground082L",
+   "nombre": "Ground 082 L",
+   "etiquetas": [
+    "82",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground036",
+   "nombre": "Ground 036",
+   "etiquetas": [
+    "36",
+    "dirt",
+    "ground",
+    "mud",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground039",
+   "nombre": "Ground 039",
+   "etiquetas": [
+    "39",
+    "dirt",
+    "gravel",
+    "ground",
+    "pebbles",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground083",
+   "nombre": "Ground 083",
+   "etiquetas": [
+    "83",
+    "beige",
+    "dirt",
+    "ground",
+    "mud",
+    "river",
+    "sand",
+    "soil"
+   ]
+  }
+ ],
+ "roca": [
+  {
+   "id": "Rock063",
+   "nombre": "Rock 063",
+   "etiquetas": [
+    "063",
+    "63",
+    "aged",
+    "cliff",
+    "cracked",
+    "damaged",
+    "dirty",
+    "eroded"
+   ]
+  },
+  {
+   "id": "Rock051",
+   "nombre": "Rock 051",
+   "etiquetas": [
+    "51",
+    "cliff",
+    "mountain",
+    "rock",
+    "stone",
+    "wall"
+   ]
+  },
+  {
+   "id": "Rock035",
+   "nombre": "Rock 035",
+   "etiquetas": [
+    "35",
+    "black",
+    "cave",
+    "cliff",
+    "grey",
+    "rock",
+    "stone"
+   ]
+  },
+  {
+   "id": "Rock030",
+   "nombre": "Rock 030",
+   "etiquetas": [
+    "30",
+    "cliff",
+    "grey",
+    "rock",
+    "stone",
+    "wall"
+   ]
+  },
+  {
+   "id": "Rock029",
+   "nombre": "Rock 029",
+   "etiquetas": [
+    "29",
+    "cliff",
+    "desert",
+    "orange",
+    "red",
+    "rock",
+    "stone"
+   ]
+  },
+  {
+   "id": "Rocks011",
+   "nombre": "Rocks 011",
+   "etiquetas": [
+    "11",
+    "cliff",
+    "ground",
+    "rock",
+    "rocks",
+    "stone",
+    "stones"
+   ]
+  },
+  {
+   "id": "Rock028",
+   "nombre": "Rock 028",
+   "etiquetas": [
+    "28",
+    "cliff",
+    "grey",
+    "rock",
+    "rough",
+    "stone"
+   ]
+  },
+  {
+   "id": "Rock057",
+   "nombre": "Rock 057",
+   "etiquetas": [
+    "57",
+    "cliff",
+    "green",
+    "grey",
+    "mossy",
+    "rock",
+    "stone"
+   ]
+  },
+  {
+   "id": "Rock026",
+   "nombre": "Rock 026",
+   "etiquetas": [
+    "26",
+    "cliff",
+    "gray",
+    "light",
+    "rock",
+    "stone"
+   ]
+  },
+  {
+   "id": "Rock022",
+   "nombre": "Rock 022",
+   "etiquetas": [
+    "22",
+    "cliff",
+    "rock",
+    "rocks",
+    "stone",
+    "wall"
+   ]
+  }
+ ],
+ "hojarasca": [
+  {
+   "id": "ScatteredLeaves008",
+   "nombre": "Scattered Leaves 008",
+   "etiquetas": [
+    "8",
+    "autumn",
+    "fall",
+    "fallen",
+    "floor",
+    "forest",
+    "ground",
+    "leaf"
+   ]
+  }
+ ],
+ "musgo": [
+  {
+   "id": "Ground037",
+   "nombre": "Ground 037",
+   "etiquetas": [
+    "037",
+    "37",
+    "damp",
+    "earth",
+    "forest",
+    "grass",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Ground068",
+   "nombre": "Ground 068",
+   "etiquetas": [
+    "68",
+    "dirt",
+    "ground",
+    "moss",
+    "rock",
+    "stone"
+   ]
+  },
+  {
+   "id": "Ground075",
+   "nombre": "Ground 075",
+   "etiquetas": [
+    "75",
+    "floor",
+    "frames",
+    "grass",
+    "ground",
+    "moss",
+    "parking",
+    "pattern"
+   ]
+  },
+  {
+   "id": "Moss001",
+   "nombre": "Moss 001",
+   "etiquetas": [
+    "1",
+    "ground",
+    "moss",
+    "mossy"
+   ]
+  },
+  {
+   "id": "Ground024",
+   "nombre": "Ground 024",
+   "etiquetas": [
+    "24",
+    "dirt",
+    "forest",
+    "ground",
+    "moss",
+    "mud",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Gravel029",
+   "nombre": "Gravel 029",
+   "etiquetas": [
+    "29",
+    "dirt",
+    "gravel",
+    "ground",
+    "grunge",
+    "moss",
+    "pebbles",
+    "stone"
+   ]
+  },
+  {
+   "id": "Ground001",
+   "nombre": "Ground 001",
+   "etiquetas": [
+    "1",
+    "dirt",
+    "flat",
+    "ground",
+    "moss"
+   ]
+  }
+ ]
+}
