@@ -1,0 +1,24 @@
+  OK   PC: en la ribera del río del sur hay una mimbrera — {'id': 'mimbre:1845840,454295', 'x': -12.01, 'z': -850.5}
+  OK   PC: se ven su cepa y sus varas — {'recoger_mimbre_planta': True, 'recoger_mimbre': True}
+  OK   PC: con la lasca, Usar corta sus varas: un haz de mimbre — 1
+  OK   PC: las varas se van y la cepa se queda — {'recoger_mimbre_planta': True, 'recoger_mimbre': False}
+  OK   PC: hay un árbol cerca — {'id': 'arbol:-71,-8408', 'x': -7.062416442669928, 'z': -840.7849632706493, 'r': 0.17264116944335958, 'especie': 'roble'}
+  OK   PC: sin hacha y con la lasca, Usar descorteza el roble (1 o 2 cortezas) — 2
+  OK   PC: y ya no se ofrece descortezarlo
+  OK   PC: en el pinar hay pinos o abetos — {'id': 'arbol:28566,30705', 'x': 2856.6111713768914, 'z': 3070.4803921058774, 'r': 0.3536810366739387, 'especie': 'pino'}
+  OK   PC: Usar le hace el corte al pino (la resina, sangrando) — {'descortezar': False, 'sangrar': False, 'resina': 'sangrando'}
+  OK   PC: cuando sale, Usar coge la resina (1) — 1
+  OK   PC: sin errores en la página
+  OK   móvil: en la ribera del río del sur hay una mimbrera — {'id': 'mimbre:1845840,454295', 'x': -12.01, 'z': -850.5}
+  OK   móvil: se ven su cepa y sus varas — {'recoger_mimbre_planta': True, 'recoger_mimbre': True}
+  OK   móvil: con la lasca, Usar corta sus varas: un haz de mimbre — 1
+  OK   móvil: las varas se van y la cepa se queda — {'recoger_mimbre_planta': True, 'recoger_mimbre': False}
+  OK   móvil: hay un árbol cerca — {'id': 'arbol:-71,-8408', 'x': -7.062416442669928, 'z': -840.7849632706493, 'r': 0.17264116944335958, 'especie': 'roble'}
+  OK   móvil: sin hacha y con la lasca, Usar descorteza el roble (1 o 2 cortezas) — 2
+  OK   móvil: y ya no se ofrece descortezarlo
+  OK   móvil: en el pinar hay pinos o abetos — {'id': 'arbol:28566,30705', 'x': 2856.6111713768914, 'z': 3070.4803921058774, 'r': 0.3536810366739387, 'especie': 'pino'}
+  OK   móvil: Usar le hace el corte al pino (la resina, sangrando) — {'descortezar': False, 'sangrar': False, 'resina': 'sangrando'}
+  OK   móvil: cuando sale, Usar coge la resina (1) — 1
+  OK   móvil: sin errores en la página
+
+Todo correcto
