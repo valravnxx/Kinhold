@@ -1,0 +1,35 @@
+Los seis perfiles
+  OK   son seis, de móvil básico a PC alto — movil-1 movil-2 movil-3 pc-1 pc-2 pc-3
+  OK   en móvil, cada perfil lleva al menos lo del anterior
+  OK   en PC, cada perfil lleva al menos lo del anterior
+  OK   objetivos del GDD: 30 fps en móvil, 60 en PC
+Nada que importe para jugar cambia entre perfiles (GDD, apartado 3)
+  OK   la niebla (lo lejos que se ve) es la misma en los seis — 45–130 45–130 45–130 45–130 45–130 45–130
+  OK   el desenfoque nunca está puesto de inicio (solo en escenas concretas)
+  OK   el mapeo tonal y la gradación de color van en todos (la identidad del mundo)
+Gradación de color
+  OK   es suave: ningún canal cambia más de 0,13 (lo que más, el cian puro, que no sale en la paleta) — 0.125
+  OK   el gris medio queda casi igual — 0.500 0.500 0.500
+  OK   sombras algo frías y luces algo cálidas — sombra r0.124 b0.148 · luz r0.888 b0.852
+  OK   los verdes, un poco menos saturados (nada chilla) — 0.35 → 0.31
+  OK   la tabla se rellena con la gradación y no toca el canal alfa
+Perfil de inicio (antes de medir)
+  OK   móvil barato → movil-1 — movil-1
+  OK   móvil medio → movil-2 — movil-2
+  OK   móvil alto → movil-3 — movil-3
+  OK   iPhone o iPad → movil-3 — movil-3
+  OK   portátil con gráfica integrada → pc-1 — pc-1
+  OK   PC con gráfica de hace años → pc-2 — pc-2
+  OK   PC con gráfica buena → pc-3 — pc-3
+  OK   sin tarjeta gráfica (las pruebas): lo más barato → movil-1 — movil-1
+  OK   POCO F7 (Adreno 825; Chrome dice como mucho 8 GB) → movil-3 — movil-3
+Por la medida
+  OK   PC que hace 60 en el medio pero no en el alto → PC medio
+  OK   móvil que hace 38 fps en el medio (30 con margen) pero no en el alto → móvil medio
+  OK   un móvil muy rápido no pasa a los de PC
+  OK   si no llega a ninguno, el más bajo
+  OK   naturaleza en móvil: cada perfil, igual o más detalle que el anterior, y el más alto más que el más bajo — movil-1 {"cerca":12,"alto":0} · movil-2 {"cerca":16,"alto":0} · movil-3 {"cerca":22,"alto":8}
+  OK   naturaleza en PC: cada perfil, igual o más detalle que el anterior, y el más alto más que el más bajo — pc-1 {"cerca":24,"alto":8} · pc-2 {"cerca":40,"alto":16} · pc-3 {"cerca":60,"alto":30}
+  OK   naturaleza: el PC alto lleva el modelo de cerca hasta 60 m y el de más detalle hasta 30
+
+28 bien, 0 mal
