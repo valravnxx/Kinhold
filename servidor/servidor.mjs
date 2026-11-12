@@ -5,7 +5,7 @@
 // - Las acciones de construcción pasan por la lógica pura (ejecutar, src/logica/acciones.js), igual que
 //   en el navegador. Las que salen bien se reparten a todos los conectados.
 // - Todas las acciones (bien o mal) se guardan en un archivo, una por línea (JSON), para poder auditarlas.
-//   Al arrancar, el mundo se rehace con reproducir a partir de ese archivo.
+//   Al arrancar, el mundo se rehace desde su estado guardado (mundo_estado.json) y lo que vino después (cargarMundo).
 //
 // Mensajes (JSON):
 //   cliente → servidor   { tipo: 'accion', id, accion: { tipo, ...datos } }
@@ -120,13 +120,13 @@
 //
 // Uso: node servidor/servidor.mjs [puerto] [archivo]   (por defecto 8080 y servidor/mundo.jsonl)
 import { WebSocketServer } from 'ws';
-import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
+import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync, statSync, openSync, readSync, closeSync } from 'fs';
 import { writeFile, rename } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import { randomUUID, createHash, randomInt } from 'crypto';
 import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
-import { RegistroAcciones, ejecutar, reproducir, USAN_INVENTARIO, fueraDeAlcance } from '../src/logica/acciones.js';
+import { RegistroAcciones, ejecutar, reproducir, reproducirDesde, USAN_INVENTARIO, fueraDeAlcance } from '../src/logica/acciones.js';
 import { PresenciaServidor, CADA, validarAspecto, validarEstado } from '../src/logica/presencia.js';
 import { llevadoDe, huellaLlevado } from '../src/logica/llevado.js';
 import { PROTOCOLO } from '../src/logica/protocolo.js';
@@ -171,12 +171,54 @@ const fichaValida = (f) => typeof f === 'string' && /^[0-9a-f]{32}$/.test(f);
 // Lee el archivo del mundo. Una línea cortada al final (el servidor se apagó a mitad) se descarta.
 export function leerArchivo(archivo) {
   if (!existsSync(archivo)) return [];
+  return leerLineas(readFileSync(archivo, 'utf8'));
+}
+function leerLineas(texto) {
   const entradas = [];
-  for (const linea of readFileSync(archivo, 'utf8').split('\n')) {
+  for (const linea of texto.split('\n')) {
     if (!linea.trim()) continue;
     try { entradas.push(JSON.parse(linea)); } catch (e) { console.warn('Línea del mundo no válida, se descarta:', linea.slice(0, 80)); }
   }
   return entradas;
+}
+
+// El registro del mundo compactado (auditoría del 4 nov; 12 nov). Al arrancar, el servidor guarda el mundo entero en
+// mundo_estado.json, junto al registro: { version, n (la última acción que lleva), bytes (hasta dónde del registro),
+// cola (los últimos bytes de ese trozo, para saber que el registro es el mismo), mundo (Mundo.exportar()) }. La vez
+// siguiente parte de ahí y solo reproduce lo que vino después, en vez de cada acción desde el primer día. El registro
+// entero se queda (para auditar). Si el estado no casa con el registro (el registro es más corto o es otro: un wipe a
+// medias, una copia de otro día), no se usa: se rehace todo desde el registro, como antes.
+const COLA = 256;
+function trozo(archivo, desde, hasta) {
+  const fd = openSync(archivo, 'r');
+  try { const b = Buffer.alloc(hasta - desde); let leidos = 0; while (leidos < b.length) { const n = readSync(fd, b, leidos, b.length - leidos, desde + leidos); if (!n) break; leidos += n; } return b.subarray(0, leidos); }
+  finally { closeSync(fd); }
+}
+const colaDe = (archivo, bytes) => bytes > 0 ? trozo(archivo, Math.max(0, bytes - COLA), bytes).toString('base64') : '';
+export function cargarMundo(archivo, archivoEstado, registrar = () => {}) {
+  const tam = existsSync(archivo) ? statSync(archivo).size : 0;
+  let estado = null;
+  if (existsSync(archivoEstado)) {
+    try {
+      const e = JSON.parse(readFileSync(archivoEstado, 'utf8'));
+      if (e && e.version === 1 && Number.isInteger(e.n) && Number.isInteger(e.bytes) && e.bytes >= 0 && e.bytes <= tam && e.mundo && e.cola === colaDe(archivo, e.bytes)) estado = e;
+      else registrar('mundo_estado.json no casa con el registro: se rehace el mundo entero desde el registro');
+    } catch (x) { registrar(`mundo_estado.json no válido, se rehace el mundo entero desde el registro: ${x && x.message}`); }
+  }
+  if (!estado) {
+    const previas = leerArchivo(archivo);
+    return { mundo: reproducir(previas), total: previas.reduce((m, e) => Math.max(m, e.n || 0), 0), reproducidas: previas.length, compactado: false };
+  }
+  const resto = estado.bytes < tam ? leerLineas(trozo(archivo, estado.bytes, tam).toString('utf8')) : [];
+  return { mundo: reproducirDesde(estado.mundo, resto), total: resto.reduce((m, e) => Math.max(m, e.n || 0), estado.n), reproducidas: resto.length, compactado: true };
+}
+// guarda el estado entero del mundo (después de cargarlo y de cerrar la línea a medias, antes de apuntar nada nuevo)
+export function guardarEstadoMundo(archivo, archivoEstado, mundo, n, registrar = () => {}) {
+  const bytes = existsSync(archivo) ? statSync(archivo).size : 0;
+  try {
+    writeFileSync(archivoEstado + '.tmp', JSON.stringify({ version: 1, n, bytes, cola: colaDe(archivo, bytes), t: new Date().toISOString(), mundo: mundo.exportar() }));
+    reemplazar(archivoEstado + '.tmp', archivoEstado, registrar);
+  } catch (x) { registrar(`no se ha podido guardar mundo_estado.json: ${x && x.message}`); }
 }
 
 // Cambia el guardado por el nuevo (escrito en .tmp). En Windows, si alguien tiene el archivo abierto en ese momento
@@ -243,12 +285,17 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   const admins = correosAdmin(adminCorreo);
   if (!admins.size) registrar('sin KINHOLD_ADMIN_CORREO: nadie es admin (servidor/nube/LEEME.md)');
   mkdirSync(dirname(archivo), { recursive: true });
-  const previas = leerArchivo(archivo);
-  // si quedó una línea a medias, lo nuevo empieza en una línea aparte
-  if (existsSync(archivo)) { const t = readFileSync(archivo, 'utf8'); if (t && !t.endsWith('\n')) appendFileSync(archivo, '\n'); }
-  const mundo = reproducir(previas);
+  // el mundo: desde su estado guardado (mundo_estado.json) y lo que vino después, o desde el registro entero (cargarMundo)
+  const archivoEstado = resolve(dirname(archivo), 'mundo_estado.json');
+  const cargado = cargarMundo(archivo, archivoEstado, registrar);
+  const mundo = cargado.mundo;
   const registro = new RegistroAcciones();
-  registro.total = previas.reduce((m, e) => Math.max(m, e.n || 0), 0);
+  registro.total = cargado.total;
+  // si quedó una línea a medias, lo nuevo empieza en una línea aparte (mirando solo el último byte)
+  if (existsSync(archivo)) { const tam = statSync(archivo).size; if (tam && trozo(archivo, tam - 1, tam)[0] !== 10) appendFileSync(archivo, '\n'); }
+  // y se guarda el estado entero una vez: el próximo arranque sigue desde aquí
+  guardarEstadoMundo(archivo, archivoEstado, mundo, registro.total, registrar);
+  registrar(`mundo: ${cargado.reproducidas} acciones reproducidas${cargado.compactado ? ' desde mundo_estado.json' : ' desde el registro entero'}`);
 
   // fichas: resumen (sha256) → autor
   // (caducan a los vidaFicha ms si su personaje tiene cuenta; «salir en todos los aparatos»: src/logica/fichas.js)

@@ -6312,5 +6312,20 @@
   ],
   "pruebas": "Sin pruebas: aprobado por valravnx.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T06:26:14+00:00",
+  "fin": "2026-11-12T06:50:27+00:00",
+  "titulo": "Orden: el registro del mundo se compacta",
+  "hito": "orden",
+  "hecho": [
+   "Al arrancar, el servidor guarda el mundo entero en mundo_estado.json, junto al registro, y el siguiente arranque sigue desde ahí: solo reproduce las acciones que vinieron después, en vez de cada acción desde el primer día.",
+   "El registro entero (mundo.jsonl) se queda para auditar; el estado lleva hasta dónde del registro llega y sus últimos bytes, y si no casa con el registro (más corto, otro, roto) no se usa y el mundo se rehace desde el registro, como antes.",
+   "Al arrancar ya no se lee el registro entero para ver si quedó una línea a medias: basta con el último byte.",
+   "Prueba nueva (prueba_compactar_mundo): el mundo compactado es el mismo que reproduciendo el registro entero, lo que pasa después sale igual en los dos, y un estado que no casa, uno roto o un wipe vuelven al registro; rota a propósito (MUTAR=1) falla.",
+   "El wipe de servidor/nube/LEEME.md ya borra mundo_estado.json (es un .json); anotado allí."
+  ],
+  "pruebas": "En la nube, el revisor pidió lógica y recorrido: recorrido correcto; en lógica todo correcto salvo dos comprobaciones de prueba_nube (systemd-analyze verify), que fallan por avisos de servicios de la propia máquina de GitHub (CPUAccounting= en xfs_scrub y walinuxagent), no por este cambio. Sin versión nueva: no cambia nada jugable.",
+  "estado": "ok"
  }
 ]

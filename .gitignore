@@ -6,3 +6,5 @@ node_modules
 servidor/mundo.jsonl
 servidor/combate.jsonl
 servidor/.servidor_mutado*.mjs
+servidor/mundo_estado.json
+servidor/mundo_estado.json.tmp

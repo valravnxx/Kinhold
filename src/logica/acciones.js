@@ -310,8 +310,12 @@ export function acabarObra(mundo, registro, autor, construccion, claveObra) {
 }
 
 // Rehace un mundo desde cero aplicando, en orden, las acciones que salieron bien.
-export function reproducir(entradas) {
-  const m = new Mundo();
+export function reproducir(entradas) { return reproducirDesde(null, entradas); }
+
+// Lo mismo, pero desde un estado guardado (Mundo.exportar()) en vez de desde cero: el servidor guarda el mundo entero al
+// arrancar (mundo_estado.json, 12 nov) y, la vez siguiente, solo aplica las acciones que vinieron después.
+export function reproducirDesde(estado, entradas) {
+  const m = estado ? Mundo.importar(estado) : new Mundo();
   const reg = new RegistroAcciones();
   for (const e of entradas) if (e.ok) ejecutar(m, reg, { autor: e.autor, tipo: e.tipo, ...e.datos });
   return m;
