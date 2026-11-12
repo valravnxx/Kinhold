@@ -1,0 +1,33 @@
+PC: talar un árbol joven con hacha de piedra
+  OK   sin hacha no se tala: lo dice — Necesitas un hacha en la mano para talar.
+  OK   el hacha de piedra está en el catálogo y se coge con la mano
+  OK   con el hacha en la mano, Usar junto al árbol tala
+  OK   cada golpe se cuenta y dice cuántos faltan — Talas el árbol: faltan 7 golpes.
+  OK   el golpe va al registro con su autor
+  OK   con los golpes que pide, cae — {'ok': True, 'cae': True, 'faltan': 0, 'motivo': '', 'dir': -2.03}
+  OK   ya no está en pie (queda el tocón) y Usar no lo encuentra
+  OK   el árbol cae (se ve caer)
+  OK   lo que deja no se ve mientras cae
+  OK   se asienta: acaba tumbado en el suelo (o apoyado) y se queda así un momento — {'t': 2.25, 'dura': 2.1, 'angulo': 1.52, 'final': 1.52, 'apoyo': None}
+  OK   queda el tocón en el sitio
+  OK   el árbol del bosque ya no se dibuja
+  OK   en el suelo, un tronco delgado y de 2 a 4 varas (no ramas) — [{'tipo': 'tronco_delgado', 'n': 1, 'x': 21.8, 'z': 10.69}, {'tipo': 'vara', 'n': 2, 'x': 20.27, 'z': 9.94}]
+  OK   el tronco queda tumbado a lo largo de donde cayó — -3.6 y -2.03
+  OK   se ven, donde cayó el árbol
+  OK   las varas se ven como palos de 1,6 m tumbados — 1.61 m
+  OK   el tronco delgado se coge con Usar (en las dos manos) — {"tipo":"tronco_delgado","n":1}
+  OK   el tronco delgado se echa al hombro y deja las manos libres — {'ok': True}
+  OK   con la postura de llevarlo al hombro — hombroQuieto
+PC: se guarda y vuelve a crecer
+  OK   al recargar sigue el tocón
+  OK   pasado su tiempo, vuelve a crecer: sin tocón y otra vez en el bosque
+PC: el adulto con hacha de piedra, muy lento
+  OK   un golpe de piedra a un adulto: faltan 55 — {'ok': True, 'cae': False, 'faltan': 55, 'motivo': '', 'dir': None}
+  OK   con el hacha de hierro cae enseguida y deja un tronco largo — {'ok': True, 'cae': True, 'faltan': 0, 'motivo': '', 'dir': -1.11}
+  OK   sin errores en la consola (PC)
+Móvil: talar con el botón Usar
+  OK   móvil: el botón Usar tala
+  OK   móvil: cae y queda el tocón
+  OK   sin errores en la consola (móvil)
+
+TODO CORRECTO
