@@ -854,7 +854,7 @@ try {
         if (!(await cogerHacha())) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `sin hacha: ${h.motivo}` }; }
         // si al hacha no le quedan los golpes de este árbol, se repara antes (un adulto con piedra: 56; un joven: 8)
         { const h = s.objetos.invs.de(yo).rutasCon('hacha_piedra').map(ru => s.objetos.invs.de(yo).buscar(ru).cosa)[0];
-          if (h && VIDA_DESGASTE.hacha_piedra - (h.usado || 0) < (edad === 'adulto' ? 56 + 20 : 8 + 3)) { const rp = await repararHacha(); if (!rp.ok) return { ok: false, motivo: `no repara el hacha: ${rp.motivo}` }; } }
+          if (h && VIDA_DESGASTE.hacha_piedra - (h.usado || 0) <= (edad === 'adulto' ? 56 + 20 : 8 + 3)) { const rp = await repararHacha(); if (!rp.ok) return { ok: false, motivo: `no repara el hacha: ${rp.motivo}` }; } }
         await J.andar(a.x + 1, a.z);
         let t, g = 0;
         do {
@@ -1017,7 +1017,9 @@ try {
     console.log('16f. Para las cuerdas de la puerta y del andamio: tala un árbol adulto, lo tronza, levanta un banco de tronco y trenza 3 cuerdas');
     const ad = await talar('adulto');
     comprobar('tala un árbol adulto con su hacha de piedra (despacio)', ad.ok, `${ad.motivo || ''} ${ad.golpes || ''} golpes`);
-    comprobar('antes del adulto, al hacha de piedra no le quedan sus golpes (tras 16 jóvenes): la repara en una piedra de tallar con un cordel dejado en ella, y recupera la mitad', reparaciones.length === 1 && reparaciones[0].antes === 128 && reparaciones[0].despues === 44 && reparaciones[0].datos?.recuperado === 84 && JSON.stringify(reparaciones[0].gasta) === JSON.stringify({ cordel: 1 }), JSON.stringify(reparaciones));
+    // (12 nov: talar y limpiar el caído gastan el hacha: 11 golpes el joven y 76 el adulto con piedra; se repara cuando no
+    // le quedan los de lo que va a talar: hoy, antes del 16.º joven y antes del adulto)
+    comprobar('cuando al hacha de piedra no le quedan los golpes del árbol que va a talar y limpiar, la repara en una piedra de tallar con un cordel dejado en ella, y recupera la mitad', reparaciones.length >= 1 && reparaciones.every(x => x.despues === Math.max(0, x.antes - 84) && x.datos?.recuperado === 84 && JSON.stringify(x.gasta) === JSON.stringify({ cordel: 1 })), JSON.stringify(reparaciones));
     comprobar('y no se le rompe: tala el adulto con el hacha reparada', hachasRotas.length === 0 && ad.ok, JSON.stringify(hachasRotas));
     const largo = ad.ok && enSuelo('tronco_largo', ad.a, 6)[0];
     let golpes = 0, tz = { ok: false, motivo: 'no hay tronco largo' };
