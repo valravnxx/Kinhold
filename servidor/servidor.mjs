@@ -43,7 +43,8 @@
 //   { tipo: 'resultado_objeto', id, ok, motivo?, datos? } (datos: lo que ha pasado, p. ej. si el árbol cae y hacia dónde).
 //   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario } (también si sale mal: así el
 //   navegador deshace lo que había adelantado), y si cambia el suelo, a todos { tipo: 'suelo', objetos }. Si cae un
-//   árbol, a todos (antes que el suelo) { tipo: 'tala', estado, cae: { arbol, dir, autor, objetos } } (y a punto de caer,
+//   árbol, a todos { tipo: 'tala', estado, cae: { arbol, dir, autor, caida } }, y al limpiarlo (antes que el suelo) { tipo: 'tala',
+//   estado, limpio: { arbol, autor, objetos } } (y a punto de caer,
 //   { tipo: 'crujido', arbol, autor }; a quien le cae encima, la herida como evento de combate { tipo: 'arbol', … }); si se recoge algo, { tipo: 'recoleccion',
 //   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion).
 //   Por trozos (src/logica/trozos_red.js): lo del suelo, lo talado y lo recogido llega solo de los trozos que cada uno
@@ -1265,8 +1266,10 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           const k = sitio ? trozoDe(sitio.x, sitio.z) : null, solo = k ? new Set([k]) : new Set();
           for (const [otro, a] of clientes) if (a === autor || (k && vista.tiene(a, k))) hacer(otro, solo);
         };
-        if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos, caida: r.caida } }));
+        if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, caida: r.caida } }));
         // el crujido de aviso (12 nov): a punto de caer, lo oyen todos los de alrededor (al soltarse, con el 'tala' de arriba)
+        // el árbol caído, limpio (12 nov): lo que deja va en el suelo de abajo; aquí, que ya no está tumbado
+        if (r.ok && r.limpio) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), limpio: { arbol: msg.accion.arbol, autor, objetos: r.objetos } }));
         if (r.ok && r.cruje) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro) => enviar(otro, { tipo: 'crujido', arbol: msg.accion.arbol, autor }));
         // y quien quede debajo (src/logica/tala.js, golpeDeCaida): se mira cuándo le llegaría con dónde está ahora y, en
         // ese momento, otra vez con dónde está entonces (el que se aparta a tiempo se libra). La herida lleva su autor.

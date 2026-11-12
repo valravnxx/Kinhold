@@ -1305,6 +1305,8 @@ function arbolCercano() {
   }
   return mejor;
 }
+// el árbol caído sin limpiar al alcance del hacha (12 nov): { o, d, x, z } (x, z: el punto de su tronco más cercano)
+function caidoCercano() { return pj.k === 0 ? talaV.caidoCercano(pj.x, pj.z) : null; }
 // obra a medias al alcance: en tu planta o la de encima (un muro o un tejado que se apoya en lo que pisas)
 function obrasCercanas() {
   const lista = [];
@@ -1678,6 +1680,8 @@ function accionPrincipal() {
   if (!it && pj.k === 0 && inventario().cuantos('lasca_silex') > 0 && liebreAlLado()) { const l = liebreAlLado(); return A(tr('Despiezar la liebre'), 'liebre', l, despiezar, { alto: 0.2 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
+  // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
+  if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
   if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
@@ -1721,6 +1725,8 @@ function accionPrincipal() {
       }
       return A(tr('Talar el árbol'), 'hacha_piedra', a, () => mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true), { alto: 3, apagada: true, sub: tr('Necesitas un hacha en la mano para talar.') });
     }
+    const caido = caidoCercano();
+    if (caido) return A(tr('Limpiar el árbol caído'), 'hacha_piedra', caido, () => mostrarAviso(tr('Necesitas un hacha en la mano para limpiar el árbol caído.'), true), { alto: 0.9, apagada: true, sub: tr('Necesitas un hacha en la mano para limpiar el árbol caído.') });
     if (aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });   // junto al agua, sin otra cosa que usar, se bebe
     // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
     if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { const c = comidaQueLlevas()[0]; return A(tr('Comer: {c}', { c: tr(CATALOGO[c].nombre).toLowerCase() }), c, yo, () => comer(c), { alto: 1.2 }); }
@@ -1780,6 +1786,8 @@ function opcionesUsar() {
   }
   const a = arbolCercano();
   if (a) ops.push({ texto: tr('Talar el árbol'), pos: a, alto: 3, hacer: () => hachaEnMano(inventario()) ? empezarTala(a) : mostrarAviso(tr('Necesitas un hacha en la mano para talar.'), true) });
+  const caido = caidoCercano();
+  if (caido) ops.push({ texto: tr('Limpiar el árbol caído'), pos: caido, alto: 0.9, hacer: () => hachaEnMano(inventario()) ? empezarLimpieza(caido) : mostrarAviso(tr('Necesitas un hacha en la mano para limpiar el árbol caído.'), true) });
   if (a) {   // lo que da el árbol en pie (8 nov): la corteza y, de los pinos y los abetos, la resina
     const u = talaV.usos(a);
     if (u.descortezar) ops.push({ texto: tr('Descortezar el árbol'), pos: a, alto: 1.4, hacer: () => usarArbol(a, 'descortezar') });
@@ -2315,6 +2323,8 @@ window.__fuegos = () => ({ chimeneas: chimeneas.length, hogueras: estacionesV.pa
 // Un golpe de hacha al árbol que talas (con autor, en src/logica/tala.js). Al caer, deja el tronco y las ramas en
 // el suelo, donde cae, y el tocón.
 function empezarTala(a) { estado.talando = a; estado.golpeEn = 0.45; pj.rot = Math.atan2(a.x - pj.x, a.z - pj.z); mostrarAviso(t('talando')); }
+// Limpiar el árbol caído (valravnx, 12 nov): los mismos golpes de hacha al mismo árbol, mirando a su tronco tumbado
+function empezarLimpieza(c) { const a = c.o; a.prog = null; estado.talando = a; estado.golpeEn = 0.45; pj.rot = Math.atan2(c.x - pj.x, c.z - pj.z); mostrarAviso(tr('Limpias el árbol caído.')); }
 const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
 function golpeTala() {
   const a = estado.talando;
@@ -2359,7 +2369,16 @@ function avisoTala(a, r) {
   if (r.seRompe) {
     estado.talando = null;
     mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[r.seRompe] ? CATALOGO[r.seRompe].nombre : r.seRompe).toLowerCase() }), true);
-    if (!r.cae) return;
+    if (!r.cae && !r.limpio) return;
+  }
+  // limpiando el caído (12 nov): lo que falta y, al terminar, lo que deja
+  if (r.limpia) {
+    if (!r.limpio) { mostrarAviso(r.faltan === 1 ? tr('Limpias el árbol caído: falta 1 golpe.') : tr('Limpias el árbol caído: faltan {n} golpes.', { n: r.faltan })); return; }
+    estado.talando = null; a.prog = null;
+    const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);
+    const txt = menudo && menudo.tipo === 'vara' ? 'Árbol limpio: deja {tronco} y {n} varas.' : 'Árbol limpio: deja {tronco} y {n} ramas.';
+    mostrarAviso(tr(txt, { tronco: tr(CATALOGO[tronco.tipo].nombre).toLowerCase(), n: menudo ? menudo.n : 0 }));
+    return;
   }
   // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
   if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
@@ -2370,10 +2389,8 @@ function avisoTala(a, r) {
     return;
   }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
-  estado.talando = null;
-  const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);
-  const txt = menudo && menudo.tipo === 'vara' ? '¡El árbol cae! Deja {tronco} y {n} varas.' : '¡El árbol cae! Deja {tronco} y {n} ramas.';
-  mostrarAviso(tr(txt, { tronco: tr(CATALOGO[tronco.tipo].nombre).toLowerCase(), n: menudo ? menudo.n : 0 }));
+  estado.talando = null; a.prog = null;
+  mostrarAviso(tr('¡El árbol cae! Límpialo con el hacha para sacar el tronco y lo menudo.'));
 }
 
 // Desbrozar (valravnx, 8 nov; src/logica/recoleccion.js): el matorral (de la vegetación) o el arbusto de bayas más
@@ -3575,7 +3592,7 @@ window.__kinhold = {
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV,
   calor() { return calorEn(Object.values(fabCliente.estaciones), pj.x, pj.z, Date.now()); }, // el calor de las hogueras donde estás (para el frío)
-  inventarios, golpeTala, arbolCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
+  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
   rastras, miRastra, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)

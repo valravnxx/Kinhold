@@ -1,9 +1,10 @@
 // Pruebas de la tala (src/logica/tala.js). Ejecutar: node pruebas/prueba_tala.mjs
 // Con MUTAR=1 el adulto cae con piedra tan rápido como con hierro y el tocón vuelve al momento, y la caída no mira lo
-// que tiene delante (no se apoya ni se desvía), y el árbol que cae no hiere a nadie: las pruebas deben FALLAR.
+// que tiene delante (no se apoya ni se desvía), y el árbol que cae no hiere a nadie, y el joven caído se limpia de un
+// golpe: las pruebas deben FALLAR.
 import { Tala, GOLPES, DA, HACHAS, SEMANA, ENTRE_GOLPES, ALCANCE_TALA, edadDeEscala, idArbol, ramasDe, hachaEnMano,
   PARTE_BOCA, COHERENCIA_BOCA, PENDIENTE_CAIDA, inclinacionDe, bocaDe, caidaDe, ejecutarTala, guardarTala, cargarTala, migrarTala, VERSION_TALA,
-  simularCaida, caidaEn, altoArbol, G, CORTE, INICIO_CAIDA, REBOTE, DESVIO, AVISO_GOLPES, golpeDeCaida, bajoLaCaida } from '../src/logica/tala.js';
+  simularCaida, caidaEn, altoArbol, G, CORTE, INICIO_CAIDA, REBOTE, DESVIO, AVISO_GOLPES, golpeDeCaida, bajoLaCaida, LIMPIAR } from '../src/logica/tala.js';
 import { Mundo } from '../src/logica/construccion.js';
 import { Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
@@ -11,7 +12,7 @@ import { RegistroAcciones } from '../src/logica/acciones.js';
 import { CombateServidor } from '../src/logica/combate_servidor.js';
 
 const MUTAR = process.env.MUTAR === '1';
-if (MUTAR) { GOLPES.adulto.piedra = GOLPES.adulto.hierro; DA.adulto.vuelve = 0; }
+if (MUTAR) { GOLPES.adulto.piedra = GOLPES.adulto.hierro; DA.adulto.vuelve = 0; LIMPIAR.joven.piedra = 1; }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -35,6 +36,16 @@ function talarHasta(m, autor, arbol, x, z, t, max = 200) {
   }
   return [n, r, t];
 }
+// el árbol caído: golpea desde (x, z) hasta que queda limpio; devuelve [golpes dados, último resultado, hora]
+function limpiarHasta(m, autor, arbol, x, z, t, max = 200) {
+  let r, n = 0;
+  for (; n < max; n++) {
+    r = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor, tipo: 'talar', arbol, x, z }, t);
+    t += ENTRE_GOLPES;
+    if (!r.ok || r.limpio) { n++; break; }
+  }
+  return [n, r, t];
+}
 
 console.log('Lo que dice el documento de sistemas (apartado 3, «De los árboles»)');
 {
@@ -51,9 +62,12 @@ console.log('Lo que dice el documento de sistemas (apartado 3, «De los árboles
 console.log('Talar un árbol joven con hacha de piedra');
 {
   const m = nuevo(); conHacha(m.invs, 'ana', 'hacha_piedra');
-  const [n, r, t] = talarHasta(m, 'ana', JOVEN, 0, -1, T0);
+  const [n, r, t0] = talarHasta(m, 'ana', JOVEN, 0, -1, T0);
   comprobar('cae al dar los golpes que pide', r.ok && r.cae && n === GOLPES.joven.piedra, `${n} golpes`);
-  comprobar('cae hacia la boca: el lado desde el que la ha cortado (GDD; revisión del 1 nov)', Math.abs(Math.abs(r.dir) - Math.PI) < 0.01 && r.por === 'boca' && r.deja.every(o => o.z < 0), `dir ${r.dir}, por ${r.por}`);
+  comprobar('cae hacia la boca: el lado desde el que la ha cortado (GDD; revisión del 1 nov)', Math.abs(Math.abs(r.dir) - Math.PI) < 0.01 && r.por === 'boca', `dir ${r.dir}, por ${r.por}`);
+  comprobar('al caer no deja nada aún: se queda entero en el suelo, caído (valravnx, 12 nov)', !m.suelo.objetos.length && m.tala.caido(JOVEN, t0) && !r.deja);
+  const [nl, rl, t] = limpiarHasta(m, 'ana', JOVEN, 0.5, -2.5, t0);
+  comprobar('limpiándolo con el hacha (desde su tronco tumbado), al último golpe deja lo suyo', rl.ok && rl.limpio && nl === LIMPIAR.joven.piedra && rl.deja.every(o => o.z < 0), `${nl} golpes · ${rl.motivo || ''}`);
   const tronco = m.suelo.objetos.find(o => o.cosa.tipo === 'tronco_delgado'), varas = m.suelo.objetos.find(o => o.cosa.tipo === 'vara');
   comprobar('deja en el suelo un tronco delgado y de 2 a 4 varas, a nombre del que tala', tronco && tronco.cosa.n === 1 && varas && varas.cosa.n >= DA.joven.ramas[0] && varas.cosa.n <= DA.joven.ramas[1] && tronco.autor === 'ana' && varas.autor === 'ana', varas && String(varas.cosa.n));
   comprobar('y ninguna rama (eso, el adulto)', !m.suelo.objetos.some(o => o.cosa.tipo === 'rama'));
@@ -72,11 +86,13 @@ console.log('Talar un árbol joven con hacha de piedra');
 console.log('Talar un árbol adulto: con hierro, y con piedra muy lento');
 {
   const m = nuevo(); conHacha(m.invs, 'ana', 'hacha_hierro', 'mano:izq');
-  const [n, r] = talarHasta(m, 'ana', ADULTO, 11, 0, T0);
+  const [n, r, t1] = talarHasta(m, 'ana', ADULTO, 11, 0, T0);
   comprobar('con hacha de hierro (en la mano izquierda) cae en sus golpes', r.cae && n === GOLPES.adulto.hierro, `${n}`);
+  const [nl] = limpiarHasta(m, 'ana', ADULTO, 14, 0.5, t1);
+  comprobar('y limpio (con hierro, sus golpes), deja lo suyo', nl === LIMPIAR.adulto.hierro && !m.tala.caido(ADULTO, t1 + nl * ENTRE_GOLPES), `${nl} golpes`);
   const tronco = m.suelo.objetos.find(o => o.cosa.tipo === 'tronco_largo'), ramas = m.suelo.objetos.find(o => o.cosa.tipo === 'rama');
   comprobar('deja un tronco largo y muchas ramas', tronco && ramas && ramas.cosa.n >= DA.adulto.ramas[0], ramas && String(ramas.cosa.n));
-  comprobar('cae hacia el este, hacia la boca (el que tala está al este)', Math.abs(r.dir - Math.PI / 2) < 0.01 && tronco.x > 10, `dir ${r.dir}`);
+  comprobar('cae hacia el este, hacia la boca (el que tala está al este)', Math.abs(r.dir - Math.PI / 2) < 0.01 && !!tronco && tronco.x > 10, `dir ${r.dir}`);
   const p = nuevo(); conHacha(p.invs, 'bea', 'hacha_piedra');
   const [n2, r2] = talarHasta(p, 'bea', ADULTO, 9, 0, T0);
   comprobar('con hacha de piedra también cae, pero con muchos más golpes', r2.cae && n2 === GOLPES.adulto.piedra && n2 >= 4 * n, `${n2} golpes`);
@@ -98,7 +114,7 @@ console.log('Hacia dónde cae: la boca, la cuesta o su inclinación (GDD; revisi
     for (let i = 0; i < nBoca; i++, t += ENTRE_GOLPES) aviso = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: 'ana', tipo: 'talar', arbol: JOVEN, x: 1, z: 0 }, t);
     comprobar(`la boca se abre con los golpes del primer tercio (${nBoca} de ${N}) y el último de ellos dice hacia dónde caerá`, aviso.ok && !aviso.cae && cerca(aviso.boca, L / 2), `boca ${aviso.boca}`);
     const r = caer(m, golpes.slice(nBoca), t);
-    comprobar('cortada la boca al este y por detrás desde el oeste, cae al este (hacia la boca, no hacia el que da el último golpe)', r.cae && r.por === 'boca' && cerca(r.dir, L / 2) && r.deja.every(o => o.x > 0), `dir ${r.dir}, por ${r.por}`);
+    comprobar('cortada la boca al este y por detrás desde el oeste, cae al este (hacia la boca, no hacia el que da el último golpe)', r.cae && r.por === 'boca' && cerca(r.dir, L / 2), `dir ${r.dir}, por ${r.por}`);
   }
   // la boca la abre bea al norte y el resto lo corta ana desde el sur: cae al norte, hacia la boca
   {
@@ -128,7 +144,7 @@ console.log('Hacia dónde cae: la boca, la cuesta o su inclinación (GDD; revisi
   {
     const m = nuevo(); m.tala.alturaEn = (x, z) => -0.3 * z; conHacha(m.invs, 'ana', 'hacha_piedra'); conHacha(m.invs, 'bea', 'hacha_piedra');
     const r = caer(m, enfrentados());
-    comprobar('sin boca y en cuesta (30 %), cae cuesta abajo', r.cae && r.por === 'cuesta' && cerca(r.dir, 0) && r.deja.every(o => o.z > 0), `dir ${r.dir}, por ${r.por}`);
+    comprobar('sin boca y en cuesta (30 %), cae cuesta abajo', r.cae && r.por === 'cuesta' && cerca(r.dir, 0), `dir ${r.dir}, por ${r.por}`);
     const m2 = nuevo(); m2.tala.alturaEn = (x, z) => -0.5 * x; conHacha(m2.invs, 'ana', 'hacha_piedra');
     const r2 = caer(m2, Array.from({ length: N }, () => ['ana', -1, 0]));
     comprobar('con boca, la boca manda sobre la cuesta (boca al oeste, cuesta abajo al este)', r2.cae && r2.por === 'boca' && cerca(r2.dir, -L / 2), `dir ${r2.dir}`);
@@ -177,7 +193,8 @@ console.log('Entre dos: los golpes de los dos cuentan en el mismo árbol');
     t += ENTRE_GOLPES / 2 + 1; // cada uno a su ritmo: juntos, el doble de golpes por segundo
   }
   comprobar('cae con los golpes de los dos, en la mitad de tiempo', r.ok && r.cae, `${(t - T0) / 1000} s`);
-  comprobar('lo que deja va a nombre del que da el último golpe', m.suelo.objetos.every(o => o.autor === 'bea'));
+  for (let i = 0; i < 40 && !r.limpio; i++) { r = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: i % 2 ? 'bea' : 'ana', tipo: 'talar', arbol: ADULTO, x: 13, z: 0.5 }, t); t += ENTRE_GOLPES / 2 + 1; }
+  comprobar('lo limpian también entre los dos; lo que deja va a nombre del que da el último golpe', r.limpio && m.suelo.objetos.length && m.suelo.objetos.every(o => o.autor === 'bea'));
 }
 
 console.log('Ramas: un azar fijo por árbol y por vez');
@@ -253,7 +270,7 @@ console.log('La caída: con la gravedad, rebota, se asienta según el terreno, y
   const t2 = new Tala([{ ...roble }, { id: idArbol(0.8, 4), x: 0.8, z: 4, edad: 'adulto', especie: 'roble', alto: 9 }]);
   const invs = new Inventarios(); conHacha(invs, 'ana', 'hacha_hierro');
   let r, hora = T0; for (let i = 0; i < 40; i++) { r = t2.golpe(invs.de('ana'), roble.id, 0, 1, hora, 'ana'); hora += ENTRE_GOLPES; if (r.cae) break; }
-  comprobar('al caer, el golpe trae la caída; el árbol de al lado lo desvía, y el tronco queda hacia donde fue', r.cae && r.caida && cerca(r.caida.dir, r.dir) && cerca(r.dir, -DESVIO) && r.deja[0].x < 0, `dir ${r.dir}`);
+  comprobar('al caer, el golpe trae la caída; el árbol de al lado lo desvía, y el tronco queda hacia donde fue', r.cae && r.caida && cerca(r.caida.dir, r.dir) && cerca(r.dir, -DESVIO) && (t2.tendido(roble.id, hora) || {}).x1 < 0, `dir ${r.dir}`);
   // las obras de alrededor (src/logica/construccion.js): un muro de la planta baja, hasta lo alto de la planta
   const mundo = new Mundo();
   mundo.construcciones.push({ id: 7, ox: 0, oz: 3, oy: 0.5, rot: 0, piezas: new Map([['e,0,0,0,0', { id: 8, tipo: 'muro_zarzo', hueco: 'e', i: 0, j: 0, k: 0, d: 0 }]]) });
@@ -265,6 +282,39 @@ console.log('La caída: con la gravedad, rebota, se asienta según el terreno, y
   // un tocón no para nada
   t2.estado[idArbol(0.8, 4)] = { golpes: 0, parte: 0, veces: 1, caido: T0, vuelve: T0 + SEMANA };
   comprobar('un tocón no cuenta: el árbol talado ya no está', t2.alrededor(roble, T0 + 1000).length === 0);
+}
+
+console.log('El árbol caído se queda entero y se limpia con hacha (valravnx, 12 nov)');
+{
+  const m = nuevo(); conHacha(m.invs, 'ana', 'hacha_piedra');
+  const [, r, t] = talarHasta(m, 'ana', JOVEN, 0, -1, T0);   // cae hacia el sur (z < 0)
+  const e = m.tala.estado[JOVEN], td = m.tala.tendido(JOVEN, t);
+  comprobar('se queda caído donde se asentó: con su dirección y el ángulo de su caída', m.tala.caido(JOVEN, t) && e.ang === r.caida.angulo && e.dir === r.dir && m.tala.caidos(t).length === 1, JSON.stringify(e));
+  comprobar('tumbado a lo largo del suelo, del tocón hacia donde cayó', td && Math.abs(td.x1) < 0.05 && td.z1 < -2.5, JSON.stringify(td));
+  comprobar('sigue el tocón: no está en pie', !m.tala.enPie(JOVEN, t) && m.tala.tocones(t)[0].ang === e.ang);
+  const lejos = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: 'ana', tipo: 'talar', arbol: JOVEN, x: 3, z: -2 }, t);
+  comprobar('lejos de su tronco tumbado, no se llega', !lejos.ok && /lejos/.test(lejos.motivo), lejos.motivo);
+  const sin = ejecutarTala(m.tala, { de: () => new Inventarios().de('x') }, m.suelo, m.reg, { autor: 'ben', tipo: 'talar', arbol: JOVEN, x: 0, z: -2 }, t);
+  comprobar('sin hacha en la mano no se limpia', !sin.ok && /hacha/.test(sin.motivo), sin.motivo);
+  // desde la punta (lejos del tocón, junto al tronco tumbado) sí
+  const punta = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: 'ana', tipo: 'talar', arbol: JOVEN, x: 0.8, z: td.z1 }, t);
+  comprobar('desde la punta del tronco tumbado sí: el golpe lo va limpiando', punta.ok && punta.limpia && !punta.limpio && punta.faltan === LIMPIAR.joven.piedra - 1 && m.tala.progresoLimpiar(JOVEN) > 0, JSON.stringify(punta));
+  comprobar('y gasta el hacha como al talar', punta.desgaste && punta.desgaste.usado === GOLPES.joven.piedra + 1, JSON.stringify(punta.desgaste));
+  comprobar('mientras, en el suelo no hay nada', !m.suelo.objetos.length);
+  // lo guardado: el caído y lo que lleva limpiado
+  const t2 = new Tala(arboles).importar(JSON.parse(JSON.stringify(m.tala.exportar())));
+  comprobar('se guarda caído, con lo que lleva limpiado', t2.caido(JOVEN, t) && t2.estado[JOVEN].ang === e.ang && t2.progresoLimpiar(JOVEN) === m.tala.progresoLimpiar(JOVEN));
+  const [n, rl, t3] = limpiarHasta(m, 'ana', JOVEN, 0.6, -2, t + ENTRE_GOLPES);
+  comprobar('con piedra, el joven se limpia en 3 golpes (este y los de antes; el adulto, en 20)', rl.limpio && n + 1 === 3 && LIMPIAR.adulto.piedra === 20, `${n + 1}`);
+  comprobar('limpio: ya no está caído, queda el tocón, y en el suelo el tronco delgado y las varas', !m.tala.caido(JOVEN, t3) && !m.tala.enPie(JOVEN, t3) && m.suelo.objetos.some(o => o.cosa.tipo === 'tronco_delgado') && m.suelo.objetos.some(o => o.cosa.tipo === 'vara'));
+  comprobar('el registro lo anota con su autor: lo que deja al limpiarlo', m.reg.entradas.at(-1).autor === 'ana' && m.reg.entradas.at(-1).resultado?.limpio === true && m.reg.entradas.at(-1).resultado?.deja?.length === 2);
+  const otro = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: 'ana', tipo: 'talar', arbol: JOVEN, x: 0, z: -2 }, t3 + ENTRE_GOLPES);
+  comprobar('limpio, ya solo queda el tocón', !otro.ok && /tocón/.test(otro.motivo), otro.motivo);
+  // el que no se limpia, se pudre: al volver a crecer el árbol, desaparece sin dejar nada
+  const p = nuevo(); conHacha(p.invs, 'ana', 'hacha_piedra');
+  talarHasta(p, 'ana', JOVEN, 0, -1, T0);
+  const vuelto = T0 + DA.joven.vuelve + 60000;
+  comprobar('sin limpiar, al volver a crecer el árbol el caído ya no está (sin dejar nada)', !p.tala.caido(JOVEN, vuelto) && p.tala.enPie(JOVEN, vuelto) && !p.suelo.objetos.length);
 }
 
 console.log('El crujido de aviso y el daño (tarea «Crujido de aviso y daño», 12 nov)');

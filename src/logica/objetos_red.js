@@ -129,7 +129,7 @@ export class ObjetosServidor {
       else if (a.tipo === 'talar' || a.tipo === 'descortezar' || a.tipo === 'sangrar') {
         const fallo = this.conocerArbol(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarTala(this.tala, this.invs, this.suelo, this.registro, a, ahora);
-        suelo = !!(r.ok && r.cae);
+        suelo = !!(r.ok && r.limpio);   // (12 nov) lo que deja cae al suelo al limpiar el caído, no al caer
       } else if (a.tipo === 'trocear') {
         r = ejecutarTroceo(this.troceo, this.invs, this.registro, a, ahora, this.enTierras);
         suelo = !!(r.ok && r.termina);
@@ -177,16 +177,19 @@ export class ObjetosServidor {
     if (this.terreno) {
       const t = this.terreno.arbol(a.arbol, num(a.ax) ? a.ax : a.x, num(a.az) ? a.az : a.z);
       if (!t) return 'Ahí no hay ningún árbol.';
-      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_TALA + TOLERANCIA) return 'Está demasiado lejos.';
+      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_TALA + TOLERANCIA + this.largoCaido(a.arbol)) return 'Está demasiado lejos.';
       this.tala.anadir([{ ...t }]);
       return null;
     }
     if (!txt(a.arbol) || !num(a.ax) || !num(a.az) || !Object.hasOwn(DA, a.edad)) return 'Datos no válidos.';
     if (idArbol(a.ax, a.az) !== a.arbol) return 'Ahí no hay ningún árbol.';
-    if (Math.hypot(a.ax - p.x, a.az - p.z) > ALCANCE_TALA + TOLERANCIA) return 'Está demasiado lejos.';
+    if (Math.hypot(a.ax - p.x, a.az - p.z) > ALCANCE_TALA + TOLERANCIA + this.largoCaido(a.arbol)) return 'Está demasiado lejos.';
     this.tala.anadir([{ id: a.arbol, x: Math.round(a.ax * 100) / 100, z: Math.round(a.az * 100) / 100, edad: a.edad, ...(txt(a.especie) && a.especie.length <= 16 ? { especie: a.especie } : {}) }]);
     return null;
   }
+  // Un árbol caído sin limpiar (12 nov) se limpia desde cualquier punto de su tronco tumbado: hasta la punta (el más
+  // alto, unos 12 m); lo exacto lo mira la tala (src/logica/tala.js, distanciaCaido).
+  largoCaido(id) { const e = this.tala.estado[id]; return e && Number.isFinite(e.ang) ? 12 : 0; }
   // Lo mismo con un punto de recogida: su clase (ramas, piedra…) y su sitio.
   conocerPunto(a, p) {
     if (this.recoleccion.porId.has(a.punto)) return null;
