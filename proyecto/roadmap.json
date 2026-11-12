@@ -1499,7 +1499,9 @@
     },
     {
      "nombre": "Hierba densa: una alfombra de hojas teñidas con el color del suelo que tienen debajo, movidas por el viento, que se desvanece con la distancia; cuánta, según el perfil gráfico",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-12T11:50:53+01:00",
+     "rama": "trabajo/20261112-1151-aspecto-hierba"
     },
     {
      "nombre": "El suelo con materiales: hierba, tierra, roca y hojarasca mezcladas según la pendiente, el bioma y el bosque, con relieve",

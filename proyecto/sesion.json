@@ -1,4 +1,10 @@
 {
  "A": null,
- "B": null
+ "B": null,
+ "chat:trabajo/20261112-1151-aspecto-hierba": {
+  "inicio": "2026-11-12T11:50:53+01:00",
+  "tarea": "Hierba densa: una alfombra de hojas teñidas con el color del suelo que tienen debajo, movidas por el viento, que se desvanece con la distancia; cuánta, según el perfil gráfico",
+  "hito": "aspecto",
+  "rama": "trabajo/20261112-1151-aspecto-hierba"
+ }
 }
