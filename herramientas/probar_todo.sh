@@ -93,6 +93,7 @@ paso "Chat de texto: lo que se dice, limpio, sin hablar a chorro, a los de cerca
 paso "Recorrido de jugador: uno nuevo, sin arcón y con lo que recoge, de principio a fin" node pruebas/prueba_recorrido.mjs
 paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs
+paso "Los materiales del suelo: hierba, tierra, roca y hojarasca" node pruebas/prueba_suelo_materiales.mjs
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
