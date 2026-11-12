@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2739 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3075 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4450 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3145 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2733 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3101 KB
+dist/kinhold_trozos.html 2752 KB
+hilo de los trozos 23 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el perfil gráfico en el juego
+  OK   móvil: con el horizonte se ve lo lejano (cambia la franja del horizonte) — cambia el 25.9 % de la franja
+  OK   móvil: sin errores de página
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas/graficos_juego
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 2420 s
