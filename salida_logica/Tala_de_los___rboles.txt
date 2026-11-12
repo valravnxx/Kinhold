@@ -1,0 +1,106 @@
+Lo que dice el documento de sistemas (apartado 3, «De los árboles»)
+  OK   joven o adulto sale del tamaño del árbol
+  OK   el joven se tala con piedra o con hierro
+  OK   el adulto con hierro; con piedra tarda mucho (cuatro veces más o más) — 56 y 14
+  OK   el joven da un tronco delgado (grande) y el adulto uno largo (enorme)
+  OK   el adulto da muchas más ramas que varas el joven
+  OK   el joven da varas y el adulto ramas (revisión del 1 nov: «tronco delgado y varas»)
+  OK   vuelven a crecer en semanas reales — 3 y 6 semanas
+  OK   las hachas: de piedra, de hierro y la de mano (cabeza de hierro), en el catálogo
+Talar un árbol joven con hacha de piedra
+  OK   cae al dar los golpes que pide — 8 golpes
+  OK   cae hacia la boca: el lado desde el que la ha cortado (GDD; revisión del 1 nov) — dir 3.14, por boca
+  OK   deja en el suelo un tronco delgado y de 2 a 4 varas, a nombre del que tala — 3
+  OK   y ninguna rama (eso, el adulto)
+  OK   las varas, tumbadas a lo largo de donde cayó, como el tronco — 1.57 y 1.57
+  OK   el tronco se queda (no desaparece)
+  OK   queda el tocón: ya no está en pie
+  OK   el tocón no se vuelve a talar — Ese árbol ya está talado: solo queda el tocón.
+  OK   a las tres semanas sigue el tocón
+  OK   pasado su tiempo vuelve a crecer (por tiempo transcurrido)
+  OK   y se puede talar otra vez
+  OK   el registro lleva cada golpe con su autor
+Talar un árbol adulto: con hierro, y con piedra muy lento
+  OK   con hacha de hierro (en la mano izquierda) cae en sus golpes — 14
+  OK   deja un tronco largo y muchas ramas — 6
+  OK   cae hacia el este, hacia la boca (el que tala está al este) — dir 1.57
+  OK   con hacha de piedra también cae, pero con muchos más golpes — 56 golpes
+  OK   el hacha de mano tala como la de hierro
+Hacia dónde cae: la boca, la cuesta o su inclinación (GDD; revisión del 1 nov)
+  OK   la boca se abre con los golpes del primer tercio (3 de 8) y el último de ellos dice hacia dónde caerá — boca 1.57
+  OK   cortada la boca al este y por detrás desde el oeste, cae al este (hacia la boca, no hacia el que da el último golpe) — dir 1.57, por boca
+  OK   la boca la abre quien sea: la de bea al norte (z < 0), aunque el resto lo corte ana desde el sur — dir 3.14
+  OK   golpes de la boca algo desviados (hasta 35°) siguen haciendo boca, hacia su media — dir 0.09
+  OK   golpes de lados opuestos no hacen boca, y el aviso lo dice — boca null
+  OK   sin boca y en llano, cae hacia donde se inclina el árbol — dir 1.89, inclinación 1.89
+  OK   sin boca y en cuesta (30 %), cae cuesta abajo — dir 0, por cuesta
+  OK   con boca, la boca manda sobre la cuesta (boca al oeste, cuesta abajo al este) — dir -1.57
+  OK   una cuesta suave (5 %, menos del 12 %) no manda: cae por su inclinación — por inclinacion
+  OK   la inclinación es fija por árbol y no la misma para todos
+  OK   caidaDe sin terreno ni boca: por su inclinación
+  OK   lo que lleva abierto de la boca se guarda y se lee — {"golpes":1,"parte":0.125,"veces":0,"bp":0.125,"bx":0,"bz":0.125}
+  OK   una boca guardada rota se descarta (el árbol sigue con sus golpes)
+  OK   los números: la boca, un tercio; de un lado, 0,7 o más; la cuesta que manda, 12 %
+Lo que no se puede
+  OK   sin hacha en la mano, no se tala
+  OK   lejos del árbol, no
+  OK   un árbol que no existe, no
+  OK   sin autor, no
+  OK   datos raros, no
+  OK   sin hora, no
+  OK   un golpe sí
+  OK   dos golpes demasiado seguidos, no
+  OK   el hacha de otro no te sirve
+  OK   lo fallido también queda en el registro
+Entre dos: los golpes de los dos cuentan en el mismo árbol
+  OK   cae con los golpes de los dos, en la mitad de tiempo — 5.614 s
+  OK   lo que deja va a nombre del que da el último golpe
+Ramas: un azar fijo por árbol y por vez
+  OK   siempre lo mismo
+  OK   dentro de lo que dice, y no siempre igual — 6,9,8,7
+  OK   el hacha en la mano se encuentra
+Guardar y cargar (los navegadores y el servidor: por tiempo transcurrido)
+  OK   se guarda
+  OK   el tocón sigue al cargar, con su hora de volver
+  OK   y la muesca del adulto también
+  OK   lo de un árbol aún sin cargar no cuenta (no hay tocón ni árbol)
+  OK   y en cuanto llega, sigue talado
+  OK   si se va y vuelve, también; y se vuelve a guardar
+  OK   lo que no es un árbol se descarta
+  OK   un guardado roto o sin versión se descarta
+  OK   un guardado ilegible no rompe nada
+La caída: con la gravedad, rebota, se asienta según el terreno, y se apoya o se desvía (tarea «La caída»)
+  OK   el alto sale de la especie y del tamaño (el roble a escala 1, 7,5 m; el joven, 4 m) — 9 m
+  OK   empieza casi en pie (lo que se ha vencido al soltarlo) y acaba tumbado en el llano — 1.552 rad
+  OK   cae cada vez más deprisa (la gravedad) hasta el suelo — 74 tramos
+  OK   tarda lo que pide la gravedad para su alto (±0,1 s) — 2.683 s, a mano 2.682 s
+  OK   rebota un poco al dar en el suelo y se asienta — rebota hasta 1.505
+  OK   se asienta según el terreno: cuesta abajo se tumba más que en llano, y cuesta arriba menos — 1.844 / 1.552 / 1.26
+  OK   los fotogramas, cada 1/30 s como mucho, y en caidaEn el ángulo de cada momento
+  OK   si da de lleno con otro árbol, se queda apoyado en él (no llega al suelo) — 0.478 rad, {"tipo":"arbol","id":"b"}
+  OK   si lo coge de refilón, se desvía hacia el otro lado y sigue hasta el suelo — dir -0.4
+  OK   una obra delante también lo para — 0.938 rad
+  OK   lo que está más allá de su alto o a un lado no cuenta
+  OK   sale siempre igual (todos la ven igual)
+  OK   al caer, el golpe trae la caída; el árbol de al lado lo desvía, y el tronco queda hacia donde fue — dir -0.4
+  OK   las obras cerca salen con su sitio y su alto (un muro, hasta lo alto de su planta); las lejanas, no — {"id":"obra:7:8","tipo":"obra","x":1,"z":3,"r":1,"arriba":3}
+  OK   y con ellas la tala sabe con qué puede dar
+  OK   un tocón no cuenta: el árbol talado ya no está
+El crujido de aviso y el daño (tarea «Crujido de aviso y daño», 12 nov)
+  OK   cruje cuando le quedan 2 golpes o menos (no antes) — [false,false,true,true]
+  OK   a quien está debajo del tronco le da de lleno: en la cabeza, contundente y muy grave (adulto) — {"t":2.429,"parte":"tronco","zona":"cabeza","sev":0.95,"tipo":"contundente"}
+  OK   debajo de la copa, las ramas: en el torso y menos grave — {"t":2.596,"parte":"copa","zona":"torso","sev":0.5,"tipo":"contundente"}
+  OK   a un lado del tronco, en un hombro (brazo) — {"t":2.429,"parte":"tronco","zona":"brazoD","sev":0.95,"tipo":"contundente"}
+  OK   le llega cuando el tronco baja hasta su cabeza: antes de lo que tarda la caída entera, y antes cerca que lejos — 2.429 s y 2.596 s de 3.254
+  OK   detrás del tocón, a un lado lejos o más allá de la punta, nada
+  OK   si aún no ha llegado (pronto en la caída), nada: el que se aparta a tiempo se libra
+  OK   el joven hiere menos que el adulto — {"t":1.396,"parte":"copa","zona":"torso","sev":0.2,"tipo":"contundente"}
+  OK   si se queda apoyado en lo alto de otro árbol, no le da a quien está más allá de donde se apoya — 0.352 rad
+  OK   a quiénes les llega, por orden (también al que lo tala si se queda debajo, y al compañero) — [["ana",2.429],["lejos",2.596]]
+  OK   el servidor le hace la herida a quien le cae (contundente) y la anota con el autor que lo taló — {"n":1,"autor":"ana","tipo":"arbol","datos":{"objetivo":"ben","arbol":"arbol:0,0","parte":"tronco"},"ok":true,"resultado":"herida","zona":"cabeza","gravedad":"muy grave"}
+  OK   y lo reparte como evento de combate (para el aviso y la ropa que se gasta) — {"tipo":"arbol","n":1,"autor":"ana","objetivo":"ben","arbol":"arbol:0,0","parte":"tronco","resultado":"herida","t":0,"zona":"cabeza","gravedad":"muy grave","danio":"contundente"}
+  OK   un tronco de adulto en la cabeza deja inconsciente
+  OK   también al que lo tala
+  OK   en Strandvang no hiere a otro jugador (se anota rechazado)
+
+94 bien, 0 mal
