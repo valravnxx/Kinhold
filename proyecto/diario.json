@@ -6327,5 +6327,21 @@
   ],
   "pruebas": "En la nube, el revisor pidió lógica y recorrido: recorrido correcto; en lógica todo correcto salvo dos comprobaciones de prueba_nube (systemd-analyze verify), que fallan por avisos de servicios de la propia máquina de GitHub (CPUAccounting= en xfs_scrub y walinuxagent), no por este cambio. Sin versión nueva: no cambia nada jugable.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T07:23:17+00:00",
+  "fin": "2026-11-12T08:00:58+00:00",
+  "titulo": "Orden: src/juego/main.js partido en partes",
+  "hito": "orden",
+  "hecho": [
+   "src/juego/main.js pasa de 3.602 a 3.196 líneas: cuatro partes con sentido salen a sus propios archivos, sin cambiar nada de lo que hacen.",
+   "src/juego/movimiento.js: qué corta el paso en cada planta, el choque, el paso del rival de práctica y la altura del suelo bajo el jugador (escaleras, adarve, trampillas, andamio y tejados).",
+   "src/juego/camara_libre.js: la herramienta del admin (la velocidad, el autoconstruir y la cámara libre con su barra).",
+   "src/juego/barra_construir.js: la barra de construir (pestañas, piezas y su coste en iconos) y el contador de arriba, plegado.",
+   "src/juego/accion_vista.js: la acción a la vista (la etiqueta, el aro en el suelo, el botón de acción del móvil y la lista de lo demás).",
+   "Lo que queda en main.js (las obras, las acciones, la conexión en línea y el bucle) comparte mucho estado y se queda junto; los archivos nuevos están en la tabla del revisor de pruebas."
+  ],
+  "pruebas": "En la nube, el revisor pidió construcción, la acción a la vista, construir a la altura del suelo y el panel del admin, y se nombraron a mano la demo única y el combate en el mundo: los 6 correctos. Capturas de PC y móvil miradas: igual que antes. Sin versión nueva: no cambia nada jugable.",
+  "estado": "ok"
  }
 ]
