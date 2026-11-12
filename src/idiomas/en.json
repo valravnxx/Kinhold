@@ -2737,5 +2737,16 @@
  "v189: la hierba densa (hito «El aspecto»; valravnx, 12 nov: «el mundo sigue viéndose como un prado verde con puntitos de hierbas»). En lugar de las briznas oscuras sueltas, miles de matas de hojas finas alrededor de ti, cada una del color del suelo que tiene debajo y algo más clara en la punta, que se mueven con el viento y reciben las sombras. Donde el suelo es tierra, roca, arena o nieve no hay hierba, ni donde has construido, ni al lado de lo que se recoge del suelo (para no taparlo). A lo lejos se va por partes, sin corte.": "v189: dense grass (milestone «The look»; valravnx, 12 Nov: «the world still looks like a green meadow with little dots of grass»). Instead of the loose dark blades, thousands of tufts of fine blades around you, each the colour of the ground beneath it and slightly lighter at the tip, moving with the wind and receiving shadows. There is no grass where the ground is earth, rock, sand or snow, nor where you have built, nor next to things you can pick up from the ground (so as not to hide them). In the distance it thins out gradually, with no hard edge.",
  "v189, provisional: cuánta hierba y hasta dónde, según la calidad gráfica (el móvil básico no la lleva y sigue con las briznas de antes): de 22 m y 12 matas por metro en el móvil medio a 44 m y 15 en el PC alto; cerca de ti hay más y más pequeñas, y de la mitad del radio para allá, menos y más anchas. No hace sombra ni choca, y aún no se pisa ni se siega. Las pruebas automáticas van sin ella salvo la suya.": "v189, provisional: how much grass and how far, according to the graphics quality (basic mobile does not have it and keeps the old blades): from 22 m and 12 tufts per metre on medium mobile to 44 m and 15 on high PC; near you there are more and smaller ones, and from half the radius outwards, fewer and wider. It casts no shadow and has no collision, and it cannot yet be trampled or mown. The automated tests run without it except its own.",
  "Hierba densa": "Dense grass",
- "Demo única · v189 (Hierba densa)": "Single demo · v189 (Dense grass)"
+ "Demo única · v189 (Hierba densa)": "Single demo · v189 (Dense grass)",
+ "Mandada: {f} fps de media, el fotograma más lento {p} ms.": "Sent: {f} fps on average, slowest frame {p} ms.",
+ "No se ha podido mandar: sin conexión con el servidor.": "Could not send it: no connection to the server.",
+ "Midiendo… {s} s": "Measuring… {s} s",
+ "Medir {s} s y mandarlo al servidor": "Measure {s} s and send it to the server",
+ "Aún no se ha mandado ninguna.": "None has been sent yet.",
+ "Medida para el servidor": "Measurement for the server",
+ "Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.": "Play normally while it measures: it sends how long each frame takes, the triangles, the draw calls and this device.",
+ "Ver las mandadas": "See the ones sent",
+ "Espera un poco antes de mandar otra medida.": "Wait a little before sending another measurement.",
+ "Medida no válida.": "Invalid measurement.",
+ "El servidor no ha podido guardarla.": "The server could not save it."
 }

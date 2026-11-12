@@ -20,7 +20,7 @@ import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearHierbaDensa } from '../mundo/hierba_densa.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
-import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
+import { vigilar, soloEscena, ofrecerGente, ofrecerEnvio } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
 import { perfil as perfilGrafico } from '../posprocesado/perfiles.js';
 import { ponerDetalleNaturaleza, cargarAltoNaturaleza } from '../mundo/naturaleza_meshy.js';
@@ -217,6 +217,8 @@ renderer.setClearColor(0x000000, 0); // el cielo lo pinta la página (un degrada
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 prepararRenderer(renderer); // sombras blandas, sRGB y ACES: los de la escena común
 vigilar(renderer); // fotogramas, triángulos y memoria (src/mundo/rendimiento.js)
+// y la medida de este aparato, al servidor con un botón del panel de rendimiento (por la conexión, si la hay)
+ofrecerEnvio({ mandar: (m) => (enLinea ? enLinea.pedirRendimiento(m) : Promise.resolve(null)), admin: () => !!(enLinea && enLinea.admin) });
 const escena = new THREE.Scene();
 // En la demo, el mundo de verdad: Whitholm, la isla de los playtests (src/mundo/mundo_juego.js). El mapa lo genera antes el
 // menú de la demo (window.__mundoDemo). Sin él (la demo con ?llano=1, que usan las pruebas de navegador de la construcción), el llano.

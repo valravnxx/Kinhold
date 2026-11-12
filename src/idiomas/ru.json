@@ -2737,5 +2737,16 @@
  "v189: la hierba densa (hito «El aspecto»; valravnx, 12 nov: «el mundo sigue viéndose como un prado verde con puntitos de hierbas»). En lugar de las briznas oscuras sueltas, miles de matas de hojas finas alrededor de ti, cada una del color del suelo que tiene debajo y algo más clara en la punta, que se mueven con el viento y reciben las sombras. Donde el suelo es tierra, roca, arena o nieve no hay hierba, ni donde has construido, ni al lado de lo que se recoge del suelo (para no taparlo). A lo lejos se va por partes, sin corte.": "v189: густая трава (этап «Облик»; valravnx, 12 ноя: «мир всё ещё выглядит как зелёный луг с точечками травы»). Вместо редких тёмных травинок — тысячи кустиков тонких травинок вокруг тебя, каждый цвета земли под ним и чуть светлее на кончике; они колышутся на ветру и принимают тени. Травы нет там, где земля — это почва, камень, песок или снег, там, где ты построил, и рядом с тем, что можно подобрать с земли (чтобы не закрывать). Вдали она редеет постепенно, без резкой границы.",
  "v189, provisional: cuánta hierba y hasta dónde, según la calidad gráfica (el móvil básico no la lleva y sigue con las briznas de antes): de 22 m y 12 matas por metro en el móvil medio a 44 m y 15 en el PC alto; cerca de ti hay más y más pequeñas, y de la mitad del radio para allá, menos y más anchas. No hace sombra ni choca, y aún no se pisa ni se siega. Las pruebas automáticas van sin ella salvo la suya.": "v189, временно: сколько травы и как далеко — по качеству графики (в базовом мобильном её нет, остаются прежние травинки): от 22 м и 12 кустиков на метр в среднем мобильном до 44 м и 15 в высоком ПК; рядом с тобой их больше и они мельче, а дальше половины радиуса — меньше и шире. Она не отбрасывает тень и не мешает ходить, и её пока нельзя примять или скосить. Автоматические тесты идут без неё, кроме её собственного.",
  "Hierba densa": "Густая трава",
- "Demo única · v189 (Hierba densa)": "Единая демо · v189 (Густая трава)"
+ "Demo única · v189 (Hierba densa)": "Единая демо · v189 (Густая трава)",
+ "Mandada: {f} fps de media, el fotograma más lento {p} ms.": "Отправлено: в среднем {f} к/с, самый медленный кадр {p} мс.",
+ "No se ha podido mandar: sin conexión con el servidor.": "Не удалось отправить: нет связи с сервером.",
+ "Midiendo… {s} s": "Измеряю… {s} с",
+ "Medir {s} s y mandarlo al servidor": "Измерить {s} с и отправить на сервер",
+ "Aún no se ha mandado ninguna.": "Пока ничего не отправлено.",
+ "Medida para el servidor": "Замер для сервера",
+ "Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.": "Играйте как обычно, пока идёт замер: отправляется время каждого кадра, треугольники, вызовы отрисовки и данные об этом устройстве.",
+ "Ver las mandadas": "Посмотреть отправленные",
+ "Espera un poco antes de mandar otra medida.": "Подождите немного, прежде чем отправлять новый замер.",
+ "Medida no válida.": "Недопустимый замер.",
+ "El servidor no ha podido guardarla.": "Серверу не удалось её сохранить."
 }

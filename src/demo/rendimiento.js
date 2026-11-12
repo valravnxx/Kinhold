@@ -1,9 +1,11 @@
 // Kinhold — los números de rendimiento a la vista en la demo única.
 // Junto al botón «Menú» sale un botón con los fotogramas por segundo; al pulsarlo se abre el detalle: tiempo de
 // cada fotograma, triángulos, llamadas de dibujo, memoria y personajes en escena. En «Construir» se pueden añadir
-// personajes de prueba para medir con gente. Las medidas salen de src/mundo/rendimiento.js.
+// personajes de prueba para medir con gente. Las medidas salen de src/mundo/rendimiento.js. En el juego en línea, un botón
+// mide un rato y lo manda al servidor (src/logica/rendimiento.js); la cuenta de admin ve las últimas mandadas.
 import { tr } from '../idioma.js';
-import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
+import { medidaRendimiento, genteDePrueba, tomarMedida, midiendo, datosAparato, envioRendimiento } from '../mundo/rendimiento.js';
+import { MEDIR_SEGUNDOS, resumenMedida } from '../logica/rendimiento.js';
 
 const CSS = `
 #btnDemoFps{min-width:62px;font-variant-numeric:tabular-nums}
@@ -20,8 +22,13 @@ const CSS = `
 #demoRend p{margin:6px 0 0;color:#bfb19a}
 #demoRend .perfiles button{margin:2px 0}
 #demoRend[hidden]{display:none!important}
+#demoRend .envio{margin:8px 0 2px;padding-top:8px;border-top:1px solid rgba(241,232,216,.12)}
+#demoRend .envio p.mal{color:#f0b8a8}
+#demoRend ol{margin:6px 0 0;padding-left:18px;font-size:11.5px} #demoRend ol li{margin:3px 0;overflow-wrap:anywhere}
+#demoRend button:disabled{opacity:.6;cursor:default}
 `;
 const GENTE = [0, 4, 8, 16, 20];
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const miles = (n) => (n / 1000).toFixed(n < 10000 ? 1 : 0);
 
 // pone el botón detrás de `boton` (el de «Menú») y el panel; devuelve la función que refresca los números
@@ -47,6 +54,39 @@ export function ponerRendimiento(boton) {
   const colocar = () => { if (ajustes) return; const r = b.getBoundingClientRect(); panel.style.top = Math.round(r.bottom + 8) + 'px'; panel.style.maxHeight = Math.max(160, innerHeight - r.bottom - 18) + 'px'; };
   b.onclick = () => { panel.hidden = !panel.hidden; b.classList.toggle('sel', !panel.hidden); colocar(); refrescar(); };
   addEventListener('resize', colocar);
+
+  // la medida al servidor (src/logica/rendimiento.js): MEDIR_SEGUNDOS midiendo y se manda con lo que se sabe del aparato
+  const envio = { texto: '', mal: false, desde: 0, lista: null };
+  async function medirYMandar() {
+    const e = envioRendimiento();
+    if (midiendo()) return;
+    envio.texto = ''; envio.mal = false; envio.desde = performance.now(); refrescar();
+    const resultado = await tomarMedida(MEDIR_SEGUNDOS);
+    envio.desde = 0;
+    const G = window.__graficos || null;
+    const r = resultado && e ? await e.mandar({ que: 'enviar', medida: { resultado, aparato: datosAparato(), perfil: G ? G.perfil : null } }) : null;
+    if (r && r.ok) { envio.texto = tr('Mandada: {f} fps de media, el fotograma más lento {p} ms.', { f: Math.round(resultado.fps), p: resultado.peor }); envio.mal = false; }
+    else { envio.texto = r ? tr(r.motivo) : tr('No se ha podido mandar: sin conexión con el servidor.'); envio.mal = true; }
+    window.__medidaMandada = { resultado, respuesta: r };   // (pruebas)
+    refrescar();
+  }
+  async function verMandadas() {
+    const e = envioRendimiento(); if (!e) return;
+    const r = await e.mandar({ que: 'ver' });
+    envio.lista = r && r.ok ? r.medidas : null;
+    if (!r || !r.ok) { envio.texto = r ? tr(r.motivo) : tr('No se ha podido mandar: sin conexión con el servidor.'); envio.mal = true; }
+    refrescar();
+  }
+  function bloqueEnvio() {
+    const e = envioRendimiento(); if (!e) return '';
+    const quedan = envio.desde ? Math.max(0, Math.ceil(MEDIR_SEGUNDOS - (performance.now() - envio.desde) / 1000)) : 0;
+    const boton = envio.desde ? `<button data-enviar disabled>${tr('Midiendo… {s} s', { s: quedan })}</button>`
+      : `<button data-enviar>${tr('Medir {s} s y mandarlo al servidor', { s: MEDIR_SEGUNDOS })}</button>`;
+    const lista = envio.lista ? (envio.lista.length ? `<ol>${envio.lista.map(m => `<li>${esc(m.t.slice(0, 16).replace('T', ' '))} · ${esc(m.cuenta || m.autor)} · ${esc(resumenMedida(m))}<br><small>${esc(m.aparato.grafica)}</small></li>`).join('')}</ol>` : `<p>${tr('Aún no se ha mandado ninguna.')}</p>`) : '';
+    return `<div class="envio"><b>${tr('Medida para el servidor')}</b><p>${tr('Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.')}</p>` +
+      `<div class="gente">${boton}${e.admin() ? `<button data-vermandadas>${tr('Ver las mandadas')}</button>` : ''}</div>` +
+      (envio.texto ? `<p class="${envio.mal ? 'mal' : ''}" data-envio-estado>${esc(envio.texto)}</p>` : '') + lista + '</div>';
+  }
 
   function refrescar() {
     const m = medidaRendimiento();
@@ -76,7 +116,10 @@ export function ponerRendimiento(boton) {
       (g && g.detalle ? `<div class="gente">${tr('Niveles de detalle:')} <button data-detalle="1" class="${g.detalle() ? 'sel' : ''}">${tr('sí')}</button><button data-detalle="0" class="${g.detalle() ? '' : 'sel'}">${tr('no (todos enteros)')}</button></div>` : '') +
       (G ? `<div class="gente perfiles">${tr('Calidad gráfica:')} ${G.PERFILES.map(p => `<button data-perfil="${p.id}" class="${G.perfil === p.id ? 'sel' : ''}">${tr(p.nombre)}${p.id === G.sugerido ? ' ★' : ''}</button>`).join('')}</div>` +
         `<p>${tr('★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.')}</p>` +
-        (G.ponerMaqueta ? `<div class="gente">${tr('Desenfoque de maqueta:')} <button data-maqueta="1" class="${G.maqueta ? 'sel' : ''}">${tr('sí')}</button><button data-maqueta="0" class="${G.maqueta ? '' : 'sel'}">${tr('no')}</button>${G.puedeMaqueta ? '' : ` <small>${tr('(esta calidad no lo lleva)')}</small>`}</div>` : '') : '');
+        (G.ponerMaqueta ? `<div class="gente">${tr('Desenfoque de maqueta:')} <button data-maqueta="1" class="${G.maqueta ? 'sel' : ''}">${tr('sí')}</button><button data-maqueta="0" class="${G.maqueta ? '' : 'sel'}">${tr('no')}</button>${G.puedeMaqueta ? '' : ` <small>${tr('(esta calidad no lo lleva)')}</small>`}</div>` : '') : '') +
+      bloqueEnvio();
+    const enviar = panel.querySelector('[data-enviar]:not([disabled])'); if (enviar) enviar.onclick = medirYMandar;
+    const ver = panel.querySelector('[data-vermandadas]'); if (ver) ver.onclick = verMandadas;
     for (const x of panel.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
     for (const x of panel.querySelectorAll('[data-perfil]')) x.onclick = () => { G.poner(x.dataset.perfil); refrescar(); };
     for (const x of panel.querySelectorAll('[data-maqueta]')) x.onclick = () => { G.ponerMaqueta(x.dataset.maqueta === '1'); refrescar(); };

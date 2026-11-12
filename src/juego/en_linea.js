@@ -31,6 +31,8 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
   const escuchasSalida = new Set();   // y la respuesta a la salida que elige un personaje nuevo (src/juego/main.js)
   const escuchasDicho = new Set();    // y lo que dice alguien en el chat de texto (src/juego/charla.js)
   const escuchasMuerte = new Set();   // y que has muerto (src/logica/muerte.js): dónde vuelves (src/juego/main.js)
+  const pedidosRend = new Map();      // id → la respuesta que se espera a la medida de rendimiento (src/mundo/rendimiento.js)
+  let idRend = 0;
 
   cli = abrirCliente({
     alAbrir: (enviar) => {
@@ -42,6 +44,7 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
       if (msg.tipo === 'salida') { for (const f of escuchasSalida) f(msg); return; }
       if (msg.tipo === 'dicho') { for (const f of escuchasDicho) f(msg); return; }
       if (msg.tipo === 'muerte') { for (const f of escuchasMuerte) f(msg); return; }
+      if (msg.tipo === 'rendimiento') { const f = pedidosRend.get(msg.id); if (f) { pedidosRend.delete(msg.id); f(msg); } return; }
       // (si no vale lo dicho, el motivo, para que lo vea quien habla)
       if (msg.tipo === 'error' && (msg.motivo === MOTIVO_VACIO || msg.motivo === MOTIVO_DESPACIO)) for (const f of escuchasDicho) f({ tipo: 'dicho_error', motivo: msg.motivo });
       for (const l of msg.tipo === 'luchadores' ? msg.lista : msg.tipo === 'bienvenida' ? msg.luchadores || [] : []) {
@@ -166,6 +169,17 @@ export function conectarEnLinea({ escena, recursos, aspecto, alCambiar, avisar, 
     decir: (texto) => cli.estado === 'conectado' && cli.enviar({ tipo: 'decir', texto }),
     decirFrase: (frase) => cli.estado === 'conectado' && cli.enviar({ tipo: 'decir', frase }),
     escucharDicho: (f) => { escuchasDicho.add(f); return () => escuchasDicho.delete(f); },
+    // la medida de rendimiento de este aparato (servidor/sistemas/rendimiento.mjs): la respuesta, o null sin conexión
+    // o si no llega en 10 s
+    pedirRendimiento: (m) => {
+      if (cli.estado !== 'conectado') return Promise.resolve(null);
+      const id = ++idRend;
+      return new Promise(r => {
+        const t = setTimeout(() => { pedidosRend.delete(id); r(null); }, 10000);
+        pedidosRend.set(id, (x) => { clearTimeout(t); r(x); });
+        cli.enviar({ tipo: 'rendimiento', id, ...m });
+      });
+    },
     get yo() { return cli.yo; },
     get estado() { return cli.estado; },
     get antiguo() { return cli.antiguo; },
