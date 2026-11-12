@@ -6269,5 +6269,23 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal; la tala, 94 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T04:32:07+00:00",
+  "fin": "2026-11-12T05:35:50+00:00",
+  "titulo": "Talar de verdad: el árbol caído se queda entero y se limpia con hacha; el hito, aprobado (chat con valravnx)",
+  "hito": "talar",
+  "hecho": [
+   "Pedido de valravnx: «al caer el árbol se convierte en tronco y ramas y tal, mejor que se quede como está y que haya que limpiarlo con hacha para ello, hazlo y ya estaremos del hito».",
+   "Al caer, el árbol se queda entero donde se asienta, tumbado o apoyado en lo que tenía delante, con su ángulo guardado en el servidor: todos lo ven igual, también quien llega después. La base resbala del tocón al final de la caída, así el tocón se ve al lado.",
+   "Con el hacha en la mano, junto a su tronco tumbado (de cualquier punto, del tocón a la punta), Usar lo limpia a golpes: «Limpiar el árbol caído». Al último golpe deja el tronco y las varas o las ramas donde estaba, a nombre del que lo termina, y el caído desaparece. Lo valida el servidor con su autor (src/logica/tala.js).",
+   "Decisiones provisionales en el registro de la demo: 3 golpes con piedra y 2 con hierro el joven, 20 y 6 el adulto; gastan el hacha; si nadie lo limpia, se pudre cuando el árbol vuelve a crecer.",
+   "En el móvil, el verbo del botón de acción ya no se corta por la derecha con textos largos.",
+   "El recorrido de jugador limpia cada árbol que tala y repara el hacha contando esos golpes. Demo v187 publicada.",
+   "valravnx dio el hito por cerrado con este cambio: «Talar de verdad», hecho."
+  ],
+  "pruebas": "En la nube: la tala en el navegador (PC y móvil, con el caído, Usar para limpiarlo y lo que deja), el recorrido (248 bien) y la demo única, bien. Lógica en la nube bien salvo prueba_nube.mjs (los avisos de systemd de la máquina de GitHub, igual que en main). Aquí: tala 111/111, objetos del servidor 78/78 y trozos en red 26/26; rota a propósito (MUTAR=1), la tala falla. Segunda mirada de otro agente a las capturas: los tres puntos, sí. Queda mal (para más adelante): el jugador puede meterse en la copa y el tronco caídos (no chocan), y el tronco que queda al limpiarlo no tiene el mismo largo que el caído.",
+  "capturas": "capturas/demo-v187",
+  "estado": "ok"
  }
 ]
