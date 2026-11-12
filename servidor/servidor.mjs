@@ -64,7 +64,9 @@
 //   El navegador junta lo que le llega de lo talado y lo recogido con lo que ya tenía. 'coger' y 'soltar' son el arcón de
 //   pruebas (arconPruebas: solo en las pruebas automáticas; el servidor de verdad no lo tiene, valravnx 1 nov: «fuera el arcón
 //   infinito»; la bienvenida dice { arcon: true | false }). Se guarda entero en objetos.json junto al mundo, y cada acción (bien o mal)
-//   en objetos.jsonl.
+//   en objetos.jsonl. objetos.json no se reescribe en cada acción (cada hachazo, 12 nov): se apunta que ha cambiado y se
+//   escribe como mucho una vez cada guardarCada ms (1 s; KINHOLD_GUARDAR_CADA), sin parar el servidor mientras se escribe;
+//   al cerrar (y al apagarlo con SIGTERM o SIGINT), lo que falte, de golpe.
 //   Las obras cobran de ahí (src/logica/acciones.js): entregar, subir y el arcón de materiales (sacar_arcon y dejar_arcon,
 //   solo con arconPruebas) se ejecutan con los inventarios del servidor; la entrada que se guarda y se reparte va ya
 //   pagada («lleva» y la cantidad de verdad), así que al volver a arrancar y en los demás navegadores el mundo se rehace
@@ -118,6 +120,7 @@
 // Uso: node servidor/servidor.mjs [puerto] [archivo]   (por defecto 8080 y servidor/mundo.jsonl)
 import { WebSocketServer } from 'ws';
 import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
+import { writeFile, rename } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import { randomUUID, createHash, randomInt } from 'crypto';
 import { fileURLToPath } from 'url';
@@ -179,6 +182,17 @@ export function leerArchivo(archivo) {
 // (las pruebas lo leen a menudo), cambiarlo falla con EPERM o EBUSY: se reintenta un poco y, si no, se dice y se sigue
 // (se guardará la vez siguiente). Antes, el fallo cortaba la acción antes de contestar al jugador.
 const ESPERA = new Int32Array(new SharedArrayBuffer(4));
+// Lo mismo sin bloquear (para objetos.json, que se guarda a menudo): si falla, se dice y se guardará la vez siguiente.
+async function reemplazarSinEsperar(tmp, dest, registrar = console.error) {
+  for (let i = 0; ; i++) {
+    try { await rename(tmp, dest); return true; } catch (e) {
+      if (i >= 25 || !['EPERM', 'EBUSY', 'EACCES'].includes(e.code)) { registrar(`no se ha podido guardar ${dest} (${e.code}); se guardará la próxima vez`); return false; }
+      await new Promise(r => setTimeout(r, 8));
+    }
+  }
+}
+// Cada cuánto, como mucho, se reescribe objetos.json (ms)
+const GUARDAR_CADA = 1000;
 function reemplazar(tmp, dest, registrar = console.error) {
   for (let i = 0; ; i++) {
     try { renameSync(tmp, dest); return true; } catch (e) {
@@ -190,7 +204,7 @@ function reemplazar(tmp, dest, registrar = console.error) {
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
   gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
-  salidaComun = false, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, usoRopa = USO_ROPA_MS, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
+  salidaComun = false, guardarCada = GUARDAR_CADA, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, usoRopa = USO_ROPA_MS, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
   fauna: entornoFauna = terreno && terreno.fauna, ticoFauna = 200 } = {}) {
   archivo = resolve(archivo);
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
@@ -319,7 +333,29 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
   }
   // se escribe en uno aparte y se cambia de nombre: si el servidor se apaga a mitad, queda el anterior entero
-  const guardarObjetos = () => { writeFileSync(archivoObjetos + '.tmp', JSON.stringify(objetos.exportar())); reemplazar(archivoObjetos + '.tmp', archivoObjetos); };
+  // (12 nov) guardarObjetos() solo apunta que hay cambios: se escribe como mucho una vez cada guardarCada ms, sin bloquear,
+  // y nunca dos escrituras a la vez (si cambia mientras se escribe, se vuelve a escribir después). Así un hachazo por
+  // segundo, o varios jugadores a la vez, no reescriben el archivo entero en cada acción.
+  let objetosSucios = false, escribiendoObjetos = null, plazoObjetos = null, escriturasObjetos = 0;
+  const escribirObjetos = () => {
+    plazoObjetos = null;
+    if (!objetosSucios || escribiendoObjetos) return;
+    objetosSucios = false; escriturasObjetos++;
+    const texto = JSON.stringify(objetos.exportar());   // lo de este momento; lo que cambie mientras se escribe, en la siguiente
+    escribiendoObjetos = writeFile(archivoObjetos + '.tmp', texto).then(() => reemplazarSinEsperar(archivoObjetos + '.tmp', archivoObjetos, registrar))
+      .catch(e => { objetosSucios = true; registrar(`no se pudo guardar objetos.json: ${e && e.message}`); })
+      .finally(() => { escribiendoObjetos = null; if (objetosSucios && !plazoObjetos) plazoObjetos = setTimeout(escribirObjetos, guardarCada); });
+  };
+  const guardarObjetos = () => { objetosSucios = true; if (!plazoObjetos && !escribiendoObjetos) plazoObjetos = setTimeout(escribirObjetos, guardarCada); };
+  // al cerrar o apagarse: espera a la que esté a medias y escribe lo que falte, de golpe
+  const guardarObjetosYa = async () => {
+    if (plazoObjetos) { clearTimeout(plazoObjetos); plazoObjetos = null; }
+    if (escribiendoObjetos) await escribiendoObjetos;
+    if (plazoObjetos) { clearTimeout(plazoObjetos); plazoObjetos = null; }
+    if (!objetosSucios) return;
+    objetosSucios = false; escriturasObjetos++;
+    writeFileSync(archivoObjetos + '.tmp', JSON.stringify(objetos.exportar())); reemplazar(archivoObjetos + '.tmp', archivoObjetos, registrar);
+  };
 
   // Volver donde lo dejaste (valravnx, 31 oct): dónde estaba cada jugador al salir (autor → { x, y, z, giro }, relativo
   // al sitio de salida, como su presencia). Se apunta al salir y, por si el servidor se apaga de golpe, en cada latido
@@ -1369,7 +1405,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   return {
     wss, mundo, terreno, fauna, abandono, cuerpos, morir, salidas, archivoSalidas, revisarTierras, dormidos, revisarDormidos, ultimaPelea, archivoAbandono, archivoTierras, vista, archivo, archivoAdmin, archivoCuentas, archivoSeguridad, cuentas, fichas, verificaciones, cartero, archivoCombate, archivoFichas, archivoPosiciones, posiciones, archivoNecesidades, necesidades, archivoObjetos, archivoObjetosReg, objetos, presencia, combate, apartados, clientes,
     listo: new Promise(r => wss.on('listening', () => r(wss.address().port))),
-    cerrar: () => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); }),
+    guardarObjetosYa, escriturasObjetos: () => escriturasObjetos,
+    cerrar: () => guardarObjetosYa().catch(e => registrar(`no se pudo guardar objetos.json al cerrar: ${e && e.message}`)).then(() => new Promise(r => { clearInterval(tic); clearInterval(ticNecesidades); clearInterval(ticCombate); clearInterval(ticLatido); if (ticTierras) clearInterval(ticTierras); if (ticFauna) clearInterval(ticFauna); for (const ws of clientes.keys()) ws.terminate(); wss.close(() => r()); })),
   };
 }
 
@@ -1395,6 +1432,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_MUERTE=rapida: los nuevos llegan con la sed al máximo y se mueren de sed en 3 s (y el cuerpo se va a los
   // 45 s), solo para la prueba de navegador de morir. Nunca en el servidor de verdad.
   const muerteRapida = process.env.KINHOLD_PRUEBAS_MUERTE === 'rapida';
-  const s = crearServidor({ puerto, archivo, terreno, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 45000 } : {}) });
+  // KINHOLD_GUARDAR_CADA: cada cuánto, como mucho, se reescribe objetos.json (ms; por defecto 1000)
+  const g = process.env.KINHOLD_GUARDAR_CADA, guardarCada = g && Number(g) >= 0 ? Number(g) : GUARDAR_CADA;
+  const s = crearServidor({ puerto, archivo, terreno, guardarCada, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 45000 } : {}) });
+  // al apagarlo (actualizar.sh, Ctrl+C, las pruebas al terminar): lo que falte de objetos.json, antes de salir
+  let apagando = false;
+  const apagar = (senal) => { if (apagando) return; apagando = true; s.guardarObjetosYa().catch(e => console.error('no se pudo guardar objetos.json al apagar:', e && e.message)).finally(() => process.exit(senal === 'SIGINT' ? 130 : 143)); };
+  process.on('SIGTERM', () => apagar('SIGTERM')); process.on('SIGINT', () => apagar('SIGINT'));
   s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}${muerteRapida ? ' · AVISO: muerte rápida de sed (KINHOLD_PRUEBAS_MUERTE=rapida), solo para pruebas' : ''}`));
 }
