@@ -78,7 +78,7 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     if (on.color) lista.push(new LUT3DEffect(tabla));
     composer.addPass(new EffectPass(camara, ...lista));
     // el desenfoque de maqueta (arriba y abajo de la pantalla), en los perfiles que pueden con una pasada más
-    if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, new MaquetaEffect()));
+    if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, new MaquetaEffect({ vivo: cieloVivo })));
     if (SMAA[perfil.suavizado] !== undefined) composer.addPass(new EffectPass(camara, new SMAAEffect({ preset: SMAA[perfil.suavizado] })));
     composer.setSize(renderer.domElement.clientWidth || innerWidth, renderer.domElement.clientHeight || innerHeight, false);
   }

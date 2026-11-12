@@ -26,7 +26,8 @@ vec3 cieloBase(vec3 d){
   float e=d.y,c=max(dot(d,uSol),0.0),bajo=1.0-smoothstep(4.0,30.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
   float vis=smoothstep(-0.2,0.02,uSol.y);
   vec3 h=mix(cieloAbajo,uColSol,0.32*bajo*vis*pow(c,3.0)*(1.0-smoothstep(0.0,0.5,e)));
-  vec3 col=mix(h,cieloArriba,pow(clamp(e/0.6,0.0,1.0),0.75));
+  // (12 nov: el azul de arriba llega antes; el color del horizonte queda en una franja baja, como la calima de verdad)
+  vec3 col=mix(h,cieloArriba,pow(clamp(e/0.42,0.0,1.0),0.6));
   col+=uColSol*vis*(0.22*pow(c,3000.0)+0.1*pow(c,300.0)+0.12*pow(c,16.0)*(0.5+0.5*bajo)+0.07*pow(c,4.0)*bajo);
   return col;
 }
@@ -55,7 +56,7 @@ float fbmN(vec2 p){float s=0.0,k=0.5;for(int i=0;i<4;i++){s+=k*ruidoN(p);p=p*2.0
 vec4 nubes(vec3 d){
   if(d.y<0.015)return vec4(0.0);
   vec2 p=d.xz/(d.y+0.16)*1.15+uTiempo*vec2(0.0045,0.0017);
-  float n=fbmN(p),cob=smoothstep(0.5,0.72,n)*smoothstep(0.015,0.16,d.y);
+  float n=fbmN(p),cob=smoothstep(0.5,0.66,n)*smoothstep(0.015,0.14,d.y);
   if(cob<0.003)return vec4(0.0);
   // la luz: más clara donde la nube es más fina hacia el sol
   float haciaSol=fbmN(p+normalize(uSol.xz+vec2(0.0001))*0.22),luz=clamp(0.62+1.5*(n-haciaSol),0.0,1.0);

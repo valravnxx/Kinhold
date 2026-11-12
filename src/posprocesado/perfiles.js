@@ -10,7 +10,9 @@
 //
 // GDD (apartado 3): ningún ajuste gráfico esconde ni cambia lo que importa para jugar. Por eso la niebla (lo lejos que
 // se ve) y el mundo que se dibuja son los mismos en los seis: lo que cambia es la calidad de lo que ya se ve. El
-// desenfoque nunca está puesto mientras se juega (solo en escenas concretas: el visor del personaje, una vista de cerca).
+// desenfoque de profundidad nunca está puesto mientras se juega (solo en escenas concretas: el visor del personaje, una
+// vista de cerca). El de maqueta (12 nov, a prueba; src/posprocesado/maqueta.js) va por la altura en la pantalla, deja
+// nítida la franja del centro y se quita en Ajustes: lo llevan los perfiles con «desenfoque».
 
 // Cada perfil:
 //   res: resolución del dibujo respecto a la pantalla (tope; con el aparato que tenga menos, la del aparato)
@@ -68,7 +70,7 @@ export function efectosDe(p) {
 // búsqueda (LUT) que la aplica.
 // 12 nov (el aspecto de maqueta: la referencia es más viva y contrastada que la v5): más contraste, luces más cálidas
 // y los colores con su fuerza (los verdes, un punto menos que el resto, para que la hierba no chille).
-export const GRADACION = { frias: [-0.014, 0.0, 0.028], calidas: [0.042, 0.018, -0.03], sat: 1.08, satVerdes: 1.0, contraste: 1.12 };
+export const GRADACION = { frias: [-0.014, 0.0, 0.028], calidas: [0.042, 0.018, -0.03], sat: 1.08, satVerdes: 1.0, contraste: 1.08 };
 const lum = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const recorta = (v) => Math.min(1, Math.max(0, v));
 export function gradar(r, g, b, G = GRADACION) {

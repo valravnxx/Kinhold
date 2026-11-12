@@ -60,10 +60,10 @@ export const MOMENTOS = [
   { alto: -18, arriba: 0x060a14, horizonte: 0x111a2a, sol: [0xff8a4a, 0], hemi: [0x7c92d4, 0x40465c, 2.3] },
   { alto: -8, arriba: 0x141d36, horizonte: 0x3c3a52, sol: [0xff8a4a, 0], hemi: [0x8896cc, 0x484656, 2.3] },
   { alto: -2, arriba: 0x34476a, horizonte: 0xb97a62, sol: [0xff7a3c, 0], hemi: [0xaaa8c2, 0x54494a, 2.3] },
-  { alto: 3, arriba: 0x6a82a0, horizonte: 0xe8955a, sol: [0xff9a5a, 1.6], hemi: [0xc0b8c4, 0x6a5238, 1.7] },
-  { alto: 10, arriba: 0x86a2c0, horizonte: 0xf0c08c, sol: [0xffbf80, 2.7], hemi: [0xc2c4d2, 0x76603c, 1.25] },
-  { alto: 22, arriba: 0x7fa6cc, horizonte: 0xecd9b6, sol: [0xffd49c, 3.3], hemi: [0xbccbe2, 0x806c44, 1.0] },
-  { alto: 40, arriba: 0x79a5d2, horizonte: 0xe4dfcc, sol: [0xffe4bc, 3.3], hemi: [0xb8cdea, 0x847248, 1.0] },
+  { alto: 3, arriba: 0x6a82a0, horizonte: 0xe8955a, sol: [0xff9a5a, 1.6], hemi: [0xcab8b8, 0x6e563a, 2.3] },
+  { alto: 10, arriba: 0x7397c2, horizonte: 0xf0c08c, sol: [0xffbc7c, 2.7], hemi: [0xd0c4c4, 0x7a6240, 2.0] },
+  { alto: 22, arriba: 0x6497d2, horizonte: 0xecd9b6, sol: [0xffd6a4, 3.2], hemi: [0xc4cee0, 0x806c44, 1.5] },
+  { alto: 40, arriba: 0x5c93d6, horizonte: 0xe4dfcc, sol: [0xffecd0, 3.2], hemi: [0xbfd0ea, 0x847248, 1.4] },
 ];
 // la luz de la luna (llena y alta; se multiplica por su fase y lo alto que está) y lo que añade a la luz del cielo
 export const LUNA = { color: 0xa8bce8, intensidad: 0.85, hemi: 0.3 };
