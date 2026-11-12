@@ -59,6 +59,38 @@
  },
  "noticias": [
   {
+   "fecha": "2026-11-12",
+   "titulo": "De prado a maqueta: el nuevo aspecto de Kinhold",
+   "cuerpo": [
+    "Desde el alto en el camino del 1 de noviembre, Kinhold ha cerrado siete hitos seguidos:",
+    "• Cuentas, con usuario y contraseña.",
+    "• Jugar entre dos sin trampas.",
+    "• De nada a una casa: fabricar en cualquier sitio y la casa humilde entera, del cimiento a la puerta.",
+    "• Un primer día con sentido: hambre, sed, frío, dormir, cazar y asar.",
+    "• La interfaz nueva, con menú de pestañas y acabado de juego terminado.",
+    "• Talar de verdad: el árbol cruje, cae con su peso, puede herir y luego hay que limpiarlo con el hacha.",
+    "• Perfiles gráficos para que el juego vaya bien en cada aparato.",
+    "El bucle básico ya se cierra: se puede empezar sin nada y acabar con tu casa, en línea y con otra persona.",
+    "Pero había un problema que no se podía seguir aplazando: el aspecto. Lo que salía de los modelos hechos por código era un low-poly genérico que no se parecía a lo que queremos. Así que fijamos una imagen de referencia para todo el juego: un pueblo medieval de maqueta en miniatura. Casas de entramado, muros de piedra seca, musgo y matas, luz cálida de sol y ese desenfoque de las fotos de maquetas. Desde ahora, todo lo que se ve se compara con esa imagen, y si no se acerca, no está terminado.",
+    "Para llegar ahí, el arte pasa a hacerse con Meshy, un generador de modelos 3D, siempre con el mismo encargo de estilo:",
+    "• Los personajes: un hombre y una mujer nuevos, con sus animaciones de andar, correr y trabajar.",
+    "• La naturaleza entera: las siete especies de árbol del mundo (abeto, pino, abedul, roble, haya, fresno y encina), cada una en joven y en adulto. También el matorral, el arbusto de bayas, los helechos, las rocas, las peñas, los cantos de río y las plantas que se recogen.",
+    "• Cuatro niveles de detalle por modelo, según la calidad gráfica que elijas: en los aparatos potentes, los árboles se ven con todo su detalle hasta más lejos.",
+    "• Los primeros objetos hechos a mano por el desarrollador, el acopio de troncos y el mojón. Los muebles y los puestos de trabajo seguirán ese camino: hechos y revisados uno a uno.",
+    "Hoy hemos hecho una auditoría completa del proyecto: qué funciona, qué no, qué está congelado y cómo seguir. La conclusión: la base técnica está sólida, y lo que más separa a Kinhold de un juego terminado es su aspecto y la cantidad de cosas que hacer.",
+    "Lo que hemos decidido:",
+    "• Primero, el aspecto. Un hito nuevo, «El aspecto: del prado a la maqueta», va por delante de todo lo demás. Tiene seis pasos: luz y cielo, hierba densa, suelo con materiales, sotobosque, riberas y rocas, y bruma de distancia.",
+    "• Seguimos en el navegador y con nuestro propio motor. Un enlace y a jugar, también en el móvil. Lo que falta para el aspecto se hace igual en cualquier motor.",
+    "• Si algún día hay cosas de pago, serán solo estéticas.",
+    "• Las animaciones de trabajar se van a mejorar: probaremos animaciones de captura de movimiento y haremos que las manos agarren de verdad el mango de las herramientas.",
+    "• Mientras tanto, el código se ordena: se parten los archivos más grandes y hay un comprobador que pilla errores en segundos.",
+    "Y ya se pueden jugar los dos primeros pasos:",
+    "• La luz y el cielo (v188): un sol más dorado, sombras con color, tardes doradas de sombras largas, cielo azul con nubes. Y, a prueba, el desenfoque de maqueta mientras juegas: nítido donde estás y suave arriba y abajo. Se quita en los ajustes.",
+    "• La hierba densa (v189): adiós al prado con puntitos. Ahora hay miles de matas finas alrededor de ti, del color del suelo que pisan, que se mueven con el viento.",
+    "Lo siguiente es el suelo: tierra, piedra, hojarasca y musgo donde toca, en vez de un verde liso."
+   ]
+  },
+  {
    "fecha": "2026-11-01",
    "titulo": "Alto en el camino: revisión completa y nuevo rumbo",
    "cuerpo": [
