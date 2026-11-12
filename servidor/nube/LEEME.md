@@ -99,6 +99,10 @@ que abra la demo entra en este mundo y puede construir.
   vuelven a empezar como nuevos, en la salida. **Las cuentas se quedan** (`cuentas.jsonl`): cada uno entra con su
   usuario y su contraseña y es el mismo personaje, empezando de cero. Para borrar también las cuentas, el `rm -f
   /var/lib/kinhold/*.json /var/lib/kinhold/*.jsonl` de antes.
+- **El mundo, compactado** (12 nov): al arrancar, el servidor guarda el mundo entero en `/var/lib/kinhold/mundo_estado.json`
+  y el siguiente arranque sigue desde ahí, reproduciendo solo las acciones que vinieron después. `mundo.jsonl` se queda
+  entero (para auditar). El wipe de arriba borra los dos. Si el estado no casa con el registro (una copia de otro día),
+  no se usa y el mundo se rehace desde `mundo.jsonl`, como antes; en el registro del servidor sale de dónde se cargó.
 - **Cuentas** (usuario y contraseña): en `/var/lib/kinhold/cuentas.jsonl`, una por línea, con la contraseña resumida
   (scrypt con sal; nunca en claro). Tras 5 contraseñas mal seguidas a una cuenta, o 20 fallos desde la misma dirección,
   se espera 15 minutos. Cuentas nuevas (2 nov): como mucho 3 por dirección y hora y 30 en total por hora, y entre una y
