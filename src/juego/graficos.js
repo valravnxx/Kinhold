@@ -4,7 +4,8 @@
 //   - el que se haya elegido en este navegador (se guarda), o el de ?graficos=<perfil> en la dirección;
 //   - si no, el que sugiere el aparato (sugerirPerfil): un móvil con buena gráfica, «Móvil alto y tableta», etc.
 // Se cambia en el panel de rendimiento (el botón de los fps, junto a «Menú»: src/demo/rendimiento.js).
-// En el juego no van el desenfoque (solo para escenas concretas, que aún no hay) ni los haces de luz (con la cámara del
+// En el juego no van el desenfoque de profundidad (solo para escenas concretas, que aún no hay; sí el de maqueta, que
+// va por la altura en la pantalla: src/posprocesado/maqueta.js) ni los haces de luz (con la cámara del
 // juego casi nunca se mira al sol, y en la prueba apenas se veían): la cadena es la de cada perfil sin esos dos.
 import { PERFILES, perfil, efectosDe, sugerirPerfil } from '../posprocesado/perfiles.js';
 import { crearPosprocesado } from '../posprocesado/efectos.js';
@@ -12,6 +13,15 @@ import { crearPosprocesado } from '../posprocesado/efectos.js';
 const CLAVE = 'kinhold_graficos';
 const leer = () => { try { return localStorage.getItem(CLAVE); } catch (e) { return null; } };
 const guardar = (id) => { try { localStorage.setItem(CLAVE, id); } catch (e) { /* sin almacenamiento */ } };
+// el desenfoque de maqueta mientras se juega (valravnx, 12 nov: a prueba): puesto, salvo que se quite en Ajustes (se
+// guarda) o con ?maqueta=0. Las pruebas automáticas, sin él (dibujan como antes), salvo ?maqueta=1.
+const CLAVE_MAQUETA = 'kinhold_maqueta';
+function maquetaDeInicio() {
+  const q = new URLSearchParams(location.search).get('maqueta');
+  if (q === '0' || q === '1') return q === '1';
+  if (navigator.webdriver) return false;
+  try { return localStorage.getItem(CLAVE_MAQUETA) !== '0'; } catch (e) { return true; }
+}
 
 // lo que se sabe del aparato antes de dibujar nada
 export function aparatoDe(renderer) {
@@ -32,11 +42,12 @@ export function crearGraficos(renderer, escena, camara, ambiente, horizonte = nu
   const sugerido = sugerirPerfil(aparato);
   const enDireccion = new URLSearchParams(location.search).get('graficos');
   let actual = [enDireccion, leer(), sugerido].find(id => id && PERFILES.some(p => p.id === id));
+  let maqueta = maquetaDeInicio();
   const alCambiar = [];
   function poner(id, recordar = true) {
     if (!PERFILES.some(p => p.id === id)) return false;
     actual = id;
-    post.montar(perfil(id), { ...efectosDe(perfil(id)), desenfoque: false, rayos: false });
+    post.montar(perfil(id), { ...efectosDe(perfil(id)), desenfoque: false, rayos: false, maqueta });
     if (horizonte) horizonte.poner(perfil(id).horizonte || null);
     if (recordar) guardar(id);
     for (const f of alCambiar) f(id);
@@ -48,6 +59,10 @@ export function crearGraficos(renderer, escena, camara, ambiente, horizonte = nu
     get perfil() { return actual; },
     poner,
     alCambiar: (f) => alCambiar.push(f),
+    // el desenfoque de maqueta: si está puesto, si este perfil puede con él, y ponerlo o quitarlo (se guarda)
+    get maqueta() { return maqueta; },
+    get puedeMaqueta() { return !!perfil(actual).desenfoque; },
+    ponerMaqueta(si) { maqueta = !!si; try { localStorage.setItem(CLAVE_MAQUETA, maqueta ? '1' : '0'); } catch (e) { /* sin almacenamiento */ } poner(actual, false); },
     get pasadas() { return post.pasadas; },
     horizonte,
     dibujar: (dt) => post.dibujar(dt),

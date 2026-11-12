@@ -35,6 +35,8 @@ for c in ['v1', 'taller-v12', 'taller-v13', 'taller-v14', 'taller-v15', 'taller-
     if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
 # la naturaleza de Meshy (11 nov), como en la web: esta prueba mira el mundo con ella
 if os.path.isdir(os.path.join(RAIZ, 'docs/recursos/naturaleza')): shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')
+# el acopio y el mojón de Meshy (v178), como en la web (12 nov: sin ellos, la página daba dos 404)
+if os.path.isdir(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1')): shutil.copytree(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1'), f'{sitio}/recursos/estaciones-meshy-v1')
 # las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
 import re as _rk
 for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES|PIEZAS) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):

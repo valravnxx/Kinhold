@@ -4,7 +4,8 @@
 //   2. la oclusión ambiental (n8ao), si la lleva
 //   3. el desenfoque puntual, solo si se pide (va aparte: no se puede juntar con otros efectos de su clase)
 //   4. en UNA sola pasada: el brillo de las luces, los haces de luz, el mapeo tonal y la gradación de color
-//   5. el suavizado SMAA, si es el del perfil (también va aparte por lo mismo)
+//   5. el desenfoque de maqueta (src/posprocesado/maqueta.js), si está puesto
+//   6. el suavizado SMAA, si es el del perfil (también va aparte por lo mismo)
 // La niebla va en esa misma pasada (src/posprocesado/niebla.js: la de three.js se vería más espesa con posprocesado). Sin nada puesto (el modo «v5»), se dibuja directo como la prueba de
 // estilo v5, con el mapeo tonal del propio three.js.
 import * as THREE from 'three';
@@ -13,6 +14,7 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect,
 import { N8AOPostPass } from 'n8ao';
 import { rellenarTabla, HORIZONTE } from './perfiles.js';
 import { NieblaEffect } from './niebla.js';
+import { MaquetaEffect } from './maqueta.js';
 
 const SMAA = { 'smaa-bajo': SMAAPreset.LOW, 'smaa-medio': SMAAPreset.MEDIUM, 'smaa-alto': SMAAPreset.HIGH };
 
@@ -42,7 +44,7 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
       if (luzSol.shadow.mapSize.x !== lado) { luzSol.shadow.mapSize.set(lado, lado); if (luzSol.shadow.map) { luzSol.shadow.map.dispose(); luzSol.shadow.map = null; } }
     }
     // three.js 0.186 ya no tiene sombras PCFSoft (avisa y usa PCF): lo blando es el radio del filtro (la v5 usa 4)
-    if (luzSol) luzSol.shadow.radius = v5 || perfil.blandas ? 4 : 1.5;
+    if (luzSol) luzSol.shadow.radius = v5 ? 4 : perfil.blandas ? 2.5 : 1.5;   // (12 nov: con 4, el borde salía punteado)
     if (renderer.shadowMap.type !== THREE.PCFShadowMap) renderer.shadowMap.type = THREE.PCFShadowMap;
     const n = typeof niebla === 'function' ? niebla() : niebla;   // la de la luz de ahora (cada luz trae la suya)
     // directo, la niebla de la escena; con posprocesado, la del efecto (detrás del mapeo tonal, como la de three.js)
@@ -75,6 +77,8 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     if (on.niebla && n) lista.push(new NieblaEffect(n, camara, comp ? { ...HORIZONTE, ...comp, cielo: cielo ? cielo() : null } : null, cieloVivo));
     if (on.color) lista.push(new LUT3DEffect(tabla));
     composer.addPass(new EffectPass(camara, ...lista));
+    // el desenfoque de maqueta (arriba y abajo de la pantalla), en los perfiles que pueden con una pasada más
+    if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, new MaquetaEffect({ vivo: cieloVivo })));
     if (SMAA[perfil.suavizado] !== undefined) composer.addPass(new EffectPass(camara, new SMAAEffect({ preset: SMAA[perfil.suavizado] })));
     composer.setSize(renderer.domElement.clientWidth || innerWidth, renderer.domElement.clientHeight || innerHeight, false);
   }

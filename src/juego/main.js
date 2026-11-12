@@ -226,7 +226,7 @@ const MUNDO = window.__mundoDemo || null;
 // arena de la orilla por encima del agua. Con 0,5, cinco veces mejor; la cámara nunca está a menos de 1,5 m del personaje)
 const camara = new THREE.PerspectiveCamera(45, 1, MUNDO ? 0.5 : 0.1, MUNDO ? 1600 : 500);
 // cielo, sol, luz del cielo y niebla del estilo v5 (src/mundo/ambiente.js); la sombra sigue al jugador
-const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200] });
+const ambiente = crearAmbiente(escena, { fondoPagina: true, alcance: 30, mapa: 2048, niebla: MUNDO ? [110, 700] : [70, 200], normalBias: 0.07 });   // (0,07: con el sol bajo, la sombra propia hacía una trama en el personaje)
 // el ciclo de día y noche (valravnx, 7 nov; src/mundo/cielo.js y src/logica/cielo.js): la hora es la del servidor (su
 // reloj llega en la bienvenida: todos ven el mismo cielo); mueve el sol, la luna y las estrellas, y con ellos la luz
 let desfaseReloj = 0;
