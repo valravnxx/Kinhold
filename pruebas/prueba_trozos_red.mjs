@@ -101,6 +101,11 @@ try {
   await pausa(200);
   const talaA = a.de('tala').at(-1);
   comprobar('A recibe que cae, con el tocón', talaA && talaA.cae.arbol === arbol && talaA.estado.estado[arbol]?.vuelve > Date.now());
+  // caído, se queda entero hasta que se limpia con hacha (valravnx, 12 nov): A lo limpia y entonces deja lo suyo
+  golpes = 0;
+  do { r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 11, az: 10, edad: 'adulto' }); golpes++; } while (r.ok && !r.datos.limpio && golpes < 30);
+  comprobar('A lo limpia', r.ok && r.datos.limpio, r.motivo);
+  await pausa(200);
   comprobar('B, lejos, no recibe nada de ese árbol', b.de('tala').length === 0, `${b.de('tala').length} mensajes`);
   comprobar('y en su suelo no está lo que ha dejado', b.de('suelo').length > 0 && b.de('suelo').every(m => !m.objetos.some(o => o.cosa.tipo === 'tronco_largo')));
   comprobar('A sí lo ve en su suelo', a.de('suelo').at(-1)?.objetos.some(o => o.cosa.tipo === 'tronco_largo'));

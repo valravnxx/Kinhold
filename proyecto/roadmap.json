@@ -1806,7 +1806,7 @@
    "id": "talar",
    "num": "P5",
    "nombre": "Talar de verdad",
-   "estado": "en_curso",
+   "estado": "hecho",
    "jugable": "El árbol cae por física hacia la boca que le cortas, con un crujido de aviso, y hiere a quien esté debajo.",
    "nota": "Revisión del 1 nov con valravnx: aprobado: caída sobre el tocón con la física de un tronco que gira; el daño lo decide el servidor con su autor.",
    "tareas": [
@@ -1837,9 +1837,10 @@
     },
     {
      "nombre": "El árbol caído se queda entero en el suelo y se limpia con hacha: al terminar de limpiarlo, deja el tronco y lo menudo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T04:32:07+00:00",
-     "rama": "trabajo/20261112-0430-limpiar"
+     "rama": "trabajo/20261112-0430-limpiar",
+     "fin": "2026-11-12T05:35:50+00:00"
     }
    ]
   },
@@ -4051,6 +4052,13 @@
      "archivo": "jugar/demo/v186.html",
      "capturas": "capturas/demo-v186",
      "notas": "El árbol cruje y hiere: cuando le quedan dos golpes cruje (lo oyen todos los de alrededor) y tiembla; al soltarse suena el chasquido y, al caer, el golpe. A quien queda debajo cuando el tronco le llega le hiere el servidor (el tronco, en la cabeza o un brazo; la copa, en el torso), también al que lo tala: abre la boca de un lado y corta el resto por detrás del tocón."
+    },
+    {
+     "v": "v187",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v187.html",
+     "capturas": "capturas/demo-v187",
+     "notas": "El árbol caído se queda entero: cuando cae, se queda tumbado donde se asienta (o apoyado en lo que tenía delante), igual para todos, con el tocón al lado. Con el hacha en la mano, junto a su tronco, Usar lo limpia a golpes, y al terminar deja el tronco y las varas o las ramas."
     }
    ]
   },

@@ -386,6 +386,15 @@ try {
     // apoyado en lo que tenga delante); si se desvía, el tronco queda hacia donde fue
     const cd = r.datos?.caida;
     comprobar('y cae de verdad: el servidor manda su caída, que acaba asentada en el suelo o apoyada', !!cd && cd.fotos.length > 10 && cd.dir === r.datos.dir && (cd.apoyo ? cd.angulo > 0.2 : cd.angulo > 1.1) && Math.abs(r.datos.dir - r.datos.hacia) <= 0.81, cd && `${cd.dura} s, ${cd.angulo} rad${cd.apoyo ? ', apoyado en ' + cd.apoyo.tipo : ''}, queda hacia ${cd.dir}`);
+    // caído, se queda entero (valravnx, 12 nov): se limpia a golpes de hacha, junto a su tronco tumbado (desde detrás del
+    // tocón llega), y entonces deja lo suyo
+    comprobar('caído, se queda entero en el suelo: aún no ha dejado nada', s.objetos.tala.caido(a.id, Date.now()) && !s.objetos.sueloVisible(Date.now()).some(o => Math.hypot(o.x - a.x, o.z - a.z) < 5 && (o.cosa.tipo === 'tronco_delgado' || o.cosa.tipo === 'vara')));
+    let limpieza = 0;
+    do {
+      r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); limpieza++;
+      if (r.ok && !r.datos.limpio) await pausa(550);
+    } while (r.ok && !r.datos.limpio && limpieza < 10);
+    comprobar('lo limpia con el hacha (joven con piedra: 3 golpes)', r.ok && r.datos.limpio && limpieza === 3, `${limpieza} golpes · ${r.motivo || ''}`);
     const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5);
     const tronco = deja.find(o => o.cosa.tipo === 'tronco_delgado'), varas = deja.find(o => o.cosa.tipo === 'vara');
     varasArbol = varas;
@@ -845,7 +854,7 @@ try {
         if (!(await cogerHacha())) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `sin hacha: ${h.motivo}` }; }
         // si al hacha no le quedan los golpes de este árbol, se repara antes (un adulto con piedra: 56; un joven: 8)
         { const h = s.objetos.invs.de(yo).rutasCon('hacha_piedra').map(ru => s.objetos.invs.de(yo).buscar(ru).cosa)[0];
-          if (h && VIDA_DESGASTE.hacha_piedra - (h.usado || 0) < (edad === 'adulto' ? 56 : 8)) { const rp = await repararHacha(); if (!rp.ok) return { ok: false, motivo: `no repara el hacha: ${rp.motivo}` }; } }
+          if (h && VIDA_DESGASTE.hacha_piedra - (h.usado || 0) <= (edad === 'adulto' ? 56 + 20 : 8 + 3)) { const rp = await repararHacha(); if (!rp.ok) return { ok: false, motivo: `no repara el hacha: ${rp.motivo}` }; } }
         await J.andar(a.x + 1, a.z);
         let t, g = 0;
         do {
@@ -857,7 +866,19 @@ try {
           }
           if (t.ok && !t.datos.cae) await pausa(550);
         } while (t.ok && !t.datos.cae && g < 80);
-        if (t.ok && t.datos.cae) { tocones.push(a); return { ok: true, a, golpes: g }; }
+        if (t.ok && t.datos.cae) {
+          tocones.push(a);
+          // caído, se limpia (12 nov): desde detrás del tocón, junto a su tronco tumbado
+          await pausa(550);
+          let l, gl = 0;
+          do {
+            if (!['mano:der', 'mano:izq'].some(m => J.inv.lugares[m]?.tipo === 'hacha_piedra')) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `sin hacha para limpiarlo: ${h.motivo}` }; await J.andar(a.x - 1, a.z); }
+            l = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); gl++;
+            if (l.ok && !l.datos.limpio) await pausa(550);
+          } while (l.ok && !l.datos.limpio && gl < 40);
+          if (!l.ok || !l.datos.limpio) return { ok: false, motivo: `no lo limpia: ${l.motivo || gl + ' golpes'}` };
+          return { ok: true, a, golpes: g };
+        }
       }
       return { ok: false, motivo: 'ningún árbol cae' };
     };
@@ -996,7 +1017,9 @@ try {
     console.log('16f. Para las cuerdas de la puerta y del andamio: tala un árbol adulto, lo tronza, levanta un banco de tronco y trenza 3 cuerdas');
     const ad = await talar('adulto');
     comprobar('tala un árbol adulto con su hacha de piedra (despacio)', ad.ok, `${ad.motivo || ''} ${ad.golpes || ''} golpes`);
-    comprobar('antes del adulto, al hacha de piedra no le quedan sus golpes (tras 16 jóvenes): la repara en una piedra de tallar con un cordel dejado en ella, y recupera la mitad', reparaciones.length === 1 && reparaciones[0].antes === 128 && reparaciones[0].despues === 44 && reparaciones[0].datos?.recuperado === 84 && JSON.stringify(reparaciones[0].gasta) === JSON.stringify({ cordel: 1 }), JSON.stringify(reparaciones));
+    // (12 nov: talar y limpiar el caído gastan el hacha: 11 golpes el joven y 76 el adulto con piedra; se repara cuando no
+    // le quedan los de lo que va a talar: hoy, antes del 16.º joven y antes del adulto)
+    comprobar('cuando al hacha de piedra no le quedan los golpes del árbol que va a talar y limpiar, la repara en una piedra de tallar con un cordel dejado en ella, y recupera la mitad', reparaciones.length >= 1 && reparaciones.every(x => x.despues === Math.max(0, x.antes - 84) && x.datos?.recuperado === 84 && JSON.stringify(x.gasta) === JSON.stringify({ cordel: 1 })), JSON.stringify(reparaciones));
     comprobar('y no se le rompe: tala el adulto con el hacha reparada', hachasRotas.length === 0 && ad.ok, JSON.stringify(hachasRotas));
     const largo = ad.ok && enSuelo('tronco_largo', ad.a, 6)[0];
     let golpes = 0, tz = { ok: false, motivo: 'no hay tronco largo' };

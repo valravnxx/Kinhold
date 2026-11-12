@@ -5,8 +5,9 @@
 // Cómo se ve (provisional):
 //  - el árbol que cae es el mismo modelo del bosque, que gira sobre su base como dice su caída (src/logica/tala.js,
 //    simularCaida: con la gravedad, rebota en el suelo y se asienta según el terreno, o se queda apoyado en lo que
-//    tenga delante o se desvía): en línea, los fotogramas del servidor, así todos lo ven igual; y se queda un momento
-//    donde se asentó; después quedan el tronco y las ramas como objetos del suelo (src/juego/suelo.js), donde cayó.
+//    tenga delante o se desvía): en línea, los fotogramas del servidor, así todos lo ven igual; y se queda entero donde
+//    se asentó (valravnx, 12 nov) hasta que se limpia a golpes de hacha; limpio, quedan el tronco y las ramas como
+//    objetos del suelo (src/juego/suelo.js), donde cayó.
 //  - el tocón: el pie del tronco con su corteza y el corte claro con anillos arriba.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -14,10 +15,9 @@ import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { RADIO_TRONCO, radioTronco } from '../mundo/especies.js';
 import { sonar, oidos } from './sonidos.js';
-import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala, simularCaida, caidaEn, altoArbol, CORTE } from '../logica/tala.js';
+import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala, simularCaida, caidaEn, altoArbol, radioArbol, CORTE, ALCANCE_TALA } from '../logica/tala.js';
 
 const TIEMBLA = 1.4;     // s que tiembla el árbol que cruje (el aviso de que va a caer)
-const EN_EL_SUELO = 1.3; // s: lo que se queda tumbado (o apoyado) antes de ser tronco y ramas
 
 function tocon(o) {
   // el tronco de su especie (los árboles del mundo, src/mundo/vegetacion_mundo.js) o el del llano (pino y árbol de copa)
@@ -61,6 +61,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
   const grupo = new THREE.Group(); grupo.name = 'tala'; raiz.add(grupo);
   const tocones = new Map();  // id → objeto del tocón
   const cayendo = [];         // { pivote, t, o }
+  const tumbados = new Map(); // id → pivote: el árbol caído, entero donde se asentó, hasta que se limpia
   const temblando = new Map(); // id → { o, t }: el que cruje, tiembla un momento
   const cero = new THREE.Matrix4().makeScale(0, 0, 0), eje = new THREE.Vector3();
 
@@ -81,24 +82,50 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
     if (o.malla) { o.malla.setMatrixAt(o.instancia, original(o)); o.malla.instanceMatrix.needsUpdate = true; }
     const t = tocones.get(o.id); if (t) { grupo.remove(t); tocones.delete(o.id); }
   }
-  // lo de ahora: tocones donde se taló y árboles donde ya volvieron a crecer
+  // el árbol entero, girando sobre su base encima del tocón (el que cae y el caído)
+  function pivoteDe(o) {
+    const p = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
+    original(o).decompose(p, q, s);
+    const pivote = new THREE.Group(); pivote.position.copy(p);
+    pivote.position.y += CORTE; // se parte encima del tocón: el árbol cae desde ahí, no desde el suelo
+    const m = new THREE.Mesh(o.malla.geometry, o.malla.material); m.quaternion.copy(q); m.scale.copy(s);
+    m.castShadow = true; m.receiveShadow = true; pivote.add(m);
+    // al caer, la base resbala del tocón hacia donde cae (así el tocón se ve, con el tronco al lado): un par de radios
+    const a = tala.porId.get(o.id) || datosArbol(o, o.id);
+    pivote.userData = { base: pivote.position.clone(), resbala: radioArbol(a.edad, a.especie, a.tam) * 2 + 0.12 };
+    return pivote;
+  }
+  // inclinado «angulo» hacia dir; fin: el ángulo en que se asienta (la base resbala del tocón según lo que lleva caído)
+  function inclinar(pivote, angulo, dir, fin = angulo) {
+    eje.set(Math.cos(dir), 0, -Math.sin(dir)); pivote.quaternion.setFromAxisAngle(eje, angulo);
+    // resbala en el último tramo de la caída (del 60 % al final) y baja lo que estaba encima del tocón
+    const u = pivote.userData, k = fin > 0 ? Math.max(0, Math.min(1, (angulo / fin - 0.6) / 0.4)) : 1;
+    if (u && u.base) pivote.position.set(u.base.x + Math.sin(dir) * u.resbala * k, u.base.y - CORTE * 0.8 * k, u.base.z + Math.cos(dir) * u.resbala * k);
+  }
+  // el caído (sin limpiar): entero, como se asentó
+  function tumbar(o) {
+    if (!o.malla || tumbados.has(o.id) || cayendo.some(c => c.o.id === o.id)) return;
+    const e = tala.estado[o.id], p = pivoteDe(o);
+    inclinar(p, e.ang, e.dir || 0); p.name = 'arbol_caido';
+    grupo.add(p); tumbados.set(o.id, p);
+  }
+  function levantar(id) { const p = tumbados.get(id); if (p) { grupo.remove(p); tumbados.delete(id); } }
+  // lo de ahora: tocones donde se taló, los caídos sin limpiar y árboles donde ya volvieron a crecer
   function refrescar(ahora = Date.now()) {
     for (const o of porId.values()) {
       if (tala.enPie(o.id, ahora)) { if (tocones.has(o.id)) mostrar(o); }
       else if (!tocones.has(o.id)) esconder(o);
+      if (tala.caido(o.id, ahora)) tumbar(o); else levantar(o.id);
     }
+    for (const id of [...tumbados.keys()]) if (!porId.has(id)) levantar(id);
   }
   refrescar();
 
   // el árbol que cae: el mismo modelo, girando sobre su base como dice su caída (sin ella, la de aquí, hacia «dir»)
   function caer(o, dir, deja, caida = null) {
     if (!caida || !Array.isArray(caida.fotos) || !caida.fotos.length) caida = simularCaida(tala.porId.get(o.id) || datosArbol(o, o.id), dir, { alturaEn: altura });
-    const p = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
-    original(o).decompose(p, q, s);
-    const pivote = new THREE.Group(); pivote.position.copy(p);
-    pivote.position.y += CORTE; // se parte encima del tocón: el árbol cae desde ahí, no desde el suelo
-    const m = new THREE.Mesh(o.malla.geometry, o.malla.material); m.quaternion.copy(q); m.scale.copy(s);
-    m.castShadow = true; m.receiveShadow = true; pivote.add(m); pivote.name = 'arbol_cayendo';
+    levantar(o.id);
+    const pivote = pivoteDe(o); pivote.name = 'arbol_cayendo';
     grupo.add(pivote);
     temblando.delete(o.id);
     cayendo.push({ pivote, t: 0, caida, deja, o });
@@ -116,10 +143,11 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
     }
     tala.anadir(nuevos);
     for (const o of lista) if (o.id && !tala.enPie(o.id, Date.now()) && !tocones.has(o.id)) esconder(o);
+    for (const o of lista) if (o.id && tala.caido(o.id, Date.now())) tumbar(o);
   }
   function quitar(ids) {
     for (const id of ids) {
-      porId.delete(id);
+      porId.delete(id); levantar(id);
       const t = tocones.get(id); if (t) { grupo.remove(t); tocones.delete(id); }
     }
     tala.quitar(ids);
@@ -134,8 +162,9 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
     golpe(invs, registro, autor, o, x, z, ahora = Date.now()) {
       const r = ejecutarTala(tala, invs, sueloObjetos.suelo, registro, { autor, tipo: 'talar', arbol: o.id, x, z }, ahora);
       if (r.ok) guardarlo();
-      // lo que deja no se ve hasta que el árbol está en el suelo
-      if (r.ok && r.cae) { sueloObjetos.guardar(); sueloObjetos.esconder(r.objetos); esconder(o); caer(o, r.dir, r.objetos, r.caida); }
+      if (r.ok && r.cae) { esconder(o); caer(o, r.dir, [], r.caida); }
+      // limpio: el caído se va y queda en el suelo lo que deja
+      if (r.ok && r.limpio) { levantar(o.id); sueloObjetos.guardar(); sueloObjetos.refrescar(); }
       return r;
     },
     // sin servidor (las pruebas): descortezar o sangrar el árbol o aquí (src/logica/tala.js), a lo que llevas
@@ -149,10 +178,14 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
       for (let i = cayendo.length - 1; i >= 0; i--) {
         const c = cayendo[i]; c.t += dt;
         const { angulo, dir } = caidaEn(c.caida, c.t);
-        eje.set(Math.cos(dir), 0, -Math.sin(dir));
-        c.pivote.quaternion.setFromAxisAngle(eje, angulo);
-        if (!c.sono && c.t >= c.caida.dura) { c.sono = true; sonar('suelo', lejos(c.o)); }
-        if (c.t > c.caida.dura + EN_EL_SUELO) { grupo.remove(c.pivote); cayendo.splice(i, 1); sueloObjetos.mostrar(c.deja); }
+        inclinar(c.pivote, angulo, dir, c.caida.angulo);
+        // en el suelo: se queda caído, entero (si aún lo está: otro puede haberlo limpiado mientras)
+        if (c.t >= c.caida.dura) {
+          sonar('suelo', lejos(c.o)); cayendo.splice(i, 1);
+          if (tala.caido(c.o.id, Date.now()) && !tumbados.has(c.o.id)) { c.pivote.name = 'arbol_caido'; tumbados.set(c.o.id, c.pivote); }
+          else grupo.remove(c.pivote);
+          if (c.deja && c.deja.length) sueloObjetos.mostrar(c.deja);
+        }
       }
       // el que cruje tiembla: se mece un poco sobre su base, cada vez menos
       for (const [id, v] of temblando) {
@@ -167,6 +200,21 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
       if (t - ultimo > 5000) { ultimo = t; refrescar(t); }
     },
     get cayendo() { return cayendo.length; },
+    get tumbados() { return tumbados.size; },
+    // el árbol caído sin limpiar al alcance del hacha desde (x, z): { o, d, x, z } (x, z: el punto de su tronco más
+    // cercano), o null
+    caidoCercano(x, z, ahora = Date.now()) {
+      let mejor = null;
+      for (const c of tala.caidos(ahora)) {
+        const o = porId.get(c.arbol.id), d = tala.distanciaCaido(c.arbol.id, x, z, ahora);
+        if (!o || d > ALCANCE_TALA || (mejor && d >= mejor.d)) continue;
+        const t = tala.tendido(c.arbol.id, ahora), dx = t.x1 - t.x0, dz = t.z1 - t.z0, l2 = dx * dx + dz * dz || 1;
+        const k = Math.max(0, Math.min(1, ((x - t.x0) * dx + (z - t.z0) * dz) / l2));
+        mejor = { o, d, x: t.x0 + dx * k, z: t.z0 + dz * k };
+      }
+      return mejor;
+    },
+    progresoLimpiar: (o) => tala.progresoLimpiar(o.id),
     get temblando() { return temblando.size; },
     get oidos() { return oidos; },   // lo que ha sonado (las pruebas)
     // el crujido de aviso (está a punto de caer): suena (más flojo de lejos) y el árbol tiembla un momento

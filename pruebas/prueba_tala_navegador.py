@@ -5,6 +5,8 @@
 # recargar y, pasado su tiempo, el árbol vuelve a crecer. El adulto con hacha de piedra pide muchos golpes.
 # Capturas de cerca en PC (1280×800) y móvil (390×844).
 # Uso: python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html <carpeta>
+# Caído, el árbol se queda entero en el suelo (valravnx, 12 nov) y Usar con el hacha junto a su tronco lo limpia: al
+# terminar, deja el tronco y lo menudo.
 # MUTAR=1: el árbol talado sigue «en pie» (sin tocón ni caída): tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, re
 from playwright.sync_api import sync_playwright
@@ -83,8 +85,18 @@ def foto(pg, nombre):
 def golpes(pg, a, n, desde=1):
     return pg.evaluate(f"""(() => {{ const k = {K}, o = k.obstaculos.find(x => x.id === '{a['id']}'); let r;
       for (let i = 0; i < {n}; i++) {{ r = k.talaV.golpe(k.inventarios, k.registroAcciones, 'jugador:local', o, k.pj.x, k.pj.z, Date.now() + ({desde} + i) * 1000);
-        if (!r.ok || r.cae) break; }}
-      return {{ ok: r.ok, cae: !!r.cae, faltan: r.faltan, motivo: r.motivo || '', dir: r.dir }}; }})()""")
+        if (!r.ok || r.cae || r.limpio) break; }}
+      return {{ ok: r.ok, cae: !!r.cae, limpio: !!r.limpio, faltan: r.faltan, motivo: r.motivo || '', dir: r.dir }}; }})()""")
+
+# el jugador al lado del árbol caído, a media altura de su tronco tumbado, mirándolo; la cámara de lado
+def junto_caido(pg, a, dist=5.5, pitch=0.45, giro=0.9, en=0.5):
+    pg.evaluate(f"""(() => {{ const k = {K}, t = k.talaV.tala.tendido('{a['id']}', Date.now());
+      const mx = t.x0 + (t.x1 - t.x0) * {en}, mz = t.z0 + (t.z1 - t.z0) * {en}, l = Math.hypot(t.x1 - t.x0, t.z1 - t.z0) || 1;
+      const px = -(t.z1 - t.z0) / l, pz = (t.x1 - t.x0) / l;
+      k.pj.k = 0; k.pj.x = mx + px * 1.0; k.pj.z = mz + pz * 1.0; k.pj.y = 0; k.pj.rot = Math.atan2(mx - k.pj.x, mz - k.pj.z);
+      k.cam.yaw = k.pj.rot + Math.PI + {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()""")
+
+def accion(pg): return pg.evaluate(f"(() => {{ const a = {K}.accionPrincipal(); return a ? a.texto : null; }})()")
 
 def en_pie(pg, a): return pg.evaluate(f"(() => {{ const k = {K}, o = k.obstaculos.find(x => x.id === '{a['id']}'); return k.talaV.enPie(o); }})()")
 
@@ -113,9 +125,10 @@ with sync_playwright() as p:
     pg.wait_for_function(f"(() => {{ const c = {K}.escena.getObjectByName('arbol_cayendo'); return !c || c.quaternion.w < 0.94; }})()", timeout=60000)
     foto(pg, 'tala_02_cae')
     # la caída (12 nov): con la gravedad, rebota y se asienta según el terreno (o apoyado en lo que tenga delante)
-    pg.wait_for_function(f"(() => {{ const c = {K}.talaV.caidas[0]; return !c || c.t > c.dura + 0.1; }})()", timeout=60000)
     c = pg.evaluate(f"{K}.talaV.caidas[0] || null")
-    comprobar('se asienta: acaba tumbado en el suelo (o apoyado) y se queda así un momento', c is not None and abs(c['angulo'] - c['final']) < 0.01 and (c['final'] > 1.1 or c['apoyo'] is not None), str(c))
+    pg.wait_for_function(f"{K}.talaV.cayendo === 0", timeout=60000)
+    ang = pg.evaluate(f"(() => {{ const p = {K}.escena.getObjectByName('arbol_caido'); return p ? 2 * Math.acos(Math.min(1, Math.abs(p.quaternion.w))) : null; }})()")
+    comprobar('se asienta: acaba tumbado en el suelo (o apoyado) y se queda así (12 nov: entero, hasta que se limpia)', c is not None and ang is not None and abs(ang - c['final']) < 0.01 and (c['final'] > 1.1 or c['apoyo'] is not None), f"{c} · se queda a {ang}")
     comprobar('al soltarse suena el chasquido y, al dar en el suelo, el golpe', pg.evaluate(f"(() => {{ const q = {K}.talaV.oidos.map(o => o.que); return q.includes('chasquido') && q.includes('suelo'); }})()"))
     foto(pg, 'tala_03_asentado')
     # el crujido de aviso (12 nov): a punto de caer, cruje (suena) y el árbol tiembla un momento
@@ -124,6 +137,26 @@ with sync_playwright() as p:
     pg.wait_for_function(f"{K}.talaV.temblando === 0", timeout=30000)
     comprobar('y luego se queda como estaba', pg.evaluate(f"(() => {{ const k = {K}, o = k.obstaculos.find(x => x.id === '{otro}'), m = new k.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m); return m.equals(o.matriz); }})()"))
     pg.wait_for_function(f"{K}.talaV.cayendo === 0", timeout=90000)
+    # caído, se queda entero (valravnx, 12 nov) hasta que se limpia con el hacha
+    comprobar('caído, se queda entero en el suelo donde se asentó', pg.evaluate(f"{K}.talaV.tumbados === 1 && !!{K}.escena.getObjectByName('arbol_caido') && !{K}.escena.getObjectByName('arbol_cayendo')"))
+    comprobar('y aún no ha dejado nada en el suelo', not pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.length"))
+    junto_caido(pg, j, dist=8, pitch=0.85, giro=0.6)
+    pg.wait_for_timeout(500)
+    comprobar('junto a su tronco, con el hacha, la acción es limpiarlo', accion(pg) == 'Limpiar el árbol caído', str(accion(pg)))
+    foto(pg, 'tala_03b_caido')
+    junto_caido(pg, j, dist=4.2, pitch=0.8, giro=0.5, en=0.3)
+    foto(pg, 'tala_03c_caido_de_cerca')
+    junto_caido(pg, j)
+    pg.evaluate(f"{K}.usar()")
+    comprobar('Usar lo empieza a limpiar', pg.evaluate(f"!!{K}.estado.talando"))
+    pg.wait_for_function(f"{K}.talaV.tala.progresoLimpiar('{j['id']}') > 0", timeout=60000)
+    comprobar('cada golpe lo dice', 'Limpias el árbol caído' in aviso(pg), aviso(pg))
+    foto(pg, 'tala_03d_limpiando')
+    pg.evaluate(f"{K}.estado.talando = null")
+    rl = golpes(pg, j, 10, desde=40)
+    comprobar('con sus golpes queda limpio', rl['ok'] and rl['limpio'], str(rl))
+    comprobar('limpio, el árbol caído ya no está', pg.evaluate(f"{K}.talaV.tumbados === 0 && !{K}.escena.getObjectByName('arbol_caido')"))
+    junto(pg, j)
     comprobar('queda el tocón en el sitio', pg.evaluate(f"(() => {{ const t = {K}.talaV.grupo.children.filter(c => c.name === 'tocon'); return t.length === 1 && Math.hypot(t[0].position.x - {j['x']}, t[0].position.z - {j['z']}) < 0.01; }})()"))
     comprobar('el árbol del bosque ya no se dibuja', pg.evaluate(f"(() => {{ const o = {K}.obstaculos.find(x => x.id === '{j['id']}'), m = new {K}.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m); return Math.abs(m.determinant()) < 1e-9; }})()"))
     suelo = pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.map(o => ({{ tipo: o.cosa.tipo, n: o.cosa.n, x: o.x, z: o.z }}))")
@@ -173,8 +206,13 @@ with sync_playwright() as p:
     comprobar('un golpe de piedra a un adulto: faltan 55', r['ok'] and not r['cae'] and r['faltan'] == 55, str(r))
     pg.evaluate(f"{K}.soltarAlSuelo('mano:der')"); en_mano(pg, 'hacha_hierro')
     r = golpes(pg, ad, 30, desde=10)
-    comprobar('con el hacha de hierro cae enseguida y deja un tronco largo', r['cae'] and pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'tronco_largo')"), str(r))
+    comprobar('con el hacha de hierro cae enseguida', r['cae'], str(r))
     pg.wait_for_function(f"{K}.talaV.cayendo === 0", timeout=90000)
+    junto_caido(pg, ad, dist=11, pitch=0.8, giro=0.7)
+    pg.wait_for_timeout(500)
+    foto(pg, 'tala_05_adulto_caido')
+    rl = golpes(pg, ad, 30, desde=60)
+    comprobar('y limpio, deja un tronco largo y las ramas', rl['limpio'] and pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'tronco_largo') && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'rama')"), str(rl))
     junto(pg, ad, dist=7.5, pitch=0.42, giro=1.3)
     foto(pg, 'tala_05_adulto_talado')
     comprobar('sin errores en la consola (PC)', not pg.errores, '; '.join(pg.errores[:3]))
@@ -192,7 +230,17 @@ with sync_playwright() as p:
     pg.evaluate(f"{K}.estado.talando = null")
     r = golpes(pg, j, 20)
     pg.wait_for_function(f"{K}.talaV.cayendo === 0", timeout=90000)
-    comprobar('móvil: cae y queda el tocón', r['cae'] and not en_pie(pg, j))
+    comprobar('móvil: cae y queda caído, entero', r['cae'] and not en_pie(pg, j) and pg.evaluate(f"{K}.talaV.tumbados === 1"))
+    junto_caido(pg, j, dist=6.5, pitch=0.85, giro=0.5)
+    pg.wait_for_timeout(500)
+    foto(pg, 'tala_07_movil_caido')
+    pg.locator('#btnUsar').tap()
+    pg.wait_for_function(f"{K}.talaV.tala.progresoLimpiar('{j['id']}') > 0", timeout=60000)
+    comprobar('móvil: el botón Usar lo limpia', pg.evaluate(f"!!{K}.estado.talando"))
+    pg.evaluate(f"{K}.estado.talando = null")
+    rl = golpes(pg, j, 10, desde=40)
+    comprobar('móvil: limpio, deja el tronco delgado', rl['limpio'] and pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'tronco_delgado')"), str(rl))
+    junto(pg, j, dist=4.2)
     foto(pg, 'tala_07_movil_tocon')
     comprobar('sin errores en la consola (móvil)', not pg.errores, '; '.join(pg.errores[:3]))
     nav.close()

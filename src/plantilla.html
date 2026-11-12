@@ -214,7 +214,8 @@ body.tactil-ui:not(.construyendo):not(.desmontando) #btnUsar:active{transform:sc
 body.tactil-ui #btnUsar .ic{display:block;width:58%;height:58%;object-fit:contain;filter:drop-shadow(0 0 1px #120b06) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
 body.tactil-ui #btnUsar .ic.g{width:44%;height:44%}
 body.tactil-ui #btnUsar:not(.activo) .ic{opacity:.35}
-body.tactil-ui #btnUsar .verbo{display:block;position:absolute;top:100%;margin-top:3px;left:50%;transform:translateX(-50%);font:18px 'EB Garamond',Georgia,serif;color:#f1e6cf;white-space:nowrap;text-shadow:0 1px 1px #000,0 0 3px #000,0 0 10px rgba(0,0,0,.75)}
+/* (12 nov) pegado por la derecha al borde del botón: los verbos largos («Limpiar el árbol caído») crecen hacia la izquierda y no se cortan */
+body.tactil-ui #btnUsar .verbo{display:block;position:absolute;top:100%;margin-top:3px;right:-10px;text-align:right;font:18px 'EB Garamond',Georgia,serif;color:#f1e6cf;white-space:nowrap;text-shadow:0 1px 1px #000,0 0 3px #000,0 0 10px rgba(0,0,0,.75)}
 body.tactil-ui #btnUsar .prog{display:block;position:absolute;inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px);transform:rotate(-90deg)}
 body.tactil-ui #btnUsar .prog[hidden]{display:none}
 body.tactil-ui.construyendo #btnUsar,body.tactil-ui.desmontando #btnUsar{display:none}
