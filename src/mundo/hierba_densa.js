@@ -197,8 +197,9 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
     // algo construido encima
     if (++repaso % 10 === 0 || sucio) {
       let rehechas = 0;
-      for (const [k, c] of [...celdas]) {
-        const d = Math.hypot((c.ci + 0.5) * CELDA - xm, (c.cj + 0.5) * CELDA - zm);
+      // (de cerca a lejos: después de construir, lo primero que se rehace es lo que tiene el jugador a los pies)
+      const orden = [...celdas].map(([k, c]) => [k, c, Math.hypot((c.ci + 0.5) * CELDA - xm, (c.cj + 0.5) * CELDA - zm)]).sort((a, b) => a[2] - b[2]);
+      for (const [k, c, d] of orden) {
         if (d > R + CELDA * 2) { soltar(k); continue; }
         if (rehechas >= POR_FOTOGRAMA) continue;
         const v = trozoEn((c.ci + 0.5) * CELDA, (c.cj + 0.5) * CELDA);

@@ -60,7 +60,7 @@ export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
 // El color del suelo de cerca (el de la vista «Como en el juego»), en lineal y ya con el sombreado de las vaguadas:
 //   st: el sitio (paisaje.sitio) o null en el agua; y: altura (m); s: pendiente de la forma (vecinos a 3 m); s1: la de
 //   aquí mismo (1 m); lap: concavidad (vecinos a 2 m, m/m²); xm, ym: el punto en el mundo (m)
-const TIERRA = [0.49, 0.42, 0.33], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: la tierra, algo más parda: se leía como paja)
+const TIERRA = [0.47, 0.42, 0.35], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: la tierra, algo más parda: se leía como paja)
 // (la prueba quita el lecho a propósito para comprobar que falla)
 const window_sinLecho = () => typeof globalThis !== 'undefined' && !!globalThis.__sinLecho;
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };

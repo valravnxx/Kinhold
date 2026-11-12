@@ -78,17 +78,23 @@ vec4 bCapas; vec3 pwCapas;
     // (cada una con su color en distinta medida: la tierra y la roca casi solo claros y oscuros; la hojarasca, con el suyo)
     vec3 L = vec3(0.299, 0.587, 0.114);
     vec3 dH = cH.rgb / uMedias[0], dT = cT.rgb / uMedias[1], dR = cR.rgb / uMedias[2], dF = cF.rgb / uMedias[3];
-    dH = mix(vec3(dot(dH, L)), dH, 0.5); dT = mix(vec3(dot(dT, L)), dT, 0.1); dR = mix(vec3(dot(dR, L)), dR, 0.3); dF = mix(vec3(dot(dF, L)), dF, 0.85);
+    dH = mix(vec3(dot(dH, L)), dH, 0.5); dT = vec3(dot(dT, L)); dR = mix(vec3(dot(dR, L)), dR, 0.3); dF = mix(vec3(dot(dF, L)), dF, 0.85);
     vec3 d = dH * b.x + dT * b.y + dR * b.z + dF * b.w;
     // a lo lejos, el detalle se va (la misma textura muchas veces seguidas hace rayas y aguas); y 0,6: lo que oscurecía
     // la textura «suelo» de antes, con la que están hechos los colores de los vértices
     // y también donde se ve muy de canto: cuando cada píxel de la pantalla abarca varios de la textura, su detalle hace
     // bandas (el aliasing de mirar una textura en ángulo rasante); ahí se va también
     float tpp = max(length(dFdx(p)), length(dFdy(p))) / uEscala.y * 512.0;
-    float lejosD = max(smoothstep(35.0, 130.0, length(vViewPosition)), smoothstep(9.0, 26.0, tpp));
-    // (lo de lejos se queda con la variación grande de la hierba, que no hace rayas)
-    vec3 grande = mix(vec3(1.0), cH2.rgb / uMedias[0], 0.45 * b.x);
-    diffuseColor.rgb *= 0.6 * mix(clamp(d, 0.0, 2.2), grande, lejosD);
+    // a media distancia, las mismas texturas leídas cinco veces más grandes: siguen los terrones y las manchas, sin las
+    // bandas de las pequeñas; muy lejos, ya sin detalle (lo cubre la bruma)
+    float medioD = max(smoothstep(22.0, 45.0, length(vViewPosition)), smoothstep(7.0, 18.0, tpp));
+    float lejosD = smoothstep(90.0, 220.0, length(vViewPosition));
+    vec2 p5 = p / 5.0;
+    vec3 eH = cH2.rgb / uMedias[0], eT = texture2D(tTierra, p5 / uEscala.y).rgb / uMedias[1], eF = texture2D(tHoja, p5 / uEscala.w).rgb / uMedias[3], eR = texture2D(tRoca, p5 / uEscala.z).rgb / uMedias[2];
+    eH = mix(vec3(dot(eH, L)), eH, 0.5); eT = vec3(dot(eT, L)); eR = vec3(dot(eR, L)); eF = mix(vec3(dot(eF, L)), eF, 0.85);
+    vec3 dM = mix(vec3(1.0), eH, 0.6) * b.x + eT * b.y + eR * b.z + eF * b.w;
+    vec3 dTodo = mix(clamp(d, 0.0, 2.2), clamp(mix(vec3(1.0), dM, 0.75), 0.0, 2.2), medioD);
+    diffuseColor.rgb *= 0.6 * mix(dTodo, vec3(1.0), lejosD);
   }
 #else
 #ifdef USE_MAP
