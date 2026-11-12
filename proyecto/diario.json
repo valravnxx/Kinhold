@@ -6253,5 +6253,21 @@
   "pruebas": "En la nube: la tala en el navegador (con el chasquido, el golpe en el suelo y el árbol que cruje y tiembla, nuevo), el mimbre y la corteza, la demo única y el recorrido (con «cruje» y «no le hiere», nuevos), bien. Tala 94/94 aquí y objetos del servidor 75/75 (con el crujido que oye B, la herida de B debajo de la copa y A que se libra detrás del tocón); rotas a propósito (MUTAR=1 y quitando el daño del servidor), fallan. En «lógica» falla prueba_nube.mjs (los avisos de systemd de la máquina de GitHub, igual que en main) y prueba_presencia.mjs (el movimiento suave, 2,52 veces con tope 2,5: no la toca este cambio y aquí pasa entera). No comprobado: cómo suenan los sonidos (aquí no hay altavoces: solo que se piden) ni la segunda mirada de otro agente (no cambia nada que se vea salvo el temblor, que en una captura no se aprecia).",
   "capturas": "capturas/demo-v186",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T04:23:27+00:00",
+  "fin": "2026-11-12T04:25:29+00:00",
+  "titulo": "Talar de verdad: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "talar",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el árbol cae hacia la boca que le cortas (sin boca, hacia donde se inclina o cuesta abajo), gira sobre el tocón con la gravedad, rebota y se asienta según el terreno, se apoya o se desvía en lo que tiene delante, cruje antes de caer y hiere a quien queda debajo, con su autor; todo lo decide el servidor y todos lo ven igual (demo v185 y v186, ya en main).",
+   "El recorrido de jugador, sin arcón, ya tala así: abre la boca, corta el resto por detrás del tocón, oye el crujido, el árbol cae hacia la boca y no le hiere (salió entero en la nube con la v186).",
+   "En pruebas/prueba_origenes.mjs no queda nada pendiente: cada material que el juego enseña sale del mundo.",
+   "Lo que queda para la revisión: los sonidos (el crujido, el chasquido y el golpe en el suelo) no se han podido oír aquí; en las capturas de la prueba de talar, los troncos y las copas cerca de la cámara salen casi negros, y en el móvil la mano de arriba no coge bien el mango del hacha.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal; la tala, 94 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

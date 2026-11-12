@@ -1806,7 +1806,7 @@
    "id": "talar",
    "num": "P5",
    "nombre": "Talar de verdad",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "El árbol cae por física hacia la boca que le cortas, con un crujido de aviso, y hiere a quien esté debajo.",
    "nota": "Revisión del 1 nov con valravnx: aprobado: caída sobre el tocón con la física de un tronco que gira; el daño lo decide el servidor con su autor.",
    "tareas": [
@@ -1830,9 +1830,10 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T04:23:27+00:00",
-     "rama": "trabajo/20261112-0423"
+     "rama": "trabajo/20261112-0423",
+     "fin": "2026-11-12T04:25:29+00:00"
     }
    ]
   },
