@@ -6491,5 +6491,21 @@
   ],
   "pruebas": "Velocidad con pocos fotogramas: 3,55 m/s a 5,7 fps en la nube; rota a propósito, falla. Comprobador de código sin fallos. No comprobado: el reporte de 10 s de esa jugadora (la red de aquí no llega al servidor).",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T15:14:35+01:00",
+  "fin": "2026-11-12T22:15:00+01:00",
+  "titulo": "El suelo con materiales (demo v192)",
+  "hito": "aspecto",
+  "hecho": [
+   "El suelo ya no es un verde liso: mezcla cuatro texturas libres (CC0, ambientCG) de hierba, tierra, roca y hojarasca según la pendiente, el bioma, el bosque, la playa y el lecho de los ríos, con el borde por la altura de cada textura y relieve.",
+   "A media distancia el detalle se vuelve a muestrear más grande, y lejos o muy de canto se apaga, para que no salgan rayas.",
+   "Calvas de tierra más pequeñas, de silueta irregular y de pardo gris cálido; la hierba, hacia el verde oliva de la referencia, con zonas más ocres y más oscuras a gran escala; la roca, solo en lo muy empinado.",
+   "La hierba densa no crece sobre la tierra ni la hojarasca, y al construir se rehace primero lo más cercano.",
+   "Siete miradas de un revisor aparte; la séptima dio el sí."
+  ],
+  "pruebas": "Revisor en la nube: bien la hierba densa, la demo única, el posprocesado y los perfiles, el terreno por trozos, el mapa y la demo en el mundo; la lógica falla solo en la prueba del servidor con Caddy en la máquina de GitHub (aquí pasa 27/27, y no se ha tocado el servidor). Comprobador de código correcto.",
+  "capturas": "capturas/demo-v192",
+  "estado": "ok"
  }
 ]
