@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="kinhold-origen" content="1775a6b978fb0ec756915e81227068a4ced493fe">
+<meta name="kinhold-origen" content="6fe0213a8c054396b7fa031eae85b0f38e851fa2">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kinhold GDD v0.9</title>
 <style>
@@ -63,7 +63,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="wrap">
 <header>
   <h1>GDD — Kinhold</h1>
-  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items; 6 Nov: shoulder loads, young and mature trees, the humble house and base storage; crafting at a station with what is placed on it; workstations as a build in their own tab, and where each one goes) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
+  <div class="sub">Version 0.9 · 26 Oct 2026 (31 Oct: the king's island and its city; 4 Nov: what is paid, the art direction and the warehouse with market; 4 Nov, later, after the audit: your land is the whole zone, the king's zones, the boundary stone can be taken down, crafting without learning recipes, parity of paid items; 6 Nov: shoulder loads, young and mature trees, the humble house and base storage; crafting at a station with what is placed on it; workstations as a build in their own tab, and where each one goes; 12 Nov: up to date with what was decided, always online, four directions and the random start at a free spot) · Expansion for a finished game: districts, transport, woven clothing and living together online · The content catalogue remains in the analysis document</div>
   <p class="legend" style="margin-top:10px">
     <span class="tag ok">DECIDED</span> you said so
     <span class="tag method">METHOD</span> how to do it technically
@@ -106,7 +106,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li><b>Realistic mechanics.</b> What you would do in real life costs what it would cost.</li>
   <li><b>The world is huge and travel matters.</b></li>
   <li><b>From survival to kingdom,</b> or to living well in isolation.</li>
-  <li><b>The solo player has a complete game.</b></li>
+  <li><b>Whoever plays alone has a complete game,</b> in the same online world as everyone else.</li>
   <li><b>Everything rests on knowledge, skill and equipment,</b> not on character levels or stats.</li>
   <li><b>Skill-based combat,</b> without health bars.</li>
   <li><b>What is yours is safe while you are away.</b></li>
@@ -116,6 +116,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <section id="plataforma">
 <h2>2. Platform, camera and product</h2>
 <p><span class="tag ok">DECIDED</span>Own website with accounts. Paid server if needed. PC, mobile and tablet.</p>
+<p><span class="tag ok">DECIDED</span><b>Always online</b> (valravnx, 30 Oct): the game is always played connected to the server, also from the website, and that is the only mode; there is no separate offline or solo mode. Whoever plays alone does so in everyone's world. Everything that changes the world goes through the server with its author, and what one player sees the others see too.</p>
 <p><span class="tag ok">DECIDED</span>Semi-isometric third person with <b>free rotation</b>.</p>
 <p><span class="tag ok">DECIDED</span>Languages: <b>English, Spanish and Russian.</b></p>
 <p><span class="tag ok">DECIDED</span><b>Free forever</b>; what is paid is only appearance, in recipes (see section 20). You see exactly what you buy before buying it. No loot boxes or wheels, no premium currency, no season pass and no rush offers to push people to buy (4 Nov).</p>
@@ -170,7 +171,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 </table></div>
 <p><span class="tag ok">DECIDED</span><b>A world of 256 × 256 km including the sea</b> (chosen by valravnx on 27 Oct, with seed 66172, in the map sketches): mainland regions of about 75 × 75 km and an island region of about 2,000 km², separated by sea. Crossing a mainland region takes about 15 hours on foot or 6 on horseback.</p>
 <p><span class="tag ok">DECIDED</span><b>Names</b> (chosen by valravnx on 28 Oct): the continent is <b>Kinland</b>, and its five regions are <b>Whitholm</b> (the northeastern island: cold, rainy and limestone), <b>Eikwold</b> (northwest: forests, plains and coast), <b>Rudmere</b> (southwest: the warmest, holm oak woods on red sandstone, with the lake), <b>Highfell</b> (the central massif, with the highest peak) and <b>Storaa</b> (southeast: the driest, where the great river runs). They are <b>regions, not countries</b>: countries, if they ever come, will be made by the players.</p>
-<p><span class="tag ok">DECIDED</span><b>Playtest world: Whitholm</b> (valravnx, 29 Oct): while testing with other people, the game is played only on the island (about 2,000 km²). The rest of the world exists, but a sea more than 20 km wide separates it and cannot be crossed by swimming. It will be opened later: if there are enough players, or by letting them discover it themselves when ships arrive. The island is divided into districts. <b>Where you appear</b> (valravnx, 30 Oct): each new player, at a random spot in three starting districts (Motdale, Breiddal and Strandvang, the vales and meadows of the east and south-east), always in ordinary biomes (never in the mountains, alpine pasture or snow) and on flat ground away from rivers. Its resources are discussed separately. <b>The districts</b> (valravnx, 30 Oct) are eight, each one or several whole river basins: Breiddal (the great south-eastern vale), Motdale (the eastern valley, where the rivers meet), Nordwold (the north), Lindholt (the north-west), Strandvang (the east coast), Furulid (the western slope of the sierra), Sudholt (the south) and Ravnsnes (the western peninsula). Each district is divided into zones of roughly 1 km² for clans (section 11).</p>
+<p><span class="tag ok">DECIDED</span><b>Playtest world: Whitholm</b> (valravnx, 29 Oct): while testing with other people, the game is played only on the island (about 2,000 km²). The rest of the world exists, but a sea more than 20 km wide separates it and cannot be crossed by swimming. It will be opened later: if there are enough players, or by letting them discover it themselves when ships arrive. The island is divided into districts. <b>Where you appear</b> (valravnx, 30 Oct): each new player, at a random spot in three starting districts (Motdale, Breiddal and Strandvang, the vales and meadows of the east and south-east), always in ordinary biomes (never in the mountains, alpine pasture or snow) and on flat ground away from rivers. Its resources are discussed separately. <b>Only at a free spot</b> (valravnx, 5 Nov: «you appear at a random FREE point; if a zone has an active boundary stone, it stops being a spawn»): the random start only chooses among sites whose zone has no boundary stone. <b>The districts</b> (valravnx, 30 Oct) are eight, each one or several whole river basins: Breiddal (the great south-eastern vale), Motdale (the eastern valley, where the rivers meet), Nordwold (the north), Lindholt (the north-west), Strandvang (the east coast), Furulid (the western slope of the sierra), Sudholt (the south) and Ravnsnes (the western peninsula). Each district is divided into zones of roughly 1 km² for clans (section 11).</p>
 <div class="box m"><span class="tag method">METHOD</span>
 <p>Since the world comes from a seed, it can be expanded at the edges later without touching what already exists. With few people at first, the medium world may feel empty: we will keep an eye on it once there are players.</p></div>
 <h3>Relief, rivers and forests at real scale</h3>
@@ -335,7 +336,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span><b>Timber props</b> (posts and a log crossbeam) are placed like building works: frame, material and time, and several people finish sooner. Each material takes more or fewer strokes depending on its hardness and the tool. A decent mine costs time or people.</p>
 <p><span class="tag ok">DECIDED</span><b>Spoil is carried out</b> in a basket or wheelbarrow, and it is material that gets used. What each one is for (earth to fill and level, stone to build…) is decided with the recipes.</p>
 <p><span class="tag ok">DECIDED</span><b>Realistic layers and veins:</b> topsoil, clay or gravel beneath, and then each region's bedrock (limestone, sandstone, granite, slate). Surface iron is scarce and poor, and is found by signs (reddish water, waterlogged ground); the good iron is in veins inside the rock, which need a mine. Coal crops out on some slopes and is dug in shallow pits. Veins come from the world seed.</p>
-<p><span class="tag ok">DECIDED</span><b>No digging on someone else's land</b> (their zone, section 11) unless its owner has invited you. <b>The king's zones</b> (valravnx, 4 Nov): zones holding a vein marked on the map, a starting site or the city <b>cannot be claimed</b>; anyone digs and gathers there. Small unmarked veins can end up inside private land (its owner and guests dig them): there is one of each per area of some 14 km, so nobody lacks one nearby.</p>
+<p><span class="tag ok">DECIDED</span><b>No digging on someone else's land</b> (their zone, section 11) unless its owner has invited you. <b>The king's zones</b> (valravnx, 4 Nov): zones holding a vein marked on the map, the common starting point or the city <b>cannot be claimed</b> (those of the random starting sites can, like any other: 5 Nov); anyone digs and gathers there. Small unmarked veins can end up inside private land (its owner and guests dig them): there is one of each per area of some 14 km, so nobody lacks one nearby.</p>
 <p><span class="tag old">SUPERSEDED · 4 Nov</span><s>nor within its exclusion radius (there is no radius any more: the land is the whole zone)</s></p>
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
@@ -478,9 +479,9 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
   <li>Localised wounds, bleeding and fatigue, visible on the character and in the warnings.</li>
   <li>Armour by zone and type of blow.</li>
   <li>Healing by wound type (analysis, section 15).</li>
-  <li>Strikes in five directions with the new character: we will test moving the arm towards the target (inverse kinematics) over a base animation, because the animation pack only has a few strikes.</li>
+  <li>Strikes in four directions (those of the in-world combat, below) with the new character: we will test moving the arm towards the target (inverse kinematics) over a base animation, because the animation pack only has a few strikes.</li>
 </ul></div>
-<p><span class="tag ok">DECIDED</span>Fencing with a <b>strike rose</b> (combat v2): over the opponent, five zones (high, left, right, low and thrust). Defence in three layers: a parry without side that tires you, a perfect parry at the last moment, and a master strike from the same side. Feints and stamina. Guards remain as an advanced mode.</p>
+<p><span class="tag ok">DECIDED</span>Fencing with a <b>strike rose</b> (combat v2): over the opponent, <s>five zones (high, left, right, low and thrust)</s> four directions since 31 Oct (next paragraph). Defence: a parry by side that tires you, a perfect parry at the last moment, and a master strike from the same side. Feints and stamina. <s>Guards remain as an advanced mode.</s> A single combat, the directional one in the world: the layers and guards modes, and the separate lists, were removed on 6 Nov.</p>
 <p><span class="tag ok">DECIDED</span>Combat happens <b>inside the world</b> (valravnx, 30 Oct 2026): no separate lists; you draw your weapon and fight wherever you are, with a free camera and free movement, and a mode to <b>lock onto</b> someone that brings back the duel camera. On PC, with the mouse: the direction of the blow is that of the last movement before the click, among <b>four</b> (valravnx, 31 Oct: high, left, right and down, which is the thrust; no low cut and no centre, because parrying or attacking the centre is very hard; no movement, the last one used); <b>the longer the click is held, the more the blow charges</b>, and released early it comes out a little sooner and weaker. Once the direction is chosen, the blow is <b>committed</b>: it cannot be changed; the parry button cancels it (a <b>feint</b>, which costs stamina), to parry or to start another blow from another side (valravnx, 31 Oct). Parries are <b>by side</b> (replacing the parry without side): you hold the right button and the mouse picks the side, which can also be changed without letting go; the perfect parry counts from when the right side is set. On mobile, the rose is fixed to one side with a button to parry.</p>
 <p><span class="tag ok">DECIDED</span>Shield (provisional): without choosing a side, it stops everything coming from the front, blows, arrows and stones; from the side or from behind, no (valravnx, 31 Oct).</p>
 <p><span class="tag ok">DECIDED</span>Touch camera: dragging a finger on a free area turns the camera, tapping without dragging strikes; with the bow, the camera follows where you aim.</p>
@@ -520,7 +521,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <p><span class="tag ok">DECIDED</span>The NPCs for hire are <b>travelling merchants and mercenaries who arrive at your settlement.</b></p>
 <div class="box p"><span class="tag ok">APPROVED</span> How they arrive and what types there are:
 <ul>
-  <li><b>Arrival:</b> every so often a traveller passes through your settlement (you need a boundary stone for them to come). They stay for a while; if you do not hire them, they move on. With a higher boundary stone level they come more often and in more types.</li>
+  <li><b>Arrival:</b> every so often a traveller passes through your settlement (you need a boundary stone for them to come). They stay for a while; if you do not hire them, they move on. <s>With a higher boundary stone level they come more often and in more types.</s> (The boundary stone has no levels since 4 Nov: how often they come, the same for everyone, will be decided when its milestone arrives.)</li>
   <li><b>Where they come from:</b> they leave the king's city with their goods and walk to the settlements; they are rare and uncommon (valravnx, 31 Oct): normally you go to the city. A merchant only stays permanently in a settlement if a system for it is created, like the one for hiring mercenaries; otherwise they trade and move on.</li>
   <li><b>Types:</b>
     <ul>
@@ -559,7 +560,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <div class="box m"><span class="tag method">METHOD</span>
 <ul>
   <li>A single online world; playing solo also needs a connection.</li>
-  <li>The first milestones are prototyped in the browser without a server; the logic is written so the server can run it later without rewriting it.</li>
+  <li><s>The first milestones are prototyped in the browser without a server;</s> since 30 Oct, everything is made and tested online; the logic is written so the server can run it later without rewriting it.</li>
   <li>Authoritative server over websockets; database with accounts, characters and world changes.</li>
   <li>Versioned saves so progress is not lost with each update.</li>
   <li>Tests before each delivery: headless browser, real screenshots; online, several clients and bots with simulated lag.</li>
@@ -581,7 +582,7 @@ th{color:var(--muted);font-family:system-ui,sans-serif;font-size:.8rem;text-tran
 <tr><td>1d</td><td>A single demo</td><td>Building, combat and character on the same page, with the same scene and the same character.</td></tr>
 <tr><td>1g</td><td>Digging and mining</td><td>Trenches and levelling with a round brush; mines with irregular rock and no grid look, what is above hidden and black what cannot be seen, support by material with timber props, spoil carried out, realistic layers and veins, no digging on other people's land.</td></tr>
 <tr><td>2</td><td>Equipment and slot-based carrying</td><td>Inventory panel, belts, firewood frame and other backpacks; felling, transport and slowdown from carrying.</td></tr>
-<tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes, unlocking through practice, durability and repair.</td></tr>
+<tr><td>3</td><td>Stations and crafting</td><td>First stations, recipes (<s>unlocking through practice</s>: no learning recipes since 1 Nov), durability and repair.</td></tr>
 <tr><td>4</td><td>Survival</td><td>Needs with warnings, clothing against the cold, bound bed and death with partial looting.</td></tr>
 <tr><td>5</td><td>Duel</td><td>Fencing against a bot, with wounds.</td></tr>
 <tr><td>6</td><td>Siege, fire and upkeep</td><td>Battering ram, fire damage, boundary stone with materials.</td></tr>

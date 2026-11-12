@@ -6343,5 +6343,21 @@
   ],
   "pruebas": "En la nube, el revisor pidió construcción, la acción a la vista, construir a la altura del suelo y el panel del admin, y se nombraron a mano la demo única y el combate en el mundo: los 6 correctos. Capturas de PC y móvil miradas: igual que antes. Sin versión nueva: no cambia nada jugable.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T08:24:01+00:00",
+  "fin": "2026-11-12T08:27:13+00:00",
+  "titulo": "El GDD y el documento de sistemas, al día con lo decidido (P6, carril A)",
+  "hito": "orden",
+  "hecho": [
+   "GDD: decisión nueva «Siempre en línea» (30 oct) en el apartado 2, y el pilar del que juega solo, en el mismo mundo en línea que los demás",
+   "GDD: el combate, con cuatro direcciones en todo el documento; la rosa de cinco zonas y las guardias como modo avanzado, tachadas (un solo combate, el direccional del mundo, desde el 6 nov)",
+   "GDD: la salida al azar solo en un sitio libre (valravnx, 5 nov); las zonas del rey, con la salida común y no con cada sitio de salida",
+   "GDD: tachado lo que contradecía lo decidido: el nivel del mojón en los ambulantes, el desbloqueo por práctica en la tabla de hitos y el prototipo sin servidor",
+   "Sistemas: el mojón sin niveles ni radios, las estaciones sin desbloqueos y el primer día que empieza en un sitio libre al azar de las comarcas de inicio",
+   "Los mismos cambios en inglés y en ruso, con la huella nueva del original"
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube; la web se genera bien con las traducciones de los documentos al día",
+  "estado": "ok"
  }
 ]
