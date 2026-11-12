@@ -6220,5 +6220,21 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T02:22:15+00:00",
+  "fin": "2026-11-12T02:52:02+00:00",
+  "titulo": "Talar de verdad: la caída del árbol (carril A)",
+  "hito": "talar",
+  "hecho": [
+   "El árbol talado gira sobre el tocón como una vara rígida con la gravedad (cada vez más deprisa), da en el suelo, rebota un poco y se asienta según el terreno: cuesta abajo se tumba más y cuesta arriba menos (src/logica/tala.js, simularCaida, lógica pura).",
+   "Si por el medio hay otro árbol en pie o una obra, se queda apoyado en él; si lo coge de refilón, se desvía hacia el otro lado y sigue cayendo. El tronco y lo menudo quedan hacia donde fue.",
+   "La calcula el servidor con su terreno, sus árboles (el terreno ya sabe su alto) y las piezas de las obras, y manda los fotogramas con la caída: todos la ven igual. El navegador los dibuja tal cual.",
+   "Decisiones provisionales, en el registro de la demo: el alto del árbol, el de su modelo; se parte a 0,3 m; rebota con el 22 % de la velocidad; de lleno si pasa a menos de la mitad de lo que se tocan, si no se desvía 0,4 rad.",
+   "Demo v185 publicada, con las capturas de la caída y del árbol asentado."
+  ],
+  "pruebas": "En la nube: la tala en el navegador (con la captura del árbol asentado, nueva), el mimbre y la corteza, quitar el mojón, la demo única (falló la primera vez porque faltaban las traducciones del registro; con ellas, bien) y el recorrido 245/245 (con «cae de verdad», nuevo), bien. Tala 79/79 aquí (rota a propósito con MUTAR=1, falla); objetos del servidor 72/72 y terreno del servidor bien. En «lógica» falla prueba_nube.mjs, que no toca este cambio (los avisos de systemd de la máquina de GitHub, igual que en main). La construcción se pasó en la nube aunque el cambio en construccion.js solo añade obrasCerca (lo usa el servidor). Calcular una caída en el servidor, de 10 a 30 ms medidos aquí. No comprobado: la segunda mirada de otro agente a las capturas (el modelo del árbol es el mismo de antes; en las capturas de prueba el tronco tumbado pasa por las piernas del personaje: el daño a quien queda debajo es la tarea siguiente).",
+  "capturas": "capturas/demo-v185",
+  "estado": "ok"
  }
 ]
