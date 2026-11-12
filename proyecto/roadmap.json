@@ -1728,7 +1728,7 @@
    "num": "P4b",
    "nombre": "La interfaz nueva",
    "jugable": "La interfaz del estudio del 7 nov (octava versión) en el juego, en PC y en el móvil: la barra de abajo, la acción, el menú con pestañas, el equipo, fabricar, construir, tu tierra, las necesidades y hablar, con el acabado renderizado.",
-   "estado": "revision",
+   "estado": "hecho",
    "nota": "valravnx, 7 nov: «aplica por ahora, pero le haremos reviews». El estudio: diseno/estudios/interfaz.html; las herramientas del kit: herramientas/interfaz/. Cada tarea, con capturas de PC y móvil para que valravnx la revise.",
    "tareas": [
     {

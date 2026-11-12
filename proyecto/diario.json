@@ -6269,5 +6269,16 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal; la tala, 94 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T06:36:41+01:00",
+  "fin": "2026-11-12T06:36:41+01:00",
+  "titulo": "P4b aprobado: la interfaz nueva",
+  "hito": "interfaz",
+  "hecho": [
+   "valravnx aprueba por el chat el hito P4b, La interfaz nueva («aprueba interfaz»): pasa a hecho."
+  ],
+  "pruebas": "Sin pruebas: aprobado por valravnx.",
+  "estado": "ok"
  }
 ]

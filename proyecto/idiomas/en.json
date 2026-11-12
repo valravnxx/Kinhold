@@ -3934,5 +3934,8 @@
  "Lo que queda para la revisión: los sonidos (el crujido, el chasquido y el golpe en el suelo) no se han podido oír aquí; en las capturas de la prueba de talar, los troncos y las copas cerca de la cámara salen casi negros, y en el móvil la mano de arriba no coge bien el mango del hacha.": "Left for the review: the sounds (the creak, the snap and the thud on the ground) could not be heard here; in the felling test screenshots, trunks and canopies close to the camera look almost black, and on mobile the upper hand does not grip the axe handle properly.",
  "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe.": "All the milestone's tasks are done: it goes to review and no new milestone is started until valravnx tries it and approves it.",
  "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 6 bien y 0 mal; la tala, 94 bien y 0 mal.": "No code changed, nothing in the cloud. Here: material origins, 6 passed and 0 failed; felling, 94 passed and 0 failed.",
- "El árbol caído se queda entero en el suelo y se limpia con hacha: al terminar de limpiarlo, deja el tronco y lo menudo": "The fallen tree stays whole on the ground and is cleared with an axe: once cleared, it leaves the trunk and the small wood"
+ "El árbol caído se queda entero en el suelo y se limpia con hacha: al terminar de limpiarlo, deja el tronco y lo menudo": "The fallen tree stays whole on the ground and is cleared with an axe: once cleared, it leaves the trunk and the small wood",
+ "P4b aprobado: la interfaz nueva": "P4b approved: the new interface",
+ "valravnx aprueba por el chat el hito P4b, La interfaz nueva («aprueba interfaz»): pasa a hecho.": "valravnx approves milestone P4b, The new interface, through the chat («aprueba interfaz»): it becomes done.",
+ "Sin pruebas: aprobado por valravnx.": "No tests: approved by valravnx."
 }
