@@ -6396,5 +6396,20 @@
   ],
   "pruebas": "Revisor en la nube: recorrido de jugador 249 bien, 0 mal; lógica, todo bien salvo la prueba del servidor en internet (systemd-analyze de la máquina de GitHub, falla igual en main). Aquí, las pruebas de node que arrancan el servidor, bien (menos las que piden caddy y rsync, que esta máquina no tiene)",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T10:23:57+00:00",
+  "fin": "2026-11-12T10:48:21+00:00",
+  "titulo": "Un comprobador de código que avisa en segundos (P6, carril A)",
+  "hito": "orden",
+  "hecho": [
+   "Nuevo herramientas/comprobar_codigo.mjs: pasa a la vez el analizador (eslint, eslint.config.mjs) y la comprobación de tipos de JavaScript (TypeScript sobre el código sin anotar, jsconfig.json), aquí y en unos 15 segundos",
+   "Falla solo con fallos de verdad: nombres sin definir, exportaciones o módulos que no existen, claves repetidas, código que no se alcanza, comparaciones imposibles; lo demás de los tipos sale como avisos contados",
+   "pruebas_nube.mjs lo pasa antes de subir nada y no gasta la nube si falla",
+   "Arreglado lo que encontró: una clave repetida en el objeto de pruebas de la demo y una coma suelta en unir_json.mjs",
+   "Roto a propósito (un nombre sin definir, una clave repetida y una importación que no existe): falla con los cinco avisos"
+  ],
+  "pruebas": "Comprobador de código, limpio. Revisor en la nube: cavar bien; lógica, todo bien salvo la prueba del servidor en internet (systemd-analyze de la máquina de GitHub, falla igual en main)",
+  "estado": "ok"
  }
 ]

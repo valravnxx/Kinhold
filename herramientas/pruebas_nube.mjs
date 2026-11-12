@@ -11,6 +11,7 @@
 //      node herramientas/pruebas_nube.mjs --todo                la batería entera (solo si valravnx la pide)
 //      SIN_TRAER=1 node herramientas/pruebas_nube.mjs           sin traer capturas
 //      SOLO_NUBE=1 node herramientas/pruebas_nube.mjs           sin mirar el PC de valravnx
+//      SIN_COMPROBAR=1 node herramientas/pruebas_nube.mjs       sin el comprobador de código de antes (comprobar_codigo.mjs)
 // Lo lanza la subida de una rama nube-pedido/<id>/<grupos> (la nube) o pc-pedido/<id>/<grupos> (su PC); esas ramas y las
 // nube/ que devuelven los grupos las borra la propia nube (desde las sesiones no se pueden borrar ramas). Hace falta gh
 // con permiso sobre el repositorio (lo tienen las sesiones).
@@ -41,6 +42,13 @@ const gh = (...a) => JSON.parse(sh('gh', ['api', ...a]) || 'null');
 const dormir = (s) => new Promise(r => setTimeout(r, s * 1000));
 const min = (a, b) => ((new Date(b) - new Date(a)) / 60000).toFixed(1);
 const ahora = () => Date.now();
+
+// Antes de nada, el comprobador de código (herramientas/comprobar_codigo.mjs): lo que se ve aquí en segundos (un nombre
+// sin definir, una exportación que no existe) no gasta una tanda en la nube. SIN_COMPROBAR=1 para saltarlo.
+if (!process.env.SIN_COMPROBAR) {
+  try { console.log(sh('node', ['herramientas/comprobar_codigo.mjs'])); }
+  catch (e) { console.log(String(e.stdout || e.message).trim()); console.error('El comprobador de código falla: se arregla antes de pasar nada en la nube.'); process.exit(1); }
+}
 
 const rama = sh('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 if (rama === 'HEAD') { console.error('No estás en ninguna rama.'); process.exit(2); }

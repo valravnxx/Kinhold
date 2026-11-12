@@ -88,7 +88,7 @@ export function unirTextos(tBase, tNuestro, tSuyo) {
   const b = tBase.trim() ? JSON.parse(tBase) : (Array.isArray(n) ? [] : {});
   if (Array.isArray(n) !== Array.isArray(s) || Array.isArray(n) !== Array.isArray(b)) throw new Error('los tres archivos no tienen la misma forma');
   const u = Array.isArray(n) ? unirDiario(b, n, s) : unirTraducciones(b, n, s);
-  const sangria = (tNuestro.match(/\n( +|\t)/) || [, 1])[1];
+  const sangria = tNuestro.match(/\n( +|\t)/)?.[1] ?? 1;
   const texto = JSON.stringify(u.resultado, null, sangria) + (tNuestro.endsWith('\n') ? '\n' : '');
   return { texto, choques: u.choques };
 }

@@ -3186,7 +3186,7 @@ window.__kinhold = {
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV,
   calor() { return calorEn(Object.values(fabCliente.estaciones), pj.x, pj.z, Date.now()); }, // el calor de las hogueras donde estás (para el frío)
-  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, usar, cambiarHombro,
+  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
   rastras, miRastra, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
