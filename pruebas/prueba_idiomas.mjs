@@ -69,7 +69,7 @@ for (const m of leer('src/logica/inventario.js').matchAll(/motivo: '(No te cabe[
 for (const linea of leer('src/combate/logica.js').split('\n')) if (/(this|\w+)\.caer\(/.test(linea)) for (const m of linea.matchAll(/'([A-ZÁÉÍÓÚ][^']+)'/g)) meter(m[1]);
 // las cuentas y el correo: los motivos que dice el servidor y la pantalla de la cuenta los enseña (valravnx, 2 nov)
 for (const f of ['src/logica/cuentas.js', 'src/logica/correo.js', 'servidor/correo.mjs']) for (const m of leer(f).matchAll(/(?:motivo: |return |\|\| |\? |: )'([A-ZÁÉÍÓÚ][^'$]+\.)'/g)) meter(m[1]);
-meter(leer('servidor/servidor.mjs').match(/const SIN_CORREO = '([^']+)'/)[1]);
+meter(leer('servidor/sistemas/cuentas.mjs').match(/const SIN_CORREO = '([^']+)'/)[1]);
 
 // los nombres del suavizado de la prueba de posprocesado y los botones fijos de su página
 { const src = leer('src/posprocesado/main.js'); const t = src.slice(src.indexOf('const SUAVIZADO'), src.indexOf('};', src.indexOf('const SUAVIZADO')));
