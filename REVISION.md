@@ -6,6 +6,9 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 12 nov — valravnx en la sesión del carril A: el árbol caído se limpia con hacha
+«me gusta como cae, falta una cosita pequeña, al caer el arbol se convierte en tronco y ramas y tal, mejor que se quede como está y que haya que limpiarlo con hacha para ello, hazlo y ya estaremos del hito». → Tarea nueva en «Talar de verdad» (vuelve a en curso): el árbol caído se queda entero donde se asienta y se limpia a golpes de hacha; al terminar, deja el tronco y lo menudo. Con eso, el hito queda aprobado.
+
 ### 11 nov — valravnx en la sesión del carril A: el hito de Meshy, solo a mano
 «pasa a siguiente hito, deja el de meshy a solo manual» (tras cerrar la prueba de estilo de la naturaleza, ya en el mundo desde la v176). → El hito «El arte con Meshy» lleva `"lleva": "chat"`: los carriles ya no cogen nada de él; lo que entre de Meshy lo manda valravnx y se mete a mano con él. Los carriles siguen con el hito siguiente, «La interfaz nueva».
 
