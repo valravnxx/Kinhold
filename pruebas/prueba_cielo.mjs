@@ -78,8 +78,10 @@ const dia = luzTotal(a12), oscura = luzTotal(noche(0)), conLuna = luzTotal(noche
 comprobar('de noche, oscuro pero jugable: la luz del cielo nunca se apaga', noche(0).hemi.intensidad >= 1.5, noche(0).hemi.intensidad.toFixed(2));
 comprobar('de noche, menos luz que de día (con luna nueva, menos de un tercio; con llena, menos de la mitad)', oscura < dia / 3 && conLuna < dia / 2, `${oscura.toFixed(2)} y ${conLuna.toFixed(2)} contra ${dia.toFixed(2)}`);
 comprobar('la luna llena alumbra más que la nueva y su luz es la que hace sombra', conLuna > oscura * 1.3 && noche(0.5).luz.deLuna && noche(0).luz.intensidad === 0);
-const v5 = LUCES.manana, m40 = momentoDe(48);
-comprobar('a mediodía, la luz «mañana» del estilo v5', m40.arriba === v5.fondo[1] && m40.horizonte === v5.fondo[0] && m40.sol[0] === v5.sol[0] && m40.sol[1] === v5.sol[1] && m40.hemi[2] === v5.hemi[2]);
+// (12 nov, el aspecto de maqueta: el día ya no es la luz «mañana» de la v5, fría y plana)
+const m40 = momentoDe(48), calido = (c) => canales(c)[0] - canales(c)[2];
+comprobar('de día, el sol manda sobre la luz del cielo (sombras con contraste) y es cálido', m40.sol[1] * claro(m40.sol[0]) > 2 * m40.hemi[2] * claro(m40.hemi[0]) && calido(m40.sol[0]) > 15, `${(m40.sol[1] * claro(m40.sol[0])).toFixed(2)} contra ${(m40.hemi[2] * claro(m40.hemi[0])).toFixed(2)}`);
+comprobar('de día, el cielo es azul arriba, cálido en el horizonte, y el suelo devuelve luz cálida', calido(m40.arriba) < -50 && calido(m40.horizonte) > calido(m40.arriba) + 80 && calido(momentoDe(15).horizonte) > 60 && calido(m40.hemi[1]) > 40 && calido(m40.hemi[0]) < -30);
 comprobar('los momentos van de la noche al día, en orden', MOMENTOS.every((m, i) => i === 0 || m.alto > MOMENTOS[i - 1].alto));
 comprobar('la misma hora del servidor, el mismo cielo', JSON.stringify(cieloDe(T0 + 777)) === JSON.stringify(cieloDe(T0 + 777)));
 

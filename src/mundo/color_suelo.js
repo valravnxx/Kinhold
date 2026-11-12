@@ -5,10 +5,11 @@ import { fbm } from '../logica/mapa.js';
 import { bosqueEn } from '../logica/paisaje.js';
 
 // color del suelo (0–1) por bioma: el del suelo que se ve bajo los árboles o en el prado, no el del mapa
+// (12 nov, el aspecto de maqueta: los verdes tiraban a mostaza con el sol cálido; menos rojo en los biomas de hierba)
 const SUELO = {
-  taiga: [0.36, 0.42, 0.29], caducifolio: [0.42, 0.5, 0.3], mixto: [0.45, 0.52, 0.32], encinar: [0.5, 0.5, 0.33],
-  pradera: [0.55, 0.6, 0.36], brezal: [0.5, 0.46, 0.38], matorral: [0.63, 0.58, 0.42], turbera: [0.4, 0.43, 0.32],
-  alpino: [0.55, 0.56, 0.45], nieve: [0.9, 0.91, 0.92],
+  taiga: [0.33, 0.42, 0.27], caducifolio: [0.38, 0.49, 0.27], mixto: [0.41, 0.51, 0.29], encinar: [0.47, 0.5, 0.31],
+  pradera: [0.49, 0.58, 0.31], brezal: [0.48, 0.46, 0.37], matorral: [0.61, 0.58, 0.41], turbera: [0.38, 0.43, 0.31],
+  alpino: [0.53, 0.56, 0.44], nieve: [0.9, 0.91, 0.92],
 };
 const ROCA = { granito: [0.6, 0.56, 0.53], caliza: [0.74, 0.71, 0.63], pizarra: [0.42, 0.43, 0.47], arenisca: [0.68, 0.55, 0.41] };
 const ARENA = [0.76, 0.71, 0.58];

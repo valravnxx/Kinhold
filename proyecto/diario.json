@@ -6359,5 +6359,27 @@
   ],
   "pruebas": "Sin código cambiado, nada en la nube; la web se genera bien con las traducciones de los documentos al día",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T09:11:17+01:00",
+  "fin": "2026-11-12T10:51:32+01:00",
+  "titulo": "El aspecto: la luz y el cielo de la maqueta, y el desenfoque a prueba (demo v188)",
+  "hito": "aspecto",
+  "hecho": [
+   "Tras la auditoría del 12 nov, valravnx aprueba el hito nuevo «El aspecto» como primera prioridad; este es su primer paso de seis (luego: hierba densa, suelo con materiales, sotobosque, riberas y rocas, bruma).",
+   "La luz del día: sol más fuerte y dorado, luz del cielo más azul y más baja (las cosas tienen volumen y las sombras, color) y rebote cálido del suelo; con el sol bajo, tarde dorada y sombras largas. La noche, como estaba.",
+   "El cielo: azul, con la calima en una franja baja del horizonte y nubes que pasan despacio (solo cuestan en los píxeles de cielo).",
+   "Los colores: algo más de contraste y de fuerza, y los biomas de hierba menos amarillentos (con el sol cálido tiraban a mostaza).",
+   "Las plantas de Meshy reciben algo más de luz del cielo de día (las copas guardan el volumen en su lado en sombra) y menos de noche (las de hoja clara brillaban).",
+   "El desenfoque de maqueta mientras se juega, a prueba, como pidió valravnx: nítida la franja del centro y un poco emborronado arriba y abajo; una pasada más, en todos los perfiles menos el móvil básico; se quita en Menú, Ajustes, Rendimiento y calidad gráfica. De noche casi no actúa (las estrellas salían como corros de puntos).",
+   "Sombras: el borde ya no sale punteado (radio del filtro de 4 a 2,5) ni hace trama en el personaje con el sol bajo.",
+   "Segunda mirada de un agente aparte, tres rondas: las dos primeras dijeron que no (copas casi negras, suelo mostaza, plantas que brillaban de noche, tarde apagada, banda blanca en el horizonte) y se arregló; la tercera, que sí, con lo que queda: de noche el personaje se pierde con la cámara alta, los árboles de hoja clara aún destacan algo, el suelo por la tarde roza el mostaza y en el móvil hay dientes de sierra.",
+   "La prueba de la demo en el mundo sirve también los modelos de las estaciones (daba dos 404 desde la v178).",
+   "Decisión provisional: los colores y la fuerza de la luz de cada momento, las nubes (sin tiempo atmosférico) y las medidas del desenfoque. Choca con el GDD (el desenfoque, nunca mientras se juega): está a prueba por decisión de valravnx y decide él al verlo.",
+   "No comprobado: los fotogramas en aparatos reales con la pasada de más (aquí no hay tarjeta gráfica); valravnx los mide en su PC y su móvil. Mixamo: su ayuda permite el uso comercial y no deja repartir los archivos sueltos; nadie de Adobe aclara si vale en un repositorio público."
+  ],
+  "pruebas": "En la nube, el revisor pidió 6 grupos: el día y la noche, la demo única, posprocesado y perfiles gráficos, la demo en el mundo y el perfil gráfico en el juego, bien; lógica, bien salvo las dos comprobaciones de systemd de la máquina de GitHub, que fallan igual sin este cambio. Aquí: prueba_cielo 24/24 y prueba_perfiles_graficos 33/33 (con las comprobaciones nuevas del día y del desenfoque). Capturas de la escena fija en PC y móvil a las 10, 13, 16:30 y 23 h, miradas una a una.",
+  "capturas": "capturas/demo-v188",
+  "estado": "ok"
  }
 ]

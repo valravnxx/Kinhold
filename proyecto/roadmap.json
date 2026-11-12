@@ -1492,9 +1492,10 @@
    "tareas": [
     {
      "nombre": "La luz y el cielo de la maqueta: sol bajo y dorado, sombras largas y suaves, rebote cálido del suelo, más contraste y calidez, cielo con degradado y nubes; y el desenfoque de maqueta suave mientras se juega, para que valravnx lo pruebe y diga si molesta",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T09:11:17+01:00",
-     "rama": "trabajo/20261112-0911-aspecto-luz"
+     "rama": "trabajo/20261112-0911-aspecto-luz",
+     "fin": "2026-11-12T10:51:32+01:00"
     },
     {
      "nombre": "Hierba densa: una alfombra de hojas teñidas con el color del suelo que tienen debajo, movidas por el viento, que se desvanece con la distancia; cuánta, según el perfil gráfico",
@@ -4140,6 +4141,13 @@
      "archivo": "jugar/demo/v187.html",
      "capturas": "capturas/demo-v187",
      "notas": "El árbol caído se queda entero: cuando cae, se queda tumbado donde se asienta (o apoyado en lo que tenía delante), igual para todos, con el tocón al lado. Con el hacha en la mano, junto a su tronco, Usar lo limpia a golpes, y al terminar deja el tronco y las varas o las ramas."
+    },
+    {
+     "v": "v188",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v188.html",
+     "capturas": "capturas/demo-v188",
+     "notas": "La luz y el cielo de la maqueta (hito «El aspecto»): sol más fuerte y dorado con sombras de color, tarde dorada de sombras largas, cielo azul con calima baja y nubes, colores con más fuerza y suelo menos amarillento. Y, a prueba, el desenfoque de maqueta mientras se juega (se quita en Menú, Ajustes, Rendimiento y calidad gráfica)."
     }
    ]
   },
