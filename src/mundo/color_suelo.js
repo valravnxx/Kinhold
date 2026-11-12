@@ -111,17 +111,17 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   pTierra = Math.max(pTierra, playa);
   if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { // (con un ruido más fino en el borde: si no, salían óvalos lisos, como pegatinas)
     // (y torcidas con un ruido grande, que cambia su silueta y su tamaño: si no, eran óvalos iguales en fila)
-    const ux = xm + (fbm(xm / 40, ym / 40, 51, 2) - 0.5) * 30, uy = ym + (fbm(xm / 40, ym / 40, 53, 2) - 0.5) * 30;
+    const ux = xm + (fbm(xm / 25, ym / 25, 51, 2) - 0.5) * 9, uy = ym + (fbm(xm / 25, ym / 25, 53, 2) - 0.5) * 9;
     const t = suave(0.62, 0.74, fbm(ux / 16, uy / 16, 41, 3) + (fbm(xm / 4.5, ym / 4.5, 47, 2) - 0.5) * 0.14 + (fbm(xm / 90, ym / 90, 55, 2) - 0.5) * 0.12) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.93); pTierra = Math.max(pTierra, t); }
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
   if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); pHoja = Math.min(1, d * 0.9); }
   if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) { c = conLecho(c, st, rio, xm, ym); pTierra = Math.max(pTierra, 1 - suave(-0.3, 1.6, rio.dm - rio.ancho / 2)); }
   // la hierba, algo menos chillona: hacia el verde oliva pajizo de la referencia (diseno/referencia/aspecto_del_juego.jpg)
-  const g = (1 - pRoca) * (1 - pTierra) * (1 - pHoja) * 0.2, L = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+  const g = (1 - pRoca) * (1 - pTierra) * (1 - pHoja) * 0.3, L = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
   c = [c[0] + (L * 1.06 - c[0]) * g, c[1] + (L - c[1]) * g, c[2] + (L * 0.86 - c[2]) * g];
   // y a gran escala, zonas del prado más ocres y otras más oscuras, como en la referencia (de lejos no era un verde plano)
   { const gp = (1 - pRoca) * (1 - pTierra) * (1 - pHoja), z = fbm(xm / 140, ym / 140, 57, 3) - 0.5, o = fbm(xm / 60, ym / 60, 59, 2) - 0.5;
-    const k = 1 + z * 0.22 * gp, oc = Math.max(0, o) * 0.35 * gp;
+    const k = 1 + z * 0.32 * gp, oc = Math.max(0, o) * 0.5 * gp;
     c = [c[0] * k * (1 + oc * 0.5), c[1] * k * (1 + oc * 0.2), c[2] * k * (1 - oc * 0.3)]; }
   const v = 1 - Math.max(-0.1, Math.min(0.15, lap * 1.5)) + (fbm(xm / 5, ym / 5, 43, 3) - 0.5) * 0.16;
   // los colores de arriba están en sRGB (como los de la paleta); los de los vértices van en lineal
