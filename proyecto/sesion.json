@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-12T06:26:14+00:00",
-  "tarea": "El registro del mundo (mundo.jsonl) se compacta: al arrancar, el servidor guarda el estado entero una vez y sigue desde ahí, en vez de reproducir cada acción desde el primer día; con una prueba de que el mundo compactado es el mismo (auditoría del 4 nov)",
-  "hito": "orden",
-  "rama": "trabajo/20261112-0626"
- },
+ "A": null,
  "B": null
 }
