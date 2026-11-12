@@ -2024,9 +2024,9 @@
     },
     {
      "nombre": "Adelgazar la web por debajo de 1 GB: archivar las versiones viejas y encoger las capturas",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T13:26:56+00:00",
-     "rama": "trabajo/20261112-1326"
+     "fin": "2026-11-12T13:32:15+00:00"
     },
     {
      "nombre": "La medida de rendimiento de cada aparato, al servidor con un botón: fotogramas, peor fotograma, triángulos y llamadas de dibujo",
@@ -3107,476 +3107,476 @@
     {
      "v": "v38",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v38.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v38.html",
      "capturas": "capturas/construccion-v37",
      "notas": "En «Construir», el adarve detrás de la empalizada (construcción v37)"
     },
     {
      "v": "v39",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v39.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v39.html",
      "capturas": "capturas/demo-v39",
      "notas": "Pies descalzos: en «Construir», sin calzado vas descalzo; en «Personaje», botón «Descalzo» y vista «Pies»."
     },
     {
      "v": "v40",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v40.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v40.html",
      "capturas": "capturas/personaje-v21",
      "notas": "En «Personaje», «Más animaciones»: las 39 animaciones extra en el personaje del taller"
     },
     {
      "v": "v41",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v41.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v41.html",
      "capturas": null,
      "notas": "En «Personaje», tintes de la ropa y blasón de la sobreveste (personajes en taller-v13)."
     },
     {
      "v": "v42",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v42.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v42.html",
      "capturas": "capturas/personaje-v23",
      "notas": "En «Personaje», «Hechura de la ropa»: material (lino o lana), corte y tejido (liso, sarga, espiguilla, cuadros o rayas) de cada prenda de tela puesta, sobre el mismo modelo."
     },
     {
      "v": "v43",
      "fecha": "2026-10-29",
-     "archivo": "jugar/demo/v43.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v43.html",
      "capturas": "capturas/demo-v43",
      "notas": "Niveles de detalle de los personajes. En «Construir», el botón de los fps dice cuántos hay en cada nivel, deja apagarlos para comparar y tiene 20 personajes de prueba, los últimos delante de la cámara hasta 65 m."
     },
     {
      "v": "v44",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v44.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v44.html",
      "capturas": "capturas/personaje-v25",
      "notas": "En «Personaje», las barbas rehechas: la larga con volumen y la corta, el bigote y la perilla pelo a pelo."
     },
     {
      "v": "v45",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v45.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v45.html",
      "capturas": "capturas/construccion-v39",
      "notas": "Objetos en el suelo en «Construir» (construcción v39)"
     },
     {
      "v": "v46",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v46.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v46.html",
      "capturas": "capturas/personaje-v26",
      "notas": "En «Personaje», la capa rehecha: cae de los hombros, más ancha abajo y con pliegues, abierta por delante y cerrada con un broche bajo el cuello (taller-v15)."
     },
     {
      "v": "v47",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v47.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v47.html",
      "capturas": "capturas/personaje-v27",
      "notas": "En «Personaje», la capa se mueve al andar (se queda atrás, ondea y vuelve al pararse), cae por encima de los brazos a los costados y de espalda se ven los pliegues. Personajes en recursos/personajes/taller-v16/."
     },
     {
      "v": "v48",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v48.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v48.html",
      "capturas": "capturas/demo-v48",
      "notas": "«Construir» en el mundo de verdad: apareces en Whitholm, la isla de los playtests, en el mismo sitio para todos (tierra firme, llano y lejos de los ríos), y andas por la isla sobre el terreno por trozos del mapa, con la cámara del juego. Fuera el llano. No se puede salir de la isla ni entrar en el mar; el servidor solo admite posiciones en la isla."
     },
     {
      "v": "v49",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v49.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v49.html",
      "capturas": "capturas/construccion-v40",
      "notas": "En «Construir», tala de verdad: con un hacha en la mano, Usar junto a un árbol lo tala; cae, deja el tocón, un tronco y ramas, y vuelve a crecer pasadas unas semanas reales (construcción v40)."
     },
     {
      "v": "v50",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v50.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v50.html",
      "capturas": "capturas/personaje-v28",
      "notas": "En «Personaje», bigote con volumen y barba larga pulida (ondas distintas en cada mechón y los lados del cuello tapados). Personajes en recursos/personajes/taller-v17/."
     },
     {
      "v": "v51",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v51.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v51.html",
      "capturas": "capturas/demo-v51",
      "notas": "En «Construir», la ropa cosida lleva su hechura y su tinte en el inventario (cada prenda la suya) y se ve así puesta, también en línea; la cota de malla, larga o corta; personajes de la taller-v17"
     },
     {
      "v": "v52",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v52.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v52.html",
      "capturas": "capturas/demo-v52",
      "notas": "En «Construir», cada jugador nuevo aparece en un sitio al azar de Motdale, Breiddal o Strandvang (261 sitios llanos, lejos de los ríos y fuera de la montaña) y vuelve siempre al suyo. Quien ya tenía algo construido sigue en el sitio de antes; en línea, todos en el sitio común de momento."
     },
     {
      "v": "v53",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v53.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v53.html",
      "capturas": "capturas/construccion-v42",
      "notas": "En «Construir», el combate en el mundo: golpe cargado en la dirección del ratón, cambio de lado sin soltar, paradas por lado, rival de práctica y Fijar; en el móvil, la rosa fija."
     },
     {
      "v": "v54",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v54.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v54.html",
      "capturas": "capturas/construccion-v43",
      "notas": "En «Construir», tronzar y partir: el tronco largo se tronza con hacha en 3 o 4 troncos cortos y el corto se parte en leña; el tronco corto se lleva con las dos manos o al hombro."
     },
     {
      "v": "v55",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v55.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v55.html",
      "capturas": "capturas/demo-v55",
      "notas": "En «Construir», lo que crece en Whitholm es el del mapa: árboles de las siete especies en sus biomas, en masas de bosque, claros y corros, con hierba, flores, matorrales y piedras; siempre en el mismo sitio, nada en el agua, y todos se talan. Los árboles que tapan al personaje no se dibujan. Aún mal: lejos de la salida no hay árboles ni hierba."
     },
     {
      "v": "v56",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v56.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v56.html",
      "capturas": "capturas/construccion-v44",
      "notas": "En «Construir», obras con lo que llevas: lo que se entrega a una obra sale de lo que llevas encima; el material se coge del arcón de pruebas del inventario («Materiales de obra»), que «+ Materiales» llena."
     },
     {
      "v": "v57",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v57.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v57.html",
      "capturas": "capturas/demo-v57",
      "notas": "Siempre en línea: el juego entra siempre al mundo del servidor de prueba, también desde la web, y es el único modo; en el menú, Jugar, Duelo y Personaje. Sin servidor, un cartel lo dice, con un botón para volver a intentarlo."
     },
     {
      "v": "v58",
      "fecha": "2026-10-30",
-     "archivo": "jugar/demo/v58.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v58.html",
      "capturas": "capturas/demo-v58",
      "notas": "Lo que crece sigue al jugador por la isla: árboles, hierba, matas y piedras se hacen a su alrededor por trozos de 32 m, poco a poco, y lo de lejos se suelta; lo talado sigue talado al irse y volver."
     },
     {
      "v": "v59",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v59.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v59.html",
      "capturas": "capturas/personaje-v29",
      "notas": "Toca y cuello de la ropa: la piel sigue bajo el escote y bajo la toca ya no va la cofia (personajes en taller-v18)."
     },
     {
      "v": "v60",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v60.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v60.html",
      "capturas": "capturas/demo-v60",
      "notas": "Construir a la altura del suelo: cada construcción queda a la altura del terreno donde empieza y los cimientos alisan el suelo de debajo; cercas y empalizadas siguen el suelo de su sitio, y el mojón y los muebles van en el suelo."
     },
     {
      "v": "v61",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v61.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v61.html",
      "capturas": "capturas/personaje-v30",
      "notas": "Nacimiento del pelo y cejas: en «Personaje» y en el juego, el pelo nace poco a poco en la frente (ya no es un casquete) y las cejas asientan en el arco, más pobladas y sin trozos. Personajes en taller-v19."
     },
     {
      "v": "v62",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v62.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v62.html",
      "capturas": "capturas/demo-v62",
      "notas": "El agua y el nado: los ríos y el mar de cerca alrededor del jugador; se vadea y se nada con un aguante (el de correr) que baja más deprisa cuanto más pesa lo que llevas; sin aguante te ahogas."
     },
     {
      "v": "v63",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v63.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v63.html",
      "capturas": "capturas/demo-v63",
      "notas": "En línea, lo que llevas es lo del servidor: el inventario, soltar y coger del suelo, talar, tronzar, partir y recoger pasan por el servidor con tu autor, y lo que dejas en el suelo y los tocones los ven todos y siguen ahí al volver."
     },
     {
      "v": "v64",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v64.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v64.html",
      "capturas": "capturas/personaje-v31",
      "notas": "Capa de espalda (como en el personaje v31): lana sin teñir más clara y pliegues redondos y hondos que se ven también en sombra. Personajes en taller-v20."
     },
     {
      "v": "v65",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v65.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v65.html",
      "capturas": "capturas/demo-v65",
      "notas": "En «Jugar», las obras cobran de lo que llevas, como en solitario: lo que se entrega a una obra (y lo que se sube a una obra en alto) sale de lo que llevas en el servidor, y el arcón de materiales de obra va por el servidor. El servidor guarda las entregas ya pagadas, así que al volver a arrancar y en el navegador de los demás el mundo se rehace igual. Protocolo 6: quien lleva el servidor tiene que actualizarlo."
     },
     {
      "v": "v66",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v66.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v66.html",
      "capturas": "capturas/demo-v66",
      "notas": "Volver donde lo dejaste: el navegador recuerda quién eres aunque cierres la pestaña, y al volver a entrar apareces donde estabas al salir (el servidor lo guarda). Dos pestañas del mismo navegador son el mismo jugador."
     },
     {
      "v": "v67",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v67.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v67.html",
      "capturas": "capturas/demo-v67",
      "notas": "Sin cortados rectos de kilómetros: las laderas de los valles de los ríos ya no son planos lisos y rectos (valravnx, 31 oct); llevan relieve, el borde se redondea y la cabecera del valle es suave"
     },
     {
      "v": "v68",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v68.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v68.html",
      "capturas": "capturas/demo-v68",
      "notas": "Los tejados terminados se pisan (un tejado entero con un solo andamio) y clic derecho en lo que quieras usar: menú con eso y lo muy cercano (en el móvil, el dedo quieto); el botón derecho ya no gira la cámara"
     },
     {
      "v": "v69",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v69.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v69.html",
      "capturas": "capturas/personaje-v32",
      "notas": "Herramienta en la mano al trabajar en «Personaje» (personaje v32)"
     },
     {
      "v": "v70",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v70.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v70.html",
      "capturas": "capturas/demo-v70",
      "notas": "El mapa del rey: Whitholm cartografiada (M o el botón «Mapa»), con las comarcas, los ríos, la ciudad del rey en Strandvang y dónde estás. Fuera «Duelo» del menú: se lucha en «Jugar»."
     },
     {
      "v": "v71",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v71.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v71.html",
      "capturas": "capturas/demo-v71",
      "notas": "v71: lo que llevas se ve puesto en el personaje: el cinturón (el cordel, la cuerda trenzada o uno de los tres cintos de cuero, con su hebilla y sus anillas) y lo que cuelga de sus huecos (el hacha por el cinto, el cuchillo en su funda, la espada envainada, una bolsa de cuero o un hatillo); a la espalda, el leñero, el porta-piedras o la mochila de bastidor con sus correas, el zurrón, el fardo, los cestos, la caja de herramientas, el carcaj o el escudo, con lo que llevan dentro asomando (la leña y los troncos del leñero, las piedras, las bayas, las flechas); al hombro, el saco, la bandolera, el odre o un tronco corto; y en las manos, la piedra, la rama, la leña o la herramienta. Lo grande en las dos manos se lleva en brazos, con su animación. Se ajusta al cuerpo y a la ropa de cada uno y se mueve con él. Los demás lo ven igual: se lo cuenta el servidor, sacado de lo que llevas en él."
     },
     {
      "v": "v72",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v72.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v72.html",
      "capturas": "capturas/demo-v72",
      "notas": "Combate a cuatro direcciones (valravnx, 31 oct): arriba, izquierda, derecha y abajo para clavar; el escudo para todo lo que viene de frente; el golpe va comprometido y el botón de parar lo cancela con una finta"
     },
     {
      "v": "v73",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v73.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v73.html",
      "capturas": "capturas/demo-v73",
      "notas": "La brocha de nivelar en «Construir» → «Tierra»: un disco a la altura a la que deja el suelo y la raya del borde suave; alisa un círculo de 0,5 a 4 m (R o Girar cambian el tamaño) y las pasadas seguidas siguen a la misma altura. La hierba, las matas, las piedras y los árboles de lo alisado siguen al suelo."
     },
     {
      "v": "v74",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v74.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v74.html",
      "capturas": "capturas/demo-v74",
      "notas": "El tronco al hombro: el personaje lo sujeta con la mano derecha por encima y va algo inclinado, andando y quieto (también lo ven los demás); animaciones de llevar al hombro y de arrastrar hechas en el taller (taller-carga-v1). Y el tronco al hombro frena por su peso: al 90 %."
     },
     {
      "v": "v75",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v75.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v75.html",
      "capturas": "capturas/demo-v75",
      "notas": "Panel de depuración del admin: F9 (o el botón «Admin» con ?admin) abre el mapa del rey con todos los jugadores conectados y su lista; un clic en el mapa te lleva ahí y «Ir» te pone junto a otro jugador. Todo pasa por el servidor con la clave de admin que valravnx pone en la máquina (servidor/nube/LEEME.md)."
     },
     {
      "v": "v76",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v76.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v76.html",
      "capturas": "capturas/personaje-v34",
      "notas": "Cejas y cuello del hombre: de cerca las cejas ya no salen en bloques gruesos y la barba corta baja por el cuello hasta la ropa, sin la franja clara de antes (personajes en taller-v21)."
     },
     {
      "v": "v77",
      "fecha": "2026-10-31",
-     "archivo": "jugar/demo/v77.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v77.html",
      "capturas": "capturas/demo-v77",
      "notas": "La rastra: sale del arcón de pruebas al suelo, se engancha con Usar (con las manos libres) y se arrastra despacio, con la animación de arrastrar; lleva hasta 3 troncos cortos, 24 piedras o un bloque de piedra, y se queda donde la dejas con lo que lleve. En línea, por el servidor."
     },
     {
      "v": "v78",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v78.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v78.html",
      "capturas": "capturas/demo-v78",
      "notas": "Lo que se recoge sale del sitio en el mundo: ramas bajo los árboles, sílex en la caliza y los ríos, piedra en las laderas y los ríos, ortigas y hierba larga en los claros y las riberas; siempre en el mismo sitio para todos y apareciendo a tu alrededor al andar."
     },
     {
      "v": "v79",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v79.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v79.html",
      "capturas": "capturas/personaje-v35",
      "notas": "En el juego, cejas sin escalones, barba que clarea en pelos sueltos y bigote unido a la barba (personajes taller-v22)."
     },
     {
      "v": "v80",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v80.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v80.html",
      "capturas": "capturas/demo-v80",
      "notas": "Pelear en línea en el mundo (valravnx, 31 oct): el arma sacada, los golpes y las paradas van por el servidor; los demás te ven con la espada en la mano y sus golpes hieren de verdad"
     },
     {
      "v": "v81",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v81.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v81.html",
      "capturas": "capturas/demo-v81",
      "notas": "v81: el servidor conoce el mundo. Genera Whitholm con la misma semilla que tu navegador y saca él los árboles y lo que se recoge: su sitio, la edad del árbol y la clase de cada cosa son los del servidor, y un árbol o un punto que no está en el mundo no vale aunque lo diga el navegador. Comprueba contra el terreno dónde estás (dentro de la isla y cerca del suelo) y las obras: el mojón en tierra firme, la planta baja de lo que empiezas a ras del suelo (también del alisado), y la brocha y la decoración a una altura con sentido. De los árboles y los puntos guarda solo lo que ha cambiado (lo talado y lo recogido). v81, provisional: un jugador puede estar hasta 40 m bajo el suelo (cavando) y 120 m por encima; la planta baja de lo que se empieza, a 1,5 m del suelo como mucho (el navegador lo mide en la malla del trozo, que en ladera se aparta algo del suelo exacto); la brocha, a 6 m (al arrastrarla sigue a la altura de la pasada anterior, ladera arriba o abajo); la decoración, de 0,5 m por debajo a 40 m por encima; el mojón, a más de 0,15 m sobre el mar. v81, aún mal: lo guardado aún no va por trozos y la bienvenida sigue mandando todo lo talado y lo recogido de la isla (va en la tarea siguiente); el servidor tarda unos 5 s más en arrancar, lo que tarda en generar la isla."
     },
     {
      "v": "v82",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v82.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v82.html",
      "capturas": "capturas/personaje-v36",
      "notas": "En «Personaje» y en el juego: la cofia baja hasta quedar metida bajo el escote y los bordes recortados de la ropa y el pelo ya no salen en dientes de sierra con poca resolución, como en el móvil (taller-v23)."
     },
     {
      "v": "v83",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v83.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v83.html",
      "capturas": null,
      "notas": "El servidor manda a cada uno solo lo de su alrededor: lo talado, lo recogido y el suelo van por trozos de 128 m (la bienvenida, lo de alrededor de donde apareces; al andar, lo de los trozos que te entran) y se guardan por trozo. Las obras y lo alisado aún llegan todos."
     },
     {
      "v": "v84",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v84.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v84.html",
      "capturas": null,
      "notas": "Las obras, los muebles y lo alisado con la brocha llegan solo de los trozos de alrededor de cada jugador: al entrar y al cambiar de trozo, el mundo de construcción de esos trozos (no todo lo construido en la isla), y cada obra solo a quien tiene su trozo, con el contador de ids, el arcón y el mojón del servidor para que salga igual. No cambia nada de lo que se ve."
     },
     {
      "v": "v85",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v85.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v85.html",
      "capturas": "capturas/demo-v85",
      "notas": "La carretilla de rueda maciza: la rueda es una rodaja de tronco. Sale del arcón de pruebas; Usar la empuja (va delante, con las varas en las manos, y la rueda rueda) y la aparca donde está, con lo que lleve. Lleva más que la rastra (4 troncos cortos, 40 de leña, 36 piedras o un bloque) y frena menos. Aparcada en tus tierras, nadie más la toca; fuera, cualquiera coge lo que lleva. Por el servidor, con su autor. Aún mal: falta una animación de empujar (usa la de llevar en brazos y va muy levantada)."
     },
     {
      "v": "v86",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v86.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v86.html",
      "capturas": "capturas/demo-v86",
      "notas": "En el móvil se para con su propia rosa, como la de atacar (valravnx, 1 nov), y los botones del combate ya no se tapan"
     },
     {
      "v": "v87",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v87.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v87.html",
      "capturas": "capturas/demo-v87",
      "notas": "Empujar la carretilla tiene su animación, hecha en el taller (andando y quieta): algo inclinado hacia delante, con los brazos bajos y las manos cerradas alrededor de las varas. La carretilla va más baja: unos 22° en vez de 29°."
     },
     {
      "v": "v88",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v88.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v88.html",
      "capturas": "capturas/demo-v88",
      "notas": "Pelear en cualquier sitio del mundo: el rival de práctica anda por donde andarías tú (rodea árboles y obras, no sube cortados, no entra donde cubre) y nadando no se lucha."
     },
     {
      "v": "v89",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v89.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v89.html",
      "capturas": "capturas/demo-v89",
      "notas": "Bigote y barba del cuello: el bigote más fino, sin banda oscura sobre el labio, y la barba se aclara poco a poco bajo la barbilla. Personajes en taller-v24."
     },
     {
      "v": "v90",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v90.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v90.html",
      "capturas": "capturas/demo-v90",
      "notas": "Strandvang, tierras del rey: en la comarca E nadie puede herir a otro jugador. El servidor rechaza el golpe o la flecha entre jugadores (llega, pero no hiere; queda en el registro con su autor y el motivo) y se dice; al entrar y al salir sale un cartel. Contra el rival de práctica se pelea igual."
     },
     {
      "v": "v91",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v91.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v91.html",
      "capturas": "capturas/demo-v91",
      "notas": "El tronco corto al hombro va apoyado encima del hombro derecho, al lado de la cabeza, y la mano derecha lo sujeta por encima (antes tapaba la cabeza y la mano subía al cuello). Hombre y mujer, quieto y andando. Animaciones en taller-carga-v3."
     },
     {
      "v": "v92",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v92.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v92.html",
      "capturas": "capturas/demo-v92",
      "notas": "Tu cuenta: pantalla de crear cuenta y de entrar antes del mundo; el personaje que ya llevabas pasa a tu cuenta, y desde otro aparato entras con él"
     },
     {
      "v": "v93",
      "fecha": "2026-11-01",
-     "archivo": "jugar/demo/v93.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v93.html",
      "capturas": "capturas/demo-v93",
      "notas": "El admin, por la cuenta: el panel de depuración (F9 o el botón «Admin») sale solo con la cuenta de admin, la de valravnx, sin clave aparte. Con otra cuenta no sale y el servidor lo rechaza. En el panel, cada jugador con el nombre de su cuenta."
     },
     {
      "v": "v94",
      "fecha": "2026-11-02",
-     "archivo": "jugar/demo/v94.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v94.html",
      "capturas": "capturas/demo-v94",
      "notas": "Cuentas más seguras: contraseñas de 10 caracteres o más y sin las más usadas, sin altas en masa (por dirección, en total por hora y con espera que crece), fichas que caducan, «Salir en todos los aparatos» y registro de seguridad en el servidor."
     },
     {
      "v": "v95",
      "fecha": "2026-11-02",
-     "archivo": "jugar/demo/v95.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v95.html",
      "capturas": "capturas/demo-v95",
      "notas": "Cuentas con correo: al crear la cuenta hay que dar un correo (uno por cuenta) y confirmarlo con el código de 6 cifras que llega a él; sin confirmarlo no se entra en el mundo. Las cuentas de antes añaden su correo al entrar. Se puede pedir otro código o cambiar el correo. Mientras el servidor no tenga la clave de Resend, el código queda en su registro."
     },
     {
      "v": "v96",
      "fecha": "2026-11-04",
-     "archivo": "jugar/demo/v96.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v96.html",
      "capturas": "capturas/demo-v96",
      "notas": "Recuperar y cambiar la contraseña: «¿Has olvidado la contraseña?» manda un código al correo confirmado de la cuenta para poner otra; en el menú, cambiar la contraseña o el correo pidiendo la actual, con aviso por correo. Al cambiar la contraseña se cierra la sesión en los demás aparatos."
     },
     {
      "v": "v97",
      "fecha": "2026-11-04",
-     "archivo": "jugar/demo/v97.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v97.html",
      "capturas": "capturas/demo-v97",
      "notas": "Tu tierra es la zona entera de tu mojón: un mojón por personaje y una zona, un dueño. El dueño puede invitar a quien tenga al lado a construir en su tierra. El mapa del rey enseña tu tierra de color con su mojón y, al acercarlo, los lindes de las zonas de cada comarca."
     },
     {
      "v": "v98",
      "fecha": "2026-11-04",
-     "archivo": "jugar/demo/v98.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v98.html",
      "capturas": "capturas/demo-v98",
      "notas": "El admin, por su correo: el panel de depuración sale solo con la cuenta cuyo correo confirmado dice la máquina (KINHOLD_ADMIN_CORREO); el nombre de usuario ya no cuenta."
     },
     {
      "v": "v99",
      "fecha": "2026-11-04",
-     "archivo": "jugar/demo/v99.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v99.html",
      "capturas": "capturas/demo-v99",
      "notas": "El mapa del rey se acerca más y, de cerca, ya no pone los nombres de las comarcas, que tapaban tu tierra; el zoom deja quieto el punto al que acercas."
     },
     {
      "v": "v100",
      "fecha": "2026-11-04",
-     "archivo": "jugar/demo/v100.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v100.html",
      "capturas": "capturas/demo-v100",
      "notas": "Quitar el mojón para reposicionar (valravnx, 4 nov): en Desmontar, apunta a tu mojón; se resalta en rojo lo que se perdería y el aviso dice cuántas piezas y muebles pierdes; al confirmar («Quitar el mojón»), tu tierra queda libre, lo construido en ella se pierde y puedes poner el mojón donde quieras, sin espera. El mojón de otro no se toca."
     },
     {
      "v": "v101",
      "fecha": "2026-11-04",
-     "archivo": "jugar/demo/v101.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v101.html",
      "capturas": "capturas/demo-v101",
      "notas": "El mojón y los muebles se pagan de lo que llevas encima, no del montón común (3 piedras para el mojón; cada mueble, sus materiales), por el servidor con su autor. Al quitar un mueble, lo que devuelve va a lo que llevas."
     },
     {
      "v": "v102",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v102.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v102.html",
      "capturas": "capturas/demo-v102",
      "notas": "Hito Cuentas terminado, para la revisión de valravnx: cuentas con usuario, contraseña y correo confirmado; recuperar y cambiar la contraseña y el correo; límites de intentos por la dirección del jugador; el admin, solo por la cuenta con el correo de la máquina. Además: las piedras sueltas ya no salen en la orilla y el panel de rendimiento sale también a menos de 1 fps."
     },
     {
      "v": "v103",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v103.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v103.html",
      "capturas": "capturas/demo-v103",
      "notas": "Lo tuyo es tuyo: en tu tierra solo tú y quien tengas invitado desmontáis, abrís y cerráis las puertas y encendéis o apagáis el fuego; a los demás les sale «Es tierra de otro». Lo comprueba el servidor con el autor de cada uno."
     },
     {
      "v": "v104",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v104.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v104.html",
      "capturas": "capturas/demo-v104",
      "notas": "El servidor no se fía del navegador en las obras: entregar, subir material, trabajar y desmontar solo valen junto a la pieza y en su planta (o en la de debajo), con la posición que el servidor tiene de ti. De lejos, «Estás demasiado lejos: acércate.»; desde el suelo no se entrega arriba. Al desmontar, la demo ya lo dice antes de pedir confirmación."
     },
     {
      "v": "v105",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v105.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v105.html",
      "capturas": "capturas/demo-v105",
      "notas": "Perfiles gráficos y posprocesado en el juego: oclusión ambiental, mapeo tonal, gradación de color, brillo de las luces y niebla según el perfil, de Móvil básico a PC alto. El perfil se elige en el botón de los fps, junto a «Menú» (★ el que sugiere tu aparato) y se queda guardado.",
      "noticia": false
@@ -3584,7 +3584,7 @@
     {
      "v": "v106",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v106.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v106.html",
      "capturas": "capturas/demo-v106",
      "notas": "Horizonte en los perfiles altos (Móvil alto y los tres de PC): detrás del terreno de cerca se ve la isla entera, en basto, con su relieve y su color, y el mar hasta el borde, fundidos con el cielo por la bruma.",
      "noticia": false
@@ -3592,21 +3592,21 @@
     {
      "v": "v107",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v107.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v107.html",
      "capturas": "capturas/demo-v107",
      "notas": "Ríos de verdad: los afluentes llegan al cauce del río al que entran, el doble de anchos (arroyos hasta 8 m que se vadean; ríos que se nadan o se cruzan por sus vados), nacen estrechos, y el lecho es de grava y cantos con orilla de barro en vez de hierba. Capturas: antes y después, en un arroyo, un río y una unión."
     },
     {
      "v": "v108",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v108.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v108.html",
      "capturas": "capturas/demo-v108",
      "notas": "Zonas del rey (valravnx, 4 nov): la zona de la gran veta de hierro (Breiddal), la de la ciudad (Strandvang) y la de la salida (Lindholt) no se reclaman, también por el servidor; en el mapa del rey salen de oro viejo con «Zona del rey» y por qué."
     },
     {
      "v": "v109",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v109.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v109.html",
      "capturas": "capturas/demo-v109",
      "notas": "El bosque de lejos: donde hay bosque, una capa de copas a la altura de los árboles, con bultos y manchas de copas, más oscura cuanto más lejos, para distinguir de lejos los bosques de las praderas y los montes.",
      "noticia": false
@@ -3614,28 +3614,28 @@
     {
      "v": "v110",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v110.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v110.html",
      "capturas": "capturas/demo-v110",
      "notas": "Explorar libre como admin: el mapa del panel del admin es el del continente entero, Kinland, con sus regiones; un clic te lleva a cualquier sitio y allí se carga el terreno y puedes andar. Solo la cuenta de admin puede salir de Whitholm."
     },
     {
      "v": "v111",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v111.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v111.html",
      "capturas": "capturas/demo-v111",
      "notas": "Fuera el arcón infinito del juego de verdad: en línea ya no hay arcón de pruebas ni botón «+ Materiales», y lo que llevas se coge del mundo. El contador de materiales de arriba sale solo dentro de tu tierra, con lo almacenado en ella. Al desmontar una pieza, lo que devuelve va a lo que llevas, y lo que no te cabe cae al suelo a tus pies."
     },
     {
      "v": "v112",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v112.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v112.html",
      "capturas": "capturas/demo-v112",
      "notas": "Traer jugadores como admin: en la lista del panel, junto a «Ir», «Traer» pone a ese jugador a tu lado (lo pide el servidor, solo con la cuenta de admin, y queda apuntado); a él le sale el aviso «El admin te ha llevado junto a él»."
     },
     {
      "v": "v113",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v113.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v113.html",
      "capturas": "capturas/demo-v113",
      "notas": "El horizonte sin cortes: a su altura (sin escalón donde acaba el terreno de cerca ni tierra baja bajo el mar) y sin tiras de bosque flotando donde aún no ha llegado el terreno.",
      "noticia": false
@@ -3643,490 +3643,490 @@
     {
      "v": "v114",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v114.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v114.html",
      "capturas": "capturas/demo-v114",
      "notas": "El linde del bosque de lejos sin paredes: donde acaba el bosque, el dosel de lejos baja poco a poco hasta el suelo y pasa a su color, en vez de caer en una pared de dientes de sierra. Capturas: antes y después, mirando lomas con bosque a varios km."
     },
     {
      "v": "v115",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v115.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v115.html",
      "capturas": "capturas/demo-v115",
      "notas": "Eliges dónde empiezas: en línea hay tres salidas del rey (Lindholt, junto a la ciudad y en Motdale) y cada personaje nuevo elige la suya una vez; en la pradera abierta, algo de piedra y sílex sueltos. Capturas: la elección en PC y móvil, la llegada a Motdale y a la ciudad, y lo que se recoge alrededor."
     },
     {
      "v": "v116",
      "fecha": "2026-11-05",
-     "archivo": "jugar/demo/v116.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v116.html",
      "capturas": "capturas/demo-v116",
      "notas": "El mar de verdad: el fondo baja enseguida (en las playas, unos metros someros con la arena a la vista y luego hondo; al pie de los acantilados, hondo ya), sin la franja de fondo gris azulado al aire, y el fondo de arena que se ve bajo el agua."
     },
     {
      "v": "v117",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v117.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v117.html",
      "capturas": "capturas/demo-v117",
      "notas": "Con algo al hombro, las manos no llevan nada, ni el hacha: con el tronco corto o el saco al hombro no se coge nada con las manos, y para subirte algo al hombro hay que llevar las manos vacías (lo que cuelga de una correa, la bandolera y el odre, deja las manos libres). Por el servidor. Capturas: el panel de inventario con el hacha en la mano y el odre colgado, y el tronco en las manos en el móvil, antes de subirlo al hombro."
     },
     {
      "v": "v118",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v118.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v118.html",
      "capturas": "capturas/demo-v118",
      "notas": "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de la casa humilde (la teja, la chimenea, el adarve, la empalizada, la polea, el polipasto, la escalera de tablas, lo de tablas y los muebles caros quedan guardados para su nivel)."
     },
     {
      "v": "v119",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v119.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v119.html",
      "capturas": "capturas/demo-v119",
      "notas": "Los ríos llegan al mar: en la orilla bajan al nivel del mar, se ensanchan en un estuario de arena, su cauce sigue mar adentro y los medianos y grandes acaban en un delta de isletas."
     },
     {
      "v": "v120",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v120.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v120.html",
      "capturas": null,
      "notas": "La tierra vuelve al rey si no se usa: 30 días sin que entren el dueño ni sus invitados (15 sin obra terminada), con aviso por correo una semana antes y el último día; lo construido queda como ruina. Lo hace el servidor."
     },
     {
      "v": "v121",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v121.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v121.html",
      "capturas": "capturas/demo-v121",
      "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
     },
     {
      "v": "v122",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v122.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v122.html",
      "capturas": "capturas/demo-v122",
      "notas": "La herramienta del admin (valravnx, 6 nov): el panel se abre en «Info» (lo del servidor y dónde estás); «Mapa» con los jugadores; «Modos»: autoconstruir, velocidad ×1 a ×10 y cámara libre volando en 3D; «Arcón»: invocarse cualquier objeto. Solo para la cuenta de admin, comprobado por el servidor."
     },
     {
      "v": "v123",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v123.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v123.html",
      "capturas": "capturas/demo-v123",
      "notas": "El bosque de lejos sin dientes de sierra: va en el mismo suelo lejano (una sola superficie, que no se pelea consigo misma en la hondura) y su color sale de texturas leídas en cada píxel. Capturas: antes y después, mirando a las montañas altas."
     },
     {
      "v": "v124",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v124.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v124.html",
      "capturas": "capturas/demo-v124",
      "notas": "Sin tierra bajo el agua a lo lejos: el suelo de lejos solo se quita donde ya ha llegado el de cerca, la cámara distingue cinco veces mejor lo que está casi a la misma altura y lo lejano se acerca poco a poco; el río entra en el mar sin punta seca; la arena de la playa, hasta unos 60 m."
     },
     {
      "v": "v125",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v125.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v125.html",
      "capturas": "capturas/demo-v125",
      "notas": "El panel de fabricación: con H o el botón «Fabricar», todas las recetas a la vista (lo que puedes ya, lo que casi y lo que pide otra estación), de dónde sale cada material, encargar y recoger por el servidor, y poner la piedra de tallar, la hoguera o el banco de tronco delante de ti."
     },
     {
      "v": "v126",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v126.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v126.html",
      "capturas": "capturas/demo-v126",
      "notas": "v126: depositar en las estaciones (valravnx, 6 nov). La piedra de tallar, la hoguera y el banco de tronco tienen dónde dejar los materiales, y se ven puestos encima o al lado. Sus recetas gastan solo lo depositado en ellas; lo de las manos sigue con lo que llevas y el suelo. En el panel de fabricación, cada estación a tu lado sale con lo que tiene («Coger») y lo que llevas que se puede dejar («Dejar»); todo por el servidor y lo ven todos."
     },
     {
      "v": "v127",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v127.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v127.html",
      "capturas": "capturas/demo-v127",
      "notas": "La desembocadura en embudo: el río se abre hacia el mar en sus últimos 140 m; el agua del río se funde con la del mar (toma su color y sigue en un abanico que se desvanece)."
     },
     {
      "v": "v128",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v128.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v128.html",
      "capturas": "capturas/demo-v128",
      "notas": "Chat de texto: con Intro (en el móvil, «Hablar») dices una frase; sale en un bocadillo sobre tu cabeza, la ven los que están a 50 m o menos y se va al rato. Pasa por el servidor con su autor: limpia, sin hablar a chorro y apuntada para moderar."
     },
     {
      "v": "v129",
      "fecha": "2026-11-06",
-     "archivo": "jugar/demo/v129.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v129.html",
      "capturas": "capturas/demo-v129",
      "notas": "El panel de fabricar nuevo: cartas con la imagen de cada cosa, pestañas por dónde se hace y la ficha con para qué sirve y de dónde sale cada material; los dos atajos («Hacer antes» y «Poner en la estación lo que falta»); Usar delante de una estación abre su panel; y los modelos de lo que piden y dan las recetas (fibra, juncos, mimbre, piel, resina, cordel, cuerda, honda, odre, nasa, trampa, cubo, hacha de piedra…)."
     },
     {
      "v": "v130",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v130.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v130.html",
      "capturas": "capturas/demo-v130",
      "notas": "Árboles jóvenes y adultos bien distintos: los jóvenes, con su propio modelo en cada especie, de 3 a 5 m, finos y de copa rala, más en los bordes del bosque y en los claros; los adultos, un 30 % más altos y más gruesos. Cada árbol lleva su edad, la misma en el juego y en el servidor."
     },
     {
      "v": "v131",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v131.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v131.html",
      "capturas": "capturas/demo-v131",
      "notas": "Talar un árbol joven con el hacha de piedra da un tronco delgado y de 2 a 4 varas. El tronco delgado es la madera de la casa humilde: es el tronco que piden las piezas, y se echa al hombro para llevarlo a la obra. Las varas, con su modelo en el suelo."
     },
     {
      "v": "v132",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v132.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v132.html",
      "capturas": "capturas/demo-v132",
      "notas": "Juncos, barro y yesca ya tienen de dónde salir: los juncos se cortan en la orilla de los ríos con una lasca de sílex, el barro se cava en la orilla con el palo cavador (no se agota) y la yesca se coge de los hongos yesqueros de los tocones del bosque, o se hace con las manos de fibra seca o de corteza. Con sus modelos y sus imágenes en el panel."
     },
     {
      "v": "v133",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v133.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v133.html",
      "capturas": "capturas/demo-v133",
      "notas": "El inventario pasa a ser «Equipo» (valravnx, 7 nov), con el estilo del panel de fabricar: cada cosa con su imagen, las manos y el hombro también en el panel y una ficha al tocar algo. Lo que llevas puesto se quita a las manos o se deja en el suelo, a tus pies, con lo que lleve dentro; de las manos se vuelve a poner. Modelos nuevos de los tres cintos, el saco y la bandolera (imágenes en iconos-v3). En el móvil, la ficha sale abajo sin tapar el equipo."
     },
     {
      "v": "v134",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v134.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v134.html",
      "capturas": "capturas/demo-v134",
      "notas": "Lo que se fabrica con las manos se ve con su modelo en la mano y en el cinturón: lasca de sílex, palo cavador, cordel, cuerda y el hacha de piedra (antes salía la de hierro); el leñero cogido con las manos, entero. Nuevo: el taladro de fuego de arco (2 ramas y 1 cordel)."
     },
     {
      "v": "v135",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v135.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v135.html",
      "capturas": "capturas/demo-v135",
      "notas": "El bosque de lejos visto de cerca, sin montículos (valravnx, 7 nov): las manchas de las copas ya no salen en anillos ni en rayas y se apagan cuando ya no caben en el píxel; las de 60 m, mucho más suaves. Las copas de cerca, suavizadas, empiezan a 250 m del jugador y suben poco a poco hasta su alto a 400 m, sin tapar la vista."
     },
     {
      "v": "v136",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v136.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v136.html",
      "capturas": "capturas/demo-v136",
      "notas": "Los puestos de trabajo son obra: la piedra de tallar, la hoguera y el banco de tronco se levantan desde Construir, en su pestaña «Puestos de trabajo»: se pone el marco, se le lleva lo que pide y se trabaja en él; la hoguera, solo fuera"
     },
     {
      "v": "v137",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v137.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v137.html",
      "capturas": "capturas/demo-v137",
      "notas": "El día y la noche: el sol, la luna con su fase y las estrellas, y la luz que los sigue"
     },
     {
      "v": "v138",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v138.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v138.html",
      "capturas": "capturas/demo-v138",
      "notas": "El tejado de la casa humilde (valravnx, 7 nov): tejado de juncos y su remate de esquina (2 varas y 4 juncos, cortados en la orilla con una lasca), con el junco como material de obra. Lo que pide paja se esconde del menú: la paja sale del cereal, que aún no hay. Prueba nueva que sigue cada material hasta el mundo y no deja pasar ninguna parte de la casa sin origen."
     },
     {
      "v": "v139",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v139.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v139.html",
      "capturas": "capturas/demo-v139",
      "notas": "Sin llanos pelados en la estepa (valravnx, 7 nov): tierra adentro, lo que quedaba por debajo del mar se ponía a 0,4 m justos, en llanos de kilómetros sin nada que de lejos perdían contra el mar de lejos (el manto azul). Ahora, pasada la costa, el suelo no baja de unos 2 m y lo que iba a quedar más hondo sube como un relieve suave: crece lo que toca y la playa no cambia. 17 sitios de salida de pradera más."
     },
     {
      "v": "v140",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v140.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v140.html",
      "capturas": "capturas/demo-v140",
      "notas": "La hoguera, fuera: se levanta apagada con sus ramas, se enciende con la yesca y el taladro de fuego, arde un rato por cada rama o leña que se le echa y se apaga sola (quedan las cenizas); da luz y calor. Por el servidor: todos la ven igual."
     },
     {
      "v": "v141",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v141.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v141.html",
      "capturas": "capturas/demo-v141",
      "notas": "Las necesidades: hambre, sed, frío y cansancio, con sus avisos"
     },
     {
      "v": "v142",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v142.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v142.html",
      "capturas": "capturas/demo-v142",
      "notas": "Los almacenajes de la base: acopio de troncos, pila de piedras y leñera, en su pestaña «Almacenajes» de Construir. Se levantan como obra y solo en tu tierra; cada uno guarda lo suyo (troncos; piedra suelta; leña y ramas) y se ve lleno. Con Usar, «Guardar y sacar». La obra no coge de ellos sola. El contador «En tu tierra» cuenta lo guardado en ellos."
     },
     {
      "v": "v143",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v143.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v143.html",
      "capturas": "capturas/demo-v143",
      "notas": "Beber del río con las manos"
     },
     {
      "v": "v144",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v144.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v144.html",
      "capturas": "capturas/demo-v144",
      "notas": "Llevar más de una vez: la rastra lleva también troncos delgados (hasta 5) y varas (hasta 12); los juncos y el mimbre van en el fardo atado, con la paja y la fibra, y se ven como haces atados a la espalda."
     },
     {
      "v": "v145",
      "fecha": "2026-11-07",
-     "archivo": "jugar/demo/v145.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v145.html",
      "capturas": "capturas/demo-v145",
      "notas": "Los puestos de trabajo y los almacenajes se ponen con el giro que les das y se desmontan terminados (el 75 % del material y lo que guardan, al suelo)"
     },
     {
      "v": "v146",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v146.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v146.html",
      "capturas": "capturas/demo-v146",
      "notas": "v146: bayas y setas para comer (P4). En el bosque y en los claros hay arbustos de bayas, más grandes que los de adorno y cargados de racimos rojos y negro morados que se ven bien de lejos; en el bosque, corros de setas. Con las manos, «Usar» coge de 3 a 6: las bayas desaparecen del arbusto y el arbusto se queda; las setas se van enteras. Vuelven con la estación."
     },
     {
      "v": "v147",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v147.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v147.html",
      "capturas": "capturas/demo-v147",
      "notas": "v147: el árbol cae hacia la boca que le cortas (P5): los golpes del primer tercio la abren hacia donde está quien los da y el árbol caerá hacia ese lado, aunque luego se corte por detrás; el aviso lo dice. Sin boca (golpes de lados opuestos), cae cuesta abajo y, en llano, hacia donde se inclina. Lo decide el servidor."
     },
     {
      "v": "v148",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v148.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v148.html",
      "capturas": "capturas/demo-v148",
      "notas": "Más almacenajes de la base: el soporte de varas, el almiar (paja y juncos), el hoyo de barro y el cesto (lo pequeño), cada uno con su modelo y lleno con lo que guarda"
     },
     {
      "v": "v149",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v149.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v149.html",
      "capturas": null,
      "notas": "v149, arreglo urgente: al sacar de un almacenaje o de una estación una pila que no te cabe entera, ahora sacas lo que te cabe y el resto se queda (antes decía «No te cabe» y la pila se quedaba bloqueada). Con el clic derecho (o dejando pulsado en el móvil) eliges cuánto sacar."
     },
     {
      "v": "v150",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v150.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v150.html",
      "capturas": "capturas/demo-v150",
      "notas": "El juego completo de muros de zarzo y barro: además del liso, con puerta y con ventana, como los de troncos"
     },
     {
      "v": "v151",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v151.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v151.html",
      "capturas": "capturas/demo-v151",
      "notas": "v151: dos almacenajes nuevos de dentro, colgados en el muro: el colgadero de herramientas (cada una colgada por la cabeza entre dos varas) y el de mochilas (cada cosa de su estaquilla). Al ponerlos, el marco se pega al muro más cercano, mirando a la habitación; lo que llevas a la espalda, vacío, se cuelga tal cual."
     },
     {
      "v": "v152",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v152.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v152.html",
      "capturas": "capturas/demo-v152",
      "notas": "El mapa del rey enseña las zonas ya tomadas por un mojón (valravnx, 8 nov): cada dueño de un color apagado, distinto de los demás, con su mojón; las de quien te ha invitado a construir, del color de la tuya y, de cerca, «Te han invitado». Sin nombres."
     },
     {
      "v": "v153",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v153.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v153.html",
      "capturas": "capturas/demo-v153",
      "notas": "La barra de abajo, nueva (primera tarea de la interfaz): tus dos manos con la imagen de lo que llevas, el hombro solo cuando cargas algo (y entonces las manos, apagadas), el cinto con su arma (tócalo para cogerla con la mano) y la carga en una raya. Los huecos y los botones, con el kit de la interfaz: cuero, roble, latón y hierro renderizados, y los iconos repujados. Las imágenes de las cosas, otra vez sacadas con luz de contra y contorno."
     },
     {
      "v": "v154",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v154.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v154.html",
      "capturas": "capturas/demo-v154",
      "notas": "Desbrozar: con el hacha de piedra (o con la lasca, más despacio) los matorrales y los arbustos se quitan en pocos golpes, por el servidor y con su autor; dan de 2 a 4 ramas y a veces una vara, y rebrotan en una estación. El arbusto de bayas pierde sus bayas."
     },
     {
      "v": "v155",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v155.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v155.html",
      "capturas": "capturas/demo-v155",
      "notas": "El hogar, dentro de la casa: un puesto nuevo, solo bajo techo, de piedras y barro; el mismo fuego que la hoguera pero más duradero, que se deja en brasas y se aviva sin yesca. Por el servidor, con su autor."
     },
     {
      "v": "v156",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v156.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v156.html",
      "capturas": "capturas/demo-v156",
      "notas": "La cama ligada: en Construir, una pestaña nueva «Camas» con el refugio de ramas (fuera, para cuando aún no tienes casa: 12 ramas y 4 cordeles) y la cama de juncos (dentro de la casa: 8 haces de juncos y 2 cordeles). Se levantan como obra; con Usar delante la ligas (una por personaje: es donde reaparecerás) y, ya tuya, duermes en ella: te tumbas y el cansancio baja deprisa; al moverte te levantas. También en la tierra de quien te ha invitado a construir, para vivir en pareja o en grupo."
     },
     {
      "v": "v157",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v157.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v157.html",
      "capturas": "capturas/demo-v157",
      "notas": "El mazo de piedra (1 piedra, 1 rama y 2 cordeles, con las manos) y romper con él las rocas medianas del mundo, a golpes por el servidor: dejan sus piedras sueltas y unos cascotes"
     },
     {
      "v": "v158",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v158.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v158.html",
      "capturas": "capturas/demo-v158",
      "notas": "v158: la acción, a la vista (estudio de la interfaz del 7 nov). Lo que haría Usar sale escrito sobre la cosa que tienes delante, con un aro dorado en el suelo bajo ella: «Desbrozar: matorral», «Coger del suelo: 2 × Rama», «Talar el árbol». En PC se hace con la F; si hay varias cosas al alcance, al lado sale la lista (la de Usar, marcada) y un clic en otra la hace. La obra dice lo que le falta («Tronco delgado: 2 de 4» y una barra), y mientras se tala o se desbroza un aro se va llenando. En el móvil, un botón de acción grande junto al pulgar con la imagen de la cosa y el verbo debajo, y Fabricar y Construir en arco a su lado. Fuera los botones Mover, Desmontar y Usar de la derecha: Construir queda abajo (B), y Desmontar y Terminar salen solo mientras construyes."
     },
     {
      "v": "v159",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v159.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v159.html",
      "capturas": "capturas/demo-v159",
      "notas": "De dónde salen el mimbre (mimbreras de la ribera, con la lasca), la corteza (descortezar un árbol en pie) y la resina (sangrar un pino o un abeto); la honda y el odre, fuera hasta que haya caza"
     },
     {
      "v": "v160",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v160.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v160.html",
      "capturas": null,
      "notas": "El frío: lo lleva el servidor para cada uno. Sube de noche, según el bioma y lo que llevas puesto (cada prenda abriga), y baja bajo techo y junto a una hoguera o un hogar encendidos. Con la camisa y el pantalón de lino del principio, de día no hay frío en la salida y de noche sale su aviso."
     },
     {
      "v": "v161",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v161.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v161.html",
      "capturas": "capturas/demo-v161",
      "notas": "Descansar sentado: Z o el botón de la ficha del cansancio; sentado, el cansancio baja más deprisa. Y el cansancio es el mismo que el del combate: pelear cansa, y quien llega cansado empieza con menos aliento. Por el servidor."
     },
     {
      "v": "v162",
      "fecha": "2026-11-08",
-     "archivo": "jugar/demo/v162.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v162.html",
      "capturas": "capturas/demo-v162",
      "notas": "Dormido al desconectarse: al salir del juego, tu personaje se queda dormido en el mundo, tumbado y con el símbolo de desconectado encima. En tu tierra, protegido y a tu cama ligada; fuera, atacable 5 minutos (15 si peleaste en el último minuto) y luego a salvo y a su cama. Por el servidor."
     },
     {
      "v": "v163",
      "fecha": "2026-11-09",
-     "archivo": "jugar/demo/v163.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v163.html",
      "capturas": "capturas/demo-v163",
      "notas": "Morir y que te saqueen: se muere de sed y de hambre (con la sed o el hambre al máximo se pierde sangre poco a poco), en el combate o ahogado; vuelves sano a tu cama ligada o a tu sitio de salida, y tu cuerpo queda tumbado donde caíste una hora, con la mitad de lo que llevabas en el suelo a su lado, que cualquiera puede coger; la otra mitad se rompe, al azar del servidor"
     },
     {
      "v": "v164",
      "fecha": "2026-11-09",
-     "archivo": "jugar/demo/v164.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v164.html",
      "capturas": "capturas/demo-v164",
      "notas": "Liebres en el mundo: salen en los prados y en las lindes del bosque, pastan, se ponen alerta si te acercas y huyen a la carrera si llegas cerca. Las mueve el servidor: los dos veis la misma."
     },
     {
      "v": "v165",
      "fecha": "2026-11-09",
-     "archivo": "jugar/demo/v165.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v165.html",
      "capturas": "capturas/demo-v165",
      "notas": "Cazar la liebre con la lanza endurecida: con la lanza en la mano y una liebre a tiro delante, Usar la lanza; vuela hacia donde miras, el servidor decide si acierta y la liebre cae muerta con la lanza a su lado, para recogerlas"
     },
     {
      "v": "v166",
      "fecha": "2026-11-09",
-     "archivo": "jugar/demo/v166.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v166.html",
      "capturas": "capturas/demo-v166",
      "notas": "Nada que salga solo sobre las cosas: en el móvil, ningún cuadro de texto mientras juegas (lo dice el botón de acción grande y el aro en el suelo), y lo demás que puedes hacer, manteniendo pulsado el botón de acción; en PC, la lista, con Alt o el clic derecho."
     },
     {
      "v": "v167",
      "fecha": "2026-11-09",
-     "archivo": "jugar/demo/v167.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v167.html",
      "capturas": "capturas/demo-v167",
      "notas": "El contador de arriba, plegado: una placa pequeña con el total de lo que tienes almacenado en tu tierra, que se despliega al tocarla. En el móvil, más pequeños el botón de acción, Fabricar y Construir, la barra de abajo y los avisos de las necesidades, para que tapen menos."
     },
     {
      "v": "v168",
      "fecha": "2026-11-09",
-     "archivo": "jugar/demo/v168.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v168.html",
      "capturas": "capturas/demo-v168",
      "notas": "El modo arma emplea lo que llevas en la mano (fuera la espada de pruebas): puños, hacha, mazo, palo, cuchillo, lanza; la lanza clava y se lanza apuntando (Espacio o el botón Lanzar), con poca fuerza y algo de desvío, y caza liebres; las piedras también se lanzan; lo lanzado queda en el suelo"
     },
     {
      "v": "v169",
      "fecha": "2026-11-10",
-     "archivo": "jugar/demo/v169.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v169.html",
      "capturas": "capturas/demo-v169",
      "notas": "Despiezar y asar la liebre: con la lasca de sílex encima y la liebre cazada a tus pies, Usar la despieza (también desde el panel de fabricar); da carne cruda y una piel pequeña, y con la piel vuelven la honda y el odre. La carne se asa en la hoguera o en el hogar y la asada sacia mucho más que la cruda; la cruda se estropea en unas horas. Todo por el servidor."
     },
     {
      "v": "v170",
      "fecha": "2026-11-10",
-     "archivo": "jugar/demo/v170.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v170.html",
      "capturas": "capturas/demo-v170",
      "notas": "v170: las herramientas y las armas se gastan. Cada golpe al talar gasta el hacha: la de piedra aguanta unos 3 árboles adultos (o unos 21 jóvenes) y la de hierro unos 30. Cada golpe que alcanza o que se para gasta el arma de la mano (unos 50 la de madera o piedra: la lanza, el palo cavador, el mazo; unos 400 la de hierro), y la lanza lanzada se gasta al dar a una presa. Lo cuenta el servidor; la ficha del equipo dice cuántos usos le quedan, con su barra, y al acabarse se rompe y te avisa."
     },
     {
      "v": "v171",
      "fecha": "2026-11-10",
-     "archivo": "jugar/demo/v171.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v171.html",
      "capturas": "capturas/demo-v171",
      "notas": "Reparar en su puesto con su material: el hacha y el mazo de piedra en la piedra de tallar con un cordel dejado en ella, la lanza endurecida en el banco de tronco con fibra (llevando la lasca); desde el menú de Usar junto al puesto, lo hace el servidor; la ficha del equipo dice dónde y con qué"
     },
     {
      "v": "v172",
      "fecha": "2026-11-10",
-     "archivo": "jugar/demo/v172.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v172.html",
      "capturas": "capturas/demo-v172",
      "notas": "v172: los personajes de Meshy (valravnx, 10 nov). El jugador y los demás jugadores son el hombre o la mujer que hizo valravnx en Meshy, con 59 animaciones de su biblioteca y 8 hechas a partir de texto (llevar un tronco al hombro, andando y parado; empujar la carretilla, andando y parada; arrastrar la rastra; talar y picar a dos manos; llevar algo en brazos). Fuera los de antes: el del taller, el de Quaternius y el muñeco de bloques, también en las peleas y en el visor de personajes. v172, provisional: aún sin ropa por capas, aspecto, tintes ni hechuras (vuelven poco a poco), y con las manos abiertas. Al talar y al picar, el mango pasa por las dos manos; el golpe de ahora (de Meshy, hecho a partir de texto) aún sube las manos junto a la cara y el hacha roza la cabeza: valravnx elige el bueno en Meshy. Los pies se suben lo que el modelo los trae hundidos (17 cm el hombre, 19 la mujer). Las manos se ajustan encima del tronco al hombro y en las agarraderas de la carretilla."
     },
     {
      "v": "v173",
      "fecha": "2026-11-10",
-     "archivo": "jugar/demo/v173.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v173.html",
      "capturas": "capturas/demo-v173",
      "notas": "El hombre anda como un hombre (el paso tranquilo de Meshy, con los pies separados) y los dos esperan quietos, sin mirar a los lados"
     },
     {
      "v": "v174",
      "fecha": "2026-11-10",
-     "archivo": "jugar/demo/v174.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v174.html",
      "capturas": "capturas/demo-v174",
      "notas": "La ropa y la armadura se gastan y se reparan: cada prenda lleva su desgaste, que cuenta el servidor (con el uso y con los golpes que hieren donde cubre); su ficha dice lo que le queda y cómo se repara; la de lino y la de lana se zurcen con una fibra y la de cuero con piel y cordel, puestas, en el banco de tronco"
     },
     {
      "v": "v175",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v175.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v175.html",
      "capturas": "capturas/demo-v175",
      "notas": "v175: el menú con pestañas (estudio de la interfaz del 7 nov, aprobado por valravnx: «un solo menú con pestañas»). Arriba, en el mundo, solo quedan Menú (Tab) y, en línea, Hablar; en PC, en tu tierra, también tu mojón. Menú abre un tablero de roble encima del mundo desenfocado, con las pestañas Equipo, Fabricar, Construir, Mapa y Tu tierra (en el móvil, botones redondos) y, al pie, Ajustes (con los fps), Ayuda, Decisiones, el idioma y Salir; «+ Materiales» y «Reiniciar», solo con el arcón de pruebas, y Admin, solo para el admin. Las teclas de siempre (I, H, M, B) abren su pestaña; Esc o la cruz lo cierran. Tu tierra dice dónde está tu mojón y quién puede construir, o, sin mojón, lleva a ponerlo. Lo que se desplaza dentro del tablero se desvanece abajo para que se vea que sigue."
     },
     {
      "v": "v176",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v176.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v176.html",
      "capturas": "capturas/demo-v176",
      "notas": "La naturaleza de Meshy: las siete especies de árbol, adultas y jóvenes, el matorral, los helechos, el arbusto de las bayas, las ortigas, los juncos, la hierba larga y las rocas, con el aspecto de maqueta en miniatura"
     },
     {
      "v": "v177",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v177.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v177.html",
      "capturas": "capturas/demo-v177",
      "notas": "El equipo en tres columnas: Ropa (con tu personaje), Lo que llevas (las manos, el hombro y cada bolsa abierta a la vez, con sus huecos) y A tus pies (lo del suelo a dos pasos: tocar para cogerlo; tocar ahí con algo tuyo elegido para dejarlo). En el móvil, dos pestañas: «Lo que llevas» y «Ropa». Los huecos vacíos enseñan, apagada, la silueta de lo que va. La ficha, abajo, con lo principal y «Mover…»; clic derecho o mantener el dedo: a la mano, o al suelo si ya está en la mano."
     },
     {
      "v": "v178",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v178.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v178.html",
      "capturas": "capturas/demo-v178",
      "notas": "El acopio de troncos y el mojón que hizo valravnx en Meshy, en lugar de los de código: el acopio con sus durmientes en el suelo y los troncos apilados encima, tenue mientras se levanta; el mojón, de la misma altura, sobre su parche de tierra. Bajados para el móvil y cargados una vez para todos."
     },
     {
      "v": "v179",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v179.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v179.html",
      "capturas": "capturas/demo-v179",
      "notas": "Más detalle en los gráficos altos: los árboles, las matas y las rocas de Meshy van con su modelo de cerca hasta más lejos y, al lado, con uno de más detalle"
     },
     {
      "v": "v180",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v180.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v180.html",
      "capturas": "capturas/demo-v180",
      "notas": "Fabricar con el acabado nuevo, en su pestaña del menú: tablero de roble y cartas con filo de latón; cada sitio dice si está a tu lado o a cuántos pasos; la ficha dice de dónde sale cada material (en las manos, en el zurrón, en el suelo, en la estación) y cuánto hay; en una estación, «×3» encarga tres seguidas; lo que está en marcha, con su barra. En el móvil, las pestañas de los sitios en filas enteras."
     },
     {
      "v": "v181",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v181.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v181.html",
      "capturas": "capturas/demo-v181",
      "notas": "Construir con el acabado nuevo: arriba, en una barra de roble, «Poner | Quitar» (X), la planta, Deshacer (Ctrl+Z) y Terminar; abajo, las piezas con su imagen y el coste en iconos, con cuánto tienes y en rojo lo que no te llega; deshacer quita lo último que pusiste; sin mojón, construir se abre en la pestaña Tierra"
     },
     {
      "v": "v182",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v182.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v182.html",
      "capturas": "capturas/demo-v182",
      "notas": "La pestaña «Tu tierra» con el acabado nuevo: cada almacenaje con lo que tiene, quién puede construir con «Quitarle» y cuándo vuelve al rey si no se usa"
     },
     {
      "v": "v183",
      "fecha": "2026-11-11",
-     "archivo": "jugar/demo/v183.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-demo/demo-v183.html",
      "capturas": "capturas/demo-v183",
      "notas": "Las necesidades con los medallones de latón del estudio: los cuatro arriba a la derecha, medio transparentes si van bien; la que peor va, en rojo, más grande, con flecha y nombre; al pulsarlo, su ficha en dos líneas en un tablero de roble; el frío escarcha los bordes de la pantalla."
     },
@@ -4392,42 +4392,42 @@
     {
      "v": "v34",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v34.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v34.html",
      "capturas": "capturas/construccion-v34",
      "notas": "v34: el personaje vuelve a tener las manos enteras (desde la taller-v9 salían como una tira) y la mujer lleva botas bajas, que ya no atraviesan la falda larga. Personajes en recursos/personajes/taller-v11/."
     },
     {
      "v": "v35",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v35.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v35.html",
      "capturas": "capturas/construccion-v35",
      "notas": "Recoger del suelo y de las plantas (N0): ramas en el bosque, piedra suelta en la ladera, sílex en un afloramiento de caliza y fibra de ortigas y hierba larga en el claro, con Usar; va al inventario por huecos y vuelve a salir pasado su tiempo"
     },
     {
      "v": "v36",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v36.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v36.html",
      "capturas": "capturas/construccion-v36",
      "notas": "El panel de inventario es el equipo (valravnx, 29 oct): tu personaje de verdad, vestido con lo que llevas, y a los lados la ropa, la cintura y la espalda; sin cuadros de manos ni de hombro ni el dibujo retorcido. Lo de las manos y el hombro se coge del mundo (el arcón de pruebas) y abajo sale lo que llevas, con «Soltar»; el hacha de mano se ve en la mano."
     },
     {
      "v": "v37",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v37.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v37.html",
      "capturas": "capturas/construccion-v37",
      "notas": "Adarve: pasarela de tablas a 1,8 m por detrás de la empalizada, para asomarse entre las puntas; se sube por una escalera de mano o de tablas puesta delante, que salen más cortas"
     },
     {
      "v": "v38",
      "fecha": "2026-10-29",
-     "archivo": "jugar/construccion/v38.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v38.html",
      "capturas": "capturas/construccion-v38",
      "notas": "Si no llevas calzado, vas descalzo, como empieza el GDD (antes llevaba zapatos porque el cuerpo no tenía pies)."
     },
     {
      "v": "v39",
      "fecha": "2026-10-30",
-     "archivo": "jugar/construccion/v39.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-construccion/construccion-v39.html",
      "capturas": "capturas/construccion-v39",
      "notas": "Objetos en el suelo: «Soltar» deja lo que llevas a tus pies y Usar lo coge; fuera de tus tierras desaparece pasada 1 hora real; troncos, leña y piedras se quedan como pila"
     },
@@ -4798,98 +4798,98 @@
     {
      "v": "v19",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v19.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v19.html",
      "capturas": "capturas/personaje-v19",
      "notas": "v19: arreglo de las manos y de las botas de la mujer (lo vio valravnx). Desde la v16 (taller-v9) las manos salían rotas, como una tira: al reducir triángulos protegiendo la cara, la reducción entera caía sobre las manos y el cuello. Ahora vuelven a estar enteras, con sus dedos, en los dos cuerpos y con todas las prendas. Las botas de la mujer son bajas, hasta un poco por encima del tobillo, para que la caña no atraviese por detrás la falda larga al andar; las del hombre siguen altas. Personajes en recursos/personajes/taller-v11/."
     },
     {
      "v": "v20",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v20.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v20.html",
      "capturas": "capturas/personaje-v20",
      "notas": "Pies descalzos: botón «Descalzo» en la ropa y vista «Pies» de cerca. El bajo de las calzas, recto."
     },
     {
      "v": "v21",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v21.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v21.html",
      "capturas": "capturas/personaje-v21",
      "notas": "Las 39 animaciones extra (arco, picar, sembrar, regar, pescar, golpes ligeros y pesados, escudo, pasos, trepar, tumbarse…) pasadas al esqueleto del taller propio: en Opciones, «Más animaciones»"
     },
     {
      "v": "v22",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v22.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v22.html",
      "capturas": "capturas/personaje-v22",
      "notas": "Tintes de la ropa y blasón de la sobreveste: cada prenda puesta se tiñe con los tintes de la época y la sobreveste lleva partido, cortado, cuartelado, palo, faja, banda, cruz, sotuer o cheurón. Personajes en taller-v13 (tela y cuero en gris con el color aparte)."
     },
     {
      "v": "v23",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v23.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v23.html",
      "capturas": "capturas/personaje-v23",
      "notas": "Hechura de la ropa: en Opciones, para cada prenda de tela puesta, el material (lino o lana), el corte (largo, a media pierna o corto) y el tejido (liso, sarga, espiguilla, cuadros o rayas), sobre el mismo modelo y sin recargarlo. Con una prenda más corta encima asoma la de debajo."
     },
     {
      "v": "v24",
      "fecha": "2026-10-29",
-     "archivo": "jugar/personaje/v24.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v24.html",
      "capturas": "capturas/personaje-v24",
      "notas": "Niveles de detalle del personaje del taller: de lejos lleva menos triángulos y, más lejos, una sola pieza con las texturas juntas; fuera de la cámara no se dibuja. Para verlos de cerca, ?detalle=1 o ?detalle=2 en la dirección."
     },
     {
      "v": "v25",
      "fecha": "2026-10-30",
-     "archivo": "jugar/personaje/v25.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v25.html",
      "capturas": "capturas/personaje-v25",
      "notas": "Barbas rehechas (valravnx: «horribles»): la larga es ahora una malla con volumen que cae recta bajo el mentón y de perfil forma una cuña, con la punta desigual; la corta, el bigote y la perilla, pelo a pelo y con el borde que se aclara poco a poco. Personajes en taller-v14."
     },
     {
      "v": "v26",
      "fecha": "2026-10-30",
-     "archivo": "jugar/personaje/v26.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v26.html",
      "capturas": "capturas/personaje-v26",
      "notas": "Capa rehecha (valravnx: «la capa que no es capa»): ya no es el cuerpo empujado hacia fuera, que parecía un chaleco sin mangas metido en la cintura, sino una malla propia que se apoya en los hombros y cae recta, algo más ancha abajo y con pliegues, abierta por delante y cerrada con un broche de bronce bajo el cuello. Personajes en recursos/personajes/taller-v15/."
     },
     {
      "v": "v27",
      "fecha": "2026-10-30",
-     "archivo": "jugar/personaje/v27.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v27.html",
      "capturas": "capturas/personaje-v27",
      "notas": "La capa se mueve al andar: se queda atrás, sube un poco, ondea al ritmo del paso y vuelve al pararse (sin simulación de tela: por la altura de cada punto, con un muelle). A los costados cae por encima de los brazos bajados y de espalda se ven más los pliegues. Personajes en recursos/personajes/taller-v16/."
     },
     {
      "v": "v28",
      "fecha": "2026-10-30",
-     "archivo": "jugar/personaje/v28.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v28.html",
      "capturas": "capturas/personaje-v28",
      "notas": "Bigote con volumen (una malla propia sobre el labio de arriba, que cae por las comisuras) y barba larga pulida: ondas distintas en cada mechón y, por los lados, baja por el cuello. Personajes en recursos/personajes/taller-v17/."
     },
     {
      "v": "v29",
      "fecha": "2026-10-31",
-     "archivo": "jugar/personaje/v29.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v29.html",
      "capturas": "capturas/personaje-v29",
      "notas": "Toca y cuello de la ropa: la piel sigue bajo el escote (sin mancha de piel rota ni huecos negros) y bajo la toca ya no va la cofia. Personajes en taller-v18."
     },
     {
      "v": "v30",
      "fecha": "2026-10-31",
-     "archivo": "jugar/personaje/v30.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v30.html",
      "capturas": "capturas/personaje-v30",
      "notas": "Nacimiento del pelo y cejas: el pelo ya no corta en seco en la frente como un casquete (nace poco a poco y en el borde va pegado a la piel); las cejas asientan en el arco, más pobladas y sin trozos sueltos, en su propio calco con más resolución. Personajes en taller-v19."
     },
     {
      "v": "v31",
      "fecha": "2026-10-31",
-     "archivo": "jugar/personaje/v31.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v31.html",
      "capturas": "capturas/personaje-v31",
      "notas": "Capa de espalda: ya no sale casi negra y lisa; lana sin teñir más clara, pliegues redondos y hondos de unos 14 cm que empiezan más arriba, el fondo de cada pliegue más oscuro en la tela (se ven también en sombra), y la vista «Espalda» de cuerpo entero. Personajes en taller-v20."
     },
     {
      "v": "v32",
      "fecha": "2026-10-31",
-     "archivo": "jugar/personaje/v32.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-personaje/personaje-v32.html",
      "capturas": "capturas/personaje-v32",
      "notas": "Herramienta en la mano al trabajar: el pico al picar y el hacha al talar"
     },
@@ -5015,28 +5015,28 @@
     {
      "v": "v10",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v10.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v10.html",
      "capturas": "capturas/mapa-v10",
      "notas": "El mundo de cerca es siempre igual: árboles, hierba, piedras y rocas salen de su sitio en el mundo y de la semilla, así que al andar y rehacer la zona de cerca lo que ya estaba no cambia."
     },
     {
      "v": "v11",
      "fecha": "2026-10-28",
-     "archivo": "jugar/mapa/v11.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v11.html",
      "capturas": "capturas/mapa-v11",
      "notas": "Las laderas de montaña ya no van en escalones: son pendientes continuas, y los cortados salen solo en afloramientos de roca y donde ya es muy empinado, en pocos escalones grandes."
     },
     {
      "v": "v12",
      "fecha": "2026-10-29",
-     "archivo": "jugar/mapa/v12.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v12.html",
      "capturas": "capturas/mapa-v12",
      "notas": "Saltos de agua: donde el río baja mucho por roca dura, casi todo el desnivel se concentra en un salto de 4 a 35 m, con lámina de agua, chorros blancos, poza de espuma y paredes de roca alrededor. La cámara ya no se mete bajo el suelo."
     },
     {
      "v": "v13",
      "fecha": "2026-10-29",
-     "archivo": "jugar/mapa/v13.html",
+     "archivo": "https://github.com/valravnxx/Kinhold/releases/download/jugar-mapa/mapa-v13.html",
      "capturas": "capturas/mapa-v13",
      "notas": "Bosques frondosos: siete especies de árbol (abeto, pino, abedul, roble, haya, fresno y encina), 2 o 3 por bioma en rodales; masas de bosque y claros con lindes graduales, corros en campo abierto y límite del bosque en la montaña. Desde lo alto, las masas se leen como masas."
     },

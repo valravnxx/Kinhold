@@ -6447,5 +6447,19 @@
   "pruebas": "En la nube, el revisor pidió 6 grupos: la hierba densa (falló una vez por un umbral de la propia prueba, corregido, y bien al repetirla), el bosque de lejos visto de cerca, posprocesado y perfiles gráficos, el mazo de piedra y romper rocas y el perfil gráfico en el juego, bien; lógica, bien salvo las dos comprobaciones de systemd de la máquina de GitHub, que fallan igual sin este cambio. Aquí: el comprobador de código sin errores y prueba_perfiles_graficos 36/36. Capturas de la escena fija en PC y móvil, de día, de tarde y de noche, miradas una a una.",
   "capturas": "capturas/demo-v189",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T13:26:56+00:00",
+  "fin": "2026-11-12T13:32:15+00:00",
+  "titulo": "Orden: la web, por debajo de 1 GB",
+  "hito": "orden",
+  "hecho": [
+   "170 versiones jugables viejas (demo v38–v183, construcción v34–v39, personaje v19–v32, mapa v10–v13) subidas a sus releases de GitHub con la acción «releases» y quitadas de la web solo después de comprobar que cada una estaba allí; se siguen descargando desde el selector de versiones.",
+   "Las capturas viejas, encogidas a 960 px: de 353 a 273 MB.",
+   "La web pasa de 1,2 GB a 577 MB; en ella quedan las 5 últimas versiones de cada prototipo y la prueba de estilo v5."
+  ],
+  "pruebas": "Sin código cambiado: nada en la nube. Comprobado a mano que una versión archivada (demo v150) se descarga entera de su release con las rutas a la web, y la web generada sin fallos.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
