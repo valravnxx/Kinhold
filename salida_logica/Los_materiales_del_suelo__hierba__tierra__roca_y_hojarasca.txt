@@ -1,0 +1,17 @@
+Lo que hay en cada punto
+  OK   cada punto lleva sus cuatro pesos (hierba, tierra, roca, hojarasca), entre 0 y 1, y suman 1 — 12427 puntos, 0 mal
+  OK   en el mundo hay de los cuatro materiales (en algún sitio, cada uno manda) — hierba hasta 1.00, media 0.58 · tierra hasta 1.00, media 0.27 · roca hasta 1.00, media 0.01 · hojarasca hasta 0.81, media 0.14
+  OK   la roca sale en lo empinado y casi nada en lo llano — en lo empinado 1.00 (5 puntos), en lo llano 0.002
+  OK   en el prado, sobre todo hierba — 0.90 0.00 0.00 0.10
+  OK   en una pared, roca — 0.00 0.00 1.00 0.00
+  OK   en la playa, tierra (la arena) — 0.03 0.97 0.00 0.00
+  OK   en el lecho de un río, tierra (la grava) — 0.00 1.00 0.00 0.00
+  OK   bajo el bosque, hojarasca — 0.19 0.00 0.00 0.81
+Entre trozos
+  OK   en el borde común de dos trozos, la misma mezcla a los dos lados — 0 distintos
+Las texturas
+  OK   las cuatro capas, con su color (y la altura en el alfa) y su relieve
+  OK   el color medio de cada una, para usarlas como detalle — {"hierba":[0.3238,0.299,0.1044],"tierra":[0.1898,0.1286,0.0686],"roca":[0.0842,0.081,0.0625],"hojarasca":[0.2934,0.1604,0.046]}
+  OK   su procedencia, CC0
+
+Todo correcto
