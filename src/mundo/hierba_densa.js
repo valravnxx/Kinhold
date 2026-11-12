@@ -25,7 +25,7 @@ function geometriaMata() {
     const a = h * 6.283 / HOJAS + 0.4 + (h % 2) * 0.5, ca = Math.cos(a), sa = Math.sin(a);   // hacia dónde se abre
     const px = -sa, pz = ca;                                          // a lo ancho de la hoja
     const cx = ca * 0.12, cz = sa * 0.12;                             // el pie, algo separado del centro
-    const w = 0.075, cae = 0.3 + 0.18 * (h % 2), largo = 1 - 0.22 * (h % 2);
+    const w = 0.062, cae = 0.3 + 0.18 * (h % 2), largo = 1 - 0.22 * (h % 2);
     const pt = (lado, y, anch, fuera) => { pos.push(cx + ca * fuera + px * lado * anch, y * largo, cz + sa * fuera + pz * lado * anch); alto.push(y); nor.push(0, 1, 0); };
     const b = pos.length / 3;
     pt(-1, 0, w, 0); pt(1, 0, w, 0); pt(-1, 0.55, w * 0.7, cae * 0.3); pt(1, 0.55, w * 0.7, cae * 0.3); pt(0, 1, 0, cae);
@@ -83,7 +83,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       .replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\nnormal = normalize( vNormal );')
       // más oscura en el pie (la sombra de la propia mata) y más clara y algo más amarilla en la punta; a lo lejos, del
       // color del suelo sin más, para que el borde de la hierba no se note contra el suelo de más allá
-      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(mix(vec3(0.8, 0.82, 0.8), vec3(1.02, 1.02, 0.95), vAlto), vec3(0.9), smoothstep(0.25, 0.9, vLejos));');
+      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(mix(vec3(0.72, 0.75, 0.72), vec3(1.03, 1.03, 0.96), vAlto), vec3(0.93), smoothstep(0.25, 0.9, vLejos));');
   };
   const grupo = new THREE.Group(); grupo.name = 'hierbaDensa'; raiz.add(grupo);
   const celdas = new Map();   // «i,j» → { im (o null si no hay ninguna mata), malla (la del terreno con la que se hizo), n }
@@ -131,7 +131,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       if (est.length && est.some(e => (e.x - x) ** 2 + (e.z - z) ** 2 < 0.2)) continue;
       o.position.set(x, y - y0 - 0.02, z); o.rotation.set(0, giro, 0); const an = (0.8 + 0.5 * h) * (banda ? 1.4 : 1); o.scale.set(tam * an, tam * (0.6 + 0.4 * h), tam * an); o.updateMatrix();
       o.matrix.toArray(M, n * 16);
-      K[n * 3] = c[0] * tono * 0.8; K[n * 3 + 1] = c[1] * tono * 0.84; K[n * 3 + 2] = c[2] * tono * 0.75; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)
+      K[n * 3] = c[0] * tono * 0.74; K[n * 3 + 1] = c[1] * tono * 0.8; K[n * 3 + 2] = c[2] * tono * 0.68; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)
     }
     let im = null;
     if (n) {
