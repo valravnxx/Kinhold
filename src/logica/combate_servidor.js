@@ -96,6 +96,9 @@ const marcasCura = (h) => Object.entries(MARCAS_CURA).filter(([, k]) => h[k]).ma
 // lo que cambia sin parar (el avance de la acción) no cuenta para decidir si hay que mandarlo otra vez
 const clave = (f) => [f.arma, f.objeto, f.armadura, f.prendas.join(','), f.accion, f.linea, f.bloqueando, f.lineaBloqueo, f.sacada, f.cansancio, f.sangre, f.lista.map(h => h[1] + h[4]).join(','), Object.values(f.botiquin).join(','), f.fuera, f.contra, Math.round(f.tension * 10)].join('|');
 
+// las zonas del cuerpo donde puede llegar un árbol al caer
+const DANO_ZONAS = { cabeza: 1, torso: 1, brazoD: 1, brazoI: 1 };
+
 export class CombateServidor {
   // ritmo: el de RITMO (decisión provisional: «normal» para todos en línea). semilla: azar de las heridas.
   // tierras: en(x, z) de crearTierrasRey (src/logica/tierras_rey.js), o null para no proteger ningún sitio.
@@ -301,6 +304,29 @@ export class CombateServidor {
     if (r.zona) { e.zona = r.zona; e.gravedad = r.gravedad; e.danio = r.tipo; }
     if (r.nota) e.nota = r.nota;
     this.pendientes.push(e);
+  }
+
+  // Un árbol que cae le da a objetivo (tarea «Crujido de aviso y daño», 12 nov; src/logica/tala.js, golpeDeCaida): la
+  // herida (contundente, de la parte del árbol que le llega, frenada por lo que lleva puesto), anotada con el autor que
+  // lo taló (puede ser él mismo). En Strandvang no hiere a otro jugador (tierras del rey). g: { parte, zona, sev }.
+  herirConArbol(autor, objetivo, g, arbol) {
+    const de = this.ctx.luchadores[objetivo];
+    if (!de || de.fuera || !g || !Object.hasOwn(DANO_ZONAS, g.zona) || !(g.sev > 0)) return null;
+    const at = this.ctx.luchadores[autor] || de;
+    const prot = autor !== objetivo && this.ctx.protegido ? this.ctx.protegido(at, de) : null;
+    const accion = { autor, tipo: 'arbol', objetivo, arbol, parte: g.parte };
+    let r;
+    if (prot) r = { ok: false, motivo: prot };
+    else {
+      const sev = g.sev * de.proteccion(g.zona, 'contundente'), h = de.recibirHerida(g.zona, sev, 'contundente');
+      r = { ok: true, resultado: 'herida', zona: g.zona, gravedad: h.gravedad };
+    }
+    const e = this.registro.anotar(accion, r);
+    if (r.ok) { e.zona = r.zona; e.gravedad = r.gravedad; }
+    const ev = { tipo: 'arbol', n: e.n, autor, objetivo, arbol, parte: g.parte, resultado: r.ok ? 'herida' : RESULTADO_TIERRAS, t: this.ms() };
+    if (r.ok) { ev.zona = r.zona; ev.gravedad = r.gravedad; ev.danio = 'contundente'; } else ev.motivo = r.motivo;
+    this.pendientes.push(ev);
+    return r;
   }
 
   // Los eventos desde la última vez (para repartirlos a todos en el mismo orden)

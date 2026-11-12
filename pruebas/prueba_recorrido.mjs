@@ -366,8 +366,18 @@ try {
     const a = cerca(arboles.filter(e => e.edad === 'joven'), J.pos)[0] || joven;
     await J.andar(a.x + 1, a.z);
     let golpes = 0;
-    do { r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); golpes++; if (r.ok && !r.datos.cae) await pausa(550); } while (r.ok && !r.datos.cae && golpes < 30);
+    // abierta la boca (caerá hacia él), se pasa detrás del tocón para cortar el resto: si no, se lo echa encima (12 nov)
+    let cruje = false;
+    do {
+      r = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); golpes++;
+      if (r.ok && r.datos.cruje) cruje = true;
+      if (r.ok && r.datos.boca !== undefined) { await J.andar(a.x, a.z + 1); await J.andar(a.x - 1, a.z); }
+      if (r.ok && !r.datos.cae) await pausa(550);
+    } while (r.ok && !r.datos.cae && golpes < 30);
     comprobar('lo tala a golpes (joven con piedra: 8) y cae', r.ok && r.datos.cae && golpes === 8, `${golpes} golpes · ${r.motivo || ''}`);
+    comprobar('antes de caer, el árbol cruje (el aviso)', cruje);
+    await pausa(3500);   // lo que tarda en caer: detrás del tocón no le da
+    comprobar('cortando por detrás del tocón, el árbol no le hiere al caer', !(s.combate.luchadores[J.bienvenida.autor]?.heridas || []).length, JSON.stringify(s.combate.luchadores[J.bienvenida.autor]?.heridas));
     // herramientas que se gastan (10 nov; documento de sistemas, apartado 10): cada golpe lo cuenta el servidor
     const hachaInv = ['mano:der', 'mano:izq'].map(l => s.objetos.invs.de(J.bienvenida.autor).lugares[l]).find(c => c?.tipo === 'hacha_piedra');
     comprobar('el hacha de piedra se gasta talando: el servidor cuenta los 8 golpes y se lo dice', r.datos?.desgaste?.usado === 8 && r.datos.desgaste.vida === 168 && hachaInv?.usado === 8 && J.inv.lugares[['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'hacha_piedra')]?.usado === 8, `${JSON.stringify(r.datos?.desgaste)} · en el servidor ${hachaInv?.usado}`);
@@ -840,9 +850,10 @@ try {
         let t, g = 0;
         do {
           t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++;
+          if (t.ok && t.datos.boca !== undefined) { await J.andar(a.x, a.z + 1); await J.andar(a.x - 1, a.z); }   // detrás del tocón
           if (t.ok && t.datos.seRompe) {
             hachasRotas.push({ edad, golpe: g, usado: t.datos.desgaste?.usado, enMano: s.objetos.invs.de(yo).cuantos('hacha_piedra') > 0 });
-            if (!t.datos.cae) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `se le rompe el hacha y no se hace otra: ${h.motivo}` }; await J.andar(a.x + 1, a.z); }
+            if (!t.datos.cae) { const h = await otraHacha(); if (!h.ok) return { ok: false, motivo: `se le rompe el hacha y no se hace otra: ${h.motivo}` }; await J.andar(a.x - 1, a.z); }
           }
           if (t.ok && !t.datos.cae) await pausa(550);
         } while (t.ok && !t.datos.cae && g < 80);

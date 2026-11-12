@@ -209,6 +209,54 @@ export function caidaEn(c, t) {
 }
 
 // El hacha que lleva en las manos el inventario inv (la de la derecha primero): { ruta, tipo, clase } o null.
+// El crujido de aviso y el daño (tarea «Crujido de aviso y daño», 12 nov; GDD apartado 6: «con un crujido de aviso, y
+// hiere a quien esté debajo»). Decisiones provisionales (el GDD no fija los números; en el registro y en el diario):
+//  - Cruje cuando le quedan AVISO_GOLPES golpes o menos (y al soltarse, al empezar a caer): lo oyen todos los de alrededor,
+//    y la caída empieza despacio (desde INICIO_CAIDA), así hay tiempo de apartarse.
+//  - Hiere a quien está debajo cuando el tronco le llega: el árbol, girando como dice su caída, baja a menos de
+//    ALTO_PERSONA del suelo donde está, a lo ancho de esa parte. Lo mira quien valida (el servidor) con dónde está cada
+//    uno en ese momento: el que se ha apartado a tiempo, se libra. Hiere a todos, también al que lo tala y al compañero.
+//  - Según la parte: el tronco (hasta PARTE_COPA de su largo) da de lleno, contundente (adulto, muy grave; joven,
+//    grave), en la cabeza si le coge de pleno y en un hombro (brazo) si de lado; la copa, ramas (adulto, grave; joven,
+//    leve), en el torso. Lo que lleva puesto lo frena como cualquier golpe contundente.
+export const AVISO_GOLPES = 2;
+export const ALTO_PERSONA = 1.75;       // m
+export const PARTE_COPA = 0.55;         // del largo del árbol: desde aquí, la copa
+const ANCHO_PERSONA = 0.3;              // m, de medio cuerpo
+export const COPA_ANCHO = { joven: 0.9, adulto: 1.8 };   // m, la mitad de lo ancho de la copa
+export const DANO_CAIDA = { tronco: { joven: 0.55, adulto: 0.95 }, copa: { joven: 0.2, adulto: 0.5 } };
+// ¿Le da el árbol a que cae con la caída c a quien está en (x, z), hasta el segundo t de la caída? null, o
+// { t (cuándo le llega), parte: 'tronco' | 'copa', zona, sev, tipo: 'contundente' }. alturaEn: el suelo (o null: llano).
+export function golpeDeCaida(a, c, x, z, t = Infinity, alturaEn = null) {
+  const f = c && Array.isArray(c.fotos) ? c.fotos : null;
+  if (!f || !f.length || !Number.isFinite(x) || !Number.isFinite(z)) return null;
+  const suelo = (px, pz) => { const h = alturaEn ? alturaEn(px, pz) : 0; return Number.isFinite(h) ? h : 0; };
+  const yp = suelo(a.x, a.z) + CORTE, L = Math.max(1, altoDe(a) - CORTE), cabeza = suelo(x, z) + ALTO_PERSONA;
+  const rT = radioArbol(a.edad, a.especie, a.tam), edad = a.edad === 'adulto' ? 'adulto' : 'joven';
+  const dx = x - a.x, dz = z - a.z;
+  for (const [tf, ang, dir] of f) {
+    if (tf > t) break;
+    if (!(ang > 1e-3)) continue;
+    const d = dx * Math.sin(dir) + dz * Math.cos(dir), l = dx * Math.cos(dir) - dz * Math.sin(dir);
+    if (d <= rT) continue;                              // detrás del tocón o pegado a él: no le cae encima
+    const r = d / Math.sin(ang);
+    if (r > L) continue;                                // más allá de la punta
+    if (yp + r * Math.cos(ang) > cabeza) continue;      // aún le pasa por encima
+    const parte = r / L < PARTE_COPA ? 'tronco' : 'copa', ancho = (parte === 'tronco' ? rT : COPA_ANCHO[edad]) + ANCHO_PERSONA;
+    if (Math.abs(l) > ancho) continue;
+    const zona = parte === 'copa' ? 'torso' : Math.abs(l) <= rT + 0.15 ? 'cabeza' : l >= 0 ? 'brazoD' : 'brazoI';
+    return { t: tf, parte, zona, sev: DANO_CAIDA[parte][edad], tipo: 'contundente' };
+  }
+  return null;
+}
+// A quiénes de personas ([{ autor, x, z }]) les llegaría la caída c (con dónde están ahora): [{ autor, t, parte, … }],
+// por orden de cuándo les llega. El servidor vuelve a mirarlo con golpeDeCaida en ese momento (por si se apartan).
+export function bajoLaCaida(a, c, personas, alturaEn = null) {
+  const r = [];
+  for (const p of personas || []) { const g = p && golpeDeCaida(a, c, p.x, p.z, Infinity, alturaEn); if (g) r.push({ autor: p.autor, ...g }); }
+  return r.sort((u, v) => u.t - v.t);
+}
+
 export function hachaEnMano(inv) {
   for (const ruta of ['mano:der', 'mano:izq']) {
     const c = inv.lugares[ruta];
@@ -292,6 +340,7 @@ export class Tala {
     const g = gastar(inv, h.ruta), gasto = g ? { desgaste: { usado: g.usado, vida: g.vida }, ...(g.roto ? { seRompe: h.tipo } : {}) } : {};
     if (e.parte < 1 - 1e-9) {
       const r = { ok: true, cae: false, golpes: e.golpes, faltan: Math.max(1, Math.round((1 - e.parte) * total)), hacha: h.tipo, ...gasto };
+      if (r.faltan <= AVISO_GOLPES) r.cruje = true;   // el crujido de aviso: está a punto de caer
       // el golpe que termina la boca dice si la hay (y hacia dónde caerá) o si los golpes no la han hecho de un lado
       if (enBoca > 0 && e.bp >= PARTE_BOCA - 1e-9) { const b = bocaDe(e); r.boca = b ? b.dir : null; }
       return r;

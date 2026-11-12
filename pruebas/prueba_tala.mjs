@@ -1,13 +1,14 @@
 // Pruebas de la tala (src/logica/tala.js). Ejecutar: node pruebas/prueba_tala.mjs
 // Con MUTAR=1 el adulto cae con piedra tan rápido como con hierro y el tocón vuelve al momento, y la caída no mira lo
-// que tiene delante (no se apoya ni se desvía): las pruebas deben FALLAR.
+// que tiene delante (no se apoya ni se desvía), y el árbol que cae no hiere a nadie: las pruebas deben FALLAR.
 import { Tala, GOLPES, DA, HACHAS, SEMANA, ENTRE_GOLPES, ALCANCE_TALA, edadDeEscala, idArbol, ramasDe, hachaEnMano,
   PARTE_BOCA, COHERENCIA_BOCA, PENDIENTE_CAIDA, inclinacionDe, bocaDe, caidaDe, ejecutarTala, guardarTala, cargarTala, migrarTala, VERSION_TALA,
-  simularCaida, caidaEn, altoArbol, G, CORTE, INICIO_CAIDA, REBOTE, DESVIO } from '../src/logica/tala.js';
+  simularCaida, caidaEn, altoArbol, G, CORTE, INICIO_CAIDA, REBOTE, DESVIO, AVISO_GOLPES, golpeDeCaida, bajoLaCaida } from '../src/logica/tala.js';
 import { Mundo } from '../src/logica/construccion.js';
 import { Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
+import { CombateServidor } from '../src/logica/combate_servidor.js';
 
 const MUTAR = process.env.MUTAR === '1';
 if (MUTAR) { GOLPES.adulto.piedra = GOLPES.adulto.hierro; DA.adulto.vuelve = 0; }
@@ -264,6 +265,53 @@ console.log('La caída: con la gravedad, rebota, se asienta según el terreno, y
   // un tocón no para nada
   t2.estado[idArbol(0.8, 4)] = { golpes: 0, parte: 0, veces: 1, caido: T0, vuelve: T0 + SEMANA };
   comprobar('un tocón no cuenta: el árbol talado ya no está', t2.alrededor(roble, T0 + 1000).length === 0);
+}
+
+console.log('El crujido de aviso y el daño (tarea «Crujido de aviso y daño», 12 nov)');
+{
+  const m = nuevo(); conHacha(m.invs, 'ana', 'hacha_hierro');
+  const crujen = [];
+  let hora = T0, r;
+  for (let i = 0; i < 20; i++) { r = ejecutarTala(m.tala, m.invs, m.suelo, m.reg, { autor: 'ana', tipo: 'talar', arbol: JOVEN, x: 0, z: 1, }, hora); hora += ENTRE_GOLPES; if (r.cae) break; crujen.push(!!r.cruje); }
+  const n = GOLPES.joven.hierro;
+  comprobar(`cruje cuando le quedan ${AVISO_GOLPES} golpes o menos (no antes)`, crujen.length === n - 1 && crujen.filter(Boolean).length === AVISO_GOLPES && crujen.slice(0, n - 1 - AVISO_GOLPES).every(c => !c), JSON.stringify(crujen));
+  // un roble adulto de 9 m que cae hacia +z, en llano
+  const roble = { id: 'r', x: 0, z: 0, edad: 'adulto', especie: 'roble', alto: 9 };
+  const c = simularCaida(roble, 0);
+  const caeEn = MUTAR ? () => null : golpeDeCaida;
+  const tronco = caeEn(roble, c, 0, 3), copa = caeEn(roble, c, 0.5, 7.5);
+  comprobar('a quien está debajo del tronco le da de lleno: en la cabeza, contundente y muy grave (adulto)', tronco && tronco.parte === 'tronco' && tronco.zona === 'cabeza' && tronco.tipo === 'contundente' && tronco.sev >= 0.75, JSON.stringify(tronco));
+  comprobar('debajo de la copa, las ramas: en el torso y menos grave', copa && copa.parte === 'copa' && copa.zona === 'torso' && copa.sev < tronco.sev, JSON.stringify(copa));
+  const lado = caeEn(roble, c, 0.7, 3);
+  comprobar('a un lado del tronco, en un hombro (brazo)', lado && lado.parte === 'tronco' && /^brazo/.test(lado.zona), JSON.stringify(lado));
+  comprobar('le llega cuando el tronco baja hasta su cabeza: antes de lo que tarda la caída entera, y antes cerca que lejos', tronco && copa && tronco.t > 0 && copa.t > tronco.t - 1 && tronco.t <= c.dura, `${tronco && tronco.t} s y ${copa && copa.t} s de ${c.dura}`);
+  comprobar('detrás del tocón, a un lado lejos o más allá de la punta, nada', !caeEn(roble, c, 0, -2) && !caeEn(roble, c, 3, 4) && !caeEn(roble, c, 0, 11));
+  comprobar('si aún no ha llegado (pronto en la caída), nada: el que se aparta a tiempo se libra', tronco && !caeEn(roble, c, 0, 3, tronco.t - 0.2));
+  const joven = { id: 'j', x: 0, z: 0, edad: 'joven', especie: 'abedul' }, cj = simularCaida(joven, 0), gj = caeEn(joven, cj, 0, 1.5);
+  comprobar('el joven hiere menos que el adulto', gj && gj.sev < tronco.sev, JSON.stringify(gj));
+  // apoyado en otro árbol: queda alto y no llega a quien está debajo de lejos
+  const ap = simularCaida(roble, 0, { obstaculos: [{ id: 'b', tipo: 'arbol', x: 0, z: 3, r: 0.4, arriba: 9 }] });
+  comprobar('si se queda apoyado en lo alto de otro árbol, no le da a quien está más allá de donde se apoya', !caeEn(roble, ap, 0, 6), `${ap.angulo} rad`);
+  const lista = (MUTAR ? () => [] : bajoLaCaida)(roble, c, [{ autor: 'lejos', x: 0, z: 7.5 }, { autor: 'ana', x: 0, z: 3 }, { autor: 'fuera', x: 5, z: -5 }]);
+  comprobar('a quiénes les llega, por orden (también al que lo tala si se queda debajo, y al compañero)', lista.length === 2 && lista.every(b => b.autor !== 'fuera'), JSON.stringify(lista.map(b => [b.autor, b.t])));
+}
+
+{
+  // el servidor hiere con su autor (src/logica/combate_servidor.js, herirConArbol)
+  const cs = new CombateServidor();
+  cs.entrar('ana', { prendas: [] }); cs.entrar('ben', { prendas: [] });
+  const g = { parte: 'tronco', zona: 'cabeza', sev: 0.95 };
+  const r = MUTAR ? null : cs.herirConArbol('ana', 'ben', g, 'arbol:0,0');
+  const e = cs.registro.entradas.at(-1), ev = cs.sacarEventos().at(-1);
+  comprobar('el servidor le hace la herida a quien le cae (contundente) y la anota con el autor que lo taló', r && r.ok && cs.luchadores.ben.heridas.length === 1 && cs.luchadores.ben.heridas[0].tipo === 'contundente' && e && e.autor === 'ana' && e.tipo === 'arbol' && e.datos.objetivo === 'ben', JSON.stringify(e));
+  comprobar('y lo reparte como evento de combate (para el aviso y la ropa que se gasta)', ev && ev.tipo === 'arbol' && ev.objetivo === 'ben' && ev.zona === 'cabeza' && ev.gravedad === 'muy grave', JSON.stringify(ev));
+  comprobar('un tronco de adulto en la cabeza deja inconsciente', cs.luchadores.ben.fuera);
+  const yo = MUTAR ? null : cs.herirConArbol('ana', 'ana', { parte: 'copa', zona: 'torso', sev: 0.5 }, 'arbol:0,0');
+  comprobar('también al que lo tala', yo && yo.ok && cs.luchadores.ana.heridas.length === 1);
+  const prot = new CombateServidor(); prot.entrar('ana'); prot.entrar('ben');
+  prot.ctx.protegido = () => 'En Strandvang, tierras del rey, nadie puede herir a otro jugador.';
+  const rp = prot.herirConArbol('ana', 'ben', g, 'arbol:0,0');
+  comprobar('en Strandvang no hiere a otro jugador (se anota rechazado)', rp && !rp.ok && prot.luchadores.ben.heridas.length === 0 && prot.registro.entradas.at(-1).ok === false);
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);
