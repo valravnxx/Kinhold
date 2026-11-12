@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-12T08:24:01+00:00",
+  "tarea": "El GDD y el documento de sistemas al día con lo decidido (cuatro direcciones, siempre en línea, salida al azar, la revisión del 1 nov) y sin contradicciones",
+  "hito": "orden",
+  "rama": "trabajo/20261112-0824"
+ },
  "B": null,
  "chat:trabajo/20261112-0911-aspecto-luz": {
   "inicio": "2026-11-12T09:11:17+01:00",
