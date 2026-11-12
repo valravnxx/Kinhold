@@ -1978,9 +1978,9 @@
     },
     {
      "nombre": "El GDD y el documento de sistemas al día con lo decidido (cuatro direcciones, siempre en línea, salida al azar, la revisión del 1 nov) y sin contradicciones",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T08:24:01+00:00",
-     "rama": "trabajo/20261112-0824"
+     "fin": "2026-11-12T08:27:13+00:00"
     },
     {
      "nombre": "Pasar al GDD lo esencial del anexo de valravnx del 4 nov: lo de pago (recetas de apariencia con usos limitados y paridad funcional), la dirección gráfica y el almacén con mercado en la ciudad del rey",
