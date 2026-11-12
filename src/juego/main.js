@@ -60,6 +60,10 @@ import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
+import { crearMovimiento } from './movimiento.js';
+import { crearCamaraLibre } from './camara_libre.js';
+import { crearBarraConstruir } from './barra_construir.js';
+import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -1238,7 +1242,7 @@ const joy = { activo: false, id: null, cx: 0, cy: 0, vx: 0, vy: 0 };
 // ---------------- Acciones ----------------
 function cambiarModo(m) {
   // sin mojón, construir se abre en la pestaña Tierra con el mojón elegido (estudio de la interfaz, 7 nov)
-  if (m === 'construir' && estado.modo !== 'construir' && !miMojon()) { estado.sel = { clase: 'mojon', tipo: 'mojon' }; categoria = 'tierra'; construirBarra(); }
+  if (m === 'construir' && estado.modo !== 'construir' && !miMojon()) { estado.sel = { clase: 'mojon', tipo: 'mojon' }; barraConstruir.ponerCategoria('tierra'); }
   estado.modo = m;
   estado.pendienteDesmontar = null;
   $('confirmar').hidden = true;
@@ -2141,151 +2145,8 @@ function dentroDeCasilla(c, p) {
   const l = mundoALocal(c, pj.x, pj.z);
   return Math.floor(l.lx / MODULO) === p.i && Math.floor(l.lz / MODULO) === p.j;
 }
-// ---------------- Movimiento y colisiones ----------------
-function segmentosBloqueo(k) {
-  const segs = []; // [x1,z1,x2,z2]
-  // las matas escondidas bajo lo construido no chocan; y lo del suelo (árboles, rocas, matas) solo choca a ras de
-  // suelo: desde un adarve o una planta de arriba se pasa por encima (una roca bajo el adarve paraba al que andaba por él)
-  const circulos = k === 0 ? obstaculos.filter(o => !o.oculto) : [];
-  for (const c of mundo.construcciones) {
-    for (const [key, p] of c.piezas) {
-      // chimenea: en la planta baja no se entra en el hogar; más arriba, su cañón no se atraviesa
-      if (p.hueco === 'h' && !p.obra && !window.__sinChoqueHogar && (k === 0 || k * ALTURA < (altosCanon.get(p) ?? altoCanon(c, p, P.subidaTejado)))) {
-        const esq = huellaHogar(p, k > 0).map(q => localAMundo(c, q.lx, q.lz));
-        for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]);
-        continue;
-      }
-      if (p.k !== k && !(p.hueco === 'a' && k === 1)) continue;
-      if (p.obra) continue; // una obra es solo un armazón: no corta el paso
-      if (p.hueco === 'a' && !window.__sinChoqueAdarve) {
-        // adarve: por debajo de su piso no se pasa (está a 1,5 m); encima, la empalizada no se salta (los otros
-        // lados están abiertos: si sales por ellos, caes)
-        const esq = [[p.i, p.j], [p.i + 1, p.j], [p.i + 1, p.j + 1], [p.i, p.j + 1]].map(([a, b]) => localAMundo(c, a * MODULO, b * MODULO));
-        if (k === 0) { for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]); continue; }
-        // los lados de la casilla, por dir (SUBE): 0 → +z (esq 2-3), 1 → -x (3-0), 2 → -z (0-1), 3 → +x (1-2)
-        const LADO = [[2, 3], [3, 0], [0, 1], [1, 2]];
-        for (const { dir } of empalizadasDe(c, p.i, p.j)) { const [a, b] = LADO[dir]; segs.push([esq[a].x, esq[a].z, esq[b].x, esq[b].z]); }
-        continue;
-      }
-      if (p.hueco === 'v') {
-        const m = localAMundo(c, p.i * MODULO, p.j * MODULO);
-        circulos.push({ x: m.x, z: m.z, r: 0.16 });
-        continue;
-      }
-      if (p.hueco === 'l' && PIEZAS[p.tipo].andando && trampillaCerrada(c, p.i, p.j, p.k)) {
-        // escalera con la trampilla de arriba cerrada: no se puede subir, así que la casilla no se pisa
-        const esq = [[p.i, p.j], [p.i + 1, p.j], [p.i + 1, p.j + 1], [p.i, p.j + 1]].map(([a, b]) => localAMundo(c, a * MODULO, b * MODULO));
-        for (let n = 0; n < 4; n++) segs.push([esq[n].x, esq[n].z, esq[(n + 1) % 4].x, esq[(n + 1) % 4].z]);
-        continue;
-      }
-      if (p.hueco !== 'e') continue;
-      const def = PIEZAS[p.tipo];
-      if (def.portón && p.abierta) continue;
-      const a = p.d === 0 ? [p.i * MODULO, p.j * MODULO] : [p.i * MODULO, p.j * MODULO];
-      const b = p.d === 0 ? [(p.i + 1) * MODULO, p.j * MODULO] : [p.i * MODULO, (p.j + 1) * MODULO];
-      const pa = localAMundo(c, a[0], a[1]), pb = localAMundo(c, b[0], b[1]);
-      if (def.conPuerta) {
-        const puertaP = c.piezas.get(clave('p', p.i, p.j, p.k, p.d));
-        const f = (P.anchoPuerta / 2) / MODULO;
-        const m1 = { x: pa.x + (pb.x - pa.x) * (0.5 - f), z: pa.z + (pb.z - pa.z) * (0.5 - f) };
-        const m2 = { x: pa.x + (pb.x - pa.x) * (0.5 + f), z: pa.z + (pb.z - pa.z) * (0.5 + f) };
-        segs.push([pa.x, pa.z, m1.x, m1.z], [m2.x, m2.z, pb.x, pb.z]);
-        if (puertaP && !puertaP.abierta) segs.push([m1.x, m1.z, m2.x, m2.z]);
-      } else segs.push([pa.x, pa.z, pb.x, pb.z]);
-    }
-  }
-  return { segs, circulos };
-}
-function resolverColision(x, z, k) {
-  const R = 0.32;
-  const { segs, circulos } = segmentosBloqueo(k);
-  for (let it = 0; it < 3; it++) {
-    for (const [x1, z1, x2, z2] of segs) {
-      const dx = x2 - x1, dz = z2 - z1;
-      const l2 = dx * dx + dz * dz;
-      let u = ((x - x1) * dx + (z - z1) * dz) / l2;
-      u = Math.max(0, Math.min(1, u));
-      const px = x1 + u * dx, pz = z1 + u * dz;
-      const ex = x - px, ez = z - pz, d = Math.hypot(ex, ez);
-      const lim = R + 0.14;
-      if (d < lim && d > 1e-6) { x = px + ex / d * lim; z = pz + ez / d * lim; }
-    }
-    for (const o of circulos) {
-      const ex = x - o.x, ez = z - o.z, d = Math.hypot(ex, ez), lim = R + o.r;
-      if (d < lim && d > 1e-6) { x = o.x + ex / d * lim; z = o.z + ez / d * lim; }
-    }
-  }
-  return { x, z };
-}
-// Un paso de alguien que anda por el suelo del mundo (el rival de práctica): de (x0, z0) hacia (x1, z1) sin
-// atravesar obras ni árboles, sin subir cortados ni salir de la isla y sin meterse donde ya cubre (no nada). Si no
-// puede de frente, se desliza por un eje, como tú; si tampoco, se queda donde estaba.
-function andarHasta(x0, z0, x1, z1) {
-  const r = resolverColision(x1, z1, 0);
-  if (!mundoJ) return { x: THREE.MathUtils.clamp(r.x, -190, 190), z: THREE.MathUtils.clamp(r.z, -190, 190) };
-  const vale = (x, z) => mundoJ.andable(x0, z0, x, z) && modoAgua(mundoJ.aguaEn(x, z)?.hondo) !== 'nadar';
-  if (vale(r.x, r.z)) return r;
-  if (vale(r.x, z0)) return { x: r.x, z: z0 };
-  if (vale(x0, r.z)) return { x: x0, z: r.z };
-  return { x: x0, z: z0 };
-}
-// altura del suelo bajo el jugador en su planta; baja de planta si no hay suelo
-// Escalera de tablas bajo el jugador: se sube andando. Devuelve { k, y } o null.
-// Si vienes por debajo del tramo alto (o caes por el hueco desde arriba muy por encima), no cuenta.
-function escaleraBajoJugador() {
-  for (const c of mundo.construcciones) {
-    const l = mundoALocal(c, pj.x, pj.z);
-    const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
-    for (const k0 of [pj.k, pj.k - 1]) {
-      if (k0 < 0) continue;
-      const p = escaleraAndando(c, i, j, k0);
-      if (!p || trampillaCerrada(c, i, j, k0)) continue; // con la trampilla cerrada, la escalera no sube
-      const t = progresoEscalera(p, l.lx, l.lz);
-      const base = c.piezas.has(clave('f', i, j, k0)) ? (k0 === 0 ? P.superficieCimiento : P.superficieSuelo) : 0;
-      const y0 = oyDe(c) + k0 * ALTURA + base, y1 = oyDe(c) + (adarveDeEscalera(c, p, false) ? ALTO_ADARVE : (k0 + 1) * ALTURA + P.superficieSuelo);
-      const y = y0 + t * (y1 - y0);
-      if (pj.k === k0 && y - pj.y > 0.8) continue; // estás debajo de la escalera, no encima
-      return { k: t > 0.5 ? k0 + 1 : k0, y };
-    }
-  }
-  return null;
-}
-// Tejado terminado de la casilla (i, j) que cubre la planta k - 1 (sus muros acaban a la altura de la planta k): altura
-// de su cara de arriba bajo el jugador, o null. Se pisa (valravnx, 31 oct: «los tejados deben poder ser pisables para
-// poder construir tejados con un solo andamio»): desde el andamio se sale al tramo de al lado y desde ahí se alcanza
-// el siguiente. Si su cara está muy por encima de tus pies (llegas por debajo, a un tramo alto), no se sube de golpe.
-// Grueso de cada tejado por encima de su plano, en vertical (m; del dibujo de modelos.js): paja en dos hiladas,
-// tablillas sobre la tablazón, tejas de canal y cobija.
-const SOBRE_TEJADO = { paja: 0.44, tablilla: 0.13, teja: 0.25 };
-function tejadoBajoJugador(c, i, j, k, l) {
-  const key = clave('r', i, j, k), p = c.piezas.get(key);
-  if (!p || p.obra || window.__sinPisarTejados) return null;
-  const tj = geometriaTejados(c).get(key);
-  const material = Object.keys(SOBRE_TEJADO).find(m => p.tipo.endsWith(m)) || 'tablilla';
-  const y = oyDe(c) + k * ALTURA + altoTejadoEn(p, tj, l.lx, l.lz) * P.subidaTejado + SOBRE_TEJADO[material];
-  return y - pj.y > 0.8 ? null : y;
-}
-function alturaSuelo() {
-  const e = escaleraBajoJugador();
-  if (e) { pj.k = e.k; return e.y; }
-  for (let k = pj.k; k >= 0; k--) {
-    for (const c of mundo.construcciones) {
-      const l = mundoALocal(c, pj.x, pj.z);
-      const i = Math.floor(l.lx / MODULO), j = Math.floor(l.lz / MODULO);
-      const f = c.piezas.get(clave('f', i, j, k));
-      const oy = oyDe(c);
-      if (f && !f.obra) { pj.k = k; return oy + k * ALTURA + (k === 0 ? P.superficieCimiento : P.superficieSuelo); }
-      if (k === 1 && adarveEn(c, i, j)) { pj.k = 1; return oy + ALTO_ADARVE; } // en el piso del adarve
-      if (k > 0 && trampillaCerrada(c, i, j, k - 1)) { pj.k = k; return oy + k * ALTURA + P.superficieSuelo; } // la trampilla cerrada se pisa
-      if (k > 0 && andamioEn(c, i, j, k - 1)) { pj.k = k; return oy + k * ALTURA + P.superficieSuelo; } // plataforma del andamio
-      if (k > 0) { const y = tejadoBajoJugador(c, i, j, k, l); if (y !== null) { pj.k = k; return y; } } // el tejado terminado se pisa
-    }
-    // sin suelo construido debajo, el terreno: llano en la zona de construir, y las lomas de más allá (donde está la
-    // ladera con la piedra suelta y el sílex), que antes se cruzaban por dentro
-    if (k === 0) { pj.k = 0; return decorado.altura(pj.x, pj.z); }
-  }
-  return 0;
-}
+// ---------------- Movimiento y colisiones (src/juego/movimiento.js) ----------------
+const { resolverColision, andarHasta, alturaSuelo } = crearMovimiento({ mundo: () => mundo, pj, obstaculos, altosCanon, mundoJ, decorado });
 
 // planta en la que está un mueble, por su altura (los del suelo de arriba están a una altura de planta o más)
 const plantaDeco = (d) => Math.max(0, Math.floor((d.y - sueloEn(d.x, d.z) + 0.3) / ALTURA));
@@ -2565,59 +2426,10 @@ function alMorir(m) {
 }
 let ultimaMuerte = null;
 
-// ---------------- La herramienta del admin: velocidad y cámara libre ----------------
-// (valravnx, 6 nov: «poder multiplicar la velocidad de carrera y poder ir a freecam volando en 3 dimensiones»; el panel
-// está en src/juego/panel_admin.js). La velocidad la confirma el servidor (y solo a la cuenta de admin le deja moverse
-// tanto); la cámara libre es solo de este navegador: el personaje se queda donde estaba y no cambia nada del mundo.
-// Decisiones provisionales (anotadas en el diario): vuela a 12 m/s, con Mayúsculas a 48; no atraviesa el suelo (queda
-// al menos a 0,5 m por encima) y no se aleja más de 3 km del personaje (lo de alrededor llega por el personaje).
-const VUELO = 12, VUELO_RAPIDO = 48, VUELO_LEJOS = 3000;
-// con el autoconstruir del admin, el mojón y los muebles no piden llevar sus materiales (el servidor no los cobra)
-function autoconstruirAdmin() { return !!(enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.autoconstruir); }
-const velocidadAdmin = () => (enLinea && enLinea.admin && enLinea.red && enLinea.red.modosAdmin && enLinea.red.modosAdmin.velocidad > 1 ? enLinea.red.modosAdmin.velocidad : 1);
-const barraVuelo = document.createElement('div');
-barraVuelo.id = 'barraVuelo'; barraVuelo.hidden = true;
-// a la izquierda, a media altura: a la derecha están los botones de modo y Usar, y abajo a la izquierda el joystick
-barraVuelo.style.cssText = 'position:fixed;left:calc(12px + env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:8px';
-for (const [idb, texto, sube] of [['vueloSubir', '▲', 1], ['vueloBajar', '▼', -1], ['vueloIrAqui', tr('Ir aquí'), 0], ['vueloSalir', tr('Cámara'), 0]]) {
-  const b = document.createElement('button'); b.id = idb; b.textContent = texto;
-  b.style.cssText = 'min-width:52px;min-height:44px;font:600 14px system-ui,sans-serif;color:#f1e8d8;background:rgba(36,30,24,.85);border:1px solid rgba(241,232,216,.3);border-radius:10px;touch-action:none';
-  if (sube) {
-    b.addEventListener('pointerdown', (e) => { e.preventDefault(); camLibre.sube = sube; });
-    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, () => { if (camLibre.sube === sube) camLibre.sube = 0; });
-  }
-  else b.onclick = () => (idb === 'vueloSalir' ? alternarCamaraLibre(false) : panelAdmin && panelAdmin.irAqui());
-  barraVuelo.appendChild(b);
-}
-document.body.appendChild(barraVuelo);
-function alternarCamaraLibre(si = !camLibre.activa) {
-  if (si === camLibre.activa) return;
-  if (si && !(panelAdmin && panelAdmin.admin)) return;
-  camLibre.activa = si; camLibre.sube = 0;
-  barraVuelo.hidden = !si;
-  if (si) {
-    // empieza donde estaba la cámara, mirando hacia donde miraba (de cara al personaje)
-    camLibre.x = camara.position.x; camLibre.y = camara.position.y; camLibre.z = camara.position.z;
-    mostrarAviso(tr('Cámara libre: el personaje se queda aquí.'));
-  } else mostrarAviso(tr('Vuelves a tu personaje.'));
-}
-function moverCamaraLibre(ax, az, dt) {
-  const v = (teclas.has('shift') ? VUELO_RAPIDO : VUELO) * dt;
-  const cp = Math.cos(cam.pitch), s = Math.sin(cam.yaw), c = Math.cos(cam.yaw);
-  // adelante: hacia donde mira (también hacia arriba o abajo); los lados, en horizontal
-  const fx = -s * cp, fy = -Math.sin(cam.pitch), fz = -c * cp;
-  const avance = -az, lado = ax;
-  camLibre.x += (fx * avance + c * lado) * v;
-  camLibre.z += (fz * avance - s * lado) * v;
-  camLibre.y += fy * avance * v;
-  const sube = (teclas.has(' ') ? 1 : 0) - (teclas.has('c') ? 1 : 0) + camLibre.sube;
-  camLibre.y += sube * v;
-  // ni bajo el suelo ni demasiado lejos del personaje
-  const dx = camLibre.x - pj.x, dz = camLibre.z - pj.z, d = Math.hypot(dx, dz);
-  if (d > VUELO_LEJOS) { camLibre.x = pj.x + dx / d * VUELO_LEJOS; camLibre.z = pj.z + dz / d * VUELO_LEJOS; }
-  const suelo = mundoJ ? decorado.altura(camLibre.x, camLibre.z) : 0;
-  if (camLibre.y < suelo + 0.5) camLibre.y = suelo + 0.5;
-}
+// ---------------- La herramienta del admin: velocidad y cámara libre (src/juego/camara_libre.js) ----------------
+const { alternarCamaraLibre, moverCamaraLibre, autoconstruirAdmin, velocidadAdmin } = crearCamaraLibre({
+  camLibre, camara, cam, pj, teclas, enLinea: () => enLinea, panelAdmin: () => panelAdmin,
+  sueloEn: (x, z) => (mundoJ ? decorado.altura(x, z) : 0), avisar: (txt) => mostrarAviso(txt) });
 
 const reloj = new THREE.Clock();
 function paso() {
@@ -2733,233 +2545,19 @@ function paso() {
   requestAnimationFrame(paso);
 }
 
-// ---------------- Interfaz ----------------
-const CATEGORIAS = [
-  ['tierra', t('catTierra')], ['base', t('catBase')], ['estructura', t('catEstructura')], ['muro', t('catMuros')],
-  ['tejado', t('catTejados')], ['acceso', t('catAcceso')], ['exterior', t('catExterior')], ['puestos', tr('Puestos de trabajo')], ['almacenajes', tr('Almacenajes')], ['camas', tr('Camas')], ['deco', t('catDeco')],
-];
-let categoria = 'base';
-// Lo que tienes de cada cosa para construir (estudio de la interfaz, 7 nov: «el coste en iconos, en rojo lo que no tienes,
-// y lo que hay en tu tierra»): lo que llevas encima más lo almacenado en tu tierra (en línea, en los almacenajes de la
-// zona de tu mojón; sin servidor, el arcón de pruebas). La obra no coge de lo almacenado sola: es lo que hay a mano.
-function almacenadoEnTierra() {
-  const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null, hay = {};
-  if (zona === null) return hay;
-  for (const e of Object.values(fabCliente.estaciones)) if (esAlmacen(e.tipo) && !e.obra && mundo.tierraDe(e.x, e.z) === zona)
-    for (const [k, n] of Object.entries(e.deposito || {})) hay[k] = (hay[k] || 0) + n;
-  return hay;
-}
-function tienesObjeto(tipo, enTierra) {
-  const arcon = enLinea ? 0 : (mundo.materiales[MATERIAL_DE_OBJETO[tipo]] ?? 0);
-  return inventario().cuantos(tipo) + (enTierra[tipo] || 0) + arcon;
-}
-const RAIZ_PIEZAS = '../../' + CARPETA_PIEZAS;
-function imagenEntrada(e) {
-  if (e.clase === 'mojon') return '../../' + CARPETA_INTERFAZ + 'g_mojon.webp';
-  if (e.clase === 'nivelar') return '../../' + CARPETA_INTERFAZ + 'g_construir.webp';
-  if (e.clase === 'puesto') return carpetaIconos() + 'est_' + e.tipo + '.webp';
-  return RAIZ_PIEZAS + (e.clase === 'deco' ? 'deco_' : 'pz_') + e.tipo + '.webp';
-}
-const catPuesto = k => esAlmacen(k) ? 'almacenajes' : esCama(k) ? 'camas' : 'puestos';
-function construirBarra() {
-  const tabs = $('pestanas'); tabs.innerHTML = '';
-  for (const [id, nombre] of CATEGORIAS) {
-    const b = document.createElement('button');
-    b.textContent = nombre; b.dataset.cat = id;
-    b.className = id === categoria ? 'sel' : '';
-    b.onclick = () => { categoria = id; construirBarra(); };
-    tabs.appendChild(b);
-  }
-  const lista = $('piezas'); lista.innerHTML = '';
-  const entradas = categoria === 'puestos' || categoria === 'almacenajes' || categoria === 'camas'
-    ? Object.entries(ESTACIONES).filter(([k]) => catPuesto(k) === categoria).map(([k, d]) => ({ clase: 'puesto', tipo: k, def: d }))
-    : categoria === 'deco'
-    ? Object.entries(DECORACION).filter(([, d]) => enEsteTramo(d)).map(([k, d]) => ({ clase: 'deco', tipo: k, def: d }))
-    : Object.entries(PIEZAS).filter(([, d]) => d.cat === categoria && enEsteTramo(d)).map(([k, d]) => ({ clase: k === 'mojon' ? 'mojon' : 'pieza', tipo: k, def: d }));
-  if (categoria === 'tierra') entradas.push({ clase: 'nivelar', tipo: 'brocha', def: { nombre: 'Brocha de nivelar', coste: {} }, nota: tr('alisa el suelo') });
-  const enTierra = enLinea ? almacenadoEnTierra() : {};
-  for (const e of entradas) {
-    const b = document.createElement('button');
-    b.className = 'pieza' + (estado.sel.tipo === e.tipo ? ' sel' : '');
-    // el coste, en iconos: cuánto pide y, pequeño, cuánto tienes (en rojo si no llega)
-    const costes = Object.entries(e.def.coste || {}).map(([m, n]) => {
-      const tipo = e.clase === 'puesto' ? m : OBJETO_DE_MATERIAL[m];
-      const nom = e.clase === 'puesto' ? tr(CATALOGO[m].nombre) : tr(MATERIALES[m]);
-      const hay = tipo ? tienesObjeto(tipo, enTierra) : 0;
-      return `<span class="cc${hay < n ? ' falta' : ''}" title="${n} ${nom.toLowerCase()} · ${tr('tienes {n}', { n: hay })}"><img src="${carpetaIconos()}${tipo}.webp" alt="${nom}" loading="lazy">${n}<i>/${hay}</i></span>`;
-    }).join('');
-    const pie = e.nota ? `<small>${e.nota}</small>` : e.clase === 'mojon' ? `<small>${tr('tu tierra')}</small>` : `<span class="pz-coste">${costes}</span>`;
-    b.innerHTML = `<img class="pz-img" src="${imagenEntrada(e)}" alt="" loading="lazy"><b>${tr(e.def.nombre)}</b>${pie}`;
-    b.title = tr(e.def.nombre) + (e.clase === 'puesto' ? ' · ' + tr(DONDE[e.def.donde]).toLowerCase() : '');
-    if (e.clase === 'nivelar') b.id = 'btnBrocha';
-    b.onclick = () => {
-      estado.sel = { clase: e.clase, tipo: e.tipo };
-      estado.dir = 0;
-      if (e.clase === 'nivelar') estado.alturaBrocha = null; // al volver a coger la brocha, la altura se vuelve a tomar del suelo
-      if (estado.modo !== 'construir') cambiarModo('construir');
-      construirBarra(); evaluarColocacion();
-    };
-    lista.appendChild(b);
-  }
-  if (estado.modo === 'construir') document.documentElement.style.setProperty('--alto-barra', $('barra').offsetHeight + 'px');
-}
-// lo que tienes cambia (coges, dejas, entregas): el coste se vuelve a pintar solo si cambia algo (se mira cada medio
-// segundo, no en cada fotograma; rehacer los botones a cada rato se comería los clics)
-let ultimaBarra = 0;
-function refrescarBarra() {
-  if (estado.modo !== 'construir' || performance.now() - ultimaBarra < 500) return;
-  ultimaBarra = performance.now();
-  const enTierra = enLinea ? almacenadoEnTierra() : {};
-  const tipos = new Set([...Object.values(OBJETO_DE_MATERIAL), ...Object.values(ESTACIONES).flatMap(d => Object.keys(d.coste || {}))]);
-  const firma = categoria + ':' + [...tipos].map(t => tienesObjeto(t, enTierra)).join(',');
-  if (firma === refrescarBarra.firma) return;
-  refrescarBarra.firma = firma;
-  const desplaza = $('piezas').scrollLeft;
-  construirBarra();
-  $('piezas').scrollLeft = desplaza;
-}
-function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? catPuesto(estado.sel.tipo) : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
-
-// El contador de arriba (valravnx, 1 nov): en línea, solo dentro de tu tierra (la zona de tu mojón) y con lo que tienes
-// almacenado en ella; fuera, no sale. Lo almacenado es lo guardado en los almacenajes de la base de tu tierra (7 nov:
-// el acopio de troncos, la pila de piedras, la leñera), de los que te llegan del servidor (los trozos de tu alrededor);
-// hasta que los hubo, era lo que había en el suelo de tu tierra. Sin servidor (las pruebas de navegador), lo que hay en
-// el arcón de pruebas, como antes.
-let htmlMateriales = null;
-// El contador de arriba (lo almacenado en tu tierra), plegado (valravnx, 9 nov: «desplegable y nunca fijo, porque tapa
-// mucha pantalla sobre todo en móvil»): una placa pequeña con el total; tocándola se despliega la lista y se vuelve a
-// plegar. Siempre empieza plegado.
-let materialesAbierto = false;
-function pintarMateriales() {
-  const m = $('materiales');
-  let html = '', titulo = '', total = 0;
-  if (!enLinea) { titulo = tr('En el arcón:'); html = Object.entries(MATERIALES).map(([k, n]) => { total += mundo.materiales[k] ?? 0; return `<span><b>${mundo.materiales[k] ?? 0}</b> ${tr(n).toLowerCase()}</span>`; }).join(''); }
-  else {
-    const mojon = miMojon(), zona = mojon ? mundo.tierraDe(mojon.x, mojon.z) : null;
-    const esMio = (x, z) => zona !== null && mundo.tierraDe(x, z) === zona;
-    if (esMio(pj.x, pj.z)) {
-      const hay = {};
-      for (const e of Object.values(fabCliente.estaciones)) if (esAlmacen(e.tipo) && !e.obra && esMio(e.x, e.z))
-        for (const [k, n] of Object.entries(e.deposito || {})) hay[k] = (hay[k] || 0) + n;
-      const ks = Object.keys(hay).filter(k => CATALOGO[k]).sort((a, b) => hay[b] - hay[a]);
-      titulo = tr('En tu tierra:'); total = ks.reduce((t, k) => t + hay[k], 0);
-      html = ks.length ? ks.map(k => `<span><b>${hay[k]}</b> ${tr(CATALOGO[k].nombre).toLowerCase()}</span>`).join('')
-        : `<span>${tr('aún no tienes nada almacenado')}</span>`;
-    }
-  }
-  if (html) html = `<button type="button" class="mat-cab" aria-expanded="${materialesAbierto}">${titulo.replace(/:$/, '')} <b>${total}</b><i class="fl"></i></button><div class="mat-lista">${html}</div>`;
-  if (html !== htmlMateriales) { htmlMateriales = html; m.innerHTML = html; }
-  m.classList.toggle('abierto', materialesAbierto);
-  m.hidden = !html;
-}
-$('materiales').addEventListener('click', (e) => {
-  if (!e.target.closest('.mat-cab')) return;
-  materialesAbierto = !materialesAbierto; htmlMateriales = null; pintarMateriales();
-});
+// ---------------- Interfaz: la barra de construir y el contador de arriba (src/juego/barra_construir.js) ----------------
+const barraConstruir = crearBarraConstruir({
+  estado, pj, fabCliente, inventario, miMojon, mundo: () => mundo, enLinea: () => enLinea,
+  cambiarModo: (m) => cambiarModo(m), evaluarColocacion: () => evaluarColocacion() });
+const { construirBarra, refrescarBarra, marcarSeleccion, pintarMateriales } = barraConstruir;
 let ultimoMateriales = 0;
 
-// ---------------- La acción, a la vista (estudio de la interfaz del 7 nov) ----------------
-// Cada poco (no en cada fotograma: mira todo lo de alrededor) se mira qué haría Usar y qué más hay al alcance; en cada
-// fotograma se coloca la etiqueta sobre la cosa y el aro en el suelo bajo ella. En PC, la tecla F; con varias cosas, la
-// lista (clic en una para hacerla). En el móvil, el botón de acción grande lleva la imagen de la cosa y el verbo.
-document.body.classList.toggle('tactil-ui', !!estado.esTactil);
-const aroAccion = new THREE.Group();
-{
-  const mat = (o) => new THREE.MeshBasicMaterial({ color: 0xf0c46e, transparent: true, opacity: o, depthWrite: false, side: THREE.DoubleSide });
-  const filo = new THREE.Mesh(new THREE.RingGeometry(0.47, 0.5, 48), mat(0.9));
-  const halo = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.56, 48), mat(0.14));
-  for (const m of [halo, filo]) { m.rotation.x = -Math.PI / 2; m.renderOrder = 3; aroAccion.add(m); }
-  aroAccion.visible = false;
-  escena.add(aroAccion);
-}
-const RADIO_ARO = { arbol: 1.1, obra: 1.0, est: 0.85 };
-let accionVista = null, accionOps = [], accionHasta = 0;
-const vProy = new THREE.Vector3();
-const urlIcono = (ic) => !ic ? '' : ic.startsWith('g_') ? '../../' + CARPETA_INTERFAZ + ic + '.webp' : carpetaIconos() + ic + '.webp';
-function pintarAccion() {
-  const ahora = performance.now();
-  const etq = $('accionEtq'), lista = $('accionLista'), btn = $('btnUsar');
-  const ocultar = estado.modo !== 'mover' || document.body.classList.contains('combate') || !menuUsar.hidden
-    || (panelFabricar && panelFabricar.abierto && estado.esTactil) || (panelInventario && panelInventario.abierto && estado.esTactil) || (menuJuego && menuJuego.abierto);
-  if (ahora >= accionHasta) {
-    accionHasta = ahora + 150;
-    // el mojón de arriba (en PC, en tu tierra): abre la pestaña Tu tierra
-    { const mo = miMojon(), z = mo ? mundo.tierraDe(mo.x, mo.z) : null; $('btnMojon').hidden = estado.esTactil || z === null || mundo.tierraDe(pj.x, pj.z) !== z; }
-    accionVista = ocultar ? null : accionPrincipal();
-    // la lista: lo demás que hay al alcance (lo mismo que el clic derecho), sin repetir la acción de Usar. Solo cuando se
-    // pide (valravnx, 8 nov: «salen solos, siendo un caos… toggle con alt o click derecho, pero no todo el rato»): Alt en
-    // PC y mantener pulsado el botón de acción en el móvil la abren y la cierran; sin pedirla, la etiqueta dice que hay más
-    const otras = accionVista ? opcionesUsar().filter(o => o.texto !== accionVista.texto) : [];
-    // se cierra sola al cambiar de cosa (al alejarte o al hacerla): abrirla vale para lo que tienes delante, no para siempre
-    const cosa = accionVista ? `${accionVista.pos.x.toFixed(1)},${accionVista.pos.z.toFixed(1)}` : null;
-    if (estado.verLista && cosa !== estado.listaDe) estado.verLista = false;
-    accionOps = estado.verLista ? otras.slice(0, 3) : [];
-    accionVista && (accionVista.hayMas = !estado.verLista && otras.length > 0);
-    pintarBotonAccion(btn, accionVista);
-    pintarLista(lista, accionVista, accionOps);
-  }
-  const a = accionVista;
-  btn.classList.toggle('activo', !!a && !a.apagada);
-  if (!a) { etq.hidden = true; lista.hidden = true; aroAccion.visible = false; return; }
-  const y0 = a.y ?? sueloEn(a.pos.x, a.pos.z);
-  // el aro, en el suelo bajo la cosa (algo más grande para un árbol, una obra o una estación)
-  const r = a.icono === 'g_construir' ? RADIO_ARO.obra : (a.alto || 0) >= 3 ? RADIO_ARO.arbol : String(a.icono).startsWith('est_') ? RADIO_ARO.est : (a.alto || 0) <= 0.4 ? 0.42 : 0.6;
-  aroAccion.visible = !(a.pos.x === pj.x && a.pos.z === pj.z); // (lo que va contigo, como comer, no lleva aro)
-  aroAccion.position.set(a.pos.x, y0 + 0.04, a.pos.z); aroAccion.scale.setScalar(r / 0.5);
-  // la etiqueta, sobre la cosa (si está delante de la cámara)
-  vProy.set(a.pos.x, y0 + Math.min(a.alto ?? 1, 2.2) + 0.15, a.pos.z).project(camara);
-  const rc = renderer.domElement.getBoundingClientRect();
-  if (vProy.z >= 1 || Math.abs(vProy.x) > 1.1 || Math.abs(vProy.y) > 1.1) { etq.hidden = true; lista.hidden = true; return; }
-  const sx = rc.left + (vProy.x + 1) / 2 * rc.width, sy = rc.top + (1 - vProy.y) / 2 * rc.height;
-  const clave = [a.texto, a.sub, a.barra, a.apagada, a.hayMas, Math.round((a.prog || 0) * 20)].join('|');
-  if (etq.dataset.clave !== clave) {
-    etq.dataset.clave = clave;
-    const L = 2 * Math.PI * 8;
-    const prog = a.prog ? `<svg class="prog" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/><circle cx="10" cy="10" r="8" fill="none" stroke="#f0c46e" stroke-width="3" stroke-dasharray="${L * a.prog} ${L}"/></svg>` : '';
-    const mas = a.hayMas ? `<span class="mas">${estado.esTactil ? '' : '<span class="k">Alt</span>'}${esc(tr('más'))}</span>` : '';
-    etq.innerHTML = `<div class="etq placa"><div class="lin">${estado.esTactil ? '' : '<span class="k">F</span>'}<span>${esc(a.texto)}</span>${prog}${mas}</div>`
-      + (a.sub ? `<small>${esc(a.sub)}</small>` : '') + (a.barra !== undefined ? `<div class="barra"><i style="width:${Math.round(a.barra * 100)}%"></i></div>` : '') + '</div>';
-    etq.classList.toggle('apagada', !!a.apagada);
-  }
-  // en el móvil, sin etiqueta sobre la cosa (valravnx, 9 nov: «cuando paso delante de algo sale»): el botón de acción
-  // grande ya lleva su imagen, el verbo y lo que falta; queda el aro en el suelo
-  etq.hidden = !!estado.esTactil;
-  // (que no se salga por los lados)
-  const ancho = etq.offsetWidth / 2 + 8;
-  etq.style.left = Math.max(ancho, Math.min(innerWidth - ancho, sx)) + 'px';
-  etq.style.top = Math.max(etq.offsetHeight + 8, sy - 10) + 'px';
-  if (!lista.hidden && !estado.esTactil) { lista.style.left = Math.min(innerWidth - lista.offsetWidth - 10, sx + ancho - 4) + 'px'; lista.style.top = Math.max(60, sy - etq.offsetHeight - 10) + 'px'; }
-}
-const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-function pintarBotonAccion(btn, a) {
-  const img = btn.querySelector('.ic'), verbo = btn.querySelector('.verbo'), lleno = btn.querySelector('.lleno'), prog = btn.querySelector('.prog');
-  if (!img) return;
-  const ic = a ? a.icono : 'g_colocar', src = window.__sinImagenes ? '' : urlIcono(ic);
-  if (img.getAttribute('src') !== src) { if (src) img.setAttribute('src', src); else img.removeAttribute('src'); }
-  img.classList.toggle('g', String(ic).startsWith('g_'));
-  // el verbo, corto: lo de antes de los dos puntos («Coger del suelo: 2 × Rama» → «Coger del suelo»)
-  verbo.textContent = a ? a.texto.split(/[:(]/)[0].trim() : tr('Usar');
-  btn.setAttribute('aria-label', a ? a.texto : tr('Usar'));
-  prog.toggleAttribute('hidden', !(a && a.prog));   // (un svg no tiene .hidden)
-  if (a && a.prog) lleno.setAttribute('stroke-dasharray', `${2 * Math.PI * 51 * a.prog} 400`);
-}
-function pintarLista(lista, a, ops) {
-  if (!a || !ops.length) { lista.hidden = true; lista.innerHTML = ''; return; }
-  const clave = [a.texto, ...ops.map(o => o.texto)].join('|');
-  lista.hidden = false;
-  if (lista.dataset.clave === clave) return;
-  lista.dataset.clave = clave;
-  lista.innerHTML = '';
-  const fila = (texto, icono, hacer, sel) => {
-    const b = document.createElement('button');
-    b.className = 'placa' + (sel ? ' sel' : '');
-    b.innerHTML = `${icono && !window.__sinImagenes ? `<img src="${urlIcono(icono)}" alt="" onerror="this.style.visibility='hidden'">` : '<img alt="" style="visibility:hidden">'}<span>${esc(texto)}</span>${sel && !estado.esTactil ? '<span class="k">F</span>' : ''}`;
-    b.onclick = (e) => { e.stopPropagation(); hacer(); accionHasta = 0; };
-    lista.appendChild(b);
-  };
-  fila(a.texto, a.icono, a.hacer, true);
-  for (const o of ops) fila(o.texto, null, o.hacer, false);
-}
+// ---------------- La acción, a la vista (src/juego/accion_vista.js) ----------------
+const accionV = crearAccionVista({
+  escena, camara, renderer, estado, pj, menuUsar, miMojon, sueloEn, mundo: () => mundo,
+  ocultos: () => (panelFabricar && panelFabricar.abierto && estado.esTactil) || (panelInventario && panelInventario.abierto && estado.esTactil) || (menuJuego && menuJuego.abierto),
+  accionPrincipal: () => accionPrincipal(), opcionesUsar: () => opcionesUsar() });
+const { pintarAccion, alternarLista, aroAccion } = accionV;
 
 function actualizarUI() {
   pintarMateriales();
@@ -2998,10 +2596,6 @@ $('btnBaja').onclick = () => cambiarPlanta(-1);
 $('btnDeshacer').onclick = () => deshacer();
 $('btnUsar').onclick = () => { if (estado.listaPorToque) { estado.listaPorToque = false; return; } cerrarMenuUsar(); usar(); };
 // la lista de lo demás que hay al alcance, solo cuando se pide: Alt en PC; mantener pulsado el botón de acción en el móvil
-function alternarLista() {
-  estado.verLista = !estado.verLista; accionHasta = 0;
-  estado.listaDe = accionVista ? `${accionVista.pos.x.toFixed(1)},${accionVista.pos.z.toFixed(1)}` : null;
-}
 addEventListener('keydown', (e) => {
   if (e.key !== 'Alt' || e.repeat || e.ctrlKey || e.metaKey || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
   e.preventDefault(); alternarLista();
@@ -3483,7 +3077,7 @@ window.__kinhold = {
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
   beber, aguaAlLado, comer, accionPrincipal, despiezar, liebreAlLado,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
-  get accionVista() { return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
+  get accionVista() { const accionVista = accionV.vista(); return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
   rocaCercana, empezarRotura,   // romper rocas (8 nov)
   usarArbol,   // la corteza y la resina (8 nov)
   pintarTodoInventario,   // (pruebas: lo que llevas, otra vez en el panel y puesto, tras cambiarlo a mano)
