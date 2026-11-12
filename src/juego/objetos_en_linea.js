@@ -66,7 +66,7 @@ export function crearObjetosEnLinea({ inventarios, autor, sueloObjetos, talaV, r
     const deja = Array.isArray(c.objetos) ? c.objetos : [];
     if (verCaer) sueloObjetos.esconder(deja);   // el suelo llega justo detrás: lo que deja, cuando el árbol esté en el suelo
     ponerTala(msg.estado);
-    if (verCaer) talaV.caer(o, c.dir || 0, deja);
+    if (verCaer) talaV.caer(o, c.dir || 0, deja, c.caida && typeof c.caida === 'object' ? c.caida : null);   // la caída del servidor: la misma para todos
   }
 
   return {

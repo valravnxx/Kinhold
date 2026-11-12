@@ -3,18 +3,19 @@
 // src/logica/tala.js; aquí se dibuja con el estilo v5 y se guarda en el navegador.
 //
 // Cómo se ve (provisional):
-//  - el árbol que cae es el mismo modelo del bosque, que gira sobre su base hacia donde cae (la boca, la cuesta o su
-//    inclinación: src/logica/tala.js), cada vez más deprisa (como al caer), y se queda un momento en el suelo;
-//    después quedan el tronco y las ramas como objetos del suelo (src/juego/suelo.js), donde cayó.
+//  - el árbol que cae es el mismo modelo del bosque, que gira sobre su base como dice su caída (src/logica/tala.js,
+//    simularCaida: con la gravedad, rebota en el suelo y se asienta según el terreno, o se queda apoyado en lo que
+//    tenga delante o se desvía): en línea, los fotogramas del servidor, así todos lo ven igual; y se queda un momento
+//    donde se asentó; después quedan el tronco y las ramas como objetos del suelo (src/juego/suelo.js), donde cayó.
 //  - el tocón: el pie del tronco con su corteza y el corte claro con anillos arriba.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { RADIO_TRONCO, radioTronco } from '../mundo/especies.js';
-import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala } from '../logica/tala.js';
+import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala, simularCaida, caidaEn, altoArbol, CORTE } from '../logica/tala.js';
 
-const CAE = 1.7, EN_EL_SUELO = 1.3; // s: lo que tarda en caer y lo que se queda tumbado antes de ser tronco y ramas
+const EN_EL_SUELO = 1.3; // s: lo que se queda tumbado (o apoyado) antes de ser tronco y ramas
 
 function tocon(o) {
   // el tronco de su especie (los árboles del mundo, src/mundo/vegetacion_mundo.js) o el del llano (pino y árbol de copa)
@@ -33,6 +34,12 @@ function tocon(o) {
   return g;
 }
 
+// lo que la tala sabe de un árbol del decorado: su sitio, su edad, su especie y su alto (para la caída)
+function datosArbol(o, id) {
+  const edad = o.edad || edadDeEscala(o.escala);
+  return { id, x: o.x, z: o.z, edad, ...(o.especie ? { especie: o.especie, tam: o.escala, alto: altoArbol(edad, o.especie, o.escala) } : {}) };
+}
+
 // obstaculos: los del decorado (los árboles llevan escala, modelo, instancia y malla). altura(x, z): el terreno.
 // sueloObjetos: el suelo de la demo (crearSuelo), donde cae lo que deja el árbol.
 export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
@@ -42,7 +49,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     const id = idArbol(o.x, o.z);
     if (porId.has(id)) continue;
     o.id = id; porId.set(id, o);
-    arboles.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala) });
+    arboles.push(datosArbol(o, id));
   }
   const tala = new Tala(arboles);
   tala.alturaEn = altura; // sin boca, cuesta abajo (en línea lo decide el servidor con su terreno)
@@ -50,7 +57,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
   const grupo = new THREE.Group(); grupo.name = 'tala'; raiz.add(grupo);
   const tocones = new Map();  // id → objeto del tocón
   const cayendo = [];         // { pivote, t, o }
-  const cero = new THREE.Matrix4().makeScale(0, 0, 0);
+  const cero = new THREE.Matrix4().makeScale(0, 0, 0), eje = new THREE.Vector3();
 
   function original(o) { // la matriz de su instancia en el bosque (guardada la primera vez)
     if (!o.matriz) { o.matriz = new THREE.Matrix4(); o.malla.getMatrixAt(o.instancia, o.matriz); }
@@ -78,16 +85,17 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
   }
   refrescar();
 
-  // el árbol que cae: el mismo modelo, girando sobre su base hacia «dir»
-  function caer(o, dir, deja) {
+  // el árbol que cae: el mismo modelo, girando sobre su base como dice su caída (sin ella, la de aquí, hacia «dir»)
+  function caer(o, dir, deja, caida = null) {
+    if (!caida || !Array.isArray(caida.fotos) || !caida.fotos.length) caida = simularCaida(tala.porId.get(o.id) || datosArbol(o, o.id), dir, { alturaEn: altura });
     const p = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
     original(o).decompose(p, q, s);
     const pivote = new THREE.Group(); pivote.position.copy(p);
-    pivote.position.y += 0.27 + 0.12 * o.escala; // se parte encima del tocón: el árbol cae desde ahí, no desde el suelo
+    pivote.position.y += CORTE; // se parte encima del tocón: el árbol cae desde ahí, no desde el suelo
     const m = new THREE.Mesh(o.malla.geometry, o.malla.material); m.quaternion.copy(q); m.scale.copy(s);
     m.castShadow = true; m.receiveShadow = true; pivote.add(m); pivote.name = 'arbol_cayendo';
     grupo.add(pivote);
-    cayendo.push({ pivote, t: 0, eje: new THREE.Vector3(Math.cos(dir), 0, -Math.sin(dir)), deja });
+    cayendo.push({ pivote, t: 0, caida, deja });
   }
 
   // los árboles del mundo llegan y se van al andar (src/mundo/vegetacion_mundo.js): lo talado de cada uno se guarda
@@ -97,7 +105,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     for (const o of lista) {
       if (!o.arbol) continue;
       const id = o.id || idArbol(o.x, o.z); o.id = id; porId.set(id, o);
-      nuevos.push({ id, x: o.x, z: o.z, edad: o.edad || edadDeEscala(o.escala), ...(o.especie ? { especie: o.especie } : {}) });
+      nuevos.push(datosArbol(o, id));
     }
     tala.anadir(nuevos);
     for (const o of lista) if (o.id && !tala.enPie(o.id, Date.now()) && !tocones.has(o.id)) esconder(o);
@@ -120,7 +128,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
       const r = ejecutarTala(tala, invs, sueloObjetos.suelo, registro, { autor, tipo: 'talar', arbol: o.id, x, z }, ahora);
       if (r.ok) guardarlo();
       // lo que deja no se ve hasta que el árbol está en el suelo
-      if (r.ok && r.cae) { sueloObjetos.guardar(); sueloObjetos.esconder(r.objetos); esconder(o); caer(o, r.dir, r.objetos); }
+      if (r.ok && r.cae) { sueloObjetos.guardar(); sueloObjetos.esconder(r.objetos); esconder(o); caer(o, r.dir, r.objetos, r.caida); }
       return r;
     },
     // sin servidor (las pruebas): descortezar o sangrar el árbol o aquí (src/logica/tala.js), a lo que llevas
@@ -133,16 +141,19 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     paso(dt) {
       for (let i = cayendo.length - 1; i >= 0; i--) {
         const c = cayendo[i]; c.t += dt;
-        const f = Math.min(1, c.t / CAE);
-        c.pivote.quaternion.setFromAxisAngle(c.eje, f * f * (Math.PI / 2 - 0.06)); // cada vez más deprisa, como al caer
-        if (c.t > CAE + EN_EL_SUELO) { grupo.remove(c.pivote); cayendo.splice(i, 1); sueloObjetos.mostrar(c.deja); }
+        const { angulo, dir } = caidaEn(c.caida, c.t);
+        eje.set(Math.cos(dir), 0, -Math.sin(dir));
+        c.pivote.quaternion.setFromAxisAngle(eje, angulo);
+        if (c.t > c.caida.dura + EN_EL_SUELO) { grupo.remove(c.pivote); cayendo.splice(i, 1); sueloObjetos.mostrar(c.deja); }
       }
       const t = Date.now(); // lo que vuelve a crecer se mira cada pocos segundos
       if (t - ultimo > 5000) { ultimo = t; refrescar(t); }
     },
     get cayendo() { return cayendo.length; },
+    // los que caen ahora: cuánto llevan (s), lo que dura su caída y su ángulo de ahora (las pruebas)
+    get caidas() { return cayendo.map(c => ({ t: c.t, dura: c.caida.dura, angulo: caidaEn(c.caida, c.t).angulo, final: c.caida.angulo, apoyo: c.caida.apoyo })); },
     // en línea, el árbol que tala cualquiera lo hace caer el servidor (src/juego/objetos_en_linea.js)
-    caer: (o, dir, deja) => { esconder(o); caer(o, dir, deja); },
+    caer: (o, dir, deja, caida) => { esconder(o); caer(o, dir, deja, caida); },
     refrescar, guardar: guardarlo, anadir, quitar,
   };
 }

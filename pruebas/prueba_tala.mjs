@@ -1,12 +1,16 @@
 // Pruebas de la tala (src/logica/tala.js). Ejecutar: node pruebas/prueba_tala.mjs
-// Con MUTAR=1 el adulto cae con piedra tan rápido como con hierro y el tocón vuelve al momento: las pruebas deben FALLAR.
+// Con MUTAR=1 el adulto cae con piedra tan rápido como con hierro y el tocón vuelve al momento, y la caída no mira lo
+// que tiene delante (no se apoya ni se desvía): las pruebas deben FALLAR.
 import { Tala, GOLPES, DA, HACHAS, SEMANA, ENTRE_GOLPES, ALCANCE_TALA, edadDeEscala, idArbol, ramasDe, hachaEnMano,
-  PARTE_BOCA, COHERENCIA_BOCA, PENDIENTE_CAIDA, inclinacionDe, bocaDe, caidaDe, ejecutarTala, guardarTala, cargarTala, migrarTala, VERSION_TALA } from '../src/logica/tala.js';
+  PARTE_BOCA, COHERENCIA_BOCA, PENDIENTE_CAIDA, inclinacionDe, bocaDe, caidaDe, ejecutarTala, guardarTala, cargarTala, migrarTala, VERSION_TALA,
+  simularCaida, caidaEn, altoArbol, G, CORTE, INICIO_CAIDA, REBOTE, DESVIO } from '../src/logica/tala.js';
+import { Mundo } from '../src/logica/construccion.js';
 import { Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
-if (process.env.MUTAR === '1') { GOLPES.adulto.piedra = GOLPES.adulto.hierro; DA.adulto.vuelve = 0; }
+const MUTAR = process.env.MUTAR === '1';
+if (MUTAR) { GOLPES.adulto.piedra = GOLPES.adulto.hierro; DA.adulto.vuelve = 0; }
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -207,6 +211,59 @@ console.log('Guardar y cargar (los navegadores y el servidor: por tiempo transcu
   comprobar('un guardado roto o sin versión se descarta', !migrarTala({ estado: {} }) && !migrarTala(null) && !migrarTala({ version: VERSION_TALA + 1, estado: {} }));
   const roto = { d: { 'kinhold.tala': '{no' }, getItem(k) { return this.d[k]; } };
   comprobar('un guardado ilegible no rompe nada', Object.keys(cargarTala(roto, new Tala(arboles)).estado).length === 0);
+}
+
+console.log('La caída: con la gravedad, rebota, se asienta según el terreno, y se apoya o se desvía (tarea «La caída»)');
+{
+  // con MUTAR, la caída que se prueba no mira lo de alrededor ni rebota (la de antes: un giro hasta el suelo)
+  const cerca = (a, b, e = 0.01) => Math.abs(a - b) < e;
+  const simular = MUTAR ? (a, dir, o = {}) => simularCaida(a, dir, { ...o, obstaculos: [] }) : simularCaida;
+  const roble = { id: idArbol(0, 0), x: 0, z: 0, edad: 'adulto', especie: 'roble', alto: altoArbol('adulto', 'roble', 1.2) };
+  const c = simular(roble, 0);
+  const f = c.fotos, ang = f.map(x => x[1]);
+  comprobar('el alto sale de la especie y del tamaño (el roble a escala 1, 7,5 m; el joven, 4 m)', altoArbol('adulto', 'roble', 1) === 7.5 && altoArbol('joven', 'roble', 1.25) === 5, `${roble.alto} m`);
+  comprobar('empieza casi en pie (lo que se ha vencido al soltarlo) y acaba tumbado en el llano', cerca(f[0][1], INICIO_CAIDA) && c.angulo > 1.45 && c.angulo < 1.65 && !c.apoyo, `${c.angulo} rad`);
+  // la gravedad: la velocidad media de cada tramo, hasta tocar el suelo, crece (salvo el redondeo de los fotogramas, a la milésima); con una vara rígida, θ'' = 3g/2L sen θ
+  const hasta = ang.findIndex(v => v >= c.angulo - 0.002), vel = [];
+  for (let i = 2; i < hasta; i++) vel.push((ang[i] - ang[i - 1]) / (f[i][0] - f[i - 1][0]));
+  comprobar('cae cada vez más deprisa (la gravedad) hasta el suelo', vel.length > 10 && vel.every((v, i) => i === 0 || v >= vel[i - 1] - 0.07) && vel[vel.length - 1] > 5 * vel[0], `${vel.length} tramos`);
+  // lo que tarda: el mismo integrado a mano con paso fino
+  const L = roble.alto - CORTE, k = 3 * G / (2 * L);
+  let th = INICIO_CAIDA, w = 0, t = 0; while (th < c.angulo) { w += k * Math.sin(th) * 1e-4; th += w * 1e-4; t += 1e-4; }
+  comprobar('tarda lo que pide la gravedad para su alto (±0,1 s)', Math.abs(f[hasta][0] - t) < 0.1, `${f[hasta][0]} s, a mano ${t.toFixed(3)} s`);
+  const tras = ang.slice(hasta + 1);
+  comprobar('rebota un poco al dar en el suelo y se asienta', tras.some(v => v < c.angulo - 0.005) && tras.every(v => v > c.angulo - 0.2) && cerca(ang[ang.length - 1], c.angulo, 0.002), `rebota hasta ${Math.min(...tras)}`);
+  const cuestaAbajo = simular(roble, 0, { alturaEn: (x, z) => -0.3 * z }), cuestaArriba = simular(roble, 0, { alturaEn: (x, z) => 0.3 * z });
+  comprobar('se asienta según el terreno: cuesta abajo se tumba más que en llano, y cuesta arriba menos', cuestaAbajo.angulo > c.angulo + 0.15 && cuestaArriba.angulo < c.angulo - 0.15, `${cuestaAbajo.angulo} / ${c.angulo} / ${cuestaArriba.angulo}`);
+  comprobar('los fotogramas, cada 1/30 s como mucho, y en caidaEn el ángulo de cada momento', f.every((x, i) => i === 0 || x[0] - f[i - 1][0] <= 1 / 30 + 0.005) && cerca(caidaEn(c, 0).angulo, INICIO_CAIDA) && cerca(caidaEn(c, 99).angulo, c.angulo));
+  // otro árbol de lleno, a 4 m delante: se queda apoyado en él
+  const otro = { id: 'b', tipo: 'arbol', x: 0.1, z: 4, r: 0.4, arriba: 9 };
+  const ap = simular(roble, 0, { obstaculos: [otro] });
+  comprobar('si da de lleno con otro árbol, se queda apoyado en él (no llega al suelo)', !!ap.apoyo && ap.apoyo.id === 'b' && ap.angulo < 1 && cerca(ap.dir, 0), `${ap.angulo} rad, ${JSON.stringify(ap.apoyo)}`);
+  // de refilón (a un lado): se desvía hacia el otro lado y sigue hasta el suelo
+  const ref = simular(roble, 0, { obstaculos: [{ ...otro, x: 0.75 }] });
+  comprobar('si lo coge de refilón, se desvía hacia el otro lado y sigue hasta el suelo', !ref.apoyo && cerca(ref.dir, -DESVIO) && ref.angulo > 1.4, `dir ${ref.dir}`);
+  const obra = simular(roble, 0, { obstaculos: [{ id: 'obra:1:2', tipo: 'obra', x: 0, z: 3, r: 1, arriba: 2.5 }] });
+  comprobar('una obra delante también lo para', !!obra.apoyo && obra.apoyo.tipo === 'obra' && obra.angulo < 1.4, `${obra.angulo} rad`);
+  const bajo = simular(roble, 0, { obstaculos: [{ ...otro, z: 12 }, { ...otro, id: 'c', x: 3 }] });
+  comprobar('lo que está más allá de su alto o a un lado no cuenta', !bajo.apoyo && cerca(bajo.dir, 0));
+  comprobar('sale siempre igual (todos la ven igual)', JSON.stringify(simular(roble, 0, { obstaculos: [otro] })) === JSON.stringify(ap));
+  // al talarlo: la caída va en lo que devuelve, y lo que deja va hacia donde se desvió
+  const t2 = new Tala([{ ...roble }, { id: idArbol(0.8, 4), x: 0.8, z: 4, edad: 'adulto', especie: 'roble', alto: 9 }]);
+  const invs = new Inventarios(); conHacha(invs, 'ana', 'hacha_hierro');
+  let r, hora = T0; for (let i = 0; i < 40; i++) { r = t2.golpe(invs.de('ana'), roble.id, 0, 1, hora, 'ana'); hora += ENTRE_GOLPES; if (r.cae) break; }
+  comprobar('al caer, el golpe trae la caída; el árbol de al lado lo desvía, y el tronco queda hacia donde fue', r.cae && r.caida && cerca(r.caida.dir, r.dir) && cerca(r.dir, -DESVIO) && r.deja[0].x < 0, `dir ${r.dir}`);
+  // las obras de alrededor (src/logica/construccion.js): un muro de la planta baja, hasta lo alto de la planta
+  const mundo = new Mundo();
+  mundo.construcciones.push({ id: 7, ox: 0, oz: 3, oy: 0.5, rot: 0, piezas: new Map([['e,0,0,0,0', { id: 8, tipo: 'muro_zarzo', hueco: 'e', i: 0, j: 0, k: 0, d: 0 }]]) });
+  const obras = mundo.obrasCerca(0, 0, 8);
+  comprobar('las obras cerca salen con su sitio y su alto (un muro, hasta lo alto de su planta); las lejanas, no', obras.length === 1 && obras[0].tipo === 'obra' && cerca(obras[0].x, 1) && cerca(obras[0].z, 3) && cerca(obras[0].arriba, 3) && mundo.obrasCerca(40, 0, 8).length === 0, JSON.stringify(obras[0]));
+  t2.obstaculosEn = (x, z, r) => mundo.obrasCerca(x, z, r);
+  comprobar('y con ellas la tala sabe con qué puede dar', t2.alrededor(roble, T0).length === 1);
+  t2.obstaculosEn = null;
+  // un tocón no para nada
+  t2.estado[idArbol(0.8, 4)] = { golpes: 0, parte: 0, veces: 1, caido: T0, vuelve: T0 + SEMANA };
+  comprobar('un tocón no cuenta: el árbol talado ya no está', t2.alrededor(roble, T0 + 1000).length === 0);
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);

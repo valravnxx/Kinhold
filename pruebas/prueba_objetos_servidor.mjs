@@ -157,6 +157,7 @@ try {
   comprobar('A lo tala a golpes (adulto con hierro: 14) y el resultado dice que cae y hacia dónde', r.ok && r.datos.cae && golpes === 14 && Number.isFinite(r.datos.dir), `${golpes} golpes · ${r.motivo || ''}`);
   const tb = await talaB, sl = await sueloTala;
   comprobar('B se entera: el árbol cae y queda el tocón', tb.cae.arbol === arbol && tb.cae.autor === yoA && tb.estado.estado[arbol]?.vuelve > Date.now());
+  comprobar('y le llega la caída del servidor (sus fotogramas: la misma para todos), hacia donde dice el resultado', !!tb.cae.caida && Array.isArray(tb.cae.caida.fotos) && tb.cae.caida.fotos.length > 10 && tb.cae.caida.dir === r.datos.dir && tb.cae.dir === r.datos.dir, tb.cae.caida && `${tb.cae.caida.fotos.length} fotogramas, ${tb.cae.caida.dura} s`);
   comprobar('y ve el tronco largo y las ramas en el suelo', sl.objetos.some(o => o.cosa.tipo === 'tronco_largo') && sl.objetos.some(o => o.cosa.tipo === 'rama'));
   r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 11, az: 10, edad: 'joven' });
   comprobar('talado, ya no se tala (ni diciendo que es otro árbol más joven)', !r.ok, r.motivo);

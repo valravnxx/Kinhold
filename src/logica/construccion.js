@@ -718,6 +718,21 @@ export class Mundo {
     return false;
   }
 
+  // Las piezas de las obras (también a medias: el marco ya está puesto) a menos de r m de (x, z), con lo que puede dar
+  // un árbol al caer (src/logica/tala.js, simularCaida): un círculo de media casilla cada una, hasta lo alto de su
+  // planta (el suelo y el cimiento, poco más que el suelo). [{ id, tipo: 'obra', x, z, r, arriba }]
+  obrasCerca(x, z, r) {
+    if (!Number.isFinite(x) || !Number.isFinite(z) || !Number.isFinite(r)) return [];
+    const out = [];
+    for (const c of this.construcciones.values()) for (const p of c.piezas.values()) {
+      const m = centroMundo(c, p);
+      if (Math.hypot(m.x - x, m.z - z) > r + MODULO) continue;
+      out.push({ id: 'obra:' + c.id + ':' + p.id, tipo: 'obra', x: redondo(m.x), z: redondo(m.z), r: MODULO / 2,
+        arriba: redondo((c.oy || 0) + p.k * ALTURA + (p.hueco === 'f' ? 0.3 : ALTURA)) });
+    }
+    return out;
+  }
+
   // El muro terminado de planta baja más cercano a (x, z), para colgar en él lo que va en la pared (los colgaderos de
   // mochilas y de herramientas, src/logica/fabricacion.js). Solo muros llenos (sin puerta ni ventana) y a menos de
   // hasta m de su eje. Devuelve el sitio pegado a su cara, del lado de (x, z) y a margen de las esquinas, y el giro

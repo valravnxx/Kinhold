@@ -311,6 +311,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     puedeTocar: (a, x, z) => mundo.puedeTocar(x, z, a),   // las estaciones de fabricar, en tierra de otro solo si te ha invitado
     bajoTecho: (x, z) => mundo.bajoTecho(x, z),           // los puestos de trabajo: la hoguera, solo fuera
     alMuro: (x, z) => mundo.muroCercano(x, z, 0.5),       // los colgaderos, pegados a un muro
+    obrasCerca: (x, z, r) => mundo.obrasCerca(x, z, r),   // con lo que puede dar un árbol al caer (src/logica/tala.js)
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
@@ -1248,7 +1249,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           const k = sitio ? trozoDe(sitio.x, sitio.z) : null, solo = k ? new Set([k]) : new Set();
           for (const [otro, a] of clientes) if (a === autor || (k && vista.tiene(a, k))) hacer(otro, solo);
         };
-        if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos } }));
+        if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos, caida: r.caida } }));
         // lo descortezado y lo sangrado (8 nov): lo de ese árbol, a quien lo tiene alrededor
         if (r.ok && (msg.accion.tipo === 'descortezar' || msg.accion.tipo === 'sangrar')) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo) }));
         if (r.suelo) repartirSuelo(ahora);
