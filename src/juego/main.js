@@ -338,6 +338,7 @@ const obstaculos = decorado.obstaculos; // {x,z,r}
 // En el mundo, sale del sitio (ramas en el bosque, sílex en la caliza…) y sigue al jugador (src/logica/recogida_mundo.js).
 const recoleccion = mundoJ ? crearRecoleccionMundo({ raiz: escena, mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarRecogida ? 1 + Math.floor(Math.random() * 1e6) : 0), altura: decorado.altura, obstaculos, almacen })
   : crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
+if (hierbaDensa) hierbaDensa.estorbos = () => recoleccion.puntos || [];   // (a su lado no se pone hierba, que los taparía)
 // lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.tierraDe(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)

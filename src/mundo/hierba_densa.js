@@ -16,16 +16,16 @@ import { claveTrozo, trozoDe } from '../logica/trozos.js';
 export const CELDA = 8;   // m
 const POR_FOTOGRAMA = 2;  // celdas nuevas, como mucho, en cada fotograma
 
-// una mata: cuatro hojas que se abren hacia fuera, cada una una tira que se estrecha (5 puntos, 3 triángulos). Mide 1 de
+// una mata: tres hojas finas que se abren hacia fuera, cada una una tira que se estrecha (5 puntos, 3 triángulos). Mide 1 de
 // alto (la instancia le da su tamaño); «alto» (0 en el pie, 1 en la punta) es lo que mueve el viento y aclara el color
 function geometriaMata() {
   const pos = [], alto = [], idx = [], nor = [];
-  const HOJAS = 4;
+  const HOJAS = 3;
   for (let h = 0; h < HOJAS; h++) {
     const a = h * 6.283 / HOJAS + 0.4 + (h % 2) * 0.5, ca = Math.cos(a), sa = Math.sin(a);   // hacia dónde se abre
     const px = -sa, pz = ca;                                          // a lo ancho de la hoja
     const cx = ca * 0.12, cz = sa * 0.12;                             // el pie, algo separado del centro
-    const w = 0.085, cae = 0.3 + 0.18 * (h % 2), largo = 1 - 0.22 * (h % 2);
+    const w = 0.075, cae = 0.3 + 0.18 * (h % 2), largo = 1 - 0.22 * (h % 2);
     const pt = (lado, y, anch, fuera) => { pos.push(cx + ca * fuera + px * lado * anch, y * largo, cz + sa * fuera + pz * lado * anch); alto.push(y); nor.push(0, 1, 0); };
     const b = pos.length / 3;
     pt(-1, 0, w, 0); pt(1, 0, w, 0); pt(-1, 0.55, w * 0.7, cae * 0.3); pt(1, 0.55, w * 0.7, cae * 0.3); pt(0, 1, 0, cae);
@@ -38,7 +38,7 @@ function geometriaMata() {
   g.setIndex(idx);
   return g;
 }
-export const TRIANGULOS_MATA = 12;
+export const TRIANGULOS_MATA = 9;
 
 // el azar fijo de una celda (enteros → 0–1, una secuencia)
 function azarCelda(i, j) {
@@ -67,7 +67,9 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       // al llegar al borde de su radio, la mata encoge hasta el suelo; y cuanto más lejos, más ancha (a lo lejos hay las
       // mismas matas por metro y se ven más pequeñas: así siguen tapando el suelo)
       float lejos = distance(pie.xz, uCentro) / uRadio;
-      float cerca = 1.0 - smoothstep(0.55, 1.0, lejos);
+      // (se van por partes: cada mata tiene su azar, y a más distancia quedan menos, y más bajas; no hay un corte)
+      float azar = fract(sin(dot(pie.xz, vec2(12.9898, 78.233))) * 43758.5453);
+      float cerca = step(azar, 1.0 - smoothstep(0.4, 1.0, lejos)) * (1.0 - 0.45 * smoothstep(0.5, 1.0, lejos));
       vLejos = lejos;
       enMundo.xz = pie.xz + (enMundo.xz - pie.xz) * (1.0 + 1.6 * lejos);
       enMundo.y = pie.y + (enMundo.y - pie.y) * cerca;
@@ -81,11 +83,11 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       .replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\nnormal = normalize( vNormal );')
       // más oscura en el pie (la sombra de la propia mata) y más clara y algo más amarilla en la punta; a lo lejos, del
       // color del suelo sin más, para que el borde de la hierba no se note contra el suelo de más allá
-      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(mix(vec3(0.74, 0.76, 0.74), vec3(1.14, 1.13, 1.0), vAlto), vec3(1.0), smoothstep(0.3, 0.95, vLejos));');
+      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(mix(vec3(0.8, 0.82, 0.8), vec3(1.02, 1.02, 0.95), vAlto), vec3(0.94), smoothstep(0.25, 0.9, vLejos));');
   };
   const grupo = new THREE.Group(); grupo.name = 'hierbaDensa'; raiz.add(grupo);
   const celdas = new Map();   // «i,j» → { im (o null si no hay ninguna mata), malla (la del terreno con la que se hizo), n }
-  let conf = null, ocupado = null, sucio = 0;
+  let conf = null, ocupado = null, sucio = 0, estorbos = null;
   const o = new THREE.Object3D(), col = new THREE.Color();
 
   // el trozo de terreno de un punto del mundo, si está con su malla
@@ -107,15 +109,18 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
   }
 
   // hace la celda (ci, cj); false si su terreno aún no está (se vuelve a intentar)
-  function hacer(ci, cj) {
+  // banda: 0, cerca del jugador (más matas, más pequeñas); 1, más allá (menos matas y más anchas: tapan lo mismo)
+  function hacer(ci, cj, banda = 0) {
     const xm0 = ci * CELDA, zm0 = cj * CELDA;
     const v0 = trozoEn(xm0 + CELDA / 2, zm0 + CELDA / 2);
     if (!v0) return false;
-    const N = Math.round(conf.densidad * CELDA * CELDA), r = azarCelda(ci, cj);
+    const N = Math.round(conf.densidad * (banda ? 0.45 : 1.6) * CELDA * CELDA), r = azarCelda(ci, cj);
+    // lo que hay en el suelo para recoger (ramas, piedras…): a su lado no se pone hierba, que lo taparía
+    const est = estorbos ? estorbos().filter(e => e.x + O.x > xm0 - 1 && e.x + O.x < xm0 + CELDA + 1 && e.z + O.z > zm0 - 1 && e.z + O.z < zm0 + CELDA + 1) : [];
     const M = new Float32Array(N * 16), K = new Float32Array(N * 3);
     let n = 0;
     for (let k = 0; k < N; k++) {
-      const xm = xm0 + r() * CELDA, zm = zm0 + r() * CELDA, giro = r() * 6.283, tam = 0.2 + r() * 0.16, tono = 0.86 + r() * 0.28, corte = r();
+      const xm = xm0 + r() * CELDA, zm = zm0 + r() * CELDA, giro = r() * 6.283, tam = (0.17 + r() * r() * 0.3) * (banda ? 1.25 : 1), tono = 0.9 + r() * 0.2, corte = r();
       const v = trozoEn(xm, zm) || v0;
       const y = terreno.alturaEn(xm, zm);
       if (y === null || y < 0.6) continue;                       // (ni en el agua ni en la orilla)
@@ -123,9 +128,10 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       if (h <= corte) continue;                                  // (donde el suelo deja de ser hierba, cada vez menos matas)
       const x = xm - O.x, z = zm - O.z;
       if (ocupado && ocupado(x, z)) continue;
-      o.position.set(x, y - y0 - 0.02, z); o.rotation.set(0, giro, 0); o.scale.set(tam * (0.8 + 0.5 * h), tam * (0.6 + 0.4 * h), tam * (0.8 + 0.5 * h)); o.updateMatrix();
+      if (est.length && est.some(e => (e.x - x) ** 2 + (e.z - z) ** 2 < 0.2)) continue;
+      o.position.set(x, y - y0 - 0.02, z); o.rotation.set(0, giro, 0); const an = (0.8 + 0.5 * h) * (banda ? 1.7 : 1); o.scale.set(tam * an, tam * (0.6 + 0.4 * h), tam * an); o.updateMatrix();
       o.matrix.toArray(M, n * 16);
-      K[n * 3] = c[0] * tono * 0.9; K[n * 3 + 1] = c[1] * tono * 0.93; K[n * 3 + 2] = c[2] * tono * 0.84; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)
+      K[n * 3] = c[0] * tono * 0.82; K[n * 3 + 1] = c[1] * tono * 0.86; K[n * 3 + 2] = c[2] * tono * 0.77; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)
     }
     let im = null;
     if (n) {
@@ -138,7 +144,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       im.boundingSphere = new THREE.Sphere(new THREE.Vector3(xm0 + CELDA / 2 - O.x, (terreno.alturaEn(xm0 + CELDA / 2, zm0 + CELDA / 2) ?? 0) - y0, zm0 + CELDA / 2 - O.z), CELDA * 1.6);
       grupo.add(im);
     }
-    celdas.set(ci + ',' + cj, { im, malla: v0.malla, n, ci, cj });
+    celdas.set(ci + ',' + cj, { im, malla: v0.malla, n, ci, cj, banda });
     return true;
   }
   function soltar(k) {
@@ -156,6 +162,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
     if (conf) U.uRadio.value = conf.radio;
   }
 
+  const CORTE = 0.45, bandaDe = (d) => (d < conf.radio * CORTE ? 0 : 1);
   // en cada fotograma: P, dónde está el jugador (escena); t, el tiempo (s). Devuelve los ms que ha tardado
   let repaso = 0;
   function paso(P, t) {
@@ -172,17 +179,19 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
     }
     faltan.sort((a, b) => a[0] - b[0]);
     let hechas = 0;
-    for (const [, ci, cj] of faltan) { if (hechas >= POR_FOTOGRAMA) break; if (hacer(ci, cj)) hechas++; }
+    for (const [d, ci, cj] of faltan) { if (hechas >= POR_FOTOGRAMA) break; if (hacer(ci, cj, bandaDe(d))) hechas++; }
     // de vez en cuando: fuera las lejanas, y otra vez las que tienen el suelo cambiado (otro detalle, suelo nivelado) o
     // algo construido encima
-    if (++repaso % 20 === 0 || sucio) {
+    if (++repaso % 10 === 0 || sucio) {
       let rehechas = 0;
       for (const [k, c] of [...celdas]) {
         const d = Math.hypot((c.ci + 0.5) * CELDA - xm, (c.cj + 0.5) * CELDA - zm);
         if (d > R + CELDA * 2) { soltar(k); continue; }
         if (rehechas >= POR_FOTOGRAMA) continue;
         const v = trozoEn((c.ci + 0.5) * CELDA, (c.cj + 0.5) * CELDA);
-        if (c.vieja || (v && v.malla !== c.malla)) { soltar(k); if (hacer(c.ci, c.cj)) rehechas++; }
+        // (la banda cambia con holgura, para que una celda en la raya no se rehaga a cada paso)
+        const b = c.banda ? (d < R * CORTE - CELDA * 0.5 ? 0 : 1) : (d > R * CORTE + CELDA * 0.5 ? 1 : 0);
+        if (c.vieja || b !== c.banda || (v && v.malla !== c.malla)) { soltar(k); if (hacer(c.ci, c.cj, b)) rehechas++; }
       }
       sucio = [...celdas.values()].some(c => c.vieja) ? 1 : 0;
     }
@@ -192,6 +201,8 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
   return {
     poner, paso, grupo, soltarTodo,
     get activa() { return !!conf; },
+    // estorbos: () => [{ x, z }] (escena), lo que hay para recoger en el suelo
+    set estorbos(f) { estorbos = f; },
     // donde se ha construido no hay hierba: las celdas se rehacen poco a poco con lo ocupado de ahora
     despejar(f) { ocupado = f; for (const c of celdas.values()) c.vieja = true; sucio = 1; },
     get cuenta() { let n = 0; for (const c of celdas.values()) n += c.n; return { celdas: celdas.size, matas: n, triangulos: n * TRIANGULOS_MATA }; },

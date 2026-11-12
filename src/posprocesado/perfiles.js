@@ -27,16 +27,17 @@
 //     distancia (m) los árboles, las matas y las rocas de Meshy van con su modelo de cerca, con textura (cerca), y hasta
 //     cuál con el de más detalle (alto, 0: nunca); más allá, el de media distancia y el de lejos (src/mundo/naturaleza_meshy.js)
 //   hierba (12 nov, el aspecto de maqueta): la hierba densa alrededor del jugador (src/mundo/hierba_densa.js): hasta
-//     cuántos metros (radio) y cuántas matas por metro cuadrado (densidad). null: sin ella (las briznas sueltas de antes)
+//     cuántos metros (radio) y cuántas matas por metro cuadrado (densidad; cerca de ti, 1,6 veces eso, y de casi la mitad
+//     del radio para allá, 0,45, más anchas). null: sin ella (las briznas sueltas de antes)
 //   horizonte (valravnx, 5 nov): la isla entera, basta, detrás del terreno de cerca (src/mundo/horizonte.js); paso:
 //     cada cuántos 100 m va un punto (4: cada 400 m, 2: cada 200, 1: cada 100). null: solo el terreno de cerca
 export const PERFILES = [
   { id: 'movil-1', nombre: 'Móvil básico', res: 0.75, sombras: 512, blandas: false, ao: null, aoMedia: true, brillo: null, rayos: null, suavizado: 'ninguno', desenfoque: false, naturaleza: { cerca: 12, alto: 0 }, hierba: null, objetivo: 30 },
-  { id: 'movil-2', nombre: 'Móvil medio', res: 1, sombras: 1024, blandas: false, ao: 'Performance', aoMedia: true, brillo: 4, rayos: null, suavizado: 'smaa-bajo', desenfoque: true, naturaleza: { cerca: 16, alto: 0 }, hierba: { radio: 14, densidad: 7 }, objetivo: 30 },
-  { id: 'movil-3', nombre: 'Móvil alto y tableta', res: 1.5, sombras: 1024, blandas: true, ao: 'Low', aoMedia: true, brillo: 6, rayos: null, suavizado: 'smaa-medio', desenfoque: true, naturaleza: { cerca: 22, alto: 8 }, hierba: { radio: 18, densidad: 8 }, objetivo: 30, horizonte: { paso: 2 } },
-  { id: 'pc-1', nombre: 'PC básico', res: 1, sombras: 2048, blandas: true, ao: 'Medium', aoMedia: true, brillo: 6, rayos: 32, suavizado: 'smaa-alto', desenfoque: true, naturaleza: { cerca: 24, alto: 8 }, hierba: { radio: 22, densidad: 8 }, objetivo: 60, horizonte: { paso: 2 } },
-  { id: 'pc-2', nombre: 'PC medio', res: 1.5, sombras: 2048, blandas: true, ao: 'High', aoMedia: false, brillo: 8, rayos: 60, suavizado: 'msaa-4', desenfoque: true, naturaleza: { cerca: 40, alto: 16 }, hierba: { radio: 30, densidad: 9 }, objetivo: 60, horizonte: { paso: 2 } },
-  { id: 'pc-3', nombre: 'PC alto', res: 2, sombras: 4096, blandas: true, ao: 'Ultra', aoMedia: false, brillo: 8, rayos: 90, suavizado: 'msaa-8', desenfoque: true, naturaleza: { cerca: 60, alto: 30 }, hierba: { radio: 40, densidad: 11 }, objetivo: 60, horizonte: { paso: 1 } },
+  { id: 'movil-2', nombre: 'Móvil medio', res: 1, sombras: 1024, blandas: false, ao: 'Performance', aoMedia: true, brillo: 4, rayos: null, suavizado: 'smaa-bajo', desenfoque: true, naturaleza: { cerca: 16, alto: 0 }, hierba: { radio: 22, densidad: 9 }, objetivo: 30 },
+  { id: 'movil-3', nombre: 'Móvil alto y tableta', res: 1.5, sombras: 1024, blandas: true, ao: 'Low', aoMedia: true, brillo: 6, rayos: null, suavizado: 'smaa-medio', desenfoque: true, naturaleza: { cerca: 22, alto: 8 }, hierba: { radio: 25, densidad: 10 }, objetivo: 30, horizonte: { paso: 2 } },
+  { id: 'pc-1', nombre: 'PC básico', res: 1, sombras: 2048, blandas: true, ao: 'Medium', aoMedia: true, brillo: 6, rayos: 32, suavizado: 'smaa-alto', desenfoque: true, naturaleza: { cerca: 24, alto: 8 }, hierba: { radio: 28, densidad: 10 }, objetivo: 60, horizonte: { paso: 2 } },
+  { id: 'pc-2', nombre: 'PC medio', res: 1.5, sombras: 2048, blandas: true, ao: 'High', aoMedia: false, brillo: 8, rayos: 60, suavizado: 'msaa-4', desenfoque: true, naturaleza: { cerca: 40, alto: 16 }, hierba: { radio: 36, densidad: 14 }, objetivo: 60, horizonte: { paso: 2 } },
+  { id: 'pc-3', nombre: 'PC alto', res: 2, sombras: 4096, blandas: true, ao: 'Ultra', aoMedia: false, brillo: 8, rayos: 90, suavizado: 'msaa-8', desenfoque: true, naturaleza: { cerca: 60, alto: 30 }, hierba: { radio: 44, densidad: 15 }, objetivo: 60, horizonte: { paso: 1 } },
 ];
 export const perfil = (id) => PERFILES.find(p => p.id === id) || PERFILES[2];
 

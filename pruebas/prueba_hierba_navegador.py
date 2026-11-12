@@ -51,7 +51,7 @@ with sync_playwright() as p:
         c = pg.evaluate(CUENTA) or {'matas': 0, 'celdas': 0, 'triangulos': 0}
         conf = pg.evaluate(f"(() => {{ const p = window.__graficos.PERFILES.find(x => x.id === window.__graficos.perfil); return p.hierba; }})()")
         comprobar('con un perfil que la lleva, miles de matas alrededor del jugador', c['matas'] > 1000, f"{c['matas']} matas en {c['celdas']} celdas, {c['triangulos']} triángulos")
-        tope = 3.1416 * (conf['radio'] + 12) ** 2 * conf['densidad'] if conf else 0
+        tope = 3.1416 * (conf['radio'] + 12) ** 2 * conf['densidad'] * 1.6 if conf else 0
         comprobar('y no más de las que dice su perfil (radio y matas por metro)', 0 < c['matas'] <= tope, f"{c['matas']} de {round(tope)}")
         comprobar('las briznas sueltas de antes ya no se dibujan', pg.evaluate(BRIZNAS) == 0, str(pg.evaluate(BRIZNAS)))
         # el color: el del suelo que tienen debajo (verde: más verde que rojo y que azul), ninguna negra
