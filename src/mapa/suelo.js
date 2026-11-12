@@ -18,7 +18,7 @@ import { materialTex } from '../mundo/estilos.js';
 const SIN_HUECO = new THREE.Vector4(1e9, 1e9, -1e9, -1e9);
 export const CAPAS_SUELO = ['hierba', 'tierra', 'roca', 'hojarasca'];
 // metros que ocupa cada textura en el suelo (una vez entera)
-export const ESCALA_SUELO = { hierba: 2.6, tierra: 2.2, roca: 3.5, hojarasca: 1.8 };
+export const ESCALA_SUELO = { hierba: 2.6, tierra: 2.2, roca: 3.5, hojarasca: 2.0 };
 
 // lo que comparten los materiales de cerca: las texturas y cuánto relieve
 const capas = {
@@ -78,14 +78,14 @@ vec4 bCapas; vec3 pwCapas;
     // (cada una con su color en distinta medida: la tierra y la roca casi solo claros y oscuros; la hojarasca, con el suyo)
     vec3 L = vec3(0.299, 0.587, 0.114);
     vec3 dH = cH.rgb / uMedias[0], dT = cT.rgb / uMedias[1], dR = cR.rgb / uMedias[2], dF = cF.rgb / uMedias[3];
-    dH = mix(vec3(dot(dH, L)), dH, 0.5); dT = mix(vec3(dot(dT, L)), dT, 0.2); dR = mix(vec3(dot(dR, L)), dR, 0.3); dF = mix(vec3(dot(dF, L)), dF, 0.7);
+    dH = mix(vec3(dot(dH, L)), dH, 0.5); dT = mix(vec3(dot(dT, L)), dT, 0.1); dR = mix(vec3(dot(dR, L)), dR, 0.3); dF = mix(vec3(dot(dF, L)), dF, 0.85);
     vec3 d = dH * b.x + dT * b.y + dR * b.z + dF * b.w;
     // a lo lejos, el detalle se va (la misma textura muchas veces seguidas hace rayas y aguas); y 0,6: lo que oscurecía
     // la textura «suelo» de antes, con la que están hechos los colores de los vértices
     // y también donde se ve muy de canto: cuando cada píxel de la pantalla abarca varios de la textura, su detalle hace
     // bandas (el aliasing de mirar una textura en ángulo rasante); ahí se va también
     float tpp = max(length(dFdx(p)), length(dFdy(p))) / uEscala.y * 512.0;
-    float lejosD = max(smoothstep(14.0, 55.0, length(vViewPosition)), smoothstep(9.0, 26.0, tpp));
+    float lejosD = max(smoothstep(35.0, 130.0, length(vViewPosition)), smoothstep(9.0, 26.0, tpp));
     // (lo de lejos se queda con la variación grande de la hierba, que no hace rayas)
     vec3 grande = mix(vec3(1.0), cH2.rgb / uMedias[0], 0.45 * b.x);
     diffuseColor.rgb *= 0.6 * mix(clamp(d, 0.0, 2.2), grande, lejosD);

@@ -108,6 +108,15 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
     return _c;
   }
 
+  // el peso de la hierba del suelo en un punto (0–1), entre los cuatro puntos de su rejilla; null si el trozo no lo trae
+  function pesoHierbaEn(v, xm, zm) {
+    const at = v.malla.geometry.attributes.mezcla; if (!at) return null;
+    const s = v.suelo, P = at.array, n = s.n;
+    const ga = Math.min(n - 1.001, Math.max(0, (xm - s.x0) / s.paso)), gb = Math.min(n - 1.001, Math.max(0, (zm - s.z0) / s.paso));
+    const a = Math.floor(ga), b = Math.floor(gb), fa = ga - a, fb = gb - b;
+    const p = P[(b * n + a) * 4], q = P[(b * n + a + 1) * 4], r = P[((b + 1) * n + a) * 4], u = P[((b + 1) * n + a + 1) * 4];
+    return (p + (q - p) * fa) * (1 - fb) + (r + (u - r) * fa) * fb;
+  }
   // hace la celda (ci, cj); false si su terreno aún no está (se vuelve a intentar)
   // banda: 0, cerca del jugador (más matas, más pequeñas); 1, más allá (menos matas y más anchas: tapan lo mismo)
   function hacer(ci, cj, banda = 0) {
@@ -124,7 +133,11 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       const v = trozoEn(xm, zm) || v0;
       const y = terreno.alturaEn(xm, zm);
       if (y === null || y < 0.6) continue;                       // (ni en el agua ni en la orilla)
-      const c = colorEn(v, xm, zm), h = cuantaHierba(c[0], c[1], c[2]);
+      // cuánta hierba hay ahí: por el color (verde: hierba) y, si el trozo lo trae, también por el peso de la hierba
+      // del suelo (src/mundo/color_suelo.js, pesos): sobre la tierra, la roca o la hojarasca no se pone (se teñía de
+      // pardo y parecía un campo arado)
+      const c = colorEn(v, xm, zm), w = pesoHierbaEn(v, xm, zm), hc = cuantaHierba(c[0], c[1], c[2]);
+      const h = w === null ? hc : Math.min(hc, Math.max(0, (w - 0.3) / 0.45));
       if (h <= corte) continue;                                  // (donde el suelo deja de ser hierba, cada vez menos matas)
       const x = xm - O.x, z = zm - O.z;
       if (ocupado && ocupado(x, z)) continue;
