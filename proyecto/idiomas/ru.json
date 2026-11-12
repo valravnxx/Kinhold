@@ -4060,5 +4060,13 @@
  "El servidor la guarda en rendimiento.jsonl con la hora y la cuenta (una cada 15 s por jugador como mucho) y la cuenta de admin ve las 30 últimas con «Ver las mandadas», en el mismo panel.": "Сервер сохраняет замер в rendimiento.jsonl со временем и аккаунтом (не чаще одного раза в 15 с на игрока), а аккаунт администратора видит последние 30 через «Посмотреть отправленные» в той же панели.",
  "En Ajustes, Ayuda y Decisiones el marco de madera ya no se va al desplazar hacia abajo: lo de abajo quedaba fuera del marco.": "В Настройках, Помощи и Решениях деревянная рамка больше не уезжает при прокрутке вниз: нижняя часть оставалась за рамкой.",
  "Con esto el hito «Orden» queda terminado y pasa a revisión de valravnx.": "На этом этап «Порядок» завершён и переходит на проверку к valravnx.",
- "Demo v190.": "Демо v190."
+ "Demo v190.": "Демо v190.",
+ "Con pocos fotogramas, la velocidad de siempre (no a cámara lenta)": "При малом числе кадров — обычная скорость (не замедленная съёмка)",
+ "Con pocos fotogramas se anda a la velocidad de siempre: el tiempo del juego va al real, no a cámara lenta.": "При малом числе кадров персонаж ходит с обычной скоростью: игровое время идёт как реальное, а не замедленно.",
+ "Con pocos fotogramas, la velocidad de siempre (demo v191)": "При малом числе кадров — обычная скорость (демо v191)",
+ "Velocidad con pocos fotogramas: 3,55 m/s a 5,7 fps en la nube; rota a propósito, falla. Comprobador de código sin fallos. No comprobado: el reporte de 10 s de esa jugadora (la red de aquí no llega al servidor).": "Скорость при малом числе кадров: 3,55 м/с при 5,7 к/с в облаке; если сломать нарочно — падает. Проверка кода без ошибок. Не проверено: 10-секундный отчёт этой игроки (отсюда сеть не достаёт до сервера).",
+ "Con pocos fps una jugadora de prueba andaba «hiperlenta»: el bucle contaba como mucho 0,05 s por fotograma, así que por debajo de 20 fps todo el juego iba a cámara lenta.": "При низком fps тестовая игрока ходила «сверхмедленно»: цикл считал не больше 0,05 с на кадр, поэтому ниже 20 fps вся игра шла замедленно.",
+ "Ahora el tiempo del juego va al real, hasta medio segundo por fotograma (la vuelta de otra pestaña no salta).": "Теперь игровое время идёт как реальное, до полусекунды на кадр (возврат с другой вкладки не даёт скачка).",
+ "El paso de andar se parte en trozos de 0,05 s, para no atravesar paredes ni saltarse una orilla con fotogramas largos.": "Шаг ходьбы делится на куски по 0,05 с, чтобы на длинных кадрах не проходить сквозь стены и не перескакивать берег.",
+ "Prueba nueva: con el juego frenado a propósito a pocos fps, andar 3 s recorre lo que toca a 3,6 m/s (con el recorte de antes, 0,29 m/s: falla).": "Новый тест: при нарочно замедленной до низкого fps игре 3 с ходьбы проходят положенное при 3,6 м/с (со старым ограничением — 0,29 м/с: падает)."
 }

@@ -2038,9 +2038,9 @@
     },
     {
      "nombre": "Con pocos fotogramas, la velocidad de siempre (no a cámara lenta)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T18:14:07+01:00",
-     "rama": "trabajo/20261112-1814-velocidad"
+     "fin": "2026-11-12T18:30:38+01:00"
     }
    ]
   },
@@ -4181,6 +4181,13 @@
      "archivo": "jugar/demo/v190.html",
      "capturas": "capturas/demo-v190",
      "notas": "Medida de rendimiento de cada aparato, al servidor con un botón"
+    },
+    {
+     "v": "v191",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v191.html",
+     "capturas": "capturas/demo-v191",
+     "notas": "Con pocos fotogramas se anda a la velocidad de siempre: el tiempo del juego va al real, no a cámara lenta."
     }
    ]
   },

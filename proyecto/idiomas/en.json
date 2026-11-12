@@ -4079,5 +4079,13 @@
  "El servidor la guarda en rendimiento.jsonl con la hora y la cuenta (una cada 15 s por jugador como mucho) y la cuenta de admin ve las 30 últimas con «Ver las mandadas», en el mismo panel.": "The server stores it in rendimiento.jsonl with the time and the account (at most one every 15 s per player) and the admin account sees the last 30 with «See the ones sent», in the same panel.",
  "En Ajustes, Ayuda y Decisiones el marco de madera ya no se va al desplazar hacia abajo: lo de abajo quedaba fuera del marco.": "In Settings, Help and Decisions the wooden frame no longer moves away when scrolling down: the lower part was left outside the frame.",
  "Con esto el hito «Orden» queda terminado y pasa a revisión de valravnx.": "With this the «Order» milestone is finished and goes to valravnx's review.",
- "Demo v190.": "Demo v190."
+ "Demo v190.": "Demo v190.",
+ "Con pocos fotogramas, la velocidad de siempre (no a cámara lenta)": "With few frames, the usual speed (not slow motion)",
+ "Con pocos fotogramas se anda a la velocidad de siempre: el tiempo del juego va al real, no a cámara lenta.": "With few frames you walk at the usual speed: game time keeps to real time, not slow motion.",
+ "Con pocos fotogramas, la velocidad de siempre (demo v191)": "With few frames, the usual speed (demo v191)",
+ "Velocidad con pocos fotogramas: 3,55 m/s a 5,7 fps en la nube; rota a propósito, falla. Comprobador de código sin fallos. No comprobado: el reporte de 10 s de esa jugadora (la red de aquí no llega al servidor).": "Speed with few frames: 3.55 m/s at 5.7 fps in the cloud; broken on purpose, it fails. Code checker with no errors. Not checked: that player's 10 s report (the network here cannot reach the server).",
+ "Con pocos fps una jugadora de prueba andaba «hiperlenta»: el bucle contaba como mucho 0,05 s por fotograma, así que por debajo de 20 fps todo el juego iba a cámara lenta.": "With low fps a test player walked «super slow»: the loop counted at most 0.05 s per frame, so below 20 fps the whole game ran in slow motion.",
+ "Ahora el tiempo del juego va al real, hasta medio segundo por fotograma (la vuelta de otra pestaña no salta).": "Now game time keeps to real time, up to half a second per frame (coming back from another tab does not jump).",
+ "El paso de andar se parte en trozos de 0,05 s, para no atravesar paredes ni saltarse una orilla con fotogramas largos.": "The walking step is split into 0.05 s pieces, so long frames do not pass through walls or skip a shoreline.",
+ "Prueba nueva: con el juego frenado a propósito a pocos fps, andar 3 s recorre lo que toca a 3,6 m/s (con el recorte de antes, 0,29 m/s: falla).": "New test: with the game slowed down on purpose to low fps, walking for 3 s covers what it should at 3.6 m/s (with the old cap, 0.29 m/s: it fails)."
 }
