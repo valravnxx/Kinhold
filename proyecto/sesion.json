@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-12T10:25:13+00:00",
-  "tarea": "Comprobador de código: un analizador y la comprobación de tipos de JavaScript, que avisen en segundos y sin la nube",
-  "hito": "orden",
-  "rama": "trabajo/20261112-1025"
- },
+ "A": null,
  "B": null
 }

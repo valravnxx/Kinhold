@@ -2009,9 +2009,9 @@
     },
     {
      "nombre": "Comprobador de código: un analizador y la comprobación de tipos de JavaScript, que avisen en segundos y sin la nube",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T10:25:13+00:00",
-     "rama": "trabajo/20261112-1025"
+     "fin": "2026-11-12T10:48:21+00:00"
     },
     {
      "nombre": "Una base común para las pruebas de navegador: el servidor de archivos y las copias de recursos, en un solo sitio",
