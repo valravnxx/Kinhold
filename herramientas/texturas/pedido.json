@@ -1,1 +1,2 @@
-{"buscar": {"hierba": "grass ground", "tierra": "dirt ground soil", "roca": "rock cliff stone", "hojarasca": "forest floor leaves", "musgo": "moss ground"}, "cuantas": 10}
+{"buscar": {"hojarasca": "forest leaves", "hojas": "leaves", "bosque": "forest ground"}, "cuantas": 12,
+ "bajar": {"hierba": "Ground037", "tierra": "Ground106", "tierra2": "Ground048", "roca": "Rock028", "roca2": "Rock030"}}
