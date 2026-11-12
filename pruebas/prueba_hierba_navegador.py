@@ -69,8 +69,9 @@ with sync_playwright() as p:
         try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
         except Exception: pass
         pg.wait_for_timeout(6000); esperar_hierba(pg, 300)
+        lim = conf['radio'] + 30   # (las celdas se sueltan a dos celdas más allá del radio; con holgura)
         lejos = pg.evaluate(f"""(() => {{ const k = {K}; let cerca = 0, atras = 0; k.hierbaDensa.grupo.traverse(o => {{ if (!o.isInstancedMesh) return; const a = o.instanceMatrix.array;
-          const d = Math.hypot(a[12] - k.pj.x, a[14] - k.pj.z); if (d < 40) cerca++; else atras++; }}); return [cerca, atras]; }})()""")
+          const d = Math.hypot(a[12] - k.pj.x, a[14] - k.pj.z); if (d < %LIM%) cerca++; else atras++; }}); return [cerca, atras]; }})()""".replace('%LIM%', str(lim)))
         comprobar('al andar 60 m, la hierba va detrás: hay celdas donde estás y se han soltado las de atrás', lejos[0] > 3 and lejos[1] == 0, f'{lejos[0]} celdas contigo, {lejos[1]} atrás')
         # el móvil básico no la lleva: vuelven las briznas; y al volver al perfil, otra vez la hierba
         pg.evaluate("window.__graficos.poner('movil-1', false)"); pg.wait_for_timeout(3000)
