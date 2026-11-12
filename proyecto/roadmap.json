@@ -2035,6 +2035,12 @@
      "estado": "hecho",
      "inicio": "2026-11-12T14:24:14+00:00",
      "fin": "2026-11-12T15:12:47+00:00"
+    },
+    {
+     "nombre": "Con pocos fotogramas, la velocidad de siempre (no a cámara lenta)",
+     "estado": "en_curso",
+     "inicio": "2026-11-12T18:14:07+01:00",
+     "rama": "trabajo/20261112-1814-velocidad"
     }
    ]
   },
