@@ -183,6 +183,12 @@ try:
             W, H = vista['width'], vista['height']
             comprobar(f'{nombre}: las ocho frases rápidas, en tu lengua', [b['t'] for b in botones] == [T(f) for f in FRASES], str([b['t'] for b in botones]))
             comprobar(f'{nombre}: enteras y dentro de la pantalla (sin cortar el texto)', len(botones) == 8 and all(b['cabe'] and b['x0'] >= 0 and b['x1'] <= W and b['y0'] >= 0 and b['y1'] <= H for b in botones), str(botones[:2]))
+            # y no pisa nada de la interfaz que se pueda tocar (botones, joystick, manos)
+            pisa = pg.evaluate("""() => { const c = document.getElementById('charlaCaja').getBoundingClientRect();
+              return [...document.querySelectorAll('button, #llevas .hu, #joystick, #stick')].filter(e => !e.closest('#charlaCaja') && e.offsetParent !== null && getComputedStyle(e).visibility !== 'hidden')
+                .filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left < c.right && r.right > c.left && r.top < c.bottom && r.bottom > c.top; })
+                .map(e => e.id || e.textContent.trim().slice(0, 20) || e.className); }""")
+            comprobar(f'{nombre}: el tablero de hablar no pisa ningún botón', not pisa, str(pisa))
             captura(pg, f'{SALIDA}/{nombre}_frases.png')
             try: pg.locator('#charlaCaja').screenshot(path=f'{SALIDA}/{nombre}_frases_cerca.png')
             except Exception as e: print('  (sin captura de cerca:', str(e)[:80], ')')

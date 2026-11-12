@@ -51,10 +51,11 @@ export function montarCharla({ enLinea, boton, camara, lienzo, pies, alAbrir = (
     alAbrir();
     ponerTextos();   // (el aviso del campo, corto en el móvil: se mira al abrir)
     caja.hidden = false; texto.value = '';
+    document.body.classList.add('hablando');   // (en el móvil, sin el botón del arma debajo del tablero)
     // (en el móvil, sin sacar el teclado: taparía las frases; se toca el campo para escribir)
     if (!document.body.classList.contains('tactil-ui')) texto.focus();
   }
-  function cerrar() { caja.hidden = true; texto.blur(); }
+  function cerrar() { caja.hidden = true; texto.blur(); document.body.classList.remove('hablando'); }
   caja.onsubmit = (e) => {
     e.preventDefault();
     const t = texto.value.trim();
