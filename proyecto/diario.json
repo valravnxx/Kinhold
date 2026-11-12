@@ -6289,6 +6289,20 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-12T05:24:07+00:00",
+  "fin": "2026-11-12T05:50:40+00:00",
+  "titulo": "Orden: el servidor guarda los objetos sin reescribir el archivo en cada hachazo y sin bloquear (carril A)",
+  "hito": "orden",
+  "hecho": [
+   "objetos.json (lo que lleva cada uno, el suelo, lo talado y lo recogido) ya no se reescribe entero en cada acción: cada acción solo apunta que ha cambiado, y se escribe como mucho una vez por segundo, sin parar el servidor mientras se escribe (y nunca dos escrituras a la vez).",
+   "Al cerrar el servidor, y al apagarlo (actualizar.sh, Ctrl+C), escribe lo que falte antes de salir; el registro de cada acción (objetos.jsonl) sigue apuntándose al momento.",
+   "Cada cuánto se escribe se puede cambiar con KINHOLD_GUARDAR_CADA (en milisegundos).",
+   "Prueba nueva (pruebas/prueba_guardado_objetos.mjs, 15 comprobaciones): 31 acciones seguidas no escriben el archivo en cada una, pasado el plazo lo guardado es lo del servidor, al cerrar se escribe lo que falta y se lee igual al volver a arrancar, y el servidor de verdad apagado antes del plazo lo guarda. Rota a propósito con MUTAR=1 (escribir en cada acción): falla."
+  ],
+  "pruebas": "En la nube: el recorrido y los almacenajes de la base (que leen objetos.json), bien; la lógica, bien salvo la prueba del servidor de internet con Caddy (25/27), que falla igual en las ejecuciones de antes de este cambio y no lo toca. Sin cambio jugable: no hay versión nueva.",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-12T06:36:41+01:00",
   "fin": "2026-11-12T06:36:41+01:00",
   "titulo": "P4b aprobado: la interfaz nueva",

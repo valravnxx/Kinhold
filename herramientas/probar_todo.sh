@@ -83,6 +83,7 @@ paso "Herramienta del admin en el servidor (información, autoconstruir, arcón 
 paso "Cuentas: usuario y contraseña (resumida con sal), crear, entrar, intentos y lo que no debe dejar" node pruebas/prueba_cuentas.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
+paso "El servidor guarda objetos.json sin reescribirlo en cada acción ni bloquear" node pruebas/prueba_guardado_objetos.mjs
 paso "El servidor conoce el mundo (árboles, recogida, posiciones y obras contra el terreno)" node pruebas/prueba_terreno_servidor.mjs
 paso "Lo talado, lo recogido y el suelo, por trozos: a cada uno lo de su alrededor" node pruebas/prueba_trozos_red.mjs
 paso "Las obras y lo alisado, por trozos: a cada uno lo de su alrededor, con los mismos ids que el servidor" node pruebas/prueba_obras_red.mjs
