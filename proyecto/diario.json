@@ -6411,5 +6411,19 @@
   ],
   "pruebas": "Comprobador de código, limpio. Revisor en la nube: cavar bien; lógica, todo bien salvo la prueba del servidor en internet (systemd-analyze de la máquina de GitHub, falla igual en main)",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T11:22:30+00:00",
+  "fin": "2026-11-12T12:40:14+00:00",
+  "titulo": "Una base común para las pruebas de navegador (P6, carril A)",
+  "hito": "orden",
+  "hecho": [
+   "Nuevo pruebas/sitio_prueba.py: monta el sitio de cada prueba como la web publicada (cada página en jugar/<carpeta>/prueba.html) y sirve los archivos en un puerto libre, en un solo sitio",
+   "Los recursos se enlazan desde docs/ en vez de copiarse carpeta a carpeta: una carpeta nueva de recursos ya no hay que añadirla prueba por prueba",
+   "51 pruebas de navegador pasan a usarla: 630 líneas menos de copias y servidores repetidos",
+   "Para las pruebas que comprueban que sin un recurso fallan (MUTAR_HOMBRO de lo que llevas puesto), el sitio puede dejar fuera una carpeta; comprobado que entonces da 404 y que borrar el sitio no toca docs/"
+  ],
+  "pruebas": "Comprobador de código, limpio. En la nube, una muestra de cada forma de montar el sitio: el día y la noche, el personaje y el posprocesado, bien; la hoguera, bien al repetirla (la primera vez falló «se apaga sola», y en main pasó). Fallan igual en main (comprobado en la nube): los niveles de detalle del personaje, las opciones del personaje en inglés, la mano al hombro de lo que llevas puesto y, en el panel de fabricar, la lista de puestos y talar con el hacha",
+  "estado": "ok"
  }
 ]

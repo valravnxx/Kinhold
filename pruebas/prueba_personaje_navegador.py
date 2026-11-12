@@ -7,27 +7,14 @@
 import sys, os, io, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageStat, ImageChops, ImageDraw
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_personaje.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_personaje'
 os.makedirs(SALIDA, exist_ok=True)
-sitio = tempfile.mkdtemp()
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
-os.makedirs(f'{sitio}/jugar/personaje'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/personaje/prueba.html')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/v1'), f'{sitio}/recursos/personajes/v1')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-v24'), f'{sitio}/recursos/personajes/taller-v24')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v2'), f'{sitio}/recursos/personajes/meshy-v2')  # los personajes de Meshy
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1'), f'{sitio}/recursos/estaciones-meshy-v1')  # el acopio y el mojón de valravnx (Meshy), como en la web
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-dormir-v1'), f'{sitio}/recursos/personajes/taller-dormir-v1')  # tumbarse y levantarse
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-sentarse-v1'), f'{sitio}/recursos/personajes/taller-sentarse-v1')  # sentarse en el suelo
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-anim-v1'), f'{sitio}/recursos/personajes/taller-anim-v1')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'personaje': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/personaje/prueba.html'
 
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]

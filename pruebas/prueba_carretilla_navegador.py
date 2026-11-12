@@ -8,33 +8,15 @@
 # MUTAR=1: la carretilla no se deja empujar: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, re
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'dist/kinhold_demo.html')
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas'
 os.makedirs(SALIDA, exist_ok=True)
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-sitio = tempfile.mkdtemp()
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/naturaleza'), f'{sitio}/recursos/naturaleza')   # la naturaleza de Meshy (11 nov), como en la web
-os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
 TALLER = re.search(r"TALLER = '(taller-v\d+)'", open(os.path.join(RAIZ, 'src/mundo/eleccion.js'), encoding='utf8').read()).group(1)
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes', TALLER), f'{sitio}/recursos/personajes/{TALLER}')
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-carga-v3'), f'{sitio}/recursos/personajes/taller-carga-v3')  # las de cargar del taller
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/meshy-v2'), f'{sitio}/recursos/personajes/meshy-v2')  # los personajes de Meshy
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/estaciones-meshy-v1'), f'{sitio}/recursos/estaciones-meshy-v1')  # el acopio y el mojón de valravnx (Meshy), como en la web
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-dormir-v1'), f'{sitio}/recursos/personajes/taller-dormir-v1')  # tumbarse y levantarse
-shutil.copytree(os.path.join(RAIZ, 'docs/recursos/personajes/taller-sentarse-v1'), f'{sitio}/recursos/personajes/taller-sentarse-v1')  # sentarse en el suelo
-import re as _re
-_ICONOS = _re.search(r"CARPETA_ICONOS = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()).group(1)
-shutil.copytree(os.path.join(RAIZ, 'docs', _ICONOS), f'{sitio}/{_ICONOS}')  # las imágenes del panel de equipo
-# las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
-import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES|PIEZAS) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
-    if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = os.environ.get('MUTAR') == '1'

@@ -7,25 +7,14 @@
 # MUTAR=1: el agua del río solo en la mitad de los sitios (como «a ratos»): tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, json
 from playwright.sync_api import sync_playwright
+from sitio_prueba import montar_sitio, servir
 
 RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 'dist/kinhold_demo.html'))
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_rios'
 os.makedirs(SALIDA, exist_ok=True)
-sitio = tempfile.mkdtemp()
-os.makedirs(f'{sitio}/jugar/demo'); os.makedirs(f'{sitio}/recursos/personajes')
-shutil.copy(RUTA, f'{sitio}/jugar/demo/prueba.html')
-for c in os.listdir(os.path.join(RAIZ, 'docs/recursos/personajes')):
-    o = os.path.join(RAIZ, f'docs/recursos/personajes/{c}')
-    if os.path.isdir(o): shutil.copytree(o, f'{sitio}/recursos/personajes/{c}')
-# las imágenes de lo que llevas (la barra de abajo) y el kit de la interfaz, como en la web
-import re as _rk
-for _c in _rk.findall(r"CARPETA_(?:ICONOS|INTERFAZ|FUENTES|PIEZAS) = '([^']+)'", open(os.path.join(RAIZ, 'src/logica/iconos.js')).read()):
-    if not os.path.exists(f'{sitio}/{_c}'): shutil.copytree(os.path.join(RAIZ, 'docs', _c), f'{sitio}/{_c}')
-class Silencioso(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Silencioso, directory=sitio))
-threading.Thread(target=srv.serve_forever, daemon=True).start()
+sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
+srv = servir(sitio)
 MUTAR = os.environ.get('MUTAR', '')
 BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
