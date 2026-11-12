@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-12T05:26:51+00:00",
-  "tarea": "El servidor guarda los objetos sin reescribir el archivo entero en cada acción (cada hachazo) y sin bloquear",
-  "hito": "orden",
-  "rama": "trabajo/20261112-0527"
- },
+ "A": null,
  "B": null
 }
