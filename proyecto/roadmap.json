@@ -2017,7 +2017,9 @@
     },
     {
      "nombre": "Una base común para las pruebas de navegador: el servidor de archivos y las copias de recursos, en un solo sitio",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-12T11:23:59+00:00",
+     "rama": "trabajo/20261112-1123"
     },
     {
      "nombre": "Adelgazar la web por debajo de 1 GB: archivar las versiones viejas y encoger las capturas",
