@@ -151,13 +151,27 @@ try {
   comprobar('ni uno cuyo nombre no cuadra con su sitio', !r.ok, r.motivo);
   r = await b.objeto({ tipo: 'talar', arbol, x: 1, z: 0, ax: 11, az: 10, edad: 'adulto' });
   comprobar('B, lejos, no lo tala aunque diga que está al lado', !r.ok, r.motivo);
+  // B se queda debajo de donde caerá (la copa, a 7 m): le llega el crujido y, al caer, le hiere (12 nov). A abre la boca
+  // desde su lado (caerá hacia él) y corta el resto por detrás: el que se aparta se libra.
+  b.estar(4, 10); await pausa(150);
   const talaB = b.esperar(m => m.tipo === 'tala', 4000), sueloTala = b.esperar(m => m.tipo === 'suelo' && m.objetos.some(o => o.cosa.tipo === 'tronco_largo'), 4000);
-  let golpes = 0;
-  do { r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 11, az: 10, edad: 'adulto' }); golpes++; } while (r.ok && !r.datos.cae && golpes < 30);
+  const crujeB = b.esperar(m => m.tipo === 'crujido' && m.arbol === arbol, 4000).catch(() => null);
+  const heridaB = b.esperar(m => m.tipo === 'combate' && m.eventos.some(e => e.tipo === 'arbol' && e.objetivo === yoB), 8000).catch(() => null);
+  let golpes = 0, dondeA = 10;
+  do {
+    if (golpes === 5) { dondeA = 12; a.estar(12, 10); await pausa(150); }
+    r = await a.objeto({ tipo: 'talar', arbol, x: dondeA, z: 10, ax: 11, az: 10, edad: 'adulto' }); golpes++;
+  } while (r.ok && !r.datos.cae && golpes < 30);
   comprobar('A lo tala a golpes (adulto con hierro: 14) y el resultado dice que cae y hacia dónde', r.ok && r.datos.cae && golpes === 14 && Number.isFinite(r.datos.dir), `${golpes} golpes · ${r.motivo || ''}`);
   const tb = await talaB, sl = await sueloTala;
   comprobar('B se entera: el árbol cae y queda el tocón', tb.cae.arbol === arbol && tb.cae.autor === yoA && tb.estado.estado[arbol]?.vuelve > Date.now());
   comprobar('y le llega la caída del servidor (sus fotogramas: la misma para todos), hacia donde dice el resultado', !!tb.cae.caida && Array.isArray(tb.cae.caida.fotos) && tb.cae.caida.fotos.length > 10 && tb.cae.caida.dir === r.datos.dir && tb.cae.dir === r.datos.dir, tb.cae.caida && `${tb.cae.caida.fotos.length} fotogramas, ${tb.cae.caida.dura} s`);
+  const cr = await crujeB;
+  comprobar('antes de caer, B oye el crujido de aviso (y quién lo tala)', !!cr && cr.autor === yoA);
+  const hb = await heridaB, eb = hb && hb.eventos.find(e => e.tipo === 'arbol' && e.objetivo === yoB);
+  comprobar('al caer, a B (debajo de la copa) le hiere el servidor, con el autor que lo taló', !!eb && eb.autor === yoA && eb.resultado === 'herida' && eb.parte === 'copa' && s.combate.luchadores[yoB].heridas.length > 0, JSON.stringify(eb));
+  comprobar('y A, que cortaba por detrás, se libra', !(s.combate.luchadores[yoA].heridas || []).length);
+  b.estar(1, 0); await pausa(150);
   comprobar('y ve el tronco largo y las ramas en el suelo', sl.objetos.some(o => o.cosa.tipo === 'tronco_largo') && sl.objetos.some(o => o.cosa.tipo === 'rama'));
   r = await a.objeto({ tipo: 'talar', arbol, x: 10, z: 10, ax: 11, az: 10, edad: 'joven' });
   comprobar('talado, ya no se tala (ni diciendo que es otro árbol más joven)', !r.ok, r.motivo);

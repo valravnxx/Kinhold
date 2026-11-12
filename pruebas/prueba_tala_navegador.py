@@ -116,7 +116,13 @@ with sync_playwright() as p:
     pg.wait_for_function(f"(() => {{ const c = {K}.talaV.caidas[0]; return !c || c.t > c.dura + 0.1; }})()", timeout=60000)
     c = pg.evaluate(f"{K}.talaV.caidas[0] || null")
     comprobar('se asienta: acaba tumbado en el suelo (o apoyado) y se queda así un momento', c is not None and abs(c['angulo'] - c['final']) < 0.01 and (c['final'] > 1.1 or c['apoyo'] is not None), str(c))
+    comprobar('al soltarse suena el chasquido y, al dar en el suelo, el golpe', pg.evaluate(f"(() => {{ const q = {K}.talaV.oidos.map(o => o.que); return q.includes('chasquido') && q.includes('suelo'); }})()"))
     foto(pg, 'tala_03_asentado')
+    # el crujido de aviso (12 nov): a punto de caer, cruje (suena) y el árbol tiembla un momento
+    otro = pg.evaluate(f"(() => {{ const k = {K}, t = k.talaV.tala; const o = k.obstaculos.filter(x => x.arbol && x.id && x.malla && x.id !== '{j['id']}' && t.enPie(x.id, Date.now()))[0]; if (!o) return null; k.talaV.crujir(o); return o.id; }})()")
+    comprobar('un árbol que cruje suena y tiembla', otro is not None and pg.evaluate(f"{K}.talaV.temblando === 1 && {K}.talaV.oidos.at(-1).que === 'crujido'"), str(otro))
+    pg.wait_for_function(f"{K}.talaV.temblando === 0", timeout=30000)
+    comprobar('y luego se queda como estaba', pg.evaluate(f"(() => {{ const k = {K}, o = k.obstaculos.find(x => x.id === '{otro}'), m = new k.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m); return m.equals(o.matriz); }})()"))
     pg.wait_for_function(f"{K}.talaV.cayendo === 0", timeout=90000)
     comprobar('queda el tocón en el sitio', pg.evaluate(f"(() => {{ const t = {K}.talaV.grupo.children.filter(c => c.name === 'tocon'); return t.length === 1 && Math.hypot(t[0].position.x - {j['x']}, t[0].position.z - {j['z']}) < 0.01; }})()"))
     comprobar('el árbol del bosque ya no se dibuja', pg.evaluate(f"(() => {{ const o = {K}.obstaculos.find(x => x.id === '{j['id']}'), m = new {K}.escena.matrixWorld.constructor(); o.malla.getMatrixAt(o.instancia, m); return Math.abs(m.determinant()) < 1e-9; }})()"))

@@ -13,8 +13,10 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { RADIO_TRONCO, radioTronco } from '../mundo/especies.js';
+import { sonar, oidos } from './sonidos.js';
 import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala, simularCaida, caidaEn, altoArbol, CORTE } from '../logica/tala.js';
 
+const TIEMBLA = 1.4;     // s que tiembla el árbol que cruje (el aviso de que va a caer)
 const EN_EL_SUELO = 1.3; // s: lo que se queda tumbado (o apoyado) antes de ser tronco y ramas
 
 function tocon(o) {
@@ -41,8 +43,10 @@ function datosArbol(o, id) {
 }
 
 // obstaculos: los del decorado (los árboles llevan escala, modelo, instancia y malla). altura(x, z): el terreno.
-// sueloObjetos: el suelo de la demo (crearSuelo), donde cae lo que deja el árbol.
-export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
+// sueloObjetos: el suelo de la demo (crearSuelo), donde cae lo que deja el árbol. oyente(): dónde está quien escucha
+// ({ x, z }: los sonidos, más flojos de lejos).
+export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oyente = null }) {
+  const lejos = (o) => { const p = oyente && oyente(); return p ? Math.hypot(o.x - p.x, o.z - p.z) : 0; };
   const arboles = [], porId = new Map();
   for (const o of obstaculos) {
     if (!o.arbol || !o.malla) continue;
@@ -57,6 +61,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
   const grupo = new THREE.Group(); grupo.name = 'tala'; raiz.add(grupo);
   const tocones = new Map();  // id → objeto del tocón
   const cayendo = [];         // { pivote, t, o }
+  const temblando = new Map(); // id → { o, t }: el que cruje, tiembla un momento
   const cero = new THREE.Matrix4().makeScale(0, 0, 0), eje = new THREE.Vector3();
 
   function original(o) { // la matriz de su instancia en el bosque (guardada la primera vez)
@@ -95,7 +100,9 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
     const m = new THREE.Mesh(o.malla.geometry, o.malla.material); m.quaternion.copy(q); m.scale.copy(s);
     m.castShadow = true; m.receiveShadow = true; pivote.add(m); pivote.name = 'arbol_cayendo';
     grupo.add(pivote);
-    cayendo.push({ pivote, t: 0, caida, deja });
+    temblando.delete(o.id);
+    cayendo.push({ pivote, t: 0, caida, deja, o });
+    sonar('chasquido', lejos(o));
   }
 
   // los árboles del mundo llegan y se van al andar (src/mundo/vegetacion_mundo.js): lo talado de cada uno se guarda
@@ -144,12 +151,30 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos }) {
         const { angulo, dir } = caidaEn(c.caida, c.t);
         eje.set(Math.cos(dir), 0, -Math.sin(dir));
         c.pivote.quaternion.setFromAxisAngle(eje, angulo);
+        if (!c.sono && c.t >= c.caida.dura) { c.sono = true; sonar('suelo', lejos(c.o)); }
         if (c.t > c.caida.dura + EN_EL_SUELO) { grupo.remove(c.pivote); cayendo.splice(i, 1); sueloObjetos.mostrar(c.deja); }
+      }
+      // el que cruje tiembla: se mece un poco sobre su base, cada vez menos
+      for (const [id, v] of temblando) {
+        v.t += dt; const o = v.o;
+        if (!o.malla || !tala.enPie(id, Date.now())) { temblando.delete(id); continue; }
+        if (v.t >= TIEMBLA) { o.malla.setMatrixAt(o.instancia, original(o)); o.malla.instanceMatrix.needsUpdate = true; temblando.delete(id); continue; }
+        const m = original(o), base = new THREE.Vector3().setFromMatrixPosition(m), a = 0.025 * (1 - v.t / TIEMBLA) * Math.sin(v.t * 31);
+        const giro = new THREE.Matrix4().makeTranslation(base.x, base.y, base.z).multiply(new THREE.Matrix4().makeRotationAxis(v.eje, a)).multiply(new THREE.Matrix4().makeTranslation(-base.x, -base.y, -base.z));
+        o.malla.setMatrixAt(o.instancia, giro.multiply(m)); o.malla.instanceMatrix.needsUpdate = true;
       }
       const t = Date.now(); // lo que vuelve a crecer se mira cada pocos segundos
       if (t - ultimo > 5000) { ultimo = t; refrescar(t); }
     },
     get cayendo() { return cayendo.length; },
+    get temblando() { return temblando.size; },
+    get oidos() { return oidos; },   // lo que ha sonado (las pruebas)
+    // el crujido de aviso (está a punto de caer): suena (más flojo de lejos) y el árbol tiembla un momento
+    crujir(o) {
+      if (!o || !tala.enPie(o.id, Date.now())) return;
+      sonar('crujido', lejos(o));
+      if (o.malla) { const d = (tala.estado[o.id] && Number.isFinite(tala.estado[o.id].bx)) ? Math.atan2(tala.estado[o.id].bx, tala.estado[o.id].bz) : 0; temblando.set(o.id, { o, t: 0, eje: new THREE.Vector3(Math.cos(d), 0, -Math.sin(d)) }); }
+    },
     // los que caen ahora: cuánto llevan (s), lo que dura su caída y su ángulo de ahora (las pruebas)
     get caidas() { return cayendo.map(c => ({ t: c.t, dura: c.caida.dura, angulo: caidaEn(c.caida, c.t).angulo, final: c.caida.angulo, apoyo: c.caida.apoyo })); },
     // en línea, el árbol que tala cualquiera lo hace caer el servidor (src/juego/objetos_en_linea.js)

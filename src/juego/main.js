@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { Mundo, alAlcance, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra, USAN_INVENTARIO, reservaDe } from '../logica/acciones.js';
+import { NOMBRE_ZONA } from '../combate/logica.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA, enEsteTramo } from '../logica/piezas.js';
 import { modeloPieza, mojon as modeloMojon, decoracion as modeloDeco, mat, P, rellenoTejado, rampaVaras, troncoSuelto, POLEA, POLIPASTO, colgarPolipasto, tornoSuelto, moverHumo } from '../mundo/modelos.js';
 import { llevadoDe } from '../logica/llevado.js';
@@ -323,7 +324,7 @@ const recoleccion = mundoJ ? crearRecoleccionMundo({ raiz: escena, mundoJ, semil
 // lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.tierraDe(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
-const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos });
+const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos, oyente: () => pj });
 // en el mundo, lo que crece sigue al jugador: los árboles que llegan pasan por la tala (su tocón, si se taló) y los
 // que se van se sueltan; al ponerlos, los talados no se dibujan
 if (decorado.paso) {
@@ -2333,6 +2334,24 @@ function golpeTala() {
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
   avisoTala(a, r);
 }
+// El crujido de aviso (tarea «Crujido de aviso y daño», 12 nov): el árbol de otro que cruje cerca, un aviso; el tuyo
+// ya lo dice avisoTala.
+function crujidoDeRed(msg, yo) {
+  const o = msg.arbol && talaV.porId.get(msg.arbol);
+  if (!o) return;
+  talaV.crujir(o);
+  if (msg.autor !== yo && Math.hypot(o.x - pj.x, o.z - pj.z) < 25) mostrarAviso(tr('Cruje un árbol cerca: va a caer. ¡Cuidado!'), true);
+}
+// El árbol que le cae encima a alguien (el servidor, src/logica/tala.js, golpeDeCaida): a ti, la herida; al que lo
+// taló, a quién le ha dado.
+function arbolEncima(eventos, yo) {
+  for (const e of eventos || []) {
+    if (e.tipo !== 'arbol' || !yo) continue;
+    const z = e.zona ? tr(NOMBRE_ZONA[e.zona]) : '', g = e.gravedad ? tr(e.gravedad) : '';
+    if (e.objetivo === yo && e.resultado === 'herida') mostrarAviso(tr(e.parte === 'copa' ? '¡Te alcanzan las ramas del árbol! Herida {g} en {z}.' : '¡Te cae encima el tronco! Herida {g} en {z}.', { g, z }), true);
+    else if (e.autor === yo && e.objetivo !== yo && e.resultado === 'herida') mostrarAviso(tr('El árbol que has talado ha herido a alguien: {g} en {z}.', { g, z }), true);
+  }
+}
 function avisoTala(a, r) {
   // lo que llevas talado, para el aro de la acción (el primer golpe dice cuántos faltan)
   if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
@@ -2344,6 +2363,12 @@ function avisoTala(a, r) {
   }
   // el golpe que termina la boca (src/logica/tala.js): hacia dónde caerá, o que no la hay
   if (!r.cae && r.boca !== undefined) { mostrarAviso(r.boca === null ? tr('Has cortado desde varios lados: sin boca, caerá hacia donde se incline o cuesta abajo.') : tr('La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.')); return; }
+  // a punto de caer: el crujido de aviso (en línea suena con el del servidor, para todos los de alrededor)
+  if (!r.cae && r.cruje) {
+    if (!objetosRed) talaV.crujir(a);
+    mostrarAviso(r.faltan === 1 ? tr('¡El árbol cruje! Falta 1 golpe: apártate de donde va a caer.') : tr('¡El árbol cruje! Faltan {n} golpes: apártate de donde va a caer.', { n: r.faltan }));
+    return;
+  }
   if (!r.cae) { mostrarAviso(r.faltan === 1 ? tr('Talas el árbol: falta 1 golpe.') : tr('Talas el árbol: faltan {n} golpes.', { n: r.faltan })); return; }
   estado.talando = null;
   const menudo = r.deja.find(d => d.tipo === 'rama' || d.tipo === 'vara'), tronco = r.deja.find(d => d !== menudo);
@@ -3292,6 +3317,9 @@ function iniciarEnLinea() {
       if (fauna.recibir(msg)) return;   // las liebres de alrededor (src/juego/fauna.js)
       // pelear en el mundo: tus heridas y lo que pasa con tus golpes y los de los demás contra ti (src/juego/combate_mundo.js)
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'bienvenida') combate.recibir(msg, enLinea.red.yo || msg.autor, (a) => enLinea.modeloDe(a));
+      if (msg.tipo === 'combate') arbolEncima(msg.eventos, enLinea.red.yo);
+      // el crujido de aviso de un árbol a punto de caer (src/juego/tala.js): suena y tiembla; si es de otro, un aviso
+      if (msg.tipo === 'crujido') { crujidoDeRed(msg, enLinea.red.yo); return; }
       if (msg.tipo === 'luchadores' || msg.tipo === 'combate' || msg.tipo === 'combate_rechazo') return;
       // lo que llevas, el suelo, lo talado y lo recogido (src/juego/objetos_en_linea.js)
       // tus necesidades (src/logica/necesidades.js): las lleva el servidor; aquí solo se guardan para enseñarlas

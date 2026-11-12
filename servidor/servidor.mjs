@@ -43,7 +43,8 @@
 //   { tipo: 'resultado_objeto', id, ok, motivo?, datos? } (datos: lo que ha pasado, p. ej. si el árbol cae y hacia dónde).
 //   Al autor le manda lo que lleva tal como queda, { tipo: 'inventario', inventario } (también si sale mal: así el
 //   navegador deshace lo que había adelantado), y si cambia el suelo, a todos { tipo: 'suelo', objetos }. Si cae un
-//   árbol, a todos (antes que el suelo) { tipo: 'tala', estado, cae: { arbol, dir, autor, objetos } }; si se recoge algo, { tipo: 'recoleccion',
+//   árbol, a todos (antes que el suelo) { tipo: 'tala', estado, cae: { arbol, dir, autor, objetos } } (y a punto de caer,
+//   { tipo: 'crujido', arbol, autor }; a quien le cae encima, la herida como evento de combate { tipo: 'arbol', … }); si se recoge algo, { tipo: 'recoleccion',
 //   estado }. La bienvenida lleva todo eso (inventario, suelo, tala, recoleccion).
 //   Por trozos (src/logica/trozos_red.js): lo del suelo, lo talado y lo recogido llega solo de los trozos que cada uno
 //   tiene alrededor (la bienvenida, los de donde aparece). Al cambiar de trozo le llega { tipo: 'trozos', entran,
@@ -154,6 +155,7 @@ import { NADO } from '../src/logica/nado.js';
 import { Fauna, FaunaEnRed } from '../src/logica/fauna.js';
 import { estropearInventario, estropearSuelo } from '../src/logica/comida.js';
 import { armaDeMano, loQueSeLanza } from '../src/logica/arma_mano.js';
+import { bajoLaCaida, golpeDeCaida } from '../src/logica/tala.js';
 import { gastar, gastarCosa, gastarRopa, GASTA_AL_DAR, GASTA_AL_PARAR, GOLPE_ROPA, USO_ROPA_MS } from '../src/logica/desgaste.js';
 
 export const GRACIA = 120000;   // ms que se guarda el luchador de quien se ha cortado (decisión provisional)
@@ -592,7 +594,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
       if (GASTA_AL_PARAR.has(e.resultado)) gastarArma(e.objetivo);
     }
     // la ropa y la armadura (10 nov): el golpe o lo lanzado que hiere gasta lo que cubre esa zona a quien lo recibe
-    for (const e of eventos) if ((e.tipo === 'golpe' || e.tipo === 'flecha') && e.objetivo && e.zona && objetos.invs.de(e.objetivo)) gastarRopaDe(e.objetivo, GOLPE_ROPA, e.zona);
+    for (const e of eventos) if ((e.tipo === 'golpe' || e.tipo === 'flecha' || e.tipo === 'arbol') && e.objetivo && e.zona && objetos.invs.de(e.objetivo)) gastarRopaDe(e.objetivo, GOLPE_ROPA, e.zona);
     for (const e of eventos) {
       if (e.tipo !== 'flecha') continue;
       const ahora = Date.now(), enT = (x, z) => !!mundo.tierraDe(x, z);
@@ -611,6 +613,20 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     for (const e of eventos) if (e.objetivo && (e.tipo === 'golpe' || e.tipo === 'flecha')) { const t = Date.now(); ultimaPelea.set(e.autor, t); ultimaPelea.set(e.objetivo, t); }
     const nuevas = combate.registro.entradas.filter(e => e.n > escritas);
     if (nuevas.length) { appendFileSync(archivoCombate, nuevas.map(e => JSON.stringify(e)).join('\n') + '\n'); escritas = nuevas[nuevas.length - 1].n; }
+  };
+  // Lo que hiere un árbol al caer (tarea «Crujido de aviso y daño», 12 nov)
+  const caidaHiere = (autor, id, caida) => {
+    const a = objetos.sitioArbol(id); if (!a) return;
+    const alt = objetos.tala.alturaEn, desde = Date.now();
+    const personas = Object.entries(combate.luchadores).map(([quien, L]) => ({ autor: quien, x: L.x, z: L.z }));
+    for (const b of bajoLaCaida(a, caida, personas, alt)) {
+      setTimeout(() => {
+        const L = combate.luchadores[b.autor]; if (!L || L.fuera) return;
+        const g = golpeDeCaida(a, caida, L.x, L.z, (Date.now() - desde) / 1000 + 0.05, alt);
+        if (!g) return;
+        ponerAlDia(); combate.herirConArbol(autor, b.autor, g, id); repartirCombate();
+      }, Math.max(0, b.t * 1000 - (Date.now() - desde))).unref?.();
+    }
   };
   const ticCombate = setInterval(() => {
     ponerAlDia(); repartirCombate();
@@ -1250,6 +1266,11 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
           for (const [otro, a] of clientes) if (a === autor || (k && vista.tiene(a, k))) hacer(otro, solo);
         };
         if (r.ok && r.cae) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo), cae: { arbol: msg.accion.arbol, dir: r.dir, autor, objetos: r.objetos, caida: r.caida } }));
+        // el crujido de aviso (12 nov): a punto de caer, lo oyen todos los de alrededor (al soltarse, con el 'tala' de arriba)
+        if (r.ok && r.cruje) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro) => enviar(otro, { tipo: 'crujido', arbol: msg.accion.arbol, autor }));
+        // y quien quede debajo (src/logica/tala.js, golpeDeCaida): se mira cuándo le llegaría con dónde está ahora y, en
+        // ese momento, otra vez con dónde está entonces (el que se aparta a tiempo se libra). La herida lleva su autor.
+        if (r.ok && r.cae && r.caida) caidaHiere(autor, msg.accion.arbol, r.caida);
         // lo descortezado y lo sangrado (8 nov): lo de ese árbol, a quien lo tiene alrededor
         if (r.ok && (msg.accion.tipo === 'descortezar' || msg.accion.tipo === 'sangrar')) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo) }));
         if (r.suelo) repartirSuelo(ahora);
