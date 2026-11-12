@@ -1506,7 +1506,9 @@
     },
     {
      "nombre": "El suelo con materiales: hierba, tierra, roca y hojarasca mezcladas según la pendiente, el bioma y el bosque, con relieve",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-12T15:14:35+01:00",
+     "rama": "trabajo/20261112-1515-aspecto-suelo"
     },
     {
      "nombre": "Sotobosque: helechos, matas y cantos en grupos al pie de los árboles y en las lindes, troncos caídos, tocones y manchas de flores, según el bioma",
