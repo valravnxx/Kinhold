@@ -15,7 +15,7 @@ import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { RADIO_TRONCO, radioTronco } from '../mundo/especies.js';
 import { sonar, oidos } from './sonidos.js';
-import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala, simularCaida, caidaEn, altoArbol, CORTE, ALCANCE_TALA } from '../logica/tala.js';
+import { Tala, idArbol, edadDeEscala, ejecutarTala, cargarTala, guardarTala, simularCaida, caidaEn, altoArbol, radioArbol, CORTE, ALCANCE_TALA } from '../logica/tala.js';
 
 const TIEMBLA = 1.4;     // s que tiembla el árbol que cruje (el aviso de que va a caer)
 
@@ -90,9 +90,18 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
     pivote.position.y += CORTE; // se parte encima del tocón: el árbol cae desde ahí, no desde el suelo
     const m = new THREE.Mesh(o.malla.geometry, o.malla.material); m.quaternion.copy(q); m.scale.copy(s);
     m.castShadow = true; m.receiveShadow = true; pivote.add(m);
+    // al caer, la base resbala del tocón hacia donde cae (así el tocón se ve, con el tronco al lado): un par de radios
+    const a = tala.porId.get(o.id) || datosArbol(o, o.id);
+    pivote.userData = { base: pivote.position.clone(), resbala: radioArbol(a.edad, a.especie, a.tam) * 2 + 0.12 };
     return pivote;
   }
-  function inclinar(pivote, angulo, dir) { eje.set(Math.cos(dir), 0, -Math.sin(dir)); pivote.quaternion.setFromAxisAngle(eje, angulo); }
+  // inclinado «angulo» hacia dir; fin: el ángulo en que se asienta (la base resbala del tocón según lo que lleva caído)
+  function inclinar(pivote, angulo, dir, fin = angulo) {
+    eje.set(Math.cos(dir), 0, -Math.sin(dir)); pivote.quaternion.setFromAxisAngle(eje, angulo);
+    // resbala en el último tramo de la caída (del 60 % al final) y baja lo que estaba encima del tocón
+    const u = pivote.userData, k = fin > 0 ? Math.max(0, Math.min(1, (angulo / fin - 0.6) / 0.4)) : 1;
+    if (u && u.base) pivote.position.set(u.base.x + Math.sin(dir) * u.resbala * k, u.base.y - CORTE * 0.8 * k, u.base.z + Math.cos(dir) * u.resbala * k);
+  }
   // el caído (sin limpiar): entero, como se asentó
   function tumbar(o) {
     if (!o.malla || tumbados.has(o.id) || cayendo.some(c => c.o.id === o.id)) return;
@@ -169,7 +178,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
       for (let i = cayendo.length - 1; i >= 0; i--) {
         const c = cayendo[i]; c.t += dt;
         const { angulo, dir } = caidaEn(c.caida, c.t);
-        inclinar(c.pivote, angulo, dir);
+        inclinar(c.pivote, angulo, dir, c.caida.angulo);
         // en el suelo: se queda caído, entero (si aún lo está: otro puede haberlo limpiado mientras)
         if (c.t >= c.caida.dura) {
           sonar('suelo', lejos(c.o)); cayendo.splice(i, 1);
