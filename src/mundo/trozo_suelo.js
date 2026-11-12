@@ -11,7 +11,7 @@ import { colorJuego } from './color_suelo.js';
 import { nivelar, marcasEn } from '../logica/nivelado.js';
 
 const BORDE = 3;
-const _c = [0, 0, 0];
+const _c = [0, 0, 0], _p = [1, 0, 0, 0];
 
 // paisaje: el de crearPaisaje(mapa); (i, j): el trozo; paso: su rejilla (m).
 // Devuelve lo de mallaTrozo (posiciones relativas a la esquina x0, z0) más normales, colores (lineales), uvs, y ms (lo
@@ -36,6 +36,7 @@ export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = f
   const malla = mallaTrozo(i, j, paso, alturaRejilla, { lado });
   const { posiciones, superficie } = malla, total = posiciones.length / 3;
   const normales = new Float32Array(total * 3), colores = new Float32Array(total * 3), uvs = new Float32Array(total * 2);
+  const mezcla = new Float32Array(total * 4);   // (cuánto de cada material del suelo: src/mundo/color_suelo.js, pesos)
   // vecinos para la pendiente de la forma (unos 3 m), la de aquí mismo (1 m) y la concavidad (2 m), en puntos de rejilla
   const k3 = Math.max(1, Math.min(BORDE, Math.round(3 / paso))), k2 = Math.max(1, Math.min(BORDE, Math.round(2 / paso)));
   // los ríos del trozo, para pintar su lecho (src/mundo/color_suelo.js)
@@ -49,8 +50,9 @@ export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = f
     const s1 = Math.hypot(dx, dz);
     const lap = (en(a + k2, b) + en(a - k2, b) + en(a, b + k2) + en(a, b - k2) - 4 * y) / (4 * k2 * k2 * paso * paso);
     const st = y > 0.05 ? paisaje.sitio(xm, zm, y) : null;
-    colorJuego(st, y, s, s1, lap, xm, zm, _c, tramos.length ? paisaje.rioCerca(xm, zm, tramos) : null);
+    colorJuego(st, y, s, s1, lap, xm, zm, _c, tramos.length ? paisaje.rioCerca(xm, zm, tramos) : null, _p);
     colores[k * 3] = _c[0]; colores[k * 3 + 1] = _c[1]; colores[k * 3 + 2] = _c[2];
+    mezcla.set(_p, k * 4);
     // la textura va por el mundo (no por el trozo), para que siga sin cortes de un trozo a otro
     uvs[k * 2] = xm * 0.5; uvs[k * 2 + 1] = zm * 0.5;
   }
@@ -58,13 +60,13 @@ export function hacerSueloTrozo(paisaje, i, j, paso, { lado = LADO, recortar = f
   if (total > superficie) {
     for (let v = superficie; v < total; v++) {
       const a = Math.round(posiciones[v * 3] / paso), b = Math.round(posiciones[v * 3 + 2] / paso), k = b * n + a;
-      normales.set(normales.subarray(k * 3, k * 3 + 3), v * 3); colores.set(colores.subarray(k * 3, k * 3 + 3), v * 3);
+      normales.set(normales.subarray(k * 3, k * 3 + 3), v * 3); colores.set(colores.subarray(k * 3, k * 3 + 3), v * 3); mezcla.set(mezcla.subarray(k * 4, k * 4 + 4), v * 4);
       uvs[v * 2] = uvs[k * 2]; uvs[v * 2 + 1] = uvs[k * 2 + 1];
     }
   }
   const ms = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
-  return { ...malla, normales, colores, uvs, ms };
+  return { ...malla, normales, colores, uvs, mezcla, ms };
 }
 
 // lo que se pasa de un hilo a otro sin copiar (los búferes se mueven)
-export const buferesDe = (r) => [r.posiciones.buffer, r.normales.buffer, r.colores.buffer, r.uvs.buffer, r.indices.buffer, r.H.buffer];
+export const buferesDe = (r) => [r.posiciones.buffer, r.normales.buffer, r.colores.buffer, r.uvs.buffer, r.mezcla.buffer, r.indices.buffer, r.H.buffer];

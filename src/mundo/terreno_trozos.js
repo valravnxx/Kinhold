@@ -80,6 +80,7 @@ export function crearTerrenoTrozos({ grupo, material, mapa, paisaje = null, orig
     geo.setAttribute('normal', new THREE.BufferAttribute(s.normales, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(s.colores, 3));
     geo.setAttribute('uv', new THREE.BufferAttribute(s.uvs, 2));
+    if (s.mezcla) geo.setAttribute('mezcla', new THREE.BufferAttribute(s.mezcla, 4));   // (los materiales del suelo: src/mapa/suelo.js)
     geo.setIndex(new THREE.BufferAttribute(s.indices, 1));
     // la esfera que lo envuelve, sin recorrer los vértices: el cuadrado del trozo y lo más alto y lo más bajo
     let lo = Infinity, hi = -Infinity; const H = s.H;

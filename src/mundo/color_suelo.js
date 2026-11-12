@@ -92,18 +92,34 @@ function conLecho(c, st, rio, xm, ym) {
   return r.map((v, q) => v + (roca[q] - v) * suelto);
 }
 
-export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = null) {
+// pesos (opcional, 12 nov, el suelo con materiales: src/mapa/suelo.js): cuánto hay en ese punto de cada material del
+// suelo [hierba, tierra, roca, hojarasca], que suman 1; con ellos el sombreador mezcla sus texturas. Salen de lo mismo que
+// el color: la roca de las paredes, la tierra de las calvas, la playa y el lecho de los ríos, y la hojarasca del bosque.
+export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = null, pesos = null) {
   // el color con la pendiente de aquí mismo (1 m): una repisa entre dos paredes tiene su hierba
-  let c = colorDelSuelo(st, y, Math.max(s1, s * 0.6), xm, ym);
+  const sp = Math.max(s1, s * 0.6);
+  let c = colorDelSuelo(st, y, sp, xm, ym);
+  let pRoca = 0, pTierra = 0, pHoja = 0;
+  if (!st || !st.bioma) pTierra = 1;                                   // (el fondo del agua y los cauces: arena, cantos)
+  else {
+    pRoca = Math.min(1, Math.max(0, (sp - 0.85) / 0.4) + (st.bioma === 'alpino' ? 0.25 : 0));
+    if (st.bioma === 'nieve' || st.T < -1.5) pTierra = 1 - pRoca;
+  }
   // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
   // (en la arena de la playa, ni calvas ni hojarasca: salían manchas pardas)
   const playa = st && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25 && y < 2.8 ? arenaDe(y) * (1 - suave(45, 90, st.costa ?? 0)) : 0;
-  if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); }
+  pTierra = Math.max(pTierra, playa);
+  if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.7); pTierra = Math.max(pTierra, t); }
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
-  if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); }
-  if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) c = conLecho(c, st, rio, xm, ym);
+  if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); pHoja = Math.min(1, d * 0.9); }
+  if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) { c = conLecho(c, st, rio, xm, ym); pTierra = Math.max(pTierra, 1 - suave(-0.3, 1.6, rio.dm - rio.ancho / 2)); }
   const v = 1 - Math.max(-0.1, Math.min(0.15, lap * 1.5)) + (fbm(xm / 5, ym / 5, 43, 3) - 0.5) * 0.16;
   // los colores de arriba están en sRGB (como los de la paleta); los de los vértices van en lineal
   sal[0] = lin(c[0]) * v; sal[1] = lin(c[1]) * v; sal[2] = lin(c[2]) * v;
+  if (pesos) {
+    // la roca manda; de lo que queda, la tierra; de lo que queda, la hojarasca; el resto, hierba
+    const r = pRoca, ti = (1 - r) * pTierra, h = (1 - r - ti) * pHoja;
+    pesos[0] = Math.max(0, 1 - r - ti - h); pesos[1] = ti; pesos[2] = r; pesos[3] = h;
+  }
   return sal;
 }

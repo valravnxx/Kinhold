@@ -19,6 +19,7 @@ import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearHierbaDensa } from '../mundo/hierba_densa.js';
+import { ponerRelieveSuelo } from '../mapa/suelo.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
@@ -333,6 +334,10 @@ function hierbaDe(id) {
 }
 hierbaDe(graficos.perfil);
 graficos.alCambiar(hierbaDe);
+// el relieve de las texturas del suelo (src/mapa/suelo.js), según el perfil gráfico
+const relieveDe = (id) => ponerRelieveSuelo(perfilGrafico(id).relieveSuelo ?? 1);
+relieveDe(graficos.perfil);
+graficos.alCambiar(relieveDe);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 // lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
 // En el mundo, sale del sitio (ramas en el bosque, sílex en la caliza…) y sigue al jugador (src/logica/recogida_mundo.js).
