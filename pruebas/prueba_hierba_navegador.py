@@ -81,7 +81,9 @@ with sync_playwright() as p:
         c2 = pg.evaluate(CUENTA) or {'matas': 0}
         comprobar('al volver a su perfil, otra vez la hierba densa', c2['matas'] > 300 and pg.evaluate(BRIZNAS) == 0, f"{c2['matas']} matas")
         # donde se construye no hay hierba: con todo ocupado a menos de 6 m, ahí no queda ninguna mata, y más allá sí
-        pg.evaluate(f"(() => {{ const k = {K}; const c = {{ x: k.pj.x, z: k.pj.z }}; window.__centroDespejar = c; k.hierbaDensa.despejar((x, z) => Math.hypot(x - c.x, z - c.z) < 6); }})()"); pg.wait_for_timeout(9000)
+        pg.evaluate(f"(() => {{ const k = {K}; const c = {{ x: k.pj.x, z: k.pj.z }}; window.__centroDespejar = c; k.hierbaDensa.despejar((x, z) => Math.hypot(x - c.x, z - c.z) < 6); }})()")
+        # (se rehacen poco a poco: hasta que no quede ninguna, como mucho 60 s en esta máquina sin tarjeta gráfica)
+        pg.wait_for_function(f"{K}.hierbaDensa.porRehacer === 0", timeout=60000); pg.wait_for_timeout(500)
         des = pg.evaluate(f"""(() => {{ const k = {K}; let dentro = 0, fuera = 0; k.hierbaDensa.grupo.traverse(o => {{ if (!o.isInstancedMesh) return; const a = o.instanceMatrix.array;
           for (let i = 0; i < o.count; i++) {{ const c = window.__centroDespejar, d = Math.hypot(a[i * 16 + 12] - c.x, a[i * 16 + 14] - c.z); if (d < 5.9) dentro++; else fuera++; }} }}); return [dentro, fuera]; }})()""")
         comprobar('donde se ha construido no queda hierba, y alrededor sí', des[0] == 0 and des[1] > 300, f'{des[0]} matas dentro, {des[1]} fuera')

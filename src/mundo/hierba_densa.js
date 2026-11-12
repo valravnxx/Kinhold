@@ -219,6 +219,8 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
     set estorbos(f) { estorbos = f; },
     // donde se ha construido no hay hierba: las celdas se rehacen poco a poco con lo ocupado de ahora
     despejar(f) { ocupado = f; for (const c of celdas.values()) c.vieja = true; sucio = 1; },
+    // cuántas celdas quedan por rehacer después de despejar
+    get porRehacer() { let n = 0; for (const c of celdas.values()) if (c.vieja) n++; return n; },
     get cuenta() { let n = 0; for (const c of celdas.values()) n += c.n; return { celdas: celdas.size, matas: n, triangulos: n * TRIANGULOS_MATA }; },
   };
 }

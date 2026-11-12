@@ -60,7 +60,7 @@ export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
 // El color del suelo de cerca (el de la vista «Como en el juego»), en lineal y ya con el sombreado de las vaguadas:
 //   st: el sitio (paisaje.sitio) o null en el agua; y: altura (m); s: pendiente de la forma (vecinos a 3 m); s1: la de
 //   aquí mismo (1 m); lap: concavidad (vecinos a 2 m, m/m²); xm, ym: el punto en el mundo (m)
-const TIERRA = [0.47, 0.42, 0.35], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: la tierra, algo más parda: se leía como paja)
+const TIERRA = [0.5, 0.44, 0.38], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: pardo gris cálido, como el camino de la referencia; antes se leía como paja, y luego como caqui)
 // (la prueba quita el lecho a propósito para comprobar que falla)
 const window_sinLecho = () => typeof globalThis !== 'undefined' && !!globalThis.__sinLecho;
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -109,7 +109,8 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   // (en la arena de la playa, ni calvas ni hojarasca: salían manchas pardas)
   const playa = st && (st.roca === 'arenisca' || st.roca === 'caliza') && s < 0.25 && y < 2.8 ? arenaDe(y) * (1 - suave(45, 90, st.costa ?? 0)) : 0;
   pTierra = Math.max(pTierra, playa);
-  if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3)) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.82); pTierra = Math.max(pTierra, t); }
+  if (st && st.bioma && st.bioma !== 'nieve' && s < 0.6) { // (con un ruido más fino en el borde: si no, salían óvalos lisos, como pegatinas)
+    const t = suave(0.62, 0.74, fbm(xm / 16, ym / 16, 41, 3) + (fbm(xm / 4.5, ym / 4.5, 47, 2) - 0.5) * 0.14) * (1 - playa); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.93); pTierra = Math.max(pTierra, t); }
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
   if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); pHoja = Math.min(1, d * 0.9); }
   if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) { c = conLecho(c, st, rio, xm, ym); pTierra = Math.max(pTierra, 1 - suave(-0.3, 1.6, rio.dm - rio.ancho / 2)); }
