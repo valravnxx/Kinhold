@@ -1,0 +1,282 @@
+0. Elige dónde empieza: la salida común (Lindholt), de las tres del rey
+  OK   llega sin posición: aún no ha elegido — null
+  OK   llega sin hambre, sin sed, sin frío y descansado (P4: sus necesidades, del servidor) — {"hambre":0,"sed":0,"frio":0,"cansancio":0}
+  OK   una salida que no existe no vale — Esa salida no existe.
+  OK   elige Lindholt: aparece en la salida común, en el suelo — {"x":0,"y":0,"z":0,"giro":0}
+  OK   y no puede volver a elegir — Ya has empezado.
+1. Empieza con lo puesto, y sin arcón
+  OK   le llega lo que lleva: solo la camisa y el pantalón de lino — ropa:interior=camisa_lino ropa:piernas=pantalon_lino
+  OK   en el combate lleva eso mismo: la camisa y el pantalón, sin armadura — camisa_lino, pantalon_lino
+  OK   no puede sacar nada del arcón de pruebas (no hay) — Aquí no hay arcón.
+  OK   ni del arcón de materiales de las obras — Aquí no hay arcón.
+  OK   ni rellenarlo (el botón de pruebas) — Aquí no hay arcón.
+  OK   la bienvenida le dice que no hay arcón (el navegador no lo enseña) — false
+  OK   en la salida no puede poner su mojón: es zona del rey — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+2. Recoge piedras: anda hasta ellas y las coge con las manos
+  OK   hay piedras sueltas cerca de la salida (a menos de 120 m) — 56; la primera a 54 m
+  OK   recoge 6 piedras, 3 en cada mano — 6 piedras 
+  OK   la séptima ya no le cabe en las manos — No te cabe: no tienes sitio libre.
+  OK   y una piedra ya recogida no vuelve a darse — Ya lo han recogido: aún no ha vuelto a salir.
+3. Lo que aún no se puede hacer como jugador nuevo
+  OK   talar: sin hacha, no (se la fabrica en el paso 8) — Necesitas un hacha en la mano para talar.
+4. Anda hasta la zona de al lado (la de la salida es del rey) y pone su mojón: la zona es su tierra
+  OK   la zona de al lado de la salida no es del rey — a 440 m al oeste
+  OK   pone su mojón en ella y lo paga con 3 de las piedras que lleva (no del montón común) —  lleva 3
+  OK   y no un segundo (uno por personaje) — Ya tienes un mojón.
+5. Levanta un cimiento de piedra con las piedras que ha traído
+  OK   pone el marco del cimiento en su tierra
+  OK   entrega las 3 que le quedan (pide 8) y se queda con las manos vacías —  faltan 5
+  OK   sin todo el material aún no se puede trabajar — Primero hay que llevarle todo el material.
+  OK   vuelve a por las 5 que faltan (le caben en las manos) — 5 piedras
+  OK   las entrega: el cimiento tiene todo lo que pide
+  OK   lo trabaja hasta terminarlo — 5 ratos de 5 s 
+5b. Llega otro jugador: lo de su tierra no lo toca (lo tuyo es tuyo)
+  OK   otro jugador nuevo elige también Lindholt
+  OK   otro jugador no puede desmontar su cimiento — Es tierra de otro: solo su dueño y sus invitados.
+  OK   se hablan: lo que dice uno le llega al otro, que está al lado — {"tipo":"dicho","autor":"jugador:940a3606","texto":"Esa es mi tierra"}
+6. Con las manos libres otra vez, recoge ramas del bosque
+  OK   recoge ramas caídas —  1 ramas
+7. Se arrepiente del sitio: quita su mojón (pierde el cimiento) y lo vuelve a poner más allá
+  OK   sabe que perdería su cimiento (1 construcción, 1 pieza) — {"c":1,"p":1}
+  OK   quita su mojón: dice lo perdido
+  OK   ya no tiene mojón y el cimiento ha desaparecido — 0 construcciones
+  OK   sin nada encima no puede volver a ponerlo (se paga con 3 piedras de lo que lleva) — No llevas los materiales.
+  OK   recoge otras 3 piedras para el mojón nuevo — 3 piedras
+  OK   vuelve a poner su mojón 30 m más allá, sin espera, pagado con ellas
+8. Se fabrica un hacha de piedra con lo que recoge: fibra, cordel, piedra de tallar y el hacha
+  OK   deja las ramas en el suelo, a sus pies
+  OK   arranca fibra de ortigas y hierba larga hasta tener 6 — 6 de fibra de 2 plantas; fibra×6 –
+  OK   con las manos, en cualquier sitio, se hace su cordel 1 (3 de fibra)
+  OK   y lo recoge (va a lo que lleva, o a sus pies si no le cabe) — {"dados":[{"objeto":"cordel","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false}
+  OK   con las manos, en cualquier sitio, se hace su cordel 2 (3 de fibra)
+  OK   y lo recoge (va a lo que lleva, o a sus pies si no le cabe) — {"dados":[{"objeto":"cordel","cantidad":1,"donde":[["mano:der",1]]}],"quedan":false}
+  OK   tiene sus 2 cordeles (en la mano o a sus pies) — 2 en la mano, 0 en el suelo; cordel×1 cordel×1
+  OK   deja un cordel a sus pies para tener una mano libre
+  OK   recoge 2 piedras — 2 · piedra×2 cordel×1
+  OK   levanta una piedra de tallar a su lado: el marco, sin gastar nada; le lleva 1 piedra y trabaja en ella
+  OK   sin nada depositado en la piedra de tallar, el hacha no se encarga — Falta en la estación: 1 de Piedra, 1 de Rama, 2 de Cordel de fibra.
+  OK   deja en la piedra de tallar la piedra que lleva
+  OK   y el cordel de la mano
+  OK   coge el otro cordel de sus pies y lo deja también
+  OK   y una de sus ramas del suelo
+  OK   la piedra de tallar tiene encima 1 piedra, 1 rama y 2 cordeles — {"piedra":1,"cordel":2,"rama":1}
+  OK   encarga el hacha de piedra con lo depositado en la piedra de tallar — {"encima":{},"suelo":{},"estacion":{"piedra":1,"rama":1,"cordel":2}}
+  OK   y la recoge: lleva un hacha de piedra en la mano — hacha_piedra×1 –
+9. Con su hacha de piedra tala un árbol joven
+  OK   lo tala a golpes (joven con piedra: 8) y cae — 8 golpes · 
+  OK   antes de caer, el árbol cruje (el aviso)
+  OK   cortando por detrás del tocón, el árbol no le hiere al caer — []
+  OK   el hacha de piedra se gasta talando: el servidor cuenta los 8 golpes y se lo dice — {"usado":8,"vida":168} · en el servidor 8
+  OK   empieza a caer hacia la boca que le ha abierto: el lado desde el que tala (al este del tronco) — hacia 1.57, por boca
+  OK   y cae de verdad: el servidor manda su caída, que acaba asentada en el suelo o apoyada — 2.138 s, 1.56 rad, queda hacia 1.57
+  OK   caído, se queda entero en el suelo: aún no ha dejado nada
+  OK   lo limpia con el hacha (joven con piedra: 3 golpes) — 3 golpes · 
+  OK   y deja en el suelo un tronco delgado y de 2 a 4 varas (revisión del 1 nov) — tronco_delgado×1, vara×2
+10. Se echa el tronco delgado al hombro y levanta con él un poste en su tierra (la madera de la casa humilde)
+  OK   coge el tronco delgado del suelo y se lo echa al hombro
+  OK   con el tronco al hombro no coge las varas con las manos (vendrá a por ellas) — No te cabe: no tienes sitio libre.
+  OK   pone en su tierra el marco de un poste (pide 1 tronco delgado)
+  OK   le lleva el tronco delgado del hombro: el poste tiene lo que pide
+  OK   lo trabaja hasta terminarlo: su primer poste — 2 ratos de 5 s 
+11. Va al río a por lo que pide la casa humilde y la hoguera: barro con su palo cavador, juncos con una lasca y yesca
+  OK   hay un río al que ir andando desde la salida — a 825 m
+  OK   en su orilla hay juncos, barro, hongos yesqueros, sílex, piedra y ramas — juncos 2, barro 4, yesquero 15, silex 33, piedra 16, ramas 99
+  OK   lejos del agua no puede beber — Aquí no hay agua: busca un río, un lago o el mar.
+  OK   junto al río hay orilla seca con agua al lado
+  OK   en la orilla bebe agua con las manos: la sed baja —  sed 20.8 → 0
+  OK   trago a trago: enseguida otra vez, no — Despacio: trago a trago.
+  OK   recoge ramas junto al río
+  OK   sin palo cavador no puede cavar el barro — Necesitas un palo cavador o una pala para cavar el barro.
+  OK   se hace un palo cavador con las manos (1 rama)
+  OK   y lo coge — rama×1 palo_cavador×1
+  OK   con el palo cavador, cava una cesta de barro en la orilla — barro×1 palo_cavador×1
+  OK   y el barro no se agota: el sitio sigue ahí
+  OK   sin cuchillo no puede cortar los juncos — Necesitas un cuchillo o una lasca de sílex para cortarlos.
+  OK   levanta una piedra de tallar en la orilla (su marco, su piedra y su trabajo) —  piedra×1 –
+  OK   deja encima una piedra y un sílex —  
+  OK   encarga una lasca de sílex
+  OK   y la coge: lleva un cuchillo de sílex — lasca_silex×1 –
+  OK   con la lasca, corta de 1 a 3 haces de juncos (valravnx, 8 nov: al azar) — lasca_silex×1 junco×3
+  OK   y coge yesca de los hongos yesqueros de un tocón, con las manos — lasca_silex×1 yesca×1
+  OK   cerca del río, arranca fibra y hace otro cordel —  0 de fibra de 2 plantas
+  OK   lleva un cordel y dos ramas — cordel×1 rama×3
+  OK   se hace un taladro de fuego con las manos (2 ramas y 1 cordel) — – rama×1
+  OK   y lo coge: con la yesca, ya puede encender fuego — taladro_fuego×1 rama×1
+12. Levanta una hoguera en la orilla, la enciende con su yesca y su taladro, le echa una rama y se apaga sola
+  OK   pone el marco de una hoguera en la orilla (fuera, sin techo)
+  OK   le lleva sus 6 piedras, recogidas de la orilla con las manos —  {"piedra":6,"rama":1} (6 recogidas)
+  OK   y sus 4 ramas — {}
+  OK   la levanta trabajando en ella: apagada, con sus ramas puestas — {"hasta":0,"combustible":720,"cenizas":false}
+  OK   sin la yesca y el taladro en las manos no la enciende — Para encenderla hace falta llevar el taladro de fuego y yesca.
+  OK   coge del suelo su taladro y su yesca — taladro_fuego×1 yesca×1
+  OK   enciende la hoguera: gasta una yesca y el taladro le sigue sirviendo — taladro_fuego×1 –
+  OK   y todos la ven encendida (lo que manda el servidor) — {"encendida":true,"queda":720,"combustible":0,"cenizas":false}
+  OK   le echa una rama: arde 3 min más — – –
+  OK   deja una rama en la hoguera y la endurece al fuego (la lanza) —  
+  OK   de noche, a 9 m de la hoguera y con la camisa y el pantalón de lino, le sube el frío — 0.68 → 6.81
+  OK   junto a la hoguera encendida, le baja — 7.02 → 6.14
+  OK   pasada su hora se apaga sola y quedan las cenizas — {"encendida":false,"queda":0,"combustible":0,"cenizas":true}
+  OK   y apagada ya no se hace nada al fuego — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+13. Vuelve a su tierra con piedras de la orilla y levanta una pila de piedras: guarda en ella, saca, y la obra no coge de ella sola
+  OK   recoge 6 piedras en la orilla, 3 en cada mano — 6
+  OK   fuera de su tierra no puede poner un almacenaje — Los almacenajes van en tu tierra (o en la de quien te invita).
+  OK   en su tierra levanta una pila de piedras: su marco, sus 4 piedras y su trabajo —  lleva 2
+  OK   guarda en ella las 2 piedras que le sobran (Usar: guardar)
+  OK   y todos la ven con sus piedras (lo que manda el servidor) — {"piedra":2}
+  OK   la obra no coge de la pila sola: con las manos vacías, la hoguera de al lado no recibe ninguna piedra — Le falta: 6 de Piedra, 4 de Rama. No lo llevas ni lo tienes a tu lado.
+  OK   saca una piedra de la pila (Usar: sacar)
+  OK   y esa sí se la lleva a la obra
+14. Se ata un fardo y se lleva los juncos a la espalda (valravnx, 7 nov: los juncos, con la paja, en el fardo)
+  OK   su haz de juncos sigue en la orilla
+  OK   arranca fibra y hace dos cordeles — 2 cordel×1 cordel×1
+  OK   se ata un fardo con ellos (con las manos) —   fardo×1 –
+  OK   y se lo echa a la espalda
+  OK   coge del suelo su haz de juncos y va al fardo, a la espalda, con las manos libres
+15. Vuelve a por las varas del árbol, levanta en su tierra un almiar y guarda en él su haz de juncos (8 nov)
+  OK   las varas del árbol siguen donde cayeron — 2
+  OK   coge 2 varas, una en cada mano (los juncos siguen en el fardo) —  
+  OK   en su tierra levanta un almiar: su marco, sus 2 varas y su trabajo —  lleva 0 varas
+  OK   guarda en él el haz de juncos que llevaba en el fardo
+  OK   y todos lo ven con sus juncos (lo que manda el servidor) — {"junco":1}
+  OK   y lo vuelve a sacar cuando lo necesita
+16. La casa humilde entera, en su tierra y con lo que recoge: cimiento de piedra, cuatro postes, dos muros de troncos, uno de zarzo con barro, el de la puerta con su puerta de varas, y el tejado de juncos
+  OK   el sitio de la casa es de su tierra — {"x":-460,"z":-6}
+  OK   pone en su tierra el marco del cimiento de su casa
+  OK   le lleva sus 8 piedras sueltas, en dos viajes, y lo levanta —  faltan 8 · 135 piedras libres · no coge: Ya lo han recogido: aún no ha vuelto a salir. · entregas: ok | ok · – – · {"hambre":41.81,"sed":41.91,"frio":0.97,"cansancio":99.9}
+  OK   recoge su hacha de piedra del suelo — hacha_piedra×1 –
+  OK   levanta los cuatro postes de las esquinas, con un tronco delgado cada uno, talado por él y traído al hombro — 4 · 
+  OK   levanta dos muros de troncos y el de la puerta: 11 troncos delgados más, de 11 árboles jóvenes, uno a uno al hombro — 3 · 
+16c2. Cansado de talar y cargar troncos, se sienta a descansar
+  OK   talar y cargar los troncos le ha cansado — cansancio 100
+  OK   sentado, el cansancio baja (en 5 s, casi lo que dice sentado: más del doble que de pie quieto) — cansancio 99 → 94 (como mucho 95.00)
+16d. Vuelve al río a por el barro del muro de zarzo y los juncos que le faltan para el tejado
+  OK   se hace un cordel y se lo ciñe a la cintura —    – –
+  OK   recoge su lasca de sílex de la orilla y la lleva en el cinturón
+  OK   y su palo cavador, en la mano izquierda
+  OK   cava 4 cestas de barro (3 las deja a sus pies: con el palo en una mano, en la otra le caben 3) — 4 · barro×1 palo_cavador×1
+  OK   corta juncos con la lasca del cinturón y los mete en el fardo: lleva al menos 3 haces — 1 cortes · en el fardo 3 · barro×1 – · 3 sin probar · no corta: Ya lo han recogido: aún no ha vuelto a salir.
+  OK   coge las 3 cestas de barro del suelo: lleva 4 — barro×1 barro×3
+  OK   de vuelta en su casa, pone el marco del muro de zarzo (norte)
+  OK   y le lleva sus 4 cestas de barro
+  OK   recoge 4 varas de los árboles que taló, se las lleva al zarzo y lo levanta —  
+16f. Para las cuerdas de la puerta y del andamio: tala un árbol adulto, lo tronza, levanta un banco de tronco y trenza 3 cuerdas
+  OK   tala un árbol adulto con su hacha de piedra (despacio) —  56 golpes
+  OK   cuando al hacha de piedra no le quedan los golpes del árbol que va a talar y limpiar, la repara en una piedra de tallar con un cordel dejado en ella, y recupera la mitad — [{"antes":165,"despues":81,"datos":{"objeto":"hacha_piedra","usado":81,"vida":168,"recuperado":84},"gasta":{"cordel":1}},{"antes":92,"despues":8,"datos":{"objeto":"hacha_piedra","usado":8,"vida":168,"recuperado":84},"gasta":{"cordel":1}}]
+  OK   y no se le rompe: tala el adulto con el hacha reparada — []
+  OK   lo tronza a hachazos: le da 3 o 4 troncos cortos — 54 golpes · 
+  OK   levanta allí un banco de tronco con 2 de ellos, con el hacha en la mano —  hacha_piedra×1 –
+  OK   arranca fibra, hace 9 cordeles, los deja en el banco de 3 en 3 y trenza 3 cuerdas — 9 cordeles, 3 cuerdas · cuerda×3 – · 
+  OK   la camisa de lino se ha gastado con el uso (lo cuenta el servidor) — {"tipo":"camisa_lino","n":1,"usado":31}
+  OK   la zurce puesta, en el banco de tronco con una fibra: recupera lo gastado —  {"tipo":"camisa_lino","n":1} · antes 31
+  OK   pone la puerta de varas en el hueco del muro de la puerta
+  OK   le lleva su cuerda y 4 varas —  faltan 0 varas
+  OK   la levanta
+  OK   y la abre con Usar
+16h. Levanta un andamio junto a la casa, sube a él con las varas y los juncos y pone desde arriba el tejado de juncos
+  OK   pone el marco de un andamio junto a la casa (al este)
+  OK   le lleva sus 2 cuerdas y 8 varas de los árboles que taló, y lo levanta —   
+  OK   pone el marco del tejado de juncos encima de los muros
+  OK   lleva 2 varas y al menos 4 haces de juncos (en la mano y en el fardo) — vara×2 junco×1 · 4 haces
+  OK   desde el suelo no se lo puede dar: el tejado está en la planta de arriba — Súbelo a mano por la escalera o el andamio hasta la planta de la obra.
+  OK   sube al andamio y desde arriba le da al tejado sus 2 varas y sus 4 haces de juncos —  
+  OK   lo trabaja desde el andamio: la casa ya tiene techo — 2 ratos 
+  OK   desmonta el andamio
+  OK   la casa humilde, entera: cimiento, 4 postes, 4 muros (2 de troncos, 1 de zarzo y barro, 1 con puerta), puerta de varas y tejado de juncos, todo terminado — 11 de 11 · 11 piezas
+  OK   cerrada: un muro terminado en cada uno de sus cuatro lados — e:0,0,0,1 e:1,0,0,1 e:0,0,0,0 e:0,1,0,0
+  OK   y techada: dentro está bajo techo; fuera, no
+  OK   es suya: todo lo pagó con lo que llevaba (sin arcón)
+16j. Levanta el hogar dentro de su casa con piedras y barro, lo enciende, lo deja en brasas y lo aviva sin yesca
+  OK   fuera de la casa no puede poner el hogar — Hogar: solo dentro de la casa.
+  OK   dentro de su casa pone el marco del hogar
+  OK   le lleva sus 8 piedras, recogidas alrededor de la casa — le faltan 0
+  OK   cava 2 cestas de barro en la orilla — barro×2 palo_cavador×1
+  OK   le lleva sus 2 cestas de barro — – taladro_fuego×1
+  OK   lo levanta trabajando en él: el hogar, apagado y sin nada puesto — {"hasta":0,"combustible":0,"cenizas":false}
+  OK   le echa ramas de alrededor (cada una, 4 min y medio en el hogar) — 2 · {"hasta":0,"combustible":540,"cenizas":false}
+  OK   lleva el taladro de fuego y yesca — yesca×1 taladro_fuego×1
+  OK   enciende el hogar dentro de su casa (bajo techo)
+  OK   lo deja en brasas y todos lo ven en brasas, sin llama — {"encendida":false,"brasas":true,"queda":2160,"combustible":0,"cenizas":false}
+  OK   con brasas no se hace nada al fuego — Está en brasas: avívalo para que vuelva la llama.
+  OK   y lo aviva sin gastar yesca: vuelve la llama
+  OK   hay un arbusto de bayas a menos de 150 m — 16
+  OK   coge las bayas del arbusto con las manos (de 3 a 6) — 5 bayas
+  OK   y el arbusto ya no tiene bayas
+  OK   otra vez, no — Ya lo han recogido: aún no ha vuelto a salir.
+  OK   se come una: el hambre baja y le queda una menos —  hambre 89.47 → 84.47, bayas 5 → 4
+  OK   su hacha de piedra sigue en el suelo donde la dejó
+  OK   y la vuelve a coger
+  OK   hay un matorral a menos de 60 m — 233
+  OK   desbroza el matorral con el hacha de piedra: caen de 2 a 4 ramas donde estaba — 2 ramas
+  OK   y el matorral queda quitado (en lo que reparte el servidor)
+  OK   otra vez, no: hasta que rebrote — Ya está desbrozado: aún no ha rebrotado.
+  OK   y se lleva las ramas — 0 → 2
+  OK   recoge una piedra suelta y la deja con lo demás
+  OK   arranca fibra y hace dos cordeles — 2
+  OK   con las manos se hace el mazo de piedra (1 piedra, 1 rama y 2 cordeles, de lo que tiene a sus pies) —  
+  OK   hay una roca mediana a menos de 150 m — 23
+  OK   rompe la roca a golpes de mazo, cada golpe por el servidor (más golpes cuanto más grande) —  22 golpes de 22
+  OK   y deja sus piedras sueltas donde estaba (de 6 a 25, según su tamaño) — 19 de 19
+  OK   la roca queda rota (en lo que reparte el servidor)
+  OK   romper cansa (o ya llega al máximo, tras todo el día) — 100 → 99.8
+  OK   otra vez, no: solo quedan cascotes — Esa roca ya está rota: solo quedan cascotes.
+  OK   y se lleva las piedras que le caben —  0 → 3
+  OK   lleva su lasca de sílex
+  OK   en la ribera del río más cercano hay mimbreras — río a 975 m; 2 mimbreras
+  OK   corta con la lasca las varas de la mimbrera: un haz de mimbre
+  OK   descorteza un roble en pie: de 1 a 2 cortezas
+  OK   y un roble o un haya no se sangra (no da resina)
+  OK   le han subido solas la sed y el hambre y le llegan del servidor — {"hambre":93.9,"sed":100,"frio":0.32,"cansancio":91.35}
+  OK   sus avisos salen de lo que manda el servidor: con la sed y el hambre por debajo de 40, aún ninguno de los dos — {"hambre":93.9,"sed":100,"frio":0.32,"cansancio":91.35} → hambre,sed
+16k. Con la sed al máximo, va a beber al agua más cercana y vuelve
+  OK   hay agua a menos de 1,5 km — a 5 m
+  OK   bebe hasta quitarse la sed — sed 100 → 0.03
+  OK   con hambre, come bayas y setas (las que lleva y las de alrededor) — hambre 94.08 → 38.66
+17. La cama ligada: un refugio de ramas en su tierra, lo liga y duerme; luego una cama de juncos en su casa, y la liga
+  OK   el sitio del refugio es de su tierra y está fuera (no bajo techo) — {"x":-453,"z":-6}
+  OK   recoge 12 ramas caídas del bosque y las amontona en el sitio (en viajes de 6, las que le caben en las manos) — 12 ramas · 145 sin probar
+  OK   y se hace 4 cordeles con la fibra de las plantas de alrededor — 4 cordeles · – –
+  OK   pone el marco del refugio, le lleva las ramas y los cordeles del suelo de al lado y lo levanta — {"estacion":"refugio_ramas:10","entregado":{"rama":12,"cordel":4},"falta":{},"usado":{"encima":{},"suelo":{"s99":{"rama":3},"s100":{"rama":3},"s101":{"rama":3},"s102":{"rama":3},"s104":{"cordel":1},"s106":{"cordel":1},"s108":{"cordel":1},"s109":{"cordel":1}}}}
+  OK   sin ligarlo, no duerme en él — Solo se duerme en tu cama ligada: lígala primero.
+  OK   lo liga: ya es su cama (donde reaparecerá)
+  OK   y lo que reparte el servidor de las estaciones dice que es la suya (el navegador lo mira para dormir)
+  OK   duerme en él y el cansancio baja deprisa (en 5 s, casi lo que dice dormir; quieto bajaría 4 veces menos) —  cansancio 90.68 → 83.16 (como mucho 84.68)
+  OK   lleva su lasca de sílex para cortar juncos — – –
+  OK   corta al menos 8 haces de juncos en el río (en las manos y en el fardo) — 9 haces · en el fardo 9 · – – · Ya lo han recogido: aún no ha vuelto a salir. · {"tipo":"cordel","n":1,"dentro":[{"tipo":"lasca_silex","n":1}]} · 6 sin probar
+  OK   dentro de su casa está bajo techo
+  OK   deja los juncos en el suelo de su casa — 9 · – – ·  · hombro: –
+  OK   y le trae 2 cordeles de fibra — 2 cordeles · 
+  OK   pone dentro la cama de juncos y la levanta con lo que hay en el suelo — {"estacion":"cama_juncos:11","entregado":{"junco":8,"cordel":2},"falta":{},"usado":{"encima":{},"suelo":{"s110":{"junco":3},"s111":{"junco":3},"s112":{"junco":2},"s113":{"cordel":1},"s115":{"cordel":1}}}}
+  OK   la liga: ya es su cama, y el refugio deja de serlo (una por personaje)
+  OK   y duerme en ella
+  OK   sale del juego en su casa: se queda dormido en su cama, protegido (fuera del combate) — {"x":-459.5,"y":45.33767615668884,"z":-6,"giro":0,"desde":1794472788139,"hasta":1794472788139,"cama":{"x":-459.5,"y":45.33767615668884,"z":-6},"enCama":true}
+  OK   al volver, es él y despierta en su cama — {"x":-459.5,"y":45.33767615668884,"z":-6,"giro":0}
+18. Muere de sed: vuelve a su cama y recupera lo suyo del cuerpo
+  OK   sin beber, se muere de sed (lo decide el servidor) — "De sed"
+  OK   y vuelve a su cama ligada, sano — {"x":-459.5,"y":45.33767615668884,"z":-6,"giro":0}
+  OK   su cuerpo queda donde cayó — [-466.4,-6]
+  OK   con la mitad de lo que llevaba alrededor (la otra mitad se rompe) — 3 de 5
+  OK   recupera lo suyo del cuerpo — 3 de 3 montones
+19. Ve liebres y huyen al acercarse
+  OK   ve liebres a su alrededor (se las manda el servidor) — 22
+  OK   va hacia la más cercana y huye, alejándose deprisa — a 121 m; huye: true; ahora a 24.7 m
+20. Vuelve a la hoguera de la orilla, recoge la lanza que hizo, saca el arma y caza una liebre lanzándosela
+  OK   recoge de la hoguera la lanza endurecida, en la mano: su arma es la lanza — – – · lanza
+  OK   ve liebres alrededor de la hoguera (sin agua por medio) — 12 de 16
+  OK   al lanzarla sale de su mano — 3 lanzadas
+  OK   si falla, recoge su lanza del suelo y vuelve a probar
+  OK   apuntando, con desvío, alguna le da: lo decide el servidor, la liebre cae muerta y la lanza cerca — 3 lanzadas: a 13.5 m (alerta, aliento 69, tensando): suelo a 0.7 m de ella; a 41.7 m (huir, aliento 60, tensando): suelo a 22.9 m de ella; a 10.1 m (alerta, aliento 39, tensando): presa a 0.3 m de ella
+  OK   recoge la lanza y la liebre —  
+21. Despieza la liebre con la lasca, asa la carne en la hoguera y se la come
+  OK   se le rompió la lasca al morir: talla otra en su piedra de tallar —   · piedra: traer true, lleva 0, ruta mano:der, deja true · silex: traer true, lleva 0, ruta mano:der, deja true · a 1 m de la piedra de tallar
+  OK   despieza con las manos la liebre del suelo, llevando la lasca — lasca: 1
+  OK   recoge la carne cruda, que se estropea con el tiempo (lleva hasta cuándo), y la piel — {"ruta":"mano:izq","c":{"tipo":"carne_cruda","n":1,"hasta":1794484388154}}
+  OK   la hoguera se ha apagado y no le queda nada: le echa una rama de por aquí
+  OK   se le rompió el taladro al morir: hace otro (2 ramas y un cordel de fibra) — yesca,
+  OK   la hoguera se había apagado: la vuelve a encender
+  OK   deja la carne en la hoguera encendida y la asa —  
+  OK   recoge la carne asada
+  OK   se la come: le quita el hambre (más que cruda) —  hambre 76.52185185185114 → 41.52185185185114
+
+Todavía no se puede (sin el arcón): la resina — los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs
+
+249 bien, 0 mal
