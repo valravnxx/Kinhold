@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 12 nov 2026 — por el chat: auditoría total
+
+valravnx pidió una auditoría de todo (estado, hitos hechos y congelados, qué funciona y qué no, el aspecto frente a la referencia, las animaciones, el código, si cambiar de motor y el camino a un juego comercial). Entregada en el chat como documento. **No cambia el roadmap**: propone un hito nuevo «El aspecto» (luz y cielo, hierba densa, suelo con materiales, sotobosque, bruma, desenfoque de maqueta) por delante de P8, con el carril en P6 a la vez, y traer del congelado 10b solo «manos que agarran». Espera sus respuestas (prioridad del hito nuevo, desenfoque mientras se juega, medidas de fotogramas en su PC y su móvil, vía de las animaciones, navegador o escritorio, cómo se cobra). Hasta que conteste, los carriles siguen como estaban.
+
 ### 12 nov 2026 — por el chat, sobre P4b (La interfaz nueva)
 
 "aprueba interfaz" → hito P4b `hecho`.
