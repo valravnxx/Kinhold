@@ -153,6 +153,7 @@ paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_mater
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
+paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_demo.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html "$C/carretilla"

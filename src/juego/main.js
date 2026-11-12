@@ -2449,8 +2449,13 @@ const { alternarCamaraLibre, moverCamaraLibre, autoconstruirAdmin, velocidadAdmi
   sueloEn: (x, z) => (mundoJ ? decorado.altura(x, z) : 0), avisar: (txt) => mostrarAviso(txt) });
 
 const reloj = new THREE.Clock();
+const DT_MAX = 0.5, PASO_ANDAR = 0.05;
 function paso() {
-  const dt = Math.min(reloj.getDelta(), 0.05);
+  // el tiempo del juego va al real aunque haya pocos fotogramas (valravnx, 12 nov: con pocos fps su chica andaba
+  // «hiperlenta»: antes se recortaba a 0,05 s por fotograma, así que por debajo de 20 fps todo iba a cámara lenta). Solo
+  // se recorta un fotograma larguísimo (la pestaña de vuelta, un tirón de segundos), y el paso de andar se parte en
+  // trozos de PASO_ANDAR para no atravesar paredes ni saltarse una orilla.
+  const dt = Math.min(reloj.getDelta(), window.__mutarVelocidad ? 0.05 : DT_MAX);   // (__mutarVelocidad: el recorte de antes, para romper a propósito pruebas/prueba_velocidad_navegador.py)
   if (mundoJ) pasoMundo();
   // el contador de arriba sigue a donde estás (entras o sales de tu tierra) y a lo que cambia en el suelo
   if (enLinea && performance.now() - ultimoMateriales > 500) { ultimoMateriales = performance.now(); pintarMateriales(); if (!$('panelTierra').hidden) pintarTierra(); }
@@ -2494,14 +2499,17 @@ function paso() {
     const s = Math.sin(cam.yaw), co = Math.cos(cam.yaw);
     const dx = (ax * co + az * s) / Math.hypot(ax, az);
     const dz = (-ax * s + az * co) / Math.hypot(ax, az);
-    let nx = pj.x + dx * vel * dt, nz = pj.z + dz * vel * dt;
-    const r = resolverColision(nx, nz, pj.k);
-    if (!mundoJ) { pj.x = THREE.MathUtils.clamp(r.x, -190, 190); pj.z = THREE.MathUtils.clamp(r.z, -190, 190); }
-    // en el mundo: dentro de la isla, sin meterse en el mar ni subir por las paredes de los cortados (si no se puede
-    // de frente, se prueba a deslizarse por cada eje)
-    else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
-    else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
-    else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
+    const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
+    for (let i = 0; i < trozos; i++) {
+      const nx = pj.x + dx * vel * h, nz = pj.z + dz * vel * h;
+      const r = resolverColision(nx, nz, pj.k);
+      if (!mundoJ) { pj.x = THREE.MathUtils.clamp(r.x, -190, 190); pj.z = THREE.MathUtils.clamp(r.z, -190, 190); }
+      // en el mundo: dentro de la isla, sin meterse en el mar ni subir por las paredes de los cortados (si no se puede
+      // de frente, se prueba a deslizarse por cada eje)
+      else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
+      else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
+      else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
+    }
     const objetivoRot = Math.atan2(dx, dz);
     let dr = objetivoRot - pj.rot;
     while (dr > Math.PI) dr -= Math.PI * 2;
