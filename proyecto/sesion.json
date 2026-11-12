@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-12T09:25:23+00:00",
+  "tarea": "Partir servidor/servidor.mjs: la función crearServidor (1.242 líneas) en un módulo por sistema, sin cambiar lo que hace",
+  "hito": "orden",
+  "rama": "trabajo/20261112-0925"
+ },
  "B": null,
  "chat:trabajo/20261112-0911-aspecto-luz": {
   "inicio": "2026-11-12T09:11:17+01:00",

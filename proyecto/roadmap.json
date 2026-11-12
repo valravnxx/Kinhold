@@ -2002,7 +2002,9 @@
     },
     {
      "nombre": "Partir servidor/servidor.mjs: la función crearServidor (1.242 líneas) en un módulo por sistema, sin cambiar lo que hace",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-12T09:25:23+00:00",
+     "rama": "trabajo/20261112-0925"
     },
     {
      "nombre": "Comprobador de código: un analizador y la comprobación de tipos de JavaScript, que avisen en segundos y sin la nube",
