@@ -60,7 +60,7 @@ export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
 // El color del suelo de cerca (el de la vista «Como en el juego»), en lineal y ya con el sombreado de las vaguadas:
 //   st: el sitio (paisaje.sitio) o null en el agua; y: altura (m); s: pendiente de la forma (vecinos a 3 m); s1: la de
 //   aquí mismo (1 m); lap: concavidad (vecinos a 2 m, m/m²); xm, ym: el punto en el mundo (m)
-const TIERRA = [0.5, 0.44, 0.38], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: pardo gris cálido, como el camino de la referencia; antes se leía como paja, y luego como caqui)
+const TIERRA = [0.55, 0.47, 0.41], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: pardo gris cálido, como el camino de la referencia; antes se leía como paja, y luego como caqui)
 // (la prueba quita el lecho a propósito para comprobar que falla)
 const window_sinLecho = () => typeof globalThis !== 'undefined' && !!globalThis.__sinLecho;
 const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -114,6 +114,9 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
   if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); pHoja = Math.min(1, d * 0.9); }
   if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) { c = conLecho(c, st, rio, xm, ym); pTierra = Math.max(pTierra, 1 - suave(-0.3, 1.6, rio.dm - rio.ancho / 2)); }
+  // la hierba, algo menos chillona: hacia el verde oliva pajizo de la referencia (diseno/referencia/aspecto_del_juego.jpg)
+  const g = (1 - pRoca) * (1 - pTierra) * (1 - pHoja) * 0.2, L = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+  c = [c[0] + (L * 1.06 - c[0]) * g, c[1] + (L - c[1]) * g, c[2] + (L * 0.86 - c[2]) * g];
   const v = 1 - Math.max(-0.1, Math.min(0.15, lap * 1.5)) + (fbm(xm / 5, ym / 5, 43, 3) - 0.5) * 0.16;
   // los colores de arriba están en sRGB (como los de la paleta); los de los vértices van en lineal
   sal[0] = lin(c[0]) * v; sal[1] = lin(c[1]) * v; sal[2] = lin(c[2]) * v;
