@@ -148,7 +148,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
 
   // Las mallas de ahora, alrededor de P (escena): se hacen enteras y se cambian de golpe por las de antes.
   let mallas = [], vivas = [], deArboles = [], centro = null, ocupadoUlt = null, cuenta = null, tapan = new Set();
-  const api = { enPie: () => true, mataEnPie: () => true, rocaEnPie: () => true, alLlegar: null, alIrse: null };   // (mataEnPie(id): si no está desbrozada; rocaEnPie(id): si no está rota)
+  const api = { enPie: () => true, mataEnPie: () => true, rocaEnPie: () => true, alLlegar: null, alIrse: null, hierbaDensa: false };   // (mataEnPie(id): si no está desbrozada; rocaEnPie(id): si no está rota)
   const cero = new THREE.Matrix4().makeScale(0, 0, 0);
   function poner(P) {
     mirarDetalle();
@@ -207,7 +207,9 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // color y se tiñen solo un poco del de cada una)
     const hM = M('hierba'), fM = M('flores'), mM = M('matorral'), blanco = new THREE.Color(1, 1, 1);
     const HC = movil ? 7 : 10;   // (la hierba de Meshy, que son miles: la de cerca entera, la de más allá con muy pocos triángulos)
-    if (hM) { instancias(hierba.filter(e => dist(e) < HC), hM.cerca.geo, hM.cerca.mats, 'hierbaCerca', e => c.setScalar(e.tono)); instancias(hierba.filter(e => dist(e) >= HC), hM.lejos.geo, hM.lejos.mats, 'hierba', e => c.setScalar(e.tono)); }
+    // (con la hierba densa puesta, src/mundo/hierba_densa.js, las briznas sueltas de antes sobran)
+    if (api.hierbaDensa) { /* nada */ }
+    else if (hM) { instancias(hierba.filter(e => dist(e) < HC), hM.cerca.geo, hM.cerca.mats, 'hierbaCerca', e => c.setScalar(e.tono)); instancias(hierba.filter(e => dist(e) >= HC), hM.lejos.geo, hM.lejos.mats, 'hierba', e => c.setScalar(e.tono)); }
     else instancias(hierba, pl.mata, material('doble'), 'hierba', e => c.setScalar(e.tono));
     if (fM) { instancias(flores.filter(e => dist(e) < HC), fM.cerca.geo, fM.cerca.mats, 'floresCerca', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); instancias(flores.filter(e => dist(e) >= HC), fM.lejos.geo, fM.lejos.mats, 'flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65)); }
     else instancias(flores, pl.flor, material('fijo'), 'flores', e => c.set(FLORES[e.color]));

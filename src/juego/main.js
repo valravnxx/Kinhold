@@ -18,6 +18,7 @@ import { crearCielo } from '../mundo/cielo.js';
 import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
+import { crearHierbaDensa } from '../mundo/hierba_densa.js';
 import { crearVegetacionMundo, MEDIDAS_VEGETACION } from '../mundo/vegetacion_mundo.js';
 import { vigilar, soloEscena, ofrecerGente } from '../mundo/rendimiento.js';
 import { crearGraficos } from './graficos.js';
@@ -320,6 +321,18 @@ const decorado = mundoJ ? crearVegetacionMundo({ mundoJ, semilla: MUNDO.mapa.sem
     hierba: 3200, flores: 900, hierbaDesde: 0, hierbaHasta: 46, rocas: 40, rocasDesde: 9, matas: 45, matasDesde: 7,
     sueltos: 10, sueltosDesde: 22, calvas: 14, claro: (x, z) => Math.hypot(x, z - 4) > 1.5 }); // sin nada en el sitio de salida
 escena.add(decorado.raiz);
+// la hierba densa (12 nov, el aspecto de maqueta: src/mundo/hierba_densa.js), según el perfil gráfico. Las pruebas
+// automáticas, sin ella (dibujan como antes y no tardan más), salvo ?hierba=1; ?hierba=0 la quita.
+const hierbaDensa = mundoJ ? crearHierbaDensa({ mundoJ, raiz: escena }) : null;
+function hierbaDe(id) {
+  if (!hierbaDensa) return;
+  const q = new URLSearchParams(location.search).get('hierba');
+  const si = q === '1' || (q !== '0' && !navigator.webdriver);
+  hierbaDensa.poner(si ? perfilGrafico(id).hierba : null);
+  if (decorado.hierbaDensa !== hierbaDensa.activa) { decorado.hierbaDensa = hierbaDensa.activa; if (decorado.rehacer) decorado.rehacer(); }
+}
+hierbaDe(graficos.perfil);
+graficos.alCambiar(hierbaDe);
 const obstaculos = decorado.obstaculos; // {x,z,r}
 // lo que se recoge del suelo y de las plantas (N0): ramas, piedra, sílex y fibra (src/juego/recoleccion.js)
 // En el mundo, sale del sitio (ramas en el bosque, sílex en la caliza…) y sigue al jugador (src/logica/recogida_mundo.js).
@@ -494,6 +507,7 @@ function despejarDecorado() {
   const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r);
   estado.plantasOcultas = decorado.despejar(ocupado);
   recoleccion.despejar(ocupado); // lo que queda debajo de lo construido no se ve ni se recoge
+  if (hierbaDensa) hierbaDensa.despejar(ocupado);
 }
 let chimeneasSucias = true, chimeneas = []; // chimeneas con fuego (se buscan de nuevo al rehacer piezas)
 const altosCanon = new WeakMap(); // chimenea → hasta dónde sube su cañón (se calcula al dibujarla; lo usa el choque)
@@ -2365,7 +2379,7 @@ function pasoMundo() {
   // y lo que crece, que también sigue al jugador (src/mundo/vegetacion_mundo.js): cuenta en el mismo tiempo
   // (con la cámara libre del admin, el paisaje se prepara alrededor de la cámara)
   const foco = camLibre.activa ? { ...pj, x: camLibre.x, z: camLibre.z } : pj;
-  const ms = mundoJ.paso(foco.x, foco.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(foco) : 0);
+  const ms = mundoJ.paso(foco.x, foco.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(foco) : 0) + (hierbaDensa && mundoListo ? hierbaDensa.paso(foco, performance.now() / 1000) : 0);
   // el dosel de cerca empieza donde acaban los árboles de verdad (su cuadro, alrededor de donde se pusieron)
   if (mundoJ.horizonte && decorado.centro) mundoJ.horizonte.cuadroArboles(decorado.centro.x, decorado.centro.z, MEDIDAS_VEGETACION.cuadro);
   if (mundoListo) mirarTierras();
@@ -3068,7 +3082,7 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
-  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, combate, cielo, ambiente,
+  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, hierbaDensa, combate, cielo, ambiente,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },

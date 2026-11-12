@@ -141,6 +141,7 @@ paso "Navegador: el menú con pestañas (tablero, pestañas, pie y arriba solo M
 paso "Navegador: construir con el acabado nuevo (Poner | Quitar, la planta arriba, las piezas con su imagen y su coste, deshacer)" python3 pruebas/prueba_construir_menu_navegador.py dist/kinhold_demo.html "$C/construir_menu"
 paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_posprocesado_navegador.py dist/kinhold_posprocesado.html "$C/posprocesado"
 paso "Navegador: el perfil gráfico en el juego" python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html "$C/graficos_juego"
+paso "Navegador: la hierba densa" python3 pruebas/prueba_hierba_navegador.py dist/kinhold_demo.html "$C/hierba"
 paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py dist/kinhold_demo.html "$C/cielo"
 paso "Navegador: los avisos de las necesidades" python3 pruebas/prueba_avisos_navegador.py dist/kinhold_demo.html "$C/avisos"
 paso "Navegador: las bayas y las setas" python3 pruebas/prueba_bayas_navegador.py dist/kinhold_demo.html "$C/bayas"
