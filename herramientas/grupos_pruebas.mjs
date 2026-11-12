@@ -36,6 +36,7 @@ export const TOCA = {
   'el-mimbre-la-corteza-y-la-resina': [/^src\/juego\/tala\.js$/],
   'recoger-del-suelo-y-de-las-plantas': [/^src\/(logica|juego)\/recoleccion\.js$/],
   'tala-de-los-arboles': [/^src\/(logica|juego)\/tala\.js$/],
+  'velocidad-con-pocos-fotogramas': [/^src\/juego\/main\.js$/, /^pruebas\/prueba_velocidad_navegador\.py$/],   // el paso del tiempo del bucle (12 nov)
   'tronzar-y-partir': [/^src\/logica\/troceo\.js$/],
   'la-rastra': [/^src\/(logica|juego)\/rastra\.js$/],
   'la-carretilla': [/^src\/juego\/carretilla\.js$/],

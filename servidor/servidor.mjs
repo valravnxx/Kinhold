@@ -151,6 +151,7 @@ import { instalarCombate, arrancarCombate } from './sistemas/combate.mjs';
 import { instalarMuerte } from './sistemas/muerte.mjs';
 import { instalarFauna, arrancarFauna } from './sistemas/fauna.mjs';
 import { instalarTierras, arrancarTierras } from './sistemas/tierras.mjs';
+import { instalarRendimiento } from './sistemas/rendimiento.mjs';
 import { instalarConexiones, arrancarPresencia, arrancarLatido } from './sistemas/conexion.mjs';
 export { leerArchivo, cargarMundo, guardarEstadoMundo } from './guardado.mjs';
 
@@ -180,6 +181,8 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
     archivoNecesidades: junto('necesidades.json'),
     archivoSalidas: junto('salidas.json'),   // la salida que eligió cada uno (a ella vuelve al morir sin cama)
     archivoAdmin: junto('admin.jsonl'),
+    // la medida de rendimiento de cada aparato, que se manda con un botón (servidor/sistemas/rendimiento.mjs)
+    archivoRendimiento: junto('rendimiento.jsonl'),
     // lo que se dice en el chat de texto: quién, qué y dónde (para moderar: la cuenta de admin lo puede revisar)
     archivoCharla: junto('charla.jsonl'),
     charla: new LimitadorCharla(),
@@ -241,6 +244,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   instalarMuerte(S);
   instalarFauna(S);
   instalarTierras(S);
+  instalarRendimiento(S);
   // los tics, en el orden de siempre: combate, presencia, liebres, necesidades, latido y tierras
   const ticCombate = arrancarCombate(S);
   S.presencia = new PresenciaServidor({ limitar: limiteMovimiento });   // false: solo pruebas que colocan de golpe
@@ -255,7 +259,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   return {
     wss, mundo, terreno, fauna: S.fauna, abandono: S.abandono, cuerpos: S.cuerpos, morir: S.morir, salidas: S.salidas, archivoSalidas: S.archivoSalidas, revisarTierras: S.revisarTierras,
     dormidos: S.dormidos, revisarDormidos: S.revisarDormidos, ultimaPelea: S.ultimaPelea, archivoAbandono: S.archivoAbandono, archivoTierras: S.archivoTierras, vista, archivo,
-    archivoAdmin: S.archivoAdmin, archivoCuentas: S.archivoCuentas, archivoSeguridad: S.archivoSeguridad, cuentas: S.cuentas, fichas: S.fichas, verificaciones: S.verificaciones,
+    archivoAdmin: S.archivoAdmin, archivoRendimiento: S.archivoRendimiento, archivoCuentas: S.archivoCuentas, archivoSeguridad: S.archivoSeguridad, cuentas: S.cuentas, fichas: S.fichas, verificaciones: S.verificaciones,
     cartero: S.cartero, archivoCombate: S.archivoCombate, archivoFichas: S.archivoFichas, archivoPosiciones: S.archivoPosiciones, posiciones: S.posiciones,
     archivoNecesidades: S.archivoNecesidades, necesidades: S.necesidades, archivoObjetos: S.archivoObjetos, archivoObjetosReg: S.archivoObjetosReg, objetos: S.objetos,
     presencia: S.presencia, combate: S.combate, apartados: S.apartados, clientes,

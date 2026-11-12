@@ -1919,7 +1919,7 @@
    "id": "orden",
    "num": "P6",
    "nombre": "Orden en el código y en los documentos",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "Nada nuevo a la vista: menos código muerto, una sola armadura, el arma del inventario y un servidor que aguanta.",
    "nota": "Revisión del 1 nov con valravnx: en tareas pequeñas, entre bloque y bloque.",
    "tareas": [
@@ -2032,7 +2032,15 @@
     },
     {
      "nombre": "La medida de rendimiento de cada aparato, al servidor con un botón: fotogramas, peor fotograma, triángulos y llamadas de dibujo",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-12T14:24:14+00:00",
+     "fin": "2026-11-12T15:12:47+00:00"
+    },
+    {
+     "nombre": "Con pocos fotogramas, la velocidad de siempre (no a cámara lenta)",
+     "estado": "hecho",
+     "inicio": "2026-11-12T18:14:07+01:00",
+     "fin": "2026-11-12T18:30:38+01:00"
     }
    ]
   },
@@ -4166,6 +4174,20 @@
      "archivo": "jugar/demo/v189.html",
      "capturas": "capturas/demo-v189",
      "notas": "Hierba densa (hito «El aspecto»): en lugar de las briznas oscuras sueltas, miles de matas de hojas finas alrededor de ti, del color del suelo que tienen debajo, que se mueven con el viento y se van por partes a lo lejos. Sin hierba donde el suelo es tierra o roca, donde has construido y junto a lo que se recoge. Cuánta, según la calidad gráfica; el móvil básico no la lleva."
+    },
+    {
+     "v": "v190",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v190.html",
+     "capturas": "capturas/demo-v190",
+     "notas": "Medida de rendimiento de cada aparato, al servidor con un botón"
+    },
+    {
+     "v": "v191",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v191.html",
+     "capturas": "capturas/demo-v191",
+     "notas": "Con pocos fotogramas se anda a la velocidad de siempre: el tiempo del juego va al real, no a cámara lenta."
     }
    ]
   },

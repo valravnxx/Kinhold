@@ -10,7 +10,7 @@ import { personajeElegido } from '../mundo/eleccion.js';
 import { VERSION_DEMO, REGISTRO_DEMO } from './registro.js';
 import { CAPAS } from '../personaje/textos.js';
 import { ponerRendimiento } from './rendimiento.js';
-import { medidaRendimiento, genteDePrueba } from '../mundo/rendimiento.js';
+import { medidaRendimiento, genteDePrueba, tomarMedida, datosAparato } from '../mundo/rendimiento.js';
 import { generar, SEMILLA_MUNDO, LADO_MUNDO } from '../logica/mapa.js';
 import { usuarioGuardado, guardarUsuario } from '../mundo/pantalla_cuenta.js';
 import { motivoClave } from '../logica/cuentas.js';
@@ -78,7 +78,8 @@ if (redirige) {
   else if (caja) caja.prepend(b); else { b.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9'; document.body.appendChild(b); }
   window.__demo = { modo, listo: false };
   window.__rendimiento = { medida: medidaRendimiento, gente: (n) => genteDePrueba() && genteDePrueba().poner(n),
-    detalle: (si) => genteDePrueba()?.detalle?.(si), niveles: () => genteDePrueba()?.niveles?.() };
+    detalle: (si) => genteDePrueba()?.detalle?.(si), niveles: () => genteDePrueba()?.niveles?.(),
+    tomar: (s) => tomarMedida(s), aparato: () => datosAparato() };   // (pruebas: la medida para el servidor)
   // los números de rendimiento junto a «Menú» (src/demo/rendimiento.js), cuando la parte ya ha puesto sus botones.
   // Construir va en el mundo de verdad (Whitholm, la isla de los playtests): antes se genera el mapa del mundo, a pasos y
   // con su barra (tarda unos segundos); con ?llano=1, el llano de antes.

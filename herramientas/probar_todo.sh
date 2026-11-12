@@ -80,6 +80,7 @@ paso "Copia de seguridad diaria del servidor: las 14 últimas, en la máquina y 
 paso "Salidas en línea: cada personaje nuevo elige una de las tres del rey (Lindholt, la ciudad, Motdale) y el servidor lo recuerda" node pruebas/prueba_salidas.mjs
 paso "Panel del admin en el servidor (por la cuenta, ver a todos, teletransportarse)" node pruebas/prueba_admin_servidor.mjs
 paso "Herramienta del admin en el servidor (información, autoconstruir, arcón de admin, velocidad)" node pruebas/prueba_admin_herramienta.mjs
+paso "Medida de rendimiento de cada aparato, al servidor (la toma, la medida limpia, una cada tanto, solo el admin la ve)" node pruebas/prueba_rendimiento_servidor.mjs
 paso "Cuentas: usuario y contraseña (resumida con sal), crear, entrar, intentos y lo que no debe dejar" node pruebas/prueba_cuentas.mjs
 paso "Combate en el servidor, con lag simulado" node pruebas/prueba_combate_servidor.mjs
 paso "Inventario y suelo en el servidor, con dos clientes" node pruebas/prueba_objetos_servidor.mjs
@@ -153,6 +154,7 @@ paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_mater
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
+paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_demo.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html "$C/carretilla"

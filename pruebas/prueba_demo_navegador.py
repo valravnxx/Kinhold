@@ -164,6 +164,21 @@ with sync_playwright() as p:
         m8 = medir(pg, nombre, 'construir_9', 9)
         comprobar('construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno)', m8['triangulos'] > m0['triangulos'] + 8000, f"{m0['triangulos']} → {m8['triangulos']}")
         abrirPanel(pg, 'construir')
+        # la medida al servidor con un botón (hito «Orden», 12 nov): mide fotogramas, peor, triángulos y llamadas, y
+        # sin servidor (?sinservidor=1) lo dice en vez de quedarse esperando
+        comprobar('construir: el botón de medir y mandar al servidor', pg.locator('#demoRend [data-enviar]').count() == 1, pg.inner_text('#demoRend')[-200:])
+        if nombre == 'pc':
+            t = pg.evaluate('window.__rendimiento.tomar(1)')
+            a = pg.evaluate('window.__rendimiento.aparato()')
+            comprobar('construir: la toma de 1 s trae fotogramas, peor, triángulos y llamadas', bool(t) and t['fotogramas'] > 0 and t['peor'] > 0 and t['triangulos'] > 1000 and t['llamadas'] > 0, str(t))
+            comprobar('construir: y lo que se sabe del aparato', bool(a) and a['ancho'] > 0 and a['alto'] > 0 and bool(a['navegador']), str(a)[:160])
+            pg.click('#demoRend [data-enviar]'); pg.wait_for_timeout(1500)
+            comprobar('construir: mientras mide, lo dice', 'Midiendo' in pg.inner_text('#demoRend'), pg.inner_text('#demoRend')[-120:])
+            pg.screenshot(path=f'{SALIDA}/{nombre}_construir_rendimiento_midiendo.png')
+            try: pg.wait_for_selector('#demoRend [data-envio-estado]', timeout=20000)
+            except Exception: pass
+            e = pg.inner_text('#demoRend [data-envio-estado]') if pg.locator('#demoRend [data-envio-estado]').count() else ''
+            comprobar('construir: sin servidor, dice que no se ha podido mandar', 'sin conexión' in e, e)
         pg.screenshot(path=f'{SALIDA}/{nombre}_construir_rendimiento.png')
         pg.click('#btnDemoFps')
         if pg.evaluate("document.getElementById('hub').hidden"): pg.click('#btnMenu')

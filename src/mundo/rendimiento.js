@@ -3,7 +3,9 @@
 // cuánto tarda cada uno, los triángulos y las llamadas de dibujo de cada fotograma, la memoria de la tarjeta
 // (geometrías y texturas que conoce three.js) y la de JavaScript (solo la dicen Chrome y los navegadores
 // basados en él). No dibuja nada en pantalla: los números los enseña la demo (src/demo/rendimiento.js).
-const estado = { renderer: null, escena: null, gente: null, solo: null };
+import { TomaRendimiento, MEDIR_SEGUNDOS } from '../logica/rendimiento.js';
+
+const estado = { renderer: null, escena: null, gente: null, solo: null, toma: null, envio: null };
 const ventana = { cuenta: 0, t0: 0, peor: 0, antes: 0 };
 const medida = { fps: 0, ms: 0, peor: 0, triangulos: 0, dibujados: 0, geometrias: 0, texturas: 0, memoriaJS: null, personajes: 0, resolucion: 1, ancho: 0, alto: 0 };
 
@@ -25,6 +27,8 @@ export function vigilar(renderer) {
     estado.escena = escena;
     const ahora = performance.now();
     if (ventana.antes) ventana.peor = Math.max(ventana.peor, ahora - ventana.antes);
+    // la medida para el servidor (tomarMedida), fotograma a fotograma
+    if (estado.toma && ventana.antes) estado.toma.fotograma(ahora - ventana.antes, info.render.triangles, info.render.calls);
     ventana.antes = ahora;
     if (!ventana.t0) ventana.t0 = ahora;
     ventana.cuenta++;
@@ -54,3 +58,28 @@ export function medidaRendimiento() { return estado.renderer ? { ...medida } : n
 // Una parte puede ofrecer personajes de más para medir con gente: { poner(n), cuantos() }
 export function ofrecerGente(g) { estado.gente = g; }
 export function genteDePrueba() { return estado.gente; }
+
+// La medida para mandar al servidor (src/logica/rendimiento.js): `segundos` dibujando como siempre y, al acabar, lo que
+// ha salido. null si ninguna parte ha registrado su renderer o ya hay una midiéndose.
+export function tomarMedida(segundos = MEDIR_SEGUNDOS) {
+  if (!estado.renderer || estado.toma) return Promise.resolve(null);
+  const toma = estado.toma = new TomaRendimiento();
+  return new Promise(r => setTimeout(() => { estado.toma = null; r(toma.resultado()); }, segundos * 1000));
+}
+export function midiendo() { return !!estado.toma; }
+
+// Lo que se sabe de este aparato: el navegador, la tarjeta gráfica (si la dice), la pantalla dibujada y su resolución,
+// los núcleos y la memoria (si los dice) y si es táctil
+export function datosAparato() {
+  const r = estado.renderer; if (!r) return null;
+  const gl = r.getContext();
+  let grafica = null;
+  try { const x = gl.getExtension('WEBGL_debug_renderer_info'); grafica = gl.getParameter(x ? x.UNMASKED_RENDERER_WEBGL : gl.RENDERER); } catch (e) { /* no la dice */ }
+  return { navegador: navigator.userAgent, grafica: grafica ? String(grafica) : null, ancho: gl.drawingBufferWidth, alto: gl.drawingBufferHeight,
+    resolucion: +r.getPixelRatio().toFixed(2), nucleos: navigator.hardwareConcurrency || null, memoria: navigator.deviceMemory || null,
+    tactil: (navigator.maxTouchPoints || 0) > 0 };
+}
+
+// Cómo se manda al servidor: la parte en línea lo ofrece ({ mandar(msg) → promesa de la respuesta, o null sin conexión })
+export function ofrecerEnvio(e) { estado.envio = e; }
+export function envioRendimiento() { return estado.envio; }

@@ -6461,5 +6461,35 @@
   "pruebas": "Sin código cambiado: nada en la nube. Comprobado a mano que una versión archivada (demo v150) se descarga entera de su release con las rutas a la web, y la web generada sin fallos.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T14:24:14+00:00",
+  "fin": "2026-11-12T15:12:47+00:00",
+  "titulo": "Orden: la medida de rendimiento de cada aparato, al servidor con un botón",
+  "hito": "orden",
+  "hecho": [
+   "En Menú, Ajustes, Rendimiento y calidad gráfica, un botón nuevo, «Medir 10 s y mandarlo al servidor»: mientras se juega mide los fotogramas por segundo, el fotograma más lento, los triángulos y las llamadas de dibujo, y lo manda con el aparato (navegador, tarjeta gráfica, pantalla y calidad gráfica).",
+   "El servidor la guarda en rendimiento.jsonl con la hora y la cuenta (una cada 15 s por jugador como mucho) y la cuenta de admin ve las 30 últimas con «Ver las mandadas», en el mismo panel.",
+   "En Ajustes, Ayuda y Decisiones el marco de madera ya no se va al desplazar hacia abajo: lo de abajo quedaba fuera del marco.",
+   "Con esto el hito «Orden» queda terminado y pasa a revisión de valravnx.",
+   "Demo v190."
+  ],
+  "pruebas": "Comprobador de código, limpio. Prueba nueva de la medida en el servidor 15/15 (rota a propósito con MUTAR=1: falla). En la nube, la demo única bien (falló una vez porque el botón se rehacía cada segundo y no se podía pulsar; arreglado) y la demo en el mundo bien; lógica, bien salvo la prueba del servidor en internet (systemd-analyze de la máquina de GitHub, falla igual en main). Fuera, por la sesión: el recorrido y dormido al desconectarse (el cambio no toca el mundo ni la conexión, solo añade un mensaje). Capturas del panel en PC y móvil, arriba, abajo y midiendo, miradas una a una y por un segundo revisor. No comprobado en el navegador: la lista «Ver las mandadas» del admin (sí en la prueba del servidor). La rama del chat (el suelo) toca también src/juego/main.js, src/demo/main.js y probar_todo.sh: lo mío son líneas sueltas añadidas.",
+  "capturas": "capturas/demo-v190",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T18:14:07+01:00",
+  "fin": "2026-11-12T18:30:38+01:00",
+  "titulo": "Con pocos fotogramas, la velocidad de siempre (demo v191)",
+  "hito": "orden",
+  "hecho": [
+   "Con pocos fps una jugadora de prueba andaba «hiperlenta»: el bucle contaba como mucho 0,05 s por fotograma, así que por debajo de 20 fps todo el juego iba a cámara lenta.",
+   "Ahora el tiempo del juego va al real, hasta medio segundo por fotograma (la vuelta de otra pestaña no salta).",
+   "El paso de andar se parte en trozos de 0,05 s, para no atravesar paredes ni saltarse una orilla con fotogramas largos.",
+   "Prueba nueva: con el juego frenado a propósito a pocos fps, andar 3 s recorre lo que toca a 3,6 m/s (con el recorte de antes, 0,29 m/s: falla)."
+  ],
+  "pruebas": "Velocidad con pocos fotogramas: 3,55 m/s a 5,7 fps en la nube; rota a propósito, falla. Comprobador de código sin fallos. No comprobado: el reporte de 10 s de esa jugadora (la red de aquí no llega al servidor).",
+  "estado": "ok"
  }
 ]

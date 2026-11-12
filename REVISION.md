@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 12 nov 2026, 18:11 — por el chat
+
+- «[Una jugadora de prueba] va muy laggy, pero su problema más que los fps es que afectan a su velocidad de movimiento y va hiperlenta… y los perfiles no parecen ayudarle mucho con los fps. Ha enviado reporte al servidor con eso de los 10 s.» Causa: el bucle del juego contaba como mucho 0,05 s por fotograma, así que por debajo de 20 fps todo iba a cámara lenta. Arreglado en la tarea «Con pocos fotogramas, la velocidad de siempre» (orden). El reporte de 10 s no se puede leer desde aquí (la red no llega al servidor): valravnx lo mira en el panel de admin (F9) y pasa lo que dice, sobre todo la tarjeta gráfica.
+
 ### 12 nov 2026, 14:39 — por el chat
 
 - La hierba densa (demo v189): «en mi móvil va bien».

@@ -22,6 +22,7 @@ import { estropearInventario, estropearSuelo } from '../../src/logica/comida.js'
 import { resumen, fichaValida, SIN_CORREO, atenderCuenta } from './cuentas.mjs';
 import { atenderObjeto } from './objetos.mjs';
 import { atenderAdmin } from './admin.mjs';
+import { atenderRendimiento } from './rendimiento.mjs';
 
 // presencia: cada tic, a cada uno los que han cambiado menos él mismo
 export function arrancarPresencia(S) {
@@ -196,6 +197,7 @@ function atender(S, c, datos) {
   if (msg.tipo === 'decir') return atenderDecir(S, c, msg);
   if (msg.tipo === 'cuenta') return atenderCuenta(S, c, msg);
   if (msg.tipo === 'admin') return atenderAdmin(S, c, msg);
+  if (msg.tipo === 'rendimiento') return atenderRendimiento(S, c, msg);   // la medida de este aparato, con un botón
   if (msg.tipo === 'objeto') return atenderObjeto(S, c, msg);
   if (msg.tipo !== 'accion' || !msg.accion || typeof msg.accion !== 'object' || Array.isArray(msg.accion))
     return enviar(ws, { tipo: 'error', motivo: 'Mensaje no válido.' });
