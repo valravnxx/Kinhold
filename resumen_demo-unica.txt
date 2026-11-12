@@ -1,0 +1,37 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2689 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3025 KB
+
+== Construir demo única
+      3457 │ ...rModo, colocar, girar, cambiarPlanta, usar, confirmarDesmontaje,
+           ╵                                          ~~~~
+
+dist/kinhold_demo.html 4369 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3092 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2683 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3046 KB
+dist/kinhold_trozos.html 2697 KB
+hilo de los trozos 22 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v185 (La caída del árbol); v185: la caída del árbol (hito «Talar de verdad»). El árbol talado gira sobre el tocón como una vara que se vence con la gravedad, cada vez más deprisa; da en el suelo, rebota un poco y se asienta según el terreno (cuesta abajo se tumba más, cuesta arriba se queda más alto). Si por el medio hay otro árbol o una obra, se queda apoyado en él o, si lo coge de refilón, se desvía hacia el otro lado y sigue cayendo; el tronco y las varas quedan hacia donde fue. La calcula el servidor con su terreno, sus árboles y las obras, y manda los fotogramas: todos la ven igual.; v185, provisional: el alto del árbol, el de su modelo (por especie y tamaño); se parte a 0,3 m del suelo y empieza ya vencido 0,1 rad. Rebota con el 22 % de la velocidad y se asienta por debajo de 0,25 rad/s. La copa lo sostiene algo sobre el suelo (hasta 0,5 m en la punta). Lo de alrededor: los troncos de los árboles en pie y las piezas de las obras (un círculo de 1 m por pieza, hasta lo alto de su planta); de lleno si pasa a menos de la mitad de lo que se tocan (se queda apoyado), si no, de refilón: se desvía 0,4 rad y sigue con la mitad de la velocidad (dos veces como mucho). Apoyado, se queda así un momento y luego quedan el tronco y lo menudo en el suelo, como siempre.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 301 s

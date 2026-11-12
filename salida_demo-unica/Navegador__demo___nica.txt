@@ -1,0 +1,80 @@
+Vista pc
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 103.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 1 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 810.6, 'peor': 811, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 16, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 108.1
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 1 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 723.9, 'peor': 754, 'triangulos': 764496, 'dibujados': 51, 'geometrias': 33, 'texturas': 25, 'memoriaJS': 16, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 0.54}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 0.43200000000000005}
+  OK   construir: cargado también avanza — 0.43 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 1 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 734, 'peor': 737, 'triangulos': 810816, 'dibujados': 66, 'geometrias': 34, 'texturas': 36, 'memoriaJS': 16, 'personajes': 9, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 764496 → 810816
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	1 por segundo
+Cada fotograma	738.5 ms de 
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:59509/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+Vista movil
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 121.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 3 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 5, 'ms': 212.6, 'peor': 223, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 21, 'personajes': 1, 'resolucion': 0.5, 'ancho': 195, 'alto': 422}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 99.3
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 3 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 3, 'ms': 327.4, 'peor': 378, 'triangulos': 441750, 'dibujados': 41, 'geometrias': 28, 'texturas': 21, 'memoriaJS': 21, 'personajes': 1, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 1.08}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 0.7200000000000001}
+  OK   construir: cargado también avanza — 0.72 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 3 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 3, 'ms': 313, 'peor': 318, 'triangulos': 499078, 'dibujados': 58, 'geometrias': 30, 'texturas': 32, 'memoriaJS': 21, 'personajes': 9, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 441750 → 499078
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	3 por segundo
+Cada fotograma	313.1 ms de 
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:59509/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+  FALLA menú en en: todo traducido — Demo única · v185 (La caída del árbol); v185: la caída del árbol (hito «Talar de verdad»). El árbol talado gira sobre el tocón como una vara que se vence con la gravedad, cada vez más deprisa; da en el suelo, rebota un poco y se asienta según el terreno (cuesta abajo se tumba más, cuesta arriba se queda más alto). Si por el medio hay otro árbol o una obra, se queda apoyado en él o, si lo coge de refilón, se desvía hacia el otro lado y sigue cayendo; el tronco y las varas quedan hacia donde fue. La calcula el servidor con su terreno, sus árboles y las obras, y manda los fotogramas: todos la ven igual.; v185, provisional: el alto del árbol, el de su modelo (por especie y tamaño); se parte a 0,3 m del suelo y empieza ya vencido 0,1 rad. Rebota con el 22 % de la velocidad y se asienta por debajo de 0,25 rad/s. La copa lo sostiene algo sobre el suelo (hasta 0,5 m en la punta). Lo de alrededor: los troncos de los árboles en pie y las piezas de las obras (un círculo de 1 m por pieza, hasta lo alto de su planta); de lleno si pasa a menos de la mitad de lo que se tocan (se queda apoyado), si no, de refilón: se desvía 0,4 rad y sigue con la mitad de la velocidad (dos veces como mucho). Apoyado, se queda así un momento y luego quedan el tronco y lo menudo en el suelo, como siempre.
+  OK   menú en en: nada tapado
+  FALLA menú en ru: todo traducido — Demo única · v185 (La caída del árbol); v185: la caída del árbol (hito «Talar de verdad»). El árbol talado gira sobre el tocón como una vara que se vence con la gravedad, cada vez más deprisa; da en el suelo, rebota un poco y se asienta según el terreno (cuesta abajo se tumba más, cuesta arriba se queda más alto). Si por el medio hay otro árbol o una obra, se queda apoyado en él o, si lo coge de refilón, se desvía hacia el otro lado y sigue cayendo; el tronco y las varas quedan hacia donde fue. La calcula el servidor con su terreno, sus árboles y las obras, y manda los fotogramas: todos la ven igual.; v185, provisional: el alto del árbol, el de su modelo (por especie y tamaño); se parte a 0,3 m del suelo y empieza ya vencido 0,1 rad. Rebota con el 22 % de la velocidad y se asienta por debajo de 0,25 rad/s. La copa lo sostiene algo sobre el suelo (hasta 0,5 m en la punta). Lo de alrededor: los troncos de los árboles en pie y las piezas de las obras (un círculo de 1 m por pieza, hasta lo alto de su planta); de lleno si pasa a menos de la mitad de lo que se tocan (se queda apoyado), si no, de refilón: se desvía 0,4 rad y sigue con la mitad de la velocidad (dos veces como mucho). Apoyado, se queda así un momento y luego quedan el tronco y lo menudo en el suelo, como siempre.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
