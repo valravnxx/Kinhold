@@ -6,9 +6,19 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
-### 12 nov 2026 — por el chat: auditoría total
+### 12 nov 2026 — por el chat: auditoría total y sus respuestas
 
-valravnx pidió una auditoría de todo (estado, hitos hechos y congelados, qué funciona y qué no, el aspecto frente a la referencia, las animaciones, el código, si cambiar de motor y el camino a un juego comercial). Entregada en el chat como documento. **No cambia el roadmap**: propone un hito nuevo «El aspecto» (luz y cielo, hierba densa, suelo con materiales, sotobosque, bruma, desenfoque de maqueta) por delante de P8, con el carril en P6 a la vez, y traer del congelado 10b solo «manos que agarran». Espera sus respuestas (prioridad del hito nuevo, desenfoque mientras se juega, medidas de fotogramas en su PC y su móvil, vía de las animaciones, navegador o escritorio, cómo se cobra). Hasta que conteste, los carriles siguen como estaban.
+valravnx pidió una auditoría de todo (estado, hitos, qué funciona y qué no, el aspecto frente a la referencia, las animaciones, el código, si cambiar de motor y el camino a un juego comercial). Entregada en el chat. Sus respuestas (09:10):
+
+1. El hito nuevo «El aspecto», primera prioridad por delante de P8: «si, adelante». Creado (V1, lo lleva el chat): luz y cielo, hierba densa, suelo con materiales, sotobosque, riberas y rocas de acantilado (traídas del hito 10), bruma, manos que agarran (traída del 10b) y la prueba de Mixamo. El carril sigue con P6, que gana cinco tareas (partir el servidor, comprobador de código, base común de pruebas, adelgazar la web, medida de rendimiento por aparato).
+2. Desenfoque de maqueta mientras se juega: «pruebala, vamos a meterla y ver si es muy intrusivo o no». Entra a prueba en la primera tarea; decide él al verla.
+3. Medir los fotogramas en su PC y su móvil: «lo haré a la tarde».
+4. Animaciones: «probemos mixamo, claro».
+5. ¿Navegador con venta?: sí se puede (pasarela de pago propia); se sigue en navegador.
+6. Cómo se cobra: «ya lo hablamos, temas estéticos solo».
+7. La copia de seguridad fuera: «tengo que hacerlo». Las causas de guerra: «requieren que revisemos como hacerlas bien o si anularlas o no» (siguen en decisiones pendientes).
+
+Además: cerradas las cuatro tareas de A1 que ya estaban hechas en la práctica.
 
 ### 12 nov 2026 — por el chat, sobre P4b (La interfaz nueva)
 

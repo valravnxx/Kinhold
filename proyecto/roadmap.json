@@ -1481,6 +1481,60 @@
    "nota": "Revisión del 1 nov con valravnx: fabricar en cualquier sitio con lo básico (lo que llevas y lo que hay en el suelo a tu lado), sin aprender recetas, con estaciones por uso (no por nivel); hoguera fuera (leña, yesca, se apaga) y hogar dentro de la casa; acopio de troncos (no abastece solo a la obra); muros de tronco delgado o de zarzo con barro; árboles jóvenes y adultos bien distintos."
   },
   {
+   "id": "aspecto",
+   "num": "V1",
+   "nombre": "El aspecto: del prado a la maqueta",
+   "jugable": "El mundo se ve como la referencia de valravnx: luz cálida de sol bajo, hierba como alfombra, suelo con materiales, sotobosque, bruma y desenfoque de maqueta, medido en su PC y en su móvil.",
+   "estado": "en_curso",
+   "bloquea": false,
+   "lleva": "chat",
+   "nota": "Sale de la auditoría del 12 nov: valravnx lo aprueba como primera prioridad, por delante de P8 («1 sí, adelante»); el desenfoque de maqueta mientras se juega, a prueba («vamos a meterla y ver si es muy intrusivo o no»); las animaciones, probar Mixamo. Una escena fija de Whitholm, en PC y en móvil, se captura después de cada paso al lado de la referencia. Cada paso lo aprueba valravnx viéndolo y midiendo los fotogramas en sus aparatos.",
+   "tareas": [
+    {
+     "nombre": "La luz y el cielo de la maqueta: sol bajo y dorado, sombras largas y suaves, rebote cálido del suelo, más contraste y calidez, cielo con degradado y nubes; y el desenfoque de maqueta suave mientras se juega, para que valravnx lo pruebe y diga si molesta",
+     "estado": "en_curso",
+     "inicio": "2026-11-12T09:11:17+01:00",
+     "rama": "trabajo/20261112-0911-aspecto-luz"
+    },
+    {
+     "nombre": "Hierba densa: una alfombra de hojas teñidas con el color del suelo que tienen debajo, movidas por el viento, que se desvanece con la distancia; cuánta, según el perfil gráfico",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El suelo con materiales: hierba, tierra, roca y hojarasca mezcladas según la pendiente, el bioma y el bosque, con relieve",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sotobosque: helechos, matas y cantos en grupos al pie de los árboles y en las lindes, troncos caídos, tocones y manchas de flores, según el bioma",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Bruma cálida de distancia y horizonte: el bosque lejano como masa y el final del mundo contra el cielo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Manos que agarran bien: cada herramienta y arma con su punto de agarre, la mano colocada en el mango y los dedos cerrados alrededor, en todas las animaciones que la usan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Prueba de animaciones de Mixamo: dos (el hachazo y recoger del suelo) pasadas al esqueleto de los personajes de Meshy, comprobando antes su licencia con un repositorio público",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
    "id": "meshy",
    "num": "A1",
    "nombre": "El arte con Meshy",
@@ -1491,16 +1545,24 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: la lista de todo lo que se ve en el juego (naturaleza, objetos y estaciones, piezas de construir, animales y personajes) con su tope de triángulos y de textura para el móvil, el orden por categorías enteras y los créditos de cada tanda (3.000 al mes, Premium)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-12T09:11:17+01:00",
+     "fin": "2026-11-12T09:11:17+01:00",
+     "nota": "Cerrada en la auditoría del 12 nov: quedó hecha dentro de las versiones v176 a v179 de la demo (la naturaleza entera de Meshy en el mundo)."
     },
     {
      "nombre": "La tubería de Meshy en GitHub Actions (herramientas/meshy/, .github/workflows/meshy.yml; la clave MESHY_API_KEY es un secreto del repositorio): cada encargo, primero una imagen con el prompt de estilo (herramientas/meshy/estilo.md) y una miniatura de valravnx de referencia, luego el modelo 3D con el remallado de Meshy y su textura; el .glb, aligerado (texturas de 1024 en webp) en una carpeta nueva de docs/recursos/; un tope de créditos por tanda y lo gastado, apuntado",
-     "estado": "pendiente",
-     "nota": "Empezada el 10 nov en el chat con valravnx: el flujo ya comprueba la clave y el saldo (3.375 créditos) y baja los modelos hechos por la API (herramientas/meshy/encargo.py)."
+     "estado": "hecho",
+     "nota": "Empezada el 10 nov en el chat con valravnx: el flujo ya comprueba la clave y el saldo (3.375 créditos) y baja los modelos hechos por la API (herramientas/meshy/encargo.py). Cerrada en la auditoría del 12 nov: quedó hecha dentro de las versiones v176 a v179 de la demo (la naturaleza entera de Meshy en el mundo).",
+     "inicio": "2026-11-12T09:11:17+01:00",
+     "fin": "2026-11-12T09:11:17+01:00"
     },
     {
      "nombre": "Capturas para aprobar: cada modelo nuevo en el mundo de verdad (Whitholm), de cerca, en PC y en el móvil, al lado de lo que hay hoy; va a decisiones_pendientes y espera el visto bueno de valravnx",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-12T09:11:17+01:00",
+     "fin": "2026-11-12T09:11:17+01:00",
+     "nota": "Cerrada en la auditoría del 12 nov: quedó hecha dentro de las versiones v176 a v179 de la demo (la naturaleza entera de Meshy en el mundo)."
     },
     {
      "nombre": "Prueba de estilo de la naturaleza (primera tanda): árbol adulto, árbol joven (3–5 m, fino), arbusto, arbusto con bayas (con y sin bayas), matorral y roca mediana",
@@ -1511,7 +1573,10 @@
     },
     {
      "nombre": "La naturaleza aprobada, en el mundo: árboles, arbustos, matorrales y rocas de Meshy en lugar de los de código, copiados de un mismo modelo (instancias) y con versiones más simples de lejos para que aguante el móvil; medir los fotogramas antes y después",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-12T09:11:17+01:00",
+     "fin": "2026-11-12T09:11:17+01:00",
+     "nota": "Cerrada en la auditoría del 12 nov: quedó hecha dentro de las versiones v176 a v179 de la demo (la naturaleza entera de Meshy en el mundo)."
     },
     {
      "nombre": "El mojón de valravnx (Meshy) en el juego, en lugar del de código",
@@ -1932,6 +1997,26 @@
      "estado": "hecho",
      "inicio": "2026-11-08T11:50:47+00:00",
      "fin": "2026-11-08T13:02:24+00:00"
+    },
+    {
+     "nombre": "Partir servidor/servidor.mjs: la función crearServidor (1.242 líneas) en un módulo por sistema, sin cambiar lo que hace",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Comprobador de código: un analizador y la comprobación de tipos de JavaScript, que avisen en segundos y sin la nube",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Una base común para las pruebas de navegador: el servidor de archivos y las copias de recursos, en un solo sitio",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Adelgazar la web por debajo de 1 GB: archivar las versiones viejas y encoger las capturas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La medida de rendimiento de cada aparato, al servidor con un botón: fotogramas, peor fotograma, triángulos y llamadas de dibujo",
+     "estado": "pendiente"
     }
    ]
   },
@@ -2309,10 +2394,6 @@
      "fin": "2026-10-31T06:24:02+01:00"
     },
     {
-     "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
-     "estado": "pendiente"
-    },
-    {
      "nombre": "Caminos que se forman con el uso (GDD): cada casilla guarda cuánto se pisa; senda, luego camino, y sin uso vuelve la hierba",
      "estado": "pendiente"
     },
@@ -2405,10 +2486,6 @@
      "estado": "hecho",
      "inicio": "2026-11-06T05:04:23+01:00",
      "fin": "2026-11-06T07:14:31+01:00"
-    },
-    {
-     "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
-     "estado": "pendiente"
     },
     {
      "nombre": "Los ríos llegan al mar de verdad (valravnx, 6 nov: «NO LLEGAN AL MAR… solo un estrecho de tierra aleatorio, ningún río conecta con el océano» y la tierra de dentro sale de lejos como bajo el agua)",
@@ -2631,10 +2708,6 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: ver qué herramientas y armas hay ya, qué animaciones atraviesan algo y cómo lo resuelven otros (puntos de agarre por objeto, cinemática inversa de las manos, colisiones aproximadas del cuerpo), y desglosarlo en tareas de una sesión",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Manos que agarran bien: cada herramienta y arma con su punto de agarre, la mano colocada en el mango y los dedos cerrados alrededor, en todas las animaciones que la usan",
      "estado": "pendiente"
     },
     {
@@ -4993,12 +5066,12 @@
  ],
  "decisiones_pendientes": [
   {
-   "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas",
+   "pregunta": "Clanes y guerra (del 30 oct): con el vasallaje de comarca ya no hay un pago que dejar de hacer, así que el impago deja de ser causa de guerra. ¿Qué causas quedan, y asediar el centro de una comarca en su ventana necesita guerra declarada? Para la reunión tras P3, con las dos opciones escritas: solo guerra aceptada por las dos partes más las ventanas de asedio del centro, o causas automáticas tasadas. valravnx, 12 nov: hay que revisar cómo hacer bien las causas de guerra, o si anularlas",
    "desde": "2026-10-30",
    "hito": "tierras"
   },
   {
-   "pregunta": "Copia de seguridad del servidor: ya se hace cada día en la máquina (las 14 últimas), pero falta el sitio de fuera, que solo puede crear valravnx. Propuesta: una Storage Box de Hetzner (la más pequeña), con los pasos de servidor/nube/LEEME.md («Copia de seguridad»). ¿Vale, o prefieres otro sitio (un repositorio privado, otra máquina, un NAS)? Mientras no esté, la copia sale con error en el servidor",
+   "pregunta": "Copia de seguridad del servidor: ya se hace cada día en la máquina (las 14 últimas), pero falta el sitio de fuera, que solo puede crear valravnx. Propuesta: una Storage Box de Hetzner (la más pequeña), con los pasos de servidor/nube/LEEME.md («Copia de seguridad»). ¿Vale, o prefieres otro sitio (un repositorio privado, otra máquina, un NAS)? Mientras no esté, la copia sale con error en el servidor. valravnx, 12 nov: «tengo que hacerlo»",
    "desde": "2026-11-07",
    "hito": "admin"
   }
