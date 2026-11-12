@@ -2024,7 +2024,9 @@
     },
     {
      "nombre": "Adelgazar la web por debajo de 1 GB: archivar las versiones viejas y encoger las capturas",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-12T13:26:56+00:00",
+     "rama": "trabajo/20261112-1326"
     },
     {
      "nombre": "La medida de rendimiento de cada aparato, al servidor con un botón: fotogramas, peor fotograma, triángulos y llamadas de dibujo",

@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-12T13:26:56+00:00",
+  "tarea": "Adelgazar la web por debajo de 1 GB: archivar las versiones viejas y encoger las capturas",
+  "hito": "orden",
+  "rama": "trabajo/20261112-1326"
+ },
  "B": null
 }
