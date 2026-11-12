@@ -1,0 +1,511 @@
+{
+ "hojarasca": [
+  {
+   "id": "Ground106",
+   "nombre": "Ground 106",
+   "etiquetas": [
+    "106",
+    "beige",
+    "brown",
+    "dirt",
+    "earth",
+    "forest",
+    "ground",
+    "ground106"
+   ]
+  },
+  {
+   "id": "ScatteredLeaves009",
+   "nombre": "Scattered Leaves 009",
+   "etiquetas": [
+    "009",
+    "9",
+    "autumn",
+    "brown",
+    "cover",
+    "dry",
+    "fallen",
+    "forest"
+   ]
+  },
+  {
+   "id": "Ground076",
+   "nombre": "Ground 076",
+   "etiquetas": [
+    "076",
+    "76",
+    "forest",
+    "ground",
+    "ground076",
+    "leaves",
+    "roots",
+    "tree"
+   ]
+  },
+  {
+   "id": "ScatteredLeaves008",
+   "nombre": "Scattered Leaves 008",
+   "etiquetas": [
+    "8",
+    "autumn",
+    "fall",
+    "fallen",
+    "floor",
+    "forest",
+    "ground",
+    "leaf"
+   ]
+  },
+  {
+   "id": "Ground023",
+   "nombre": "Ground 023",
+   "etiquetas": [
+    "23",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "leaves",
+    "mud",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Ground077",
+   "nombre": "Ground 077",
+   "etiquetas": [
+    "77",
+    "autumn",
+    "brown",
+    "cone",
+    "fall",
+    "forest",
+    "ground",
+    "leaf"
+   ]
+  },
+  {
+   "id": "Ground070",
+   "nombre": "Ground 070",
+   "etiquetas": [
+    "70",
+    "autumn",
+    "brown",
+    "fall",
+    "forest",
+    "ground",
+    "leaves",
+    "roots"
+   ]
+  },
+  {
+   "id": "Ground053",
+   "nombre": "Ground 053",
+   "etiquetas": [
+    "53",
+    "forest",
+    "ground",
+    "leaves",
+    "sand"
+   ]
+  },
+  {
+   "id": "Ground038",
+   "nombre": "Ground 038",
+   "etiquetas": [
+    "38",
+    "branches",
+    "dirt",
+    "forest",
+    "ground",
+    "leaves",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Ground020",
+   "nombre": "Ground 020",
+   "etiquetas": [
+    "20",
+    "dirt",
+    "forest",
+    "grass",
+    "ground",
+    "leaves"
+   ]
+  },
+  {
+   "id": "Ground028",
+   "nombre": "Ground 028",
+   "etiquetas": [
+    "28",
+    "autumn",
+    "brown",
+    "dead",
+    "dirt",
+    "fall",
+    "forest",
+    "grey"
+   ]
+  },
+  {
+   "id": "Ground019",
+   "nombre": "Ground 019",
+   "etiquetas": [
+    "19",
+    "autumn",
+    "dirt",
+    "forest",
+    "ground",
+    "leaves",
+    "mud"
+   ]
+  }
+ ],
+ "hojas": [
+  {
+   "id": "Ground106",
+   "nombre": "Ground 106",
+   "etiquetas": [
+    "106",
+    "beige",
+    "brown",
+    "dirt",
+    "earth",
+    "forest",
+    "ground",
+    "ground106"
+   ]
+  },
+  {
+   "id": "ScatteredLeaves009",
+   "nombre": "Scattered Leaves 009",
+   "etiquetas": [
+    "009",
+    "9",
+    "autumn",
+    "brown",
+    "cover",
+    "dry",
+    "fallen",
+    "forest"
+   ]
+  },
+  {
+   "id": "Ground076",
+   "nombre": "Ground 076",
+   "etiquetas": [
+    "076",
+    "76",
+    "forest",
+    "ground",
+    "ground076",
+    "leaves",
+    "roots",
+    "tree"
+   ]
+  },
+  {
+   "id": "Gravel042",
+   "nombre": "Gravel 042",
+   "etiquetas": [
+    "42",
+    "gravel",
+    "ground",
+    "leaves",
+    "pebbles",
+    "shore",
+    "stone",
+    "stones"
+   ]
+  },
+  {
+   "id": "ScatteredLeaves008",
+   "nombre": "Scattered Leaves 008",
+   "etiquetas": [
+    "8",
+    "autumn",
+    "fall",
+    "fallen",
+    "floor",
+    "forest",
+    "ground",
+    "leaf"
+   ]
+  },
+  {
+   "id": "Ground023",
+   "nombre": "Ground 023",
+   "etiquetas": [
+    "23",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "leaves",
+    "mud",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Ground077",
+   "nombre": "Ground 077",
+   "etiquetas": [
+    "77",
+    "autumn",
+    "brown",
+    "cone",
+    "fall",
+    "forest",
+    "ground",
+    "leaf"
+   ]
+  },
+  {
+   "id": "Ground070",
+   "nombre": "Ground 070",
+   "etiquetas": [
+    "70",
+    "autumn",
+    "brown",
+    "fall",
+    "forest",
+    "ground",
+    "leaves",
+    "roots"
+   ]
+  },
+  {
+   "id": "Ground042",
+   "nombre": "Ground 042",
+   "etiquetas": [
+    "42",
+    "brown",
+    "dirt",
+    "ground",
+    "leaves",
+    "mud"
+   ]
+  },
+  {
+   "id": "Ground053",
+   "nombre": "Ground 053",
+   "etiquetas": [
+    "53",
+    "forest",
+    "ground",
+    "leaves",
+    "sand"
+   ]
+  },
+  {
+   "id": "Ground038",
+   "nombre": "Ground 038",
+   "etiquetas": [
+    "38",
+    "branches",
+    "dirt",
+    "forest",
+    "ground",
+    "leaves",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Ground041",
+   "nombre": "Ground 041",
+   "etiquetas": [
+    "41",
+    "brown",
+    "dirt",
+    "ground",
+    "leaves",
+    "mud"
+   ]
+  }
+ ],
+ "bosque": [
+  {
+   "id": "Ground106",
+   "nombre": "Ground 106",
+   "etiquetas": [
+    "106",
+    "beige",
+    "brown",
+    "dirt",
+    "earth",
+    "forest",
+    "ground",
+    "ground106"
+   ]
+  },
+  {
+   "id": "ScatteredLeaves009",
+   "nombre": "Scattered Leaves 009",
+   "etiquetas": [
+    "009",
+    "9",
+    "autumn",
+    "brown",
+    "cover",
+    "dry",
+    "fallen",
+    "forest"
+   ]
+  },
+  {
+   "id": "Ground037",
+   "nombre": "Ground 037",
+   "etiquetas": [
+    "037",
+    "37",
+    "damp",
+    "earth",
+    "forest",
+    "grass",
+    "green",
+    "ground"
+   ]
+  },
+  {
+   "id": "Ground085",
+   "nombre": "Ground 085",
+   "etiquetas": [
+    "85",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "rocky",
+    "stones"
+   ]
+  },
+  {
+   "id": "Ground086",
+   "nombre": "Ground 086",
+   "etiquetas": [
+    "86",
+    "dirt",
+    "forest",
+    "ground",
+    "path",
+    "rocky",
+    "stones"
+   ]
+  },
+  {
+   "id": "Ground067",
+   "nombre": "Ground 067",
+   "etiquetas": [
+    "67",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "rocky"
+   ]
+  },
+  {
+   "id": "Ground078",
+   "nombre": "Ground 078",
+   "etiquetas": [
+    "78",
+    "brown",
+    "floor",
+    "forest",
+    "ground",
+    "path",
+    "rocky",
+    "sand"
+   ]
+  },
+  {
+   "id": "Ground082S",
+   "nombre": "Ground 082 S",
+   "etiquetas": [
+    "82",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground082L",
+   "nombre": "Ground 082 L",
+   "etiquetas": [
+    "82",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "soil"
+   ]
+  },
+  {
+   "id": "Ground072",
+   "nombre": "Ground 072",
+   "etiquetas": [
+    "72",
+    "brown",
+    "dirt",
+    "forest",
+    "ground",
+    "sand",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Ground071",
+   "nombre": "Ground 071",
+   "etiquetas": [
+    "71",
+    "dirt",
+    "forest",
+    "ground",
+    "mud",
+    "sticks"
+   ]
+  },
+  {
+   "id": "Ground076",
+   "nombre": "Ground 076",
+   "etiquetas": [
+    "076",
+    "76",
+    "forest",
+    "ground",
+    "ground076",
+    "leaves",
+    "roots",
+    "tree"
+   ]
+  }
+ ],
+ "hierba": {
+  "id": "Ground037",
+  "origen": "https://ambientcg.com/a/Ground037",
+  "licencia": "CC0 1.0 (ambientCG)"
+ },
+ "tierra": {
+  "id": "Ground106",
+  "origen": "https://ambientcg.com/a/Ground106",
+  "licencia": "CC0 1.0 (ambientCG)"
+ },
+ "tierra2": {
+  "id": "Ground048",
+  "origen": "https://ambientcg.com/a/Ground048",
+  "licencia": "CC0 1.0 (ambientCG)"
+ },
+ "roca": {
+  "id": "Rock028",
+  "origen": "https://ambientcg.com/a/Rock028",
+  "licencia": "CC0 1.0 (ambientCG)"
+ },
+ "roca2": {
+  "id": "Rock030",
+  "origen": "https://ambientcg.com/a/Rock030",
+  "licencia": "CC0 1.0 (ambientCG)"
+ }
+}
