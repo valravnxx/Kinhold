@@ -105,6 +105,109 @@ export function caidaDe(a, e, alturaEn = null) {
   return { dir: inclinacionDe(a), por: 'inclinacion' };
 }
 
+// La caída (tarea «La caída», 12 nov; GDD apartado 6): el árbol gira sobre el tocón como una vara rígida que se vence
+// con la gravedad (θ'' = 3g/2L · sen θ: cada vez más deprisa), choca con el suelo, rebota un poco y se asienta según
+// el terreno (cuesta abajo se tumba más, cuesta arriba menos); si da con otro árbol o una obra por el medio, se queda
+// apoyado en ella, y si la coge de refilón, se desvía hacia el otro lado y sigue cayendo. Sale solo de lo que hay:
+// la dirección, el árbol, el terreno y lo de alrededor. La calcula quien valida (el servidor) y manda los fotogramas,
+// así todos la ven igual. Decisiones provisionales (el GDD no fija los números; en el registro y en el diario):
+//  - El alto del árbol, el de su modelo (ALTO_ARBOL, los mismos que src/mundo/especies.js, por su tamaño); se parte a
+//    CORTE m del suelo. La copa lo sostiene algo por encima del suelo (hasta 0,5 m en la punta).
+//  - Rebote: REBOTE de la velocidad; se asienta cuando ya va a menos de 0,25 rad/s.
+//  - Lo de alrededor: los troncos de los árboles en pie y las piezas de las obras (un círculo de 1 m por casilla, del
+//    alto de sus plantas). Lo coge de lleno si pasa a menos de la mitad de lo que se tocan: se queda apoyado. Si no,
+//    de refilón: se desvía DESVIO hacia el otro lado y sigue con la mitad de la velocidad (dos veces como mucho).
+//  - Los fotogramas, cada 1/30 s; 8 s como mucho.
+export const G = 9.81;
+export const CORTE = 0.3;               // m: a esta altura se parte (encima del tocón)
+export const REBOTE = 0.22;
+export const DESVIO = 0.4;              // rad
+export const INICIO_CAIDA = 0.1;      // rad: lo que ya se ha vencido cuando el último golpe lo suelta
+const PASO_SIM = 1 / 240, PASO_FOTO = 1 / 30, MAX_CAIDA = 8;
+export const ALTO_ARBOL = { abeto: 10.5, pino: 9.5, abedul: 9, roble: 7.5, haya: 10.8, fresno: 9.2, encina: 5.5 };
+export const ALTO_JOVEN = 4;            // el modelo del joven, a escala 1
+export const RADIO_ARBOL = { abeto: 0.3, pino: 0.27, abedul: 0.15, roble: 0.52, haya: 0.36, fresno: 0.27, encina: 0.34 };
+export const RADIO_JOVEN = { abeto: 0.075, pino: 0.07, abedul: 0.05, roble: 0.08, haya: 0.07, fresno: 0.065, encina: 0.075 };
+// el alto (m) y el radio del tronco de un árbol con su edad, especie y tamaño (tam: la escala de su modelo)
+export const altoArbol = (edad, especie, tam = 1) => redondo((edad === 'joven' ? ALTO_JOVEN : ALTO_ARBOL[especie] || 9) * (Number.isFinite(tam) && tam > 0 ? tam : 1));
+export const radioArbol = (edad, especie, tam = 1) => redondo((edad === 'joven' ? RADIO_JOVEN : RADIO_ARBOL)[especie] * tam || (edad === 'joven' ? 0.07 : 0.3));
+const altoDe = a => (Number.isFinite(a.alto) && a.alto > 1 ? a.alto : a.edad === 'joven' ? ALTO_JOVEN : 9);
+
+// El primer ángulo (desde la vertical) al que el árbol, cayendo hacia dir, toca el suelo.
+function anguloSuelo(a, dir, L, yp, alturaEn) {
+  const sx = Math.sin(dir), sz = Math.cos(dir);
+  for (let th = 0.3; th < 2.6; th += 0.004) {
+    for (let r = 1; r <= L + 1e-9; r += Math.max(0.5, L / 16)) {
+      const d = r * Math.sin(th), y = yp + r * Math.cos(th), h = alturaEn ? alturaEn(a.x + sx * d, a.z + sz * d) : 0;
+      if (y - (Number.isFinite(h) ? h : 0) <= 0.12 + 0.38 * (r / L)) return th;
+    }
+  }
+  return 2.6;
+}
+// Lo primero de alrededor con lo que da cayendo hacia dir (antes que el suelo, a menos de thSuelo): { th, o, de: 'lleno' |
+// 'refilon', lado } o null. o: { id, tipo: 'arbol' | 'obra', x, z, r, arriba } (arriba: la altura de lo más alto).
+function primerChoque(a, dir, L, yp, thSuelo, obstaculos, rPropio, fuera) {
+  const sx = Math.sin(dir), sz = Math.cos(dir), cx = Math.cos(dir), cz = -Math.sin(dir);
+  let mejor = null;
+  for (const o of obstaculos) {
+    if (o.id === a.id || fuera.has(o.id)) continue;
+    const dx = o.x - a.x, dz = o.z - a.z, d = dx * sx + dz * sz, l = dx * cx + dz * cz, toca = o.r + rPropio;
+    if (d <= 0.2 || d > L || Math.abs(l) >= toca) continue;
+    const alto = o.arriba - yp;
+    if (alto <= 0) continue;
+    const th = Math.max(Math.asin(Math.min(1, d / L)), Math.atan2(d, alto));
+    if (th >= thSuelo || (mejor && th >= mejor.th)) continue;
+    mejor = { th, o, de: Math.abs(l) <= toca / 2 ? 'lleno' : 'refilon', lado: l >= 0 ? 1 : -1 };
+  }
+  return mejor;
+}
+// La caída del árbol a, que empieza hacia dir: { fotos: [[t, ángulo, dir], …], dir, angulo, apoyo: null | { tipo, id },
+// dura } (ángulo desde la vertical, en radianes; t en s). alturaEn(x, z): el suelo (o null: llano a 0).
+// obstaculos: lo de alrededor (ver primerChoque).
+export function simularCaida(a, dir, { alturaEn = null, obstaculos = [] } = {}) {
+  const base = alturaEn ? alturaEn(a.x, a.z) : 0, yp = (Number.isFinite(base) ? base : 0) + CORTE;
+  const L = Math.max(1, altoDe(a) - CORTE), k = 3 * G / (2 * L), rPropio = radioArbol(a.edad, a.especie, a.tam) + 0.1;
+  const fotos = [], fuera = new Set();
+  let th = INICIO_CAIDA, w = 0, t = 0, sigFoto = 0, desvios = 0, apoyo = null;
+  let thS = anguloSuelo(a, dir, L, yp, alturaEn), ch = primerChoque(a, dir, L, yp, thS, obstaculos, rPropio, fuera);
+  const foto = () => fotos.push([redondo3(t), redondo3(th), redondo3(dir)]);
+  foto();
+  while (t < MAX_CAIDA) {
+    w += k * Math.sin(th) * PASO_SIM; th += w * PASO_SIM; t += PASO_SIM;
+    if (ch && th >= ch.th) {
+      th = ch.th;
+      if (ch.de === 'lleno' || desvios >= 2) { apoyo = { tipo: ch.o.tipo, id: ch.o.id }; foto(); break; }
+      // de refilón: se va hacia el otro lado y sigue, más despacio
+      desvios++; fuera.add(ch.o.id); dir = redondo(dir - ch.lado * DESVIO); w *= 0.5;
+      thS = anguloSuelo(a, dir, L, yp, alturaEn); ch = primerChoque(a, dir, L, yp, thS, obstaculos, rPropio, fuera);
+      if (th >= thS) { th = thS; foto(); break; }
+      foto(); sigFoto = t + PASO_FOTO; continue;
+    }
+    if (th >= thS) {   // el suelo: rebota un poco, hasta que se asienta
+      th = thS;
+      if (Math.abs(w) < 0.25) { foto(); break; }
+      w = -w * REBOTE; foto(); sigFoto = t + PASO_FOTO; continue;
+    }
+    if (t >= sigFoto) { foto(); sigFoto = t + PASO_FOTO; }
+  }
+  if (fotos[fotos.length - 1][0] !== redondo3(t)) foto();
+  return { fotos, dir: redondo(dir), angulo: redondo3(th), apoyo, dura: redondo3(t) };
+}
+const redondo3 = v => Math.round(v * 1000) / 1000;
+// El ángulo y la dirección de la caída c (simularCaida) en el momento t (s): { angulo, dir }.
+export function caidaEn(c, t) {
+  const f = c && c.fotos;
+  if (!Array.isArray(f) || !f.length) return { angulo: 0, dir: 0 };
+  if (t <= f[0][0]) return { angulo: f[0][1], dir: f[0][2] };
+  for (let i = 1; i < f.length; i++) {
+    if (t <= f[i][0]) {
+      const [t0, a0, d0] = f[i - 1], [t1, a1, d1] = f[i], u = t1 > t0 ? (t - t0) / (t1 - t0) : 1;
+      return { angulo: a0 + (a1 - a0) * u, dir: d0 + (d1 - d0) * u };
+    }
+  }
+  const u = f[f.length - 1]; return { angulo: u[1], dir: u[2] };
+}
+
 // El hacha que lleva en las manos el inventario inv (la de la derecha primero): { ruta, tipo, clase } o null.
 export function hachaEnMano(inv) {
   for (const ruta of ['mano:der', 'mano:izq']) {
@@ -125,6 +228,8 @@ export class Tala {
     this.ultimoGolpe = {};  // autor → ms (no se guarda: solo frena los golpes demasiado seguidos)
     this.entre = ENTRE_GOLPES; // ms entre golpe y golpe del mismo autor (el servidor pide menos: la red los junta)
     this.alturaEn = null;      // (x, z) → altura del suelo, para la cuesta (el servidor le pone la de su terreno)
+    this.obstaculosEn = null;  // (x, z, r) → lo de alrededor para la caída (árboles { id, x, z, edad, especie, alto } y
+                               // obras { id, tipo: 'obra', x, z, r, arriba }); sin él, los árboles que conoce
   }
   // Los árboles van llegando y yéndose según por dónde anda el jugador (src/mundo/vegetacion_mundo.js): lo guardado de
   // cada uno se queda aunque no esté cargado y vale en cuanto vuelve a llegar.
@@ -142,6 +247,19 @@ export class Tala {
   tocones(ahora) {
     const r = [];
     for (const [id, e] of Object.entries(this.estado)) if (e.vuelve && ahora < e.vuelve && this.porId.has(id)) r.push({ arbol: this.porId.get(id), caido: e.caido, vuelve: e.vuelve, dir: e.dir });
+    return r;
+  }
+  // Lo de alrededor del árbol a con lo que puede dar al caer (simularCaida): los troncos de los árboles en pie (los que
+  // conoce, o los de obstaculosEn: el servidor le pone los de su terreno y las obras) a lo que alcanza su alto.
+  alrededor(a, ahora) {
+    const R = altoDe(a) + 1.5, suelo = (x, z) => { const h = this.alturaEn ? this.alturaEn(x, z) : 0; return Number.isFinite(h) ? h : 0; };
+    const lista = this.obstaculosEn ? this.obstaculosEn(a.x, a.z, R) || [] : this.arboles.filter(b => Math.hypot(b.x - a.x, b.z - a.z) <= R);
+    const r = [];
+    for (const o of lista) {
+      if (o.tipo === 'obra') { r.push(o); continue; }
+      if (o.id === a.id || (this.estado[o.id] && this.estado[o.id].vuelve > ahora)) continue;   // ni él ni los tocones
+      r.push({ id: o.id, tipo: 'arbol', x: o.x, z: o.z, r: radioArbol(o.edad, o.especie, o.tam), arriba: suelo(o.x, o.z) + altoDe(o) });
+    }
     return r;
   }
   golpesPara(id, clase) { const a = this.porId.get(id); return a ? GOLPES[a.edad][clase] : 0; }
@@ -178,11 +296,14 @@ export class Tala {
       if (enBoca > 0 && e.bp >= PARTE_BOCA - 1e-9) { const b = bocaDe(e); r.boca = b ? b.dir : null; }
       return r;
     }
-    const { dir, por } = caidaDe(a, e, this.alturaEn), d = DA[a.edad], ramas = ramasDe(a, e.veces || 0);
+    const { dir: hacia, por } = caidaDe(a, e, this.alturaEn), d = DA[a.edad], ramas = ramasDe(a, e.veces || 0);
+    // cómo cae (y dónde se asienta: el desvío cambia hacia dónde), con lo que tiene alrededor
+    const caida = simularCaida(a, hacia, { alturaEn: this.alturaEn, obstaculos: this.alrededor(a, ahora) }), dir = caida.dir;
     const sx = Math.sin(dir), sz = Math.cos(dir), en = t => ({ x: redondo(a.x + sx * t), z: redondo(a.z + sz * t) });
     const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.7) }, { tipo: d.menudo, n: ramas, ...en(d.largo + 1.1) }];
     this.estado[id] = { golpes: 0, parte: 0, veces: (e.veces || 0) + 1, caido: ahora, vuelve: ahora + d.vuelve, dir: redondo(dir) };  // sin boca: la siguiente vez, otra
-    return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, dir: redondo(dir), por, deja, vuelve: ahora + d.vuelve, ...gasto };
+    // hacia: hacia dónde empieza a caer (la boca, la cuesta o su inclinación); dir: hacia dónde queda (tras desviarse)
+    return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, hacia: redondo(hacia), dir: redondo(dir), por, deja, vuelve: ahora + d.vuelve, caida, ...gasto };
   }
 
   // Lo que se le puede hacer al árbol id en pie: { descortezar, sangrar, resina: 'lista' | 'sangrando' | null }.

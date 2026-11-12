@@ -21,7 +21,7 @@ import { crearPaisaje, bosqueEn } from './paisaje.js';
 import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from './whitholm.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetacion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
-import { idArbol } from './tala.js';
+import { idArbol, altoArbol } from './tala.js';
 import { idMata, idRoca, rompible } from './recoleccion.js';
 import { nivelar as conMarcas, marcasEn } from './nivelado.js';
 import { crearComarcas, zonasDeEscena } from './comarcas.js';
@@ -52,7 +52,7 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
       const x = e.x - O.x, z = e.z - O.z;
       if (Math.hypot(x, z - 2) < CLARO_ARBOLES) continue;
       const id = idArbol(x, z);
-      m.set(id, { id, x: r2(x), z: r2(z), edad: e.edad, especie: e.especie });
+      m.set(id, { id, x: r2(x), z: r2(z), edad: e.edad, especie: e.especie, tam: Math.round(e.tam * 1000) / 1000, alto: altoArbol(e.edad, e.especie, e.tam) });
     }
     return m;
   });
@@ -145,6 +145,16 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     arbol(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;
       return buscar(arbolesDe, LADO_VEG, id, x, z);
+    },
+    // Los árboles (los del mundo, en pie o no: eso lo sabe la tala) a menos de r m de (x, z) de la escena: para ver con
+    // qué da el que cae (src/logica/tala.js, simularCaida).
+    arbolesCerca(x, z, r) {
+      if (!num(x) || !num(z) || !num(r)) return [];
+      const L = LADO_VEG, out = [];
+      for (let i = Math.floor((x - r + O.x) / L); i <= Math.floor((x + r + O.x) / L); i++)
+        for (let j = Math.floor((z - r + O.z) / L); j <= Math.floor((z + r + O.z) / L); j++)
+          for (const a of arbolesDe(i, j).values()) if (Math.hypot(a.x - x, a.z - z) <= r) out.push(a);
+      return out;
     },
     // Lo mismo con un punto de recogida: { id, tipo, x, z } o null.
     punto(id, x, z) {

@@ -371,7 +371,11 @@ try {
     // herramientas que se gastan (10 nov; documento de sistemas, apartado 10): cada golpe lo cuenta el servidor
     const hachaInv = ['mano:der', 'mano:izq'].map(l => s.objetos.invs.de(J.bienvenida.autor).lugares[l]).find(c => c?.tipo === 'hacha_piedra');
     comprobar('el hacha de piedra se gasta talando: el servidor cuenta los 8 golpes y se lo dice', r.datos?.desgaste?.usado === 8 && r.datos.desgaste.vida === 168 && hachaInv?.usado === 8 && J.inv.lugares[['mano:der', 'mano:izq'].find(l => J.inv.lugares[l]?.tipo === 'hacha_piedra')]?.usado === 8, `${JSON.stringify(r.datos?.desgaste)} · en el servidor ${hachaInv?.usado}`);
-    comprobar('cae hacia la boca que le ha abierto: el lado desde el que tala (al este del tronco)', r.datos?.por === 'boca' && Math.abs(r.datos.dir - Math.PI / 2) < 0.05, `dir ${r.datos?.dir}, por ${r.datos?.por}`);
+    comprobar('empieza a caer hacia la boca que le ha abierto: el lado desde el que tala (al este del tronco)', r.datos?.por === 'boca' && Math.abs(r.datos.hacia - Math.PI / 2) < 0.05, `hacia ${r.datos?.hacia}, por ${r.datos?.por}`);
+    // la caída (12 nov): la calcula el servidor con la gravedad, el terreno y lo de alrededor, y se asienta (en el suelo o
+    // apoyado en lo que tenga delante); si se desvía, el tronco queda hacia donde fue
+    const cd = r.datos?.caida;
+    comprobar('y cae de verdad: el servidor manda su caída, que acaba asentada en el suelo o apoyada', !!cd && cd.fotos.length > 10 && cd.dir === r.datos.dir && (cd.apoyo ? cd.angulo > 0.2 : cd.angulo > 1.1) && Math.abs(r.datos.dir - r.datos.hacia) <= 0.81, cd && `${cd.dura} s, ${cd.angulo} rad${cd.apoyo ? ', apoyado en ' + cd.apoyo.tipo : ''}, queda hacia ${cd.dir}`);
     const deja = s.objetos.sueloVisible(Date.now()).filter(o => Math.hypot(o.x - a.x, o.z - a.z) < 5);
     const tronco = deja.find(o => o.cosa.tipo === 'tronco_delgado'), varas = deja.find(o => o.cosa.tipo === 'vara');
     varasArbol = varas;

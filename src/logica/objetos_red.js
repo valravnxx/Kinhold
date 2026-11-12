@@ -92,14 +92,15 @@ export class ObjetosServidor {
   // terreno: el mundo que conoce el servidor (crearTerreno), o null. puedeTocar(autor, x, z) → { ok, motivo? }: si puede
   // poner algo ahí (en tierra de otro, solo su dueño y sus invitados; Construccion.puedeTocar).
   // bajoTecho(x, z): si ese sitio está bajo techo (Construccion.bajoTecho; los puestos de trabajo: la hoguera, solo fuera).
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null } = {}) {
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null, obrasCerca = () => [] } = {}) {
+    this.obrasCerca = obrasCerca;  // las piezas de las obras cerca de (x, z): con lo que puede dar un árbol al caer
     this.puedeTocar = puedeTocar;
     this.bajoTecho = bajoTecho;
     this.alMuro = alMuro;  // lo que va colgado en un muro: Construccion.muroCercano
     this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
-    this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
+    this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala(); this.tala.obstaculosEn = this.alrededorTala();
     this.recoleccion = new Recoleccion([]); this.recoleccion.entre = ENTRE_GOLPES_RED;
     this.posicion = posicion;
     this.enTierras = enTierras;
@@ -165,6 +166,10 @@ export class ObjetosServidor {
   }
   // La altura del suelo del mundo, para que el árbol sin boca caiga cuesta abajo (src/logica/tala.js); sin terreno, nada.
   alturaTala() { return this.terreno ? (x, z) => this.terreno.suelo(x, z) : null; }
+  // Lo de alrededor de un árbol que cae: los árboles de su terreno (sin terreno, los que conoce la tala) y las obras.
+  alrededorTala() {
+    return (x, z, r) => [...(this.terreno ? this.terreno.arbolesCerca(x, z, r) : this.tala.arboles.filter(b => Math.hypot(b.x - x, b.z - z) <= r)), ...(this.obrasCerca(x, z, r) || [])];
+  }
   // El árbol que dice el navegador (decisión provisional, arriba): su nombre sale de su sitio, y tiene que estar al
   // alcance de donde el servidor tiene al autor. Devuelve el motivo si no vale.
   conocerArbol(a, p) {
@@ -286,7 +291,7 @@ export class ObjetosServidor {
     let arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
     // con el terreno, solo los que de verdad están en el mundo, y como son en él (lo guardado antes lo decía el navegador)
     if (this.terreno) arboles = arboles.map(a => this.terreno.arbol(a.id, a.x, a.z)).filter(Boolean);
-    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad, ...(txt(a.especie) ? { especie: a.especie } : {}) }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala();
+    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad, ...(txt(a.especie) ? { especie: a.especie } : {}), ...(num(a.alto) ? { alto: a.alto, tam: a.tam } : {}) }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala(); this.tala.obstaculosEn = this.alrededorTala();
     this.troceo.importar(datos.troceo, ahora);
     let puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
     if (this.terreno) puntos = puntos.map(q => this.terreno.punto(q.id, q.x, q.z)).filter(Boolean);

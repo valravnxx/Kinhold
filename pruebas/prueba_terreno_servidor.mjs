@@ -134,6 +134,8 @@ try {
   comprobar('talar un árbol que no está en el mundo (aunque su nombre cuadre) se rechaza', !r.ok, r.motivo);
   r = await a.objeto({ tipo: 'talar', arbol: id, x: px, z: pz, ax: e.x, az: e.z, edad: 'joven' });
   comprobar('uno de verdad sí, y con la edad del servidor (adulto), no la que dice el navegador (joven)', r.ok && s.objetos.tala.porId.get(id)?.edad === 'adulto', `${r.motivo || ''} ${s.objetos.tala.porId.get(id)?.edad}`);
+  const cerca_ = T.arbolesCerca(e.x, e.z, 12);
+  comprobar('los árboles de alrededor (con los que puede dar al caer) los saca del terreno, con su alto', cerca_.some(b => b.id === id) && cerca_.every(b => Math.hypot(b.x - e.x, b.z - e.z) <= 12 && b.alto > 2), `${cerca_.length} árboles`);
   const err = a.esperar(m => m.tipo === 'error');
   a.estar(px + 2, T.suelo(px + 2, pz) + 200, pz);   // volando, 200 m sobre el suelo
   const m = await err.catch(() => null);
