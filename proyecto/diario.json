@@ -6381,5 +6381,20 @@
   "pruebas": "En la nube, el revisor pidió 6 grupos: el día y la noche, la demo única, posprocesado y perfiles gráficos, la demo en el mundo y el perfil gráfico en el juego, bien; lógica, bien salvo las dos comprobaciones de systemd de la máquina de GitHub, que fallan igual sin este cambio. Aquí: prueba_cielo 24/24 y prueba_perfiles_graficos 33/33 (con las comprobaciones nuevas del día y del desenfoque). Capturas de la escena fija en PC y móvil a las 10, 13, 16:30 y 23 h, miradas una a una.",
   "capturas": "capturas/demo-v188",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-12T09:22:28+00:00",
+  "fin": "2026-11-12T09:59:19+00:00",
+  "titulo": "El servidor, partido en un módulo por sistema (P6, carril A)",
+  "hito": "orden",
+  "hecho": [
+   "servidor/servidor.mjs pasa de 1.493 a 295 líneas: solo crearServidor, que monta el estado común y arranca los sistemas, y el arranque",
+   "Cada sistema en su módulo de servidor/sistemas/: cuentas, objetos, posiciones, necesidades, combate, muerte (dormir y morir), fauna, tierras, admin y conexión (la bienvenida, los mensajes, la presencia y el latido)",
+   "El guardado en archivos (el registro del mundo, su estado compactado y el cambio de guardado sin dejarlo a medias), en servidor/guardado.mjs",
+   "Sin cambiar lo que hace: los mismos mensajes, los mismos archivos y los tics en el mismo orden; comprobado con un analizador que no queda ningún nombre sin definir",
+   "El revisor de pruebas pasa el recorrido de jugador también si cambia un módulo del servidor"
+  ],
+  "pruebas": "Revisor en la nube: recorrido de jugador 249 bien, 0 mal; lógica, todo bien salvo la prueba del servidor en internet (systemd-analyze de la máquina de GitHub, falla igual en main). Aquí, las pruebas de node que arrancan el servidor, bien (menos las que piden caddy y rsync, que esta máquina no tiene)",
+  "estado": "ok"
  }
 ]
