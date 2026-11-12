@@ -10,6 +10,7 @@ export const LADO = 16;            // cubitos por lado de un trozo (16 × 0,5 = 
 export const RADIO_GOLPE = 0.8;    // radio del puñado de roca que quita un golpe de pico (m); con el suavizado, galerías de algo más de 1,5 m
 export const ALCANCE = 2.6;        // distancia máxima del personaje al punto del golpe (m)
 
+/* global Buffer */ // en node existe; en el navegador se mira antes con typeof
 const clave = (cx, cy, cz) => `${cx},${cy},${cz}`;
 // base64 de los bits de un trozo (en node y en el navegador)
 const aTexto = (u8) => typeof Buffer !== 'undefined' ? Buffer.from(u8).toString('base64') : btoa(String.fromCharCode(...u8));
