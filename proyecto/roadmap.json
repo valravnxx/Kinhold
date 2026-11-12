@@ -1499,9 +1499,10 @@
     },
     {
      "nombre": "Hierba densa: una alfombra de hojas teñidas con el color del suelo que tienen debajo, movidas por el viento, que se desvanece con la distancia; cuánta, según el perfil gráfico",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-12T11:50:53+01:00",
-     "rama": "trabajo/20261112-1151-aspecto-hierba"
+     "rama": "trabajo/20261112-1151-aspecto-hierba",
+     "fin": "2026-11-12T14:12:27+01:00"
     },
     {
      "nombre": "El suelo con materiales: hierba, tierra, roca y hojarasca mezcladas según la pendiente, el bioma y el bosque, con relieve",
@@ -4154,6 +4155,13 @@
      "archivo": "jugar/demo/v188.html",
      "capturas": "capturas/demo-v188",
      "notas": "La luz y el cielo de la maqueta (hito «El aspecto»): sol más fuerte y dorado con sombras de color, tarde dorada de sombras largas, cielo azul con calima baja y nubes, colores con más fuerza y suelo menos amarillento. Y, a prueba, el desenfoque de maqueta mientras se juega (se quita en Menú, Ajustes, Rendimiento y calidad gráfica)."
+    },
+    {
+     "v": "v189",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v189.html",
+     "capturas": "capturas/demo-v189",
+     "notas": "Hierba densa (hito «El aspecto»): en lugar de las briznas oscuras sueltas, miles de matas de hojas finas alrededor de ti, del color del suelo que tienen debajo, que se mueven con el viento y se van por partes a lo lejos. Sin hierba donde el suelo es tierra o roca, donde has construido y junto a lo que se recoge. Cuánta, según la calidad gráfica; el móvil básico no la lleva."
     }
    ]
   },

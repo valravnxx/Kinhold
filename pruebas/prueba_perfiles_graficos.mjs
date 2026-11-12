@@ -52,6 +52,16 @@ const t = new Float32Array(4 * 8); for (let i = 0; i < 8; i++) t.set([i / 7, i /
 rellenarTabla(t, 2);
 comprobar('la tabla se rellena con la gradación y no toca el canal alfa', t[3] === 1 && Math.abs(t[0] - gradar(0, 0, 0)[0]) < 1e-6);
 
+console.log('Hierba densa');
+{
+  const { cuantaHierba } = await import('../src/mundo/hierba_densa.js');
+  comprobar('el móvil básico no la lleva; los demás, cada uno igual o más lejos que el anterior de su familia', !PERFILES[0].hierba && ['movil', 'pc'].every(f => PERFILES.filter(p => p.id.startsWith(f) && p.hierba).every((p, i, l) => !i || (p.hierba.radio >= l[i - 1].hierba.radio && p.hierba.densidad >= l[i - 1].hierba.densidad))),
+    PERFILES.map(p => p.id + ' ' + JSON.stringify(p.hierba)).join(' · '));
+  const tri = (p) => Math.PI * p.hierba.radio ** 2 * p.hierba.densidad * (0.45 ** 2 * 1.6 + (1 - 0.45 ** 2) * 0.45) * 9;
+  comprobar('en el móvil, menos de 130 mil triángulos de hierba; en PC, menos de 700 mil', PERFILES.filter(p => p.hierba).every(p => tri(p) < (p.id.startsWith('movil') ? 130e3 : 700e3)), PERFILES.filter(p => p.hierba).map(p => p.id + ' ' + Math.round(tri(p) / 1000) + ' mil').join(' · '));
+  comprobar('hay hierba donde el suelo es verde y no donde es tierra, roca, arena o nieve', cuantaHierba(0.2, 0.3, 0.08) === 1 && cuantaHierba(0.25, 0.2, 0.12) === 0 && cuantaHierba(0.3, 0.28, 0.25) === 0 && cuantaHierba(0.5, 0.45, 0.3) === 0 && cuantaHierba(0.8, 0.8, 0.82) === 0);
+}
+
 console.log('Desenfoque de maqueta');
 {
   const { emborronado, MAQUETA } = await import('../src/posprocesado/maqueta.js');

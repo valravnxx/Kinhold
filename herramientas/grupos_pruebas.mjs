@@ -27,6 +27,7 @@ export const TOCA = {
   'quitar-el-mojon': [/^src\/logica\/(construccion|abandono)\.js$/],
   'posprocesado-y-perfiles-graficos': [/^src\/posprocesado\//, /^construir_posprocesado\.mjs$/],
   'el-perfil-grafico-en-el-juego': [/^src\/juego\/graficos\.js$/, /^src\/posprocesado\//],
+  'la-hierba-densa': [/^src\/mundo\/hierba_densa\.js$/],
   'el-dia-y-la-noche': [/^pruebas\/sitio_prueba\.py$/, /^src\/(logica|mundo)\/cielo\.js$/, /^src\/mundo\/ambiente\.js$/],
   'los-avisos-de-las-necesidades': [/^src\/juego\/avisos_necesidades\.js$/, /^src\/logica\/necesidades\.js$/],
   'las-bayas-y-las-setas': [/^src\/logica\/recoleccion\.js$/],
