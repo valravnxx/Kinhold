@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-12T14:24:14+00:00",
-  "tarea": "La medida de rendimiento de cada aparato, al servidor con un botón: fotogramas, peor fotograma, triángulos y llamadas de dibujo",
-  "hito": "orden",
-  "rama": "trabajo/20261112-1424"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261112-1515-aspecto-suelo": {
   "inicio": "2026-11-12T15:14:35+01:00",
