@@ -6187,5 +6187,22 @@
   "pruebas": "En la nube: las necesidades (PC, móvil e inglés) correctas. La lógica: todo bien salvo la prueba del servidor de internet (systemd-analyze se queja de archivos del propio sistema de la máquina de GitHub, CPUAccounting=); no toca este cambio y no comprobado si falla igual en main.",
   "capturas": "capturas/demo-v183",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-11T23:22:03+00:00",
+  "fin": "2026-11-12T00:23:52+00:00",
+  "titulo": "La interfaz nueva: hablar con las ocho frases rápidas (demo v184)",
+  "hito": "interfaz",
+  "hecho": [
+   "El botón «Hablar» de arriba (o Intro) abre un tablero de roble con ocho frases rápidas de cuero y, debajo, el campo para escribir.",
+   "Un toque en una frase y se dice: por la red va solo su número, el servidor lo comprueba y lo reparte a los de cerca, y a cada uno le sale en su lengua (en inglés, «Watch out!»).",
+   "Las frases cuentan igual que lo escrito para no hablar a chorro y quedan en charla.jsonl con su número.",
+   "En el móvil el tablero sale arriba y sin teclado, para que se vean las frases y no tape el joystick; mientras está abierto, se esconde el botón del arma que quedaba debajo.",
+   "Provisional: las ocho frases (¡Hola!, Sí, No, Gracias, Ven aquí, Espera, ¡Ayuda! y ¡Cuidado!) las he elegido yo; su orden es su número en la red.",
+   "Las pruebas del chat, al día con las frases (rota a propósito con MUTAR=3, un servidor que manda el texto en vez del número: falla). Una segunda mirada aparte vio el tablero pisando el botón del arma en el móvil: arreglado y comprobado."
+  ],
+  "pruebas": "En la nube: el chat de texto (PC y móvil en inglés) correcto, la demo única, el recorrido y dormido al desconectarse correctos. La lógica: todo bien salvo la prueba del servidor de internet (systemd-analyze se queja de archivos del sistema de la máquina de GitHub, CPUAccounting=), que no toca este cambio. Una pasada del chat falló una vez en PC en «al decirlo sale el bocadillo» (el bocadillo sí salió en la comprobación siguiente; lentitud de la máquina sin tarjeta gráfica) y las dos siguientes pasaron enteras. No comprobado en captura de PC: los bocadillos se van antes de que salga la captura en la nube.",
+  "capturas": "capturas/demo-v184",
+  "estado": "ok"
  }
 ]

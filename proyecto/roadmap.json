@@ -1788,9 +1788,10 @@
     },
     {
      "nombre": "Hablar: el botón arriba, ocho frases rápidas que llegan a cada uno en su lengua (el servidor reparte el número de la frase) y escribir",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-11T23:22:49+00:00",
-     "rama": "trabajo/20261111-2322"
+     "rama": "trabajo/20261111-2322",
+     "fin": "2026-11-12T00:23:52+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -4018,6 +4019,13 @@
      "archivo": "jugar/demo/v183.html",
      "capturas": "capturas/demo-v183",
      "notas": "Las necesidades con los medallones de latón del estudio: los cuatro arriba a la derecha, medio transparentes si van bien; la que peor va, en rojo, más grande, con flecha y nombre; al pulsarlo, su ficha en dos líneas en un tablero de roble; el frío escarcha los bordes de la pantalla."
+    },
+    {
+     "v": "v184",
+     "fecha": "2026-11-12",
+     "archivo": "jugar/demo/v184.html",
+     "capturas": "capturas/demo-v184",
+     "notas": "Hablar con las ocho frases rápidas: el botón «Hablar» de arriba (o Intro) abre un tablero de roble con ocho frases de cuero (¡Hola!, Sí, No, Gracias, Ven aquí, Espera, ¡Ayuda! y ¡Cuidado!) y el campo para escribir. Un toque y se dice; por la red va solo su número y a cada uno le sale en su lengua. En el móvil, arriba y sin teclado."
     }
    ]
   },
