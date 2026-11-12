@@ -1907,7 +1907,9 @@
     },
     {
      "nombre": "Partir src/juego/main.js (casi 3.000 líneas) en partes con sentido, sin cambiar nada de lo que hace",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-12T07:23:17+00:00",
+     "rama": "trabajo/20261112-0722"
     },
     {
      "nombre": "El GDD y el documento de sistemas al día con lo decidido (cuatro direcciones, siempre en línea, salida al azar, la revisión del 1 nov) y sin contradicciones",

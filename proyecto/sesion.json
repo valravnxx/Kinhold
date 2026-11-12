@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-12T07:23:17+00:00",
+  "tarea": "Partir src/juego/main.js (casi 3.000 líneas) en partes con sentido, sin cambiar nada de lo que hace",
+  "hito": "orden",
+  "rama": "trabajo/20261112-0722"
+ },
  "B": null
 }
