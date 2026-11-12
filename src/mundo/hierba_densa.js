@@ -71,7 +71,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       float azar = fract(sin(dot(pie.xz, vec2(12.9898, 78.233))) * 43758.5453);
       float cerca = step(azar, 1.0 - smoothstep(0.4, 1.0, lejos)) * (1.0 - 0.45 * smoothstep(0.5, 1.0, lejos));
       vLejos = lejos;
-      enMundo.xz = pie.xz + (enMundo.xz - pie.xz) * (1.0 + 1.6 * lejos);
+      enMundo.xz = pie.xz + (enMundo.xz - pie.xz) * (1.0 + 0.8 * lejos) * mix(0.4, 1.0, cerca);   // (y al irse, también se estrecha: no queda una hoja tumbada)
       enMundo.y = pie.y + (enMundo.y - pie.y) * cerca;
       // el viento: dos ondas que cruzan el prado; mueve la punta y nada el pie
       float w = sin(uTiempo * 1.3 + pie.x * 0.31 + pie.z * 0.23) * 0.07 + sin(uTiempo * 2.9 + pie.x * 1.1 - pie.z * 0.7) * 0.025;
@@ -83,7 +83,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       .replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\nnormal = normalize( vNormal );')
       // más oscura en el pie (la sombra de la propia mata) y más clara y algo más amarilla en la punta; a lo lejos, del
       // color del suelo sin más, para que el borde de la hierba no se note contra el suelo de más allá
-      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(mix(vec3(0.8, 0.82, 0.8), vec3(1.02, 1.02, 0.95), vAlto), vec3(0.94), smoothstep(0.25, 0.9, vLejos));');
+      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(mix(vec3(0.8, 0.82, 0.8), vec3(1.02, 1.02, 0.95), vAlto), vec3(0.9), smoothstep(0.25, 0.9, vLejos));');
   };
   const grupo = new THREE.Group(); grupo.name = 'hierbaDensa'; raiz.add(grupo);
   const celdas = new Map();   // «i,j» → { im (o null si no hay ninguna mata), malla (la del terreno con la que se hizo), n }
@@ -120,7 +120,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
     const M = new Float32Array(N * 16), K = new Float32Array(N * 3);
     let n = 0;
     for (let k = 0; k < N; k++) {
-      const xm = xm0 + r() * CELDA, zm = zm0 + r() * CELDA, giro = r() * 6.283, tam = (0.17 + r() * r() * 0.3) * (banda ? 1.25 : 1), tono = 0.9 + r() * 0.2, corte = r();
+      const xm = xm0 + r() * CELDA, zm = zm0 + r() * CELDA, giro = r() * 6.283, tam = (0.15 + r() * r() * 0.22) * (banda ? 1.2 : 1), tono = 0.9 + r() * 0.2, corte = r();
       const v = trozoEn(xm, zm) || v0;
       const y = terreno.alturaEn(xm, zm);
       if (y === null || y < 0.6) continue;                       // (ni en el agua ni en la orilla)
@@ -129,9 +129,9 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       const x = xm - O.x, z = zm - O.z;
       if (ocupado && ocupado(x, z)) continue;
       if (est.length && est.some(e => (e.x - x) ** 2 + (e.z - z) ** 2 < 0.2)) continue;
-      o.position.set(x, y - y0 - 0.02, z); o.rotation.set(0, giro, 0); const an = (0.8 + 0.5 * h) * (banda ? 1.7 : 1); o.scale.set(tam * an, tam * (0.6 + 0.4 * h), tam * an); o.updateMatrix();
+      o.position.set(x, y - y0 - 0.02, z); o.rotation.set(0, giro, 0); const an = (0.8 + 0.5 * h) * (banda ? 1.4 : 1); o.scale.set(tam * an, tam * (0.6 + 0.4 * h), tam * an); o.updateMatrix();
       o.matrix.toArray(M, n * 16);
-      K[n * 3] = c[0] * tono * 0.82; K[n * 3 + 1] = c[1] * tono * 0.86; K[n * 3 + 2] = c[2] * tono * 0.77; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)
+      K[n * 3] = c[0] * tono * 0.8; K[n * 3 + 1] = c[1] * tono * 0.84; K[n * 3 + 2] = c[2] * tono * 0.75; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)
     }
     let im = null;
     if (n) {
