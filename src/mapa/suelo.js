@@ -85,7 +85,7 @@ vec4 bCapas; vec3 pwCapas;
     // y también donde se ve muy de canto: cuando cada píxel de la pantalla abarca varios de la textura, su detalle hace
     // bandas (el aliasing de mirar una textura en ángulo rasante); ahí se va también
     float tpp = max(length(dFdx(p)), length(dFdy(p))) / uEscala.y * 512.0;
-    float lejosD = max(smoothstep(14.0, 55.0, length(vViewPosition)), smoothstep(1.5, 4.0, tpp));
+    float lejosD = max(smoothstep(14.0, 55.0, length(vViewPosition)), smoothstep(9.0, 26.0, tpp));
     // (lo de lejos se queda con la variación grande de la hierba, que no hace rayas)
     vec3 grande = mix(vec3(1.0), cH2.rgb / uMedias[0], 0.45 * b.x);
     diffuseColor.rgb *= 0.6 * mix(clamp(d, 0.0, 2.2), grande, lejosD);
@@ -108,7 +108,7 @@ vec4 bCapas; vec3 pwCapas;
     vec3 plano = vec3(rH.x, 0.0, -rH.y) * bCapas.x + vec3(rT.x, 0.0, -rT.y) * bCapas.y + vec3(rF.x, 0.0, -rF.y) * bCapas.w;
     vec3 roca = (vec3(0.0, rX.y, rX.x) * pw.x + vec3(rY.x, 0.0, -rY.y) * pw.y + vec3(rZ.x, rZ.y, 0.0) * pw.z) * bCapas.z;
     float tppR = max(length(dFdx(p)), length(dFdy(p))) / uEscala.y * 512.0;
-    vec3 nW = normalize(normalize(vSueloNor) + (plano + roca) * 0.85 * uRelieve * (1.0 - smoothstep(14.0, 50.0, length(vViewPosition))) * (1.0 - smoothstep(1.5, 4.0, tppR)));
+    vec3 nW = normalize(normalize(vSueloNor) + (plano + roca) * 0.85 * uRelieve * (1.0 - smoothstep(14.0, 50.0, length(vViewPosition))) * (1.0 - smoothstep(9.0, 26.0, tppR)));
     normal = normalize(mat3(viewMatrix) * nW);
   }
 #endif
