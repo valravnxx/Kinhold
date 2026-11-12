@@ -113,7 +113,7 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
     // (con un ruido más fino en el borde: si no, salían óvalos lisos, como pegatinas)
     // (y torcidas con un ruido grande, que cambia su silueta y su tamaño: si no, eran óvalos iguales en fila)
     const ux = xm + (fbm(xm / 25, ym / 25, 51, 2) - 0.5) * 9, uy = ym + (fbm(xm / 25, ym / 25, 53, 2) - 0.5) * 9;
-    const t = suave(0.62, 0.74, fbm(ux / 16, uy / 16, 41, 3) + (fbm(xm / 4.5, ym / 4.5, 47, 2) - 0.5) * 0.14 + (fbm(xm / 90, ym / 90, 55, 2) - 0.5) * 0.12) * (1 - playa) * (1 - suave(0.3, 0.6, s)); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.93); pTierra = Math.max(pTierra, t); }
+    const t = suave(0.66, 0.76, fbm(ux / 16, uy / 16, 41, 3) + (fbm(xm / 4.5, ym / 4.5, 47, 2) - 0.5) * 0.14 + (fbm(xm / 90, ym / 90, 55, 2) - 0.5) * 0.12) * (1 - playa) * (1 - suave(0.3, 0.6, s)); c = c.map((v, q) => v + (TIERRA[q] - v) * t * 0.93); pTierra = Math.max(pTierra, t); }
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
   if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); pHoja = Math.min(1, d * 0.9); }
   if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) { c = conLecho(c, st, rio, xm, ym); pTierra = Math.max(pTierra, 1 - suave(-0.3, 1.6, rio.dm - rio.ancho / 2)); }
