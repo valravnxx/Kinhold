@@ -44,7 +44,7 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
       if (luzSol.shadow.mapSize.x !== lado) { luzSol.shadow.mapSize.set(lado, lado); if (luzSol.shadow.map) { luzSol.shadow.map.dispose(); luzSol.shadow.map = null; } }
     }
     // three.js 0.186 ya no tiene sombras PCFSoft (avisa y usa PCF): lo blando es el radio del filtro (la v5 usa 4)
-    if (luzSol) luzSol.shadow.radius = v5 || perfil.blandas ? 4 : 1.5;
+    if (luzSol) luzSol.shadow.radius = v5 ? 4 : perfil.blandas ? 2.5 : 1.5;   // (12 nov: con 4, el borde salía punteado)
     if (renderer.shadowMap.type !== THREE.PCFShadowMap) renderer.shadowMap.type = THREE.PCFShadowMap;
     const n = typeof niebla === 'function' ? niebla() : niebla;   // la de la luz de ahora (cada luz trae la suya)
     // directo, la niebla de la escena; con posprocesado, la del efecto (detrás del mapeo tonal, como la de three.js)

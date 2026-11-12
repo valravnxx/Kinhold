@@ -12,12 +12,13 @@ import { Effect, EffectAttribute, BlendFunction } from 'postprocessing';
 
 // centro: la altura de la franja nítida (0 abajo, 1 arriba); franja: media altura de lo que queda nítido del todo;
 // fuerza: el radio del emborronado en el borde, en alturas de pantalla
-export const MAQUETA = { centro: 0.46, franja: 0.2, fuerza: 0.011 };
+// (arriba, la franja nítida llega más lejos: ahí están los árboles y lo que tienes delante)
+export const MAQUETA = { centro: 0.46, franja: 0.2, franjaArriba: 0.32, fuerza: 0.009 };
 
-const frag = `uniform float uCentro;uniform float uFranja;uniform float uFuerza;uniform float uNoche;
+const frag = `uniform float uCentro;uniform float uFranja;uniform float uFranjaArriba;uniform float uFuerza;uniform float uNoche;
 void mainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){
   float lejos=abs(uv.y-uCentro);
-  float k=smoothstep(uFranja,0.56,lejos);
+  float k=smoothstep(uv.y>uCentro?uFranjaArriba:uFranja,0.56,lejos);
   if(k<0.002||uNoche>0.98){outputColor=inputColor;return;}
   // (en una pantalla de pie, el mismo tanto por ciento del alto son muchos más píxeles de ancho: algo menos)
   vec2 r=vec2(uFuerza/aspect,uFuerza)*k*min(1.0,0.5+0.5*aspect)*(1.0-0.85*uNoche);
@@ -33,11 +34,11 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){
 export class MaquetaEffect extends Effect {
   // vivo (opcional): el estado del cielo de día y noche (src/mundo/cielo.js). De noche casi no se emborrona: las
   // estrellas son puntos, y con 12 muestras cada una salía como un corro de puntos
-  constructor({ centro = MAQUETA.centro, franja = MAQUETA.franja, fuerza = MAQUETA.fuerza, vivo = null } = {}) {
+  constructor({ centro = MAQUETA.centro, franja = MAQUETA.franja, franjaArriba = MAQUETA.franjaArriba, fuerza = MAQUETA.fuerza, vivo = null } = {}) {
     super('MaquetaEffect', frag, {
       blendFunction: BlendFunction.SRC,
       attributes: EffectAttribute.CONVOLUTION,
-      uniforms: new Map([['uCentro', new Uniform(centro)], ['uFranja', new Uniform(franja)], ['uFuerza', new Uniform(fuerza)], ['uNoche', new Uniform(0)]]),
+      uniforms: new Map([['uCentro', new Uniform(centro)], ['uFranja', new Uniform(franja)], ['uFranjaArriba', new Uniform(franjaArriba)], ['uFuerza', new Uniform(fuerza)], ['uNoche', new Uniform(0)]]),
     });
     this.vivo = vivo;
   }
@@ -46,6 +47,7 @@ export class MaquetaEffect extends Effect {
 
 // cuánto se emborrona a una altura de la pantalla (0–1), de 0 a 1: lo mismo que el sombreador (para las pruebas)
 export function emborronado(y, M = MAQUETA) {
-  const t = Math.max(0, Math.min(1, (Math.abs(y - M.centro) - M.franja) / (0.56 - M.franja)));
+  const f = y > M.centro ? M.franjaArriba : M.franja;
+  const t = Math.max(0, Math.min(1, (Math.abs(y - M.centro) - f) / (0.56 - f)));
   return t * t * (3 - 2 * t);
 }

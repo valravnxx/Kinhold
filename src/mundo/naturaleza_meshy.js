@@ -22,6 +22,9 @@ export const carpetaNaturaleza = (recursos) => String(recursos || '../../recurso
 let cargados = null, cargando = null, carpetaCargada = null, cargandoAlto = null, version = 0;
 // las plantas finas (hojas de una sola capa), por las dos caras
 const DOS_CARAS = new Set(['hierba_larga', 'ortigas', 'juncos', 'helechos']);
+const ROCAS = new Set(['roca', 'pena', 'canto']);
+// cuánta luz del cielo de más (o de menos) se llevan las plantas: 1,4 de día y 0,7 de noche (lo cambia el cielo)
+export const rellenoPlantas = { value: 1.4 };
 const modelo = (g, nombre, cosa) => {
   const o = g.scene.getObjectByName(nombre); if (!o) return null;
   const m = o.isMesh ? o : o.getObjectByProperty('isMesh', true); if (!m) return null;
@@ -40,7 +43,15 @@ const modelo = (g, nombre, cosa) => {
   geo.applyMatrix4(m.matrixWorld);
   if (!geo.attributes.normal) geo.computeVertexNormals();   // (la silueta de lejos del pino joven, hecha sin normales)
   geo.computeBoundingSphere(); geo.computeBoundingBox();
-  return { geo, mats: new THREE.MeshLambertMaterial({ map, vertexColors: true, side: DOS_CARAS.has(cosa) ? THREE.DoubleSide : THREE.FrontSide }) };
+  const mat = new THREE.MeshLambertMaterial({ map, vertexColors: true, side: DOS_CARAS.has(cosa) ? THREE.DoubleSide : THREE.FrontSide });
+  // (12 nov, el aspecto de maqueta: con el sol fuerte, el lado en sombra de las copas se quedaba casi negro y perdía el
+  // volumen) algo más de la luz del cielo en las plantas, como la que se cuela entre las hojas; las rocas, no
+  // (de noche, al revés: las plantas de hoja clara brillaban frente a lo demás; lo pone el cielo: src/mundo/cielo.js)
+  if (!ROCAS.has(cosa)) mat.onBeforeCompile = (s) => {
+    s.uniforms.uRellenoPlantas = rellenoPlantas;
+    s.fragmentShader = 'uniform float uRellenoPlantas;\n' + s.fragmentShader.replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\nreflectedLight.indirectDiffuse*=uRellenoPlantas;');
+  };
+  return { geo, mats: mat };
 };
 
 // Carga todos (a la vez); devuelve cuántos han llegado. Nunca falla: lo que no llega se queda en código.

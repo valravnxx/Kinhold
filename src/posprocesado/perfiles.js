@@ -70,7 +70,7 @@ export function efectosDe(p) {
 // búsqueda (LUT) que la aplica.
 // 12 nov (el aspecto de maqueta: la referencia es más viva y contrastada que la v5): más contraste, luces más cálidas
 // y los colores con su fuerza (los verdes, un punto menos que el resto, para que la hierba no chille).
-export const GRADACION = { frias: [-0.014, 0.0, 0.028], calidas: [0.042, 0.018, -0.03], sat: 1.08, satVerdes: 1.0, contraste: 1.08 };
+export const GRADACION = { frias: [-0.014, 0.0, 0.028], calidas: [0.042, 0.018, -0.03], sat: 1.05, satVerdes: 0.97, contraste: 1.08 };
 const lum = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const recorta = (v) => Math.min(1, Math.max(0, v));
 export function gradar(r, g, b, G = GRADACION) {

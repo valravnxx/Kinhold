@@ -27,7 +27,7 @@ vec3 cieloBase(vec3 d){
   float vis=smoothstep(-0.2,0.02,uSol.y);
   vec3 h=mix(cieloAbajo,uColSol,0.32*bajo*vis*pow(c,3.0)*(1.0-smoothstep(0.0,0.5,e)));
   // (12 nov: el azul de arriba llega antes; el color del horizonte queda en una franja baja, como la calima de verdad)
-  vec3 col=mix(h,cieloArriba,pow(clamp(e/0.42,0.0,1.0),0.6));
+  vec3 col=mix(h,cieloArriba,pow(clamp(e/0.27,0.0,1.0),0.55));
   col+=uColSol*vis*(0.22*pow(c,3000.0)+0.1*pow(c,300.0)+0.12*pow(c,16.0)*(0.5+0.5*bajo)+0.07*pow(c,4.0)*bajo);
   return col;
 }

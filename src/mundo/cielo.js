@@ -12,6 +12,7 @@ import * as THREE from 'three';
 import { cieloDe, msDeHora, horaTexto } from '../logica/cielo.js';
 import { LUCES } from './estilos.js';
 import { cieloAgua } from '../mapa/agua.js';
+import { rellenoPlantas } from './naturaleza_meshy.js';
 
 // el estado que lee el sombreador del cielo (lo copia NieblaEffect.update en cada fotograma)
 function estadoVacio() {
@@ -51,6 +52,7 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
     estado.colorSol.setHex(c.colorSol).convertLinearToSRGB();
     estado.arriba.setHex(c.arriba).convertLinearToSRGB(); estado.horizonte.setHex(c.horizonte).convertLinearToSRGB();
     estado.estrellas = c.estrellas;
+    rellenoPlantas.value = 1.4 - 0.7 * c.estrellas;   // (las plantas: más luz del cielo de día, menos de noche)
     // las estrellas: su sitio en el cielo que gira (filas: el punto del ecuador a la hora del sol, el de 90° más allá y el polo)
     const h = c.giro, lat = 42 * Math.PI / 180;
     A.set(-Math.sin(h), Math.cos(lat) * Math.cos(h), Math.sin(lat) * Math.cos(h));
