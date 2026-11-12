@@ -102,7 +102,7 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   let pRoca = 0, pTierra = 0, pHoja = 0;
   if (!st || !st.bioma) pTierra = 1;                                   // (el fondo del agua y los cauces: arena, cantos)
   else {
-    pRoca = Math.min(1, Math.max(0, (sp - 0.85) / 0.4) + (st.bioma === 'alpino' ? 0.25 : 0));
+    pRoca = Math.min(1, Math.max(0, (sp - 1.0) / 0.4) + (st.bioma === 'alpino' ? 0.25 : 0));
     if (st.bioma === 'nieve' || st.T < -1.5) pTierra = 1 - pRoca;
   }
   // calvas de tierra en el prado y en el bosque, y algo de variación de cerca
