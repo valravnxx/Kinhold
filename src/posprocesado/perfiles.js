@@ -66,7 +66,9 @@ export function efectosDe(p) {
 // luces un poco cálidas (como la luz de mañana y de tarde de la prueba), algo menos de saturación en los verdes y
 // azules para que nada chille, y un poco de contraste en los medios. Trabaja en sRGB, de 0 a 1, como la tabla de
 // búsqueda (LUT) que la aplica.
-export const GRADACION = { frias: [-0.012, 0.0, 0.022], calidas: [0.03, 0.012, -0.022], sat: 0.9, satVerdes: 0.84, contraste: 1.05 };
+// 12 nov (el aspecto de maqueta: la referencia es más viva y contrastada que la v5): más contraste, luces más cálidas
+// y los colores con su fuerza (los verdes, un punto menos que el resto, para que la hierba no chille).
+export const GRADACION = { frias: [-0.014, 0.0, 0.028], calidas: [0.042, 0.018, -0.03], sat: 1.08, satVerdes: 1.0, contraste: 1.12 };
 const lum = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const recorta = (v) => Math.min(1, Math.max(0, v));
 export function gradar(r, g, b, G = GRADACION) {

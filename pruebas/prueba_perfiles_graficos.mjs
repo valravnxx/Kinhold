@@ -38,16 +38,28 @@ let max = 0;
 for (let r = 0; r <= 1; r += 0.1) for (let g = 0; g <= 1; g += 0.1) for (let b = 0; b <= 1; b += 0.1) {
   const [R, G, B] = gradar(r, g, b); max = Math.max(max, Math.abs(R - r), Math.abs(G - g), Math.abs(B - b));
 }
-comprobar('es suave: ningún canal cambia más de 0,13 (lo que más, el cian puro, que no sale en la paleta)', max <= 0.13, max.toFixed(3));
+comprobar('es suave: ningún canal cambia más de 0,2 (lo que más, los colores puros, que no salen en la paleta)', max <= 0.2, max.toFixed(3));
 const gris = gradar(0.5, 0.5, 0.5);
 comprobar('el gris medio queda casi igual', gris.every(v => Math.abs(v - 0.5) < 0.01), gris.map(v => v.toFixed(3)).join(' '));
 const [sr, , sb] = gradar(0.15, 0.15, 0.15), [lr, , lb] = gradar(0.85, 0.85, 0.85);
 comprobar('sombras algo frías y luces algo cálidas', sb > sr && lr > lb, `sombra r${sr.toFixed(3)} b${sb.toFixed(3)} · luz r${lr.toFixed(3)} b${lb.toFixed(3)}`);
-const verde = gradar(0.25, 0.55, 0.2), satAntes = 0.55 - 0.2, satDespues = verde[1] - verde[2];
-comprobar('los verdes, un poco menos saturados (nada chilla)', satDespues < satAntes, `${satAntes.toFixed(2)} → ${satDespues.toFixed(2)}`);
+// (12 nov, el aspecto de maqueta: más viva y contrastada que la v5; los verdes, un punto menos que el resto)
+const verde = gradar(0.25, 0.55, 0.2), rojo = gradar(0.55, 0.25, 0.2);
+comprobar('los colores ganan fuerza, y los verdes menos que los rojos (la hierba no chilla)', rojo[0] - rojo[2] > 0.35 && verde[1] - verde[2] > 0.35 * 0.98 && verde[1] - verde[2] < rojo[0] - rojo[2], `verde ${(verde[1] - verde[2]).toFixed(3)} · rojo ${(rojo[0] - rojo[2]).toFixed(3)}`);
+const oscuro = gradar(0.25, 0.25, 0.25), clarito = gradar(0.75, 0.75, 0.75);
+comprobar('más contraste: lo oscuro baja y lo claro sube', oscuro[1] < 0.24 && clarito[1] > 0.76, `${oscuro[1].toFixed(3)} y ${clarito[1].toFixed(3)}`);
 const t = new Float32Array(4 * 8); for (let i = 0; i < 8; i++) t.set([i / 7, i / 7, i / 7, 1], i * 4);
 rellenarTabla(t, 2);
 comprobar('la tabla se rellena con la gradación y no toca el canal alfa', t[3] === 1 && Math.abs(t[0] - gradar(0, 0, 0)[0]) < 1e-6);
+
+console.log('Desenfoque de maqueta');
+{
+  const { emborronado, MAQUETA } = await import('../src/posprocesado/maqueta.js');
+  comprobar('la franja del centro queda nítida del todo (donde está el personaje)', [0.3, 0.4, 0.46, 0.55, 0.64].every(y => emborronado(y) === 0));
+  comprobar('hacia arriba y hacia abajo se emborrona cada vez más', emborronado(0.95) > emborronado(0.8) && emborronado(0.8) > 0 && emborronado(0.02) > emborronado(0.15) && emborronado(0.15) > 0);
+  comprobar('el emborronado es corto: como mucho un 1,5 % del alto de la pantalla', MAQUETA.fuerza <= 0.015 && MAQUETA.fuerza > 0);
+  comprobar('el móvil básico no lo lleva y los demás sí', !PERFILES.find(p => p.id === 'movil-1').desenfoque && PERFILES.filter(p => p.id !== 'movil-1').every(p => p.desenfoque));
+}
 
 console.log('Perfil de inicio (antes de medir)');
 const casos = [

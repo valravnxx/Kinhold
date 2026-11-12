@@ -46,6 +46,24 @@ float capaEstrellas(vec3 s,float N,float cuantas,float radio,float brillo){
   float b=brillo*(0.15+0.85*pow(h.y,3.0))*min(1.0,radio*radio/(px*px*0.49)+0.35);
   return b*exp(-d*d/(r*r))*(0.85+0.15*sin(uTiempo*(1.5+3.0*h.z)+h.y*40.0));
 }
+// las nubes (12 nov, el aspecto de maqueta): ruido en un techo plano, que pasa despacio; blancas y cálidas del lado del
+// sol de día, y apenas una sombra de noche. Solo cuestan en los píxeles de cielo.
+float ruidoN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+  float a=hashC(vec3(i,1.7)).x,b=hashC(vec3(i+vec2(1.0,0.0),1.7)).x,c=hashC(vec3(i+vec2(0.0,1.0),1.7)).x,e=hashC(vec3(i+vec2(1.0,1.0),1.7)).x;
+  return mix(mix(a,b,f.x),mix(c,e,f.x),f.y);}
+float fbmN(vec2 p){float s=0.0,k=0.5;for(int i=0;i<4;i++){s+=k*ruidoN(p);p=p*2.03+vec2(17.3,9.1);k*=0.5;}return s;}
+vec4 nubes(vec3 d){
+  if(d.y<0.015)return vec4(0.0);
+  vec2 p=d.xz/(d.y+0.16)*1.15+uTiempo*vec2(0.0045,0.0017);
+  float n=fbmN(p),cob=smoothstep(0.5,0.72,n)*smoothstep(0.015,0.16,d.y);
+  if(cob<0.003)return vec4(0.0);
+  // la luz: más clara donde la nube es más fina hacia el sol
+  float haciaSol=fbmN(p+normalize(uSol.xz+vec2(0.0001))*0.22),luz=clamp(0.62+1.5*(n-haciaSol),0.0,1.0);
+  float dia=smoothstep(-0.12,0.14,uSol.y),bajo=1.0-smoothstep(4.0,30.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
+  vec3 clara=mix(vec3(1.0,0.99,0.97),mix(vec3(1.0),uColSol,0.6),bajo),sombra=mix(cieloArriba,cieloAbajo,0.5)*0.92+0.04;
+  vec3 c=mix(mix(cieloAbajo,cieloArriba,0.5)*0.8,mix(sombra,clara,luz),dia);
+  return vec4(c,cob*mix(0.5,0.92,dia));
+}
 vec3 cieloVivo(vec3 d){
   vec3 col=cieloBase(d);
   float sobre=smoothstep(-0.03,0.01,d.y);
@@ -61,6 +79,8 @@ vec3 cieloVivo(vec3 d){
     float franja=exp(-v*v/0.03)*nube;
     col+=(tinte*st*(0.6+0.8*franja)+vec3(0.55,0.6,0.75)*0.05*franja)*uEstrellas*aire;
   }
+  // las nubes, por delante de las estrellas y por detrás del sol y de la luna (que se ven a través)
+  vec4 nb=nubes(d);col=mix(col,nb.rgb,nb.a);
   // el sol: un disco de 0,7° con el borde suave
   float cs=dot(d,uSol),bajoS=1.0-smoothstep(2.0,25.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
   col=mix(col,mix(vec3(1.0,0.98,0.92)*1.5,vec3(1.0,0.9,0.72)*1.35,bajoS),smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre);
