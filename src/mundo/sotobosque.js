@@ -1,7 +1,7 @@
 // Kinhold — el tocón viejo y el tronco caído del sotobosque (13 nov, el hito «El aspecto»): la madera muerta del bosque,
 // donde el bosque no llega a tener árbol (dónde va cada uno lo dice la lógica: src/logica/vegetacion.js, «sotobosque»).
 // Hechos por código con las mismas texturas que el tocón y los troncos de la tala (src/juego/tala.js, src/juego/suelo.js),
-// pero viejos: la corteza más oscura, el corte gastado, roto y no de hacha, raíces que asoman y musgo encima. Los
+// pero viejos: la corteza más oscura, el corte gastado, roto y no de hacha, y raíces que asoman. (Sin musgo: la media esfera con la textura de hojas se leía como hojas sueltas.) Los
 // helechos, las ortigas, la hierba alta y los cantos del sotobosque son los de Meshy (src/mundo/naturaleza_meshy.js).
 //
 // Cada uno vuelve como { geo, mats } (una sola geometría con un grupo por textura), para dibujarlo instanciado.
@@ -22,7 +22,7 @@ function juntar(L) {
 }
 
 // El tocón viejo: unos 0,3 m de radio y 0,5 m de alto (a escala 1), la boca rota en picos (no el corte limpio del hacha),
-// cuatro raíces que asoman y una mancha de musgo en un lado.
+// y cuatro raíces que se meten en el suelo.
 function toconViejo() {
   const L = new Lote({ rangoSuelo: 0.25, variacion: 0.08 });
   const r = 0.3, h = 0.42;
@@ -35,17 +35,15 @@ function toconViejo() {
   }
   // las raíces: conos tumbados que salen del pie y se meten en el suelo
   for (let k = 0; k < 4; k++) {
-    const a = k * 1.57 + 0.3, m = new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2 + 0.35));
-    L.add(cil(0.015, r * 0.32, 0.5, 6), 'corteza', Math.cos(a) * r * 1.05, 0.02, Math.sin(a) * r * 1.05, m);
+    // (bien metidas en el suelo: tumbadas, salían como patas)
+    const a = k * 1.57 + 0.3, m = new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2 + 0.75));
+    L.add(cil(0.02, r * 0.38, 0.38, 6), 'corteza', Math.cos(a) * r * 0.95, 0.0, Math.sin(a) * r * 0.95, m);
   }
-  // el musgo: una media cáscara aplastada en un lado del pie
-  // (pegada a la corteza y baja: más grande, salía como una falda verde alrededor)
-  L.add(new THREE.SphereGeometry(r * 0.45, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), 'hojaOsc', r * 0.75, -0.02, -r * 0.15, null, { escala: new THREE.Vector3(0.6, 0.5, 1), sinSuelo: true });
-  return juntar(L);
+    return juntar(L);
 }
 
 // El tronco caído: 3,6 m de largo y 0,24 m de radio (a escala 1), tumbado a lo largo de X y algo hundido, una punta
-// rota en pico y la otra con el pie y sus raíces al aire, dos muñones de rama y musgo por encima.
+// rota en pico y la otra con el pie y sus raíces al aire, y dos muñones de rama.
 function troncoCaido() {
   const L = new Lote({ rangoSuelo: 0.12, variacion: 0.08 });   // (con más, el tronco tumbado entero salía casi negro)
   const largo = 3.6, r = 0.24, tumbado = new THREE.Matrix4().makeRotationZ(Math.PI / 2);
@@ -62,10 +60,6 @@ function troncoCaido() {
   // dos muñones de rama, hacia arriba y a un lado
   L.add(cil(0.03, 0.06, 0.4, 6), 'corteza', 0.5, r * 0.75 + r + 0.12, 0.05, { z: -0.5 });
   L.add(cil(0.025, 0.05, 0.32, 6), 'corteza', -0.7, r * 0.75 + 0.1, r + 0.1, { x: 1.1 });
-  // el musgo: tiras aplastadas por encima del tronco
-  for (const [x, l] of [[-0.9, 1.1], [0.7, 0.8]]) {
-    L.add(new THREE.SphereGeometry(r * 0.9, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2), 'hojaOsc', x, r * 1.35, 0, null, { escala: new THREE.Vector3(l / (r * 1.8), 0.35, 0.95), sinSuelo: true });
-  }
   return juntar(L);
 }
 
