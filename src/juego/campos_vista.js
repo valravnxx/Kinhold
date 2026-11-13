@@ -55,7 +55,7 @@ let matLabrado = null;      // (uno para todos: no se rehace con cada cambio)
 
 // ---------- Las plantas de lo sembrado (P11) ----------
 const LEJOS_PLANTAS = 45;          // m: más lejos que esto (del borde del campo), solo el color del suelo
-const MATAS_CEBADA = 7;            // matas de cebada por m² sembrado a voleo
+const MATAS_CEBADA = 9;            // matas de cebada por m² sembrado a voleo
 const C = (h) => new THREE.Color(h);
 // el color que toma de lejos la tierra sembrada de cebada en cada fase (multiplica la textura de la tierra)
 const TINTE_CEBADA = [[0.92, 1, 0.8], [0.62, 1, 0.5], [0.8, 1, 0.52], [1.18, 1.05, 0.6]];
@@ -64,7 +64,7 @@ function constructor() {
   const pos = [], col = [], nor = [], idx = [];
   // (los colores, apagados como los de la referencia: algo hacia el gris y algo más oscuros, que con la normal hacia
   // arriba todo sale muy iluminado)
-  const apagar = (c) => { const l = c.r * 0.3 + c.g * 0.59 + c.b * 0.11; return [(c.r + (l - c.r) * 0.35) * 0.78, (c.g + (l - c.g) * 0.35) * 0.78, (c.b + (l - c.b) * 0.35) * 0.78]; };
+  const apagar = (c) => { const l = c.r * 0.3 + c.g * 0.59 + c.b * 0.11; return [(c.r + (l - c.r) * 0.25) * 0.8, (c.g + (l - c.g) * 0.25) * 0.8, (c.b + (l - c.b) * 0.25) * 0.74]; };
   const v = (x, y, z, c, ny = 1) => { pos.push(x, y, z); col.push(...apagar(c)); nor.push(0, ny, 0); return pos.length / 3 - 1; };
   return {
     // una hoja o un tallo: de (x, z) en el suelo, hacia el ángulo a, que sube «alto», se abre «fuera» y cae «cae» en la
@@ -113,21 +113,21 @@ function constructor() {
 function formaPlanta(cultivo, f) {
   const k = constructor(), r = (i) => ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
   if (cultivo === 'cebada') {   // una mata de cebada: varias hojas y, desde la espiga, sus tallos con la espiga
-    const verde = [C(0x6f9a46), C(0x5a8a3c), C(0x5e843a), C(0xb89a58)][f], punta = [C(0x9cc068), C(0x8fb460), C(0x8ea456), C(0xd8bf78)][f];
-    const n = [4, 6, 5, 5][f], alto = [0.1, 0.34, 0.5, 0.58][f];
+    const verde = [C(0x74983e), C(0x62893a), C(0x6a8838), C(0xb8954e)][f], punta = [C(0x9cb85a), C(0x93ae52), C(0xa2a856), C(0xdcb768)][f];
+    const n = [5, 6, 5, 5][f], alto = [0.13, 0.34, 0.5, 0.58][f];
     for (let i = 0; i < n; i++) { const a = i * 2.4 + r(i) * 0.6; k.hoja(Math.cos(a) * 0.03, Math.sin(a) * 0.03, a, alto * (0.75 + 0.35 * r(i + 7)), alto * (f ? 0.32 : 0.5), 0.022, verde, punta, { cae: f ? alto * 0.18 : 0 }); }
     if (f >= 2) {
-      const espiga = f === 2 ? C(0x9aa65a) : C(0xdcc27c);
-      for (let i = 0; i < 4; i++) {
-        const a = i * 1.57 + r(i + 3), sx = Math.cos(a) * 0.035, sz = Math.sin(a) * 0.035, h = alto * (1.05 + 0.25 * r(i + 11)), lean = 0.06 + 0.05 * r(i + 5);
+      const espiga = f === 2 ? C(0xbab86a) : C(0xe0b864);
+      for (let i = 0; i < 5; i++) {
+        const a = i * 1.257 + r(i + 3), sx = Math.cos(a) * 0.035, sz = Math.sin(a) * 0.035, h = alto * (1.05 + 0.25 * r(i + 11)), lean = 0.06 + 0.05 * r(i + 5);
         k.hoja(sx, sz, a, h, lean, 0.008, verde, espiga);
         const tx = sx + Math.cos(a) * lean, tz = sz + Math.sin(a) * lean;
-        if (f === 2) k.espiga(tx, h - 0.01, tz, Math.cos(a) * 0.02, 0.09, Math.sin(a) * 0.02, 0.012, espiga);
-        else k.espiga(tx, h - 0.01, tz, Math.cos(a) * 0.06, -0.05, Math.sin(a) * 0.06, 0.013, espiga);   // madura, la espiga se dobla
+        if (f === 2) k.espiga(tx, h - 0.01, tz, Math.cos(a) * 0.025, 0.12, Math.sin(a) * 0.025, 0.02, espiga);
+        else k.espiga(tx, h - 0.01, tz, Math.cos(a) * 0.08, -0.06, Math.sin(a) * 0.08, 0.02, espiga);   // madura, la espiga se dobla
       }
     }
   } else if (cultivo === 'habas') {   // un tallo recto con pares de hojas redondas, luego vainas; seca, negruzca
-    const tallo = [C(0x6a9a4a), C(0x4f7d38), C(0x4f7d38), C(0x4a3a28)][f], hoja = [C(0x7fae58), C(0x56843e), C(0x5a8642), C(0x6a5434)][f];
+    const tallo = [C(0x6a9a4a), C(0x4f7d38), C(0x4f7d38), C(0x6a5238)][f], hoja = [C(0x7fae58), C(0x56843e), C(0x5a8642), C(0x8a6e48)][f];
     const alto = [0.06, 0.3, 0.55, 0.5][f];
     if (f === 0) { k.hoja(0, 0, 0.3, 0.08, 0.05, 0.035, tallo, hoja, { ancha: true }); k.hoja(0, 0, 3.4, 0.07, 0.05, 0.035, tallo, hoja, { ancha: true }); }
     else {
@@ -138,15 +138,15 @@ function formaPlanta(cultivo, f) {
         for (const s of [0, Math.PI]) k.hoja(0, 0, a + s, 0.05, 0.09, 0.04, hoja, hoja, { y0, ancha: true });
       }
       if (f >= 2) {
-        const vaina = f === 2 ? C(0x6c9448) : C(0x2e2620);
-        for (let p = 0; p < 3; p++) { const a = p * 2.1 + 0.5, y = alto * (0.3 + 0.18 * p); k.espiga(Math.cos(a) * 0.02, y, Math.sin(a) * 0.02, Math.cos(a) * 0.05, -0.08, Math.sin(a) * 0.05, 0.014, vaina); }
+        const vaina = f === 2 ? C(0x86a654) : C(0x4a3826);
+        for (let p = 0; p < 3; p++) { const a = p * 2.1 + 0.5, y = alto * (0.3 + 0.18 * p); k.espiga(Math.cos(a) * 0.02, y, Math.sin(a) * 0.02, Math.cos(a) * 0.06, -0.11, Math.sin(a) * 0.06, 0.022, vaina); }
       }
     }
   } else if (cultivo === 'col') {   // una roseta de hojas anchas azuladas y, en el centro, el cogollo
-    const hoja = [C(0x7fa868), C(0x6e9278), C(0x6a8e74), C(0x6c8c70)][f], borde = [C(0x9ac07a), C(0x8eae90), C(0x8aaa8a), C(0x8aa684)][f];
+    const hoja = [C(0x7fa868), C(0x6e9266), C(0x6c8e62), C(0x6e8c5e)][f], borde = [C(0x9ac07a), C(0x93ae7c), C(0x90aa78), C(0x8ea672)][f];
     const n = [3, 7, 9, 10][f], largo = [0.08, 0.22, 0.26, 0.3][f];
-    for (let i = 0; i < n; i++) { const a = i * 2.4; k.hoja(0, 0, a, largo * (f ? 0.55 : 1), largo, largo * 0.45, hoja, borde, { ancha: true, cae: f ? largo * 0.15 : 0, y0: f ? 0.02 : 0 }); }
-    if (f >= 2) k.bola(0, f === 2 ? 0.1 : 0.13, 0, f === 2 ? 0.1 : 0.14, C(0xa8c49a), 0.8);
+    for (let i = 0; i < n; i++) { const a = i * 2.4; { const fuera = i < n / 2 ? 1 : 0.6; k.hoja(0, 0, a, largo * (f ? (fuera < 1 ? 1.1 : 0.75) : 1), largo * fuera, largo * 0.45, hoja, borde, { ancha: true, cae: f ? largo * 0.12 : 0, y0: f ? 0.02 : 0 }); } }
+    if (f >= 2) k.bola(0, f === 2 ? 0.1 : 0.13, 0, f === 2 ? 0.1 : 0.14, C(0xa6be8a), 0.8);
   } else {   // el nabo: hojas rectas y algo rizadas y, al engordar, la raíz blanca y morada que asoma
     const hoja = [C(0x7aac58), C(0x5e9444), C(0x5a8e42), C(0x6a8a44)][f], punta = [C(0x92c06c), C(0x7aac58), C(0x76a656), C(0x8a9a52)][f];
     const n = [3, 6, 7, 7][f], alto = [0.08, 0.2, 0.28, 0.3][f];
