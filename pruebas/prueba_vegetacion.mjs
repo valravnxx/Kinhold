@@ -10,7 +10,7 @@
 // MUTAR=4 → el sotobosque se mide contra los árboles movidos 20 m: tiene que fallar.
 // MUTAR=5 → los juncos del agua se miran 3 m más allá (en seco): tiene que fallar.
 // MUTAR=6 → con la orilla de antes (nada a menos de 4 m del cauce): tiene que fallar.
-// MUTAR=7 → las rocas de pared se miran 15 m más allá (en el llano): tiene que fallar.
+// MUTAR=7 → las rocas de pared se miran 60 m más allá (en el llano): tiene que fallar.
 //   - la roca de los cortados (13 nov): piezas en las paredes empinadas, ninguna en el llano ni en el agua, las mismas
 //     por trozos que en su cuadro
 //   - riberas y costas (13 nov): los juncos del agua, dentro del agua somera; la marisma, solo en las desembocaduras;
@@ -181,7 +181,7 @@ comprobar('más jóvenes en lindes y claros que dentro del bosque cerrado', nLin
   const g = vegetacionEn(pai, alt, sem, c).paredes, t = [];
   for (const [di, dj] of [[0, 0], [1, 0], [0, 1], [1, 1]]) t.push(...vegetacionTrozo(pai, alt, sem, i0 + di, j0 + dj).paredes);
   const pend = (x, z) => Math.hypot(alt(x + 1, z) - alt(x - 1, z), alt(x, z + 1) - alt(x, z - 1)) / 2;
-  const d = MUTAR === '7' ? 15 : 0;
+  const d = MUTAR === '7' ? 60 : 0;
   // (la pieza se pone algo fuera de la pared y apilada hacia arriba; se mira la pendiente a su lado, en un círculo de 3 m)
   const llano = t.filter(e => Math.max(...[0, 1, 2, 3, 4, 5, 6, 7].map(k => pend(e.x + d + Math.cos(k) * 3, e.z + Math.sin(k) * 3))) < 0.8).length;
   comprobar('la roca de los cortados: piezas en las paredes empinadas (solo las anchas y altas), ninguna en el llano, y las mismas por trozos que en su cuadro',
