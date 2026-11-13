@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2844 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3185 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4624 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3254 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2838 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3216 KB
+dist/kinhold_trozos.html 2860 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: construir con el acabado nuevo (Poner | Quitar, la planta arriba, las piezas con su imagen y su coste, deshacer)
+  OK   quitando, sin los huecos de las manos de abajo
+  OK   Poner: vuelve a poner
+  OK   sin errores en la página
+TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 102 s
