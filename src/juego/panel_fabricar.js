@@ -38,12 +38,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 export const DELANTE = 1.2; // m: dónde se pone una estación, delante de ti
 // las pestañas: todo, con las manos y una por cada uso con estación
 const PESTANAS = ['todo', 'manos', ...Object.keys(USOS).filter(u => u !== 'manos')];
-const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco'), secar: () => tr('Secadero') };
+const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco') };
 // cómo se nombra cada estación en una frase («encima de la piedra de tallar»)
 const LA_ESTACION = { piedra_tallar: () => tr('la piedra de tallar'), hoguera: () => tr('la hoguera'), banco_tronco: () => tr('el banco de trabajo de tronco'),
   acopio_troncos: () => tr('el acopio de troncos'), pila_piedras: () => tr('la pila de piedras'), lenera: () => tr('la leñera'),
   soporte_varas: () => tr('el soporte de varas'), almiar: () => tr('el almiar'), hoyo_barro: () => tr('el hoyo de barro'), cesto: () => tr('el cesto'),
-  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas'), secadero: () => tr('el secadero') };
+  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas') };
 const laEstacion = t => LA_ESTACION[t] ? LA_ESTACION[t]() : tr(ESTACIONES[t].nombre).toLowerCase();
 const MANO_SVG = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17V8.5a1.8 1.8 0 0 1 3.6 0V15M13.6 15V6.3a1.8 1.8 0 0 1 3.6 0V15M17.2 15V7.5a1.8 1.8 0 0 1 3.6 0V16M20.8 16v-4a1.8 1.8 0 0 1 3.6 0v7c0 5-3.4 9-8.4 9-3.4 0-5.4-1.6-7-4.2l-3-5a1.9 1.9 0 0 1 3.1-2.1L10 19"/></svg>';
 const TODO_SVG = '<svg viewBox="0 0 32 32" fill="currentColor"><rect x="5" y="5" width="9" height="9" rx="2"/><rect x="18" y="5" width="9" height="9" rx="2"/><rect x="5" y="18" width="9" height="9" rx="2"/><rect x="18" y="18" width="9" height="9" rx="2"/></svg>';
@@ -86,7 +86,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
   const sinModelo = t => indice[t] && indice[t].propio === false;
   const icono = t => `<span class="fab-ic">${img(t)}${sinModelo(t) ? `<em class="fab-pend">${esc(tr('sin modelo aún'))}</em>` : ''}</span>`;
   const dondeUso = uso => uso === 'manos' ? tr('Con las manos') : tr(USOS[uso].nombre);
-  const segundos = s => s >= 3600 ? tr('{h} h', { h: Math.round(s / 360) / 10 }) : s >= 60 ? tr('{m} min', { m: Math.round(s / 6) / 10 }) : tr('{s} s', { s });   // (13 nov) lo del secadero tarda horas
+  const segundos = s => s >= 60 ? tr('{m} min', { m: Math.round(s / 6) / 10 }) : tr('{s} s', { s });
   const estacionDeUso = uso => estacionesDeUso(uso)[0] || null;
   const iconoPestana = k => k === 'todo' ? `<span class="fab-svg">${TODO_SVG}</span>` : k === 'manos' ? `<span class="fab-svg">${MANO_SVG}</span>` : `<span class="fab-ic">${img('est_' + estacionDeUso(k))}</span>`;
   const cerca = (e, p, d = ALCANCE_ESTACION) => Math.hypot(e.x - p.x, e.z - p.z) <= d;
@@ -303,8 +303,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     panel.classList.toggle('fab-ficha-abierta', fichaMovil);
     for (const s of marcha.querySelectorAll('.fab-tiempo')) {
       const falta = Number(s.dataset.fin) - t;
-      const fs = Math.ceil(falta / 1000);
-      if (falta > 0) s.textContent = fs >= 3600 ? tr('te quedan {h} h {m} min', { h: Math.floor(fs / 3600), m: Math.floor(fs % 3600 / 60) }) : fs >= 600 ? tr('te quedan {m} min', { m: Math.ceil(fs / 60) }) : tr('te quedan {s} s', { s: fs });
+      if (falta > 0) s.textContent = tr('te quedan {s} s', { s: Math.ceil(falta / 1000) });
       else { firma = ''; } // acaba de terminar: el botón de recoger sale en la siguiente vuelta
     }
     for (const b of marcha.querySelectorAll('.fab-barra i')) b.style.width = Math.max(0, Math.min(100, 100 - (Number(b.dataset.fin) - t) / Number(b.dataset.dura) * 100)).toFixed(1) + '%';
