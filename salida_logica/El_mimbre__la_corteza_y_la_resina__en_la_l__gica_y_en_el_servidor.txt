@@ -1,0 +1,32 @@
+El mimbre
+  bien  las mimbreras salen en la ribera y la orilla (y solo ahí)
+  bien  con las manos no se corta — Necesitas un cuchillo o una lasca de sílex para cortarlos.
+  bien  con la lasca se cortan sus varas: un haz de mimbre
+  bien  y vuelve en una estación
+La corteza y la resina, del árbol en pie
+  bien  sin cuchillo, lasca ni hacha no se descorteza — Necesitas un cuchillo, una lasca de sílex o un hacha para descortezarlo.
+  bien  con la lasca se descorteza un roble: de 1 a 2 cortezas a lo que llevas
+  bien  una sola vez por árbol — Ese árbol ya está descortezado.
+  bien  lejos no
+  bien  un roble no da resina — Solo los pinos y los abetos dan resina.
+  bien  el pino y el abeto son las coníferas
+  bien  al pino se le hace un corte (aún sin resina)
+  bien  la resina tarda horas: antes, no — La resina aún no ha salido: tarda unas horas.
+  bien  lo sangrado y lo descortezado se guarda
+  bien  a las 4 h, 1 resina con la mano
+  bien  y vuelve a sangrar (repetible): otra a las 4 h más
+  bien  queda en el registro con su autor
+La piel: de la caza (9 nov)
+  bien  la honda y el odre salen en el panel (vuelven con la caza) — 36 recetas
+  bien  sin piel no se pueden hacer
+En el servidor, con el terreno de Whitholm
+  bien  hay mimbreras en el mundo — a 859 m de la salida
+  bien  hay pinos o abetos en el mundo — pino
+  bien  el servidor conoce su especie — {"id":"arbol:28154,30307","x":2815.45,"z":3030.69,"edad":"adulto","especie":"pino","tam":0.982,"alto":9.33}
+  bien  en el servidor se descorteza, a lo que llevas
+  bien  y se sangra (con la especie del mundo, diga lo que diga el navegador)
+  bien  y a las 4 h se coge su resina
+  bien  todos lo saben (lo que se reparte)
+  bien  y se guarda al volver a abrir el servidor
+
+26/26 bien
