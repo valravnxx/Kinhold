@@ -1,0 +1,38 @@
+  OK   PC: sin necesidades, ningún medallón
+  OK   PC: con sed 50, hambre 30 y cansancio 80, en aviso la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   PC: los cuatro medallones: los que van bien, medio transparentes; la sed en ámbar; el cansancio, rojo, más grande y con su nombre — [['hambre', 'bien', True, '#7fb383', 44, '', 'g_hambre.webp'], ['sed', 'aviso', False, '#e2aa4c', 44, '', 'g_sed.webp'], ['frio', 'bien', True, '#d39a55', 44, '', 'g_calor.webp'], ['cansancio', 'mal', False, '#d9583a', 58, 'Cansancio', 'g_cansancio.webp']]
+  OK   PC: los medallones no tapan ningún botón y caben en la pantalla, con su nombre — [[1042, 14, 1086, 58], [1096, 14, 1140, 58], [1150, 14, 1194, 58], [1204, 14, 1262, 72], [1187, 73, 1262, 95]]
+  OK   PC: al pulsar la sed, su ficha en dos líneas: qué te pasa y cómo se quita (beber en el río) — SedAl máximo te cansarás el doble.Bebe: en la orilla de un río o de un lago.
+  OK   PC: la ficha cabe en la pantalla y no pisa los medallones ni su nombre — [926, 102, 1266, 223.59375]
+  OK   PC: el frío escarcha los bordes de la pantalla (sin frío, nada; helado, del todo) — helado 0.996089, sin frío 0.000952695
+  OK   PC: se cierra al pulsar fuera
+  OK   PC: con las cuatro en aviso, ninguno medio transparente
+  OK   PC: la ficha del cansancio lleva el botón para sentarse — Sentarte a descansarZ
+  OK   PC: el botón cabe dentro de la ficha y la ficha en la pantalla — [950, 209.59375, 1242, 246.59375] en [926, 102, 1266, 266.59375]
+  OK   PC: al pulsarlo se sienta, con su animación (en el suelo), y el botón pasa a «Levantarte» — {"s": true, "modo": "sentado", "boton": "LevantarteZ"}
+  OK   PC: al moverse se levanta
+  OK   PC: con Z se sienta otra vez, y con Z se levanta
+  OK   PC: (levantado)
+  OK   PC: rendido no corre (a paso de andar); descansado, sí — rendido 3.60, descansado 6.00, andando 3.60 m/s
+  OK   PC: helado, anda más despacio — 2.88 contra 3.60 m/s
+  OK   PC: en la salida no hay agua al lado
+  OK   PC: hay una orilla cerca de la salida — {'x': 319.5997502295783, 'z': 416.5105036528985}
+  OK   PC: junto al agua, con sed, «Usar» bebe: la sed baja — 40
+  OK   PC: sin errores en la página
+  OK   móvil: sin necesidades, ningún medallón
+  OK   móvil: con sed 50, hambre 30 y cansancio 80, en aviso la sed y el cansancio (desde 40) — ['sed', 'cansancio']
+  OK   móvil: los cuatro medallones: los que van bien, medio transparentes; la sed en ámbar; el cansancio, rojo, más grande y con su nombre — [['hambre', 'bien', True, '#7fb383', 40, '', 'g_hambre.webp'], ['sed', 'aviso', False, '#e2aa4c', 40, '', 'g_sed.webp'], ['frio', 'bien', True, '#d39a55', 40, '', 'g_calor.webp'], ['cansancio', 'mal', False, '#d9583a', 52, 'Cansancio', 'g_cansancio.webp']]
+  OK   móvil: los medallones no tapan ningún botón y caben en la pantalla, con su nombre — [[185, 16, 225, 56], [232, 16, 272, 56], [279, 16, 319, 56], [326, 16, 378, 68], [303, 69, 378, 91]]
+  OK   móvil: al pulsar la sed, su ficha en dos líneas: qué te pasa y cómo se quita (beber en el río) — SedAl máximo te cansarás el doble.Bebe: en la orilla de un río o de un lago.
+  OK   móvil: la ficha cabe en la pantalla y no pisa los medallones ni su nombre — [10, 98, 380, 219.59375]
+  OK   móvil: el frío escarcha los bordes de la pantalla (sin frío, nada; helado, del todo) — helado 0.999581, sin frío 0.000421232
+  OK   móvil: se cierra al pulsar fuera
+  OK   móvil: con las cuatro en aviso, ninguno medio transparente
+  OK   móvil: la ficha del cansancio lleva el botón para sentarse — Sentarte a descansar
+  OK   móvil: el botón cabe dentro de la ficha y la ficha en la pantalla — [34, 205.59375, 356, 242.59375] en [10, 98, 380, 262.59375]
+  OK   móvil: al pulsarlo se sienta, con su animación (en el suelo), y el botón pasa a «Levantarte» — {"s": true, "modo": "sentado", "boton": "Levantarte"}
+  OK   móvil: al moverse se levanta
+  OK   móvil: sin errores en la página
+  OK   en inglés, la ficha sale en inglés — ThirstAt the maximum you will tire twice as fast.Drink: at the bank of a river or a lake.
+
+Todo correcto
