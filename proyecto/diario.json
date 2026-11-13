@@ -6592,5 +6592,19 @@
   "pruebas": "Lógica de la vegetación con el sotobosque, correcta (y falla al romperla a propósito). Revisor en la nube: bien el bosque de lejos visto de cerca y el mazo de piedra; la lógica falla solo en systemd-analyze en la máquina de GitHub, igual que en main. Comprobador de código correcto.",
   "capturas": "capturas/demo-v193",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T07:23:23+00:00",
+  "fin": "2026-11-13T09:00:08+00:00",
+  "titulo": "P11: las semillas silvestres (sigue a medias, sin publicar)",
+  "hito": "granja",
+  "hecho": [
+   "Retomada desde su rama (trabajo/20261113-0529) y unida con main: la v193 es ahora el sotobosque, así que las semillas saldrán como v194.",
+   "Las capturas de las semillas, con la planta a un lado del personaje (antes el cuerpo la tapaba y, en el móvil, quedaba detrás del mando).",
+   "Las vainas de las habas, más gruesas, de verde claro y más por fuera de las hojas: ahora se nota bien al recogerlas.",
+   "No se publica: la segunda mirada dijo que no. Algunas vainas maduras salían casi negras, los tallos de flor de la col y el nabo eran oscuros y finos y sus silicuas, abiertas en X, parecían un fallo. Ya están cambiados en la rama (tallos más gruesos y claros, silicuas pegadas al tallo, vainas maduras pardo oliva), pero sin capturas nuevas: la siguiente sesión pasa «lo que se recoge en el mundo», lo mira de cerca y publica la v194 si sale bien."
+  ],
+  "pruebas": "Revisor en la nube: bien el recorrido, lo que se recoge en el mundo (dos veces), recoger del suelo y de las plantas, las bayas, el inventario, despiezar y asar, el hogar, la cama, los colgaderos, el mazo, los avisos y la demo única. Fallan «lo que llevas se ve puesto», «panel de fabricación» y «los almacenajes de la base», y fallan igual en main (comprobado en la nube); la lógica falla solo en systemd-analyze en la máquina de GitHub, como en main. Comprobador de código correcto.",
+  "estado": "fallo"
  }
 ]
