@@ -1,0 +1,22 @@
+Las uniones
+  OK   en Whitholm hay afluentes que entran en otro río — 11
+  OK   todos llegan al cauce del río al que entran (a menos de 1 m; antes, de media a 77 m) — 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  OK   en cada unión hay agua y el afluente llega a la altura del río — 0 de 11 con escalón o sin agua
+  OK   el afluente nunca sube al llegar a la unión — 0 de 11
+El tamaño
+  OK   el doble de ancho que antes (la mediana, de unos 3,7 m a unos 7) — mediana 7.7 m (antes 4.0)
+  OK   el río mayor de Whitholm, de unos 22 m — 22.1 m
+  OK   más o menos la mitad son arroyos (hasta 8 m) y la otra mitad ríos — 54 % arroyos
+Nacen estrechos
+  OK   donde nace, el río es más estrecho (menos del 60 % de su ancho a 1,2 km) — 38 de 38
+Se vadean los arroyos; los ríos, solo por sus vados
+  OK   los arroyos se vadean (como mucho 0,75 m de agua en el centro) — 229 de 229
+  OK   los ríos, no: en el centro hay que nadar (1,2 m o más, salvo en los vados) — 215 de 243
+El lecho: grava y piedra, no hierba
+  OK   en el centro del cauce el suelo es de grava y piedra (sin el verde de la hierba) — 270 de 270
+  OK   a 6 m de la orilla, el suelo de siempre — 270 de 270
+Cantos de río
+  OK   arroyo: hay cantos en el cauce y la orilla (más de 20 en 64 m de río) y ninguno lejos del agua — 37 cantos, 0 lejos
+  OK   río: hay cantos en el cauce y la orilla (más de 20 en 64 m de río) y ninguno lejos del agua — 122 cantos, 0 lejos
+
+14 bien, 0 mal
