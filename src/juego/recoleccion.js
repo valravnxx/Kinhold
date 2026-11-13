@@ -221,7 +221,7 @@ export function modelosRecoleccion() {
   // (P11, 13 nov) las semillas silvestres. Cada planta se queda (siempre) y se va lo que tiene la semilla, que es lo que
   // se coge: las espigas de la cebada, las vainas de las habas y los tallos en flor (con sus silicuas) de la col y del nabo.
   // Que se distingan bien entre la hierba (valravnx, 7 nov: que lo que se recoge se vea): la cebada, pajiza y alta; las
-  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas gruesas de verde claro que cuelgan por fuera; la col, hojas anchas de verde azulado; el
+  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas largas y curvas de verde claro que cuelgan de los tallos; la col, hojas anchas de verde azulado; el
   // nabo, hojas de verde vivo; las dos, con tallos de flor amarilla.
   const hojaAncha = (largo, ancho) => {   // una hoja ovalada, algo cóncava, que sale del centro hacia fuera (eje +x)
     const s = new THREE.Shape(); s.moveTo(0, 0);
@@ -258,7 +258,7 @@ export function modelosRecoleccion() {
     }
   };
   const CEBADA_TALLO = 0x9c9a5c, CEBADA_TALLO_SECO = 0xb3a46a, CEBADA_ESPIGA = 0xcdb46a, CEBADA_ARISTA = 0xd9c991;
-  const HABA_TALLO = 0x6f8f4c, HABA_HOJA = 0x71876a, HABA_HOJA_OSC = 0x5e7258, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x8fb05a, HABA_VAINA_OSC = 0x857d48;
+  const HABA_TALLO = 0x6f8f4c, HABA_HOJA = 0x71876a, HABA_HOJA_OSC = 0x5e7258, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x9cbd62, HABA_VAINA_OSC = 0x857d48;
   const COL_HOJA = 0x62806a, COL_HOJA_OSC = 0x506c58, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x97a65e;
   // la cebada silvestre: una mata de cañas finas (0,6–0,9 m), pajizas, con hojas estrechas abajo; las espigas, que es lo
   // que se coge, cabizbajas y con sus aristas largas
@@ -286,7 +286,7 @@ export function modelosRecoleccion() {
     }
   }, { doble: true, rangoSuelo: 0.3 });
   // las habas silvestres: una mata erguida (unos 0,6 m) de tallos recios, hojas ovaladas gris verdosas, flores blancas
-  // con su mancha oscura y, lo que se coge, las vainas gruesas que cuelgan, de verde claro y alguna ya madura, pardo oliva
+  // con su mancha oscura y, lo que se coge, las vainas largas y curvas que cuelgan, de verde claro y alguna ya madura, pardo oliva
   const habasTallos = [];
   for (let k = 0; k < 9; k++) { const a = k * 0.7 + 0.3, d = 0.04 + (k % 3) * 0.05, h = 0.55 + (k % 3) * 0.1; habasTallos.push({ a, d, h }); }
   const habasPlanta = geoLote(L => {
@@ -305,20 +305,20 @@ export function modelosRecoleccion() {
   }, { doble: true, rangoSuelo: 0.25 });
   // la vaina: estrecha, algo curva y de puntas afiladas (un torno con el perfil de la vaina), colgando de y = 0 hacia abajo
   const vainaHaba = (() => {
-    const largo = 0.13, perfil = [];
-    for (let i = 0; i <= 8; i++) { const t = i / 8; perfil.push(new THREE.Vector2(Math.max(0.0008, 0.0115 * Math.sin(Math.PI * t) ** 0.55), -t * largo)); }
+    const largo = 0.16, perfil = [];
+    for (let i = 0; i <= 8; i++) { const t = i / 8; perfil.push(new THREE.Vector2(Math.max(0.0008, 0.015 * Math.sin(Math.PI * t) ** 0.55), -t * largo)); }
     const g = new THREE.LatheGeometry(perfil, 6), p = g.attributes.position;
-    for (let i = 0; i < p.count; i++) { const t = -p.getY(i) / largo; p.setX(i, p.getX(i) * 1.25 + t * t * 0.022); }   // algo aplastada y curva hacia fuera
+    for (let i = 0; i < p.count; i++) { const t = -p.getY(i) / largo; p.setX(i, p.getX(i) * 1.25 + t * t * 0.028); }   // algo aplastada y curva hacia fuera
     g.computeVertexNormals(); return g;
   })();
   const habasVainas = geoLote(L => {
     for (const [k, { a, d, h }] of habasTallos.entries()) for (let n = 0; n < 4; n++) {   // cada una de su tallo, con su rabillo, colgando hacia fuera
       const y = h * (0.32 + n * 0.15), b = a + n * 1.6 + 0.8, x0 = Math.cos(a) * d, z0 = Math.sin(a) * d;
       const giro = new THREE.Matrix4().makeRotationY(-b);   // +x local mira hacia fuera, en la dirección b
-      const rab = cil(0.003, 0.003, 0.035, 3);   // el rabillo, del tallo hacia fuera y algo abajo
-      L.add(rab, HABA_TALLO, x0 + Math.cos(b) * 0.016, y - 0.006, z0 + Math.sin(b) * 0.016, giro.clone().multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2 + 0.35)), { sinSuelo: true });
+      const rab = cil(0.0035, 0.0035, 0.064, 3);   // el rabillo, del tallo hacia fuera y algo abajo (largo: que la vaina cuelgue por fuera de las hojas)
+      L.add(rab, HABA_TALLO, x0 + Math.cos(b) * 0.03, y - 0.011, z0 + Math.sin(b) * 0.03, giro.clone().multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2 + 0.35)), { sinSuelo: true });
       const cae = 0.55 + ((k * 3 + n) % 4) * 0.15;   // de 30 a 60° respecto a la vertical, no todas iguales
-      L.add(vainaHaba, (k + n) % 4 === 0 ? HABA_VAINA_OSC : HABA_VAINA, x0 + Math.cos(b) * 0.032, y - 0.012, z0 + Math.sin(b) * 0.032, giro.clone().multiply(new THREE.Matrix4().makeRotationZ(cae)), { sinSuelo: true, tex: 'liso', brillo: 1.05 });
+      L.add(vainaHaba, (k + n) % 4 === 0 ? HABA_VAINA_OSC : HABA_VAINA, x0 + Math.cos(b) * 0.06, y - 0.022, z0 + Math.sin(b) * 0.06, giro.clone().multiply(new THREE.Matrix4().makeRotationZ(cae)), { sinSuelo: true, tex: 'liso', brillo: 1.15 });
     }
   }, { rangoSuelo: 0.25 });
   // la col silvestre: un corro de hojas anchas, carnosas y azuladas, que se queda; lo que se coge, los tallos en flor
