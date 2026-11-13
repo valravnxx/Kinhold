@@ -341,11 +341,11 @@ console.log('Depositar en las estaciones y volver a coger');
 console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y leñera (revisión del 1 nov)');
 {
   const E = ESTACIONES;
-  comprobar('los siete del documento de sistemas y los dos colgaderos (8 nov), sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja y juncos; barro; lo de la espalda; las herramientas; lo pequeño)',
+  comprobar('los siete del documento de sistemas y los dos colgaderos (8 nov), sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja, juncos y gavillas; barro; lo de la espalda; las herramientas; lo pequeño)',
     igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera', 'soporte_varas', 'almiar', 'hoyo_barro', 'colgadero_mochilas', 'colgadero_herramientas', 'cesto'])
     && E.colgadero_mochilas.guarda.includes('lenero') && E.colgadero_mochilas.guarda.every(t => CATALOGO[t].lugar === 'espalda')
     && E.colgadero_herramientas.guarda.includes('hacha_piedra') && E.colgadero_herramientas.guarda.every(t => CATALOGO[t].herramienta)
-    && igual(E.soporte_varas.guarda, ['vara']) && igual(E.almiar.guarda, ['paja', 'junco']) && igual(E.hoyo_barro.guarda, ['barro'])
+    && igual(E.soporte_varas.guarda, ['vara']) && igual(E.almiar.guarda, ['paja', 'junco', 'gavilla']) && igual(E.hoyo_barro.guarda, ['barro'])
     && ['silex', 'fibra', 'cordel', 'yesca'].every(t => E.cesto.guarda.includes(t)) && E.cesto.guarda.every(t => CATALOGO[t] && CATALOGO[t].tam === 'P')
     && E.acopio_troncos.guarda.includes('tronco_delgado') && igual(E.pila_piedras.guarda, ['piedra']) && igual(E.lenera.guarda, ['lena', 'rama']) && !Object.values(RECETAS).some(r => r.uso === 'almacen'));
   comprobar('su coste sale del mundo (varas, piedras, ramas y juncos; y el cordel de fibra de los colgaderos)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama', 'junco', 'cordel'].includes(m))));

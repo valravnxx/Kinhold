@@ -93,7 +93,7 @@ comprobar('el nabo, maduro, da el nabo y 3 semillas', r.ok && tiene('nabo') === 
 // lo que da, en el juego
 comprobar('la col y el nabo se comen, crudos o asados (que sacian más)', NUTRE.col > 0 && NUTRE.nabo > 0 && NUTRE.col_asada > NUTRE.col && NUTRE.nabo_asado > NUTRE.nabo && RECETAS.asar_col && RECETAS.asar_nabo);
 comprobar('y se estropean pronto', VIDA.col > 0 && VIDA.nabo > 0);
-comprobar('las gavillas van al almiar y la col y el nabo al cesto', ESTACIONES.almiar.guarda.includes('gavilla') && ESTACIONES.cesto.guarda.includes('col') && ESTACIONES.cesto.guarda.includes('nabo'));
+comprobar('las gavillas van al almiar y el nabo (lo pequeño) al cesto', ESTACIONES.almiar.guarda.includes('gavilla') && ESTACIONES.cesto.guarda.includes('nabo'));
 
 // rehecho desde el registro y guardado: igual
 comprobar('rehecho desde el registro da el mismo mundo', foto(reproducir(reg.exportar())) === foto(m));

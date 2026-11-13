@@ -123,7 +123,7 @@ export const ESTACIONES = {
   // cuelga (lo depositado) no se estropea mientras está colgado, y la carne puesta a secar (su cola) se ve colgada para
   // todos (cuelga: true). Provisional (diario y registro): 30 s de trabajo para levantarlo.
   secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
-  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'col', 'nabo', 'col_asada', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
