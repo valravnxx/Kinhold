@@ -495,15 +495,16 @@ function bandolera(n, id) {
 
 // La estaca de marcar el campo (P11): una rama recta de 1 m con su corteza, la punta aguzada a golpes de lasca (madera
 // clara) y la cabeza cortada. En el lote L, de pie con la punta en (x, y, z) y hacia abajo, o con giro (Euler) dado.
-export function estacaEn(L, x, y, z, giro = null, id = 'e') {
-  const largo = 1, g = giro ? new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ')) : new THREE.Matrix4();
+// gr: el grosor (1 = la del inventario; en el campo se clavan algo más recias para que se vean entre la hierba). largo: su alto.
+export function estacaEn(L, x, y, z, giro = null, id = 'e', gr = 1, largo = 1) {
+  const g = giro ? new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ')) : new THREE.Matrix4();
   const en = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(g).add(new THREE.Vector3(x, y, z));
   const pon = (geo, color, py, opc) => { const c = en(0, py, 0), m = g.clone(); L.add(geo, color, c.x, c.y, c.z, m, opc); };
-  pon(cil(0.021, 0.019, largo - 0.16, 7), 'corteza', 0.16 + (largo - 0.16) / 2, { tex: 'corteza', sinSuelo: true });
-  pon(new THREE.ConeGeometry(0.019, 0.16, 7).rotateX(Math.PI), 0xa8875a, 0.08, { plano: true, tex: 'veta', sinSuelo: true });   // la punta aguzada
-  pon(new THREE.CircleGeometry(0.021, 7).rotateX(-Math.PI / 2), 'corte', largo + 0.001, { sinSuelo: true });                  // la cabeza cortada
-  const yM = 0.62 + az(id, 5) * 0.2, cM = en(0.03, yM + 0.03, 0);   // un muñón de ramita, de lado y hacia arriba
-  L.add(cil(0.006, 0.009, 0.09, 5), 'corteza', cM.x, cM.y, cM.z, g.clone().multiply(new THREE.Matrix4().makeRotationZ(-0.9)), { tex: 'corteza', sinSuelo: true });
+  pon(cil(0.021 * gr, 0.019 * gr, largo - 0.16, 7), 'corteza', 0.16 + (largo - 0.16) / 2, { tex: 'corteza', sinSuelo: true });
+  pon(new THREE.ConeGeometry(0.019 * gr, 0.16, 7).rotateX(Math.PI), 0xa8875a, 0.08, { plano: true, tex: 'veta', sinSuelo: true });   // la punta aguzada
+  pon(new THREE.CircleGeometry(0.021 * gr, 7).rotateX(-Math.PI / 2), 'corte', largo + 0.001, { sinSuelo: true });                  // la cabeza cortada
+  const yM = (0.62 + az(id, 5) * 0.2) * largo, cM = en(0.03 * gr, yM + 0.03, 0);   // un muñón de ramita, de lado y hacia arriba
+  L.add(cil(0.006 * gr, 0.009 * gr, 0.09, 5), 'corteza', cM.x, cM.y, cM.z, g.clone().multiply(new THREE.Matrix4().makeRotationZ(-0.9)), { tex: 'corteza', sinSuelo: true });
 }
 function estacas(n, id) {
   const L = lote(0.04);
