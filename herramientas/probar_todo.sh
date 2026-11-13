@@ -102,6 +102,7 @@ paso "Marcar el campo con estacas: clavar, cerrar con su superficie, quitar y mo
 paso "Limpiar el campo: arrancar el tocón con la azada o el palo cavador, deja leña y no vuelve a crecer; dentro de un campo no rebrota; lo que queda por limpiar" node pruebas/prueba_limpiar_campo.mjs
 paso "Labrar con la azada: pasadas de 1,2 m dentro del linde y donde está limpio, 1 bit por m², la hora del servidor y el barbecho" node pruebas/prueba_labrar.mjs
 paso "Sembrar y crecer: la cebada a voleo (círculo de 2 m, 1 puñado cada 10 m²) y las habas, la col y el nabo a su distancia, sobre lo labrado; fases en una semana con la hora del servidor" node pruebas/prueba_sembrar.mjs
+paso "Cosechar: la cebada madura se siega con la hoz (gavillas al suelo, 4 cada 10 m²) y las habas, la col y el nabo maduros se cogen a mano (4 veces lo sembrado); el servidor" node pruebas/prueba_cosechar.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs
