@@ -246,54 +246,6 @@ function lenera(id) {
   return mallas(L);
 }
 
-// El secadero (P9, 13 nov): cuatro postes de tronco delgado hincados, un travesaño de vara atado arriba en cada
-// costado y dos cuerdas tendidas a lo largo, algo combadas, de las que cuelga la carne.
-const SECADERO = { x: 0.85, z: 0.32, alto: 1.55, cuerda: 1.42, comba: 0.05, sitios: 5 };
-function cuerdaCombada(L, a, b, comba, r = 0.009) {
-  const n = 8;
-  for (let i = 0; i < n; i++) {
-    const p = t => new THREE.Vector3().lerpVectors(a, b, t).add(new THREE.Vector3(0, -comba * 4 * t * (1 - t), 0));
-    const p0 = p(i / n), p1 = p((i + 1) / n), d = new THREE.Vector3().subVectors(p1, p0);
-    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
-    const c = p0.clone().addScaledVector(d, 0.5);
-    L.add(cil(r, r, d.length() * 1.04, 5), 0xb8a27a, c.x, c.y, c.z, new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), { tex: 'paja', sinSuelo: true });
-  }
-}
-function secadero(id) {
-  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 }), { x: X, z: Z, alto, cuerda, comba } = SECADERO;
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {   // los postes, algo torcidos, con su corteza y el corte arriba
-    const x = sx * X + (az(id, sx + sz * 3) - 0.5) * 0.05, z = sz * Z + (az(id, sx * 5 + sz) - 0.5) * 0.04, h = alto + (az(id, sx * 7 + sz) - 0.5) * 0.08;
-    const inc = { x: (az(id, sx + 11 * sz) - 0.5) * 0.06, z: (az(id, 13 * sx + sz) - 0.5) * 0.06 };
-    L.add(cil(0.045, 0.06, h + 0.1, 8), 'corteza', x, (h - 0.1) / 2, z, inc);
-    L.add(new THREE.CircleGeometry(0.045, 8), 'corte', x, h, z, { x: -Math.PI / 2 }, { sinSuelo: true });
-  }
-  for (const sx of [-1, 1]) {   // el travesaño de cada costado y su atadura
-    varaEntre(L, new THREE.Vector3(sx * X, alto - 0.08, -Z - 0.1), new THREE.Vector3(sx * X, alto - 0.06, Z + 0.1), 0.022);
-    for (const sz of [-1, 1]) L.add(new THREE.TorusGeometry(0.05, 0.01, 5, 10), 0xb8a27a, sx * X, alto - 0.07, sz * Z, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
-  }
-  for (const sz of [-1, 1]) cuerdaCombada(L, new THREE.Vector3(-X, cuerda, sz * Z), new THREE.Vector3(X, cuerda, sz * Z), comba);
-  return mallas(L);
-}
-// Lo colgado en el secadero: primero la carne ya seca, luego la que se está secando (cada encargo, dos tiras) y al
-// final lo que se ha dejado colgado sin poner a secar (la carne cruda, roja). Cinco sitios por cuerda; lo que no cabe
-// en las cuerdas no se ve (la cola tiene como mucho 3 encargos y lo depositado, 20 cosas).
-const COLOR_TIRA = { cruda: 0x7a2b27, secando: 0x5e2a1e, seca: 0x40210f };
-function llenoSecadero(dep, id, colgado = []) {
-  const L = new Lote({ rangoSuelo: 0.4, variacion: 0.06 }), { x: X, z: Z, cuerda, comba, sitios } = SECADERO, tiras = [];
-  for (const c of colgado) for (let k = 0; k < 2; k++) tiras.push(c.listo ? 'seca' : 'secando');
-  tiras.sort((a, b) => (a === 'seca' ? 0 : 1) - (b === 'seca' ? 0 : 1));
-  for (let i = 0; i < (dep.carne_cruda || 0); i++) tiras.push('cruda');
-  tiras.slice(0, 2 * sitios).forEach((t, i) => {
-    const sz = i % 2 ? 1 : -1, k = Math.floor(i / 2), u = (k + 0.5) / sitios, x = -X + 2 * X * u + (az(id, i) - 0.5) * 0.05;
-    const y = cuerda - comba * 4 * u * (1 - u), largo = t === 'seca' ? 0.28 : 0.34, ancho = t === 'seca' ? 0.08 : 0.1;
-    const tira = new THREE.BoxGeometry(ancho, largo, 0.018, 1, 3, 1), p = tira.attributes.position;
-    for (let j = 0; j < p.count; j++) { const yy = p.getY(j); p.setX(j, p.getX(j) * (1 - 0.35 * (0.5 - yy / largo))); }   // más estrecha abajo
-    L.add(tira, COLOR_TIRA[t], x, y - 0.02 - largo / 2, sz * Z, { y: (az(id, i + 40) - 0.5) * 0.8, z: (az(id, i + 60) - 0.5) * 0.12 }, { tex: 'liso', sinSuelo: true, brillo: t === 'seca' ? 0.85 : 1.05 });
-    L.add(new THREE.TorusGeometry(0.014, 0.004, 4, 8), 0xb8a27a, x, y - 0.012, sz * Z, { y: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });   // el nudo
-  });
-  return tiras.length ? mallas(L) : new THREE.Group();
-}
-
 // El soporte de varas: dos caballetes de varas cruzadas en aspa, atados en el cruce; las varas se tumban a lo largo de X
 // en la horquilla de arriba, sin tocar el suelo.
 const SOPORTE = { x: 0.6, cruce: 0.62, abre: 0.34 };
@@ -477,7 +429,7 @@ function camaJuncos(id) {
 export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
-  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero };
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -676,7 +628,7 @@ function varaCorrea(L, a, b) {
   const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), c = a.clone().addScaledVector(d, 0.5);
   L.add(new THREE.BoxGeometry(0.02, d.length(), 0.004), CUERO_COLG, c.x, c.y, c.z, m, { tex: 'liso', sinSuelo: true });
 }
-const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero };
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -689,8 +641,8 @@ const DEPOSITO_SITIOS = {
 };
 const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'lena']);
 // El grupo con lo depositado: un montón por tipo, más pequeño encima que al pie.
-export function modeloDeposito(tipo, deposito, id, colgado = []) {
-  if (LLENO[tipo]) { const g = LLENO[tipo](deposito || {}, id, colgado); g.name = 'deposito'; return g; }
+export function modeloDeposito(tipo, deposito, id) {
+  if (LLENO[tipo]) { const g = LLENO[tipo](deposito || {}, id); g.name = 'deposito'; return g; }
   const g = new THREE.Group(), sit = DEPOSITO_SITIOS[tipo] || { encima: [], radio: 0.8, empieza: 0 };
   let arriba = 0, pie = 0;
   for (const [t, n] of Object.entries(deposito || {})) {
@@ -727,7 +679,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -773,7 +725,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
   const vF = new THREE.Vector3();
   function paso() {
     const t = performance.now();
-    if (t - ultimo > 1000) { ultimo = t; let cambia = false; for (const [id, o] of vistas) { const e = fab.estaciones[id]; if (e) { ponerFuego(o, e); if (e.colgado && o.userData.firma !== firmaDe(e)) cambia = true; } } if (cambia) refrescar(); }
+    if (t - ultimo > 1000) { ultimo = t; for (const [id, o] of vistas) { const e = fab.estaciones[id]; if (e) ponerFuego(o, e); } }
     const arden = [];
     for (const o of vistas.values()) {
       const f = o.getObjectByName('fuego');
@@ -802,17 +754,14 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (o.userData.nivel !== nivel) { vestirObra(o, nivel); o.userData.nivel = nivel; }
       ponerFuego(o, e);
       // lo depositado (o, en obra, lo entregado): se rehace solo si ha cambiado
-      const montones = e.obra ? e.obra.entregado : e.deposito, firma = firmaDe(e);
+      const montones = e.obra ? e.obra.entregado : e.deposito, firma = (e.obra ? 'o' : 'd') + JSON.stringify(montones || {});
       if (o.userData.firma !== firma) {
         const viejo = o.getObjectByName('deposito'); if (viejo) o.remove(viejo);
-        o.add(modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id, e.obra ? [] : colgadoAhora(e))); o.userData.firma = firma;
+        o.add(modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id)); o.userData.firma = firma;
       }
     }
   }
-  // lo colgado a secar (el secadero): cada encargo, si ya está listo según la hora de este navegador
-  const colgadoAhora = e => (e.colgado || []).map(c => ({ listo: Date.now() >= c.hasta }));
-  const firmaDe = e => (e.obra ? 'o' + JSON.stringify(e.obra.entregado || {}) : 'd' + JSON.stringify(e.deposito || {}) + colgadoAhora(e).map(c => c.listo ? 1 : 0).join(''));
-  // las que manda el servidor, con lo depositado (sin colas: lo encargado es de cada uno; del secadero, lo colgado)
+  // las que manda el servidor, con lo depositado (sin colas: lo encargado es de cada uno)
   function poner(lista) {
     if (!Array.isArray(lista)) return;
     const nuevas = {};
@@ -822,7 +771,6 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (Number.isFinite(e.giro)) n.giro = e.giro;
       const ob = e.obra && limpiarObra(e.obra, e.tipo); if (ob) n.obra = ob;
       if (Array.isArray(e.ligadas)) n.ligadas = e.ligadas.filter(a => typeof a === 'string');   // las camas: quién la tiene ligada
-      if (Array.isArray(e.colgado)) n.colgado = e.colgado.slice(0, 8).filter(c => c && Number.isFinite(c.queda)).map(c => ({ hasta: Date.now() + Math.max(0, c.queda) * 1000 }));   // el secadero
       // el fuego: con lo que le queda, contado desde que llega (la hora de este navegador)
       if (e.fuego && typeof e.fuego === 'object') n.fuego = { hasta: (e.fuego.encendida || e.fuego.brasas) && Number(e.fuego.queda) > 0 ? Date.now() + Number(e.fuego.queda) * 1000 : 0,
         combustible: Math.max(0, Number(e.fuego.combustible) || 0), cenizas: !!e.fuego.cenizas, ...(e.fuego.brasas ? { brasas: true } : {}) };
