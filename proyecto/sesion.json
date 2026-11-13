@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-13T18:24:50+00:00",
+  "tarea": "Sembrar y crecer: la cebada a voleo (cada pasada esparce un círculo de 2 m sobre lo labrado y gasta 1 puñado cada 10 m²; provisional) y las habas, la col y el nabo planta a planta, a su distancia; crecen por fases que se ven (brote, verde, espiga o cabeza, maduro) en una semana real (valravnx), por tiempo transcurrido en el servidor, y todos lo ven igual. Las plantas se dibujan con la técnica de la hierba densa (instancias por celdas) y de lejos con el color del suelo; fotogramas medidos en el móvil. Cadena: semillas ← las silvestres; tierra labrada ← la azada",
+  "hito": "granja",
+  "rama": "trabajo/20261113-1825"
+ },
  "B": null,
  "chat:trabajo/20261113-1710-aspecto-rocas": {
   "inicio": "2026-11-13T17:08:43+01:00",
