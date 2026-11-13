@@ -1,0 +1,5 @@
+  11.8 m en 3.3 s: 3.63 m/s, 7.1 fps
+  OK   el juego va de verdad a pocos fotogramas — 7.1 fps
+  OK   se anda a la velocidad de siempre (3,6 m/s) con pocos fotogramas — 3.63 m/s
+  OK   sin errores en la página
+TODO BIEN
