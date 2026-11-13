@@ -1,0 +1,34 @@
+{
+ "id": "01a1d4b6-2cc1-77d8-b4a0-7cc165065d39",
+ "type": "image-to-3d",
+ "name": "",
+ "art_style": "",
+ "object_prompt": "",
+ "style_prompt": "",
+ "negative_prompt": "",
+ "texture_prompt": "Handcrafted realistic medieval miniature, museum-quality historical diorama. Historically grounded materials and craftsmanship, subtle handmade imperfections. Muted earthy palette: weathered oak, aged timber, straw, limestone, clay, linen, wool, leather, moss. Visible wood grain, sculpted wear, tactile matte surfaces, restrained detail. Soft natural light. Not cartoonish, not fantasy, not glossy, not plastic, not generic low-poly.",
+ "texture_image_url": "",
+ "text_style_prompt": "",
+ "image_style_url": "",
+ "status": "SUCCEEDED",
+ "created_at": 1794570072616,
+ "progress": 100,
+ "started_at": 1794570072624,
+ "finished_at": 1794570120632,
+ "expires_at": 1794829320632,
+ "task_error": null,
+ "model_url": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/model.glb?Expires=1794829320&Signature=kPJwLC-PYURnMwlBynsKzH3lSg4fUwIcLnWQ30KKzfyOvNTa1g38YbAxCA76u7rwooq~3Ucvbc4ghlrSC8sCvVQ2on404UiGAXyxaJbxnR1rgaREX4aIyZRtVnw50y51P0uQWaogFLYRO~lbRncl0EUEkpIlUJyPU3aPc5mWfMwaZ5nvVRLdbjdaKTPQXMAybiMY896iG7blG7q4-UrJWKX5YBX0H9pMznJg9rQ1VzzucxcU9BdSwTI0V9wyvHftIJDCSKXpRrmcf9rvBa0~hNAqjenB-BIPI8Le-fJC81ZxR4AnYZC2h31OMv99XRFcfK1AqZ9QExHG~7ZeEN7-1g__&Key-Pair-Id=K1VGYTHIYLM9UM",
+ "thumbnail_url": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/preview.png?Expires=1794829320&Signature=geArf3fdSWgTcT8dnmAvoVPzzIy6eclKSP94ZXrwzohJwKieEdd5IElhDe09VBUc5ymy9VYHN7dST~DWqmRGGSO13H8cEhju3vr6NEK99yUDzgjFlftYsdcKuWPylwA2DgyvGFMDQObpaDpyeiTEYUEaUnTt-Cl9D-gaNo3AdZ9icBPU8ds5p-KmVAt-uwcm1QtNzWhMiokozVxZ0EPETRcFfImSq2JRCN2Wx8~a75Cwyn6DaZojdBDfRmAwBOKb8pgimM3lbf7TeeDOQTG2vCA5aNE4RwIIBkpKnTMGbejD1ziwinDlQWqErbB79Ria6nN2OSODytLpukR6eNmEgQ__&Key-Pair-Id=K1VGYTHIYLM9UM",
+ "thumbnail_urls": {
+  "back": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/preview_back.png?Expires=1794829320&Signature=FZcLiBrBYcEYlYyxgoX37lGk8~WkPHdXy-MCXzzsn5C5-XiRPqMF3M94Q5H-N8Y1F9dSgi~Bu-~LP4AHov7-9W7jsAvJsftqbqvn5r0geSUlXTg8L0HZTRV1msDiLZywpljsjdz5QBx~PrIogzmTE9wB-8pUQVRso1o4Hw~q-8BN8tB76e4br4mMvgX6ZZE3xM9KaVnAUrDUodvfd7IGPP5z6fLCME9uwKpL-jURF1Eg2UN2vhc5JU5pR8Fo9f7~K2Jgp6phE-Jb8jd9uzg3Qft7vOwmDnUxR4Tun0VzM40BYwYaI-6c~YuxuS1M0dcAdgJ6cTnhHReHWMEPri91Xg__&Key-Pair-Id=K1VGYTHIYLM9UM",
+  "front": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/preview_front.png?Expires=1794829320&Signature=mVP2R4j~fYCaa4nNvtiDrXSBbIWKA9BXYZ8ktWitB3Ai4FzqWzzGoVXoTCDl0jUCCJcFdU2Ee-xJxSqWvpB6ZK17PsR28HCw1Dlc82MHmKGpzeuV9Vz05DgVpUddiUTPyd~3RlU2HIEF5QWp~FuVc-qTH7wifU79dt1MtJpkO582TePF9~WbjvzXQMxf1g3gDFzNAebNB~Darc1o3~-OL8PCbUqqgHp~LpWaiLADKsYxpotIPmFWYMkalfFAIJHR0npzBnew2RWwUVJgRVzEXhuASzO2dulGazlB-9qbXtXPosDumxuU10bjNc6cj9Dro8ygjD3DtiHGxcTEWdV07A__&Key-Pair-Id=K1VGYTHIYLM9UM",
+  "left": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/preview_left.png?Expires=1794829320&Signature=UmNyT5ef6iwYsIC05zE3BeDI-KCOsuBf5ZdehSLdKc1hbychhE2htzMw-1F2iqhKpCruWvhweRzR-gW6kSeC8gI8RzwXCb2RWw3tKs1uHkmVPKORfI2IbOFc08n-Uqd5ijstfpaHsexmLSZs7NswvgmzOP34bCBgmW~0Hm25f4xLmpdCqxgzo8LO3YwoONPR3ztIoyEjsnmnuHv2nsbr0OX~wCI-rmRKlJGA2MOzMB2nEejFUWeSzXxiK3GcsU-CcdF3ylaAGostiu0N1CkSE-pwbdBLogGJcoGGstEPkJGXRYNORr2r90RBK4T83IhHpps4Rw7UDddYJKjQkNtiag__&Key-Pair-Id=K1VGYTHIYLM9UM",
+  "right": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/preview_right.png?Expires=1794829320&Signature=npksnvSYXZeWj9yWFox8-hXAI--vB61rp01JrMgqGwnVZYGwd8guL26yrbPx29vJvN6Xw7JDHOL9-2DeXZOO5nsb4su7-kuXaIgb8ZUyVpuie-pU3tAOzuKjpc4w1rTiW7jzj0C4vb2PHDYQlBS42Xu2So577HM-JMOlghkQahD1LoB7AlzSxniEF9onnlcBuFZnlOlCLL-fEDDfvA96sxSpuupoNBMU7WKSKPIgqW7xgAeLL0iTVTd0ZNQNJYVLSEVzyCy57rUMBgE6YDGdacIdm00qZqk18Fvt01YyZgE6M51Z0KXMM-JiyhfTUPvwi3MQHRqgjErFnV0NdIkJNA__&Key-Pair-Id=K1VGYTHIYLM9UM"
+ },
+ "texture_urls": [
+  {
+   "base_color": "https://assets.meshy.ai/34b5976e-2b3b-4192-9b8b-0108ef9c81d3/tasks/01a1d4b6-2cc1-77d8-b4a0-7cc165065d39/output/texture_0.png?Expires=1794829320&Signature=GmlomWsTti~8a3vXCEMOD2~AJmfe2l7Hz14Xac3ag4q1VFRwRFSMzD6ItxnYritVvnoO1Gmkce7ymOlM4wrOtBbIt2a8Ta92b8YgbmCBvVEerftIwgmLaLbgYxIRyrtDlYHOhsKg5cxW1EUyCX4aEti8R5IumLwW4T84TxwGVZ7Q1sZOVnkXfrXOHWJThRmZiVdfhqezdlGdIG43LO~4SDTl3jX8wzk52Lz1YQKOL~oXGvEV2e9XE4jRavOxV5hLdrRsGMkyce6P~vYNNT5D6O2ia3yt8l3OCxc8Y~kHUF3VLfAkf2Cs6Ju8i-NhTWzD6iSTY3f7nNOaB8sF1ITLBw__&Key-Pair-Id=K1VGYTHIYLM9UM"
+  }
+ ],
+ "consumed_credits": 30
+}

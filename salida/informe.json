@@ -1,0 +1,29 @@
+[
+ {
+  "nombre": "junco_recoger",
+  "alto": 1.3,
+  "imagen_id": "01a1d4af-e55e-71ab-9cf8-04071421e9c9",
+  "modelo_id": "01a1d4b0-482c-773b-adc4-bb6139c89efb",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "junco_cortado",
+  "alto": 0.3,
+  "imagen_id": "01a1d4b3-5ae5-7029-8ca6-ade5b4362b1e",
+  "modelo_id": "01a1d4b3-bd77-72eb-97e9-94b140f48d59",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "junco_adorno",
+  "alto": 0.8,
+  "imagen_id": "01a1d4b5-ca81-76eb-84f9-f78fc55aeccb",
+  "modelo_id": "01a1d4b6-2cc1-77d8-b4a0-7cc165065d39",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
