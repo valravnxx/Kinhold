@@ -257,8 +257,8 @@ export function modelosRecoleccion() {
     }
   };
   const CEBADA_TALLO = 0x9c9a5c, CEBADA_TALLO_SECO = 0xb3a46a, CEBADA_ESPIGA = 0xcdb46a, CEBADA_ARISTA = 0xd9c991;
-  const HABA_TALLO = 0x4f6a3a, HABA_HOJA = 0x6e8566, HABA_HOJA_OSC = 0x5a7152, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x4a5a30, HABA_VAINA_OSC = 0x33331f;
-  const COL_HOJA = 0x7e9a8e, COL_HOJA_OSC = 0x67837a, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x7d8a46;
+  const HABA_TALLO = 0x4f6a3a, HABA_HOJA = 0x6f8a5c, HABA_HOJA_OSC = 0x5b7549, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x4a5a30, HABA_VAINA_OSC = 0x33331f;
+  const COL_HOJA = 0x5f7d6c, COL_HOJA_OSC = 0x4d6a5c, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x7d8a46;
   // la cebada silvestre: una mata de cañas finas (0,6–0,9 m), pajizas, con hojas estrechas abajo; las espigas, que es lo
   // que se coge, cabizbajas y con sus aristas largas
   const cebadaCanas = [];
@@ -287,14 +287,14 @@ export function modelosRecoleccion() {
   // las habas silvestres: una mata erguida (unos 0,6 m) de tallos recios, hojas ovaladas gris verdosas, flores blancas
   // con su mancha oscura y, lo que se coge, las vainas gruesas que cuelgan, verde oscuro y alguna ya negra
   const habasTallos = [];
-  for (let k = 0; k < 6; k++) { const a = k * 1.05 + 0.3, d = 0.04 + (k % 3) * 0.04, h = 0.5 + (k % 3) * 0.08; habasTallos.push({ a, d, h }); }
+  for (let k = 0; k < 9; k++) { const a = k * 0.7 + 0.3, d = 0.04 + (k % 3) * 0.05, h = 0.55 + (k % 3) * 0.1; habasTallos.push({ a, d, h }); }
   const habasPlanta = geoLote(L => {
     for (const { a, d, h } of habasTallos) {
       const x = Math.cos(a) * d, z = Math.sin(a) * d;
-      L.add(cil(0.006, 0.009, h, 4), HABA_TALLO, x, h / 2, z);
-      for (let n = 0; n < 5; n++) {
-        const y = h * (0.2 + n * 0.17), b = a + n * 1.9;
-        for (const lado of [0, Math.PI]) L.add(hojaAncha(0.075 - n * 0.006, 0.03), n % 2 ? HABA_HOJA : HABA_HOJA_OSC, x, y, z, new THREE.Matrix4().makeRotationY(b + lado).multiply(new THREE.Matrix4().makeRotationZ(0.35)), { sinSuelo: true });
+      L.add(cil(0.008, 0.012, h, 4), HABA_TALLO, x, h / 2, z);
+      for (let n = 0; n < 6; n++) {
+        const y = h * (0.12 + n * 0.15), b = a + n * 1.9;
+        for (const lado of [0, Math.PI]) L.add(hojaAncha(0.12 - n * 0.008, 0.05), n % 2 ? HABA_HOJA : HABA_HOJA_OSC, x, y, z, new THREE.Matrix4().makeRotationY(b + lado).multiply(new THREE.Matrix4().makeRotationZ(0.35)), { sinSuelo: true });
         if (n >= 2 && n % 2 === 0) { // las flores, junto a la hoja
           L.add(new THREE.IcosahedronGeometry(0.012, 0), HABA_FLOR, x + Math.cos(b) * 0.025, y + 0.012, z - Math.sin(b) * 0.025, null, { escala: new THREE.Vector3(1.3, 0.8, 1), sinSuelo: true, tex: 'liso', brillo: 1.15 });
           L.add(new THREE.IcosahedronGeometry(0.005, 0), HABA_MANCHA, x + Math.cos(b) * 0.036, y + 0.014, z - Math.sin(b) * 0.036, null, { sinSuelo: true, tex: 'liso' });
@@ -305,16 +305,16 @@ export function modelosRecoleccion() {
   const habasVainas = geoLote(L => {
     for (const [k, { a, d, h }] of habasTallos.entries()) for (let n = 0; n < 3; n++) {
       const y = h * (0.3 + n * 0.17), b = a + n * 2.2 + 0.8, x = Math.cos(a) * d + Math.cos(b) * 0.03, z = Math.sin(a) * d + Math.sin(b) * 0.03;
-      const v = new THREE.CapsuleGeometry(0.011, 0.07, 2, 6); v.translate(0, -0.045, 0);
+      const v = new THREE.CapsuleGeometry(0.014, 0.09, 2, 6); v.translate(0, -0.045, 0);
       L.add(v, (k + n) % 4 === 0 ? HABA_VAINA_OSC : HABA_VAINA, x, y, z, { y: -b, z: 0.35 }, { escala: new THREE.Vector3(1.25, 1, 0.9), sinSuelo: true, tex: 'liso', brillo: 1.05 });
     }
   }, { rangoSuelo: 0.25 });
   // la col silvestre: un corro de hojas anchas, carnosas y azuladas, que se queda; lo que se coge, los tallos en flor
   // (0,7–0,9 m) con sus silicuas llenas de semilla
-  const colPlanta = geoLote(L => { roseta(L, 9, 0.24, 0.1, COL_HOJA, COL_HOJA_OSC, 0.45, 0.4); roseta(L, 5, 0.13, 0.07, COL_HOJA_OSC, COL_HOJA, 0.9, 1.3); }, { doble: true, rangoSuelo: 0.15 });
+  const colPlanta = geoLote(L => { roseta(L, 9, 0.3, 0.12, COL_HOJA, COL_HOJA_OSC, 0.5, 0.4); roseta(L, 6, 0.18, 0.09, COL_HOJA_OSC, COL_HOJA, 0.95, 1.3); }, { doble: true, rangoSuelo: 0.15 });
   const colFlor = geoLote(L => flores(L, 4, 0.8, FLOR_AMARILLA_PALIDA, COL_HOJA_OSC, SILICUA, 0.2), { rangoSuelo: 0.3 });
   // el nabo silvestre: hojas de verde vivo en corro bajo; los tallos en flor, más y de amarillo más vivo (0,5–0,7 m)
-  const naboPlanta = geoLote(L => { roseta(L, 11, 0.2, 0.065, NABO_HOJA, NABO_HOJA_OSC, 0.3, 0.9); }, { doble: true, rangoSuelo: 0.15 });
+  const naboPlanta = geoLote(L => { roseta(L, 13, 0.3, 0.085, NABO_HOJA, NABO_HOJA_OSC, 0.55, 0.9); }, { doble: true, rangoSuelo: 0.15 });
   const naboFlor = geoLote(L => flores(L, 6, 0.6, FLOR_AMARILLA, NABO_HOJA_OSC, SILICUA, 1.1), { rangoSuelo: 0.3 });
 
   // peña de caliza del afloramiento (decorado, no se recoge)
