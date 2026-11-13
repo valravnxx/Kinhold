@@ -1,4 +1,10 @@
 {
  "A": null,
- "B": null
+ "B": null,
+ "chat:trabajo/20261113-1600-juncos-tamano": {
+  "inicio": "2026-11-13T15:59:13+01:00",
+  "tarea": "Juncos más grandes: los que se recogen y los de adorno, y más en la marisma (valravnx, 13 nov)",
+  "hito": "aspecto",
+  "rama": "trabajo/20261113-1600-juncos-tamano"
+ }
 }
