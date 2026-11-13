@@ -206,13 +206,17 @@ function deBase64(t, n) {
   } catch (e) { /* roto: sin labrar */ }
   return u8;
 }
-// los bits de lo labrado (en memoria, sin guardar: se rehacen de c.labrado)
+// los bits de lo labrado (en memoria, sin guardar: se rehacen de c.labrado, también si c.labrado cambia por fuera, como
+// cuando al navegador le llega el campo de nuevo del servidor)
+function ponerBits(c, b) {
+  Object.defineProperty(c, '_bits', { value: b, writable: true, enumerable: false, configurable: true });
+  Object.defineProperty(c, '_bitsDe', { value: c.labrado, writable: true, enumerable: false, configurable: true });
+  return b;
+}
 function bits(c) {
-  if (!c._bits) {
-    const r = rejilla(c), n = Math.ceil(r.w * r.h / 8);
-    Object.defineProperty(c, '_bits', { value: c.labrado ? deBase64(c.labrado, n) : new Uint8Array(n), writable: true, enumerable: false, configurable: true });
-  }
-  return c._bits;
+  if (c._bits && c._bitsDe === c.labrado) return c._bits;
+  const r = rejilla(c), n = Math.ceil(r.w * r.h / 8);
+  return ponerBits(c, c.labrado ? deBase64(c.labrado, n) : new Uint8Array(n));
 }
 // ¿Sigue labrado el campo (no ha pasado el plazo desde la última pasada)?
 export const labradoVivo = (c, ahora) => !!(c && c.labradoEn && ahora - c.labradoEn <= PLAZO_BARBECHO);
@@ -244,8 +248,7 @@ export function labrar(m, campo, x, z, t, autor) {
   const e = m.entorno || null;
   if (e && e.estorbo && e.estorbo(x, z, RADIO_LABRAR, c)) return { ok: false, motivo: 'Antes limpia ahí: quedan árboles, tocones, matas o piedras.' };
   const r = rejilla(c);
-  if (!labradoVivo(c, t)) c._bits = new Uint8Array(Math.ceil(r.w * r.h / 8));   // pasado el plazo, vuelve a ser hierba
-  const b = bits(c);
+  const b = labradoVivo(c, t) ? bits(c) : new Uint8Array(Math.ceil(r.w * r.h / 8));   // pasado el plazo, vuelve a ser hierba
   let nuevas = 0;
   const i0 = Math.floor(x - RADIO_LABRAR) - r.x0, i1 = Math.floor(x + RADIO_LABRAR) - r.x0, j0 = Math.floor(z - RADIO_LABRAR) - r.z0, j1 = Math.floor(z + RADIO_LABRAR) - r.z0;
   for (let j = Math.max(0, j0); j <= Math.min(r.h - 1, j1); j++) for (let i = Math.max(0, i0); i <= Math.min(r.w - 1, i1); i++) {
@@ -256,7 +259,7 @@ export function labrar(m, campo, x, z, t, autor) {
   }
   if (!nuevas) return { ok: false, motivo: 'Ahí ya está labrado.' };
   c.labradoEn = t;
-  c.labrado = aBase64(b);
+  c.labrado = aBase64(b); ponerBits(c, b);
   let labradas = 0; for (const v of b) { let q = v; while (q) { labradas += q & 1; q >>= 1; } }
   return { ok: true, campo: c.id, nuevas, labradas };
 }
