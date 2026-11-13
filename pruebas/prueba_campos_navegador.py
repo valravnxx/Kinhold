@@ -246,10 +246,11 @@ try:
         captura(A, f'{SALIDA}/PC_labrado_de_cerca.png')
 
         print('Fuera de su tierra, no')
-        A.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der', cantidad: 1 }})")   # deja la azada: la mano, para la estaca
-        esperar(A, f"!{K}.inventario.lugares['mano:der']", 5000)
-        A.evaluate(f"(() => {{ const l = {K}.inventario.lugares; if (!l['mano:der'] && !l['mano:izq']) {K}.accionInventario({{ tipo: 'coger', objeto: 'estaca', cantidad: 1, a: 'mano:der' }}); }})()")
-        esperar(A, f"{K}.inventario.cuantos('estaca') >= 1", 5000); A.wait_for_timeout(500)
+        # deja la azada (y lo que lleve en las manos) y coge una estaca en la mano derecha
+        A.evaluate(f"(() => {{ for (const m of ['mano:der', 'mano:izq']) if ({K}.inventario.lugares[m]) {K}.accionInventario({{ tipo: 'soltar', de: m, cantidad: {K}.inventario.lugares[m].n }}); }})()")
+        esperar(A, f"!{K}.inventario.lugares['mano:der'] && !{K}.inventario.lugares['mano:izq']", 5000)
+        coger(A, 'estaca', 1, 'mano:der')
+        comprobar('deja la azada y coge una estaca', esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'estaca'", 5000), A.evaluate(f"JSON.stringify({K}.inventario.lugares['mano:der'] || null)")); A.wait_for_timeout(500)
         ir(A, 3, 6); usar(A)
         # (3,6) está en la zona del rey, a ~590 m del campo: su trozo no lleva el campo, así que no hay ninguno cargado aquí;
         # si la estaca se clavara (mal), aparecería un campo nuevo. Se comprueba que la rechaza y que no crea ninguno.

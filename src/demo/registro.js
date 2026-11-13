@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v200 (Limpiar el campo)";
+export const VERSION_DEMO = "Demo única · v201 (Labrar con la azada)";
 export const REGISTRO_DEMO = [
+  "v201: labrar con la azada (P11, la granja básica). Con la azada en la mano, dentro de un campo cerrado y limpio de tu tierra, Usar labra delante de ti (unos 2 s): cada pasada voltea un círculo de 1,2 m, sin pasar del linde, y el aviso dice cuántos m² del campo llevas. Donde quedan árboles, tocones, matas o piedras, antes hay que limpiar; lo labrado no se vuelve a labrar. La tierra labrada se ve parda, con sus surcos a lo largo del campo y sin hierba, y la ven todos; el servidor pone la hora. Labrado el campo, sus estacas ya no se mueven.",
+  "v201, provisional: el círculo de cada pasada (1,2 m de radio, en casillas de 1 m), 2 s por pasada, alcance de 3 m, y el barbecho: si en 14 días no se siembra, la tierra labrada vuelve a ser hierba (y se puede labrar otra vez).",
   "v200: limpiar el campo (P11, la granja básica). Dentro de un campo cerrado, lo que se tala ya no vuelve a crecer: queda el tocón. El tocón se arranca a golpes con la azada o el palo cavador en la mano (Usar; con el palo cavador, el doble de golpes), después de limpiar el árbol caído con el hacha; arrancado, se va para siempre y deja leña a su lado. Al entrar en un campo, y al cerrarlo, se dice lo que queda por limpiar dentro de su linde: árboles, árboles caídos, tocones, matas y piedras sueltas (las matas se desbrozan y las piedras se recogen, como siempre).",
   "v200, provisional: los golpes para arrancar un tocón (6 el joven y 14 el adulto con la azada; el doble con el palo cavador) y la leña que deja (2 el joven, 4 el adulto).",
   "v199: los juncos, más grandes (valravnx, 13 nov): los que se recogen, de unos 1,7 m, y los de adorno, de unos 1,1 m; y más matas de juncos para recoger en la marisma de las desembocaduras, con algo más de barro.",
