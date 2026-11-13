@@ -221,7 +221,7 @@ export function modelosRecoleccion() {
   // (P11, 13 nov) las semillas silvestres. Cada planta se queda (siempre) y se va lo que tiene la semilla, que es lo que
   // se coge: las espigas de la cebada, las vainas de las habas y los tallos en flor (con sus silicuas) de la col y del nabo.
   // Que se distingan bien entre la hierba (valravnx, 7 nov: que lo que se recoge se vea): la cebada, pajiza y alta; las
-  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas oscuras; la col, hojas anchas azuladas; el
+  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas verdes que cuelgan por fuera; la col, hojas anchas de verde azulado; el
   // nabo, hojas de verde vivo; las dos, con tallos de flor amarilla.
   const hojaAncha = (largo, ancho) => {   // una hoja ovalada, algo cóncava, que sale del centro hacia fuera (eje +x)
     const s = new THREE.Shape(); s.moveTo(0, 0);
