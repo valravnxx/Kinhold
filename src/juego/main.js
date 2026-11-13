@@ -1990,7 +1990,11 @@ function clavarEstaca() {
   const r = accion({ tipo: 'estaca', x: redondoMm(pj.x), z: redondoMm(pj.z) });
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); reconstruir(); actualizarUI();
-  mostrarAviso(r.cerrado ? tr('Campo cerrado: {a} m².', { a: r.area }) : r.nuevo ? tr('Primera estaca del campo: ve clavando las demás por el linde (de 3 a 16).') : tr('Estaca clavada ({n}).', { n: r.estacas }));
+  // al cerrarlo, dice también lo que queda por limpiar (y no lo vuelve a decir al pisarlo)
+  const cerrado = r.cerrado ? mundo.campos.find(c => c.id === r.campo) : null;
+  if (cerrado && campoEn(mundo, pj.x, pj.z) === cerrado) campoPisado = cerrado.id;
+  const resto = cerrado ? restoLimpiar(cerrado) : null;
+  mostrarAviso(r.cerrado ? tr('Campo cerrado: {a} m².', { a: r.area }) + ' ' + (resto ? tr('Queda por limpiar: {q}.', { q: resto }) : tr('Está limpio.')) : r.nuevo ? tr('Primera estaca del campo: ve clavando las demás por el linde (de 3 a 16).') : tr('Estaca clavada ({n}).', { n: r.estacas }));
 }
 function quitarEstaca(ec) {
   const r = accion({ tipo: 'quitar_estaca', campo: ec.campo.id, i: ec.i });
@@ -2396,13 +2400,17 @@ function quedaEnCampo(c) {
   const piedras = (recoleccion.cercanos ? recoleccion.cercanos(cx, cz, R) : []).filter(p => p.tipo === 'piedra');
   return porLimpiar(c, { arboles, caidos, tocones, matas, piedras });
 }
-function textoLimpiar(c) {
+// lo que queda, dicho («1 árbol, 4 matas»), o null si está limpio
+function restoLimpiar(c) {
   const q = quedaEnCampo(c), partes = [];
   const n = (k, uno, varios) => { if (q[k]) partes.push(q[k] === 1 ? tr(uno) : tr(varios, { n: q[k] })); };
   n('arboles', '1 árbol', '{n} árboles'); n('caidos', '1 árbol caído', '{n} árboles caídos'); n('tocones', '1 tocón', '{n} tocones');
   n('matas', '1 mata', '{n} matas'); n('piedras', '1 piedra suelta', '{n} piedras sueltas');
-  if (!partes.length) return tr('Campo de {a} m²: limpio.', { a: c.area });
-  return tr('Campo de {a} m²: queda por limpiar {q}.', { a: c.area, q: partes.join(', ') });
+  return partes.length ? partes.join(', ') : null;
+}
+function textoLimpiar(c) {
+  const q = restoLimpiar(c);
+  return q ? tr('Campo de {a} m²: queda por limpiar {q}.', { a: c.area, q }) : tr('Campo de {a} m²: limpio.', { a: c.area });
 }
 function empezarRotura(o) {
   if (!mazoEnMano(inventario())) { mostrarAviso(tr(QUE_PIDE.romper), true); return; }

@@ -2855,5 +2855,7 @@
  "{n} piedras sueltas": "камней: {n}",
  "Primero hay que talar el árbol.": "Сначала нужно срубить дерево.",
  "Antes limpia el árbol caído con el hacha.": "Сначала очисти упавшее дерево топором.",
- "Ahí no hay ningún tocón.": "Там нет пня."
+ "Ahí no hay ningún tocón.": "Там нет пня.",
+ "Queda por limpiar: {q}.": "Осталось расчистить: {q}.",
+ "Está limpio.": "Оно расчищено."
 }

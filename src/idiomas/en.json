@@ -2855,5 +2855,7 @@
  "{n} piedras sueltas": "{n} loose stones",
  "Primero hay que talar el árbol.": "First the tree has to be felled.",
  "Antes limpia el árbol caído con el hacha.": "First clear the fallen tree with the axe.",
- "Ahí no hay ningún tocón.": "There's no stump there."
+ "Ahí no hay ningún tocón.": "There's no stump there.",
+ "Queda por limpiar: {q}.": "Still to clear: {q}.",
+ "Está limpio.": "It is clear."
 }

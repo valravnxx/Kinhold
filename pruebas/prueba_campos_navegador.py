@@ -158,7 +158,7 @@ try:
         esperar(A, "!!document.querySelector('#panelFabricar .fab-carta[data-fila=\"estaca\"]')", 8000)
         t = elegir(A, 'estaca')
         comprobar('en el panel: la estaca, con 1 rama y para qué sirve', '1' in t and 'Rama' in t and 'Marca el campo' in t, t[:200])
-        comprobar('con su imagen, que carga', esperar(A, "(() => { const i = document.querySelector('#panelFabricar .fab-carta[data-fila=\"estaca\"] img'); return !!i && i.complete && i.naturalWidth > 0 && /iconos-v18\\/estaca/.test(i.src); })()", 8000))
+        comprobar('con su imagen, que carga', esperar(A, "(() => { const i = document.querySelector('#panelFabricar .fab-carta[data-fila=\"estaca\"] img'); return !!i && i.complete && i.naturalWidth > 0 && /\\/estaca\\.webp/.test(i.src); })()", 8000))
         captura(A, f'{SALIDA}/PC_panel_estaca.png')
         A.click('#panelFabricar .fab-ficha .fab-hacer')
         comprobar('terminada, sale «Recoger»', esperar(A, "!!document.querySelector('#panelFabricar .fab-recoger')", 30000))
