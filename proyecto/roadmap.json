@@ -1512,9 +1512,9 @@
     },
     {
      "nombre": "Sotobosque: helechos, matas y cantos en grupos al pie de los árboles y en las lindes, troncos caídos, tocones y manchas de flores, según el bioma",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T05:35:32+01:00",
-     "rama": "trabajo/20261113-0535-aspecto-sotobosque"
+     "fin": "2026-11-13T09:07:36+01:00"
     },
     {
      "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
@@ -4275,6 +4275,13 @@
      "archivo": "jugar/demo/v192.html",
      "capturas": "capturas/demo-v192",
      "notas": "El suelo con materiales: hierba, tierra, roca y hojarasca mezcladas según el sitio, con relieve; calvas de tierra irregulares y la hierba densa fuera de la tierra."
+    },
+    {
+     "v": "v193",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v193.html",
+     "capturas": "capturas/demo-v193",
+     "notas": "El sotobosque: corros de helechos, ortigas, hierba alta y cantos al pie de los árboles, manchas de flores, tocones viejos y troncos caídos (de código, hasta hacerlos con Meshy)."
     }
    ]
   },
