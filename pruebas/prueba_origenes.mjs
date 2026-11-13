@@ -54,9 +54,6 @@ const PENDIENTES = {
   est_carbonera: ['aún no hay carbonera', 'La carbonera y el carbón'],
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
-  gavilla: ['sale de segar la cebada', 'Cosechar: la cebada se siega'],
-  col: ['sale del huerto', 'Cosechar: la cebada se siega'],
-  nabo: ['sale del huerto', 'Cosechar: la cebada se siega'],
   est_era: ['aún no hay era', 'La era y trillar'],
   grano: ['sale de trillar', 'La era y trillar'],
   paja: ['sale de trillar', 'La era y trillar'],
@@ -108,6 +105,12 @@ for (let nuevo = true; nuevo;) {
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
   if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;
+  // la granja (P11): el campo se marca con estacas y se labra con la azada; se siembra lo silvestre y, maduro, la cebada
+  // se siega con la hoz (gavillas) y la col y el nabo se cogen a mano
+  const campo = hay.has('estaca') && tieneAlguna(['azada']);
+  if (campo && hay.has('semilla_cebada') && tieneAlguna(['hoz_silex']) && poner('gavilla', 'segar la cebada sembrada')) nuevo = true;
+  if (campo && hay.has('semilla_col') && poner('col', 'coger la col sembrada')) nuevo = true;
+  if (campo && hay.has('semilla_nabo') && poner('nabo', 'coger el nabo sembrado')) nuevo = true;
   for (const [t, d] of Object.entries(TROCEO)) if (hay.has(t) && tieneAlguna(Object.keys(HACHAS)) && poner(d.da, `${d.accion} un ${t}`)) nuevo = true;
   for (const [e, d] of Object.entries(ESTACIONES)) if (estacionHecha(e) && poner('est_' + e, 'se levanta')) nuevo = true;
   for (const [k, r] of Object.entries(RECETAS)) {

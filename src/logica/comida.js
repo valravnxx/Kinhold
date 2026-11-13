@@ -15,7 +15,8 @@
 // Decisiones provisionales (registro de la demo y diario, 9 nov; el documento no da cifras): la carne cruda dura un día
 // de juego (3 horas reales: el hambre llega al máximo en hora y media, medio día); desaparece entera (no hay carne
 // podrida que sirva de algo); lo asado no se estropea en este tramo (la carne seca y el ahumado, con sus estaciones).
-export const VIDA = { carne_cruda: 3 * 3600 * 1000 };   // ms
+// (P11, cosechar, 13 nov) la col y el nabo, crudos o asados, «no duran mucho»: un día real (provisional)
+export const VIDA = { carne_cruda: 3 * 3600 * 1000, col: 24 * 3600 * 1000, nabo: 24 * 3600 * 1000, col_asada: 24 * 3600 * 1000, nabo_asado: 24 * 3600 * 1000 };   // ms
 export const seEstropea = tipo => Object.hasOwn(VIDA, tipo);
 
 // Repasa una lista de cosas (y lo que llevan dentro): a lo que se estropea y no tiene hora se la pone; lo pasado se

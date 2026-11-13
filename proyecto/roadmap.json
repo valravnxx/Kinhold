@@ -2277,13 +2277,17 @@
     },
     {
      "nombre": "Sembrar y crecer: la cebada a voleo (cada pasada esparce un círculo de 2 m sobre lo labrado y gasta 1 puñado cada 10 m²; provisional) y las habas, la col y el nabo planta a planta, a su distancia; crecen por fases que se ven (brote, verde, espiga o cabeza, maduro) en una semana real (valravnx), por tiempo transcurrido en el servidor, y todos lo ven igual. Las plantas se dibujan con la técnica de la hierba densa (instancias por celdas) y de lejos con el color del suelo; fotogramas medidos en el móvil. Cadena: semillas ← las silvestres; tierra labrada ← la azada",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T18:24:50+00:00",
-     "rama": "trabajo/20261113-1825"
+     "rama": "trabajo/20261113-1825",
+     "fin": "2026-11-13T20:12:49+00:00"
     },
     {
      "nombre": "Cosechar: la cebada se siega con la hoz de sílex a pasadas (deja gavillas en el suelo); las habas, la col y el nabo se cogen a mano; cada planta madura da unas 4 veces lo sembrado (la proporción de la época; provisional); la col y el nabo se comen (crudos o al fuego) y no duran mucho. Las gavillas van al almiar y lo pequeño al cesto (los acopios de plantas). Cadena: hoz ← rama y 3 lascas en el banco de tronco; lasca ← sílex en la piedra de tallar",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-13T20:14:47+00:00",
+     "rama": "trabajo/20261113-2015",
+     "fin": "2026-11-13T21:24:32+00:00"
     },
     {
      "nombre": "La era y trillar: la era (8 piedras y un suelo apisonado, fuera, en tu tierra) como estación; en ella, las gavillas con el mayal dan grano de cebada (que es también su semilla) y paja. La paja deja de estar escondida: el tejado de paja y el almiar lleno se pueden hacer. Cadena: piedra ← se recoge; mayal ← 2 ramas y cuerda en el banco de tronco; gavillas ← la siega",
@@ -4411,6 +4415,20 @@
      "archivo": "jugar/demo/v201.html",
      "capturas": "capturas/demo-v201",
      "notas": "Labrar con la azada (P11): con la azada en la mano, dentro de tu campo limpio, Usar voltea un círculo de tierra delante de ti; la tierra labrada se ve con sus surcos y sin hierba, y la ven todos."
+    },
+    {
+     "v": "v202",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v202.html",
+     "capturas": "capturas/demo-v202",
+     "notas": "Sembrar y crecer (P11): con las semillas en la mano, sobre lo labrado, la cebada se siembra a voleo y las habas, la col y el nabo planta a planta; crecen en una semana por fases que se ven (brote, verde, espiga, vaina o cabeza, maduro), con la hora del servidor, y las ven todos."
+    },
+    {
+     "v": "v203",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v203.html",
+     "capturas": "capturas/demo-v203",
+     "notas": "Cosechar (P11): con la hoz de sílex, la cebada madura se siega a pasadas y deja gavillas en el suelo; las habas, la col y el nabo maduros se cogen a mano; la col y el nabo se comen crudos o asados."
     }
    ]
   },

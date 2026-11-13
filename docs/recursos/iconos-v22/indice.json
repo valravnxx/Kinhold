@@ -124,10 +124,22 @@
   "semilla_nabo": {
    "propio": true
   },
-  "piel": {
+  "gavilla": {
    "propio": true
   },
-  "piel_limpia": {
+  "col": {
+   "propio": true
+  },
+  "nabo": {
+   "propio": true
+  },
+  "col_asada": {
+   "propio": true
+  },
+  "nabo_asado": {
+   "propio": true
+  },
+  "piel": {
    "propio": true
   },
   "tela": {
@@ -326,9 +338,6 @@
    "propio": true
   },
   "est_secadero": {
-   "propio": true
-  },
-  "est_raspador": {
    "propio": true
   }
  }

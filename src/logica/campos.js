@@ -218,8 +218,9 @@ function bits(c) {
   const r = rejilla(c), n = Math.ceil(r.w * r.h / 8);
   return ponerBits(c, c.labrado ? deBase64(c.labrado, n) : new Uint8Array(n));
 }
-// ¿Sigue labrado el campo (no ha pasado el plazo desde la última pasada)?
-export const labradoVivo = (c, ahora) => !!(c && c.labradoEn && ahora - c.labradoEn <= PLAZO_BARBECHO);
+// ¿Sigue labrado el campo (no ha pasado el plazo desde la última pasada, o ya tiene algo sembrado: lo sembrado no vuelve
+// a ser hierba)?
+export const labradoVivo = (c, ahora) => !!(c && c.labradoEn && (ahora - c.labradoEn <= PLAZO_BARBECHO || sembrado(c)));
 // ¿Está labrado (x, z) en el campo c a la hora ahora?
 export function labradoEn(c, x, z, ahora) {
   if (!labradoVivo(c, ahora)) return false;
@@ -264,13 +265,206 @@ export function labrar(m, campo, x, z, t, autor) {
   return { ok: true, campo: c.id, nuevas, labradas };
 }
 
+// ---------- Sembrar y crecer (P11, «Sembrar y crecer», 13 nov) ----------
+// Sobre la tierra labrada (y aún sin sembrar), con las semillas en la mano. La cebada, a voleo: cada pasada esparce un
+// círculo de RADIO_VOLEO m donde apuntas (todas las casillas labradas de 1 m cuyo centro cae dentro) y gasta 1 puñado
+// cada M2_POR_PUNADO m² (al menos 1). Las habas, la col y el nabo, planta a planta, a su distancia de las demás (1
+// semilla cada una). Todo crece por fases (brote, verde, espiga o cabeza, maduro) en una semana real (valravnx, 13 nov),
+// por el tiempo pasado desde que se sembró, con la hora del servidor: así todos ven lo mismo.
+// En el campo: c.voleo = { t: [hora de cada pasada], celdas: base64 (1 byte por casilla: 0 sin sembrar, i+1 la pasada
+// i) } y c.plantas = [{ c: cultivo, x, z, t }]. (Decisiones provisionales: registro y diario.)
+export const CULTIVOS = {
+  cebada: { semilla: 'semilla_cebada', voleo: true, nombre: 'cebada' },
+  habas: { semilla: 'habas', distancia: 0.35, nombre: 'habas' },
+  col: { semilla: 'semilla_col', distancia: 0.6, nombre: 'col' },
+  nabo: { semilla: 'semilla_nabo', distancia: 0.3, nombre: 'nabo' },
+};
+export const CULTIVO_DE_SEMILLA = Object.fromEntries(Object.entries(CULTIVOS).map(([k, v]) => [v.semilla, k]));
+export const RADIO_VOLEO = 2;          // m
+export const M2_POR_PUNADO = 10;       // m² sembrados con cada puñado de cebada
+export const ALCANCE_SEMBRAR = 3;      // m: como mucho, de donde estás a donde siembras
+export const SEGUNDOS_VOLEO = 1.5, SEGUNDOS_PLANTAR = 1;
+export const CRECER = 7 * 24 * 3600 * 1000;   // ms: de sembrar a maduro, una semana real (valravnx)
+export const FASES = ['brote', 'verde', 'espiga', 'maduro'];   // (la col y el nabo: «cabeza» en vez de espiga)
+export const LIMITE_FASES = [0.15, 0.5, 1];                    // fracción de CRECER en la que empieza cada fase siguiente
+const MAX_PASADAS_VOLEO = 255, MAX_PLANTAS = 6000;
+// La fase (0 a 3) de algo sembrado a la hora t, a la hora ahora.
+export function fase(t, ahora) {
+  const f = (ahora - t) / CRECER;
+  return f < LIMITE_FASES[0] ? 0 : f < LIMITE_FASES[1] ? 1 : f < LIMITE_FASES[2] ? 2 : 3;
+}
+export const nombreFase = (cultivo, i) => (i === 2 && cultivo !== 'cebada' && cultivo !== 'habas' ? 'cabeza' : i === 2 && cultivo === 'habas' ? 'vaina' : FASES[i]);
+// La hora a la que cambia de fase algo sembrado a la hora t (después de ahora), o Infinity si ya está maduro.
+export function siguienteCambio(t, ahora) {
+  for (const l of LIMITE_FASES) { const h = t + l * CRECER; if (h > ahora) return h; }
+  return Infinity;
+}
+export const sembrado = (c) => !!(c && ((c.voleo && c.voleo.t && c.voleo.t.length && celdasVoleo(c).some(Boolean)) || (c.plantas && c.plantas.length)));
+// los bytes de lo sembrado a voleo (en memoria, rehechos de c.voleo.celdas si cambia por fuera, como los de lo labrado)
+function celdasVoleo(c) {
+  const v = c.voleo, n = rejilla(c).w * rejilla(c).h;
+  if (c._voleo && c._voleoDe === (v ? v.celdas : null) && c._voleo.length === n) return c._voleo;
+  const u8 = v && v.celdas ? deBase64(v.celdas, n) : new Uint8Array(n);
+  Object.defineProperty(c, '_voleo', { value: u8, writable: true, enumerable: false, configurable: true });
+  Object.defineProperty(c, '_voleoDe', { value: v ? v.celdas : null, writable: true, enumerable: false, configurable: true });
+  return u8;
+}
+// La hora a la que se sembró a voleo la casilla de (x, z), o null.
+export function voleoEn(c, x, z) {
+  if (!c || !c.voleo) return null;
+  const r = rejilla(c), i = Math.floor(x) - r.x0, j = Math.floor(z) - r.z0;
+  if (i < 0 || j < 0 || i >= r.w || j >= r.h) return null;
+  const p = celdasVoleo(c)[j * r.w + i];
+  return p ? c.voleo.t[p - 1] : null;
+}
+// Las casillas sembradas a voleo: [{ x, z, t }] (x, z: su esquina)
+export function casillasVoleo(c) {
+  if (!c || !c.voleo) return [];
+  const r = rejilla(c), u = celdasVoleo(c), out = [];
+  for (let k = 0; k < u.length; k++) if (u[k]) out.push({ x: r.x0 + (k % r.w), z: r.z0 + Math.floor(k / r.w), t: c.voleo.t[u[k] - 1] });
+  return out;
+}
+// La planta más cercana a (x, z) en el campo, a menos de r m: { p, d } o null.
+export function plantaCercana(c, x, z, r) {
+  let mejor = null;
+  for (const p of (c && c.plantas) || []) { const d = Math.hypot(p.x - x, p.z - z); if (d <= r && (!mejor || d < mejor.d)) mejor = { p, d }; }
+  return mejor;
+}
+// ¿Se puede sembrar algo de cultivo en (x, z) del campo c a la hora t? Devuelve null o el motivo (para el aviso del
+// juego, sin mandar nada).
+export function malSembrar(c, cultivo, x, z, t) {
+  const cu = CULTIVOS[cultivo];
+  if (!cu) return 'Eso no se siembra.';
+  if (!c || !c.cerrado) return 'Aquí no hay ningún campo cerrado.';
+  if (!dentroPoligono(c.puntos, x, z)) return 'Fuera del campo: se siembra dentro de su linde.';
+  if (cu.voleo) return null;   // (lo de cada casilla lo mira sembrarVoleo)
+  if (!labradoEn(c, x, z, t)) return 'Primero labra ahí.';
+  if (voleoEn(c, x, z) !== null) return 'Ahí ya está sembrado.';
+  const otra = plantaCercana(c, x, z, 2);
+  if (otra && otra.d < Math.max(cu.distancia, CULTIVOS[otra.p.c] ? CULTIVOS[otra.p.c].distancia : 0)) return 'Demasiado cerca de otra planta.';
+  return null;
+}
+// Sembrar cultivo en (x, z) del campo de id campo, a la hora t. gastar(n): cobra n semillas de lo que lleva el autor
+// ({ ok } o { ok: false, motivo }). Devuelve { ok, campo, cultivo, nuevas | planta } o { ok: false, motivo }.
+export function sembrar(m, campo, cultivo, x, z, t, autor, gastar = () => ({ ok: true })) {
+  if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
+  const c = (m.campos || []).find(k => k.id === campo);
+  if (!m.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  const mal = malSembrar(c, cultivo, x, z, t);
+  if (mal) return { ok: false, motivo: mal };
+  const cu = CULTIVOS[cultivo];
+  if (cu.voleo) {
+    if (!c.voleo) c.voleo = { t: [], celdas: '' };
+    if (c.voleo.t.length >= MAX_PASADAS_VOLEO) return { ok: false, motivo: 'Ya no caben más pasadas en este campo.' };
+    const r = rejilla(c), u = celdasVoleo(c).slice(), nueva = c.voleo.t.length + 1;
+    let nuevas = 0;
+    const i0 = Math.floor(x - RADIO_VOLEO) - r.x0, i1 = Math.floor(x + RADIO_VOLEO) - r.x0, j0 = Math.floor(z - RADIO_VOLEO) - r.z0, j1 = Math.floor(z + RADIO_VOLEO) - r.z0;
+    for (let j = Math.max(0, j0); j <= Math.min(r.h - 1, j1); j++) for (let i = Math.max(0, i0); i <= Math.min(r.w - 1, i1); i++) {
+      const cx = r.x0 + i + 0.5, cz = r.z0 + j + 0.5;
+      if ((cx - x) ** 2 + (cz - z) ** 2 > RADIO_VOLEO * RADIO_VOLEO || u[j * r.w + i]) continue;
+      if (!labradoEn(c, cx, cz, t)) continue;
+      if (!globalThis.__mutarSembrar && (c.plantas || []).some(p => Math.floor(p.x) === r.x0 + i && Math.floor(p.z) === r.z0 + j)) continue;   // (no encima de lo plantado)
+      u[j * r.w + i] = nueva; nuevas++;
+    }
+    if (!nuevas) return { ok: false, motivo: 'Ahí no queda tierra labrada sin sembrar.' };
+    const punados = Math.max(1, Math.round(nuevas / M2_POR_PUNADO));
+    const g = gastar(punados);
+    if (!g.ok) return g;
+    c.voleo = { t: [...c.voleo.t, t], celdas: aBase64(u) };
+    return { ok: true, campo: c.id, cultivo, nuevas, punados };
+  }
+  if (!c.plantas) c.plantas = [];
+  if (c.plantas.length >= MAX_PLANTAS) return { ok: false, motivo: 'Ya no caben más plantas en este campo.' };
+  const g = gastar(1);
+  if (!g.ok) return g;
+  const planta = { c: cultivo, x: r2(x), z: r2(z), t };
+  c.plantas.push(planta);
+  return { ok: true, campo: c.id, cultivo, planta };
+}
+
+// ---------- Cosechar (P11, «Cosechar», 13 nov) ----------
+// La cebada madura se siega con la hoz de sílex a pasadas: cada pasada siega un círculo de RADIO_SEGAR m donde apuntas
+// (las casillas sembradas a voleo y maduras) y deja en el suelo una gavilla cada M2_POR_GAVILLA m² segados (lo que
+// sobra de m² se guarda en el campo para la siguiente pasada). Las habas, la col y el nabo maduros se cogen a mano, uno a
+// uno. Cada planta da unas 4 veces lo sembrado (la proporción de la época; provisional): un puñado de cebada siembra 10 m²
+// y lo segado de 10 m² da 4 gavillas; una haba da 4 habas; una semilla de col da la col y 3 semillas, y la de nabo, el
+// nabo y 3 semillas. Lo segado o cogido deja la tierra labrada (sin sembrar).
+export const RADIO_SEGAR = 1.2, ALCANCE_SEGAR = 3, SEGUNDOS_SEGAR = 2, SEGUNDOS_COGER = 1;
+export const M2_POR_GAVILLA = 2.5;
+export const DA_PLANTA = { habas: { habas: 4 }, col: { col: 1, semilla_col: 3 }, nabo: { nabo: 1, semilla_nabo: 3 } };
+const MADURO = 3;
+// La planta madura más cercana a (x, z), a menos de r m: { p, i, d } o null (con todas: también las verdes, si todas).
+export function plantaMadura(c, x, z, ahora, r = 0.6, todas = false) {
+  let mejor = null;
+  ((c && c.plantas) || []).forEach((p, i) => {
+    const d = Math.hypot(p.x - x, p.z - z);
+    if (d <= r && (todas || fase(p.t, ahora) === MADURO) && (!mejor || d < mejor.d)) mejor = { p, i, d };
+  });
+  return mejor;
+}
+// Cuántas casillas de cebada hay a menos de RADIO_SEGAR de (x, z): { maduras, verdes }
+export function cebadaCerca(c, x, z, ahora) {
+  const r = { maduras: 0, verdes: 0 };
+  if (!c || !c.voleo) return r;
+  const g = rejilla(c), u = celdasVoleo(c);
+  for (let j = Math.max(0, Math.floor(z - RADIO_SEGAR) - g.z0); j <= Math.min(g.h - 1, Math.floor(z + RADIO_SEGAR) - g.z0); j++)
+    for (let i = Math.max(0, Math.floor(x - RADIO_SEGAR) - g.x0); i <= Math.min(g.w - 1, Math.floor(x + RADIO_SEGAR) - g.x0); i++) {
+      const k = j * g.w + i, cx = g.x0 + i + 0.5, cz = g.z0 + j + 0.5;
+      if (!u[k] || (cx - x) ** 2 + (cz - z) ** 2 > RADIO_SEGAR * RADIO_SEGAR) continue;
+      if (globalThis.__mutarCosechar || fase(c.voleo.t[u[k] - 1], ahora) === MADURO) r.maduras++; else r.verdes++;
+    }
+  return r;
+}
+// Segar en (x, z) del campo de id campo, a la hora t. Devuelve { ok, campo, segadas, gavillas } o { ok: false, motivo }.
+export function segar(m, campo, x, z, t, autor) {
+  if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
+  const c = (m.campos || []).find(k => k.id === campo);
+  if (!c || !c.cerrado) return { ok: false, motivo: 'Aquí no hay ningún campo cerrado.' };
+  if (!m.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  const hay = cebadaCerca(c, x, z, t);
+  if (!hay.maduras) return { ok: false, motivo: hay.verdes ? 'La cebada aún no está madura.' : 'Aquí no hay cebada que segar.' };
+  const g = rejilla(c), u = celdasVoleo(c).slice();
+  let segadas = 0;
+  for (let j = Math.max(0, Math.floor(z - RADIO_SEGAR) - g.z0); j <= Math.min(g.h - 1, Math.floor(z + RADIO_SEGAR) - g.z0); j++)
+    for (let i = Math.max(0, Math.floor(x - RADIO_SEGAR) - g.x0); i <= Math.min(g.w - 1, Math.floor(x + RADIO_SEGAR) - g.x0); i++) {
+      const k = j * g.w + i, cx = g.x0 + i + 0.5, cz = g.z0 + j + 0.5;
+      if (!u[k] || (cx - x) ** 2 + (cz - z) ** 2 > RADIO_SEGAR * RADIO_SEGAR) continue;
+      if (!globalThis.__mutarCosechar && fase(c.voleo.t[u[k] - 1], t) !== MADURO) continue;   // (lo verde se queda)
+      u[k] = 0; segadas++;
+    }
+  const total = (num(c.segado) ? c.segado : 0) + segadas, gavillas = Math.floor(total / M2_POR_GAVILLA + 1e-9);
+  c.segado = Math.round((total - gavillas * M2_POR_GAVILLA) * 100) / 100;
+  c.voleo = { t: [...c.voleo.t], celdas: aBase64(u) };
+  if (c.labradoEn < t) c.labradoEn = t;   // (lo segado queda labrado: el barbecho cuenta desde ahora)
+  return { ok: true, campo: c.id, segadas, gavillas };
+}
+// Coger a mano la planta madura más cercana a (x, z) del campo. Devuelve { ok, campo, cultivo, da } o { ok: false, motivo }.
+export function cogerPlanta(m, campo, x, z, t, autor) {
+  if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
+  const c = (m.campos || []).find(k => k.id === campo);
+  if (!c || !c.cerrado) return { ok: false, motivo: 'Aquí no hay ningún campo cerrado.' };
+  if (!m.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  const p = plantaMadura(c, x, z, t);
+  if (!p) return { ok: false, motivo: plantaMadura(c, x, z, t, 0.6, true) ? 'Aún no está madura.' : 'Aquí no hay nada que coger.' };
+  c.plantas = c.plantas.filter((_, i) => i !== p.i);
+  if (c.labradoEn < t) c.labradoEn = t;
+  return { ok: true, campo: c.id, cultivo: p.p.c, da: { ...DA_PLANTA[p.p.c] } };
+}
+
 // Para guardar y leer el mundo (Mundo.exportar / importar).
 export const exportarCampos = (l) => (l || []).map(c => ({ id: c.id, dueno: c.dueno, autor: c.autor, puntos: c.puntos.map(p => ({ ...p })), cerrado: c.cerrado, area: c.area,
-  ...(c.labrado ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}) }));
+  ...(c.labrado ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}),
+  ...(c.voleo && c.voleo.t.length ? { voleo: { t: [...c.voleo.t], celdas: c.voleo.celdas } } : {}),
+  ...(c.plantas && c.plantas.length ? { plantas: c.plantas.map(p => ({ ...p })) } : {}),
+  ...(c.segado ? { segado: c.segado } : {}) }));
 export function importarCampos(l) {
   if (!Array.isArray(l)) return [];
   return l.filter(c => c && Number.isInteger(c.id) && Array.isArray(c.puntos))
     .map(c => ({ id: c.id, dueno: c.dueno, autor: c.autor, puntos: c.puntos.filter(p => p && num(p.x) && num(p.z)).map(p => ({ x: p.x, z: p.z })), cerrado: !!c.cerrado, area: num(c.area) ? c.area : 0,
       // (13 nov) lo labrado: los bits en base64 y la hora de la última pasada
-      ...(typeof c.labrado === 'string' && c.labrado.length < 200000 && num(c.labradoEn) ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}) }));
+      ...(typeof c.labrado === 'string' && c.labrado.length < 200000 && num(c.labradoEn) ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}),
+      // (13 nov) lo sembrado: a voleo (las horas de cada pasada y un byte por casilla) y planta a planta
+      ...(c.voleo && Array.isArray(c.voleo.t) && c.voleo.t.every(num) && typeof c.voleo.celdas === 'string' && c.voleo.celdas.length < 2000000 ? { voleo: { t: [...c.voleo.t], celdas: c.voleo.celdas } } : {}),
+      ...(num(c.segado) && c.segado > 0 && c.segado < 100 ? { segado: c.segado } : {}),
+      ...(Array.isArray(c.plantas) ? { plantas: c.plantas.filter(p => p && CULTIVOS[p.c] && num(p.x) && num(p.z) && num(p.t)).map(p => ({ c: p.c, x: p.x, z: p.z, t: p.t })) } : {}) }));
 }
