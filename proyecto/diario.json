@@ -6745,5 +6745,21 @@
   "pruebas": "Comprobador de código correcto. prueba_limpiar_campo.mjs 26/0 (rota a propósito con MUTAR, falla). En la nube: el recorrido de jugador, los avisos de las necesidades, el mimbre y la corteza, la velocidad con pocos fotogramas, la tala de los árboles y marcar el campo con estacas, bien. En la lógica fallaron prueba_recoleccion (los juncos, del cambio del chat: fallaba igual en main y ya está arreglado allí) y «internet con Caddy» (como en main, por la máquina de GitHub).",
   "capturas": "capturas/demo-v200",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T16:28:12+00:00",
+  "fin": "2026-11-13T18:12:53+00:00",
+  "titulo": "P11: labrar con la azada (demo v201)",
+  "hito": "granja",
+  "hecho": [
+   "Con la azada en la mano, dentro de un campo cerrado de tu tierra, Usar labra delante de ti (unos 2 s): cada pasada voltea un círculo de 1,2 m sin pasar del linde, y el aviso dice cuántos m² del campo llevas.",
+   "Donde quedan árboles, tocones, matas o piedras, antes hay que limpiar (lo mira el servidor); lo labrado no se vuelve a labrar; labrado el campo, sus estacas ya no se mueven.",
+   "El servidor guarda lo labrado (1 bit por m²) y pone la hora; si en 14 días no se siembra, vuelve a ser hierba. Gasta aguante como trabajo pesado.",
+   "La tierra labrada se ve parda, con surcos ondulados a lo largo del campo, sin hierba encima y con un canto que se funde con la hierba; la ven todos.",
+   "Segunda mirada aparte: primero dijo que no (borde escalonado y recortado, demasiado oscura; luego festones redondos), arreglado; después, sí."
+  ],
+  "pruebas": "Comprobador de código correcto. prueba_labrar.mjs 21/0 (rota a propósito con MUTAR, falla). En la nube: el recorrido de jugador, los avisos de las necesidades, la velocidad con pocos fotogramas y marcar el campo con estacas (con su parte nueva de labrar, PC y móvil), bien. En la lógica falla «internet con Caddy», como en main. En la construcción fallan las escaleras (subir andando y el adarve): fallan igual en main (comprobado en la nube con main), no las toca este cambio. No comprobado: fotogramas en un móvil de verdad.",
+  "capturas": "capturas/demo-v201",
+  "estado": "ok"
  }
 ]
