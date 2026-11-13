@@ -1,0 +1,23 @@
+(mapa y comarcas en 2676 ms)
+Los sitios de las zonas del rey
+  OK   los apuntados en SITIOS_REY son los que salen del mapa — [{"x":180500,"z":60500,"por":"veta"},{"x":217558,"z":52730,"por":"ciudad"},{"x":184596,"z":46280,"por":"salida"},{"x":217589,"z":52804,"por":"salida"},{"x":204000,"z":57000,"por":"salida"}]
+  OK   son cuatro zonas distintas: la de la gran veta, la de la ciudad (con la salida de junto a ella), la de la salida común y la de la salida de Motdale — veta (Breiddal), ciudad (Strandvang), salida (Lindholt), salida (Motdale)
+  OK   la de la gran veta está en Breiddal, la de la ciudad en Strandvang y las de las salidas en Lindholt y Motdale
+  OK   las tres salidas en línea (valravnx, 5 nov) caen en zonas del rey: la de la ciudad, en la de la ciudad
+  OK   cada una dice por qué es del rey
+El mojón no se pone en ellas (con las coordenadas de la escena, como el servidor: el 0 en la salida)
+  OK   en la zona de gran veta de hierro no se puede poner el mojón — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+  OK   en la zona de la ciudad no se puede poner el mojón — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+  OK   en la zona de sitio de salida no se puede poner el mojón — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+  OK   en la zona de sitio de salida no se puede poner el mojón — Es zona del rey: no se reclama (aquí cava y recoge cualquiera).
+  OK   en la zona de al lado de la salida sí — 415 m al oeste 
+  OK   y se pone
+  OK   la zona de la salida no es tierra de nadie que pueda construir en ella
+El mapa del rey las pinta
+  OK   una máscara por zona del rey, con su sitio dentro — veta: 2092 muestras, ciudad: 2048 muestras, salida: 1781 muestras, salida: 2100 muestras
+  OK   del tamaño de una zona (entre 0,4 y 2,5 km²) — 1.31, 1.28, 1.11, 1.31
+Cuántas zonas tienen cada cosa (para que las del rey sean las justas)
+  1840 zonas con tierra; 853 en las comarcas de inicio. veta pequeña: 32 · vado: 52 · salida al azar: 248 · salida común: 1 · ciudad: 1 · veta marcada: 1
+  OK   los sitios de la salida al azar caen en muchas zonas (por eso no son del rey: valravnx, 5 nov) — 248 de 853
+
+15 bien, 0 mal
