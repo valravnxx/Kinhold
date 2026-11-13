@@ -1541,6 +1541,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "El modo maqueta al 100 % en Ajustes: desenfoque por distancia, más fuerte y más fino, y el color de juguete",
+     "estado": "en_curso",
+     "inicio": "2026-11-13T11:39:15+01:00",
+     "rama": "trabajo/20261113-1139-maqueta"
     }
    ]
   },
