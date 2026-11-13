@@ -8,6 +8,9 @@
 // MUTAR=2 → dos de los cuatro trozos con otra semilla: tiene que fallar.
 // MUTAR=3 → los jóvenes se miden con el modelo del adulto (como si no tuvieran el suyo): tiene que fallar.
 // MUTAR=4 → el sotobosque se mide contra los árboles movidos 20 m: tiene que fallar.
+// MUTAR=5 → los juncos del agua se miran 3 m más allá (en seco): tiene que fallar.
+//   - riberas y costas (13 nov): los juncos del agua, dentro del agua somera; la marisma, solo en las desembocaduras;
+//     la hierba de duna, solo junto al mar
 //   - el sotobosque (13 nov): siempre igual por trozos, nada en el agua ni sobre la tierra desnuda (tampoco las flores),
 //     los helechos y los cantos al pie de los árboles, y la madera muerta solo en el bosque
 //   - jóvenes y adultos bien distintos (revisión del 1 nov): los jóvenes de 3 a 5 m, más en lindes y claros que dentro
@@ -15,7 +18,7 @@
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, MEZCLA_BOSQUE, bosqueEn } from '../src/logica/paisaje.js';
 import { alturaMundo, SALIDA, SALIDAS } from '../src/logica/whitholm.js';
-import { vegetacionEn, vegetacionTrozo, LADO_VEG, ALTO_JOVEN, CRECE_ADULTO, calvaTierra } from '../src/logica/vegetacion.js';
+import { vegetacionEn, vegetacionTrozo, LADO_VEG, ALTO_JOVEN, CRECE_ADULTO, calvaTierra, marismaEn } from '../src/logica/vegetacion.js';
 import { TAMANO_ESPECIE, TAMANO_JOVEN } from '../src/mundo/especies.js';
 
 const MUTAR = process.env.MUTAR || '';
@@ -134,6 +137,31 @@ comprobar('más jóvenes en lindes y claros que dentro del bosque cerrado', nLin
   comprobar('los helechos y los cantos, al pie de los árboles (a menos de 3,5 m del más cercano, de mediana; los sitios al azar, mucho más lejos)',
     dHelecho.length > 50 && mediana(dHelecho) < 3.5 && mediana(dHelecho) < 0.5 * mediana(dAzar), `mediana ${mediana(dHelecho).toFixed(1)} m frente a ${mediana(dAzar).toFixed(1)} m al azar`);
   comprobar('los tocones viejos y los troncos caídos, solo en el bosque', madera > 0 && maderaMal === 0, `${madera}, ${maderaMal} fuera del bosque`);
+}
+
+// riberas y costas: un río de la demo, una desembocadura con su marisma y su playa (los sitios, junto a la salida de la demo)
+{
+  const sitios = [[216297, 31463], [217470, 30940], [217594, 30867]];
+  let enSeco = 0, juncos = 0, salFuera = 0, sal = 0, duna = 0, dunaFuera = 0, orilla = 0;
+  for (const [x, z] of sitios) {
+    const v = vegetacionEn(pai, alt, sem, cuadro(x, z, 40), { x, z, r: 40 });
+    const tramos = pai.riosEn(x - 40, z - 40, x + 40, z + 40);
+    for (const e of v.sotobosque) {
+      if (e.tipo === 'junco_agua' && !e.sal) {
+        juncos++;
+        const dx = MUTAR === '5' ? 3 : 0, n = pai.agua(e.x + dx, e.z, tramos);
+        if (n === null || n - alt(e.x + dx, e.z) < 0.05) enSeco++;
+      }
+      if (e.sal) { sal++; const c = pai.rioCerca(e.x, e.z, tramos); if (!(c.costa < 700)) salFuera++; }
+      if (e.tipo === 'hierba_duna') { duna++; const st = pai.sitio(e.x, e.z, alt(e.x, e.z)); if (!(st.costa < 90)) dunaFuera++; }
+      if (['hierba_larga', 'ortigas', 'helechos'].includes(e.tipo) && !e.sal) { const c = pai.rioCerca(e.x, e.z, tramos); if (c.dm - c.ancho / 2 < 4) orilla++; }
+    }
+  }
+  comprobar('los juncos del agua, dentro del agua somera', juncos > 10 && enSeco === 0, `${juncos} juncos, ${enSeco} en seco`);
+  comprobar('en la orilla del río, hierba alta, ortigas y helechos (antes los 4 m junto al agua salían vacíos)', orilla > 30, `${orilla}`);
+  comprobar('la marisma, con sus juncos y su hierba salada, solo en la desembocadura', sal > 100 && salFuera === 0, `${sal}, ${salFuera} lejos del mar`);
+  comprobar('la hierba de duna, solo junto al mar', dunaFuera === 0, `${duna}, ${dunaFuera} lejos`);
+  comprobar('lejos del mar no hay marisma', marismaEn(1, 0, { dm: 30, ancho: 8, costa: Infinity }, 0, 0) === 0 && marismaEn(1, 0, { dm: 30, ancho: 8, costa: 200 }, 0, 0) > 0.3);
 }
 
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');

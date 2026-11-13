@@ -96,7 +96,7 @@ paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs
 paso "Los materiales del suelo: hierba, tierra, roca y hojarasca" node pruebas/prueba_suelo_materiales.mjs
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
-paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, y el sotobosque" node pruebas/prueba_vegetacion.mjs
+paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, el sotobosque, las riberas y las costas" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
