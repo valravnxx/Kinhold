@@ -2166,7 +2166,7 @@
       "num": "P8",
       "nombre": "Animales del mundo y el caballo",
       "jugable": "Corzos, ciervos y jabalíes que pastan y huyen, para cazar y despiezar; caballos salvajes que se doman, se montan a pelo, se atan y comen y beben.",
-      "estado": "pendiente",
+      "estado": "congelado",
       "tareas": [
         {
           "nombre": "Prueba del arte de los animales (valravnx, 8 nov: «probar las dos»): un caballo y un corzo de un paquete libre CC0 adaptado al estilo v5 y otros hechos en el taller con Blender, con sus animaciones de andar y correr; capturas de cerca en PC y móvil al lado de la prueba de estilo v5, y valravnx elige el método (valravnx, 10 nov: los animales salen de Meshy, con el esqueleto hecho por él; ver el hito «El arte con Meshy»)",
@@ -2213,15 +2213,15 @@
           "estado": "pendiente"
         }
       ],
-      "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo."
+      "nota": "valravnx, 13 nov: congelado hasta que él diga; los animales necesitan más modelos de Meshy y que él aprenda a hacerles el esqueleto. Mientras, P9."
     },
     {
       "id": "oficios",
       "num": "P9",
       "nombre": "Oficios del asentamiento",
       "jugable": "Secadero, raspador y cubas de curtido (cuero), carbonera, huso y horno de barro; la silla de montar y las alforjas del caballo; el mimbre, la resina y la corteza.",
-      "estado": "pendiente",
-      "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo.",
+      "estado": "en_curso",
+      "nota": "valravnx, 13 nov: se empieza antes que P8 (los animales esperan). Lo que necesita el caballo (la silla y las alforjas) espera a P8.",
       "tareas": [
         {
           "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (secadero, curtido, carbonera, huso, horno de barro, silla y alforjas), con la cadena de cada material hasta el mundo",

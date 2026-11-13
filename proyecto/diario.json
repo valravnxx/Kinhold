@@ -6518,5 +6518,17 @@
   ],
   "pruebas": "Sin pruebas: aprobado por valravnx.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T04:31:12+00:00",
+  "fin": "2026-11-13T04:31:12+00:00",
+  "titulo": "P8 congelado y P9 empieza: los oficios antes que los animales",
+  "hito": "oficios",
+  "hecho": [
+   "valravnx, por el chat: «fauna requiere más Meshy y ahora tengo que aprender a modificar esqueletos para ello, así que comienza el hito P9 oficios».",
+   "El hito P8, Animales del mundo y el caballo, queda congelado hasta que él diga; P9, Oficios del asentamiento, pasa a en curso y su primera tarea es planificarlo. La silla y las alforjas del caballo esperan a P8."
+  ],
+  "pruebas": "Sin pruebas: cambio del plan.",
+  "estado": "ok"
  }
 ]

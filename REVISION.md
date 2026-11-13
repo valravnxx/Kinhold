@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026 — por el chat, sobre P8 y P9
+
+«fauna requiere mas meshy y ahora tengo que aprender a modificar esqueletos para ello, asi que comienza el hito p9 oficios» → P8 (Animales del mundo y el caballo) `congelado` hasta que valravnx diga; P9 (Oficios del asentamiento) `en_curso`, empezando por planificarlo. La silla y las alforjas del caballo esperan a P8.
+
 ### 13 nov 2026 — por el chat, sobre P6 (Orden)
 
 "aprueba orden" → hito P6 `hecho`.
