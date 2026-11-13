@@ -75,6 +75,7 @@ export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
 export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que se gasta
 export const COLA_ESTACION = 3;             // encargos sin terminar por estación
 export const COLA_MANOS = 1;
+export const COLA_SECADERO = 10;            // lo que se seca a la vez en un secadero (sus dos cuerdas; provisional)
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
 export const SECAR_CARNE = 6 * 3600;           // s que tarda la carne en secarse en el secadero (provisional)
 export const MAX_RATO_ESTACION = 5;         // s de trabajo como mucho en una sola acción (como en las obras)
@@ -175,10 +176,11 @@ export const RECETAS = {
   // asar la carne (9 nov; src/logica/comida.js): sacia más que cruda y no se estropea. Tiempo, provisional
   asar_carne:        r('Carne asada', 'fuego', 'carne_asada', { carne_cruda: 1 }, 45),
   // en el secadero (P9, 13 nov; documento de sistemas: «carne seca — 2 carne + (sal opcional) — secadero — dura
-  // mucho»): 2 carnes crudas colgadas dan 1 carne seca al cabo de SECAR_CARNE; lo que tarda se cuenta por tiempo
+  // mucho»): cada carne cruda colgada da 1 carne seca al cabo de SECAR_CARNE (valravnx, 13 nov: «1 cruda, 1 seca, no
+  // seamos tan duros, que cazar cuesta»); lo que tarda se cuenta por tiempo
   // transcurrido (la cola de la estación guarda cuándo termina), así que el servidor no tiene que simular nada. Sin sal
   // (aún no hay). Provisional (diario y registro): 6 h reales, dos días de juego.
-  secar_carne:       r('Carne seca', 'secar', 'carne_seca', { carne_cruda: 2 }, SECAR_CARNE),
+  secar_carne:       r('Carne seca', 'secar', 'carne_seca', { carne_cruda: 1 }, SECAR_CARNE),
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -667,7 +669,7 @@ export class Fabricacion {
         if (!e) return { ok: false, motivo: `Hace falta ${conQue(rc.uso)} a tu lado.` };
       }
       if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: estadoFuego(e.fuego, ahora).brasas ? 'Está en brasas: avívalo para que vuelva la llama.' : 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
-      cola = e.cola; max = COLA_ESTACION; enEst = e;
+      cola = e.cola; max = ESTACIONES[e.tipo].cuelga ? COLA_SECADERO : COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);
     if (sinTerminar.length >= max) return { ok: false, motivo: rc.uso === 'manos' ? 'Ya estás haciendo otra cosa.' : 'La cola de la estación está llena.' };
@@ -682,8 +684,8 @@ export class Fabricacion {
       if (Object.keys(f).length) return { ok: false, motivo: textoFaltan(f), faltan: f };
       usado = gastarTodo(rc.gasta, inv, cerca, suelo);
     }
-    // empieza cuando acaba lo anterior de la cola (o ya)
-    const empieza = Math.max(ahora, ...cola.map(c => c.fin));
+    // empieza cuando acaba lo anterior de la cola (o ya); en el secadero, todo lo colgado se seca a la vez
+    const empieza = enEst && ESTACIONES[enEst.tipo].cuelga ? ahora : Math.max(ahora, ...cola.map(c => c.fin));
     const encargo = { autor, receta, empieza, fin: empieza + rc.s * 1000 };
     cola.push(encargo);
     const est = Object.values(this.estaciones).find(x => x.cola === cola);

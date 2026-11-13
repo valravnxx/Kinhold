@@ -274,13 +274,13 @@ function secadero(id) {
   for (const sz of [-1, 1]) cuerdaCombada(L, new THREE.Vector3(-X, cuerda, sz * Z), new THREE.Vector3(X, cuerda, sz * Z), comba);
   return mallas(L);
 }
-// Lo colgado en el secadero: primero la carne ya seca, luego la que se está secando (cada encargo, dos tiras) y al
+// Lo colgado en el secadero: primero la carne ya seca, luego la que se está secando (cada encargo, una tira) y al
 // final lo que se ha dejado colgado sin poner a secar (la carne cruda, roja). Cinco sitios por cuerda; lo que no cabe
-// en las cuerdas no se ve (la cola tiene como mucho 3 encargos y lo depositado, 20 cosas).
+// en las cuerdas no se ve (se secan como mucho 10 a la vez y lo depositado son hasta 20 cosas).
 const COLOR_TIRA = { cruda: 0x7a2b27, secando: 0x5e2a1e, seca: 0x40210f };
 function llenoSecadero(dep, id, colgado = []) {
   const L = new Lote({ rangoSuelo: 0.4, variacion: 0.06 }), { x: X, z: Z, cuerda, comba, sitios } = SECADERO, tiras = [];
-  for (const c of colgado) for (let k = 0; k < 2; k++) tiras.push(c.listo ? 'seca' : 'secando');
+  for (const c of colgado) tiras.push(c.listo ? 'seca' : 'secando');
   tiras.sort((a, b) => (a === 'seca' ? 0 : 1) - (b === 'seca' ? 0 : 1));
   for (let i = 0; i < (dep.carne_cruda || 0); i++) tiras.push('cruda');
   tiras.slice(0, 2 * sitios).forEach((t, i) => {

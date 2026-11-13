@@ -322,7 +322,7 @@ try:
         captura(A, f'{SALIDA}/PC_secadero_cerca.png')
         A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 0.4, z: e.z + 1.2 }}); }})()""")
         A.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); A.wait_for_timeout(800)
-        comprobar('su pestaña «Secadero», con la carne seca: 2 carnes crudas, 6 h', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && /Carne seca/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
+        comprobar('su pestaña «Secadero», con la carne seca: 1 carne cruda, 6 h', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && /Carne seca/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
         t = elegir(A, 'secar_carne')
         comprobar('la ficha dice lo que tarda (6 h) y para qué sirve', '6 h' in t and 'no se estropea' in t, t[:300])
         captura(A, f'{SALIDA}/PC_panel_secadero.png')

@@ -9,7 +9,7 @@
 //     la que antes se estropea, y pasada su hora desaparece de lo que llevas y del suelo; la asada no se estropea.
 // MUTAR=1: la carne cruda no se estropea nunca: tiene que FALLAR.
 // MUTAR=2: la carne seca se recoge nada más ponerla a secar: tiene que FALLAR.
-//   - (P9) el secadero: 2 carnes crudas colgadas dan 1 carne seca al cabo de horas, que no se estropea.
+//   - (P9) el secadero: cada carne cruda colgada da 1 carne seca al cabo de horas, que no se estropea.
 import { Fabricacion, RECETAS, ESTACIONES, MAX_RATO_ESTACION } from '../src/logica/fabricacion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
@@ -94,7 +94,7 @@ console.log('El secadero y la carne seca (P9)');
 {
   const R = RECETAS.secar_carne, E = ESTACIONES.secadero;
   comprobar('el secadero: 4 troncos delgados y 2 cuerdas, fuera y en tu tierra; seca la carne', igual(E.coste, { tronco_delgado: 4, cuerda: 2 }) && E.donde === 'fuera' && E.tierra && E.uso === 'secar' && E.cuelga, JSON.stringify(E));
-  comprobar('en el secadero, 2 carnes crudas dan 1 carne seca, al cabo de horas', R.uso === 'secar' && igual(R.gasta, { carne_cruda: 2 }) && R.da === 'carne_seca' && R.n === 1 && R.s >= 3600, JSON.stringify(R));
+  comprobar('en el secadero, 1 carne cruda da 1 carne seca, al cabo de horas (valravnx: «1 cruda, 1 seca»)', R.uso === 'secar' && igual(R.gasta, { carne_cruda: 1 }) && R.da === 'carne_seca' && R.n === 1 && R.s >= 3600, JSON.stringify(R));
   comprobar('la seca se come y sacia como la asada', comestible('carne_seca') && NUTRE.carne_seca === NUTRE.carne_asada);
   const fab = new Fabricacion(), suelo = new Suelo(), inv = jugador();
   for (let i = 0; i < 4; i++) suelo.dejar({ tipo: 'tronco_delgado', n: 1 }, 0.4 + i * 0.2, 0.3, T0, 'ana', true);   // los troncos, al lado (al hombro solo va uno)
@@ -103,18 +103,20 @@ console.log('El secadero y la carne seca (P9)');
   fab.entregarEstacion('ana', s, { x: 0, z: 0 }, inv, suelo, T0);
   for (let i = 0; i < 10 && fab.estaciones[s].obra; i++) fab.trabajarEstacion('ana', s, MAX_RATO_ESTACION, { x: 0, z: 0 }, inv);
   comprobar('se levanta', !fab.estaciones[s].obra && !suelo.objetos.some(o => o.cosa.tipo === 'tronco_delgado') && inv.cuantos('cuerda') === 0, JSON.stringify(fab.estaciones[s].obra));
-  inv.meterDonde('carne_cruda', 3, undefined, { hasta: T0 + 5000 });
-  let r = fab.depositar('ana', s, inv.rutasCon('carne_cruda')[0], 3, { x: 1, z: 0 }, inv);
-  comprobar('la carne cruda se cuelga en el secadero', r.ok && fab.estaciones[s].deposito.carne_cruda === 3, r.motivo);
+  inv.meterDonde('carne_cruda', 2, undefined, { hasta: T0 + 5000 });
+  let r = fab.depositar('ana', s, inv.rutasCon('carne_cruda')[0], 2, { x: 1, z: 0 }, inv);
+  comprobar('la carne cruda se cuelga en el secadero', r.ok && fab.estaciones[s].deposito.carne_cruda === 2, r.motivo);
   r = fab.fabricar('ana', 'secar_carne', null, { x: 1, z: 0 }, inv, suelo, T0);
-  comprobar('se pone a secar con 2 de las colgadas', r.ok && fab.estaciones[s].deposito.carne_cruda === 1, r.motivo);
+  comprobar('se pone a secar una de las colgadas', r.ok && fab.estaciones[s].deposito.carne_cruda === 1, r.motivo);
   r = fab.fabricar('ana', 'secar_carne', null, { x: 1, z: 0 }, inv, suelo, T0);
-  comprobar('con 1 sola no se puede', !r.ok, r.motivo);
+  comprobar('y la otra, también (cada una la suya)', r.ok && !fab.estaciones[s].deposito.carne_cruda, r.motivo);
+  r = fab.fabricar('ana', 'secar_carne', null, { x: 1, z: 0 }, inv, suelo, T0);
+  comprobar('sin carne colgada no se puede', !r.ok, r.motivo);
   r = fab.recoger('ana', s, { x: 1, z: 0 }, inv, T0 + R.s * 1000 - 1, suelo);
   comprobar('antes de su hora no está seca', !r.ok && inv.cuantos('carne_seca') === 0, r.motivo);
   r = fab.recoger('ana', s, { x: 1, z: 0 }, inv, T0 + (MUTAR === '2' ? 0 : R.s * 1000), suelo);
   const c = inv.buscar(inv.rutasCon('carne_seca')[0] || 'mano:der').cosa;
-  comprobar('pasada su hora, se recoge la carne seca, que no se estropea', r.ok && inv.cuantos('carne_seca') === 1 && c && !('hasta' in c), JSON.stringify(r));
+  comprobar('pasada su hora, se recogen las dos carnes secas a la vez (se secan juntas), que no se estropean', r.ok && inv.cuantos('carne_seca') === 2 && c && !('hasta' in c), JSON.stringify(r));
   comprobar('la seca cabe en el cesto (lo pequeño)', ESTACIONES.cesto.guarda.includes('carne_seca'));
 }
 
@@ -124,9 +126,9 @@ console.log('El secadero por el servidor: todos ven lo colgado');
   const o = new ObjetosServidor({ posicion: a => pos[a] || null });
   const id = o.fab.colocar('ana', 'secadero', 0, 0).id; delete o.fab.estaciones[id].obra;   // ya levantado
   const ana = o.invs.de('ana'), T = Date.now();
-  ana.meterDonde('carne_cruda', 2, undefined, { hasta: T + 9e6 });
-  let r = o.ejecutar({ autor: 'ana', tipo: 'depositar_estacion', estacion: id, de: ana.rutasCon('carne_cruda')[0], cantidad: 2, x: 1, z: 0 }, T);
-  comprobar('Ana cuelga 2 carnes y se manda a todos', r.ok && r.estaciones, r.motivo);
+  ana.meterDonde('carne_cruda', 1, undefined, { hasta: T + 9e6 });
+  let r = o.ejecutar({ autor: 'ana', tipo: 'depositar_estacion', estacion: id, de: ana.rutasCon('carne_cruda')[0], cantidad: 1, x: 1, z: 0 }, T);
+  comprobar('Ana cuelga una carne y se manda a todos', r.ok && r.estaciones, r.motivo);
   r = o.ejecutar({ autor: 'ana', tipo: 'fabricar', receta: 'secar_carne', estacion: id, x: 1, z: 0 }, T);
   comprobar('las pone a secar por el servidor', r.ok && r.estaciones, r.motivo);
   const v = o.estacionesVisibles(null, T + 3600e3).find(e => e.id === id);
