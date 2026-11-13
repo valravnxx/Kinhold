@@ -1,0 +1,63 @@
+Lógica pura
+  OK   «ver» vale
+  OK   «ir» a un punto de la isla vale
+  OK   «ir» a otra región del continente vale (fuera de la isla)
+  OK   «ir» fuera del continente no vale
+  OK   el continente es el mapa entero
+  OK   un estado fuera de la isla: solo el de admin vale
+  OK   «ir» con números raros no vale
+  OK   «ir» junto a un autor con forma rara no vale
+  OK   otra cosa no vale
+  OK   junto a otro: a 1,6 m, a su altura y mirándole — {"x":11.223747499655182,"y":3,"z":18.969251700419694,"giro":-0.8707963267948967}
+  OK   «traer» a un autor vale; con forma rara o sin él, no
+  OK   traer: junto al admin dentro de la isla; fuera de ella, no
+  OK   el correo de la lista, confirmado, es admin (sin mayúsculas ni espacios)
+  OK   sin confirmar no es admin
+  OK   otro correo, sin correo o sin cuenta no es admin
+  OK   sin lista, vacía o con lo que no son correos: nadie es admin
+  OK   lo que no es un correo se descarta y lo demás vale
+Sin la lista en la máquina
+  OK   sin KINHOLD_ADMIN_CORREO, ni la cuenta «valravnx» es admin — {"tipo":"cuenta","id":2,"que":"verificar","ok":true,"admin":false,"correo":{"correo":"v***@e***.com","verificado":true}}
+  OK   y el panel no le responde — {"tipo":"admin","id":3,"que":"ver","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+Quien se queda antes el nombre «valravnx» no es admin
+  OK   al crearlas, con el correo aún sin confirmar, ninguna es admin — [false,false]
+  OK   al confirmar el correo, solo la del correo de la lista es admin — [false,true]
+  OK   la cuenta «valravnx» con otro correo no es admin; la del correo de la lista, sí — [false,true]
+  OK   al cambiar el correo por otro, deja de ser admin — {"tipo":"cuenta","id":5,"que":"verificar","ok":true,"cambiado":true,"admin":false,"correo":{"correo":"a***@e***.com","verificado":true}}
+  OK   y el panel ya no le responde — {"tipo":"admin","id":6,"que":"ver","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+Con la cuenta de admin (su correo en la lista de la máquina)
+  OK   sin cuenta, la bienvenida no dice admin — false
+  OK   sin cuenta: no se ve nada — {"tipo":"admin","id":1,"que":"ver","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+  OK   sin cuenta y con una clave: no se va a ningún sitio — {"tipo":"admin","id":2,"que":"ir","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+  OK   otra cuenta: al crearla y al confirmar su correo no es admin — {"tipo":"cuenta","id":1,"que":"crear","ok":true,"usuario":"Berta","autor":"jugador:49133e4f","admin":false,"correo":{"correo":"b***@e***.com","verificado":false},"confirmado":{"tipo":"cuenta","id":2,"que":"verificar","ok":true,"admin":false,"correo":{"correo":"b***@e***.com","verificado":true}}}
+  OK   otra cuenta: no se ve nada — {"tipo":"admin","id":3,"que":"ver","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+  OK   otra cuenta: no va junto a nadie — {"tipo":"admin","id":4,"que":"ir","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+  OK   pedir sin ser admin no echa a nadie (no hay clave que adivinar)
+  OK   al confirmar el correo de admin, la respuesta dice admin (sin volver a entrar) — {"tipo":"cuenta","id":4,"que":"verificar","ok":true,"admin":true,"correo":{"correo":"v***@e***.com","verificado":true}}
+  OK   cuenta de admin: «ver» da los tres conectados — {"n":3,"yo":"jugador:b6a9a200"}
+  OK   con el nombre de su cuenta (o nada si no tiene) — [null,"Berta","ValRavnX"]
+  OK   con su posición — {"autor":"jugador:49133e4f","cuenta":"Berta","x":40,"y":5.5,"z":-30,"giro":1.1}
+  OK   el que se ha ido ya no sale
+  OK   «ir» a un punto: el servidor responde ese punto (la altura la pone el navegador) — {"tipo":"admin","id":7,"que":"ir","ok":true,"x":250.5,"y":null,"z":-1200}
+  OK   «ir» fuera del continente: no — {"tipo":"admin","id":8,"que":"ir","ok":false,"motivo":"Petición de admin no válida."}
+  OK   «ir» junto a otro: a su lado y a su altura — {"tipo":"admin","id":9,"que":"ir","ok":true,"x":40.72575379428093,"y":5.5,"z":-31.425931776098295,"giro":-0.4707963267948966}
+  OK   «ir» junto a uno que no está: no — {"tipo":"admin","id":10,"que":"ir","ok":false,"motivo":"Ese jugador no está conectado."}
+  OK   «ir» junto a sí mismo: no — {"tipo":"admin","id":11,"que":"ir","ok":false,"motivo":"Ese jugador no está conectado."}
+  OK   «ir» a otra región del continente: el servidor responde ese punto — {"tipo":"admin","id":12,"que":"ir","ok":true,"x":-150000,"y":null,"z":150000}
+  OK   la cuenta de admin está allí (fuera de la isla) — {"autor":"jugador:b6a9a200","cuenta":"ValRavnX","x":-150000,"y":2,"z":150000,"giro":0}
+  OK   otra cuenta no puede ir fuera de la isla (sigue donde estaba) — {"autor":"jugador:49133e4f","cuenta":"Berta","x":40,"y":5.5,"z":-30,"giro":1.1}
+  OK   «traer» a otro: a 1,6 m del admin, a su altura — {"tipo":"admin","id":14,"que":"traer","ok":true,"quien":"jugador:49133e4f","x":2.4736975904046163,"y":3,"z":1.376930652306159,"giro":-1.1707963267948966}
+  OK   al traído le llega adónde va (sin id: no lo ha pedido él) — {"tipo":"admin","que":"traido","x":2.4736975904046163,"y":3,"z":1.376930652306159,"giro":-1.1707963267948966}
+  OK   y ahí sale en la lista — {"autor":"jugador:49133e4f","cuenta":"Berta","x":2.4736975904046163,"y":3,"z":1.376930652306159,"giro":-1.1707963267948966}
+  OK   «traer» a uno que no está: no — {"tipo":"admin","id":16,"que":"traer","ok":false,"motivo":"Ese jugador no está conectado."}
+  OK   «traer» a sí mismo: no — {"tipo":"admin","id":17,"que":"traer","ok":false,"motivo":"Ese jugador no está conectado."}
+  OK   otra cuenta no trae a nadie — {"tipo":"admin","id":11,"que":"traer","ok":false,"motivo":"Solo la cuenta de admin puede usar el panel."}
+  OK   con el admin fuera de la isla, no se trae a nadie — {"tipo":"admin","id":18,"que":"traer","ok":false,"motivo":"Fuera de la isla no se puede traer a nadie."}
+  OK   cada petición queda en admin.jsonl con su autor y su cuenta — 21 líneas
+  OK   la clave de un mensaje no se apunta nunca
+  OK   entrar con «valravnx» da una ficha — {"ok":true}
+  OK   con esa ficha, tras reiniciar: la bienvenida dice admin y la cuenta — {"admin":true,"cuenta":"ValRavnX"}
+  OK   y el panel le responde — {"ok":true,"n":1}
+  OK   uno nuevo sin cuenta no es admin
+
+57 bien, 0 mal
