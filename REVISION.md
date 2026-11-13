@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026, 13:03 UTC — por el chat, al carril A
+
+«sigue con p11» → el carril A sigue con la siguiente tarea de P11 (la granja básica): marcar el campo con estacas.
+
 ### 13 nov 2026, 12:26 UTC — por el chat, sobre el secadero
 
 valravnx: «sigue con el secadero que estaba a medias» → lo retoma una sesión de chat desde su rama (`trabajo/20261113-0518-secadero`), anunciada como chat para no pisar al carril A, que sigue vivo con las semillas silvestres.
