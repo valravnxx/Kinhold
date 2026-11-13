@@ -37,8 +37,7 @@ const CASA_HUMILDE = {
   puerta: ['puerta_varas'],
 };
 // Lo que aún no tiene de dónde salir: por qué, y la tarea viva del roadmap que se lo dará (un trozo de su nombre).
-// (la paja no está aquí: sale del cereal, que no hay en este tramo, y lo que la pide se esconde del menú como lo de
-// después: src/logica/piezas.js, MATERIALES_POSTERIORES)
+// (la paja, desde el 13 nov, sale de trillar las gavillas en la era: P11)
 // (8 nov: vacío. El mimbre, la resina y la corteza ya salen del mundo; 9 nov: la piel, de despiezar la liebre que se
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
@@ -57,9 +56,6 @@ const PENDIENTES = {
   est_carbonera: ['aún no hay carbonera', 'La carbonera y el carbón'],
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
-  est_era: ['aún no hay era', 'La era y trillar'],
-  grano: ['sale de trillar', 'La era y trillar'],
-  paja: ['sale de trillar', 'La era y trillar'],
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
   criba: ['aún no se hace', 'El hierro de pantano'],
   mineral_hierro: ['aún no hay manchas de hierro de pantano', 'El hierro de pantano'],
@@ -85,7 +81,7 @@ const PENDIENTES = {
 const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
-  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'grano', 'paja'],
+  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja'],   // (el grano de cebada es su semilla: semilla_cebada)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };

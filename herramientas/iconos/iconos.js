@@ -78,6 +78,7 @@ const LLENOS = { acopio_troncos: { tronco_delgado: 7 }, pila_piedras: { piedra: 
   colgadero_mochilas: { lenero: 1, cesta_recoleccion: 1, porta_piedras: 1 }, colgadero_herramientas: { hacha_piedra: 1, palo_cavador: 1, azada: 1, pala_madera: 1, hoz_silex: 1 } };
 // el secadero (P9): con carne colgada, seca y por secar
 LLENOS.secadero = { carne_cruda: 2 };
+LLENOS.era = { gavilla: 2 };   // la era (P11): con gavillas por trillar
 const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }] };
 const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
 for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };

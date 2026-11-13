@@ -1,0 +1,347 @@
+{
+ "lado": 192,
+ "iconos": {
+  "rama": {
+   "propio": true
+  },
+  "piedra": {
+   "propio": true
+  },
+  "silex": {
+   "propio": true
+  },
+  "fibra": {
+   "propio": true
+  },
+  "junco": {
+   "propio": true
+  },
+  "mimbre": {
+   "propio": true
+  },
+  "bayas": {
+   "propio": true
+  },
+  "setas": {
+   "propio": true
+  },
+  "frutos_secos": {
+   "propio": false
+  },
+  "hierbas": {
+   "propio": false
+  },
+  "corteza": {
+   "propio": true
+  },
+  "resina": {
+   "propio": true
+  },
+  "barro": {
+   "propio": false
+  },
+  "arcilla": {
+   "propio": false
+  },
+  "arena": {
+   "propio": false
+  },
+  "turba": {
+   "propio": false
+  },
+  "panal": {
+   "propio": false
+  },
+  "huevo": {
+   "propio": false
+  },
+  "yesca": {
+   "propio": true
+  },
+  "tronco_delgado": {
+   "propio": true
+  },
+  "tronco_largo": {
+   "propio": true
+  },
+  "tronco_corto": {
+   "propio": true
+  },
+  "lena": {
+   "propio": true
+  },
+  "bloque_piedra": {
+   "propio": false
+  },
+  "mineral_hierro": {
+   "propio": true
+  },
+  "vara": {
+   "propio": true
+  },
+  "cuerda": {
+   "propio": true
+  },
+  "tabla": {
+   "propio": true
+  },
+  "clavo": {
+   "propio": false
+  },
+  "barra_hierro": {
+   "propio": false
+  },
+  "teja": {
+   "propio": false
+  },
+  "liebre": {
+   "propio": true
+  },
+  "carne_cruda": {
+   "propio": true
+  },
+  "carne_asada": {
+   "propio": true
+  },
+  "carne_seca": {
+   "propio": true
+  },
+  "estaca": {
+   "propio": true
+  },
+  "semilla_cebada": {
+   "propio": true
+  },
+  "habas": {
+   "propio": true
+  },
+  "habas_asadas": {
+   "propio": true
+  },
+  "semilla_col": {
+   "propio": true
+  },
+  "semilla_nabo": {
+   "propio": true
+  },
+  "gavilla": {
+   "propio": true
+  },
+  "col": {
+   "propio": true
+  },
+  "nabo": {
+   "propio": true
+  },
+  "col_asada": {
+   "propio": true
+  },
+  "nabo_asado": {
+   "propio": true
+  },
+  "piel": {
+   "propio": true
+  },
+  "tela": {
+   "propio": false
+  },
+  "paja": {
+   "propio": false
+  },
+  "pescado": {
+   "propio": false
+  },
+  "grano": {
+   "propio": false
+  },
+  "harina": {
+   "propio": false
+  },
+  "agua": {
+   "propio": false
+  },
+  "flecha": {
+   "propio": false
+  },
+  "virote": {
+   "propio": false
+  },
+  "anzuelo": {
+   "propio": false
+  },
+  "cuchillo": {
+   "propio": true
+  },
+  "hacha_mano": {
+   "propio": true
+  },
+  "hacha_piedra": {
+   "propio": true
+  },
+  "mazo_piedra": {
+   "propio": true
+  },
+  "hacha_hierro": {
+   "propio": false
+  },
+  "lasca_silex": {
+   "propio": true
+  },
+  "lanza_endurecida": {
+   "propio": true
+  },
+  "palo_cavador": {
+   "propio": true
+  },
+  "taladro_fuego": {
+   "propio": true
+  },
+  "honda": {
+   "propio": true
+  },
+  "antorcha": {
+   "propio": true
+  },
+  "rastra": {
+   "propio": true
+  },
+  "carretilla": {
+   "propio": true
+  },
+  "arpon": {
+   "propio": true
+  },
+  "nasa": {
+   "propio": true
+  },
+  "trampa_lazo": {
+   "propio": true
+  },
+  "pala_madera": {
+   "propio": true
+  },
+  "azada": {
+   "propio": true
+  },
+  "hoz_silex": {
+   "propio": true
+  },
+  "mayal": {
+   "propio": true
+  },
+  "cubo": {
+   "propio": true
+  },
+  "espada": {
+   "propio": true
+  },
+  "escudo": {
+   "propio": true
+  },
+  "cordel": {
+   "propio": true
+  },
+  "cuerda_trenzada": {
+   "propio": true
+  },
+  "cinto_cuero": {
+   "propio": true
+  },
+  "cinto_anillas": {
+   "propio": true
+  },
+  "cinto_armas": {
+   "propio": true
+  },
+  "lenero": {
+   "propio": true
+  },
+  "cesta_recoleccion": {
+   "propio": true
+  },
+  "fardo": {
+   "propio": true
+  },
+  "zurron": {
+   "propio": true
+  },
+  "mochila_bastidor": {
+   "propio": true
+  },
+  "porta_piedras": {
+   "propio": true
+  },
+  "caja_herramientas": {
+   "propio": true
+  },
+  "carcaj": {
+   "propio": true
+  },
+  "cesto_pescador": {
+   "propio": true
+  },
+  "correa_escudo": {
+   "propio": true
+  },
+  "saco": {
+   "propio": true
+  },
+  "bandolera": {
+   "propio": true
+  },
+  "odre": {
+   "propio": true
+  },
+  "est_piedra_tallar": {
+   "propio": true
+  },
+  "est_hoguera": {
+   "propio": true
+  },
+  "est_hogar": {
+   "propio": true
+  },
+  "est_banco_tronco": {
+   "propio": true
+  },
+  "est_acopio_troncos": {
+   "propio": true
+  },
+  "est_pila_piedras": {
+   "propio": true
+  },
+  "est_lenera": {
+   "propio": true
+  },
+  "est_soporte_varas": {
+   "propio": true
+  },
+  "est_almiar": {
+   "propio": true
+  },
+  "est_hoyo_barro": {
+   "propio": true
+  },
+  "est_cesto": {
+   "propio": true
+  },
+  "est_colgadero_mochilas": {
+   "propio": true
+  },
+  "est_colgadero_herramientas": {
+   "propio": true
+  },
+  "est_refugio_ramas": {
+   "propio": true
+  },
+  "est_cama_juncos": {
+   "propio": true
+  },
+  "est_secadero": {
+   "propio": true
+  },
+  "est_era": {
+   "propio": true
+  }
+ }
+}

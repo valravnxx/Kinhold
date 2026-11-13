@@ -36,7 +36,7 @@ import { montarPanelFabricar, carpetaIconos } from './panel_fabricar.js';
 import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ, CARPETA_PIEZAS } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR } from './estaciones.js';
-import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO, cabeEn } from '../logica/fabricacion.js';
+import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO, cabeEn, motivoTierra } from '../logica/fabricacion.js';
 import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
@@ -875,7 +875,7 @@ function evaluarColocacion() {
     if (v.ok && pj.k > 0) v = { ok: false, motivo: 'Los puestos de trabajo van en la planta baja.' };
     if (v.ok) v = mundo.puedeTocar(x, z, yoAutor());
     // los almacenajes, solo en tu tierra (o en la de quien te invita)
-    if (v.ok && ESTACIONES[sel.tipo].tierra && !mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: sel.tipo === 'secadero' ? 'El secadero va en tu tierra (o en la de quien te invita).' : 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
+    if (v.ok && ESTACIONES[sel.tipo].tierra && !mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: motivoTierra(sel.tipo) };
     pintarFantasma(v.ok);
     const e = ESTACIONES[sel.tipo];
     mostrarAviso(v.ok ? tr('{e}: pon el marco y llévale {c}.', { e: tr(e.nombre), c: Object.entries(e.coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }) : tr(v.motivo), !v.ok);

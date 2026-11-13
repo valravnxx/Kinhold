@@ -336,6 +336,43 @@ function hoyoBarro(id) {
   }
   return mallas(L);
 }
+// La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, algo levantado y más claro que el
+// campo, bordeado por sus 8 piedras hincadas, con briznas de paja sueltas de lo ya trillado. Las gavillas que se le
+// dejan, tumbadas encima (DEPOSITO_SITIOS.era).
+export const ERA = 1.45;
+const TIERRA_ERA = 0x847564, TIERRA_ERA_OSC = 0x5e5244;
+function era(id) {
+  const L = new Lote({ rangoSuelo: 0.25, variacion: 0.05 });
+  L.add(new THREE.CylinderGeometry(ERA, ERA + 0.06, 0.1, 30), TIERRA_ERA_OSC, 0, -0.01, 0, null, { tex: 'piedra', sinSuelo: true }); // el canto
+  L.add(new THREE.CircleGeometry(ERA - 0.01, 30), TIERRA_ERA, 0, 0.041, 0, { x: -Math.PI / 2 }, { tex: 'piedra', sinSuelo: true });  // lo apisonado
+  for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.25, r = ERA + 0.1;
+    L.add(piedraIrregular(0.24, 1, id + 'e' + i, 0.24), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, 0.05, Math.sin(a) * r, { y: a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.6 }, { escala: new THREE.Vector3(1.35, 0.55, 0.85), plano: true });
+  }
+  for (let i = 0; i < 46; i++) { // briznas de paja sueltas
+    const a = az(id, i + 40) * Math.PI * 2, r = Math.sqrt(az(id, i + 70)) * (ERA - 0.15), largo = 0.16 + az(id, i + 100) * 0.2;
+    L.add(cil(0.008, 0.008, largo, 3), i % 3 ? 'paja' : 'pajaOsc', Math.cos(a) * r, 0.05, Math.sin(a) * r, { z: Math.PI / 2, y: az(id, i + 130) * 6 }, { tex: 'paja', sinSuelo: true });
+  }
+  return mallas(L);
+}
+// Lo dejado en la era: cada gavilla, tumbada en lo apisonado, en abanico (hasta 8; más, una encima de otra), y lo demás
+// al pie, como en los demás puestos.
+const SITIOS_ERA = [[-0.5, 0.25, 0.4], [0.45, -0.35, 2.1], [0.1, 0.6, 1.2], [-0.25, -0.55, 2.8], [0.75, 0.3, 0.9], [-0.8, -0.1, 1.7], [0.3, 0.05, 2.5], [-0.15, 0.95, 0.2]];
+function llenoEra(dep, id) {
+  const g = new THREE.Group(), n = Math.min(16, dep.gavilla || 0);
+  for (let i = 0; i < n; i++) {
+    const [x, z, a] = SITIOS_ERA[i % 8], m = modeloDe({ id: `${id}:gavilla:${i}`, cosa: { tipo: 'gavilla', n: 1 } });
+    m.position.set(x, 0.045 + Math.floor(i / 8) * 0.12, z); m.rotation.y = a + (az(id, i) - 0.5) * 0.4; m.name = i ? 'gavilla_' + i : 'deposito_gavilla';
+    g.add(m);
+  }
+  let pie = 0;
+  for (const [t, k] of Object.entries(dep)) {
+    if (t === 'gavilla' || !(k > 0)) continue;
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n: k } }), a = 0.8 + pie++ * 0.9;
+    m.position.set(Math.cos(a) * (ERA + 0.45), 0, Math.sin(a) * (ERA + 0.45)); m.scale.setScalar(0.85); m.name = 'deposito_' + t; g.add(m);
+  }
+  return g;
+}
 // El cesto: de juncos trenzados, redondo y algo más ancho de boca, con su borde enrollado.
 const CESTO = { r0: 0.22, r1: 0.27, alto: 0.3 };
 // en espiral, como se cosen los cestos de juncos: rollos de juncos uno encima de otro (y las puntadas, más claras)
@@ -487,7 +524,7 @@ function camaJuncos(id) {
 export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
-  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero };
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, era };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -686,7 +723,7 @@ function varaCorrea(L, a, b) {
   const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), c = a.clone().addScaledVector(d, 0.5);
   L.add(new THREE.BoxGeometry(0.02, d.length(), 0.004), CUERO_COLG, c.x, c.y, c.z, m, { tex: 'liso', sinSuelo: true });
 }
-const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero };
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, era: llenoEra };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -737,7 +774,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, era: 1.3 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {

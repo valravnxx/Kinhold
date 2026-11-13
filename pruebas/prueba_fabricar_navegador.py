@@ -174,8 +174,8 @@ try:
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
         nombres = [m.split('\n')[0] for m in menu]
-        comprobar('la pestaña «Puestos de trabajo», con los cinco puestos (el hogar, 8 nov; el secadero, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'], str(menu))
+        comprobar('la pestaña «Puestos de trabajo», con los seis puestos (el hogar, 8 nov; el secadero y la era, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Era'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'] and menu[5].split('\n')[1:3] == ['8', '/1'], str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
@@ -327,6 +327,27 @@ try:
         comprobar('la ficha dice lo que tarda (6 h) y para qué sirve', '6 h' in t and 'no se estropea' in t, t[:300])
         captura(A, f'{SALIDA}/PC_panel_secadero.png')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
+        print('La era (P11, 13 nov), con dos gavillas por trillar (solo para mirarla: se dibuja aquí), y su pestaña')
+        ERA = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar');
+          f.estaciones['era:vista'] = {{ id: 'era:vista', tipo: 'era', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ gavilla: 2 }} }};
+          K.__vista2 = f.estaciones['era:vista'];
+          if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); if (K.__vista2) {{ K.fabCliente.estaciones[K.__vista2.id] = K.__vista2; K.estacionesV.refrescar(); }} }}; }}
+          K.estacionesV.refrescar(); }})"""
+        A.evaluate(f"{ERA}({K}, -3.5, 1)")
+        comprobar('la era se dibuja, con las gavillas encima', A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_era'); return !!o && !!o.getObjectByName('deposito_gavilla'); }})()"))
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 2.2, z: e.z + 2.0, rot: 2.3 }}); {K}.cam.yaw = 0.7; {K}.cam.dist = 4.6; {K}.cam.pitch = 0.45; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_era.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 1.9, z: e.z + 0.4, rot: 1.8 }}); {K}.cam.yaw = 1.2; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.3; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_era_cerca.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 0.8 }}); }})()""")
+        A.evaluate(f"{K}.panelFabricar.abrirEstacion('era:vista')"); A.wait_for_timeout(800)
+        comprobar('su pestaña «Era», con trillar una gavilla', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"trillar\"]') && /Trillar una gavilla/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
+        t = elegir(A, 'trillar')
+        comprobar('la ficha pide el mayal y dice lo que da (grano y paja)', 'mayal' in t.lower() and 'paja' in t.lower(), t[:400])
+        captura(A, f'{SALIDA}/PC_panel_era.png')
+        A.evaluate(f"{K}.panelFabricar.cerrar()")
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
@@ -362,7 +383,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 5 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 6 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 
@@ -385,6 +406,18 @@ try:
         B.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); B.wait_for_timeout(1000)
         comprobar('y su panel, sin salirse de lado (con una pestaña más)', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_panel_secadero.png')
+        B.evaluate(f"{K}.panelFabricar.cerrar()")
+
+        print('La era, en el móvil')
+        B.evaluate(f"{ERA}({K}, -3.5, 1)")
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 2.0, z: e.z + 2.2, rot: 2.3 }}); {K}.cam.yaw = 0.6; {K}.cam.dist = 4.2; {K}.cam.pitch = 0.42; }})()""")
+        comprobar('en el móvil, también la era', esperar(B, f"!!{K}.escena.getObjectByName('estacion_era')", 8000))
+        B.wait_for_timeout(2500)
+        captura(B, f'{SALIDA}/movil_era.png')
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 0.8 }}); }})()""")
+        B.evaluate(f"{K}.panelFabricar.abrirEstacion('era:vista')"); B.wait_for_timeout(1000)
+        comprobar('y su panel, sin salirse de lado', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"trillar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        captura(B, f'{SALIDA}/movil_panel_era.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()")
 
         print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')

@@ -2918,5 +2918,14 @@
  "Aún no está madura.": "It isn't ripe yet.",
  "Aquí no hay nada que coger.": "There's nothing to pick here.",
  "v203: cosechar (P11, la granja básica). Con la hoz de sílex en la mano, la cebada madura se siega a pasadas (Usar, unos 2 s, un círculo de 1,2 m delante de ti) y las gavillas quedan en el suelo; lo verde no se siega. Delante de unas habas, una col o un nabo maduros, Usar los coge a mano. Lo segado y lo cogido deja la tierra labrada. La gavilla va al almiar o al fardo; el nabo, que es pequeño, al cesto o a la cesta de recolección. La col y el nabo se comen crudos, o asados al fuego, que sacian más, y se estropean en un día.": "v203: harvesting (P11, the basic farm). With the flint sickle in your hand, ripe barley is reaped in passes (Use, about 2 s, a 1.2 m circle in front of you) and the sheaves stay on the ground; green barley isn't reaped. In front of ripe broad beans, a cabbage or a turnip, Use picks them by hand. Reaped and picked soil stays tilled. Sheaves go to the haystack or the bundle; the turnip, being small, to the basket or the gathering basket. Cabbage and turnip are eaten raw, or roasted on the fire, which fills more, and they spoil in a day.",
- "Segados {n} m²: una gavilla al suelo.": "Reaped {n} m²: one sheaf on the ground."
+ "Segados {n} m²: una gavilla al suelo.": "Reaped {n} m²: one sheaf on the ground.",
+ "Grano de cebada": "Barley grain",
+ "la era": "the threshing floor",
+ "Era": "Threshing floor",
+ "una era": "a threshing floor",
+ "En la era": "On the threshing floor",
+ "Trillar una gavilla": "Thresh a sheaf",
+ "Trillar las gavillas con el mayal: grano de cebada y paja": "Thresh the sheaves with the flail: barley grain and straw",
+ "La era va en tu tierra (o en la de quien te invita).": "The threshing floor goes on your land (or on the land of whoever invites you).",
+ "Grano de cebada, que se siembra, y paja: el tejado de paja, la cama de paja, el almiar.": "Barley grain, to sow, and straw: the thatch roof, the straw bed, the haystack."
 }
