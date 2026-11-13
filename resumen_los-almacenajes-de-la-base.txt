@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2768 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3105 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4493 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3174 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2762 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3132 KB
+dist/kinhold_trozos.html 2783 KB
+hilo de los trozos 23 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: los almacenajes de la base
+  FALLA PC: sin errores en la consola — ['Failed to load resource: the server responded with a status of 404 (File not found)', 'Failed to load resource: the server responded with a status of 404 (File not found)', 'Failed to load resource: the server responded with a status of 404 (File not found)']
+  FALLA móvil: sin errores en la consola — ['Failed to load resource: the server responded with a status of 404 (File not found)', 'Failed to load resource: the server responded with a status of 404 (File not found)', 'Failed to load resource: the server responded with a status of 404 (File not found)']
+
+2 FALLOS
+!! FALLA: python3 pruebas/prueba_almacenajes_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/almacenajes
+
+HAY FALLOS
+tardó 1125 s
