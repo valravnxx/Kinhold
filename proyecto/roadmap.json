@@ -2226,7 +2226,9 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T05:15:10+00:00",
+     "rama": "trabajo/20261113-0514-granja"
     },
     {
      "nombre": "Revisión completa y publicación",
