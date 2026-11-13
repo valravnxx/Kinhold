@@ -554,7 +554,7 @@ function llenoHoyo(dep, id) {
 }
 //  - el cesto: lo de dentro sube con lo que se guarda (un lecho del color de lo que más hay) y encima asoma un poco
 //    de cada cosa: piedrecillas de sílex, mechones de fibra, bayas…, cada una de su color.
-const COLOR_PEQUENO = { silex: 'piedraOsc', lasca_silex: 'piedraOsc', fibra: 'lino', yesca: 'cortezaRoja', cordel: 'paja', cuerda: 'paja', resina: 0x9a6a2a, bayas: 0x5a2a36, setas: 0xb59a7a, frutos_secos: 'madera', hierbas: 'hoja' };
+const COLOR_PEQUENO = { silex: 'piedraOsc', lasca_silex: 'piedraOsc', fibra: 'lino', yesca: 'cortezaRoja', cordel: 'paja', cuerda: 'paja', resina: 0x9a6a2a, bayas: 0x5a2a36, setas: 0xb59a7a, semilla_cebada: 0xcdb46a, habas: 0x8a7a4e, habas_asadas: 0x5a3d22, semilla_col: 0x7a4a32, semilla_nabo: 0x2e2622, frutos_secos: 'madera', hierbas: 'hoja' };
 function llenoCesto(dep, id) {
   const tipos = Object.entries(dep).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
   const L = new Lote({ rangoSuelo: 0.2, variacion: 0.1 });
