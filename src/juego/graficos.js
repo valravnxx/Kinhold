@@ -14,13 +14,15 @@ const CLAVE = 'kinhold_graficos';
 const leer = () => { try { return localStorage.getItem(CLAVE); } catch (e) { return null; } };
 const guardar = (id) => { try { localStorage.setItem(CLAVE, id); } catch (e) { /* sin almacenamiento */ } };
 // el desenfoque de maqueta mientras se juega (valravnx, 12 nov: a prueba): puesto, salvo que se quite en Ajustes (se
-// guarda) o con ?maqueta=0. Las pruebas automáticas, sin él (dibujan como antes), salvo ?maqueta=1.
+// guarda) o con ?maqueta=0. Las pruebas automáticas, sin él (dibujan como antes), salvo ?maqueta=1. Y el modo maqueta al
+// 100 % (valravnx, 13 nov), el nivel 2: en Ajustes o con ?maqueta=2 (src/posprocesado/maqueta.js).
+// Niveles: 0 sin él, 1 el normal, 2 al 100 %. Se guarda '0', '1' o '2' (lo de antes, '0' o '1', vale igual).
 const CLAVE_MAQUETA = 'kinhold_maqueta';
 function maquetaDeInicio() {
   const q = new URLSearchParams(location.search).get('maqueta');
-  if (q === '0' || q === '1') return q === '1';
-  if (navigator.webdriver) return false;
-  try { return localStorage.getItem(CLAVE_MAQUETA) !== '0'; } catch (e) { return true; }
+  if (q === '0' || q === '1' || q === '2') return Number(q);
+  if (navigator.webdriver) return 0;
+  try { const v = localStorage.getItem(CLAVE_MAQUETA); return v === '0' ? 0 : v === '2' ? 2 : 1; } catch (e) { return 1; }
 }
 
 // lo que se sabe del aparato antes de dibujar nada
@@ -60,9 +62,11 @@ export function crearGraficos(renderer, escena, camara, ambiente, horizonte = nu
     poner,
     alCambiar: (f) => alCambiar.push(f),
     // el desenfoque de maqueta: si está puesto, si este perfil puede con él, y ponerlo o quitarlo (se guarda)
-    get maqueta() { return maqueta; },
+    get maqueta() { return maqueta > 0; },
+    get nivelMaqueta() { return maqueta; },
     get puedeMaqueta() { return !!perfil(actual).desenfoque; },
-    ponerMaqueta(si) { maqueta = !!si; try { localStorage.setItem(CLAVE_MAQUETA, maqueta ? '1' : '0'); } catch (e) { /* sin almacenamiento */ } poner(actual, false); },
+    // (si: true o 1, el normal; 2, al 100 %; false o 0, sin él)
+    ponerMaqueta(si) { maqueta = si === 2 ? 2 : si ? 1 : 0; try { localStorage.setItem(CLAVE_MAQUETA, String(maqueta)); } catch (e) { /* sin almacenamiento */ } poner(actual, false); },
     get pasadas() { return post.pasadas; },
     horizonte,
     dibujar: (dt) => post.dibujar(dt),

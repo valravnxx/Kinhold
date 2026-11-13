@@ -173,8 +173,9 @@ try:
         A.evaluate(f"{K}.cambiarModo('construir')"); A.wait_for_timeout(200)
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
-        comprobar('la pestaña «Puestos de trabajo», con los cuatro puestos (el hogar, 8 nov), lo que piden y dónde van', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and len(menu) == 4 and any('Piedra de tallar' in m and '1 piedra' in m for m in menu) and any('Hoguera' in m and 'solo fuera' in m for m in menu) and any('Hogar' in m and 'solo dentro' in m for m in menu), str(menu))
+        nombres = [m.split('\n')[0] for m in menu]
+        comprobar('la pestaña «Puestos de trabajo», con los cinco puestos (el hogar, 8 nov; el secadero, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'], str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
@@ -302,6 +303,30 @@ try:
         comprobar('nueva otra vez, el menú ya no ofrece repararla', 'Reparar: hacha de piedra' not in A.evaluate(f"{K}.opcionesUsar()"))
         A.evaluate(f"(() => {{ const l = ['mano:der', 'mano:izq'].find(l => {K}.inventario.lugares[l] && {K}.inventario.lugares[l].tipo === 'hacha_piedra'); if (l) {K}.accionInventario({{ tipo: 'soltar', de: l }}); }})()")
 
+        print('El secadero (P9, 13 nov), con carne colgada: seca, secándose y por secar (solo para mirarlo: se dibuja aquí), y su pestaña')
+        SECADERO = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar'), ahora = Date.now();
+          f.estaciones['secadero:vista'] = {{ id: 'secadero:vista', tipo: 'secadero', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ carne_cruda: 2 }},
+            colgado: [{{ hasta: ahora - 1000 }}, {{ hasta: ahora + 3 * 3600e3 }}] }};
+          // que se quede aunque el servidor vuelva a mandar las estaciones (las de verdad, más este)
+          K.__vista = f.estaciones['secadero:vista'];
+          if (!K.estacionesV.__poner) {{ K.estacionesV.__poner = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner(l); if (K.__vista) {{ K.fabCliente.estaciones[K.__vista.id] = K.__vista; K.estacionesV.refrescar(); }} }}; }}
+          K.estacionesV.refrescar(); }})"""
+        A.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
+        n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_secadero'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
+        comprobar('el secadero se dibuja, con lo colgado', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_secadero')") and n > 0, str(n))
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.8, z: e.z + 1.6, rot: 2.3 }}); {K}.cam.yaw = 0.25; {K}.cam.dist = 4.2; {K}.cam.pitch = 0.32; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_secadero.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.4, z: e.z + 0.6, rot: 2 }}); {K}.cam.yaw = 0.05; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.12; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_secadero_cerca.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 0.4, z: e.z + 1.2 }}); }})()""")
+        A.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); A.wait_for_timeout(800)
+        comprobar('su pestaña «Secadero», con la carne seca: 1 carne cruda, 6 h', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && /Carne seca/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
+        t = elegir(A, 'secar_carne')
+        comprobar('la ficha dice lo que tarda (6 h) y para qué sirve', '6 h' in t and 'no se estropea' in t, t[:300])
+        captura(A, f'{SALIDA}/PC_panel_secadero.png')
+        A.evaluate(f"{K}.panelFabricar.cerrar()")
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
@@ -337,7 +362,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 4 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 5 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 
@@ -349,6 +374,18 @@ try:
         comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_tres_estaciones.png')
+
+        print('El secadero, en el móvil')
+        B.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.6, z: e.z + 1.8, rot: 2.3 }}); {K}.cam.yaw = 0.3; {K}.cam.dist = 3.8; {K}.cam.pitch = 0.3; }})()""")
+        comprobar('en el móvil, también', esperar(B, f"!!{K}.escena.getObjectByName('estacion_secadero')", 8000))
+        B.wait_for_timeout(2500)
+        captura(B, f'{SALIDA}/movil_secadero.png')
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 0.4, z: e.z + 1.2 }}); }})()""")
+        B.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); B.wait_for_timeout(1000)
+        comprobar('y su panel, sin salirse de lado (con una pestaña más)', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        captura(B, f'{SALIDA}/movil_panel_secadero.png')
+        B.evaluate(f"{K}.panelFabricar.cerrar()")
 
         print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")

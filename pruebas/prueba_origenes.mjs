@@ -43,8 +43,6 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  est_secadero: ['aún no hay secadero', 'El secadero y la carne seca'],
-  carne_seca: ['sale del secadero', 'El secadero y la carne seca'],
   est_raspador: ['aún no hay raspador', 'El raspador de pieles, la piel limpia y el zurrón'],
   piel_limpia: ['sale del raspador', 'El raspador de pieles, la piel limpia y el zurrón'],
   zurron: ['pide piel limpia', 'El raspador de pieles, la piel limpia y el zurrón'],

@@ -90,7 +90,7 @@ export const CATALOGO = {
   // de los animales, el campo y el agua
   liebre: R('Liebre', 'M'),   // (9 nov) la cazada lanzando la lanza en el modo arma, entera: se despieza
   // (9 nov) lo que da la liebre al despiezarla (src/logica/comida.js): la carne cruda se estropea; asada, sacia más
-  carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'),
+  carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'), carne_seca: R('Carne seca', 'P'),   // (13 nov) la del secadero
   // (P11, 13 nov) las semillas silvestres (src/logica/recoleccion.js): la cebada silvestre (sus espigas, que se siembran),
   // las habas (se siembran, o se comen asadas al fuego) y las semillas de la col silvestre y del nabo silvestre
   estaca: R('Estaca', 'M'),   // la de marcar el campo (P11)

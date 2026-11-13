@@ -15,6 +15,18 @@ import { Effect, EffectAttribute, BlendFunction } from 'postprocessing';
 // (arriba, la franja nítida llega más lejos: ahí están los árboles y lo que tienes delante)
 export const MAQUETA = { centro: 0.46, franja: 0.2, franjaArriba: 0.32, fuerza: 0.009 };
 
+// El modo maqueta al 100 % (valravnx, 13 nov: «pon un modo en opciones para tener el modo maqueta 100%»). Lo que hace
+// creíble una foto de maqueta (la lente basculada sobre una miniatura): poquísima profundidad de campo. Así que, además de
+// la franja de la pantalla (más estrecha y con más emborronado), se emborrona también por la distancia: el plano
+// enfocado pasa por el personaje (la distancia que hay en el centro de la franja) y lo que está claramente más cerca o
+// más lejos se emborrona aunque caiga en el centro de la pantalla. En dos pasadas (a lo ancho y a lo alto) para que salga
+// suave con el radio mayor, y el color de juguete: un poco más de saturación
+// y de contraste, como se hace al falsear maquetas en fotografía. De noche, casi nada, como el normal.
+//   franja/franjaArriba/fuerza: las del normal, más cortas y más fuertes; cerca/lejos: desde qué fracción de la
+//   distancia de foco por delante o por detrás empieza a emborronarse y dónde llega al máximo; profundidad: cuánto
+//   pesa la distancia frente a la altura; saturacion/contraste: el color de juguete (1 = como está)
+export const MAQUETA_FUERTE = { centro: 0.46, franja: 0.1, franjaArriba: 0.17, fuerza: 0.02, cerca: 0.18, lejos: 0.95, profundidad: 0.85, saturacion: 1.08, contraste: 1.05 };
+
 const frag = `uniform float uCentro;uniform float uFranja;uniform float uFranjaArriba;uniform float uFuerza;uniform float uNoche;
 void mainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){
   float lejos=abs(uv.y-uCentro);
@@ -30,6 +42,72 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){
   }
   outputColor=s/n;
 }`;
+
+// En dos pasadas, una a lo ancho y otra a lo alto, con 15 muestras seguidas cada una (el emborronado de campana, como el
+// ejemplo de tilt-shift de three.js): con el radio grande, unas muestras sueltas en disco salían granuladas en el móvil
+// (segunda mirada, 13 nov). Cada pasada calcula lo que se emborrona igual; el color de juguete, en la segunda. El
+// emborronado pesa cada muestra por lo opaca que es y conserva la transparencia (el cielo es el fondo de la página).
+const fragFuerte = (eje) => `uniform float uCentro;uniform float uFranja;uniform float uFranjaArriba;uniform float uFuerza;uniform float uNoche;
+uniform float uCerca;uniform float uLejos;uniform float uProfundidad;uniform float uSaturacion;uniform float uContraste;
+float distanciaEn(const in vec2 p){return -getViewZ(readDepth(p));}
+void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,out vec4 outputColor){
+  // el foco: la distancia en el centro de la franja (donde está el personaje), la media de cinco puntos
+  float foco=(distanciaEn(vec2(0.5,uCentro))+distanciaEn(vec2(0.47,uCentro))+distanciaEn(vec2(0.53,uCentro))
+    +distanciaEn(vec2(0.5,uCentro-0.03))+distanciaEn(vec2(0.5,uCentro+0.03)))*0.2;
+  float lejos=abs(uv.y-uCentro);
+  float ky=smoothstep(uv.y>uCentro?uFranjaArriba:uFranja,0.5,lejos);
+  float rel=abs(-getViewZ(depth)-foco)/max(foco,0.5);
+  float kz=smoothstep(uCerca,uLejos,rel)*uProfundidad;
+  float k=clamp(max(ky,kz)+0.35*ky*kz,0.0,1.0)*(1.0-0.85*uNoche);
+  vec3 c=inputColor.rgb;float alfa=inputColor.a;
+  if(k>0.002){
+    float r=uFuerza*k*min(1.0,0.5+0.5*aspect);
+    vec2 paso=${eje === 'h' ? 'vec2(r/aspect,0.0)' : 'vec2(0.0,r)'}/7.0;
+    // (cada muestra pesa lo opaca que es: el cielo es el fondo de la página, detrás del lienzo transparente)
+    vec3 s=vec3(0.0);float sa=0.0,n=0.0;
+    for(int i=-7;i<=7;i++){
+      float fi=float(i),w=exp(-fi*fi/18.0);
+      vec4 m=texture2D(inputBuffer,uv+paso*fi);
+      s+=m.rgb*m.a*w;sa+=m.a*w;n+=w;
+    }
+    c=s/max(sa,1e-4);alfa=sa/n;
+  }
+${eje === 'h' ? '' : `  // el color de juguete (menos de noche), sobre el color como se ve en la pantalla (aquí llega lineal: hecho ahí, el medio
+  // tono queda muy abajo y las sombras se iban a negro y el verde a chillón)
+  float sat=mix(1.0,uSaturacion,1.0-uNoche),con=mix(1.0,uContraste,1.0-uNoche);
+  vec3 g=sqrt(max(c,vec3(0.0)));
+  float l=dot(g,vec3(0.2126,0.7152,0.0722));
+  g=mix(vec3(l),g,sat);
+  g=(g-0.5)*con+0.5;
+  g=clamp(g,0.0,1.0);
+  c=g*g;
+`}  outputColor=${eje === 'h' ? 'vec4(c,alfa)' : 'vec4(c*alfa,alfa)'};   // (la última, multiplicada por su opacidad, como se compone el lienzo sobre la página)
+}`;
+
+// El de 100 %: el mismo funcionamiento que el normal, con la distancia de cada píxel (EffectAttribute.DEPTH). eje: 'h'
+// (la pasada a lo ancho) o 'v' (a lo alto, con el color): van las dos, una detrás de otra (src/posprocesado/efectos.js)
+export class MaquetaFuerteEffect extends Effect {
+  constructor({ vivo = null, eje = 'v', ...m } = {}) {
+    const M = { ...MAQUETA_FUERTE, ...m };
+    super('MaquetaFuerteEffect', fragFuerte(eje), {
+      blendFunction: BlendFunction.SRC,
+      attributes: EffectAttribute.CONVOLUTION | EffectAttribute.DEPTH,
+      uniforms: new Map([['uCentro', new Uniform(M.centro)], ['uFranja', new Uniform(M.franja)], ['uFranjaArriba', new Uniform(M.franjaArriba)], ['uFuerza', new Uniform(M.fuerza)], ['uNoche', new Uniform(0)],
+        ['uCerca', new Uniform(M.cerca)], ['uLejos', new Uniform(M.lejos)], ['uProfundidad', new Uniform(M.profundidad)], ['uSaturacion', new Uniform(M.saturacion)], ['uContraste', new Uniform(M.contraste)]]),
+    });
+    this.vivo = vivo;
+  }
+  update() { this.uniforms.get('uNoche').value = this.vivo && this.vivo.activo ? this.vivo.estrellas : 0; }
+}
+
+// cuánto se emborrona en el de 100 %, de 0 a 1, a una altura de la pantalla y a una distancia (en veces la del foco: 1
+// es el personaje): lo mismo que el sombreador (para las pruebas)
+export function emborronadoFuerte(y, rel, M = MAQUETA_FUERTE) {
+  const paso = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const ky = paso(y > M.centro ? M.franjaArriba : M.franja, 0.5, Math.abs(y - M.centro));
+  const kz = paso(M.cerca, M.lejos, Math.abs(rel - 1)) * M.profundidad;
+  return Math.min(1, Math.max(ky, kz) + 0.35 * ky * kz);
+}
 
 export class MaquetaEffect extends Effect {
   // vivo (opcional): el estado del cielo de día y noche (src/mundo/cielo.js). De noche casi no se emborrona: las

@@ -17,7 +17,7 @@ const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)
 
 // el tamaño de las celdas de cada cosa (m) y su capa de azar (las mismas que en el mapa)
 export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5, canto: 1.3 };
-const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4, soto: 5 };
+const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4, soto: 5, ribera: 6, costa: 7 };
 export const DENSIDAD_BOSQUE = 0.55;   // de cerca, la densidad de un bosque de verdad (la del mapa)
 // Jóvenes y adultos, bien distintos (revisión del 1 nov; GDD apartado 8 y sistemas apartado 3): cada árbol sale con su
 // edad. El joven mide de 3 a 5 m (su propio modelo, fino y de copa rala: src/mundo/especies.js, a 4 m a escala 1) y
@@ -36,6 +36,16 @@ const PRADO = { pradera: 1, mixto: 0.8, caducifolio: 0.7, encinar: 0.55, taiga: 
 export function calvaTierra(x, z) {
   const ux = x + (fbm(x / 25, z / 25, 51, 2) - 0.5) * 9, uz = z + (fbm(x / 25, z / 25, 53, 2) - 0.5) * 9;
   return suave(0.66, 0.76, fbm(ux / 16, uz / 16, 41, 3) + (fbm(x / 4.5, z / 4.5, 47, 2) - 0.5) * 0.14 + (fbm(x / 90, z / 90, 55, 2) - 0.5) * 0.12);
+}
+// La marisma (13 nov, riberas y costas): la tierra llana y baja de las desembocaduras, a menos de 700 m del mar por el
+// río, que se encharca con las mareas: barro y hierba salada en vez de arena y prado. Devuelve de 0 a 1. y: altura sobre
+// el mar (m); s: pendiente; rio: paisaje.rioCerca (con su costa) o null. La pinta el suelo (src/mundo/color_suelo.js) y
+// la puebla de juncos el sotobosque (aquí abajo).
+export function marismaEn(y, s, rio, x, z) {
+  if (!rio || rio.costa == null || !(rio.costa < 700) || y > 1.8 || s > 0.1) return 0;
+  const b = rio.dm - rio.ancho / 2;
+  if (b < 0) return 0;
+  return (1 - suave(450, 700, rio.costa)) * (1 - suave(1.1, 1.8, y)) * (1 - suave(0.05, 0.1, s)) * (1 - suave(60, 140, b)) * (0.75 + 0.25 * fbm(x / 30, z / 30, 85, 2));
 }
 const PASO_PEND = 3;                   // la pendiente, con vecinos a 3 m (la forma del terreno, no cada piedrecita)
 
@@ -60,10 +70,15 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     return Math.hypot(h(i + 1, j) - h(i - 1, j), h(i, j + 1) - h(i, j - 1)) / (2 * PASO_PEND);
   };
   const tramos = paisaje.riosEn(x0, z0, x1, z1);
-  // qué hay en (x, z): nada en el agua ni en la orilla; si no, su sitio (bioma, roca…), la pendiente y la altura
-  const sitioEn = (x, z) => {
+  // qué hay en (x, z): nada en el agua; si no, su sitio (bioma, roca…), la pendiente y la altura. En la orilla de un río,
+  // lo que queda en seco (seco m o más por encima del agua) sí: antes no se ponía nada a menos de 4 m del cauce y el
+  // bosque quedaba siempre apartado del río por una franja vacía (valravnx, 13 nov: «en el bosque me gustaría verlo más
+  // real… que el bosque casi toque el río»). Los árboles piden algo más de altura que la hierba.
+  const sitioEn = (x, z, seco = 0.3) => {
     const y = alt(x, z);
-    if (y < 0.3 || paisaje.agua(x, z, tramos) !== null) return null;
+    if (y < 0.3) return null;
+    if (!globalThis.__orillaVieja) { const n = paisaje.agua(x, z, tramos); if (n !== null && y < n + seco) return null; }
+    else if (paisaje.agua(x, z, tramos) !== null) return null;
     const st = paisaje.sitio(x, z, y);
     return st && st.bioma ? { st, s: pendiente(x, z), y } : null;
   };
@@ -82,7 +97,10 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
   const arbolDeCelda = (cx, cz, r, dentro) => {
     const x = cx + (r() - 0.5) * 4, z = cz + (r() - 0.5) * 4, u = r(), q = r(), v = r(), giro = r() * 6.3, tono = 0.82 + r() * 0.3;
     if (!dentro(x, z)) return null;
-    const s = sitioEn(x, z); if (!s || s.y < 1.5) return null;
+    // (por debajo de 1,5 m, solo lejos del mar: antes, nada; y las vegas bajas de los ríos, a menos de 1 m tierra adentro,
+    // quedaban sin bosque, con una franja de prado entre el río y los árboles)
+    const s = sitioEn(x, z, 0.35); if (!s || (s.y < 1.5 && (!(s.st.costa > 120) || globalThis.__orillaVieja))) return null;
+    if (s.y < 1.8 && tramos.length && marismaEn(s.y, s.s, paisaje.rioCerca(x, z, tramos), x, z) > 0.3) return null;   // (en la marisma, no)
     const w = r();   // (el último: así lo de antes de cada árbol sale igual)
     const { d, especie, tam, linde } = bosqueEn(s.st, s.s, x, z, { semilla, u });
     if (!especie || q > d * DENSIDAD_BOSQUE) return { arbol: null, d, linde, s, x, z };
@@ -121,6 +139,53 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
         if (lejosTierra && f < 0.55 * prado * (1 - d) * mancha * mancha) R.sotobosque.push({ x, z, y: s.y, tipo: 'flor', tam: 0.8 + a * 0.5, giro: b * 6.3, color: Math.min(2, Math.floor(fbm(x / 40, z / 40, 63, 1) * 3)) });
         else if (lejosTierra && f > 1 - 0.07 * linde * (d > 0.02)) R.sotobosque.push({ x, z, y: s.y, tipo: c < 0.7 ? 'hierba_larga' : 'ortigas', tam: 0.65 + a * 0.5, giro: b * 6.3, tono: 0.85 + c * 0.3 });
       }
+    });
+
+    // La ribera y la costa (13 nov, riberas y costas). En el río: juncos en el agua somera del borde (donde no corre
+    // fuerte), y en la orilla, hierba alta, ortigas y algún helecho; los juncos que se recogen siguen en la orilla seca
+    // (src/logica/recogida_mundo.js), estos son solo adorno y van dentro del agua. En la marisma, matas de juncos y hierba
+    // salada. En la playa, hierba de duna rala en la parte alta de la arena.
+    const gruesos = new Map(), grueso = (x, z) => {
+      const i = Math.floor(x / 6), j = Math.floor(z / 6), k = i + ',' + j;
+      let g = gruesos.get(k);
+      if (!g) { const c = paisaje.rioCerca(i * 6 + 3, j * 6 + 3, tramos); g = { b: c.dm - c.ancho / 2, costa: c.costa }; gruesos.set(k, g); }
+      return g;
+    };
+    if (tramos.length && !globalThis.__sinRibera) recorrer(0.9, CAPA.ribera, a0, b0, a1, b1, (cx, cz, r) => {
+      const x = cx + (r() - 0.5) * 0.8, z = cz + (r() - 0.5) * 0.8, q = r(), u = r(), giro = r() * 6.3, tono = 0.85 + r() * 0.3;
+      if (!dentro(x, z)) return;
+      // (primero, en una rejilla de 6 m: lo lejos del río se salta sin medir cada celda; si no, costaba el triple)
+      const g = grueso(x, z); if (g.b > 9 && !(g.costa < 700)) return;
+      const c = paisaje.rioCerca(x, z, tramos), b = c.dm - c.ancho / 2;
+      if (b < -1.3 || b > 140) return;
+      const mancha = suave(0.42, 0.6, fbm(x / 6, z / 6, 81, 2));
+      // (el paisaje no deja nada a menos de 4 m del cauce, sitioEn: aquí se mira si el suelo queda bajo el agua o no)
+      const y = alt(x, z), nivel = paisaje.agua(x, z, tramos), hondo = nivel === null ? -1 : nivel - y;
+      if (y < 0.3) return;
+      if (hondo > 0.05) {
+        // en el agua somera del borde; donde corre fuerte, solo en el remanso de la misma orilla y menos
+        if (hondo > 0.7 || q > 0.45 * mancha || (c.costa ?? Infinity) < 150) return;
+        if (paisaje.corriente(x, z, tramos).vel > 1.1 && (hondo > 0.35 || q > 0.15 * mancha)) return;
+        R.sotobosque.push({ x, z, y, tipo: 'junco_agua', tam: 0.7 + u * 0.6, giro, tono });
+        return;
+      }
+      const st = paisaje.sitio(x, z, y); if (!st || !st.bioma || st.bioma === 'nieve') return;
+      const m = marismaEn(y, pendiente(x, z), c, x, z);
+      if (m > 0.3) {
+        // (los juncos de la marisma se recogen: son puntos de recogida, src/logica/recogida_mundo.js, que se marcan al
+        // acercarse; estos, de adorno, para que se vea como un juncal, y la hierba salada)
+        if (q < 0.3 * m * mancha) R.sotobosque.push({ x, z, y, tipo: u < 0.5 ? 'junco_agua' : 'hierba_larga', tam: 0.6 + u * 0.6, giro, tono, sal: true });
+        return;
+      }
+      if (b > 4 || calvaTierra(x, z) > 0.3) return;
+      if (q < 0.32 * (1 - b / 4) * (0.35 + 0.65 * mancha)) R.sotobosque.push({ x, z, y, tipo: u < 0.6 ? 'hierba_larga' : u < 0.85 ? 'ortigas' : 'helechos', tam: 0.7 + u * 0.5, giro, tono });
+    });
+    recorrer(1.6, CAPA.costa, a0, b0, a1, b1, (cx, cz, r) => {
+      const x = cx + (r() - 0.5) * 1.4, z = cz + (r() - 0.5) * 1.4, q = r(), u = r(), giro = r() * 6.3, tono = 0.85 + r() * 0.3;
+      if (q > 0.12 || !dentro(x, z)) return;
+      const s = sitioEn(x, z);
+      if (!s || !(s.st.costa < 90) || s.s > 0.25 || s.y < 1.4 || s.y > 3.2 || !(s.st.roca === 'arenisca' || s.st.roca === 'caliza')) return;
+      if (q < 0.12 * suave(0.4, 0.6, fbm(x / 9, z / 9, 87, 2))) R.sotobosque.push({ x, z, y: s.y, tipo: 'hierba_duna', tam: 0.55 + u * 0.5, giro, tono });
     });
 
     // El sotobosque al pie de los árboles (13 nov, el hito «El aspecto»): un corro de 2 a 6 helechos, ortigas, hierbas

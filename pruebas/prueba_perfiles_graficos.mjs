@@ -68,6 +68,15 @@ console.log('Desenfoque de maqueta');
   comprobar('la franja del centro queda nítida del todo (donde está el personaje)', [0.3, 0.4, 0.46, 0.55, 0.64].every(y => emborronado(y) === 0));
   comprobar('hacia arriba y hacia abajo se emborrona cada vez más', emborronado(0.98) > emborronado(0.85) && emborronado(0.85) > 0 && emborronado(0.75) === 0 && emborronado(0.02) > emborronado(0.15) && emborronado(0.15) > 0);
   comprobar('el emborronado es corto: como mucho un 1,5 % del alto de la pantalla', MAQUETA.fuerza <= 0.015 && MAQUETA.fuerza > 0);
+  // el modo maqueta al 100 % (valravnx, 13 nov)
+  const { emborronadoFuerte, MAQUETA_FUERTE } = await import('../src/posprocesado/maqueta.js');
+  const F = process.env.MUTAR === 'maqueta' ? { ...MAQUETA_FUERTE, profundidad: 0 } : MAQUETA_FUERTE;
+  comprobar('al 100 %: el personaje (a la distancia de foco, en el centro) queda nítido', emborronadoFuerte(0.46, 1, F) === 0 && emborronadoFuerte(0.5, 1.1, F) === 0);
+  comprobar('al 100 %: lo lejano se emborrona aunque esté en el centro de la pantalla', emborronadoFuerte(0.46, 2.5, F) > 0.6 && emborronadoFuerte(0.46, 1.5, F) > 0.1, emborronadoFuerte(0.46, 2.5, F).toFixed(2));
+  comprobar('al 100 %: lo que está mucho más cerca que el personaje, también', emborronadoFuerte(0.46, 0.3, F) > 0.5, emborronadoFuerte(0.46, 0.3, F).toFixed(2));
+  comprobar('al 100 %: la franja nítida es más estrecha y el emborronado más fuerte que el normal', emborronadoFuerte(0.75, 1, F) > emborronado(0.75) && emborronadoFuerte(0.25, 1, F) > emborronado(0.25) && F.fuerza > MAQUETA.fuerza);
+  comprobar('al 100 %: el emborronado sigue siendo corto (como mucho un 2,5 % del alto)', F.fuerza <= 0.025);
+  comprobar('al 100 %: el color de juguete es suave (como mucho un 20 % más de saturación y un 10 % de contraste)', F.saturacion > 1 && F.saturacion <= 1.2 && F.contraste >= 1 && F.contraste <= 1.1);
   comprobar('el móvil básico no lo lleva y los demás sí', !PERFILES.find(p => p.id === 'movil-1').desenfoque && PERFILES.filter(p => p.id !== 'movil-1').every(p => p.desenfoque));
 }
 

@@ -104,6 +104,14 @@ comprobar('las densidades solo usan zonas del documento', Object.entries(DENSIDA
   comprobar('y col silvestre y nabo silvestre en la ribera (las semillas del huerto)', MUTAR === '2' ? false : sem.col_silvestre > 0 && sem.nabo_silvestre > 0 && !sem.fuera, JSON.stringify(sem));
 }
 
+// 5) la marisma de una desembocadura (valravnx, 13 nov: «potenciar… una desembocadura para tener mucho más surplus de
+// juncos»): muchos más juncos que a lo largo de un río (en un cuadro de 200 m de cada uno, junto a la salida de la demo)
+{
+  const cuenta = (x, z) => puntosDe(cuadro(x, z, 100)).filter(q => q.tipo === 'juncos').length;
+  const des = cuenta(217470, 30960), rio = MUTAR === 'marisma' ? cuenta(217470, 30960) * 10 : cuenta(216297, 31463);
+  comprobar('en la marisma de una desembocadura, muchos más juncos que en la orilla de un río (al menos 5 veces)', des >= 5 * Math.max(1, rio), `${des} frente a ${rio}`);
+}
+
 // 5) alrededor del sitio de salida común (a menos de 300 m): ramas, piedra, sílex y fibra para empezar. De los sitios de
 // la salida al azar solo se dice lo que hay a menos de 500 m (en la pradera abierta hay sitios sin sílex ni piedra
 // cerca: es una decisión pendiente de valravnx, no un fallo de esto)

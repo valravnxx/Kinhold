@@ -865,7 +865,7 @@ function evaluarColocacion() {
     if (v.ok && pj.k > 0) v = { ok: false, motivo: 'Los puestos de trabajo van en la planta baja.' };
     if (v.ok) v = mundo.puedeTocar(x, z, yoAutor());
     // los almacenajes, solo en tu tierra (o en la de quien te invita)
-    if (v.ok && ESTACIONES[sel.tipo].tierra && !mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
+    if (v.ok && ESTACIONES[sel.tipo].tierra && !mundo.dentroDeTierra(x, z, yoAutor())) v = { ok: false, motivo: sel.tipo === 'secadero' ? 'El secadero va en tu tierra (o en la de quien te invita).' : 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
     pintarFantasma(v.ok);
     const e = ESTACIONES[sel.tipo];
     mostrarAviso(v.ok ? tr('{e}: pon el marco y llévale {c}.', { e: tr(e.nombre), c: Object.entries(e.coste).map(([m, n]) => `${n} ${tr(CATALOGO[m].nombre).toLowerCase()}`).join(', ') }) : tr(v.motivo), !v.ok);

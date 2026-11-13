@@ -1518,9 +1518,9 @@
     },
     {
      "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T09:14:19+01:00",
-     "rama": "trabajo/20261113-0915-aspecto-riberas"
+     "fin": "2026-11-13T15:45:28+01:00"
     },
     {
      "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
@@ -1544,9 +1544,9 @@
     },
     {
      "nombre": "El modo maqueta al 100 % en Ajustes: desenfoque por distancia, más fuerte y más fino, y el color de juguete",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T11:39:15+01:00",
-     "rama": "trabajo/20261113-1139-maqueta"
+     "fin": "2026-11-13T14:10:57+01:00"
     }
    ]
   },
@@ -2303,9 +2303,9 @@
     },
     {
      "nombre": "El secadero y la carne seca: el secadero (4 troncos delgados de postes y 2 cuerdas, en tu tierra, fuera) como estación; se cuelgan 2 carnes crudas y al cabo de unas horas reales dan 1 carne seca, que no se estropea y sacia como la asada. Lo que tarda se calcula por tiempo transcurrido en la lógica pura (lo decide el servidor), y sirve luego a las cubas y a la carbonera. Cadena: tronco delgado ← talar un árbol joven con el hacha de piedra; cuerda ← 3 cordeles en el banco de tronco ← fibra a mano; carne cruda ← despiezar la liebre con la lasca ← cazarla con la lanza endurecida",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T05:19:44+00:00",
-     "rama": "trabajo/20261113-0518-secadero"
+     "fin": "2026-11-13T14:41:11+00:00"
     },
     {
      "nombre": "El raspador de pieles, la piel limpia y el zurrón: el bastidor (4 varas y 1 cuerda) como estación; en él, con la lasca de sílex, 1 piel → 1 piel limpia; y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco: mochila mixta pequeña). Cadena: vara ← talar un árbol joven; piel ← despiezar la liebre; cordel ← fibra",
@@ -4346,6 +4346,27 @@
      "archivo": "jugar/demo/v194.html",
      "capturas": "capturas/demo-v194",
      "notas": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano y caben en el cinturón y en el cesto; las habas se asan al fuego."
+    },
+    {
+     "v": "v195",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v195.html",
+     "capturas": "capturas/demo-v195",
+     "notas": "El modo maqueta al 100 % en Ajustes: sí, 100 % y no. Al 100 %, más desenfoque, también por la distancia con el foco en el personaje, y un poco de color de juguete."
+    },
+    {
+     "v": "v196",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v196.html",
+     "capturas": "capturas/demo-v196",
+     "notas": "El secadero y la carne seca: un puesto nuevo en «Puestos de trabajo» (4 troncos delgados y 2 cuerdas, fuera y en tu tierra). Se cuelga carne cruda, que colgada no se estropea; en su pestaña «Carne seca» se pone a secar cada carne (1 cruda → 1 seca, 6 h), que no se estropea y sacia como la asada. Lo colgado se ve para todos. Cabe en el cesto."
+    },
+    {
+     "v": "v197",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v197.html",
+     "capturas": "capturas/demo-v197",
+     "notas": "Riberas y costas: juncos y hierba en las orillas, el bosque hasta el río, la marisma de las desembocaduras con muchos juncos que se recogen, hierba de duna, y los juncos de Meshy (el que se corta, el cortado y el de adorno)."
     }
    ]
   },
