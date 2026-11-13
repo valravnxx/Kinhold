@@ -1,0 +1,32 @@
+Despiezar la liebre
+  OK   con las manos, gasta 1 liebre, pide la lasca de sílex y da carne cruda y una piel
+  OK   la honda y el odre vuelven al panel (ya hay piel)
+  OK   sin la lasca no se despieza, y dice qué hace falta — Para eso hace falta llevar lasca de sílex.
+  OK   el panel la enseña casi, sin herramienta, y con lo que da además — {"receta":"despiezar_liebre","nombre":"Despiezar la liebre","uso":"manos","grupo":"casi","veces":0,"estacion":null,"conQue":"","gasta":{"liebre":1},"da":"carne_cruda","n":1,"s":30,"de":{"liebre":{"encima":0,"suelo":1,"sitios":{"suelo":1}}},"faltan":{},"requiere":["lasca_silex"],"sinHerramienta":true,"tambien":{"piel":1}}
+  OK   con la lasca, se despieza la liebre del suelo de al lado
+  OK   la lasca no se gasta
+  OK   antes de su tiempo no está
+  OK   al terminar se recogen la carne cruda y la piel — {"ok":true,"dados":[{"objeto":"carne_cruda","cantidad":1,"donde":[["mano:izq",1]]},{"objeto":"piel","cantidad":1,"donde":[["espalda/0",1]]}],"quedan":false}
+  OK   la carne cruda dura 3 h desde que se despiezó — 1794214830000
+  OK   con una mano libre, la carne a la mano y la piel, que no cabe, al suelo — [{"objeto":"carne_cruda","cantidad":1,"donde":[["mano:izq",1]]},{"objeto":"piel","cantidad":1,"alSuelo":"s3"}]
+Asar la carne y comerla
+  OK   al fuego, 1 carne cruda da 1 carne asada
+  OK   las dos se comen y la asada sacia bastante más — {"bayas":5,"setas":7,"carne_cruda":12,"carne_asada":35}
+  OK   la carne cruda se deja en la hoguera
+  OK   con el fuego apagado no se asa — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+  OK   se enciende
+  OK   con el fuego encendido se asa
+  OK   y se recoge la carne asada, que no lleva hora (no se estropea) — {"ok":true,"dados":[{"objeto":"carne_asada","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false}
+La carne cruda se estropea
+  OK   al juntar dos montones, se queda la hora de la que antes se estropea — [{"tipo":"carne_cruda","n":2,"hasta":1794204001000}]
+  OK   al soltarla, la del suelo lleva su hora — {"tipo":"carne_cruda","n":1,"hasta":1794204001000}
+  OK   al cogerla, la conserva (no vuelve a empezar) — {"ok":true,"objeto":"carne_cruda","cantidad":1,"donde":[["mano:der",1]],"queda":0}
+  OK   y se guarda con ella
+  OK   la que no lleva hora la recibe al repasarla (desde ahora)
+  OK   antes de su hora sigue ahí
+  OK   pasada su hora desaparece de lo que llevas (y dice cuánta) — {"cambia":true,"estropeadas":{"carne_cruda":2}}
+  OK   la asada sigue ahí
+  OK   la de dentro de la mochila, también
+  OK   la del suelo pasada su hora desaparece; lo demás, no — {"cambia":true,"estropeadas":{"carne_cruda":1}}
+
+27 bien, 0 mal

@@ -1,0 +1,11 @@
+Entran
+  OK   entran los 6 bots, cada uno con su autor del servidor — jugador:b93273db jugador:e6667449 jugador:5520726c jugador:96880850 jugador:a3b76d58 jugador:9179f9b7
+  OK   cada uno pone su mojón (un mojón por personaje; sin él no se construye) — 6 mojones
+Construyen
+  OK   el servidor tiene el estado de todos — 6 presentes
+  OK   mientras construyen, trabajan o van a la obra — talar talar talar talar talar talar
+  OK   levantan obras en el mundo del servidor — 6 obras terminadas
+  OK   cada obra lleva el trabajo de su bot (autor del servidor) — 6 bots con obra
+  OK   la copia del mundo de los bots es igual que la del servidor — 12 y 12 piezas
+Pelean
+  OK   cada bot se pone frente a su pareja (si nadie ha muerto en ella) — 0.87 m, 0.90 m, 0.86 m
