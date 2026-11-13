@@ -266,8 +266,25 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     const colorRoca = e => { const k = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza, t = (v) => 0.5 * lin(v) / 0.4 + 0.5 * 0.8; return c.setRGB(t(k[0]), t(k[1]), t(k[2])); };
     // la roca de los cortados (13 nov; src/logica/vegetacion.js, «paredes»): las piezas de roca del visor del mapa
     // (src/mundo/rocas.js), del tono de su roca apagado como el del estilo v5, igual que allí
-    const piezas = modelosRocaPared(), mr = materialRoca();
-    piezas.forEach((geo, v) => {
+    // (13 nov, valravnx: con las piezas de pared de Meshy, si han llegado: en estratos, con grietas y el saliente; de 4, 4
+    // y 3 m de alto, con la base en el suelo y la cara a +z, medio metidas en la ladera; si no, las de código del visor)
+    const paredesM = ['pared_estratos', 'pared_grietas', 'pared_saliente'].map(n => M(n)), ALTO_PARED = [4, 4, 3];
+    if (paredesM.every(Boolean)) {
+      paredesM.forEach((m, v) => {
+        const lista = paredes.filter(e => e.variante % 3 === v); if (!lista.length) return;
+        for (const [nivel, l] of [['cerca', lista.filter(e => dist(e) < 40)], ['medio', lista.filter(e => dist(e) >= 40 && dist(e) < 100)], ['lejos', lista.filter(e => dist(e) >= 100)]]) {
+          if (!l.length) continue;
+          const im = new THREE.InstancedMesh(m[nivel].geo, m[nivel].mats, l.length);
+          l.forEach((e, k) => {
+            const esc = e.alto / ALTO_PARED[v];
+            o.position.set(e.x, e.y - e.alto * 0.3, e.z); o.rotation.set(e.inclina * 0.5, e.giro, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
+            im.setColorAt(k, colorRoca(e).lerp(blanco, 0.45).multiplyScalar(e.tono));
+          });
+          im.castShadow = nivel !== 'lejos'; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
+        }
+      });
+    } else modelosRocaPared().forEach((geo, v) => {
+      const mr = materialRoca();
       const lista = paredes.filter(e => e.variante === v); if (!lista.length) return;
       const im = new THREE.InstancedMesh(geo, mr, lista.length);
       lista.forEach((e, k) => {

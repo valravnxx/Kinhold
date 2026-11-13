@@ -15,7 +15,8 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 export const ESPECIES_MESHY = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
 export const LISTA_NATURALEZA = [...ESPECIES_MESHY, ...ESPECIES_MESHY.map(e => e + '_joven'),
   'matorral', 'arbusto_bayas', 'roca', 'pena', 'canto', 'hierba_larga', 'ortigas', 'juncos', 'helechos',
-  'junco_recoger', 'junco_cortado', 'junco_adorno'];   // (13 nov, valravnx: los juncos que se recogen, cortados y de adorno)
+  'junco_recoger', 'junco_cortado', 'junco_adorno',
+  'pared_estratos', 'pared_grietas', 'pared_saliente'];   // (13 nov, valravnx: las piezas de pared de los acantilados)   // (13 nov, valravnx: los juncos que se recogen, cortados y de adorno)
 
 // la carpeta, al lado de la de los personajes que da cada prototipo (src/mundo/eleccion.js: recursosTaller)
 export const carpetaNaturaleza = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/personajes\/[^/]*\/?$/, 'naturaleza/meshy-v1/');

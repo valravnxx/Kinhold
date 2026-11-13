@@ -14,3 +14,6 @@
   cortados y juncos que no valen para recoger»): `junco_recoger` (la mata que se corta), `junco_cortado` (lo que queda
   hasta que vuelve a crecer) y `junco_adorno` (la mata rala y seca que no vale), hechos igual, con Meshy y el prompt de
   estilo, el 13 nov de 2026 (unos 117 créditos), y preparados con `herramientas/meshy/preparar_naturaleza.mjs`.
+- Las tres piezas de pared de los acantilados (valravnx, 13 nov 2026: «encargar rocas de pared a Meshy»): `pared_estratos`,
+  `pared_grietas` y `pared_saliente`, con Meshy y el prompt de estilo, el 13 nov de 2026 (unos 117 créditos), preparadas
+  con `herramientas/meshy/preparar_naturaleza.mjs`.
