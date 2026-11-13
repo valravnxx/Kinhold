@@ -340,13 +340,15 @@ function hoyoBarro(id) {
 // campo, bordeado por sus 8 piedras hincadas, con briznas de paja sueltas de lo ya trillado. Las gavillas que se le
 // dejan, tumbadas encima (DEPOSITO_SITIOS.era).
 export const ERA = 1.45;
-const TIERRA_ERA = 0x847564, TIERRA_ERA_OSC = 0x5e5244;
+const TIERRA_ERA = 0x847564, TIERRA_ERA_OSC = 0x5e5244, TIERRA_ERA_PISADA = 0x766856;
 function era(id) {
   const L = new Lote({ rangoSuelo: 0.25, variacion: 0.05 });
-  L.add(new THREE.CylinderGeometry(ERA, ERA + 0.06, 0.1, 30), TIERRA_ERA_OSC, 0, -0.01, 0, null, { tex: 'piedra', sinSuelo: true }); // el canto
+  // el canto, hondo: en ladera, la era es una explanada; cuesta arriba se mete en la tierra y cuesta abajo deja ver su talud
+  L.add(new THREE.CylinderGeometry(ERA, ERA + 0.22, 0.5, 30), TIERRA_ERA_OSC, 0, -0.21, 0, null, { tex: 'piedra', sinSuelo: true });
   L.add(new THREE.CircleGeometry(ERA - 0.01, 30), TIERRA_ERA, 0, 0.041, 0, { x: -Math.PI / 2 }, { tex: 'piedra', sinSuelo: true });  // lo apisonado
+  L.add(new THREE.RingGeometry(0.55, 1.05, 30), TIERRA_ERA_PISADA, 0, 0.043, 0, { x: -Math.PI / 2 }, { tex: 'piedra', sinSuelo: true }); // el corro pisado al trillar
   for (let i = 0; i < 8; i++) {
-    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.25, r = ERA + 0.1;
+    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.25, r = ERA - 0.04;   // (hincadas en el borde)
     L.add(piedraIrregular(0.24, 1, id + 'e' + i, 0.24), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, 0.05, Math.sin(a) * r, { y: a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.6 }, { escala: new THREE.Vector3(1.35, 0.55, 0.85), plano: true });
   }
   for (let i = 0; i < 46; i++) { // briznas de paja sueltas
