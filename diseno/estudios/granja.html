@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Los campos que tú trazas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Un documento de estudio, una columna; el mismo aire que los demás estudios del proyecto (tinta parda sobre papel). */
+:root{--fondo:#f6f1e7;--tinta:#2a241c;--suave:#6c6152;--acento:#8a5d16;--linea:#e1d6c2;--caja:#fffaf0;--bien:#3f6b32;--mal:#9b3a2a;
+--labrado:#8a6a45;--hierba:#8f9a5a;--arbol:#55683a;--estaca:#5a3a1c;
+--serif:Georgia,"Times New Roman",serif;--texto:system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fondo:#1d1914;--tinta:#efe6d6;--suave:#b5a890;--acento:#e0aa4a;--linea:#3a3127;--caja:#262019;--bien:#8fc27a;--mal:#e08a76;--labrado:#a9835a;--hierba:#6d7a45;--arbol:#7f9a55;--estaca:#d9a86a;color-scheme:dark}}
+:root[data-theme="dark"]{--fondo:#1d1914;--tinta:#efe6d6;--suave:#b5a890;--acento:#e0aa4a;--linea:#3a3127;--caja:#262019;--bien:#8fc27a;--mal:#e08a76;--labrado:#a9835a;--hierba:#6d7a45;--arbol:#7f9a55;--estaca:#d9a86a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.6 var(--texto)}
+main{max-width:920px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;text-wrap:balance}
+h1{font-size:32px;margin:0 0 6px}
+h2{font-size:24px;margin:44px 0 10px;padding-top:12px;border-top:1px solid var(--linea)}
+h3{font-size:19px;margin:24px 0 8px}
+p,li{max-width:70ch}
+.sub{color:var(--suave);margin:0 0 22px}
+.resumen{background:var(--caja);border:1px solid var(--linea);border-radius:10px;padding:14px 18px}
+.resumen ol{margin:6px 0 0;padding-left:22px}
+.tw{overflow-x:auto;margin:10px 0 18px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:620px}
+th,td{border-bottom:1px solid var(--linea);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--suave)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.caja{background:var(--caja);border:1px solid var(--linea);border-radius:10px;padding:12px 16px;margin:12px 0}
+.si{color:var(--bien);font-weight:600}.no{color:var(--mal);font-weight:600}
+.nota{color:var(--suave);font-size:14.5px}
+.prov{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--acento);font-weight:600}
+code{font-size:14px}
+li{margin:4px 0}
+figure{margin:18px 0}
+figcaption{color:var(--suave);font-size:14.5px;margin-top:6px}
+.dibujo{overflow-x:auto;background:var(--caja);border:1px solid var(--linea);border-radius:10px;padding:10px}
+.dibujo svg{display:block;width:100%;min-width:560px;height:auto}
+.d-hierba{fill:var(--hierba);opacity:.35}
+.d-campo{fill:none;stroke:var(--estaca);stroke-width:2;stroke-dasharray:6 5}
+.d-labrado{fill:var(--labrado);opacity:.75}
+.d-estaca{fill:var(--estaca)}
+.d-arbol{fill:var(--arbol)}
+.d-tocon{fill:var(--estaca);opacity:.7}
+.d-yo{fill:var(--acento)}
+.d-pasada{fill:none;stroke:var(--acento);stroke-width:2}
+.d-txt{fill:var(--tinta);font:13px var(--texto)}
+.d-txt.s{fill:var(--suave);font-size:12px}
+ol.pasos>li{margin:10px 0}
+</style>
+</head><body><main>
+<h1>Los campos que tú trazas</h1>
+<p class="sub">Estudio para valravnx, 13 nov 2026, sobre su idea para la granja: campos a la escala de verdad, con la forma que marque el jugador, que hay que limpiar y labrar a mano, en vez de poner una casilla de cultivo como quien pone un mueble. Es una propuesta: no cambia nada del juego ni del roadmap hasta que decidas.</p>
+
+<div class="resumen">
+<b>En corto</b>
+<ol>
+<li><b>La idea es buena y encaja con lo que ya hay.</b> El juego ya pinta el suelo con materiales (hierba, tierra, roca, hojarasca), ya alisa el terreno con una brocha redonda al nivelar, y la hierba densa ya no sale donde el suelo no es hierba. Labrar es esa misma brocha pintando «tierra labrada» dentro de tu campo.</li>
+<li><b>El campo se marca clavando estacas</b> en el suelo, una por punto, y se cierra al volver a la primera. Se hace igual en PC y en el móvil, lo ven todos y es lo que se hacía (amojonar).</li>
+<li><b>La escala de verdad pone el ritmo sola.</b> Una yunta de bueyes araba un acre (unos 4.000 m²) al día, y el trigo daba unas 4 semillas por cada una sembrada. A mano y con esa proporción, un campo grande cuesta, y la granja crece poco a poco, cosecha a cosecha, como pides.</li>
+<li><b>Huerto y campo son el mismo sistema a dos escalas:</b> el huerto, pequeño y junto a casa, se siembra planta a planta; el campo de cereal, a voleo.</li>
+<li><b>La granja básica:</b> marcar, limpiar, labrar, sembrar, crecer, segar y trillar, con cebada (grano y paja: el tejado de paja), lino y un huerto. Sin estaciones del año todavía, ni barbecho, ni bueyes.</li>
+</ol>
+</div>
+
+<h2>Lo que propones</h2>
+<ul>
+<li>La granja se irá ampliando siempre poco a poco; ahora toca planificar la más básica.</li>
+<li>Los campos, a la escala de la vida real: un huerto ocupa poco; el trigo pide mucho más sitio.</li>
+<li>Nada de casillas cuadradas para las plantaciones grandes: una zona de siembra que tú delimitas con varios puntos, con la forma que quieras, y que hay que limpiar de árboles.</li>
+<li>Labrar como un círculo a tu alrededor o donde apuntas. Un campo grande da más trabajo, pero da más.</li>
+<li>Alejarse del sistema típico de poner un mueble que es un cultivo.</li>
+</ul>
+
+<h2>Valoración</h2>
+<div class="tw"><table>
+<tr><th>A favor</th><th>En contra o difícil</th></tr>
+<tr><td>El campo se ve como un campo: con su forma, siguiendo el terreno, la orilla o el bosque. Va con la referencia de la maqueta (los campos del fondo).</td><td>Dibujar muchas plantas en un campo grande. Se resuelve con lo mismo que la hierba densa (instancias por celdas de 8 m alrededor del jugador) y, de lejos, el color del suelo. Hay que medirlo en tu móvil.</td></tr>
+<tr><td>El trabajo crece con el tamaño: entre dos se labra el doble. Da sentido a jugar en pareja.</td><td>Labrar un campo grande pasada a pasada puede cansar. Hace falta que cada pasada se sienta bien (sonido, polvo, el suelo que cambia) y, más adelante, el arado con bueyes para lo grande.</td></tr>
+<tr><td>Casi todo ya existe: la brocha del nivelado, los materiales del suelo, tu tierra, talar, desbrozar, la azada, la hoz y el mayal.</td><td>Los árboles vuelven a crecer a las 3 o 6 semanas reales: dentro de un campo no deben volver. Y hace falta arrancar el tocón.</td></tr>
+<tr><td>El servidor guarda poco: los puntos del campo y un mapa de bits de 1 m (un campo de 1.000 m² son 125 bytes por capa).</td><td>Los lindes: un campo no puede salirse de tu tierra, cruzar una obra ni pisar otro campo. Hay que validarlo en el servidor.</td></tr>
+<tr><td>No hay que aprender una herramienta de dibujo: se clava una estaca donde estás.</td><td>En ladera fuerte no se labra bien. Propongo un tope de pendiente (como en la vida real, los campos van en lo llano o en terrazas).</td></tr>
+</table></div>
+<p>En conjunto: <span class="si">sí</span>. Es más trabajo que poner casillas, pero se apoya en sistemas que ya funcionan y es lo que mejor casa con el juego: lo que cambia el mundo lo cambias tú, a escala real.</p>
+
+<h2>La escala de verdad</h2>
+<div class="tw"><table>
+<tr><th>Medida</th><th>Cuánto</th><th>De dónde</th></tr>
+<tr><td>Acre: lo que una yunta de bueyes (de 4 a 8) araba en un día</td><td class="n">4.047 m²</td><td>Wikipedia (Acre); historia local de Sutton Coldfield (encuesta de 1308)</td></tr>
+<tr><td>Una franja (selión) de campo abierto</td><td class="n">≈ 200 × 20 m</td><td>Wikipedia (Selion; Ridge and furrow)</td></tr>
+<tr><td>Las tierras de una familia, en unas 70 franjas repartidas</td><td class="n">≈ 8 ha</td><td>Wikipedia (Open-field system)</td></tr>
+<tr><td>El huerto junto a la casa (croft), en Elton, 1286</td><td class="n">½ acre ≈ 0,2 ha</td><td>Wikipedia (Open-field system)</td></tr>
+<tr><td>Trigo cosechado por cada grano sembrado (Battle Abbey, Sussex, finales del XIV)</td><td class="n">4,34</td><td>Wikipedia (Open-field system); la cebada, 4,01; la avena, 2,87</td></tr>
+<tr><td>Lo que daba un acre</td><td class="n">7–17 bushels (≈ 35 l cada uno)</td><td>Wikipedia (Open-field system)</td></tr>
+</table></div>
+<p class="nota">No comprobado: cuánto cava o labra a mano una persona en un día. No he encontrado una fuente fiable; las cifras de juego de abajo son de partida y se ajustan jugando.</p>
+<p>Lo que sale de aquí para el juego:</p>
+<ul>
+<li><b>Dos escalas bien distintas.</b> Un huerto de decenas de metros cuadrados se hace en un rato. Un campo de cereal de verdad mide miles; a mano, el primero será pequeño (unos cientos de m²) y se irá agrandando.</li>
+<li><b>La proporción de unos 4 a 1 hace la expansión natural.</b> Con las semillas silvestres siembras un trozo; de su cosecha guardas para sembrar un campo cuatro veces mayor, y así. No hace falta poner límites artificiales.</li>
+<li><b>Las franjas largas salían del arado con bueyes</b> (cuesta girar la yunta, y por eso se hacían largas y algo curvadas, en forma de S). Eso es para cuando haya bueyes: el arado haría pasadas largas y rectas en vez de círculos.</li>
+<li>Una nota sobre el huerto: el tomate llegó de América a finales del siglo XV, así que no cabe en el juego. El huerto medieval era de coles, nabos, cebollas, puerros, habas y hierbas.</li>
+</ul>
+
+<h2>Cómo lo hacen otros juegos</h2>
+<div class="tw"><table>
+<tr><th>Juego</th><th>Cómo es</th><th>Qué tomamos</th></tr>
+<tr><td>Uno de gestión de un pueblo medieval (2024)</td><td>El campo se dibuja por puntos, con la forma que quieras. El rendimiento crece con el tamaño. Los bueyes solo aran en línea recta, a lo largo, así que los jugadores acaban haciendo rectángulos. Se quejan de que un campo enorme tardaba meses en ararse y de tener que manejar todo con mucho detalle. La comunidad acaba recomendando campos medianos.</td><td>Dibujar por puntos. El rendimiento por superficie. Y el aviso: si lo grande se hace eterno, nadie lo hace. Lo pequeño tiene que salir a cuenta.</td></tr>
+<tr><td>Uno de supervivencia vikinga (2021)</td><td>Un cultivador «pinta» el suelo en un círculo donde apuntas, y luego se planta planta a planta.</td><td>Labrar en círculo donde apuntas. Plantar a mano en el huerto.</td></tr>
+<tr><td>Uno de supervivencia por bloques</td><td>La azada convierte el suelo en tierra de cultivo bloque a bloque. El suelo tiene nutrientes que se agotan; hay rotación y barbecho; junto al agua crece mejor.</td><td>El barbecho (ya decidido en el documento de sistemas), para más adelante.</td></tr>
+<tr><td>El documento de sistemas de Kinhold (propuesta)</td><td>Casillas de cultivo de 2 × 2 m, en la rejilla de construcción, una a una con la azada.</td><td>Se sustituye por esto: tu idea va más allá y la casilla de 2 m era precisamente el «mueble».</td></tr>
+</table></div>
+
+<h2>El sistema, paso a paso</h2>
+<figure>
+<div class="dibujo">
+<svg viewBox="0 0 640 300" role="img" aria-label="Un campo de forma irregular marcado con estacas junto al bosque: a la izquierda ya labrado a círculos, a la derecha con hierba, un tocón dentro por arrancar y el jugador labrando.">
+<rect class="d-hierba" x="0" y="0" width="640" height="300"></rect>
+<circle class="d-arbol" cx="560" cy="40" r="22"></circle><circle class="d-arbol" cx="600" cy="78" r="18"></circle><circle class="d-arbol" cx="522" cy="22" r="16"></circle><circle class="d-arbol" cx="612" cy="20" r="14"></circle>
+<defs><clipPath id="linde"><polygon points="90,110 230,84 380,96 470,150 430,240 260,262 100,232"></polygon></clipPath></defs>
+<g clip-path="url(#linde)">
+<circle class="d-labrado" cx="140" cy="140" r="26"></circle><circle class="d-labrado" cx="176" cy="128" r="26"></circle><circle class="d-labrado" cx="152" cy="178" r="26"></circle>
+<circle class="d-labrado" cx="190" cy="168" r="26"></circle><circle class="d-labrado" cx="120" cy="196" r="24"></circle><circle class="d-labrado" cx="214" cy="140" r="26"></circle>
+<circle class="d-labrado" cx="226" cy="186" r="26"></circle><circle class="d-labrado" cx="160" cy="222" r="24"></circle><circle class="d-labrado" cx="200" cy="216" r="24"></circle>
+<circle class="d-labrado" cx="104" cy="160" r="22"></circle><circle class="d-labrado" cx="252" cy="160" r="26"></circle>
+</g>
+<polygon class="d-campo" points="90,110 230,84 380,96 470,150 430,240 260,262 100,232"></polygon>
+<g><rect class="d-estaca" x="86" y="104" width="8" height="12"></rect><rect class="d-estaca" x="226" y="78" width="8" height="12"></rect><rect class="d-estaca" x="376" y="90" width="8" height="12"></rect><rect class="d-estaca" x="466" y="144" width="8" height="12"></rect><rect class="d-estaca" x="426" y="234" width="8" height="12"></rect><rect class="d-estaca" x="256" y="256" width="8" height="12"></rect><rect class="d-estaca" x="96" y="226" width="8" height="12"></rect></g>
+<circle class="d-tocon" cx="390" cy="180" r="9"></circle>
+<circle class="d-pasada" cx="292" cy="170" r="26"></circle>
+<circle class="d-yo" cx="318" cy="196" r="7"></circle>
+<text class="d-txt" x="96" y="96">estaca</text>
+<text class="d-txt" x="130" y="282">ya labrado (cada círculo, una pasada de azada)</text>
+<text class="d-txt" x="330" y="216">tú, labrando donde apuntas</text>
+<text class="d-txt s" x="402" y="176">tocón por arrancar</text>
+<text class="d-txt s" x="470" y="116">bosque: fuera del campo</text>
+</svg>
+</div>
+<figcaption>Un campo de unos 30 × 20 m (el dibujo no está a escala exacta) marcado con siete estacas. Lo labrado es tierra; el resto sigue siendo hierba hasta que pases la azada.</figcaption>
+</figure>
+
+<ol class="pasos">
+<li><b>Marcar el campo.</b> Con estacas (una vara afilada cada una) en la mano, Usar clava una donde estás. Hacen falta de 3 a 16. Al clavar la última junto a la primera, el campo se cierra y se ve el linde y su superficie en m². Solo en tu tierra o en la de quien te invita; no puede cruzar una obra, otro campo ni la orilla de un río, ni pasar de una pendiente. Mientras esté vacío se pueden mover las estacas o quitar el campo.</li>
+<li><b>Limpiar.</b> Dentro del campo los árboles ya no vuelven a crecer. Se talan como siempre y el tocón se arranca a golpes (nuevo: con la azada o el palo cavador; deja leña). Las matas se desbrozan; las piedras sueltas se recogen. Una roca grande se rodea con las estacas o se rompe. No se puede labrar donde quede algo.</li>
+<li><b>Labrar.</b> Con la azada en la mano, cada pasada voltea un círculo de tierra donde apuntas (a tu alcance), solo dentro del linde. El suelo pasa a «tierra labrada» (otro material del suelo, con surcos en su textura) y la hierba densa deja de salir ahí, como ya pasa con la tierra. Gasta aguante y cansancio, como talar. El campo enseña qué parte está labrada.</li>
+<li><b>Sembrar.</b> En el campo, a voleo: con las semillas en la mano, cada pasada esparce un círculo más ancho sobre lo labrado y gasta semilla según los m². En el huerto, planta a planta: cada Usar pone una planta en su hueco, a su distancia (una col cada medio metro, por ejemplo).</li>
+<li><b>Crecer.</b> Por fases que se ven (brote, verde, espiga, maduro), por tiempo transcurrido: lo calcula el servidor y todos lo ven igual. Lo labrado y no sembrado vuelve a ser hierba con el tiempo, y lo abandonado, también.</li>
+<li><b>Segar.</b> La cebada, con la hoz, a pasadas como al labrar: deja gavillas en el suelo. El lino se arranca a mano. Lo del huerto se coge a mano, planta a planta.</li>
+<li><b>Trillar.</b> Las gavillas, en la era (un suelo apisonado, nueva estación), con el mayal: dan el grano y la paja. Del grano se guarda la semilla para la próxima siembra.</li>
+</ol>
+
+<h2>Números de partida</h2>
+<p class="prov">Provisional · se ajusta jugando</p>
+<div class="tw"><table>
+<tr><th>Qué</th><th>Propuesta</th><th>Por qué</th></tr>
+<tr><td>Pasada de azada</td><td class="n">círculo de 1,2 m de radio · 2 s</td><td>Unos 4,5 m² por pasada (3,5 m² netos con los solapes): se nota el avance sin que sea un pincel gigante.</td></tr>
+<tr><td>Labrar 100 m² (un huerto)</td><td class="n">≈ 30 pasadas · 1 min</td><td>Un huerto se hace en un rato, como en la vida real.</td></tr>
+<tr><td>Labrar 1.000 m² (un primer campo; un cuarto de acre)</td><td class="n">≈ 290 pasadas · 10 min solo, 5 entre dos</td><td>Más las paradas por el aguante. Un acre entero a mano serían unos 40 minutos: es lo que hará deseable el arado con bueyes.</td></tr>
+<tr><td>Pasada de siembra a voleo</td><td class="n">círculo de 2 m · 1 s</td><td>Sembrar es más rápido que labrar.</td></tr>
+<tr><td>Semilla</td><td class="n">1 puñado cada 10 m²</td><td>Para que el primer campo se pueda sembrar con lo que se recoge en un rato de semillas silvestres.</td></tr>
+<tr><td>Cosecha</td><td class="n">4 puñados por cada uno sembrado</td><td>La proporción de la época. Además de la paja.</td></tr>
+</table></div>
+
+<h2>Cómo encaja en lo que ya hay</h2>
+<ul>
+<li><b>Tu tierra</b> (<code>src/logica/tierras_rey.js</code>, <code>zonas_rey.js</code>): el campo es de quien tiene la tierra y sus invitados lo trabajan, como las obras.</li>
+<li><b>La brocha del nivelado</b> (<code>src/logica/nivelado.js</code>): ya guarda pasadas redondas como unos pocos números (centro, radio, borde). Labrar es lo mismo, pero en vez de la altura cambia el material del suelo.</li>
+<li><b>El suelo con materiales</b> (<code>src/mundo/color_suelo.js</code>, demo v192): ya mezcla hierba, tierra, roca y hojarasca por vértice, con la malla de 1 m de cerca. Se añade la tierra labrada.</li>
+<li><b>La hierba densa</b> (<code>src/mundo/hierba_densa.js</code>): ya no pone matas donde el suelo no es hierba, ni donde se ha construido. Los cultivos se pueden dibujar con su misma técnica (instancias por celdas de 8 m).</li>
+<li><b>Talar y desbrozar</b> (<code>src/logica/tala.js</code>, <code>recoleccion.js</code>): falta que un árbol dentro de un campo no vuelva a crecer y la acción de arrancar el tocón.</li>
+<li><b>La azada, la hoz de sílex y el mayal</b> ya se fabrican en el banco de tronco y hoy no sirven para nada.</li>
+<li><b>El servidor</b>: cada estaca, pasada, siembra y siega es una acción con autor. Guarda los puntos del campo, el mapa de lo labrado (1 bit por m²) y lo sembrado por celda con su hora; el crecimiento sale del tiempo transcurrido (método del GDD).</li>
+<li><b>La paja</b> deja de estar escondida (<code>MATERIALES_POSTERIORES</code>): el tejado de paja y el almiar lleno.</li>
+</ul>
+
+<h2>La granja básica, y lo que viene después</h2>
+<div class="tw"><table>
+<tr><th>Ahora (la básica)</th><th>Después, poco a poco</th></tr>
+<tr><td>
+<ul>
+<li>Semillas silvestres: cebada, lino y col, que se encuentran en el prado y la ribera.</li>
+<li>Marcar el campo con estacas; limpiarlo (los árboles dejan de crecer, arrancar tocones).</li>
+<li>Labrar con la azada en círculos; la tierra labrada en el suelo.</li>
+<li>Sembrar a voleo (cebada, lino) y planta a planta (col, en el huerto).</li>
+<li>Crecer por fases, por tiempo real; verse en el campo y aguantar en el móvil.</li>
+<li>Segar con la hoz (gavillas), arrancar el lino, coger la col.</li>
+<li>La era y el mayal: grano y paja. El tejado de paja, a la vista.</li>
+<li>El recorrido de jugador lo hace entero, sin arcón.</li>
+</ul></td><td>
+<ul>
+<li>Las estaciones del año: cuándo se siembra cada cosa (un mes real por estación, ya decidido).</li>
+<li>El barbecho (ya decidido) y la rotación.</li>
+<li>Más cultivos: trigo, centeno, avena, habas, nabos, cebollas, cáñamo.</li>
+<li>Riego en el sur, estiércol.</li>
+<li>El arado con bueyes (pasadas largas y rectas: las franjas).</li>
+<li>Harina y pan: el molino de mano y el horno de barro.</li>
+<li>Enriar el lino: fibra de lino, hilo y tela.</li>
+<li>Cercas para que los animales no entren.</li>
+</ul></td></tr>
+</table></div>
+
+<h2>Lo que tienes que decidir</h2>
+<ol>
+<li><b>Cómo se marca el campo:</b> con estacas clavadas a pie (lo que propongo) o dibujando los puntos desde el mapa.</li>
+<li><b>Cuánto tarda en crecer</b> en la básica, sin estaciones. Con el calendario, sembrar en primavera y segar en verano es cosa de un mes real. Para empezar propongo menos (por ejemplo, una semana real la cebada) y ajustarlo al calendario cuando llegue.</li>
+<li><b>Los primeros cultivos:</b> cebada, lino y col, u otros.</li>
+<li><b>El orden:</b> la granja básica antes que los oficios (P9), o después.</li>
+</ol>
+
+<h2>Fuentes</h2>
+<ul class="nota">
+<li><a href="https://en.wikipedia.org/wiki/Acre">Wikipedia — Acre</a>: un furlong por una cadena (66 × 660 pies), 4.046,86 m²; lo que araba una yunta en un día.</li>
+<li><a href="https://sclhrg.org.uk/history-spot/102-articles-41-80/1912-draught-animals-under-the-feudal-system-longlands-48.html">Sutton Coldfield Local History Research Group — Draught animals under the feudal system</a>: «a team could plough about an acre in a day» (1308).</li>
+<li><a href="https://en.wikipedia.org/wiki/Selion">Wikipedia — Selion</a> y <a href="https://en.wikipedia.org/wiki/Ridge_and_furrow">Ridge and furrow</a>: las franjas, su tamaño y la forma de S que les daba el giro de la yunta.</li>
+<li><a href="https://en.wikipedia.org/wiki/Open-field_system">Wikipedia — Open-field system</a>: unas 70 franjas por familia (8 ha), el huerto de media acre en Elton (1286), rendimientos de Battle Abbey.</li>
+<li><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3242064406">Guía de la comunidad (Steam) sobre los campos del juego de gestión medieval</a> y <a href="https://steamcommunity.com/app/1363080/discussions/0/603039786130888002/">las quejas de sus jugadores</a>.</li>
+<li><a href="https://valheim.fandom.com/wiki/Cultivator">Wiki del juego de supervivencia vikinga — el cultivador</a>.</li>
+<li><a href="https://wiki.vintagestory.at/Farming">Wiki del juego de supervivencia por bloques — Farming</a>.</li>
+<li>Del proyecto: <code>diseno/sistemas.html</code> (apartado 5, agricultura), <code>diseno/gdd.html</code> (método del tiempo transcurrido), <code>src/logica/nivelado.js</code>, <code>src/mundo/color_suelo.js</code>, <code>src/mundo/hierba_densa.js</code>, <code>src/logica/tala.js</code>, <code>src/logica/fabricacion.js</code>, <code>src/logica/piezas.js</code>.</li>
+</ul>
+</main>
+
+</body></html>
