@@ -6507,5 +6507,16 @@
   "pruebas": "Revisor en la nube: bien la hierba densa, la demo única, el posprocesado y los perfiles, el terreno por trozos, el mapa y la demo en el mundo; la lógica falla solo en la prueba del servidor con Caddy en la máquina de GitHub (aquí pasa 27/27, y no se ha tocado el servidor). Comprobador de código correcto.",
   "capturas": "capturas/demo-v192",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T04:27:53+00:00",
+  "fin": "2026-11-13T04:27:53+00:00",
+  "titulo": "P6 aprobado: orden en el código y en los documentos",
+  "hito": "orden",
+  "hecho": [
+   "valravnx aprueba por el chat el hito P6, Orden en el código y en los documentos («aprueba orden»): pasa a hecho."
+  ],
+  "pruebas": "Sin pruebas: aprobado por valravnx.",
+  "estado": "ok"
  }
 ]

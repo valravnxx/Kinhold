@@ -1919,7 +1919,7 @@
       "id": "orden",
       "num": "P6",
       "nombre": "Orden en el código y en los documentos",
-      "estado": "revision",
+      "estado": "hecho",
       "jugable": "Nada nuevo a la vista: menos código muerto, una sola armadura, el arma del inventario y un servidor que aguanta.",
       "nota": "Revisión del 1 nov con valravnx: en tareas pequeñas, entre bloque y bloque.",
       "tareas": [
