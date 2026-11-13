@@ -1647,6 +1647,10 @@
      "estado": "hecho",
      "inicio": "2026-11-11T12:54:00+01:00",
      "fin": "2026-11-11T14:47:08+01:00"
+    },
+    {
+     "nombre": "El tocón viejo y el tronco caído del sotobosque, con Meshy (valravnx, 13 nov: «código temporal y en lista para meshy a futuro»): hoy son de código (src/mundo/sotobosque.js) y desentonan con los árboles de Meshy",
+     "estado": "congelado"
     }
    ],
    "lleva": "chat"

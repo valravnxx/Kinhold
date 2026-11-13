@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026 — por el chat, sobre el sotobosque
+
+El tocón viejo y el tronco caído, hechos por código, desentonan con los árboles de Meshy. valravnx: «codigo temporal y en lista para meshy a futuro» → se quedan los de código por ahora y entra la tarea de hacerlos con Meshy en el hito «El arte con Meshy» (`congelado`, como lo demás de Meshy que no es naturaleza en curso, hasta que él diga).
+
 ### 13 nov 2026 — por el chat, sobre P8 y P9
 
 «fauna requiere mas meshy y ahora tengo que aprender a modificar esqueletos para ello, asi que comienza el hito p9 oficios» → P8 (Animales del mundo y el caballo) `congelado` hasta que valravnx diga; P9 (Oficios del asentamiento) `en_curso`, empezando por planificarlo. La silla y las alforjas del caballo esperan a P8.
