@@ -257,8 +257,8 @@ export function modelosRecoleccion() {
     }
   };
   const CEBADA_TALLO = 0x9c9a5c, CEBADA_TALLO_SECO = 0xb3a46a, CEBADA_ESPIGA = 0xcdb46a, CEBADA_ARISTA = 0xd9c991;
-  const HABA_TALLO = 0x4f6a3a, HABA_HOJA = 0x6f8a5c, HABA_HOJA_OSC = 0x5b7549, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x4a5a30, HABA_VAINA_OSC = 0x33331f;
-  const COL_HOJA = 0x5f7d6c, COL_HOJA_OSC = 0x4d6a5c, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x7d8a46;
+  const HABA_TALLO = 0x6f8f4c, HABA_HOJA = 0x6f8a5c, HABA_HOJA_OSC = 0x5b7549, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x66803e, HABA_VAINA_OSC = 0x3e3f26;
+  const COL_HOJA = 0x62806a, COL_HOJA_OSC = 0x506c58, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x7d8a46;
   // la cebada silvestre: una mata de cañas finas (0,6–0,9 m), pajizas, con hojas estrechas abajo; las espigas, que es lo
   // que se coge, cabizbajas y con sus aristas largas
   const cebadaCanas = [];
@@ -303,19 +303,19 @@ export function modelosRecoleccion() {
     }
   }, { doble: true, rangoSuelo: 0.25 });
   const habasVainas = geoLote(L => {
-    for (const [k, { a, d, h }] of habasTallos.entries()) for (let n = 0; n < 3; n++) {
-      const y = h * (0.3 + n * 0.17), b = a + n * 2.2 + 0.8, x = Math.cos(a) * d + Math.cos(b) * 0.03, z = Math.sin(a) * d + Math.sin(b) * 0.03;
-      const v = new THREE.CapsuleGeometry(0.014, 0.09, 2, 6); v.translate(0, -0.045, 0);
+    for (const [k, { a, d, h }] of habasTallos.entries()) for (let n = 0; n < 4; n++) {   // por fuera de las hojas, para que se vean (y se note al cogerlas)
+      const y = h * (0.3 + n * 0.15), b = a + n * 1.6 + 0.8, x = Math.cos(a) * d + Math.cos(b) * 0.07, z = Math.sin(a) * d + Math.sin(b) * 0.07;
+      const v = new THREE.CapsuleGeometry(0.017, 0.1, 2, 6); v.translate(0, -0.045, 0);
       L.add(v, (k + n) % 4 === 0 ? HABA_VAINA_OSC : HABA_VAINA, x, y, z, { y: -b, z: 0.35 }, { escala: new THREE.Vector3(1.25, 1, 0.9), sinSuelo: true, tex: 'liso', brillo: 1.05 });
     }
   }, { rangoSuelo: 0.25 });
   // la col silvestre: un corro de hojas anchas, carnosas y azuladas, que se queda; lo que se coge, los tallos en flor
   // (0,7–0,9 m) con sus silicuas llenas de semilla
   const colPlanta = geoLote(L => { roseta(L, 9, 0.3, 0.12, COL_HOJA, COL_HOJA_OSC, 0.5, 0.4); roseta(L, 6, 0.18, 0.09, COL_HOJA_OSC, COL_HOJA, 0.95, 1.3); }, { doble: true, rangoSuelo: 0.15 });
-  const colFlor = geoLote(L => flores(L, 4, 0.8, FLOR_AMARILLA_PALIDA, COL_HOJA_OSC, SILICUA, 0.2), { rangoSuelo: 0.3 });
+  const colFlor = geoLote(L => flores(L, 4, 0.8, FLOR_AMARILLA_PALIDA, 0x6f8a52, SILICUA, 0.2), { rangoSuelo: 0.3 });
   // el nabo silvestre: hojas de verde vivo en corro bajo; los tallos en flor, más y de amarillo más vivo (0,5–0,7 m)
   const naboPlanta = geoLote(L => { roseta(L, 13, 0.3, 0.085, NABO_HOJA, NABO_HOJA_OSC, 0.55, 0.9); }, { doble: true, rangoSuelo: 0.15 });
-  const naboFlor = geoLote(L => flores(L, 6, 0.6, FLOR_AMARILLA, NABO_HOJA_OSC, SILICUA, 1.1), { rangoSuelo: 0.3 });
+  const naboFlor = geoLote(L => flores(L, 6, 0.6, FLOR_AMARILLA, 0x6f8a52, SILICUA, 1.1), { rangoSuelo: 0.3 });
 
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
