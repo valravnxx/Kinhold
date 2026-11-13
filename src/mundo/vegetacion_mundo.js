@@ -267,7 +267,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // la roca de los cortados (13 nov; src/logica/vegetacion.js, «paredes»): las piezas de roca del visor del mapa
     // (src/mundo/rocas.js), del tono de su roca apagado como el del estilo v5, igual que allí
     // (13 nov, valravnx: con las piezas de pared de Meshy, si han llegado: en estratos, con grietas y el saliente; de 4, 4
-    // y 3 m de alto, con la base en el suelo y la cara a −z, medio metidas en la ladera; si no, las de código del visor)
+    // y 3 m de alto, con la base en el suelo y la cara a +z, medio metidas en la ladera; si no, las de código del visor)
     const paredesM = ['pared_estratos', 'pared_grietas', 'pared_saliente'].map(n => M(n)), ALTO_PARED = [4, 4, 3];
     if (paredesM.every(Boolean)) {
       paredesM.forEach((m, v) => {
@@ -279,7 +279,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
             // (la pared tiene la pendiente de la ladera, no está a plomo: la pieza se echa hacia atrás lo que le falta a la
             // ladera para estar vertical, y se pone con su cara a ras de la ladera, no metida dentro)
             const esc = e.alto / ALTO_PARED[v], atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.8, fuera = e.alto * 0.27;
-            o.position.set(e.x + Math.sin(e.giro) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(e.giro) * fuera); o.rotation.set(-atras + e.inclina * 0.3, e.giro + Math.PI, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc); o.updateMatrix(); im.setMatrixAt(k, o.matrix);   // (la cara de Meshy mira a −z: media vuelta)
+            o.position.set(e.x + Math.sin(e.giro) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(e.giro) * fuera); o.rotation.set(-atras + e.inclina * 0.3, e.giro, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc); o.updateMatrix(); im.setMatrixAt(k, o.matrix);   // (la cara de Meshy mira a +z, medido en el modelo)
             im.setColorAt(k, colorRoca(e).lerp(blanco, 0.45).multiplyScalar(e.tono));
           });
           im.castShadow = nivel !== 'lejos'; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
