@@ -6667,5 +6667,23 @@
   "pruebas": "Perfiles gráficos (con 6 comprobaciones nuevas del 100 %, rotas a propósito: fallan), posprocesado, el perfil gráfico en el juego, la demo en el mundo y la demo única, bien en la nube. En la lógica falla el servidor de prueba en internet por avisos del sistema de la máquina de la nube, que este cambio no toca. Segunda mirada aparte: primero dijo que no (color chillón, franja blanca en el horizonte y granulado), arreglado; después, sí. Queda: en el sí de antes, la línea clara del horizonte se ve algo más ancha que sin efecto (ya estaba). No comprobado: lo que cuesta en fotogramas en un aparato de verdad.",
   "capturas": "capturas/demo-v195",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:19:44+00:00",
+  "fin": "2026-11-13T14:41:11+00:00",
+  "titulo": "El secadero y la carne seca (P9, «Oficios del asentamiento»)",
+  "hito": "oficios",
+  "hecho": [
+   "Retomada la rama a medias trabajo/20261113-0518-secadero (sesión de chat, para no pisar al carril A, vivo con las semillas silvestres).",
+   "El secadero: un puesto nuevo en «Puestos de trabajo» (4 troncos delgados y 2 cuerdas, fuera y en tu tierra); cuatro postes, travesaños y dos cuerdas combadas de las que cuelga la carne.",
+   "La carne seca: se cuelga carne cruda (Usar: dejar en él), que colgada no se estropea; en su pestaña «Carne seca» del panel, 1 cruda da 1 seca a las 6 h (valravnx: «no seamos tan duros, que cazar cuesta»); todo lo colgado se seca a la vez (hasta 10), por tiempo transcurrido en la lógica pura (lo decide el servidor). La seca no se estropea y sacia como la asada (35); cabe en el cesto.",
+   "Lo colgado se ve para todos (el servidor manda lo que se seca, sin el autor): la cruda roja, la que se seca más oscura, la seca parda y más fina.",
+   "El panel dice las horas; iconos v19 (combina el secadero/carne seca de la v16 con las semillas/habas de la v17 de main, que se solaparon al unir); traducciones en/ru.",
+   "Causa del cuelgue que dejó la rama a medias: era un flaky del móvil de la nube (sin tarjeta gráfica) al crear la cuenta del segundo jugador, no un fallo del secadero; la prueba del panel pasó entera dos veces seguidas (PC y móvil).",
+   "Unido main (v195: semillas silvestres y modo maqueta), que tocaba los mismos archivos (choque con el carril A); resueltos a mano fabricacion.js, inventario.js, necesidades.js, modelos_objetos.js e iconos.js combinando ambos cambios."
+  ],
+  "pruebas": "En la nube: el panel de fabricar (PC y móvil) con el secadero, bien (dos veces; el móvil flakea al crear la cuenta del 2.º jugador, cosa del runner sin GPU, no del cambio). Lógica aquí: comida 44/44, fabricación 197/197, orígenes 86/86, iconos 597/597, necesidades 58/58. Tras unir main, el revisor: bien recorrido 248/248, demo-única (tras añadir las traducciones v196), despiezar-y-asar, el-hogar, la-cama-ligada, los-colgaderos, el-mazo, panel-inventario, avisos, velocidad, construir-con-acabado. No bloquean: logica (solo el systemd-analyze de la máquina de la nube, falla igual en main) y los-almacenajes (el «contador desplegado», que ya fallaba en main, y el mismo flaky del móvil; mi cambio de estaciones.js solo añade el secadero, no toca los almacenajes).",
+  "capturas": "capturas/demo-v196",
+  "estado": "ok"
  }
 ]
