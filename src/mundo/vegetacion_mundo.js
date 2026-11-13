@@ -263,6 +263,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       const l = deTipo(tipo);
       instancias(l, ms[tipo].geo, ms[tipo].mats, 'soto_' + tipo, e => c.setScalar(e.tono * 1.15), { sombra: true, obst: l.map(e => ({ set oculto(v) { for (const o of e.obs) o.oculto = v; } })) });   // (el tronco, sus tres círculos)
     }
+    const colorRoca = e => { const k = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza, t = (v) => 0.5 * lin(v) / 0.4 + 0.5 * 0.8; return c.setRGB(t(k[0]), t(k[1]), t(k[2])); };
     // la roca de los cortados (13 nov; src/logica/vegetacion.js, «paredes»): las piezas de roca del visor del mapa
     // (src/mundo/rocas.js), del tono de su roca apagado como el del estilo v5, igual que allí
     const piezas = modelosRocaPared(), mr = materialRoca();
@@ -271,13 +272,13 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       const im = new THREE.InstancedMesh(geo, mr, lista.length);
       lista.forEach((e, k) => {
         o.position.set(e.x, e.y, e.z); o.rotation.set(e.inclina, e.giro, (e.tono - 1) * 0.4, 'YXZ'); o.scale.set(e.alto * (0.9 + e.tono * 0.4), e.alto, e.alto * 0.9); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
-        const kc = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza; im.setColorAt(k, c.setRGB(lin(kc[0]) / 0.62 * e.tono, lin(kc[1]) / 0.62 * e.tono, lin(kc[2]) / 0.62 * e.tono));
+        // (el color, como el de las piedras sueltas y algo más oscuro: con el del visor, de lejos, de cerca salían casi blancas)
+        im.setColorAt(k, colorRoca(e).multiplyScalar(0.62 * e.tono));
       });
       im.castShadow = true; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
     });
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía
     // anaranjada), hundidas 0,2 m como en el mapa; no se esconden al construir (chocan, como antes)
-    const colorRoca = e => { const k = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza, t = (v) => 0.5 * lin(v) / 0.4 + 0.5 * 0.8; return c.setRGB(t(k[0]), t(k[1]), t(k[2])); };
     // (con los de Meshy: la roca, la peña para las grandes del pedregal y el canto rodado para las del río; tienen su
     // color de piedra y el del sitio solo las tiñe, y van con el pie en el suelo: se suben lo que se hundían las de código)
     const rM = M('roca'), pM = M('pena'), cM = M('canto');
