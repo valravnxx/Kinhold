@@ -1,0 +1,57 @@
+Lo que dice el documento de sistemas (apartado 10, «Durabilidad»)
+  OK   hacha de piedra: unos 3 árboles adultos — 168 golpes
+  OK   hacha de hierro: unos 30 árboles adultos — 420 golpes
+  OK   armas de madera o piedra: unos 50 golpes
+  OK   armas de hierro: unos 400 golpes
+  OK   lo que no es herramienta, arma ni ropa no se gasta
+  OK   el golpe que alcanza gasta al que lo da; el parado, también al que para
+El hacha de piedra se gasta talando
+  OK   cada golpe dice cuánto lleva gastado
+  OK   tala 3 árboles adultos — 3 talados
+  OK   se rompe con el golpe que tumba el tercero — {"arbol":"arbol:200,0","cae":true}
+  OK   roto, sale de la mano
+  OK   y el cuarto ya no se puede talar — Necesitas un hacha en la mano para talar.
+  OK   el registro anota que se rompe, con su autor
+El desgaste va con la cosa
+  OK   la ficha lo sabe
+  OK   al soltarla al suelo lo lleva
+  OK   y al cogerla, también — {"tipo":"hacha_piedra","n":1,"usado":40}
+  OK   al guardar y cargar
+  OK   al moverla de una mano a la otra
+  OK   un desgaste no válido se descarta
+Las armas se gastan hasta romperse
+  OK   la lanza aguanta 50 golpes y se rompe con el último
+  OK   sin nada en la mano, no se gasta nada
+  OK   la lanza que vuela se gasta al dar a una presa
+Reparar en su puesto con su material
+  OK   nueva, no le hace falta — Está como nuevo: no le hace falta.
+  OK   sin cordel depositado en la piedra de tallar, no — Falta en la estación: 1 de Cordel de fibra.
+  OK   deja 2 cordeles en la piedra de tallar
+  OK   el hacha de piedra no se repara en el banco de tronco — Eso se repara en una piedra de tallar.
+  OK   en la piedra de tallar, con un cordel, recupera 84 golpes (la mitad) — {"objeto":"hacha_piedra","usado":66,"vida":168,"recuperado":84}
+  OK   queda en el registro, con su autor
+  OK   no pasa de nueva — {"tipo":"hacha_piedra","n":1}
+  OK   el mazo también, pero ya no queda cordel — Falta en la estación: 1 de Cordel de fibra.
+  OK   la lanza, en el banco, pide llevar la lasca — Para eso hace falta llevar lasca de sílex.
+  OK   con la lasca y la fibra depositada, recupera 25 golpes; la lasca no se gasta — {"tipo":"lanza_endurecida","n":1,"usado":15}
+  OK   lo de hierro y el palo cavador no se reparan (aún)
+  OK   lejos del puesto, no — Estás demasiado lejos de la estación.
+
+La ropa y la armadura
+  OK   cada prenda tiene su vida, de su material
+  OK   la malla aguanta más que el lino, y el lino, unos 60 golpes
+  OK   empieza con la camisa y el pantalón de lino, nuevos
+  OK   un golpe en el brazo gasta la camisa (tiene mangas), y no el pantalón, la capa ni la capucha — [{"ruta":"ropa:interior","tipo":"camisa_lino","usado":10,"vida":600,"roto":false}]
+  OK   uno en la cabeza, solo la capucha
+  OK   el uso gasta todo lo puesto, un uso cada cosa — camisa_lino, pantalon_lino, manto_lana, capucha_lana, zapatos_cuero
+  OK   al acabarse se rompe y sale de su lugar — [{"ruta":"ropa:cabeza","tipo":"capucha_lana","usado":905,"vida":900,"roto":true}]
+  OK   la camisa, sin fibra en el banco, no — Falta en la estación: 1 de Fibra cruda.
+  OK   ni en la piedra de tallar — Eso se repara en un banco de trabajo de tronco.
+  OK   puesta, en el banco con una fibra, recupera la mitad de su vida — {"tipo":"camisa_lino","n":1,"usado":100}
+  OK   y queda en el registro, con su autor
+  OK   los zapatos de cuero, con la piel sola, no: piden también un cordel — Falta en la estación: 1 de Cordel de fibra.
+  OK   con piel y cordel, sí: la mitad de su vida
+  OK   el gambesón (tela), lo de paja y la cota de malla (fragua), aún no se reparan
+  OK   el desgaste de la ropa se guarda y se carga — {"tipo":"camisa_lino","n":1,"usado":100}
+
+48 bien, 0 mal
