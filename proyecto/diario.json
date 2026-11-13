@@ -6730,5 +6730,20 @@
   ],
   "pruebas": "Recogida de lógica correcta y comprobador de código. Sin capturas: valravnx lo prueba a mano.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T15:12:52+00:00",
+  "fin": "2026-11-13T16:15:37+00:00",
+  "titulo": "P11: limpiar el campo (demo v200)",
+  "hito": "granja",
+  "hecho": [
+   "Dentro de un campo cerrado lo talado ya no vuelve a crecer: la tala pregunta si el sitio es de un campo (sinRebrote, que pone el servidor con los campos del mundo, y el navegador con los suyos) y el tocón se queda.",
+   "El tocón se arranca a golpes con la azada o el palo cavador en la mano (Usar, en PC y en el móvil), después de limpiar el árbol caído con el hacha; con el palo cavador hacen falta el doble de golpes. Arrancado, se va para siempre y deja leña a su lado. Va por el servidor con su autor y lo ven los demás.",
+   "El campo dice lo que queda por limpiar dentro de su linde (árboles, caídos, tocones, matas y piedras sueltas): al entrar en él, al cerrarlo y al arrancar un tocón. Las matas se desbrozan y las piedras se recogen como siempre.",
+   "La prueba de navegador de la tala estaba rota en main (con el tiempo del juego al real, el árbol caía mientras la prueba esperaba): arreglada, y ahora prueba también arrancar el tocón en PC y en el móvil."
+  ],
+  "pruebas": "Comprobador de código correcto. prueba_limpiar_campo.mjs 26/0 (rota a propósito con MUTAR, falla). En la nube: el recorrido de jugador, los avisos de las necesidades, el mimbre y la corteza, la velocidad con pocos fotogramas, la tala de los árboles y marcar el campo con estacas, bien. En la lógica fallaron prueba_recoleccion (los juncos, del cambio del chat: fallaba igual en main y ya está arreglado allí) y «internet con Caddy» (como en main, por la máquina de GitHub).",
+  "capturas": "capturas/demo-v200",
+  "estado": "ok"
  }
 ]

@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v199 (Juncos más grandes)";
+export const VERSION_DEMO = "Demo única · v200 (Limpiar el campo)";
 export const REGISTRO_DEMO = [
+  "v200: limpiar el campo (P11, la granja básica). Dentro de un campo cerrado, lo que se tala ya no vuelve a crecer: queda el tocón. El tocón se arranca a golpes con la azada o el palo cavador en la mano (Usar; con el palo cavador, el doble de golpes), después de limpiar el árbol caído con el hacha; arrancado, se va para siempre y deja leña a su lado. Al entrar en un campo, y al cerrarlo, se dice lo que queda por limpiar dentro de su linde: árboles, árboles caídos, tocones, matas y piedras sueltas (las matas se desbrozan y las piedras se recogen, como siempre).",
+  "v200, provisional: los golpes para arrancar un tocón (6 el joven y 14 el adulto con la azada; el doble con el palo cavador) y la leña que deja (2 el joven, 4 el adulto).",
   "v199: los juncos, más grandes (valravnx, 13 nov): los que se recogen, de unos 1,7 m, y los de adorno, de unos 1,1 m; y más matas de juncos para recoger en la marisma de las desembocaduras, con algo más de barro.",
   "v199, provisional: el tamaño de los juncos y cuántos hay en la marisma.",
   "v198: marcar el campo con estacas (P11, la granja básica). Con una estaca en la mano (se hace con las manos, de 1 rama), Usar la clava donde estás; de 3 a 16 estacas, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar el agua, una pendiente fuerte, una obra, un puesto ni otro campo; el servidor lo valida y todos lo ven. Mientras el campo está vacío, cada estaca se quita (vuelve a lo que llevas) para moverla. Las estacas se clavan recias y una cuerda atada de una a otra marca el linde por encima de la hierba (al limpiar el campo, más adelante, se verá también la tierra pisada).",
