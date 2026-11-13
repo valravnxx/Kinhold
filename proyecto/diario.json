@@ -6649,5 +6649,23 @@
   "pruebas": "Comprobador de código correcto. Aquí: recolección 66/66, lo que se recoge en el mundo (lógica) bien, orígenes 88/88. La nube estaba atascada: más de 20 ejecuciones colgadas de otras sesiones (sobre todo «panel de fabricación») ocupan las máquinas y lo nuevo se quedaba en cola. Por eso «lo que se recoge en el mundo», en el navegador, se pasó aquí, entero en PC y en móvil (TODO CORRECTO), y en la nube solo salió la demo única (bien). Lo demás del revisor ya había pasado en la nube la sesión anterior y desde entonces solo cambian los modelos de las cuatro plantas: se quitó con --sin por eso. No comprobado: «lo que se recoge en el mundo» en la nube con el último cambio. Choques: la rama de riberas (chat) toca recoleccion.js y recogida_mundo.js, y la de la maqueta toca los idiomas; ninguna está en main, así que las repasa a mano la que una después.",
   "capturas": "capturas/demo-v194",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T11:39:15+01:00",
+  "fin": "2026-11-13T14:10:57+01:00",
+  "titulo": "El modo maqueta al 100 % (demo v195)",
+  "hito": "aspecto",
+  "hecho": [
+   "En Ajustes, «Desenfoque de maqueta» tiene ahora sí, 100 % y no (valravnx, 13 nov: «pon un modo en opciones para tener el modo maqueta 100%»); el sí de antes sigue igual.",
+   "Al 100 %, la franja nítida es más estrecha y el emborronado llega al doble.",
+   "Al 100 %, también se emborrona por la distancia, con el foco en el personaje: lo de más lejos o más cerca se emborrona aunque esté a su altura en la pantalla, como al fotografiar una maqueta.",
+   "El emborronado del 100 % va en dos pasadas (a lo ancho y a lo alto) para que salga suave, sin granulado en el móvil.",
+   "El cielo es el fondo de la página detrás del lienzo: el emborronado pesa cada muestra por su opacidad, para que no salga una franja blanca en el horizonte.",
+   "Un poco más de saturación y de contraste al 100 % (el color de juguete), hecho sobre el color como se ve, para que no salga chillón ni con sombras negras.",
+   "Se cancelaron a la fuerza 17 ejecuciones de pruebas de GitHub colgadas desde hacía horas, que tenían la cola parada para todas las sesiones."
+  ],
+  "pruebas": "Perfiles gráficos (con 6 comprobaciones nuevas del 100 %, rotas a propósito: fallan), posprocesado, el perfil gráfico en el juego, la demo en el mundo y la demo única, bien en la nube. En la lógica falla el servidor de prueba en internet por avisos del sistema de la máquina de la nube, que este cambio no toca. Segunda mirada aparte: primero dijo que no (color chillón, franja blanca en el horizonte y granulado), arreglado; después, sí. Queda: en el sí de antes, la línea clara del horizonte se ve algo más ancha que sin efecto (ya estaba). No comprobado: lo que cuesta en fotogramas en un aparato de verdad.",
+  "capturas": "capturas/demo-v195",
+  "estado": "ok"
  }
 ]

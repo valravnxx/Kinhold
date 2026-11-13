@@ -1544,9 +1544,9 @@
     },
     {
      "nombre": "El modo maqueta al 100 % en Ajustes: desenfoque por distancia, más fuerte y más fino, y el color de juguete",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T11:39:15+01:00",
-     "rama": "trabajo/20261113-1139-maqueta"
+     "fin": "2026-11-13T14:10:57+01:00"
     }
    ]
   },
@@ -4346,6 +4346,13 @@
      "archivo": "jugar/demo/v194.html",
      "capturas": "capturas/demo-v194",
      "notas": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano y caben en el cinturón y en el cesto; las habas se asan al fuego."
+    },
+    {
+     "v": "v195",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v195.html",
+     "capturas": "capturas/demo-v195",
+     "notas": "El modo maqueta al 100 % en Ajustes: sí, 100 % y no. Al 100 %, más desenfoque, también por la distancia con el foco en el personaje, y un poco de color de juguete."
     }
    ]
   },
