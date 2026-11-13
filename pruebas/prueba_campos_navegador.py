@@ -203,7 +203,10 @@ try:
         ir(A, x0 + 12.5, z0 + 10.4)
         comprobar('junto a una estaca, Usar dice «Quitar la estaca (campo de 120 m²)»', texto_usar(A) == 'Quitar la estaca (campo de 120 m²)', texto_usar(A))
         usar(A)
-        comprobar('quitada: vuelve a lo que lleva (en el servidor)', servidorDice(lambda d: cuantos(d, yo, 'estaca') == 1) is not None, A.evaluate(AVISO))
+        # lo que lleva en línea es lo que dice el servidor (la actualiza con su mensaje 'inventario'): al quitar la estaca,
+        # vuelve a la mano. (Se mira ahí, no en objetos.json, que se guarda con retraso.)
+        cuenta_estaca = K + '.inventario.cuantos("estaca")'
+        comprobar('quitada: vuelve a lo que lleva (lo dice el servidor)', esperar(A, cuenta_estaca + ' >= 1', 8000), f'lleva {A.evaluate(cuenta_estaca)} · {A.evaluate(AVISO)}')
         comprobar('y el campo queda abierto, con 3 estacas', esperar(A, f"!{K}.mundo.campos[0].cerrado && {K}.mundo.campos[0].puntos.length === 3", 5000))
         ir(A, x0 + 11, z0 + 9)
         usar(A)
