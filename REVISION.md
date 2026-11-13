@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026, 12:26 UTC — por el chat, sobre el secadero
+
+valravnx: «sigue con el secadero que estaba a medias» → lo retoma una sesión de chat desde su rama (`trabajo/20261113-0518-secadero`), anunciada como chat para no pisar al carril A, que sigue vivo con las semillas silvestres.
+
 ### 13 nov 2026 — por el chat, sobre el sotobosque
 
 El tocón viejo y el tronco caído, hechos por código, desentonan con los árboles de Meshy. valravnx: «codigo temporal y en lista para meshy a futuro» → se quedan los de código por ahora y entra la tarea de hacerlos con Meshy en el hito «El arte con Meshy» (`congelado`, como lo demás de Meshy que no es naturaleza en curso, hasta que él diga).
