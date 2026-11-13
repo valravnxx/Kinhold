@@ -6620,5 +6620,18 @@
   ],
   "pruebas": "prueba_origenes.mjs: 92 bien; rota a propósito (MUTAR=2), fallan las 17 del hierro. Sin código del juego cambiado: nada en la nube.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:19:44+00:00",
+  "fin": "2026-11-13T09:44:45+00:00",
+  "titulo": "El secadero y la carne seca, a medias (chat con valravnx): no se publica",
+  "hito": "oficios",
+  "hecho": [
+   "Hecho en la rama trabajo/20261113-0518-secadero: el secadero (4 troncos delgados y 2 cuerdas, fuera y en tu tierra), la carne seca (valravnx: 1 cruda, 1 seca; 6 h; todo lo colgado se seca a la vez, hasta 10), que no se estropea y sacia como la asada; lo colgado se ve para todos (el servidor manda lo que se seca); su pestaña en el panel, el tiempo en horas, iconos v16 y las traducciones.",
+   "Lo que falla: en la prueba del panel de fabricar, la parte del móvil se cuelga en la nube (el toque al botón de fabricar, o al crear la cuenta del segundo jugador) en esta rama, y en main no. Probado quitando por separado el panel, las estaciones, los textos, los iconos y los cambios de la prueba: cada una de esas variantes también se cuelga, así que la causa no está sola en ninguno de esos cambios. Sin resolver.",
+   "Además: la prueba del menú de puestos esperaba un texto que la interfaz nueva ya no enseña (fallaba igual en main) y ahora mira los nombres y los materiales."
+  ],
+  "pruebas": "En la nube: lógica bien (salvo systemd-analyze, de la máquina de la nube, y una vez el combate con dos clientes por tiempo agotado; aquí pasa 82/82), el recorrido 248/248, y bien el hogar, la cama ligada, los colgaderos, el mazo, los avisos de las necesidades, despiezar y asar, el inventario, el acabado de construir y la velocidad con pocos fotogramas; los almacenajes, bien en la última vuelta (salvo el contador desplegado, que falla igual en main). El panel de fabricar: lo de PC, con el secadero, bien; el móvil se cuelga. Aquí: comida 44/44, fabricación 197/197, orígenes, iconos, idiomas y fuego, bien; rota a propósito (MUTAR=2), la de comida falla.",
+  "estado": "fallo"
  }
 ]
