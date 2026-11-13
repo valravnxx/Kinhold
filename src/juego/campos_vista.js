@@ -67,7 +67,7 @@ export function crearCamposVista({ escena, sueloEn }) {
     vaciar();
     const L = new Lote({ rangoSuelo: 0.3, variacion: 0.06 }), lindes = [], cuerdas = [];
     for (const c of campos || []) {
-      c.puntos.forEach((p, i) => estacaEn(L, p.x, sueloEn(p.x, p.z) - HUNDIDA, p.z, { y: (i * 1.7 + c.id) % 6.28, x: 0.04, z: ((i * 0.37) % 0.1) - 0.05 }, `${c.id}:${i}`, GROSOR_ESTACA, ALTO_ESTACA + HUNDIDA));
+      c.puntos.forEach((p, i) => estacaEn(L, p.x, sueloEn(p.x, p.z) - HUNDIDA, p.z, { y: (i * 1.7 + c.id) % 6.28, x: 0.04, z: ((i * 0.37) % 0.1) - 0.05 }, `${c.id}:${i}`, GROSOR_ESTACA, ALTO_ESTACA + HUNDIDA, 1.5));
       for (const [a, b] of ladosDe(c)) { linde(a, b, lindes); cuerda(a, b, cuerdas); }
     }
     for (const [tex, geos] of Object.entries(L.cerrar(null, true))) {
