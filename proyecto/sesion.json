@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-13T20:14:47+00:00",
-  "tarea": "Cosechar: la cebada se siega con la hoz de sílex a pasadas (deja gavillas en el suelo); las habas, la col y el nabo se cogen a mano; cada planta madura da unas 4 veces lo sembrado (la proporción de la época; provisional); la col y el nabo se comen (crudos o al fuego) y no duran mucho. Las gavillas van al almiar y lo pequeño al cesto (los acopios de plantas). Cadena: hoz ← rama y 3 lascas en el banco de tronco; lasca ← sílex en la piedra de tallar",
-  "hito": "granja",
-  "rama": "trabajo/20261113-2015"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261113-1710-aspecto-rocas": {
   "inicio": "2026-11-13T17:08:43+01:00",
