@@ -6,7 +6,8 @@
 # servidor lo guarda con su superficie (120 m²). Se ven las estacas clavadas y el linde de tierra pisada. Junto a una
 # estaca, Usar la quita (vuelve a la mano) y el campo queda abierto; clavada otra vez, se cierra de nuevo. Fuera de su
 # tierra no se clava. Con la azada, Usar labra un círculo de tierra delante de él (P11), lo guarda el servidor con su hora y
-# se ve la tierra labrada; labrado, las estacas ya no se quitan. En el móvil (390×844), el otro jugador lo ve igual.
+# se ve la tierra labrada; labrado, las estacas ya no se quitan. Con las semillas en la mano, se siembra la cebada a voleo y
+# se plantan las habas, la col y el nabo (P11), y se ven sus fases. En el móvil (390×844), el otro jugador lo ve igual.
 # Las ramas y las estacas de más salen del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba los campos en el
 # juego; la lógica y el servidor, en pruebas/prueba_campos.mjs.
 # MUTAR=1 tira los mensajes de acciones que manda la página (como si el campo fuera solo del navegador): falla.
@@ -245,6 +246,66 @@ try:
         ir(A, x0 + 7.5, z0 + 2.2, 0); A.evaluate(f"{K}.cam.yaw = Math.PI + 0.6; {K}.cam.dist = 3; {K}.cam.pitch = 0.42"); A.wait_for_timeout(2000)
         captura(A, f'{SALIDA}/PC_labrado_de_cerca.png')
 
+        print('Siembra: la cebada a voleo y las habas, la col y el nabo planta a planta (P11)')
+        for zz in (z0 + 5.0, z0 + 6.6):
+            for dx in (-1.6, 0, 1.6, 3.2):
+                ir(A, x0 + 6 + dx, zz, 0); A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(450)
+        servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'labrar' and e.get('ok')) >= 10)
+        def manos_vacias():
+            A.evaluate(f"(() => {{ for (const m of ['mano:der', 'mano:izq']) if ({K}.inventario.lugares[m]) {K}.accionInventario({{ tipo: 'soltar', de: m, cantidad: {K}.inventario.lugares[m].n }}); }})()")
+            esperar(A, f"!{K}.inventario.lugares['mano:der'] && !{K}.inventario.lugares['mano:izq']", 5000)
+        manos_vacias()
+        coger(A, 'semilla_cebada', 3, 'mano:der')
+        comprobar('coge la cebada silvestre en la mano', esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'semilla_cebada'", 5000))
+        ir(A, x0 + 5, z0 + 4.8, 0)
+        comprobar('con la cebada en la mano, sobre lo labrado, Usar dice «Sembrar cebada a voleo»', texto_usar(A) == 'Sembrar cebada a voleo', texto_usar(A))
+        A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0")
+        l = servidorMundo(lambda l: any(e.get('tipo') == 'sembrar' and e.get('ok') for e in l))
+        comprobar('la cebada se siembra en el servidor, con su hora', l is not None and any(e.get('tipo') == 'sembrar' and e.get('ok') and (e.get('datos') or {}).get('t', 0) > 1e12 for e in l), A.evaluate(AVISO))
+        comprobar('el aviso dice cuánto lleva sembrado y lo que gasta', esperar(A, f"/Cebada sembrada: \\d+ de \\d+ m² del campo \\(gastas 1\\)/.test({AVISO})", 5000), A.evaluate(AVISO))
+        comprobar('gasta un puñado', servidorDice(lambda d: cuantos(d, yo, 'semilla_cebada') == 2) is not None)
+        comprobar('se ven las matas de cebada (brote)', esperar(A, f"!!{K}.escena.getObjectByName('planta_cebada_0')", 8000))
+        comprobar('donde ya está sembrado lo dice', texto_usar(A) == 'Ahí no queda tierra labrada sin sembrar.', texto_usar(A))
+        plantadas = 0
+        for semilla, cultivo, zz in (('habas', 'habas', z0 + 4.3), ('semilla_col', 'col', z0 + 5.6), ('semilla_nabo', 'nabo', z0 + 6.9)):
+            manos_vacias()
+            coger(A, semilla, 6, 'mano:der')
+            esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === '{semilla}'", 5000)
+            for i, xx in enumerate((x0 + 7.5, x0 + 8.15, x0 + 8.8, x0 + 9.45)):
+                ir(A, xx, zz, 0)
+                if i == 0: comprobar(f'con {cultivo} en la mano, Usar dice «Plantar»', texto_usar(A).startswith('Plantar:'), texto_usar(A))
+                A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(500)
+                plantadas += 1
+            ir(A, x0 + 7.6, zz, 0)
+            comprobar(f'{cultivo}: junto a otra, demasiado cerca (lo dice)', texto_usar(A) == 'Demasiado cerca de otra planta.', texto_usar(A))
+        l = servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'sembrar' and e.get('ok')) >= 1 + plantadas)
+        comprobar('las 12 plantas, en el servidor', l is not None, str(sum(1 for e in lineas_mundo() if e.get('tipo') == 'sembrar' and e.get('ok'))))
+        comprobar('y en el campo, cada una a su sitio', esperar(A, f"({K}.mundo.campos[0].plantas || []).length === 12", 8000), A.evaluate(f"JSON.stringify({K}.mundo.campos[0].plantas || [])"))
+        A.add_style_tag(content='#menuUsar { visibility: hidden !important; }')
+        ir(A, x0 + 6.5, z0 + 1.6, 0); A.evaluate(f"{K}.cam.yaw = Math.PI; {K}.cam.dist = 5; {K}.cam.pitch = 0.42"); A.wait_for_timeout(2000)
+        captura(A, f'{SALIDA}/PC_sembrado.png')
+        # las fases: se adelanta la hora de lo sembrado solo en este navegador (lo del servidor no cambia), para verlas todas
+        DIA = 24 * 3600 * 1000
+        def edades(cebada, plantas):
+            A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0], ahora = Date.now(), e = {plantas}; c.voleo = {{ ...c.voleo, t: c.voleo.t.map(() => ahora - {cebada}) }}; c.plantas = c.plantas.map((p, i) => ({{ ...p, t: ahora - e[i % 4] }})); {K}.camposV.poner({K}.mundo.campos); }})()")
+            A.wait_for_timeout(1500)
+        edades(2.5 * DIA, [0.5 * DIA, 2.5 * DIA, 5 * DIA, 8 * DIA])
+        comprobar('crecido: la cebada verde y las plantas en sus cuatro fases', A.evaluate(f"['planta_cebada_1', 'planta_habas_0', 'planta_habas_1', 'planta_habas_2', 'planta_habas_3', 'planta_col_2', 'planta_nabo_3'].every(n => !!{K}.escena.getObjectByName(n))"))
+        ir(A, x0 + 8.5, z0 + 3.2, 0); A.evaluate(f"{K}.cam.yaw = Math.PI + 0.35; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.5"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_plantas_fases_de_cerca.png')
+        edades(5 * DIA, [5 * DIA] * 4)
+        comprobar('a los cinco días, la cebada en espiga y la col y el nabo con su cabeza', A.evaluate(f"['planta_cebada_2', 'planta_col_2', 'planta_nabo_2', 'planta_habas_2'].every(n => !!{K}.escena.getObjectByName(n))"))
+        ir(A, x0 + 6.5, z0 + 3.4, 0); A.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3.2; {K}.cam.pitch = 0.35"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_espiga_de_cerca.png')
+        edades(8 * DIA, [8 * DIA] * 4)
+        comprobar('a la semana, todo maduro', A.evaluate(f"['planta_cebada_3', 'planta_col_3', 'planta_nabo_3', 'planta_habas_3'].every(n => !!{K}.escena.getObjectByName(n))"))
+        ir(A, x0 + 6.5, z0 + 1.6, 0); A.evaluate(f"{K}.cam.yaw = Math.PI; {K}.cam.dist = 5; {K}.cam.pitch = 0.42"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_maduro.png')
+        ir(A, x0 + 6, z0 - 70, 0); A.wait_for_timeout(1500)
+        comprobar('de lejos (a 70 m) las plantas no se dibujan', A.evaluate(f"{K}.camposV.raiz.children.filter(g => g.name === 'sembrado').every(g => !g.visible)"))
+        A.evaluate(f"{K}.camposV.poner({K}.mundo.campos)")   # (lo adelantado se queda en este navegador: no se manda)
+        ir(A, x0 + 6, z0 + 3.4, 0)
+
         print('Fuera de su tierra, no')
         # deja la azada (y lo que lleve en las manos) y coge una estaca en la mano derecha
         A.evaluate(f"(() => {{ for (const m of ['mano:der', 'mano:izq']) if ({K}.inventario.lugares[m]) {K}.accionInventario({{ tipo: 'soltar', de: m, cantidad: {K}.inventario.lugares[m].n }}); }})()")
@@ -260,11 +321,14 @@ try:
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         ir(B, x0 - 3, z0 + 5, 2.4)
         comprobar('y ve la tierra labrada', esperar(B, f"!!{K}.escena.getObjectByName('tierra_labrada')", 20000))
+        comprobar('y ve lo sembrado (la cebada y las plantas, recién brotadas)', esperar(B, f"!!{K}.escena.getObjectByName('planta_cebada_0') && !!{K}.escena.getObjectByName('planta_col_0')", 20000))
         comprobar('le llega el campo, cerrado', esperar(B, f"{K}.mundo.campos.length === 1 && {K}.mundo.campos[0].cerrado", 20000), B.evaluate(f"JSON.stringify({K}.mundo.campos)"))
         B.evaluate(f"{K}.cam.yaw = 2.4 + Math.PI; {K}.cam.dist = 11; {K}.cam.pitch = 0.7"); B.wait_for_timeout(3000)
         captura(B, f'{SALIDA}/movil_campo.png')
         ir(B, x0 + 0.9, z0 - 1.1, 2.6); B.evaluate(f"{K}.cam.yaw = 2.6 + Math.PI; {K}.cam.dist = 3; {K}.cam.pitch = 0.35"); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_estaca_de_cerca.png')
+        ir(B, x0 + 8.5, z0 + 2.6, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3; {K}.cam.pitch = 0.5"); B.wait_for_timeout(2000)
+        captura(B, f'{SALIDA}/movil_sembrado_de_cerca.png')
         comprobar('a Bruno no le deja quitar las estacas de otro (lo dice)', (B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'Fuera de tu tierra.'))
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:

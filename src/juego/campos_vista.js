@@ -2,11 +2,14 @@
 // Cada estaca, clavada de pie con un cuarto de su largo en la tierra; y el linde, una franja estrecha de tierra pisada
 // que va de estaca en estaca pegada al suelo (y de la última a la primera cuando el campo está cerrado). Todo se rehace
 // cuando cambia el mundo de construcción (main.js, reconstruir).
+// Lo sembrado (P11, «Sembrar y crecer»): las plantas, como la hierba densa, en instancias (una llamada de dibujo por
+// cultivo y fase en cada campo), con su forma de cada fase (brote, verde, espiga o cabeza, maduro); de lejos no se
+// dibujan y la tierra sembrada toma el color del cultivo. Al cambiar de fase, se rehace.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { estacaEn } from './modelos_objetos.js';
-import { ladosDe, casillasLabradas, dentroPoligono } from '../logica/campos.js';
+import { ladosDe, casillasLabradas, dentroPoligono, casillasVoleo, voleoEn, fase, siguienteCambio } from '../logica/campos.js';
 
 const ALTO_ESTACA = 1.15;      // m sobre el suelo: recias y altas, para que se vean entre la hierba
 const GROSOR_ESTACA = 1.7;     // más gruesas que la de la mano (para leerlas de lejos como mojones de campo)
@@ -50,11 +53,113 @@ function texturaLabrado() {
 }
 let matLabrado = null;      // (uno para todos: no se rehace con cada cambio)
 
+// ---------- Las plantas de lo sembrado (P11) ----------
+const LEJOS_PLANTAS = 45;          // m: más lejos que esto (del borde del campo), solo el color del suelo
+const MATAS_CEBADA = 7;            // matas de cebada por m² sembrado a voleo
+const C = (h) => new THREE.Color(h);
+// el color que toma de lejos la tierra sembrada de cebada en cada fase (multiplica la textura de la tierra)
+const TINTE_CEBADA = [[0.92, 1, 0.8], [0.62, 1, 0.5], [0.8, 1, 0.52], [1.18, 1.05, 0.6]];
+// Un constructor de mallas pequeñas con color por vértice (las normales hacia arriba, como la hierba densa: luz suave).
+function constructor() {
+  const pos = [], col = [], nor = [], idx = [];
+  const v = (x, y, z, c, ny = 1) => { pos.push(x, y, z); col.push(c.r, c.g, c.b); nor.push(0, ny, 0); return pos.length / 3 - 1; };
+  return {
+    // una hoja o un tallo: de (x, z) en el suelo, hacia el ángulo a, que sube «alto», se abre «fuera» y cae «cae» en la
+    // punta; ancho en la base; c0 en el pie, c1 en la punta. ancha: hoja ancha (rombo) en vez de tira
+    hoja(x, z, a, alto, fuera, ancho, c0, c1, { cae = 0, y0 = 0, ancha = false } = {}) {
+      const ca = Math.cos(a), sa = Math.sin(a), px = -sa * ancho, pz = ca * ancho, cm = c0.clone().lerp(c1, 0.55);
+      const b = v(x - px * 0.5, y0, z - pz * 0.5, c0), b2 = v(x + px * 0.5, y0, z + pz * 0.5, c0);
+      const mx = x + ca * fuera * 0.5, mz = z + sa * fuera * 0.5, my = y0 + alto * (ancha ? 0.55 : 0.6);
+      const m1 = v(mx - px * (ancha ? 1.2 : 0.7), my, mz - pz * (ancha ? 1.2 : 0.7), cm), m2 = v(mx + px * (ancha ? 1.2 : 0.7), my, mz + pz * (ancha ? 1.2 : 0.7), cm);
+      const t = v(x + ca * fuera, y0 + alto - cae, z + sa * fuera, c1);
+      idx.push(b, b2, m1, b2, m2, m1, m1, m2, t);
+    },
+    // una bola (la cabeza de la col, el nabo que asoma): un icosaedro pequeño, algo achatado
+    bola(x, y, z, r, c, achata = 0.85) {
+      const g = new THREE.IcosahedronGeometry(r, 1), p = g.attributes.position, n = g.attributes.normal;
+      const base = pos.length / 3;
+      for (let i = 0; i < p.count; i++) { pos.push(x + p.getX(i), y + p.getY(i) * achata, z + p.getZ(i)); const k = 0.82 + 0.18 * (p.getY(i) / r * 0.5 + 0.5); col.push(c.r * k, c.g * k, c.b * k); nor.push(n.getX(i), n.getY(i), n.getZ(i)); }
+      const ix = g.index ? g.index.array : [...Array(p.count).keys()];
+      for (const i of ix) idx.push(base + i);
+      g.dispose();
+    },
+    // la espiga: un huso fino de (x, y, z) hacia (dx, dy, dz)
+    espiga(x, y, z, dx, dy, dz, r, c) {
+      const L = Math.hypot(dx, dy, dz), ux = dx / L, uy = dy / L, uz = dz / L;
+      let ax = -uz, az = ux; const la = Math.hypot(ax, az) || 1; ax /= la; az /= la;
+      const b = v(x, y, z, c), t = v(x + dx, y + dy, z + dz, c);
+      const s = [];
+      for (let k = 0; k < 3; k++) { const ang = k * 2.094, ox = ax * Math.cos(ang) * r, oz = az * Math.cos(ang) * r, oy = Math.sin(ang) * r; s.push(v(x + dx * 0.45 + ox, y + dy * 0.45 + oy, z + dz * 0.45 + oz, c)); }
+      for (let k = 0; k < 3; k++) { const a1 = s[k], a2 = s[(k + 1) % 3]; idx.push(b, a1, a2, a1, t, a2); }
+    },
+    cerrar() {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+      g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+      g.setIndex(idx);
+      return g;
+    },
+  };
+}
+// La forma de cada cultivo en cada fase (una por instancia; la instancia la gira y le da algo de tamaño).
+function formaPlanta(cultivo, f) {
+  const k = constructor(), r = (i) => ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
+  if (cultivo === 'cebada') {   // una mata de cebada: varias hojas y, desde la espiga, sus tallos con la espiga
+    const verde = [C(0x6f9a46), C(0x5a8a3c), C(0x86a24c), C(0xb89a58)][f], punta = [C(0x9cc068), C(0x8fb460), C(0xb4b46a), C(0xd8bf78)][f];
+    const n = [4, 6, 5, 5][f], alto = [0.07, 0.34, 0.5, 0.58][f];
+    for (let i = 0; i < n; i++) { const a = i * 2.4 + r(i) * 0.6; k.hoja(Math.cos(a) * 0.03, Math.sin(a) * 0.03, a, alto * (0.75 + 0.35 * r(i + 7)), alto * (f ? 0.32 : 0.5), 0.022, verde, punta, { cae: f ? alto * 0.18 : 0 }); }
+    if (f >= 2) {
+      const espiga = f === 2 ? C(0xa4ae5a) : C(0xdcc27c);
+      for (let i = 0; i < 4; i++) {
+        const a = i * 1.57 + r(i + 3), sx = Math.cos(a) * 0.035, sz = Math.sin(a) * 0.035, h = alto * (1.05 + 0.25 * r(i + 11)), lean = 0.06 + 0.05 * r(i + 5);
+        k.hoja(sx, sz, a, h, lean, 0.008, verde, espiga);
+        const tx = sx + Math.cos(a) * lean, tz = sz + Math.sin(a) * lean;
+        if (f === 2) k.espiga(tx, h - 0.01, tz, Math.cos(a) * 0.02, 0.09, Math.sin(a) * 0.02, 0.012, espiga);
+        else k.espiga(tx, h - 0.01, tz, Math.cos(a) * 0.06, -0.05, Math.sin(a) * 0.06, 0.013, espiga);   // madura, la espiga se dobla
+      }
+    }
+  } else if (cultivo === 'habas') {   // un tallo recto con pares de hojas redondas, luego vainas; seca, negruzca
+    const tallo = [C(0x6a9a4a), C(0x4f7d38), C(0x4f7d38), C(0x4a3a28)][f], hoja = [C(0x7fae58), C(0x56843e), C(0x5a8642), C(0x6a5434)][f];
+    const alto = [0.06, 0.3, 0.55, 0.5][f];
+    if (f === 0) { k.hoja(0, 0, 0.3, 0.06, 0.04, 0.03, tallo, hoja, { ancha: true }); k.hoja(0, 0, 3.4, 0.05, 0.04, 0.03, tallo, hoja, { ancha: true }); }
+    else {
+      k.hoja(0, 0, 0, alto, 0.01, 0.018, tallo, tallo); k.hoja(0, 0, 1.57, alto, 0.01, 0.018, tallo, tallo);
+      const pisos = f === 1 ? 3 : 4;
+      for (let p = 0; p < pisos; p++) {
+        const y0 = alto * (0.2 + 0.75 * p / pisos), a = p * 1.9;
+        for (const s of [0, Math.PI]) k.hoja(0, 0, a + s, 0.05, 0.09, 0.04, hoja, hoja, { y0, ancha: true });
+      }
+      if (f >= 2) {
+        const vaina = f === 2 ? C(0x6c9448) : C(0x2e2620);
+        for (let p = 0; p < 3; p++) { const a = p * 2.1 + 0.5, y = alto * (0.3 + 0.18 * p); k.espiga(Math.cos(a) * 0.02, y, Math.sin(a) * 0.02, Math.cos(a) * 0.05, -0.08, Math.sin(a) * 0.05, 0.014, vaina); }
+      }
+    }
+  } else if (cultivo === 'col') {   // una roseta de hojas anchas azuladas y, en el centro, el cogollo
+    const hoja = [C(0x7fa868), C(0x6e9278), C(0x6a8e74), C(0x6c8c70)][f], borde = [C(0x9ac07a), C(0x8eae90), C(0x8aaa8a), C(0x8aa684)][f];
+    const n = [3, 7, 9, 10][f], largo = [0.05, 0.22, 0.26, 0.3][f];
+    for (let i = 0; i < n; i++) { const a = i * 2.4; k.hoja(0, 0, a, largo * (f ? 0.55 : 1), largo, largo * 0.45, hoja, borde, { ancha: true, cae: f ? largo * 0.15 : 0, y0: f ? 0.02 : 0 }); }
+    if (f >= 2) k.bola(0, f === 2 ? 0.1 : 0.13, 0, f === 2 ? 0.1 : 0.14, C(0xa8c49a), 0.8);
+  } else {   // el nabo: hojas rectas y algo rizadas y, al engordar, la raíz blanca y morada que asoma
+    const hoja = [C(0x7aac58), C(0x5e9444), C(0x5a8e42), C(0x6a8a44)][f], punta = [C(0x92c06c), C(0x7aac58), C(0x76a656), C(0x8a9a52)][f];
+    const n = [3, 6, 7, 7][f], alto = [0.05, 0.2, 0.28, 0.3][f];
+    for (let i = 0; i < n; i++) { const a = i * 2.4 + r(i); k.hoja(0, 0, a, alto * (0.8 + 0.3 * r(i + 2)), alto * 0.45, alto * 0.18, hoja, punta, { ancha: true, cae: alto * 0.1, y0: f >= 2 ? 0.03 : 0 }); }
+    if (f >= 2) { const rr = f === 2 ? 0.045 : 0.065; k.bola(0, 0, 0, rr, C(0xe6dcd6), 1); k.bola(0, rr * 0.75, 0, rr * 0.8, C(0x8e5a7c), 0.6); }
+  }
+  return k.cerrar();
+}
+const FORMAS = {};
+const forma = (cultivo, f) => (FORMAS[cultivo + f] ||= formaPlanta(cultivo, f));
+let matPlantas = null;
+// un número fijo (0–1) para un punto, para que cada planta salga siempre igual
+const fijo = (x, z, s = 0) => { const h = Math.sin(x * 127.1 + z * 311.7 + s * 74.7) * 43758.5453; return h - Math.floor(h); };
+
 export function crearCamposVista({ escena, sueloEn }) {
   const raiz = new THREE.Group();
   raiz.name = 'campos';
   escena.add(raiz);
-  const vaciar = () => { for (const h of raiz.children) h.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); raiz.clear(); };
+  const vaciar = () => { for (const h of raiz.children) h.traverse(o => { if (o.isMesh && !o.userData.compartida) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose(); }); raiz.clear(); grupos = []; };
+  let grupos = [], ultimos = null, proximoCambio = Infinity, mirado = 0;
 
   // la franja del linde de a a b, cada medio metro a la altura del suelo, con algo de variación de color
   function linde(a, b, geos) {
@@ -128,7 +233,9 @@ export function crearCamposVista({ escena, sueloEn }) {
       let al = suave(0.3, 0.12, lejos(x, z) + ruido(x, z) * 0.1);
       if (!dentroPoligono(c.puntos, x, z)) al = 0;
       const v = 0.9 + 0.1 * ruido(x * 0.37 + 5, z * 0.41 - 3);   // manchas grandes, más claras y más oscuras
-      pos.push(x, sueloEn(x, z) + SOBRE + 0.012, z); uv.push((x * co - z * si) * 0.5, x * si + z * co); col.push(v, v * 0.985, v * 0.97, al); alfa.push(al);
+      // sembrada de cebada, la tierra toma de lejos el color de su fase (P11, sembrar)
+      const tv = voleoEn(c, x, z), ti = tv === null ? [1, 0.985, 0.97] : TINTE_CEBADA[fase(tv, ahora)];
+      pos.push(x, sueloEn(x, z) + SOBRE + 0.012, z); uv.push((x * co - z * si) * 0.5, x * si + z * co); col.push(v * ti[0], v * ti[1], v * ti[2], al); alfa.push(al);
     }
     const fila = nx + 1;
     for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
@@ -145,14 +252,56 @@ export function crearCamposVista({ escena, sueloEn }) {
     geos.push(g);
   }
 
+  // lo sembrado de un campo: un grupo con una malla de instancias por cultivo y fase (las matas de cebada, unas cuantas
+  // por casilla en sitios fijos; las demás, una por planta), que se esconde de lejos (paso)
+  function sembrado(c, ahora) {
+    const porForma = new Map(), poner = (cultivo, f, x, z, s) => { const k = cultivo + f; if (!porForma.has(k)) porForma.set(k, { cultivo, f, l: [] }); porForma.get(k).l.push([x, z, s]); };
+    let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+    for (const k of casillasVoleo(c)) {
+      const f = fase(k.t, ahora);
+      proximoCambio = Math.min(proximoCambio, siguienteCambio(k.t, ahora));
+      for (let i = 0; i < MATAS_CEBADA; i++) {
+        const x = k.x + fijo(k.x, k.z, i), z = k.z + fijo(k.z, k.x, i + 9);
+        if (!dentroPoligono(c.puntos, x, z)) continue;
+        poner('cebada', f, x, z, 0.8 + 0.4 * fijo(x, z, 3));
+      }
+      x0 = Math.min(x0, k.x); z0 = Math.min(z0, k.z); x1 = Math.max(x1, k.x + 1); z1 = Math.max(z1, k.z + 1);
+    }
+    for (const p of c.plantas || []) {
+      const f = fase(p.t, ahora);
+      proximoCambio = Math.min(proximoCambio, siguienteCambio(p.t, ahora));
+      poner(p.c, f, p.x, p.z, 0.85 + 0.3 * fijo(p.x, p.z, 5));
+      x0 = Math.min(x0, p.x); z0 = Math.min(z0, p.z); x1 = Math.max(x1, p.x); z1 = Math.max(z1, p.z);
+    }
+    if (!porForma.size) return;
+    if (!matPlantas) matPlantas = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    const g = new THREE.Group(); g.name = 'sembrado';
+    const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), P = new THREE.Vector3(), S = new THREE.Vector3();
+    for (const { cultivo, f, l } of porForma.values()) {
+      const im = new THREE.InstancedMesh(forma(cultivo, f), matPlantas, l.length);
+      im.userData.compartida = true; im.name = `planta_${cultivo}_${f}`;
+      l.forEach(([x, z, s], i) => {
+        E.set((fijo(x, z, 7) - 0.5) * 0.12, fijo(x, z, 1) * 6.283, (fijo(x, z, 8) - 0.5) * 0.12);
+        M.compose(P.set(x, sueloEn(x, z) + SOBRE, z), Q.setFromEuler(E), S.set(s, s, s));
+        im.setMatrixAt(i, M);
+      });
+      im.receiveShadow = true; im.castShadow = false;
+      im.computeBoundingSphere();
+      g.add(im);
+    }
+    g.userData.centro = { x: (x0 + x1) / 2, z: (z0 + z1) / 2, r: Math.hypot(x1 - x0, z1 - z0) / 2 };
+    raiz.add(g); grupos.push(g);
+  }
+
   // campos: los del mundo (Mundo.campos).
   function poner(campos, ahora = Date.now()) {
     vaciar();
+    ultimos = campos; proximoCambio = Infinity;
     const L = new Lote({ rangoSuelo: 0.3, variacion: 0.06 }), lindes = [], cuerdas = [], labrados = [];
     for (const c of campos || []) {
       c.puntos.forEach((p, i) => estacaEn(L, p.x, sueloEn(p.x, p.z) - HUNDIDA, p.z, { y: (i * 1.7 + c.id) % 6.28, x: 0.04, z: ((i * 0.37) % 0.1) - 0.05 }, `${c.id}:${i}`, GROSOR_ESTACA, ALTO_ESTACA + HUNDIDA, 1.5));
       for (const [a, b] of ladosDe(c)) { linde(a, b, lindes); cuerda(a, b, cuerdas); }
-      if (c.cerrado) labrado(c, ahora, labrados);
+      if (c.cerrado) { labrado(c, ahora, labrados); sembrado(c, ahora); }
     }
     for (const [tex, geos] of Object.entries(L.cerrar(null, true))) {
       const m = new THREE.Mesh(mergeGeometries(geos), materialTex(tex)); m.castShadow = m.receiveShadow = true; raiz.add(m);
@@ -165,5 +314,11 @@ export function crearCamposVista({ escena, sueloEn }) {
       m.receiveShadow = true; m.name = 'tierra_labrada'; raiz.add(m);
     }
   }
-  return { poner, raiz };
+  // cada fotograma: de lejos, lo sembrado no se dibuja (queda el color de la tierra); y al cambiar de fase, se rehace
+  function paso(foco) {
+    for (const g of grupos) { const c = g.userData.centro; g.visible = Math.hypot(c.x - foco.x, c.z - foco.z) - c.r < LEJOS_PLANTAS; }
+    const t = performance.now();
+    if (t - mirado > 5000) { mirado = t; if (Date.now() >= proximoCambio && ultimos) poner(ultimos); }
+  }
+  return { poner, paso, raiz };
 }
