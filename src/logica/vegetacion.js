@@ -70,10 +70,15 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     return Math.hypot(h(i + 1, j) - h(i - 1, j), h(i, j + 1) - h(i, j - 1)) / (2 * PASO_PEND);
   };
   const tramos = paisaje.riosEn(x0, z0, x1, z1);
-  // qué hay en (x, z): nada en el agua ni en la orilla; si no, su sitio (bioma, roca…), la pendiente y la altura
-  const sitioEn = (x, z) => {
+  // qué hay en (x, z): nada en el agua; si no, su sitio (bioma, roca…), la pendiente y la altura. En la orilla de un río,
+  // lo que queda en seco (seco m o más por encima del agua) sí: antes no se ponía nada a menos de 4 m del cauce y el
+  // bosque quedaba siempre apartado del río por una franja vacía (valravnx, 13 nov: «en el bosque me gustaría verlo más
+  // real… que el bosque casi toque el río»). Los árboles piden algo más de altura que la hierba.
+  const sitioEn = (x, z, seco = 0.3) => {
     const y = alt(x, z);
-    if (y < 0.3 || paisaje.agua(x, z, tramos) !== null) return null;
+    if (y < 0.3) return null;
+    if (!globalThis.__orillaVieja) { const n = paisaje.agua(x, z, tramos); if (n !== null && y < n + seco) return null; }
+    else if (paisaje.agua(x, z, tramos) !== null) return null;
     const st = paisaje.sitio(x, z, y);
     return st && st.bioma ? { st, s: pendiente(x, z), y } : null;
   };
@@ -92,7 +97,7 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
   const arbolDeCelda = (cx, cz, r, dentro) => {
     const x = cx + (r() - 0.5) * 4, z = cz + (r() - 0.5) * 4, u = r(), q = r(), v = r(), giro = r() * 6.3, tono = 0.82 + r() * 0.3;
     if (!dentro(x, z)) return null;
-    const s = sitioEn(x, z); if (!s || s.y < 1.5) return null;
+    const s = sitioEn(x, z, 0.35); if (!s || s.y < 1.5) return null;
     const w = r();   // (el último: así lo de antes de cada árbol sale igual)
     const { d, especie, tam, linde } = bosqueEn(s.st, s.s, x, z, { semilla, u });
     if (!especie || q > d * DENSIDAD_BOSQUE) return { arbol: null, d, linde, s, x, z };

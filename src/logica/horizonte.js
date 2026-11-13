@@ -284,7 +284,9 @@ export function crearDoselCerca(paisaje, alt, especies, cx, cz, radio, paso = PA
     let c = null;
     const aqui = !hay || hay(x, z);
     if (!aqui) faltan++;
-    if (aqui && y >= 0.3 && paisaje.agua(x, z, tramos) === null) {
+    // (en la orilla, el dosel llega hasta el agua, como los árboles de cerca: src/logica/vegetacion.js, sitioEn)
+    const nivelAgua = paisaje.agua(x, z, tramos);
+    if (aqui && y >= 0.3 && (nivelAgua === null || y >= nivelAgua + 0.35)) {
       const st = paisaje.sitio(x, z, y);
       if (st && st.bioma) {
         const s = Math.hypot(alt(x + 3, z) - alt(x - 3, z), alt(x, z + 3) - alt(x, z - 3)) / 6;
