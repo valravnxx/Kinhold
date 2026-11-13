@@ -336,7 +336,7 @@ try:
           Object.assign(f.estaciones, K.__vistas);
           if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); Object.assign(K.fabCliente.estaciones, K.__vistas); K.estacionesV.refrescar(); }}; }}
           K.estacionesV.refrescar(); }})"""
-        A.evaluate(f"{RASPADOR}({K}, -3, -3.5)")
+        A.evaluate(f"{RASPADOR}({K}, -3.5, -5.5)")
         n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_raspador'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
         comprobar('el raspador se dibuja, con la piel tensada y la otra al pie', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_raspador')") and n >= 2, str(n))
         A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 1.0, z: e.z + 2.6, rot: 2.8 }}); {K}.cam.yaw = 0.1; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.25; }})()""")
@@ -390,7 +390,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 5 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 6 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 
@@ -416,7 +416,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()")
 
         print('El raspador de pieles, en el móvil')
-        B.evaluate(f"{RASPADOR}({K}, -3, -3.5)")
+        B.evaluate(f"{RASPADOR}({K}, -3.5, -5.5)")
         B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 2.8, rot: 2.8 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.3; }})()""")
         comprobar('en el móvil, también', esperar(B, f"!!{K}.escena.getObjectByName('estacion_raspador')", 8000))
         B.wait_for_timeout(2500)

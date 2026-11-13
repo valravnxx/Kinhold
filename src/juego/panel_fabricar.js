@@ -235,7 +235,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const lleva = hay >= max ? `<p class="fab-gris">${esc(tr('No cabe nada más.'))}</p>`
       : [...dejables(inv), ...deLaEspalda(inv, e.tipo)].filter(x => guardaTipo(e.tipo, x.tipo)).map(x => `<button class="fab-hueco fab-dejar" data-estacion="${esc(e.id)}" data-de="${esc(x.ruta)}" title="${esc(tr(alm ? 'Guardar aquí' : 'Dejar') + ': ' + nombre(x.tipo))}">${icono(x.tipo)}<b class="fab-num">${x.n}</b><i class="fab-de">${esc(SITIO_CORTO(x.ruta))}</i><span class="fab-hueco-nom">${esc(nombre(x.tipo))}</span></button>`).join('')
       || `<p class="fab-gris">${esc(alm ? tr('No llevas nada que se guarde aquí ({c}).', { c: guarda }) : tr('No llevas nada que dejar.'))}</p>`;
-    const titulo = alm ? tr('Guardado en {e}', { e: laEstacion(e.tipo) }) : ESTACIONES[e.tipo].cuelga ? tr('Colgado en {e}', { e: laEstacion(e.tipo) }) : tr('Encima de {e}', { e: laEstacion(e.tipo) });   // (el secadero: lo colgado)
+    const titulo = alm ? tr('Guardado en {e}', { e: laEstacion(e.tipo) }) : ESTACIONES[e.tipo].cuelga ? tr('Colgado en {e}', { e: laEstacion(e.tipo) }) : tr('Encima de {e}', { e: laEstacion(e.tipo) }).replace(/\bde el\b/, 'del');   // («encima del banco», no «de el»)   // (el secadero: lo colgado)
     const cuenta = alm ? tr('{n} de {m} · toca para sacar', { n: hay, m: max }) : tr('{n} de {m} · toca para coger', { n: hay, m: max });
     const nada = alm ? tr('Vacío: aquí se guarda {c}.', { c: guarda }) : tr('No hay nada: deja aquí lo que piden sus recetas.');
     const q = cuanto && cuanto.estacion === e.id && dep[cuanto.objeto] ? cuanto : null;
@@ -271,7 +271,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const almacen = pestana === 'almacen';
     const cab = almacen ? (est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) }
         : { ic: '', h: tr('Almacenaje'), s: tr('Acércate al almacenaje para guardar o sacar.') })
-      : est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) + ' · ' + tr('sus recetas gastan lo que está en ella') }
+      : est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) + ' · ' + tr('sus recetas gastan lo que se le deja') }
       : pestana === 'manos' ? { ic: '', h: tr('Fabricar'), s: tr('Con las manos, en cualquier sitio: lo que llevas y lo que hay en el suelo a tu lado') }
       : pestana === 'todo' ? { ic: '', h: tr('Fabricar'), s: tr('Todo lo que se puede hacer') }
       : { ic: '', h: tr('Fabricar'), s: tr('Hace falta {e} a tu lado.', { e: tr(conQue(pestana)) }) + ' ' + tr('Los puestos de trabajo se levantan desde Construir, en «Puestos de trabajo».') };

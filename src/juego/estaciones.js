@@ -40,7 +40,7 @@ import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
 import { modeloHacha } from './personaje.js';
-import { modeloHachaPiedra, modeloMazoPiedra, contornoPiel, PIEL_LIMPIA } from './modelos_objetos.js';
+import { modeloHachaPiedra, modeloMazoPiedra, mallaPiel, moteadoPiel, PIEL_LIMPIA } from './modelos_objetos.js';
 import { conMeshy, hayMeshy, precargarMeshy } from '../mundo/meshy_objetos.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
@@ -310,7 +310,7 @@ function llenoSecadero(dep, id, colgado = []) {
 // El raspador de pieles (P9, 13 nov): el bastidor de cuatro varas. Las de los lados, hincadas y echadas hacia atrás
 // (ECHA: lo que retroceden por metro de alto); las de arriba y abajo, atadas por delante y más largas que el cuadro.
 // En su plano: u, de lado a lado; h, la altura.
-const RASPADOR = { u: 0.6, abajo: 0.32, arriba: 1.42, alto: 1.6, echa: 0.22, sobra: 0.14 };
+const RASPADOR = { u: 0.6, abajo: 0.32, arriba: 1.42, alto: 1.6, echa: 0.32, sobra: 0.14 };
 const enBastidor = (u, h, delante = 0) => new THREE.Vector3(u, h, -h * RASPADOR.echa + delante);
 const CUERDA_C = 0xb8a27a;
 function cuerdaEntre(L, a, b, r = 0.008) {
@@ -342,24 +342,22 @@ function raspador(id) {
 function llenoRaspador(dep, id) {
   const g = new THREE.Group(), { u: U, abajo, arriba } = RASPADOR, cual = dep.piel > 0 ? 'piel' : dep.piel_limpia > 0 ? 'piel_limpia' : null;
   if (cual) {
-    const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 }), h0 = (abajo + arriba) / 2 + 0.03, esc = 1.36;
-    const borde = contornoPiel(id, esc), forma = new THREE.Shape(borde);
-    const geo = new THREE.ExtrudeGeometry(forma, { depth: 0.008, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.008, bevelSegments: 1, curveSegments: 4 });
+    // la piel, estirada en el cuadro (casi hasta las varas), algo abombada hacia atrás por lo que tiran las cuerdas
+    const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 }), h0 = (abajo + arriba) / 2, giro = { x: -Math.atan(RASPADOR.echa) };
+    const { geo, agujeros } = mallaPiel(id, U - 0.1, (arriba - abajo) / 2 - 0.09, { pasos: 22, agujeros: 20, abomba: -0.04 });
     const c = enBastidor(0, h0, 0.02);
-    const color = cual === 'piel' ? 0x8a6d55 : PIEL_LIMPIA;   // por raspar: la cara de la carne, rosada y parda; limpia, pálida
-    // (la textura de manchas suaves, la del follaje, da a la piel su moteado: sin ella era un cartón liso)
-    L.add(geo, color, c.x, c.y, c.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'hojas', sinSuelo: true, rayas: v => 0.84 + 0.1 * Math.cos(v.x * 13 + v.y * 5) + 0.06 * Math.cos(v.y * 31 - v.x * 7) });
-    if (cual === 'piel') {   // el pelo, por detrás: la misma piel, un poco más atrás y algo menor (se ve solo desde atrás)
-      const d = enBastidor(0, h0, 0.013);
-      L.add(geo.clone(), 0x7d6346, d.x, d.y, d.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'hojas', sinSuelo: true, escala: new THREE.Vector3(0.985, 0.985, 1), rayas: v => 0.86 + 0.14 * Math.cos(v.x * 9) * Math.cos(v.y * 6) });
+    const color = cual === 'piel' ? 0x8f6f55 : PIEL_LIMPIA;   // por raspar: la cara de la carne, parda rosada; limpia, pálida
+    L.add(geo, color, c.x, c.y, c.z, giro, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id, cual === 'piel' ? 1.3 : 1) });
+    // la otra cara (se ve desde atrás): el pelo, si está por raspar; si no, la flor de la piel, algo más oscura
+    const atras = geo.clone(); atras.scale(-1, 1, 1); atras.computeVertexNormals();
+    const d = enBastidor(0, h0, 0.014);
+    L.add(atras, cual === 'piel' ? 0x8a6c4c : 0xa48a66, d.x, d.y, d.z, giro, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id + 'p', cual === 'piel' ? 2.2 : 1) });
+    // las lazadas: de cada agujero del borde a la vara más cercana (a los lados, arriba o abajo)
+    for (const q of agujeros) {
+      const h = h0 + q.y, aLado = U - Math.abs(q.x), aBarra = q.y < 0 ? h - abajo : arriba - h;
+      const fin = aLado < aBarra ? enBastidor(Math.sign(q.x) * U, h + (az(id, q.x) - 0.5) * 0.04, 0.012) : enBastidor(q.x * 1.05, q.y < 0 ? abajo : arriba, 0.03);
+      cuerdaEntre(L, enBastidor(q.x, h, 0.02), fin, 0.007);
     }
-    // las lazadas: de cada agujero del borde a la vara más cercana
-    borde.forEach((b, i) => {
-      if (i % 2) return;
-      const h = h0 + b.y, cand = [[Math.sign(b.x || 1) * U, h, Math.abs(Math.abs(b.x) - U)], [b.x, b.y < 0 ? abajo : arriba, Math.abs(b.y < 0 ? h - abajo : arriba - h)]];
-      const [uu, hh] = cand[0][2] < cand[1][2] ? cand[0] : cand[1];
-      cuerdaEntre(L, enBastidor(b.x * 0.97, h0 + b.y * 0.97, 0.022), enBastidor(uu, hh, 0.02));
-    });
     g.add(mallas(L));
   }
   // lo demás, al pie: la piel o las pieles que esperan, las limpias…

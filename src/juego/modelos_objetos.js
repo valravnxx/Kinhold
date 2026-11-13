@@ -99,18 +99,37 @@ export function contornoPiel(id, escala = 1) {
   const P = [[0, 0.36], [0.07, 0.3], [0.16, 0.31], [0.27, 0.38], [0.24, 0.24], [0.21, 0.08], [0.22, -0.12], [0.26, -0.3], [0.3, -0.42], [0.15, -0.33], [0.06, -0.38], [0, -0.42]];
   return [...P, ...P.slice(1, -1).reverse().map(([x, y]) => [-x, y])].map(([x, y], i) => new THREE.Vector2(x * (1 + (az(id, i) - 0.5) * 0.12) * escala, y * escala));
 }
-function pielLimpia(n, id) {
-  const L = lote(0.02);
-  const g = new THREE.ExtrudeGeometry(new THREE.Shape(contornoPiel(id)), { depth: 0.006, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.006, bevelSegments: 1, curveSegments: 4 });
-  g.rotateX(-Math.PI / 2);
-  const p = g.attributes.position;
-  for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + 0.008 * Math.sin(p.getX(i) * 7 + 2) * Math.cos(p.getZ(i) * 5));
+// Una piel estirada como malla (con vértices dentro, para que el color varíe por ella): un óvalo de semiejes a × b con
+// el contorno irregular y nada simétrico (las patas y el cuello, bultos desiguales), en el plano XY. Devuelve la
+// geometría, el contorno (f(θ): cuánto llega en cada dirección, 1 = el óvalo) y los agujeros del borde.
+export function mallaPiel(id, a, b, { pasos = 18, agujeros = 16, abomba = 0 } = {}) {
+  const f1 = az(id, 71) * 6, f2 = az(id, 72) * 6, f3 = az(id, 73) * 6;
+  // las cuatro patas en las diagonales (puntiagudas, de largo desigual), el cuello arriba y la cola abajo
+  const pata = t => { const c = -Math.cos(4 * t + 0.2 * Math.sin(t + f1)); return c > 0 ? c ** 3 : 0; };
+  const borde = t => 0.8 + (0.26 + 0.08 * Math.sin(t * 2 + f1)) * pata(t) + 0.1 * Math.max(0, Math.sin(t)) ** 10 + 0.05 * Math.max(0, -Math.sin(t)) ** 14 + 0.05 * Math.sin(3 * t + f2) + 0.03 * Math.sin(7 * t + f3);
+  const g = new THREE.PlaneGeometry(2 * a * 1.25, 2 * b * 1.25, pasos, pasos), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    let x = p.getX(i), y = p.getY(i);
+    const t = Math.atan2(y / b, x / a), r = Math.hypot(x / a, y / b), lim = borde(t);
+    if (r > lim) { x *= lim / r; y *= lim / r; }
+    const rr = Math.min(1, Math.hypot(x / a, y / b) / lim);
+    p.setXYZ(i, x, y, abomba * (1 - rr * rr) + 0.004 * Math.sin(x * 23 + f1) * Math.sin(y * 19 + f2));
+  }
   g.computeVertexNormals();
-  // la cara de dentro raspada: pálida, con vetas algo más oscuras donde quedó la membrana
-  L.add(g, PIEL_LIMPIA, 0, 0.006, 0, { y: az(id, 40) }, { tex: 'liso', rayas: (v) => 0.9 + 0.1 * Math.cos(v.x * 11 + v.z * 4) });
-  for (let k = 0; k < 8; k++) {   // los agujeros del bastidor, por el borde
-    const a = k / 8 * Math.PI * 2, r = 0.2 + az(id, k + 9) * 0.03, x = Math.cos(a) * r * 0.75, z = Math.sin(a) * r * 1.4, t = az(id, 40);
-    L.add(new THREE.CircleGeometry(0.008, 6), 0x3a2c20, x * Math.cos(t) + z * Math.sin(t), 0.019, -x * Math.sin(t) + z * Math.cos(t), { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  const ag = [];
+  for (let k = 0; k < agujeros; k++) { const t = (k + 0.5) / agujeros * Math.PI * 2 + (az(id, 80 + k) - 0.5) * 0.15, l = borde(t) * 0.9; ag.push(new THREE.Vector2(Math.cos(t) * a * l, Math.sin(t) * b * l)); }
+  return { geo: g, agujeros: ag };
+}
+// moteado de la piel: manchas suaves y algo de veta (sobre los vértices de la malla)
+export const moteadoPiel = (id, fuerte = 1) => { const f = az(id, 90) * 6; return v => 1 - fuerte * (0.08 + 0.07 * Math.sin(v.x * 17 + f) * Math.cos(v.y * 13 + v.z * 13 - f) + 0.04 * Math.sin(v.x * 41 + v.z * 37)); };
+function pielLimpia(n, id) {
+  const L = lote(0.02), { geo, agujeros } = mallaPiel(id, 0.27, 0.38, { pasos: 14, agujeros: 12 });
+  geo.rotateX(-Math.PI / 2);
+  const t = az(id, 40), y = 0.008;
+  L.add(geo, PIEL_LIMPIA, 0, y, 0, { y: t }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id, 1.2) });
+  for (const q of agujeros) {   // los agujeros del bastidor, junto al borde
+    const x = q.x, z = -q.y;
+    L.add(new THREE.CircleGeometry(0.009, 6), 0x3a2c20, x * Math.cos(t) + z * Math.sin(t), y + 0.006, -x * Math.sin(t) + z * Math.cos(t), { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
   }
   return mallas(L);
 }
