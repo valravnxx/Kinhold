@@ -12,6 +12,7 @@ import { naturaleza, hayNaturaleza, detalleNaturaleza } from './naturaleza_meshy
 import { modelosSotobosque, RADIO_TOCON, LARGO_TRONCO } from './sotobosque.js';
 import { material } from './estilos.js';
 import { ROCAS_COLOR, lin } from './color_suelo.js';
+import { modelosRocaPared, materialRoca } from './rocas.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
 export { TAM_ADULTO };
 import { idArbol } from '../logica/tala.js';
@@ -35,6 +36,8 @@ const FLORES = [0xe8e2d0, 0xd9c27a, 0xa98aa6];
 // distancia). Los trozos que quedan lejos se sueltan. Lo talado no se pierde: cada árbol es siempre el mismo obstáculo
 // (con su id por su sitio) mientras su trozo está cargado, y la tala (src/juego/tala.js) guarda lo de todos, estén o no.
 const MS_FOTOGRAMA = movil ? 3 : 4, PASO_REHACER = movil ? 8 : 10;
+// la roca de los cortados se ve hasta R_PARED m (decisión provisional, 13 nov): una pared se ve de lejos
+const R_PARED = movil ? 110 : 180;
 
 // mundoJ: el mundo del juego (src/mundo/mundo_juego.js). semilla: la del mapa.
 export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETACION }) {
@@ -81,6 +84,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
         edad: e.edad, giro: e.giro, tono: e.tono, id: idArbol(e.x, e.z), malla: null, instancia: -1, matriz: null }));
       t.piedras = v.piedras.map(esc).filter(e => lejos(e, CLARO)).map(e => ({ ...e, y: e.y - (e.canto ? e.tam * 0.35 : 0.2), ob: e.canto && e.tam < 0.45 ? null : { x: e.x, z: e.z, r: e.tam * 1.1, veg: true, canto: !!e.canto },
         id: !e.canto && rompible(e.tam) ? idRoca(e.x, e.z) : null }));   // (las medianas se rompen con el mazo: su nombre, por su sitio)   // (los cantos del río, medio hundidos; los pequeños no estorban)
+      t.paredes = (v.paredes || []).map(esc);   // (13 nov) la roca de los cortados: solo adorno, sin nivelar (en una pared no se obra)
       trozos.set(clave(i, j), t);
       for (const e of [...t.arboles, ...t.piedras]) e.yb = e.y;
       alNivel([...t.arboles, ...t.piedras], cajaTrozo(i, j));
@@ -164,9 +168,10 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     const nuevas = [], nuevasMallas = [];
     const dist = (e) => Math.hypot(e.x - P.x, e.z - P.z), enCuadro = (e) => Math.abs(e.x - P.x) <= C && Math.abs(e.z - P.z) <= C;
     const H = medidas.hierba;
-    let arboles = [], piedras = [], hierba = [], flores = [], matas = [], cascotes = [], soto = [];
+    let arboles = [], piedras = [], hierba = [], flores = [], matas = [], cascotes = [], soto = [], paredes = [];
     for (const t of trozos.values()) {
       for (const a of t.arboles) if (enCuadro(a)) arboles.push(a);
+      for (const e of t.paredes || []) if (dist(e) <= R_PARED) paredes.push(e);
       for (const e of t.piedras) if (enCuadro(e)) { if (!e.id || api.rocaEnPie(e.id)) piedras.push(e); else cascotes.push(...cascotesDe(e)); }
       if (t.hierba) {
         for (const e of t.hierba.hierba) if (dist(e) <= H) hierba.push(e);
@@ -258,6 +263,18 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       const l = deTipo(tipo);
       instancias(l, ms[tipo].geo, ms[tipo].mats, 'soto_' + tipo, e => c.setScalar(e.tono * 1.15), { sombra: true, obst: l.map(e => ({ set oculto(v) { for (const o of e.obs) o.oculto = v; } })) });   // (el tronco, sus tres círculos)
     }
+    // la roca de los cortados (13 nov; src/logica/vegetacion.js, «paredes»): las piezas de roca del visor del mapa
+    // (src/mundo/rocas.js), del tono de su roca apagado como el del estilo v5, igual que allí
+    const piezas = modelosRocaPared(), mr = materialRoca();
+    piezas.forEach((geo, v) => {
+      const lista = paredes.filter(e => e.variante === v); if (!lista.length) return;
+      const im = new THREE.InstancedMesh(geo, mr, lista.length);
+      lista.forEach((e, k) => {
+        o.position.set(e.x, e.y, e.z); o.rotation.set(e.inclina, e.giro, (e.tono - 1) * 0.4, 'YXZ'); o.scale.set(e.alto * (0.9 + e.tono * 0.4), e.alto, e.alto * 0.9); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
+        const kc = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza; im.setColorAt(k, c.setRGB(lin(kc[0]) / 0.62 * e.tono, lin(kc[1]) / 0.62 * e.tono, lin(kc[2]) / 0.62 * e.tono));
+      });
+      im.castShadow = true; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
+    });
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía
     // anaranjada), hundidas 0,2 m como en el mapa; no se esconden al construir (chocan, como antes)
     const colorRoca = e => { const k = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza, t = (v) => 0.5 * lin(v) / 0.4 + 0.5 * 0.8; return c.setRGB(t(k[0]), t(k[1]), t(k[2])); };
@@ -292,7 +309,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     if (ocupadoUlt) despejarMallas(mallas, ocupadoUlt);
     cuenta = { ...(cuenta || {}), arboles: arboles.length, especies: Object.fromEntries(ESPECIES.map(e => [e, arboles.filter(a => a.especie === e).length])),
       jovenes: arboles.filter(a => a.edad === 'joven').length,
-      hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, soto: Object.fromEntries(['helechos', 'ortigas', 'hierba_larga', 'canto', 'flor', 'tocon', 'tronco', 'junco_agua', 'hierba_duna'].map(t => [t, deTipo(t).length])), trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
+      hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, paredes: paredes.length, soto: Object.fromEntries(['helechos', 'ortigas', 'hierba_larga', 'canto', 'flor', 'tocon', 'tronco', 'junco_agua', 'hierba_duna'].map(t => [t, deTipo(t).length])), trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
   }
 
   // Los cascotes de una roca rota: de 7 a 9 trozos de un azar fijo por su nombre, por donde estaba, a ras de suelo.

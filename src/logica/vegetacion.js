@@ -17,7 +17,7 @@ const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)
 
 // el tamaño de las celdas de cada cosa (m) y su capa de azar (las mismas que en el mapa)
 export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5, canto: 1.3 };
-const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4, soto: 5, ribera: 6, costa: 7 };
+const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4, soto: 5, ribera: 6, costa: 7, pared: 8 };
 export const DENSIDAD_BOSQUE = 0.55;   // de cerca, la densidad de un bosque de verdad (la del mapa)
 // Jóvenes y adultos, bien distintos (revisión del 1 nov; GDD apartado 8 y sistemas apartado 3): cada árbol sale con su
 // edad. El joven mide de 3 a 5 m (su propio modelo, fino y de copa rala: src/mundo/especies.js, a 4 m a escala 1) y
@@ -88,7 +88,7 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     const i0 = Math.ceil((a0 - 2) / paso), i1 = Math.floor((a1 + 2) / paso), j0 = Math.ceil((b0 - 2) / paso), j1 = Math.floor((b1 + 2) / paso);
     for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) fn(i * paso, j * paso, azarCelda(i, j, capa, semilla));
   };
-  const R = { arboles: [], hierba: [], flores: [], matas: [], piedras: [], sotobosque: [] };
+  const R = { arboles: [], hierba: [], flores: [], matas: [], piedras: [], sotobosque: [], paredes: [] };
 
   // árboles: rejilla desordenada de 4,5 m; los adultos de 8 a 14 m (los de antes, 6–11 m, un 30 % más), ±15 % cada uno;
   // los jóvenes, de 3 a 5 m. arbolDeCelda: lo que sale en una celda (también lo mira el sotobosque, de las celdas de al
@@ -224,6 +224,27 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
       }
     });
   }
+
+  // la roca de los cortados (13 nov, el hito «El aspecto»; valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para
+  // los acantilados… las habéis quitado»): piezas de roca 3D encajadas en las paredes (src/mundo/rocas.js), las mismas que
+  // en el visor del mapa (src/mapa/juego.js): de 2 a 8 m, mirando hacia fuera de la pared y medio metidas en ella; en una
+  // pared alta, más piezas apiladas hasta arriba. Solo adorno: la pared ya no se puede andar por su pendiente.
+  // Cada una: { x, z, y, alto, giro, variante (0–4), inclina, tono, roca }
+  recorrer(2.6, CAPA.pared, x0, z0, x1, z1, (cx, cz, r) => {
+    const x = cx + (r() - 0.5) * 2, z = cz + (r() - 0.5) * 2, q = r(), u = r(), v = r(), w = r(), k = r(), t = r();
+    if (q > 0.4 || x < x0 || x > x1 || z < z0 || z > z1) return;
+    const gx = (alt(x + 1, z) - alt(x - 1, z)) / 2, gz = (alt(x, z + 1) - alt(x, z - 1)) / 2, s = Math.hypot(gx, gz);
+    if (s < 1.15) return;
+    const y = alt(x, z); if (y < 0.3 || (tramos.length && paisaje.agua(x, z, tramos) !== null)) return;
+    const nx = -gx / s, nz = -gz / s, alto = 2 + u * 2.5 + Math.min(3, s), roca = paisaje.sitio(x, z, y)?.roca;
+    R.paredes.push({ x: x + nx * alto * 0.05, z: z + nz * alto * 0.05, y: y - alto * 0.2, alto, giro: Math.atan2(nx, nz) + (v - 0.5) * 0.5, variante: Math.floor(w * 5), inclina: (k - 0.5) * 0.25, tono: 0.85 + t * 0.3, roca });
+    const arriba = alt(x - nx * 4, z - nz * 4), abajo = alt(x + nx * 4, z + nz * 4);
+    for (let h = abajo + 3; h < arriba - 2; h += 4 + r()) {
+      if (Math.abs(h - y) < 3) continue;
+      const a2 = 2.2 + r() * 2.5;
+      R.paredes.push({ x: x + nx * a2 * 0.05 + (r() - 0.5) * 1.5, z: z + nz * a2 * 0.05 + (r() - 0.5) * 1.5, y: h - a2 * 0.3, alto: a2, giro: Math.atan2(nx, nz) + (r() - 0.5) * 0.6, variante: Math.floor(r() * 5), inclina: (r() - 0.5) * 0.25, tono: 0.8 + r() * 0.35, roca });
+    }
+  });
 
   // piedras: pocas y sueltas por el campo; al pie de los cortados, el pedregal (más grandes y juntas)
   recorrer(CELDA.piedra, CAPA.piedra, x0, z0, x1, z1, (cx, cz, r) => {
