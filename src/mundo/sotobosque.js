@@ -72,7 +72,7 @@ function corroFlores() {
   for (let k = 0; k < 12; k++) {
     const a = r() * 6.3, d = Math.sqrt(r()) * 0.28, x = Math.cos(a) * d, z = Math.sin(a) * d, alto = 0.15 + r() * 0.15, inc = (r() - 0.5) * 0.4;
     L.add(cil(0.005, 0.007, alto, 3), 'hierba', x, alto / 2, z, { x: inc, z: (r() - 0.5) * 0.4 }, { sinSuelo: true });
-    L.add(new THREE.IcosahedronGeometry(0.022 + r() * 0.015, 0), 0xffffff, x + Math.sin((r() - 0.5) * 0.4) * alto * 0.5, alto, z + Math.sin(inc) * alto, null, { sinSuelo: true, escala: new THREE.Vector3(1.3, 0.6, 1.3) });
+    L.add(new THREE.IcosahedronGeometry(0.014 + r() * 0.01, 0), 0xffffff, x + Math.sin((r() - 0.5) * 0.4) * alto * 0.5, alto, z + Math.sin(inc) * alto, null, { sinSuelo: true, escala: new THREE.Vector3(1.3, 0.6, 1.3) });
   }
   for (let k = 0; k < 5; k++) L.add(new THREE.ConeGeometry(0.04, 0.12, 3), 'hierba', (r() - 0.5) * 0.4, 0.05, (r() - 0.5) * 0.4, { x: (r() - 0.5) * 0.8, z: (r() - 0.5) * 0.8 });
   const geo = mergeGeometries(L.cerrar());

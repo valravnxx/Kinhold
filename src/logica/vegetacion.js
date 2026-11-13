@@ -118,7 +118,7 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
         // (el sotobosque) manchas de flores, a corros y todas del mismo color en cada mancha; y en las lindes del
         // bosque, hierba alta y ortigas (con un azar más de la celda, el último: lo de antes no cambia)
         const f = r(), mancha = suave(0.6, 0.72, fbm(x / 12, z / 12, 61, 2)), lejosTierra = calvaTierra(x, z) < 0.25;
-        if (lejosTierra && f < 0.22 * prado * (1 - d) * mancha) R.sotobosque.push({ x, z, y: s.y, tipo: 'flor', tam: 0.8 + a * 0.5, giro: b * 6.3, color: Math.min(2, Math.floor(fbm(x / 40, z / 40, 63, 1) * 3)) });
+        if (lejosTierra && f < 0.55 * prado * (1 - d) * mancha * mancha) R.sotobosque.push({ x, z, y: s.y, tipo: 'flor', tam: 0.8 + a * 0.5, giro: b * 6.3, color: Math.min(2, Math.floor(fbm(x / 40, z / 40, 63, 1) * 3)) });
         else if (lejosTierra && f > 1 - 0.07 * linde * (d > 0.02)) R.sotobosque.push({ x, z, y: s.y, tipo: c < 0.7 ? 'hierba_larga' : 'ortigas', tam: 0.65 + a * 0.5, giro: b * 6.3, tono: 0.85 + c * 0.3 });
       }
     });
@@ -147,14 +147,14 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
       }
       const adulto = a.arbol.edad === 'adulto';
       if (t > (adulto ? 0.6 : 0.25) * Math.min(1, 0.35 + 0.6 * a.d + 0.5 * a.linde)) return;
-      const hel = (HELECHO[a.s.st.bioma] ?? 0.4) * (0.3 + 0.7 * a.d), ort = 0.08 + 0.35 * a.linde, can = 0.16, alta = 0.3 * (1 - a.d);
+      const hel = (HELECHO[a.s.st.bioma] ?? 0.4) * (0.3 + 0.7 * a.d), ort = 0.08 + 0.35 * a.linde, can = 0.3, alta = 0.3 * (1 - a.d);
       const n = 2 + Math.floor(q() * 5), lado = q() * 6.3, r0 = (adulto ? 0.45 : 0.2) * a.arbol.tam;
       for (let k = 0; k < n; k++) {
         const ang = lado + (q() - 0.5) * 2.6, dd = r0 + 0.35 + q() * 2.2, e = q() * (hel + ort + can + alta), u = q(), giro = q() * 6.3, tono = 0.85 + q() * 0.3;
         const x = a.x + Math.cos(ang) * dd, z = a.z + Math.sin(ang) * dd;
         if (e < hel) pon(x, z, 'helechos', 0.7 + u * 0.6, giro, tono);
         else if (e < hel + ort) pon(x, z, 'ortigas', 0.6 + u * 0.5, giro, tono);
-        else if (e < hel + ort + can) pon(x, z, 'canto', 0.25 + u * u * 0.45, giro, tono);
+        else if (e < hel + ort + can) pon(x, z, 'canto', 0.18 + u * u * 0.3, giro, tono);
         else pon(x, z, 'hierba_larga', 0.65 + u * 0.5, giro, tono);
       }
     });
