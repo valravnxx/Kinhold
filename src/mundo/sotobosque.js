@@ -68,8 +68,25 @@ function troncoCaido() {
   return juntar(L);
 }
 
+// El corro de flores: una docena de tallos de 15 a 30 cm en medio metro, con su flor (blanca: la tiñe el color de cada
+// mancha) y unas hojas abajo. Las flores sueltas de antes (una por sitio) no se leían como mancha.
+function corroFlores() {
+  const L = new Lote({ rangoSuelo: 0.25, variacion: 0.1 });
+  let h = 7;
+  const r = () => { h = (Math.imul(h, 1103515245) + 12345) >>> 0; return h / 4294967296; };
+  for (let k = 0; k < 12; k++) {
+    const a = r() * 6.3, d = Math.sqrt(r()) * 0.28, x = Math.cos(a) * d, z = Math.sin(a) * d, alto = 0.15 + r() * 0.15, inc = (r() - 0.5) * 0.4;
+    L.add(cil(0.005, 0.007, alto, 3), 'hierba', x, alto / 2, z, { x: inc, z: (r() - 0.5) * 0.4 }, { sinSuelo: true });
+    L.add(new THREE.IcosahedronGeometry(0.022 + r() * 0.015, 0), 0xffffff, x + Math.sin((r() - 0.5) * 0.4) * alto * 0.5, alto, z + Math.sin(inc) * alto, null, { sinSuelo: true, escala: new THREE.Vector3(1.3, 0.6, 1.3) });
+  }
+  for (let k = 0; k < 5; k++) L.add(new THREE.ConeGeometry(0.04, 0.12, 3), 'hierba', (r() - 0.5) * 0.4, 0.05, (r() - 0.5) * 0.4, { x: (r() - 0.5) * 0.8, z: (r() - 0.5) * 0.8 });
+  const geo = mergeGeometries(L.cerrar());
+  geo.computeBoundingSphere();
+  return { geo, mats: materialTex('liso') };
+}
+
 export function modelosSotobosque() {
-  return cache || (cache = { tocon: toconViejo(), tronco: troncoCaido() });
+  return cache || (cache = { tocon: toconViejo(), tronco: troncoCaido(), flores: corroFlores() });
 }
 // lo que estorba al andar, a escala 1: el radio del tocón, y el tronco como tres círculos a lo largo de él
 export const RADIO_TOCON = 0.42, LARGO_TRONCO = 3.6;

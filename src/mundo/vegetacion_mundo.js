@@ -235,14 +235,20 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // árboles y en las lindes, manchas de flores, y tocones viejos y troncos caídos (src/mundo/sotobosque.js). Se esconde
     // donde se construye, como la hierba; con las plantas de código (sin los de Meshy), solo las flores y la madera
     const deTipo = (t) => soto.filter(e => e.tipo === t);
+    // (son cientos: el modelo entero solo al lado, el de media distancia hasta 25 m y el de lejos más allá; sombra, solo
+    // los de al lado)
+    const porNiveles = (lista, m, nombre, color, opc = {}) => {
+      instancias(lista.filter(e => dist(e) < HC), m.cerca.geo, m.cerca.mats, nombre + 'Cerca', color, opc);
+      instancias(lista.filter(e => dist(e) >= HC && dist(e) < 25), m.medio.geo, m.medio.mats, nombre, color, { ...opc, sombra: false });
+      instancias(lista.filter(e => dist(e) >= 25), m.lejos.geo, m.lejos.mats, nombre + 'Lejos', color, { ...opc, sombra: false });
+    };
     for (const [tipo, m] of [['helechos', heM], ['ortigas', M('ortigas')], ['hierba_larga', M('hierba_larga')]]) {
-      if (m) instancias(deTipo(tipo), m.cerca.geo, m.cerca.mats, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: tipo === 'helechos', subir: () => 0.03 });
+      if (m) porNiveles(deTipo(tipo), m, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: tipo === 'helechos', subir: () => 0.03 });
     }
     const cantoM = M('canto');
-    if (cantoM) instancias(deTipo('canto'), cantoM.cerca.geo, cantoM.cerca.mats, 'soto_canto', e => c.setRGB(0.78, 0.8, 0.7).multiplyScalar(e.tono), { sombra: true, subir: e => e.tam * 0.2 });
-    if (fM) instancias(deTipo('flor'), fM.cerca.geo, fM.cerca.mats, 'soto_flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65));
-    else instancias(deTipo('flor'), pl.flor, material('fijo'), 'soto_flores', e => c.set(FLORES[e.color]));
+    if (cantoM) porNiveles(deTipo('canto'), cantoM, 'soto_canto', e => c.setRGB(0.78, 0.8, 0.7).multiplyScalar(e.tono), { sombra: true, subir: e => e.tam * 0.2 });
     const ms = modelosSotobosque();
+    instancias(deTipo('flor'), ms.flores.geo, ms.flores.mats, 'soto_flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.25));
     for (const tipo of ['tocon', 'tronco']) {
       const l = deTipo(tipo);
       instancias(l, ms[tipo].geo, ms[tipo].mats, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: true, obst: l.map(e => ({ set oculto(v) { for (const o of e.obs) o.oculto = v; } })) });   // (el tronco, sus tres círculos)
