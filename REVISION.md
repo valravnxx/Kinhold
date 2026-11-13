@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026 — por el chat, sobre la granja
+
+«la granja se tendrá que ir siempre expandiendo poco a poco, ahora necesitaríamos planificar la más básica; los plots de plantar deben tener la escala que toca en la vida real (unos tomatitos no ocupan tanto; el trigo requiere más espacio); no me gustan los plots cuadrados para plantaciones grandes: designar una zona de siembra que haya que limpiar de árboles, delimitada por varios puntos haciendo la forma, y luego arar un círculo a tu alrededor o donde apuntas; así uno grande tiene más trabajo pero da buen resultado; alejarse del típico mueble:cultivo. Es orientativo: valoración y estudio de cómo integrarlo.» → Estudio en `diseno/estudios/granja.html` (no cambia el roadmap hasta que valravnx decida).
+
 ### 13 nov 2026 — por el chat, sobre P8 y P9
 
 «fauna requiere mas meshy y ahora tengo que aprender a modificar esqueletos para ello, asi que comienza el hito p9 oficios» → P8 (Animales del mundo y el caballo) `congelado` hasta que valravnx diga; P9 (Oficios del asentamiento) `en_curso`, empezando por planificarlo. La silla y las alforjas del caballo esperan a P8.
