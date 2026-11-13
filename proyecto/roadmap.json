@@ -2251,9 +2251,9 @@
     },
     {
      "nombre": "Marcar el campo con estacas: la estaca (1 rama, con las manos; valravnx) se clava donde estás; de 3 a 16, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar obras, otros campos ni el agua, y sin pasar de una pendiente; mientras esté vacío, las estacas se mueven o se quitan. Lógica pura con autor (src/logica/campos.js), en el servidor, y todos lo ven. Cadena: rama ← se recoge en el bosque",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T13:03:33+00:00",
-     "rama": "trabajo/20261113-1303"
+     "fin": "2026-11-13T14:55:08+00:00"
     },
     {
      "nombre": "Limpiar el campo: dentro de un campo los árboles no vuelven a crecer; arrancar el tocón a golpes con la azada o el palo cavador (deja leña); las matas se desbrozan y las piedras sueltas se recogen; el campo dice lo que queda por limpiar. Cadena: azada ← rama, piedra y cuerda en el banco de tronco; palo cavador ← 1 rama",
@@ -4367,6 +4367,13 @@
      "archivo": "jugar/demo/v197.html",
      "capturas": "capturas/demo-v197",
      "notas": "Riberas y costas: juncos y hierba en las orillas, el bosque hasta el río, la marisma de las desembocaduras con muchos juncos que se recogen, hierba de duna, y los juncos de Meshy (el que se corta, el cortado y el de adorno)."
+    },
+    {
+     "v": "v198",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v198.html",
+     "capturas": "capturas/demo-v198",
+     "notas": "Marcar el campo con estacas: con una estaca en la mano, Usar la clava donde estás; de 3 a 16, y la última junto a la primera cierra el campo, con su superficie en m². Solo en tu tierra, sin cruzar agua, pendiente, obras ni otro campo."
     }
    ]
   },

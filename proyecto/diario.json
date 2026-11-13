@@ -6702,5 +6702,21 @@
   "pruebas": "Lógica de la vegetación, de la recogida y de los orígenes, correcta, con pruebas nuevas que fallan al romperlas a propósito. Revisión mínima, como pidió valravnx (él lo prueba a mano): una captura de los juncos en la marisma; no comprobado: la segunda mirada, ni las pruebas de navegador en la nube con lo último.",
   "capturas": "capturas/demo-v197",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T10:28:33+00:00",
+  "fin": "2026-11-13T14:55:08+00:00",
+  "titulo": "P11: marcar el campo con estacas (demo v198)",
+  "hito": "granja",
+  "hecho": [
+   "Los campos de cultivo en la lógica pura con autor (src/logica/campos.js) y en el servidor: con una estaca en la mano (receta nueva, 1 rama, con las manos), Usar la clava donde estás; de 3 a 16, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m².",
+   "Solo en tu tierra o en la de quien te invita; el linde no cruza el agua, una pendiente fuerte, una obra, un puesto, un mueble ni otro campo, ni se cruza consigo mismo. Lo que la lógica no sabe del terreno (agua, pendiente, puestos) se lo da el servidor (mundo.entorno); la estaca se clava solo donde el servidor tiene al jugador.",
+   "Mientras el campo está vacío, cada estaca se quita (vuelve a lo que llevas) y se vuelve a clavar: así se mueve; quitar una de un campo cerrado lo vuelve a dejar abierto. Todo con autor, se guarda en el mundo (Mundo.campos, exportar/importar) y todos lo ven por su trozo.",
+   "En el juego (src/juego/campos_vista.js): las estacas se clavan recias y de madera cálida, y una cuerda de esparto atada de una a otra marca el linde por encima de la hierba (la banda de tierra pisada se verá al limpiar el campo, más adelante). El modelo de la estaca (en la mano, en el suelo e icono iconos-v20) sale de estacaEn.",
+   "Publicada la demo v198. La estaca quita su línea de PENDIENTES en prueba_origenes (ya tiene origen: 1 rama). La segunda mirada (un agente aparte) dio el sí a cómo se ve el campo, con un retoque hecho: aclarar las estacas a marrón madera."
+  ],
+  "pruebas": "Comprobador de código correcto. En la nube: la lógica (prueba_campos.mjs 34/0: clavar, cerrar con su superficie, quitar y mover, tierra/agua/pendiente/obras/otros campos, y el servidor con dos jugadores; cada prueba nueva rota a propósito con MUTAR y falla), el recorrido de jugador (TODO CORRECTO) y el navegador «marcar el campo con estacas» (clavar, cerrar a 120 m², quitar y recerrar, la zona del rey rechaza, y el otro jugador lo ve en el móvil; TODO CORRECTO). Falla en la nube, como en main, «internet con Caddy» (prueba_nube.mjs 25/27, systemd-analyze de la máquina de GitHub): no toca este cambio. La primera vez el recorrido falló solo en la caza de la liebre (al azar, la liebre huía); repetido, salió bien. Los iconos, 605/0.",
+  "capturas": "capturas/demo-v198",
+  "estado": "ok"
  }
 ]

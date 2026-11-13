@@ -103,6 +103,9 @@
   "carne_asada": {
    "propio": true
   },
+  "carne_seca": {
+   "propio": true
+  },
   "estaca": {
    "propio": true
   },
@@ -317,6 +320,9 @@
    "propio": true
   },
   "est_cama_juncos": {
+   "propio": true
+  },
+  "est_secadero": {
    "propio": true
   }
  }
