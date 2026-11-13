@@ -2338,12 +2338,14 @@
    "num": "P10",
    "nombre": "Hierro y tablas",
    "jugable": "Hierro de pantano, carbón, horno de reducción y fragua; hacha de hierro, sierra, pico, clavos y herraduras; tablas, y las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y la cantera.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (hierro de pantano, carbonera, horno de reducción, fragua, herramientas de hierro, sierra y tablas, las piezas de nivel 2 escondidas), con la cadena de cada material hasta el mundo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T09:23:18+00:00",
+     "rama": "trabajo/20261113-0923"
     },
     {
      "nombre": "Revisión completa y publicación",
