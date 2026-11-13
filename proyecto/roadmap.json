@@ -2263,7 +2263,9 @@
     },
     {
      "nombre": "Limpiar el campo: dentro de un campo los árboles no vuelven a crecer; arrancar el tocón a golpes con la azada o el palo cavador (deja leña); las matas se desbrozan y las piedras sueltas se recogen; el campo dice lo que queda por limpiar. Cadena: azada ← rama, piedra y cuerda en el banco de tronco; palo cavador ← 1 rama",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T15:12:52+00:00",
+     "rama": "trabajo/20261113-1512"
     },
     {
      "nombre": "Labrar con la azada: con la azada en la mano, cada pasada voltea un círculo de tierra donde apuntas (1,2 m de radio, unos 2 s; provisional), solo dentro del linde y donde no queda nada por limpiar; gasta aguante y cansancio. El suelo pasa a tierra labrada (un material nuevo del suelo, con surcos) y la hierba densa deja de salir ahí; el servidor guarda lo labrado (1 bit por m²); lo labrado y no sembrado vuelve a ser hierba con el tiempo. Capturas al lado de la referencia. Cadena: azada ← el banco de tronco",

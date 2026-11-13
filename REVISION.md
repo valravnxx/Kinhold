@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026, 15:12 UTC — por el chat, al carril A
+
+«siguiente» → el carril A sigue con la siguiente tarea de P11: limpiar el campo.
+
 ### 13 nov 2026 — por el chat, sobre riberas y costas
 
 - «en varios sitios los rios como que siempre están separando el bosque… en el bosque me gustaría verlo más real» → el bosque llega hasta la orilla: nada se ponía a menos de 4 m del cauce, el dosel de lejos dejaba unos 20 m, y por debajo de 1,5 m sobre el mar no había árboles ni tierra adentro (las vegas de los ríos). Ahora vale el suelo en seco y, bajo 1,5 m, lejos del mar; la marisma de las desembocaduras sigue sin árboles. En la tarea de riberas y costas.
