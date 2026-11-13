@@ -184,8 +184,8 @@ comprobar('más jóvenes en lindes y claros que dentro del bosque cerrado', nLin
   const d = MUTAR === '7' ? 15 : 0;
   // (la pieza se pone algo fuera de la pared y apilada hacia arriba; se mira la pendiente a su lado, en un círculo de 3 m)
   const llano = t.filter(e => Math.max(...[0, 1, 2, 3, 4, 5, 6, 7].map(k => pend(e.x + d + Math.cos(k) * 3, e.z + Math.sin(k) * 3))) < 0.8).length;
-  comprobar('la roca de los cortados: piezas en las paredes empinadas, ninguna en el llano, y las mismas por trozos que en su cuadro',
-    t.length > 20 && llano === 0 && g.length === t.length, `${t.length} piezas (${g.length} en el cuadro), ${llano} en el llano`);
+  comprobar('la roca de los cortados: piezas en las paredes empinadas (solo las anchas y altas), ninguna en el llano, y las mismas por trozos que en su cuadro',
+    t.length > 5 && llano === 0 && g.length === t.length, `${t.length} piezas (${g.length} en el cuadro), ${llano} en el llano`);
 }
 
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');

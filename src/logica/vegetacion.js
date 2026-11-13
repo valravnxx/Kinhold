@@ -237,6 +237,14 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     if (s < 1.15) return;
     const y = alt(x, z); if (y < 0.3 || (tramos.length && paisaje.agua(x, z, tramos) !== null)) return;
     const nx = -gx / s, nz = -gz / s, alto = 2 + u * 2.5 + Math.min(3, s), roca = paisaje.sitio(x, z, y)?.roca;
+    // (valravnx, 13 nov: solo en las paredes anchas y altas; en los barrancos y las laderas estrechas las piezas se veían
+    // de perfil, con su corte plano) a 6 m a cada lado, la pared sigue empinada y mirando hacia el mismo sitio, y tiene
+    // más de 5 m de la base al borde
+    for (const k of [-6, 6]) {
+      const px = x - nz * k, pz = z + nx * k, hx = (alt(px + 1, pz) - alt(px - 1, pz)) / 2, hz = (alt(px, pz + 1) - alt(px, pz - 1)) / 2, hs = Math.hypot(hx, hz);
+      if (hs < 0.8 || (-hx * nx - hz * nz) / hs < 0.65) return;
+    }
+    if (alt(x - nx * 5, z - nz * 5) - alt(x + nx * 5, z + nz * 5) < 5) return;
     // (en el juego se ven de cerca: más metidas en la pared que en el visor, para que asomen como un frente y no como un
     // peñasco suelto)
     R.paredes.push({ x: x - nx * alto * 0.3, z: z - nz * alto * 0.3, y: y - alto * 0.25, alto, giro: Math.atan2(nx, nz) + (v - 0.5) * 0.5, variante: Math.floor(w * 5), inclina: (k - 0.5) * 0.25, tono: 0.85 + t * 0.3, roca, pend: s, cara: Math.atan2(nx, nz) });
