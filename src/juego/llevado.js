@@ -286,7 +286,7 @@ function espalda(t, dentro) {
       g.computeVertexNormals();
       return g;
     };
-    const E = v3(0.14, 0.17, 0.085), Y0 = 0.0, Z0 = -0.005;   // (pegado a la espalda: plano detrás)
+    const E = v3(0.14, 0.17, 0.085), Y0 = 0.07, Z0 = -0.015;   // (pegado a la espalda: plano detrás)
     L.add(forma(new THREE.SphereGeometry(1, 16, 12), 1), PIEL_CRUDA, 0, Y0, Z0, null, { escala: E, tex: 'liso', rayas: v => 0.92 + 0.08 * Math.cos(v.x * 30 + v.y * 12) });
     // la superficie de delante del cuerpo en (x, y): la deformación de forma(), al revés
     const delante = (x, y) => {
@@ -306,7 +306,7 @@ function espalda(t, dentro) {
     const yb = abajo + 0.004, zb = delante(0, yb) + 0.012;
     L.add(cil(0.009, 0.008, 0.08, 6), 0xb59a72, 0, yb - 0.016, zb + 0.004, { z: Math.PI / 2 + 0.12 }, { tex: 'veta' });   // el palito, de madera pelada
     L.add(new THREE.TorusGeometry(0.012, 0.003, 4, 8), FIBRA, 0, yb, zb - 0.002, { x: 0.2 }, { tex: 'liso' });   // su lazo, de la solapa
-    return { L, alto: 0.26 };   // (más arriba en la espalda: entre los omóplatos y los riñones)
+    return { L, alto: 0.2 };   // (más arriba en la espalda: entre los omóplatos y los riñones)
   }
   if (t === 'fardo') {
     const n = Object.values(dentro).reduce((a, b) => a + b, 0), rollos = n > 6 ? 2 : 1;

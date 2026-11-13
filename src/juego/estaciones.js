@@ -40,7 +40,7 @@ import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
 import { modeloHacha } from './personaje.js';
-import { modeloHachaPiedra, modeloMazoPiedra, mallaPiel, moteadoPiel, PIEL_LIMPIA } from './modelos_objetos.js';
+import { modeloHachaPiedra, modeloMazoPiedra, mallaPiel, moteadoPiel, moteadoPelo, PIEL_LIMPIA } from './modelos_objetos.js';
 import { conMeshy, hayMeshy, precargarMeshy } from '../mundo/meshy_objetos.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
@@ -349,9 +349,9 @@ function llenoRaspador(dep, id) {
     const color = cual === 'piel' ? 0x8f6f55 : PIEL_LIMPIA;   // por raspar: la cara de la carne, parda rosada; limpia, pálida
     L.add(geo, color, c.x, c.y, c.z, giro, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id, cual === 'piel' ? 1.3 : 1) });
     // la otra cara (se ve desde atrás): el pelo, si está por raspar; si no, la flor de la piel, algo más oscura
-    const atras = geo.clone(); atras.scale(-1, 1, 1); atras.computeVertexNormals();
+    const atras = geo.clone(); atras.scale(cual === 'piel' ? -1.035 : -1, cual === 'piel' ? 1.035 : 1, 1); atras.computeVertexNormals();   // (el pelo, algo mayor: asoma por el canto)
     const d = enBastidor(0, h0, 0.014);
-    L.add(atras, cual === 'piel' ? 0x8a6c4c : 0xa48a66, d.x, d.y, d.z, giro, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id + 'p', cual === 'piel' ? 2.2 : 1) });
+    L.add(atras, cual === 'piel' ? 0x7d6346 : 0xa48a66, d.x, d.y, d.z, giro, { tex: 'liso', sinSuelo: true, rayas: cual === 'piel' ? moteadoPelo(id) : moteadoPiel(id + 'p') });
     // las lazadas: de cada agujero del borde a la vara más cercana (a los lados, arriba o abajo)
     for (const q of agujeros) {
       const h = h0 + q.y, aLado = U - Math.abs(q.x), aBarra = q.y < 0 ? h - abajo : arriba - h;

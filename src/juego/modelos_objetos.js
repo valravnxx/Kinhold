@@ -106,7 +106,7 @@ export function mallaPiel(id, a, b, { pasos = 18, agujeros = 16, abomba = 0 } = 
   const f1 = az(id, 71) * 6, f2 = az(id, 72) * 6, f3 = az(id, 73) * 6;
   // las cuatro patas en las diagonales (puntiagudas, de largo desigual), el cuello arriba y la cola abajo
   const pata = t => { const c = -Math.cos(4 * t + 0.2 * Math.sin(t + f1)); return c > 0 ? c ** 3 : 0; };
-  const borde = t => 0.8 + (0.26 + 0.08 * Math.sin(t * 2 + f1)) * pata(t) + 0.1 * Math.max(0, Math.sin(t)) ** 10 + 0.05 * Math.max(0, -Math.sin(t)) ** 14 + 0.05 * Math.sin(3 * t + f2) + 0.03 * Math.sin(7 * t + f3);
+  const borde = t => 0.78 + (0.4 + 0.1 * Math.sin(t * 2 + f1)) * pata(t) + 0.17 * Math.max(0, Math.sin(t)) ** 12 + 0.07 * Math.max(0, -Math.sin(t)) ** 16 + 0.05 * Math.sin(3 * t + f2) + 0.03 * Math.sin(7 * t + f3);
   const g = new THREE.PlaneGeometry(2 * a * 1.25, 2 * b * 1.25, pasos, pasos), p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     let x = p.getX(i), y = p.getY(i);
@@ -117,9 +117,11 @@ export function mallaPiel(id, a, b, { pasos = 18, agujeros = 16, abomba = 0 } = 
   }
   g.computeVertexNormals();
   const ag = [];
-  for (let k = 0; k < agujeros; k++) { const t = (k + 0.5) / agujeros * Math.PI * 2 + (az(id, 80 + k) - 0.5) * 0.15, l = borde(t) * 0.9; ag.push(new THREE.Vector2(Math.cos(t) * a * l, Math.sin(t) * b * l)); }
-  return { geo: g, agujeros: ag };
+  for (let k = 0; k < agujeros; k++) { const t = (k + 0.5) / agujeros * Math.PI * 2 + (az(id, 80 + k) - 0.5) * 0.15, l = borde(t) * 0.8; ag.push(new THREE.Vector2(Math.cos(t) * a * l, Math.sin(t) * b * l)); }
+  return { geo: g, agujeros: ag, borde };
 }
+// el pelaje: manchas más fuertes y sin dirección (el lomo más oscuro), para el lado del pelo
+export const moteadoPelo = id => { const f = az(id, 91) * 6; return v => 0.76 + 0.17 * Math.sin(v.x * 29 + f) * Math.sin(v.y * 31 + v.z * 31 + f) + 0.1 * Math.cos(v.x * 7 - f) * Math.cos((v.y + v.z) * 9); };
 // moteado de la piel: manchas suaves y algo de veta (sobre los vértices de la malla)
 export const moteadoPiel = (id, fuerte = 1) => { const f = az(id, 90) * 6; return v => 1 - fuerte * (0.08 + 0.07 * Math.sin(v.x * 17 + f) * Math.cos(v.y * 13 + v.z * 13 - f) + 0.04 * Math.sin(v.x * 41 + v.z * 37)); };
 function pielLimpia(n, id) {
@@ -134,15 +136,10 @@ function pielLimpia(n, id) {
   return mallas(L);
 }
 function piel(n, id) {
-  const L = lote(0.02);
-  // el contorno de una piel de ciervo o de cabra estirada: cuerpo ovalado, las cuatro patas y el cuello
-  const g = new THREE.ExtrudeGeometry(new THREE.Shape(contornoPiel(id)), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.01, bevelSegments: 2, curveSegments: 4 });
-  g.rotateX(-Math.PI / 2);
-  // un poco ondulada, como se queda una piel en el suelo
-  const p = g.attributes.position;
-  for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + 0.02 * Math.sin(p.getX(i) * 9 + 1) * Math.cos(p.getZ(i) * 6));
-  g.computeVertexNormals();
-  L.add(g, PIEL_PELO, 0, 0.01, 0, { y: az(id, 40) }, { tex: 'liso', rayas: (v) => 0.88 + 0.12 * Math.cos(v.x * 7) * Math.cos(v.z * 5) }); // el pelo, más oscuro en el lomo
+  // (13 nov) con la misma malla que la piel limpia del raspador: el pelo hacia arriba, moteado
+  const L = lote(0.02), { geo } = mallaPiel(id, 0.27, 0.38, { pasos: 14, agujeros: 0 }), t = az(id, 40);
+  geo.rotateX(-Math.PI / 2);
+  L.add(geo, PIEL_PELO, 0, 0.012, 0, { y: t }, { tex: 'liso', sinSuelo: true, rayas: moteadoPelo(id) });
   return mallas(L);
 }
 

@@ -424,6 +424,8 @@ try:
         B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 0.3, z: e.z + 1.1 }}); }})()""")
         B.evaluate(f"{K}.panelFabricar.abrirEstacion('raspador:vista')"); B.wait_for_timeout(1000)
         comprobar('y su panel, sin salirse de lado', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"raspar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        t = elegir(B, 'raspar_piel'); B.wait_for_timeout(600)   # la ficha de la receta, entera
+        comprobar('en el móvil, la ficha de la piel limpia dice que hace falta la lasca', re.search('lasca', t, re.I) is not None, t[:200])
         captura(B, f'{SALIDA}/movil_panel_raspador.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()")
 
