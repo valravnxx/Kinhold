@@ -310,7 +310,8 @@ function atenderAccion(S, c, msg) {
   const lejos = sinArcon || contraTerreno ? null : fueraDeAlcance(mundo, accion, presencia.ultimo.get(autor));
   // los campos (P11): la estaca, donde está el jugador (lo que diga el navegador no cuenta), y el linde, contra el
   // agua, la pendiente y los puestos de trabajo (src/logica/campos.js, mundo.entorno)
-  if (['labrar', 'sembrar', 'segar', 'coger_planta'].includes(accion.tipo)) accion.t = Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
+  // (la hora la pone el servidor; solo en la prueba de cosechar, con KINHOLD_PRUEBAS_HORA=campos, una pasada al sembrar)
+  if (['labrar', 'sembrar', 'segar', 'coger_planta'].includes(accion.tipo)) accion.t = S.horaCampos && accion.tipo === 'sembrar' && Number.isFinite(accion.t) && accion.t < Date.now() ? accion.t : Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
   const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' || accion.tipo === 'labrar' || accion.tipo === 'sembrar' || accion.tipo === 'segar' || accion.tipo === 'coger_planta' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
   if (accion.tipo === 'estaca' || accion.tipo === 'labrar') mundo.entorno = entornoCampos(S);
   const r = lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);

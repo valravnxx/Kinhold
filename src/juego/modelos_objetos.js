@@ -34,6 +34,7 @@
 //    de espigas pajizas con sus aristas; las habas, unas vainas verde oscuro y unas habas sueltas, pardo verdosas; las
 //    asadas, tostadas y alguna partida; las semillas de col y de nabo, un montoncito de granos redondos y pequeños
 //    (pardo rojizos los de la col, casi negros los del nabo) con unas silicuas secas al lado.
+//  - lo que da el campo (P11, cosechar): la gavilla de cebada, la col y el nabo (crudos y asados), junto a sus modelos.
 //  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
 //    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
@@ -261,6 +262,70 @@ function semillas(color) {
     for (let i = 0; i < 22; i++) {   // el montoncito de granos
       const a = i * 2.399, d = Math.sqrt(i / 22) * 0.03, y = 0.012 + (0.03 - d) * 0.5;
       L.add(new THREE.IcosahedronGeometry(0.005, 0), color, Math.cos(a) * d + 0.01, y, Math.sin(a) * d - 0.005, null, { tex: 'liso', sinSuelo: true });
+    }
+    return mallas(L);
+  };
+}
+
+// Lo que da el campo (P11, cosechar, 13 nov): la gavilla de cebada segada, un haz de cañas tumbado, atado por el medio
+// con un vencejo de paja retorcida y con las espigas juntas en una punta; la col, el cogollo apretado verde pálido entre
+// sus hojas de fuera, más oscuras y azuladas; el nabo, la raíz blanca con el cuello morado y su rabillo, tumbado, con
+// las hojas. Asados, tostados y con alguna mancha quemada.
+const CANA = 0xc2a868, CANA_OSC = 0xa88e52, COGOLLO = 0xb4c69a, HOJA_COL = 0x6e8a6a, NABO_BLANCO = 0xe8e0d4, NABO_MORADO = 0x8a4a72, HOJA_NABO = 0x5f8442;
+function gavilla(n, id) {
+  const L = lote(0.06);
+  const k = Math.max(1, Math.min(2, n || 1));
+  for (let g = 0; g < k; g++) {
+    const oz = (g - (k - 1) / 2) * 0.22, giro = new THREE.Matrix4().makeRotationY((az(id, g) - 0.5) * 0.4);
+    const en = (x, y, z) => new THREE.Vector3(x, y, z + oz).applyMatrix4(giro);
+    for (let i = 0; i < 26; i++) {   // las cañas: juntas en el atado, abiertas en las puntas
+      const a = i * 2.399, r = Math.sqrt((i + 0.5) / 26), dy = Math.sin(a) * r, dz = Math.cos(a) * r;
+      const p0 = en(-0.36, 0.06 + dy * 0.055, dz * 0.07), p1 = en(-0.02, 0.06 + dy * 0.035, dz * 0.04), p2 = en(0.3, 0.06 + dy * 0.05, dz * 0.065);
+      L.add(tubo([p0, p1, p2], 0.004, 3), i % 3 ? CANA : CANA_OSC, 0, 0, 0, null, { tex: 'paja', sinSuelo: true });
+      const e = en(0.36, 0.06 + dy * 0.06, dz * 0.08);   // la espiga, al final de la caña, con sus aristas
+      const gr = new THREE.CapsuleGeometry(0.008, 0.06, 2, 5); gr.rotateZ(Math.PI / 2 + (az(id, i) - 0.5) * 0.3);
+      L.add(gr, ESPIGA, e.x, e.y, e.z, null, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
+      const ar = new THREE.CylinderGeometry(0.0009, 0.0009, 0.06, 3); ar.rotateZ(Math.PI / 2 - 0.2 + az(id, i + 9) * 0.4);
+      L.add(ar, ARISTA, e.x + 0.06, e.y, e.z, null, { sinSuelo: true, brillo: 1.1 });
+    }
+    const c = en(-0.02, 0.06, 0);   // el vencejo
+    L.add(new THREE.TorusGeometry(0.05, 0.009, 5, 14), CANA_OSC, c.x, c.y, c.z, { y: Math.PI / 2 + (az(id, g) - 0.5) * 0.4 }, { tex: 'paja', sinSuelo: true });
+  }
+  return mallas(L);
+}
+function col(asada) {
+  return (n, id) => {
+    const L = lote(0.04), t = asada ? 0.62 : 1, tueste = (c) => new THREE.Color(c).lerp(new THREE.Color(0x7a5a2a), asada ? 0.5 : 0);
+    for (let i = 0; i < 6; i++) {   // las hojas de fuera: cuencos abiertos alrededor del cogollo
+      const a = i * 1.05 + az(id, i) * 0.4, h = new THREE.SphereGeometry(0.1, 9, 6, 0, Math.PI * 2, 0, Math.PI * 0.42);
+      h.scale(1, 0.55, 0.75); h.rotateX(-Math.PI / 2 + 0.5);
+      L.add(h, tueste(HOJA_COL), Math.cos(a) * 0.06, 0.07 * t + 0.02, Math.sin(a) * 0.06, { y: -a + Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+    }
+    L.add(new THREE.IcosahedronGeometry(0.075, 2), tueste(COGOLLO), 0, 0.075, 0, null, { escala: v3(1, 0.88 * (asada ? 0.85 : 1), 1), tex: 'liso', sinSuelo: true, brillo: 1.04 });
+    return mallas(L);
+  };
+}
+function nabo(asado) {
+  return (n, id) => {
+    const L = lote(0.03), k = Math.max(1, Math.min(2, n || 1));
+    const tueste = (c) => new THREE.Color(c).lerp(new THREE.Color(0x8a5a26), asado ? 0.62 : 0);
+    for (let j = 0; j < k; j++) {
+      const oz = (j - (k - 1) / 2) * 0.12, gy = (az(id, j) - 0.5) * 0.6;
+      const rot = new THREE.Matrix4().makeRotationY(gy);
+      const en = (x, y, z) => new THREE.Vector3(x, y, z).applyMatrix4(rot).add(new THREE.Vector3(0, 0, oz));
+      const c = en(0, 0.045, 0);
+      L.add(new THREE.IcosahedronGeometry(0.045, 2), tueste(NABO_BLANCO), c.x, c.y, c.z, null, { escala: v3(1.05, 1, 1), tex: 'liso', sinSuelo: true, brillo: 1.05 });
+      const m = en(-0.025, 0.05, 0);   // el cuello morado (tumbado: hacia las hojas)
+      L.add(new THREE.IcosahedronGeometry(0.036, 2), tueste(NABO_MORADO), m.x, m.y, m.z, null, { escala: v3(0.8, 0.95, 0.95), tex: 'liso', sinSuelo: true });
+      const r0 = en(0.07, 0.04, 0);   // el rabillo: la raíz que se afila, corta y algo torcida
+      const cono = new THREE.ConeGeometry(0.02, 0.07, 6); cono.rotateZ(-Math.PI / 2 - 0.15);
+      L.add(cono, tueste(NABO_BLANCO), r0.x, r0.y, r0.z, { y: gy }, { tex: 'liso', sinSuelo: true });
+      if (!asado) for (let i = 0; i < 3; i++) {   // las hojas, tumbadas hacia atrás
+        const h0 = en(-0.06, 0.05, 0), h1 = en(-0.14, 0.04 + i * 0.008, (i - 1) * 0.04), h2 = en(-0.24, 0.02, (i - 1) * 0.07);
+        L.add(tubo([h0, h1, h2], 0.004, 3), HOJA_NABO, 0, 0, 0, null, { sinSuelo: true });
+        const hoja = new THREE.SphereGeometry(0.045, 7, 4); hoja.scale(1.6, 0.18, 0.7);
+        L.add(hoja, HOJA_NABO, h2.x + 0.02, 0.02, h2.z, { y: gy + (i - 1) * 0.4 }, { tex: 'liso', sinSuelo: true });
+      }
     }
     return mallas(L);
   };
@@ -532,6 +597,7 @@ export const MODELO_OBJETO = {
   estaca: estacas,
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
   semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
+  gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,

@@ -163,7 +163,7 @@ export const REVISAR_TIERRAS = 10 * 60 * 1000;   // ms entre repasos de las tier
 // instalarse (instalarX) y lo usa de los demás por S cuando lo necesita; sus tics (arrancarX) empiezan después, en el
 // mismo orden de siempre.
 export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl', registrar = () => {}, tico = CADA, ticoCombate = 50, semilla = Date.now(),
-  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
+  gracia = GRACIA, latido = LATIDO, limites = LIMITES, arconPruebas = false, horaCampos = false, adminCorreo = process.env.KINHOLD_ADMIN_CORREO, terreno = null,
   tierras = terreno && terreno.tierras, parametrosClave = claves.PARAMETROS, vidaFicha = FICHA_VIDA, altas = {}, cartero = null, limiteMovimiento = true,
   salidaComun = false, guardarCada = GUARDAR_CADA, revisarCada = REVISAR_TIERRAS, ticoNecesidades = 1000, usoRopa = USO_ROPA_MS, horaMundo = () => Date.now(), tiemposDormido = {}, tiemposMuerte = {}, duraCuerpo = DURA_CUERPO, sedInicial = 0,
   fauna: entornoFauna = terreno && terreno.fauna, ticoFauna = 200 } = {}) {
@@ -171,7 +171,7 @@ export function crearServidor({ puerto = 8080, archivo = 'servidor/mundo.jsonl',
   // tu tierra es la zona entera de tu mojón (src/logica/construccion.js): antes de rehacer el mundo del archivo
   ponerZonas(terreno && terreno.zona, terreno && terreno.esZonaRey);   // y las zonas del rey no se reclaman
   const junto = (nombre) => resolve(dirname(archivo), nombre);
-  const S = { puerto, archivo, registrar, tico, ticoCombate, semilla, gracia, latido, limites, arconPruebas, terreno, tierras, parametrosClave, vidaFicha, altas, cartero,
+  const S = { puerto, archivo, registrar, tico, ticoCombate, semilla, gracia, latido, limites, arconPruebas, horaCampos, terreno, tierras, parametrosClave, vidaFicha, altas, cartero,
     limiteMovimiento, salidaComun, guardarCada, revisarCada, ticoNecesidades, usoRopa, horaMundo, tiemposDormido, tiemposMuerte, duraCuerpo, sedInicial, entornoFauna, ticoFauna,
     archivoCombate: junto('combate.jsonl'),
     archivoFichas: junto('fichas.jsonl'),
@@ -292,12 +292,15 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_MUERTE=rapida: los nuevos llegan con la sed al máximo y se mueren de sed en 3 s (y el cuerpo se va a los
   // 45 s), solo para la prueba de navegador de morir. Nunca en el servidor de verdad.
   const muerteRapida = process.env.KINHOLD_PRUEBAS_MUERTE === 'rapida';
+  // KINHOLD_PRUEBAS_HORA=campos: en sembrar, el servidor se queda la hora que manda el navegador si es pasada (lo sembrado
+  // «hace una semana», ya maduro), solo para la prueba de navegador de cosechar (P11). Nunca en el servidor de verdad.
+  const horaCampos = process.env.KINHOLD_PRUEBAS_HORA === 'campos';
   // KINHOLD_GUARDAR_CADA: cada cuánto, como mucho, se reescribe objetos.json (ms; por defecto 1000)
   const g = process.env.KINHOLD_GUARDAR_CADA, guardarCada = g && Number(g) >= 0 ? Number(g) : GUARDAR_CADA;
-  const s = crearServidor({ puerto, archivo, terreno, guardarCada, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 45000 } : {}) });
+  const s = crearServidor({ puerto, archivo, terreno, guardarCada, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, horaCampos, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 45000 } : {}) });
   // al apagarlo (actualizar.sh, Ctrl+C, las pruebas al terminar): lo que falte de objetos.json, antes de salir
   let apagando = false;
   const apagar = (senal) => { if (apagando) return; apagando = true; s.guardarObjetosYa().catch(e => console.error('no se pudo guardar objetos.json al apagar:', e && e.message)).finally(() => process.exit(senal === 'SIGINT' ? 130 : 143)); };
   process.on('SIGTERM', () => apagar('SIGTERM')); process.on('SIGINT', () => apagar('SIGINT'));
-  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}${muerteRapida ? ' · AVISO: muerte rápida de sed (KINHOLD_PRUEBAS_MUERTE=rapida), solo para pruebas' : ''}`));
+  s.listo.then(p => console.log(`Servidor de Kinhold en el puerto ${p} · mundo en ${s.archivo} · ${s.mundo.construcciones.length} construcciones · Whitholm generado en ${ms} ms · correo: ${s.cartero.conClave ? 'Resend' : 'sin clave de Resend, los códigos van al registro'}${altasLibres ? ' · AVISO: altas sin límite (KINHOLD_PRUEBAS_ALTAS=libres), solo para pruebas' : ''}${movimientoLibre ? ' · AVISO: sin límite de velocidad (KINHOLD_PRUEBAS_MOVIMIENTO=libre), solo para pruebas' : ''}${arconPruebas ? ' · AVISO: con el arcón infinito (KINHOLD_PRUEBAS_ARCON=si), solo para pruebas' : ''}${salidaComun ? ' · AVISO: los nuevos en la salida común sin elegir (KINHOLD_PRUEBAS_SALIDA=comun), solo para pruebas' : ''}${muerteRapida ? ' · AVISO: muerte rápida de sed (KINHOLD_PRUEBAS_MUERTE=rapida), solo para pruebas' : ''}${horaCampos ? ' · AVISO: la hora de sembrar la pone el navegador (KINHOLD_PRUEBAS_HORA=campos), solo para pruebas' : ''}`));
 }
