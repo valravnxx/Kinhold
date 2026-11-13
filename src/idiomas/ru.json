@@ -2759,5 +2759,6 @@
  "v193: el sotobosque (hito «El aspecto»). Al pie de los árboles salen corros de helechos, ortigas, hierba alta y cantos, más a un lado que a otro; en las lindes del bosque, hierba alta y ortigas; en el prado, manchas de flores del mismo color; y dentro del bosque, tocones viejos y troncos caídos, que estorban al andar. Según el bioma: muchos helechos en los bosques húmedos y pocos en el encinar y el matorral. Nada de eso, ni las flores, sale sobre la tierra desnuda.": "v193: подлесок (этап «Облик»). У подножия деревьев растут группы папоротников, крапивы, высокой травы и камней, больше с одной стороны; на опушках — высокая трава и крапива; на лугу — пятна цветов одного цвета; а в лесу — старые пни и упавшие стволы, которые мешают пройти. По биому: много папоротников во влажных лесах и мало в дубравах каменного дуба и в кустарнике. Ничего из этого, включая цветы, не растёт на голой земле.",
  "v193, provisional: el tocón viejo y el tronco caído son de código hasta que se hagan con Meshy (valravnx, 13 nov: «código temporal y en lista para meshy a futuro»); cuánto sotobosque hay por árbol y por bioma, y el tamaño de las manchas de flores.": "v193, временно: старый пень и упавший ствол сделаны кодом, пока их не сделают в Meshy (valravnx, 13 нояб.: «временный код и в списке для Meshy на будущее»); сколько подлеска на дерево и по биому, и размер пятен цветов.",
  "El sotobosque": "Подлесок",
- "Demo única · v193 (El sotobosque)": "Единая демо · v193 (Подлесок)"
+ "Demo única · v193 (El sotobosque)": "Единая демо · v193 (Подлесок)",
+ "100 %": "100 %"
 }

@@ -14,7 +14,7 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect,
 import { N8AOPostPass } from 'n8ao';
 import { rellenarTabla, HORIZONTE } from './perfiles.js';
 import { NieblaEffect } from './niebla.js';
-import { MaquetaEffect } from './maqueta.js';
+import { MaquetaEffect, MaquetaFuerteEffect } from './maqueta.js';
 
 const SMAA = { 'smaa-bajo': SMAAPreset.LOW, 'smaa-medio': SMAAPreset.MEDIUM, 'smaa-alto': SMAAPreset.HIGH };
 
@@ -78,7 +78,8 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     if (on.color) lista.push(new LUT3DEffect(tabla));
     composer.addPass(new EffectPass(camara, ...lista));
     // el desenfoque de maqueta (arriba y abajo de la pantalla), en los perfiles que pueden con una pasada más
-    if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, new MaquetaEffect({ vivo: cieloVivo })));
+    // (on.maqueta === 2: el modo maqueta al 100 %, con la distancia y el color de juguete)
+    if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, on.maqueta === 2 ? new MaquetaFuerteEffect({ vivo: cieloVivo }) : new MaquetaEffect({ vivo: cieloVivo })));
     if (SMAA[perfil.suavizado] !== undefined) composer.addPass(new EffectPass(camara, new SMAAEffect({ preset: SMAA[perfil.suavizado] })));
     composer.setSize(renderer.domElement.clientWidth || innerWidth, renderer.domElement.clientHeight || innerHeight, false);
   }
