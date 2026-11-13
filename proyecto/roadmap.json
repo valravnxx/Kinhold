@@ -1512,7 +1512,9 @@
     },
     {
      "nombre": "Sotobosque: helechos, matas y cantos en grupos al pie de los árboles y en las lindes, troncos caídos, tocones y manchas de flores, según el bioma",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T05:35:32+01:00",
+     "rama": "trabajo/20261113-0535-aspecto-sotobosque"
     },
     {
      "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
