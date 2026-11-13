@@ -8,7 +8,8 @@
 #    sueltan, sin fotogramas largos; y al volver, lo recogido sigue recogido
 # En PC, en el sitio de salida con más tipos cerca (para verlos todos); en el móvil, en otro fijo con bastantes puntos.
 # Capturas de cerca de cada tipo, antes y después.
-# Uso: python3 pruebas/prueba_recogida_mundo_navegador.py <html de la demo> <carpeta_capturas>
+# Y (P11) las semillas silvestres junto a la orilla: cebada y habas en el claro, col y nabo en la ribera.
+# Uso: python3 pruebas/prueba_recogida_mundo_navegador.py <html de la demo> <carpeta_capturas>   (MUTAR=2: como si no las hubiera: tiene que fallar)
 # MUTAR=1: lo que se recoge, con otra semilla (no sale donde dice la lógica): tiene que fallar.
 import sys, os, re, json, shutil, subprocess, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -65,11 +66,26 @@ print('  sitio de salida con más tipos cerca:', TODO[:2], '· el del móvil:', 
 
 DONDE = {'ramas': ['bosque'], 'piedra': ['rio', 'ladera', 'claro'], 'silex': ['caliza', 'rio', 'claro'], 'ortiga': ['claro', 'ribera'], 'hierba_larga': ['claro', 'ribera'],
          'juncos': ['rio', 'ribera'], 'barro': ['rio', 'ribera'], 'yesquero': ['bosque'],
-         'bayas': ['bosque', 'claro'], 'setas': ['bosque']}
+         'bayas': ['bosque', 'claro'], 'setas': ['bosque'], 'mimbre': ['rio', 'ribera'],
+         'cebada_silvestre': ['claro'], 'habas_silvestres': ['claro'], 'col_silvestre': ['ribera'], 'nabo_silvestre': ['ribera']}
 # la orilla del río más cercano a la salida común (unos 850 m al norte; en metros del mundo): juncos, barro y yesqueros
 ORILLA = (184590, 45420)
 CON = {'juncos': ('lasca_silex', 'cuchillo'), 'barro': ('palo_cavador', 'palo cavador'), 'yesquero': (None, None)}
 DA_ORILLA = {'juncos': 'junco', 'barro': 'barro', 'yesquero': 'yesca'}
+# (P11) las semillas silvestres: la mata de cada una más cercana a la orilla (en metros del mundo), de la lógica
+SEMILLAS = {'cebada_silvestre': 'semilla_cebada', 'habas_silvestres': 'habas', 'col_silvestre': 'semilla_col', 'nabo_silvestre': 'semilla_nabo'}
+def semillas_cerca():
+    js = """import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from './src/logica/mapa.js';
+import { crearPaisaje } from './src/logica/paisaje.js'; import { alturaMundo } from './src/logica/whitholm.js';
+import { recogidaEn } from './src/logica/recogida_mundo.js';
+const m = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }), p = crearPaisaje(m), a = alturaMundo(p);
+const [X, Z] = """ + json.dumps(list(ORILLA)) + """, R = 300, ps = recogidaEn(p, a, m.semilla, { x0: X - R, z0: Z - R, x1: X + R, z1: Z + R }), r = {};
+for (const t of """ + json.dumps(list(SEMILLAS)) + """) { const q = ps.filter(q => q.tipo === t).sort((u, v) => Math.hypot(u.x - X, u.z - Z) - Math.hypot(v.x - X, v.z - Z))[0]; if (q) r[t] = [q.x, q.z, q.id]; }
+console.log(JSON.stringify(r));"""
+    r = subprocess.run(['node', '--input-type=module', '-e', js], cwd=RAIZ, capture_output=True, text=True, timeout=300)
+    return json.loads(r.stdout.strip().splitlines()[-1])
+SEM = semillas_cerca()
+print('  semillas silvestres junto a la orilla:', json.dumps(SEM))
 LISTO = f"{K}.mundoListo && {K}.recoleccion.listo && {K}.decorado.pendientes === 0"
 
 with sync_playwright() as p:
@@ -157,6 +173,36 @@ with sync_playwright() as p:
             pg.evaluate(f"(() => {{ const i = {K}.inventario; i.lugares['mano:der'] = null; i.lugares['mano:izq'] = null; }})()")
         pg.evaluate(f"(() => {{ const k = {K}; k.cam.dist = 7; k.cam.pitch = 0.45; }})()"); pg.wait_for_timeout(600); pg.evaluate(f"{K}.render()")
         pg.screenshot(path=f'{SALIDA}/{nombre}_orilla.png')
+        # 2c) (P11) las semillas silvestres: cebada y habas en el claro, col y nabo en la ribera; con las manos, la planta se queda
+        for tipo, da in SEMILLAS.items():
+            comprobar(f'cerca de la orilla hay {tipo} (a menos de 300 m)', MUTAR != '2' and tipo in SEM)
+            if tipo not in SEM: continue
+            x, z, pid = SEM[tipo]
+            # la planta, más allá de ti (1,1 m) y a tu derecha (0,75 m; en el móvil, 0,5), para que el cuerpo no la tape; en el móvil (pantalla
+            # estrecha) la cámara algo más lejos, para que quepan los dos y la planta no quede detrás del mando
+            dcam, lado = (3.2, 0.5) if movil else (2.6, 0.75)
+            pg.evaluate(f"""([x, z]) => {{ const k = {K}, O = k.mundoJ.salida, Y = -Math.PI / 2 + 0.3, fx = -Math.sin(Y), fz = -Math.cos(Y), rx = -fz, rz = fx;
+                const px = x - O.x - fx * 1.1 - rx * {lado}, pz = z - O.z - fz * 1.1 - rz * {lado};
+                k.pj.x = px; k.pj.z = pz; k.pj.rot = Math.atan2(x - O.x - px, z - O.z - pz); k.cam.dist = {dcam}; k.cam.pitch = 0.42; k.cam.yaw = Y; }}""", [x, z])
+            pg.wait_for_timeout(500)
+            try: pg.wait_for_function(LISTO, timeout=240000)
+            except Exception: print(f'  ({tipo}: no llegó a tiempo)')
+            pt = pg.evaluate(f"(() => {{ const k = {K}, P = k.pj; return k.recoleccion.cercanos(P.x, P.z, 3).find(q => q.id === '{pid}') || null; }})()")
+            comprobar(f'{tipo}: la página la tiene donde dice la lógica', bool(pt))
+            if not pt: continue
+            pg.wait_for_timeout(600); pg.evaluate(f"{K}.render()")
+            pg.screenshot(path=f'{SALIDA}/{nombre}_semilla_{tipo}_antes.png')
+            antes = pg.evaluate(f"{K}.inventario.cuantos('{da}')")
+            if movil: pg.locator('#btnUsar').tap()
+            else: pg.evaluate(f"{K}.usar()")
+            pg.wait_for_timeout(400)
+            despues = pg.evaluate(f"{K}.inventario.cuantos('{da}')")
+            aviso = pg.evaluate("document.getElementById('aviso').textContent")
+            comprobar(f'{tipo} ({", ".join(pt["zonas"])}): Usar lo recoge con las manos y va al inventario', despues > antes, f'{antes} → {despues} · «{aviso}»')
+            v = pg.evaluate(f"[{K}.recoleccion.rec.disponible('{pid}', Date.now()), {K}.recoleccion.rec.enPie('{pid}', Date.now())]")
+            comprobar(f'{tipo}: se va lo que tiene la semilla y la planta se queda', not v[0] and v[1], json.dumps(v))
+            pg.evaluate(f"{K}.render()"); pg.screenshot(path=f'{SALIDA}/{nombre}_semilla_{tipo}_despues.png')
+            pg.evaluate(f"(() => {{ const i = {K}.inventario; i.lugares['mano:der'] = null; i.lugares['mano:izq'] = null; }})()")
         pg.evaluate(f"([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; }}", [O['x'] + P[0] - O['x'], P[1]])
         pg.wait_for_timeout(500)
         try: pg.wait_for_function(LISTO, timeout=240000)

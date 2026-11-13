@@ -12,6 +12,7 @@
 //   Barro              — la orilla de los ríos — palo cavador o pala — cavar — 1 cesta de barro (M) — inagotable
 //   Yesca              — hongos yesqueros en los tocones viejos del bosque — manos — 1–2 yesca (P) — una estación
 // Y para comer (P4): bayas (los arbustos del bosque y los claros) y setas (el suelo del bosque), 3–6 cada vez.
+// Y las semillas silvestres de la granja (P11): cebada y habas en los claros, col y nabo en la ribera, con las manos.
 //   (y con las manos, de la fibra seca o de la corteza: recetas en src/logica/fabricacion.js)
 // Y desbrozar (valravnx, 8 nov; GDD apartado 8 y sistemas apartado 3): los matorrales del mundo (los de la vegetación,
 // src/logica/vegetacion.js: cada uno es un punto «matorral:…» por su sitio, idMata) y los arbustos de bayas se quitan
@@ -83,6 +84,14 @@ export const RECOLECTABLES = {
   // vuelven en una estación.
   bayas:        { nombre: 'Arbusto de bayas', donde: ['bosque', 'claro'], con: 'manos', accion: 'recoger', da: 'bayas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
   setas:        { nombre: 'Setas', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'setas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
+  // (P11, 13 nov) las semillas silvestres, para la granja (estudio diseno/estudios/granja.html y respuestas de valravnx):
+  // la cebada silvestre y las habas silvestres en los claros, la col silvestre y el nabo silvestre en la ribera, a mano.
+  // La planta se queda (lo que se va son las espigas, las vainas o las silicuas con su semilla) y vuelve en una
+  // estación. Cantidades, provisionales: lo que da para sembrar un trozo con un rato de recoger.
+  cebada_silvestre: { nombre: 'Cebada silvestre', donde: ['claro'], con: 'manos', accion: 'recoger', da: 'semilla_cebada', min: 2, max: 4, vuelve: TIEMPOS.estacion },
+  habas_silvestres: { nombre: 'Habas silvestres', donde: ['claro'], con: 'manos', accion: 'recoger', da: 'habas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
+  col_silvestre:    { nombre: 'Col silvestre', donde: ['ribera'], con: 'manos', accion: 'recoger', da: 'semilla_col', min: 2, max: 4, vuelve: TIEMPOS.estacion },
+  nabo_silvestre:   { nombre: 'Nabo silvestre', donde: ['ribera'], con: 'manos', accion: 'recoger', da: 'semilla_nabo', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   // los matorrales de la vegetación: no se recogen, se desbrozan (no salen en recogida_mundo: donde vacío)
   matorral:     { nombre: 'Matorral', donde: [], con: 'desbrozar', accion: 'desbrozar', da: 'rama', min: 2, max: 4, vuelve: TIEMPOS.estacion, soloDesbroce: true },
   // las rocas medianas de la vegetación: no se recogen, se rompen con el mazo (ROMPER; no salen en recogida_mundo)

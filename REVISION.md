@@ -11,6 +11,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 - «en varios sitios los rios como que siempre están separando el bosque… en el bosque me gustaría verlo más real» → el bosque llega hasta la orilla: nada se ponía a menos de 4 m del cauce, el dosel de lejos dejaba unos 20 m, y por debajo de 1,5 m sobre el mar no había árboles ni tierra adentro (las vegas de los ríos). Ahora vale el suelo en seco y, bajo 1,5 m, lejos del mar; la marisma de las desembocaduras sigue sin árboles. En la tarea de riberas y costas.
 - «que los juncos de las desembocaduras sí que se pudieran recoger… potenciar una localidad como una desembocadura para tener mucho más surplus de juncos… o incluso comerciar» → la marisma es una zona de recogida con muchos juncos (unas 12 veces los de la orilla de un río) y algo de barro. En la misma tarea.
 
+### 13 nov 2026, 13:03 UTC — por el chat, al carril A
+
+«sigue con p11» → el carril A sigue con la siguiente tarea de P11 (la granja básica): marcar el campo con estacas.
+
+### 13 nov 2026, 12:26 UTC — por el chat, sobre el secadero
+
+valravnx: «sigue con el secadero que estaba a medias» → lo retoma una sesión de chat desde su rama (`trabajo/20261113-0518-secadero`), anunciada como chat para no pisar al carril A, que sigue vivo con las semillas silvestres.
+
 ### 13 nov 2026 — por el chat, sobre el sotobosque
 
 El tocón viejo y el tronco caído, hechos por código, desentonan con los árboles de Meshy. valravnx: «codigo temporal y en lista para meshy a futuro» → se quedan los de código por ahora y entra la tarea de hacerlos con Meshy en el hito «El arte con Meshy» (`congelado`, como lo demás de Meshy que no es naturaleza en curso, hasta que él diga).

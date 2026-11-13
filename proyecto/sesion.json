@@ -1,21 +1,21 @@
 {
  "A": {
-  "inicio": "2026-11-13T07:23:23+00:00",
-  "tarea": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano (como las bayas, en las celdas que no dan otra cosa) y caben en el cinturón y en el cesto; las habas se comen asadas al fuego. Cadena: se recogen con las manos; el cesto ← 3 haces de juncos",
+  "inicio": "2026-11-13T13:03:33+00:00",
+  "tarea": "Marcar el campo con estacas: la estaca (1 rama, con las manos; valravnx) se clava donde estás; de 3 a 16, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar obras, otros campos ni el agua, y sin pasar de una pendiente; mientras esté vacío, las estacas se mueven o se quitan. Lógica pura con autor (src/logica/campos.js), en el servidor, y todos lo ven. Cadena: rama ← se recoge en el bosque",
   "hito": "granja",
-  "rama": "trabajo/20261113-0529"
+  "rama": "trabajo/20261113-1303"
  },
  "B": null,
- "chat:trabajo/20261113-0518-secadero": {
-  "inicio": "2026-11-13T05:19:44+00:00",
-  "tarea": "El secadero y la carne seca: el secadero (4 troncos delgados de postes y 2 cuerdas, en tu tierra, fuera) como estación; se cuelgan 2 carnes crudas y al cabo de unas horas reales dan 1 carne seca, que no se estropea y sacia como la asada. Lo que tarda se calcula por tiempo transcurrido en la lógica pura (lo decide el servidor), y sirve luego a las cubas y a la carbonera. Cadena: tronco delgado ← talar un árbol joven con el hacha de piedra; cuerda ← 3 cordeles en el banco de tronco ← fibra a mano; carne cruda ← despiezar la liebre con la lasca ← cazarla con la lanza endurecida",
-  "hito": "oficios",
-  "rama": "trabajo/20261113-0518-secadero"
- },
  "chat:trabajo/20261113-0915-aspecto-riberas": {
   "inicio": "2026-11-13T09:14:19+01:00",
   "tarea": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
   "hito": "aspecto",
   "rama": "trabajo/20261113-0915-aspecto-riberas"
+ },
+ "chat:trabajo/20261113-0518-secadero": {
+  "inicio": "2026-11-13T12:26:03+00:00",
+  "tarea": "El secadero y la carne seca: el secadero (4 troncos delgados de postes y 2 cuerdas, en tu tierra, fuera) como estación; se cuelgan 2 carnes crudas y al cabo de unas horas reales dan 1 carne seca, que no se estropea y sacia como la asada. Lo que tarda se calcula por tiempo transcurrido en la lógica pura (lo decide el servidor), y sirve luego a las cubas y a la carbonera. Cadena: tronco delgado ← talar un árbol joven con el hacha de piedra; cuerda ← 3 cordeles en el banco de tronco ← fibra a mano; carne cruda ← despiezar la liebre con la lasca ← cazarla con la lanza endurecida",
+  "hito": "oficios",
+  "rama": "trabajo/20261113-0518-secadero"
  }
 }

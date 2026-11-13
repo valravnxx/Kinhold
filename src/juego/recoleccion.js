@@ -1,5 +1,5 @@
 // Kinhold — lo que se recoge del suelo y de las plantas en la demo (nivel N0): ramas caídas, piedra suelta, sílex,
-// fibra de ortigas y hierba larga, juncos y barro de la orilla, hongos yesqueros y (P4) bayas y setas. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
+// fibra de ortigas y hierba larga, juncos y barro de la orilla, hongos yesqueros, (P4) bayas y setas y (P11) las semillas silvestres. La lógica (dónde sale, qué da, cuándo vuelve) está en src/logica/recoleccion.js;
 // aquí se dibuja con el estilo v5 y se decide qué zonas tiene el terreno de la demo.
 //
 // En el mundo de verdad (crearRecoleccionMundo, abajo), lo que se recoge sale del sitio (src/logica/recogida_mundo.js):
@@ -218,6 +218,117 @@ export function modelosRecoleccion() {
     }
   }, { doble: true, rangoSuelo: 0.3 });
 
+  // (P11, 13 nov) las semillas silvestres. Cada planta se queda (siempre) y se va lo que tiene la semilla, que es lo que
+  // se coge: las espigas de la cebada, las vainas de las habas y los tallos en flor (con sus silicuas) de la col y del nabo.
+  // Que se distingan bien entre la hierba (valravnx, 7 nov: que lo que se recoge se vea): la cebada, pajiza y alta; las
+  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas largas y curvas de verde claro que cuelgan de los tallos; la col, hojas anchas de verde azulado; el
+  // nabo, hojas de verde vivo; las dos, con tallos de flor amarilla.
+  const hojaAncha = (largo, ancho) => {   // una hoja ovalada, algo cóncava, que sale del centro hacia fuera (eje +x)
+    const s = new THREE.Shape(); s.moveTo(0, 0);
+    const pts = [[0.15, 0.32], [0.4, 0.48], [0.7, 0.42], [0.92, 0.2], [1, 0]];
+    for (const [x, y] of pts) s.lineTo(x * largo, y * ancho);
+    for (const [x, y] of pts.slice(0, -1).reverse()) s.lineTo(x * largo, -y * ancho);
+    s.lineTo(0, 0);
+    const g = new THREE.ShapeGeometry(s); g.rotateX(-Math.PI / 2);
+    const p = g.attributes.position;   // cóncava y que cae por la punta
+    for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i); p.setY(i, (z / ancho) ** 2 * ancho * 0.35 - (x / largo) ** 2 * largo * 0.18); }
+    g.computeVertexNormals(); return g;
+  };
+  const roseta = (L, n, largo, ancho, c1, c2, alza, sem) => {   // las hojas de la base, en corro
+    for (let k = 0; k < n; k++) {
+      const a = k * 2.399 + sem, l = largo * (0.75 + (k % 3) * 0.15), sube = alza * (1 - (k % 4) * 0.18);
+      L.add(hojaAncha(l, ancho * (0.85 + (k % 2) * 0.2)), k % 2 ? c1 : c2, 0, 0.03 + (k % 3) * 0.015, 0, new THREE.Matrix4().makeRotationY(a).multiply(new THREE.Matrix4().makeRotationZ(sube)), { sinSuelo: k > 2 });
+    }
+  };
+  const flores = (L, tallos, alto, colorFlor, colorTallo, colorVaina, sem) => {   // tallos con flores en la punta y silicuas debajo
+    for (let k = 0; k < tallos; k++) {
+      const a = k * 2.1 + sem, d = 0.03 + (k % 3) * 0.03, h = alto * (0.8 + (k % 3) * 0.12), inc = 0.08 + (k % 2) * 0.08;
+      const base = new THREE.Vector3(Math.cos(a) * d, 0.02, Math.sin(a) * d), punta = new THREE.Vector3(Math.cos(a) * (d + h * inc), h, Math.sin(a) * (d + h * inc));
+      const dir = punta.clone().sub(base), l = dir.length(), q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+      const medio = base.clone().lerp(punta, 0.5);   // (13 nov) la posición va aparte: add() pone la del giro a cero y el tallo quedaba medio enterrado
+      L.add(cil(0.008, 0.013, l, 5), colorTallo, medio.x, medio.y, medio.z, new THREE.Matrix4().makeRotationFromQuaternion(q), { sinSuelo: true });
+      for (let n = 0; n < 7; n++) {   // las silicuas, finas y largas, por el tercio de arriba
+        const t = 0.55 + n * 0.05, p = base.clone().lerp(punta, t), b = n * 2.4 + k;
+        L.add(cil(0.0035, 0.0035, 0.07, 3), colorVaina, p.x + Math.cos(b) * 0.013, p.y + 0.02, p.z + Math.sin(b) * 0.013, { x: Math.cos(b) * 0.22, z: Math.sin(b) * 0.22 }, { sinSuelo: true });   // casi pegadas al tallo (abiertas en X parecían un fallo)
+      }
+      for (let n = 0; n < 9; n++) {   // el ramillete de flores (un puñado de motas amarillas)
+        const b = n * 2.399, r = 0.012 + (n % 3) * 0.014;
+        L.add(new THREE.IcosahedronGeometry(0.014, 0), colorFlor, punta.x + Math.cos(b) * r, punta.y + 0.005 - (n % 3) * 0.012, punta.z + Math.sin(b) * r, null, { escala: new THREE.Vector3(1, 0.6, 1), sinSuelo: true, tex: 'liso', brillo: 1.25 });
+      }
+    }
+  };
+  const CEBADA_TALLO = 0x9c9a5c, CEBADA_TALLO_SECO = 0xb3a46a, CEBADA_ESPIGA = 0xcdb46a, CEBADA_ARISTA = 0xd9c991;
+  const HABA_TALLO = 0x6f8f4c, HABA_HOJA = 0x71876a, HABA_HOJA_OSC = 0x5e7258, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x9cbd62, HABA_VAINA_OSC = 0x857d48;
+  const COL_HOJA = 0x62806a, COL_HOJA_OSC = 0x506c58, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x97a65e;
+  // la cebada silvestre: una mata de cañas finas (0,6–0,9 m), pajizas, con hojas estrechas abajo; las espigas, que es lo
+  // que se coge, cabizbajas y con sus aristas largas
+  const cebadaCanas = [];
+  for (let k = 0; k < 22; k++) { const a = k * 2.399, d = 0.02 + (k % 6) * 0.035, h = 0.6 + ((k * 7) % 7) * 0.05, dobla = 0.08 + (k % 4) * 0.05; cebadaCanas.push({ a, d, h, dobla }); }
+  const cebadaPlanta = geoLote(L => {
+    for (const [k, c] of cebadaCanas.entries()) {
+      const g = new THREE.CylinderGeometry(0.0035, 0.006, c.h, 3, 4); g.translate(0, c.h / 2, 0);
+      const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i), f = (y / c.h) ** 2 * c.dobla * c.h; p.setX(i, p.getX(i) + f); }
+      L.add(g, k % 3 ? CEBADA_TALLO : CEBADA_TALLO_SECO, Math.cos(c.a) * c.d, 0, Math.sin(c.a) * c.d, { y: -c.a }, { brillo: 1.05 });
+      if (k % 2 === 0) { const hj = new THREE.ConeGeometry(0.01, 0.3, 3, 3); hj.translate(0, 0.15, 0); L.add(hj, 'hierba', Math.cos(c.a) * c.d, 0.02, Math.sin(c.a) * c.d, { y: -c.a + 1, z: -0.45 }, { brillo: 0.95 }); }
+    }
+  }, { doble: true, rangoSuelo: 0.3 });
+  const cebadaEspigas = geoLote(L => {
+    for (const c of cebadaCanas) {
+      // la punta de la caña (doblada hacia +x local, girada -a): la espiga cuelga de ella, cabizbaja
+      const m0 = new THREE.Matrix4().makeRotationY(-c.a), punta = new THREE.Vector3(c.dobla * c.h, c.h, 0).applyMatrix4(m0).add(new THREE.Vector3(Math.cos(c.a) * c.d, 0, Math.sin(c.a) * c.d));
+      const m = m0.clone().multiply(new THREE.Matrix4().makeRotationZ(-0.6 - c.dobla * 2.5));
+      const esp = new THREE.CylinderGeometry(0.009, 0.006, 0.09, 5, 1); esp.translate(0, 0.045, 0);
+      L.add(esp, CEBADA_ESPIGA, punta.x, punta.y - 0.01, punta.z, m, { sinSuelo: true, tex: 'paja', brillo: 1.1 });
+      for (let n = 0; n < 4; n++) {   // las aristas, largas y finas, que salen de la espiga
+        const ar = new THREE.CylinderGeometry(0.0012, 0.0012, 0.1, 3); ar.translate(0, 0.05, 0);
+        L.add(ar, CEBADA_ARISTA, punta.x, punta.y + 0.02 + n * 0.012, punta.z, m.clone().multiply(new THREE.Matrix4().makeRotationX(n % 2 ? 0.25 : -0.25)), { sinSuelo: true, brillo: 1.1 });
+      }
+    }
+  }, { doble: true, rangoSuelo: 0.3 });
+  // las habas silvestres: una mata erguida (unos 0,6 m) de tallos recios, hojas ovaladas gris verdosas, flores blancas
+  // con su mancha oscura y, lo que se coge, las vainas largas y curvas que cuelgan, de verde claro y alguna ya madura, pardo oliva
+  const habasTallos = [];
+  for (let k = 0; k < 9; k++) { const a = k * 0.7 + 0.3, d = 0.04 + (k % 3) * 0.05, h = 0.55 + (k % 3) * 0.1; habasTallos.push({ a, d, h }); }
+  const habasPlanta = geoLote(L => {
+    for (const { a, d, h } of habasTallos) {
+      const x = Math.cos(a) * d, z = Math.sin(a) * d;
+      L.add(cil(0.008, 0.012, h, 4), HABA_TALLO, x, h / 2, z);
+      for (let n = 0; n < 6; n++) {
+        const y = h * (0.12 + n * 0.15), b = a + n * 1.9;
+        for (const lado of [0, Math.PI]) L.add(hojaAncha(0.12 - n * 0.008, 0.05), n % 2 ? HABA_HOJA : HABA_HOJA_OSC, x, y, z, new THREE.Matrix4().makeRotationY(b + lado).multiply(new THREE.Matrix4().makeRotationZ(0.35)), { sinSuelo: true });
+        if (n >= 2 && n % 2 === 0) { // las flores, junto a la hoja
+          L.add(new THREE.IcosahedronGeometry(0.012, 0), HABA_FLOR, x + Math.cos(b) * 0.025, y + 0.012, z - Math.sin(b) * 0.025, null, { escala: new THREE.Vector3(1.3, 0.8, 1), sinSuelo: true, tex: 'liso', brillo: 1.15 });
+          L.add(new THREE.IcosahedronGeometry(0.005, 0), HABA_MANCHA, x + Math.cos(b) * 0.036, y + 0.014, z - Math.sin(b) * 0.036, null, { sinSuelo: true, tex: 'liso' });
+        }
+      }
+    }
+  }, { doble: true, rangoSuelo: 0.25 });
+  // la vaina: estrecha, algo curva y de puntas afiladas (un torno con el perfil de la vaina), colgando de y = 0 hacia abajo
+  const vainaHaba = (() => {
+    const largo = 0.16, perfil = [];
+    for (let i = 0; i <= 8; i++) { const t = i / 8; perfil.push(new THREE.Vector2(Math.max(0.0008, 0.015 * Math.sin(Math.PI * t) ** 0.55), -t * largo)); }
+    const g = new THREE.LatheGeometry(perfil, 6), p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) { const t = -p.getY(i) / largo; p.setX(i, p.getX(i) * 1.25 + t * t * 0.028); }   // algo aplastada y curva hacia fuera
+    g.computeVertexNormals(); return g;
+  })();
+  const habasVainas = geoLote(L => {
+    for (const [k, { a, d, h }] of habasTallos.entries()) for (let n = 0; n < 4; n++) {   // cada una de su tallo, con su rabillo, colgando hacia fuera
+      const y = h * (0.32 + n * 0.15), b = a + n * 1.6 + 0.8, x0 = Math.cos(a) * d, z0 = Math.sin(a) * d;
+      const giro = new THREE.Matrix4().makeRotationY(-b);   // +x local mira hacia fuera, en la dirección b
+      const rab = cil(0.0035, 0.0035, 0.064, 3);   // el rabillo, del tallo hacia fuera y algo abajo (largo: que la vaina cuelgue por fuera de las hojas)
+      L.add(rab, HABA_TALLO, x0 + Math.cos(b) * 0.03, y - 0.011, z0 + Math.sin(b) * 0.03, giro.clone().multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2 + 0.35)), { sinSuelo: true });
+      const cae = 0.55 + ((k * 3 + n) % 4) * 0.15;   // de 30 a 60° respecto a la vertical, no todas iguales
+      L.add(vainaHaba, (k + n) % 4 === 0 ? HABA_VAINA_OSC : HABA_VAINA, x0 + Math.cos(b) * 0.06, y - 0.022, z0 + Math.sin(b) * 0.06, giro.clone().multiply(new THREE.Matrix4().makeRotationZ(cae)), { sinSuelo: true, tex: 'liso', brillo: 1.15 });
+    }
+  }, { rangoSuelo: 0.25 });
+  // la col silvestre: un corro de hojas anchas, carnosas y azuladas, que se queda; lo que se coge, los tallos en flor
+  // (0,7–0,9 m) con sus silicuas llenas de semilla
+  const colPlanta = geoLote(L => { roseta(L, 9, 0.3, 0.12, COL_HOJA, COL_HOJA_OSC, 0.5, 0.4); roseta(L, 6, 0.18, 0.09, COL_HOJA_OSC, COL_HOJA, 0.6, 1.3); }, { doble: true, rangoSuelo: 0.15 });
+  const colFlor = geoLote(L => flores(L, 4, 0.8, FLOR_AMARILLA_PALIDA, 0xa9bf6c, SILICUA, 0.2), { rangoSuelo: 0.3 });
+  // el nabo silvestre: hojas de verde vivo en corro bajo; los tallos en flor, más y de amarillo más vivo (0,5–0,7 m)
+  const naboPlanta = geoLote(L => { roseta(L, 13, 0.3, 0.085, NABO_HOJA, NABO_HOJA_OSC, 0.55, 0.9); }, { doble: true, rangoSuelo: 0.15 });
+  const naboFlor = geoLote(L => flores(L, 6, 0.6, FLOR_AMARILLA, 0xa9bf6c, SILICUA, 1.1), { rangoSuelo: 0.3 });
+
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
   // (11 nov) las plantas de Meshy, si han llegado (src/mundo/naturaleza_meshy.js): ortigas, juncos, la hierba larga (con sus
@@ -227,7 +338,9 @@ export function modelosRecoleccion() {
   // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo; (13 nov) la mata de juncos cortada (cortado:
   // true) sale solo mientras no ha vuelto a crecer, en lugar de la entera
   return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('junco_recoger') ? [...M('junco_recoger'), ...M('junco_cortado').map(m => ({ ...m, cortado: true }))] : (M('juncos') || juncos), barro, yesquero, pena,
-    bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas] });
+    bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas],
+    cebada_silvestre: [...cebadaPlanta.map(m => ({ ...m, siempre: true })), ...cebadaEspigas], habas_silvestres: [...habasPlanta.map(m => ({ ...m, siempre: true })), ...habasVainas],
+    col_silvestre: [...colPlanta.map(m => ({ ...m, siempre: true })), ...colFlor], nabo_silvestre: [...naboPlanta.map(m => ({ ...m, siempre: true })), ...naboFlor] });
 }
 
 // Las bayas sobre el arbusto de Meshy: racimos de tres en la cara de fuera de la mata (lo que mira hacia fuera y no

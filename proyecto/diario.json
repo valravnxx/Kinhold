@@ -6592,5 +6592,80 @@
   "pruebas": "Lógica de la vegetación con el sotobosque, correcta (y falla al romperla a propósito). Revisor en la nube: bien el bosque de lejos visto de cerca y el mazo de piedra; la lógica falla solo en systemd-analyze en la máquina de GitHub, igual que en main. Comprobador de código correcto.",
   "capturas": "capturas/demo-v193",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T07:23:23+00:00",
+  "fin": "2026-11-13T09:00:08+00:00",
+  "titulo": "P11: las semillas silvestres (sigue a medias, sin publicar)",
+  "hito": "granja",
+  "hecho": [
+   "Retomada desde su rama (trabajo/20261113-0529) y unida con main: la v193 es ahora el sotobosque, así que las semillas saldrán como v194.",
+   "Las capturas de las semillas, con la planta a un lado del personaje (antes el cuerpo la tapaba y, en el móvil, quedaba detrás del mando).",
+   "Las vainas de las habas, más gruesas, de verde claro y más por fuera de las hojas: ahora se nota bien al recogerlas.",
+   "No se publica: la segunda mirada dijo que no. Algunas vainas maduras salían casi negras, los tallos de flor de la col y el nabo eran oscuros y finos y sus silicuas, abiertas en X, parecían un fallo. Ya están cambiados en la rama (tallos más gruesos y claros, silicuas pegadas al tallo, vainas maduras pardo oliva), pero sin capturas nuevas: la siguiente sesión pasa «lo que se recoge en el mundo», lo mira de cerca y publica la v194 si sale bien."
+  ],
+  "pruebas": "Revisor en la nube: bien el recorrido, lo que se recoge en el mundo (dos veces), recoger del suelo y de las plantas, las bayas, el inventario, despiezar y asar, el hogar, la cama, los colgaderos, el mazo, los avisos y la demo única. Fallan «lo que llevas se ve puesto», «panel de fabricación» y «los almacenajes de la base», y fallan igual en main (comprobado en la nube); la lógica falla solo en systemd-analyze en la máquina de GitHub, como en main. Comprobador de código correcto.",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T09:23:18+00:00",
+  "fin": "2026-11-13T09:28:13+00:00",
+  "titulo": "P10, hierro y tablas: planificado",
+  "hito": "hierro",
+  "hecho": [
+   "Once tareas de una sesión, con la cadena de cada cosa hasta el mundo: el hierro de pantano con pala y criba; el horno de reducción y la lupia; el fuelle, la fragua y la barra; el mango, el hacha de hierro, el pico y los clavos; la sierra y las tablas; las rocas grandes con el pico; las vetas de hierro en la roca; la arcilla y el horno cerámico; las tejas; las piezas de nivel 2 a la vista; y el recorrido de jugador. Después, la revisión.",
+   "El primer mineral es el de pantano: el pico ya pide hierro, así que la roca solo llega después. En Whitholm casi no hay turberas (3 km²) y la veta pequeña más cercana a la salida está a unos 10 km: decisión provisional, las manchas de hierro de pantano salen por las señales del GDD (tierra encharcada y agua rojiza) en las vegas llanas junto a los arroyos y en las turberas.",
+   "Decisiones provisionales (sistemas no las da): el mazo de piedra hace de martillo en la primera fragua; el yunque de piedra va dentro de la fragua (12 piedras, 4 barros y el fuelle); el fuelle, 2 cueros y 2 varas; el mango, 1 vara; 1 tronco corto da 4 tablas; 2 cestas de arcilla dan 10 tejas; el horno cerámico, 6 cestas de arcilla y 10 piedras. Las herraduras esperan a P8 (congelado).",
+   "pruebas/prueba_origenes.mjs: lo esencial del hierro (17 cosas) en su lista, en PENDIENTES con su tarea viva."
+  ],
+  "pruebas": "prueba_origenes.mjs: 92 bien; rota a propósito (MUTAR=2), fallan las 17 del hierro. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:19:44+00:00",
+  "fin": "2026-11-13T09:44:45+00:00",
+  "titulo": "El secadero y la carne seca, a medias (chat con valravnx): no se publica",
+  "hito": "oficios",
+  "hecho": [
+   "Hecho en la rama trabajo/20261113-0518-secadero: el secadero (4 troncos delgados y 2 cuerdas, fuera y en tu tierra), la carne seca (valravnx: 1 cruda, 1 seca; 6 h; todo lo colgado se seca a la vez, hasta 10), que no se estropea y sacia como la asada; lo colgado se ve para todos (el servidor manda lo que se seca); su pestaña en el panel, el tiempo en horas, iconos v16 y las traducciones.",
+   "Lo que falla: en la prueba del panel de fabricar, la parte del móvil se cuelga en la nube (el toque al botón de fabricar, o al crear la cuenta del segundo jugador) en esta rama, y en main no. Probado quitando por separado el panel, las estaciones, los textos, los iconos y los cambios de la prueba: cada una de esas variantes también se cuelga, así que la causa no está sola en ninguno de esos cambios. Sin resolver.",
+   "Además: la prueba del menú de puestos esperaba un texto que la interfaz nueva ya no enseña (fallaba igual en main) y ahora mira los nombres y los materiales."
+  ],
+  "pruebas": "En la nube: lógica bien (salvo systemd-analyze, de la máquina de la nube, y una vez el combate con dos clientes por tiempo agotado; aquí pasa 82/82), el recorrido 248/248, y bien el hogar, la cama ligada, los colgaderos, el mazo, los avisos de las necesidades, despiezar y asar, el inventario, el acabado de construir y la velocidad con pocos fotogramas; los almacenajes, bien en la última vuelta (salvo el contador desplegado, que falla igual en main). El panel de fabricar: lo de PC, con el secadero, bien; el móvil se cuelga. Aquí: comida 44/44, fabricación 197/197, orígenes, iconos, idiomas y fuego, bien; rota a propósito (MUTAR=2), la de comida falla.",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T10:28:33+00:00",
+  "fin": "2026-11-13T12:38:22+00:00",
+  "titulo": "P11: las semillas silvestres (demo v194)",
+  "hito": "granja",
+  "hecho": [
+   "Retomada desde su rama. La segunda mirada volvió a decir que no a las capturas de antes: las vainas de las habas parecían salchichas sueltas alrededor de la planta y los tallos de flor de la col se cortaban de golpe, con las flores como flotando.",
+   "Por qué se cortaban: los tallos de flor de la col y del nabo estaban medio enterrados. add() pone a cero la posición que venía en el giro, así que cada tallo quedaba centrado en el suelo. Ahora la posición va aparte y cada tallo sale entero de la roseta, con las flores en la punta y las silicuas pegadas.",
+   "Las vainas de las habas, rehechas: alargadas, algo curvas y de punta, cada una con su rabillo al tallo y colgando hacia fuera (de 30 a 60°). Las verdes, de verde claro, y alguna madura, pardo oliva.",
+   "Publicada la demo v194: cebada silvestre y habas silvestres en los claros, col silvestre y nabo silvestre en la ribera. Se recogen con las manos y caben en el cinturón, en la cesta de recolección y en el cesto; 3 habas al fuego dan 3 habas asadas.",
+   "La segunda mirada, un agente aparte, dijo que sí a las capturas nuevas de PC y de móvil. Deja dos retoques que no bloquean: más curva en las vainas y las hojas de la col más redondeadas."
+  ],
+  "pruebas": "Comprobador de código correcto. Aquí: recolección 66/66, lo que se recoge en el mundo (lógica) bien, orígenes 88/88. La nube estaba atascada: más de 20 ejecuciones colgadas de otras sesiones (sobre todo «panel de fabricación») ocupan las máquinas y lo nuevo se quedaba en cola. Por eso «lo que se recoge en el mundo», en el navegador, se pasó aquí, entero en PC y en móvil (TODO CORRECTO), y en la nube solo salió la demo única (bien). Lo demás del revisor ya había pasado en la nube la sesión anterior y desde entonces solo cambian los modelos de las cuatro plantas: se quitó con --sin por eso. No comprobado: «lo que se recoge en el mundo» en la nube con el último cambio. Choques: la rama de riberas (chat) toca recoleccion.js y recogida_mundo.js, y la de la maqueta toca los idiomas; ninguna está en main, así que las repasa a mano la que una después.",
+  "capturas": "capturas/demo-v194",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T11:39:15+01:00",
+  "fin": "2026-11-13T14:10:57+01:00",
+  "titulo": "El modo maqueta al 100 % (demo v195)",
+  "hito": "aspecto",
+  "hecho": [
+   "En Ajustes, «Desenfoque de maqueta» tiene ahora sí, 100 % y no (valravnx, 13 nov: «pon un modo en opciones para tener el modo maqueta 100%»); el sí de antes sigue igual.",
+   "Al 100 %, la franja nítida es más estrecha y el emborronado llega al doble.",
+   "Al 100 %, también se emborrona por la distancia, con el foco en el personaje: lo de más lejos o más cerca se emborrona aunque esté a su altura en la pantalla, como al fotografiar una maqueta.",
+   "El emborronado del 100 % va en dos pasadas (a lo ancho y a lo alto) para que salga suave, sin granulado en el móvil.",
+   "El cielo es el fondo de la página detrás del lienzo: el emborronado pesa cada muestra por su opacidad, para que no salga una franja blanca en el horizonte.",
+   "Un poco más de saturación y de contraste al 100 % (el color de juguete), hecho sobre el color como se ve, para que no salga chillón ni con sombras negras.",
+   "Se cancelaron a la fuerza 17 ejecuciones de pruebas de GitHub colgadas desde hacía horas, que tenían la cola parada para todas las sesiones."
+  ],
+  "pruebas": "Perfiles gráficos (con 6 comprobaciones nuevas del 100 %, rotas a propósito: fallan), posprocesado, el perfil gráfico en el juego, la demo en el mundo y la demo única, bien en la nube. En la lógica falla el servidor de prueba en internet por avisos del sistema de la máquina de la nube, que este cambio no toca. Segunda mirada aparte: primero dijo que no (color chillón, franja blanca en el horizonte y granulado), arreglado; después, sí. Queda: en el sí de antes, la línea clara del horizonte se ve algo más ancha que sin efecto (ya estaba). No comprobado: lo que cuesta en fotogramas en un aparato de verdad.",
+  "capturas": "capturas/demo-v195",
+  "estado": "ok"
  }
 ]

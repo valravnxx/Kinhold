@@ -301,7 +301,7 @@ function espalda(t, dentro) {
     const C = nuevoLote(); cesto(C, 0.4, 0.13, 0.17, t === 'cesto_pescador');
     for (const p of C.piezas) { p.m.premultiply(G.makeTranslation(0, 0, 0.17)); L.piezas.push(p); }
     // lo de dentro asoma por arriba (bayas oscuras, setas pardas, hierbas verdes…)
-    const COLOR = { bayas: 0x5a2a33, setas: 0x9b8160, hierbas: 0x667d45, frutos_secos: 0x7b5a3a, huevo: 0xd8cfbc, pescado: 0x8a9095 };
+    const COLOR = { bayas: 0x5a2a33, setas: 0x9b8160, hierbas: 0x667d45, frutos_secos: 0x7b5a3a, huevo: 0xd8cfbc, pescado: 0x8a9095, semilla_cebada: 0xcdb46a, habas: 0x8a7a4e, semilla_col: 0x7a4a32, semilla_nabo: 0x2e2622 };
     if (t === 'cesta_recoleccion') {
       let i = 0;
       for (const [k, n] of Object.entries(dentro)) for (let j = 0; j < Math.min(6, Math.ceil(n / 3)); j++, i++) {
