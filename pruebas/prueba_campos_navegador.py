@@ -214,8 +214,10 @@ try:
         comprobar('y se cierra otra vez (11 × 9 + … m²)', esperar(A, f"{K}.mundo.campos[0].cerrado && {K}.mundo.campos[0].area > 100 && {K}.mundo.campos[0].area < 120", 8000), A.evaluate(f"JSON.stringify({K}.mundo.campos[0])"))
 
         print('Fuera de su tierra, no')
+        A.evaluate(f"(() => {{ const l = {K}.inventario.lugares; if (!l['mano:der'] && !l['mano:izq']) {K}.accionInventario({{ tipo: 'coger', objeto: 'estaca', cantidad: 1, a: 'mano:der' }}); }})()")
+        esperar(A, f"{K}.inventario.cuantos('estaca') >= 1", 5000); A.wait_for_timeout(500)
         ir(A, 3, 6); usar(A)
-        comprobar('en la zona del rey no se clava', esperar(A, f"/Fuera de tu tierra/.test({AVISO})", 5000) and A.evaluate(f"{K}.mundo.campos.length") == 1, A.evaluate(AVISO))
+        comprobar('en la zona del rey no se clava, y no crea campo', esperar(A, f"/Fuera de tu tierra/.test({AVISO})", 5000) and A.evaluate(f"{K}.mundo.campos.length") == 1, f"aviso={A.evaluate(AVISO)} · campos={A.evaluate(f'{K}.mundo.campos.length')}")
 
         print('El otro jugador, en el móvil, lo ve')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
