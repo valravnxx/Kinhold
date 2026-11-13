@@ -3,6 +3,7 @@
 // three.js ni ventana.
 import { fbm } from '../logica/mapa.js';
 import { bosqueEn } from '../logica/paisaje.js';
+import { marismaEn } from '../logica/vegetacion.js';
 
 // color del suelo (0–1) por bioma: el del suelo que se ve bajo los árboles o en el prado, no el del mapa
 // (12 nov, el aspecto de maqueta: los verdes tiraban a mostaza con el sol cálido; menos rojo en los biomas de hierba)
@@ -60,6 +61,7 @@ export const lin = (c) => Math.pow(Math.max(0, c), 2.2);
 // El color del suelo de cerca (el de la vista «Como en el juego»), en lineal y ya con el sombreado de las vaguadas:
 //   st: el sitio (paisaje.sitio) o null en el agua; y: altura (m); s: pendiente de la forma (vecinos a 3 m); s1: la de
 //   aquí mismo (1 m); lap: concavidad (vecinos a 2 m, m/m²); xm, ym: el punto en el mundo (m)
+const MARISMA = [0.42, 0.42, 0.36], SALADA = [0.46, 0.47, 0.32];   // (13 nov: el barro de la marisma y su hierba salada)
 const TIERRA = [0.54, 0.48, 0.43], HOJARASCA = [0.36, 0.32, 0.23];   // (12 nov: pardo gris cálido, como el camino de la referencia; antes se leía como paja, y luego como caqui)
 // (la prueba quita el lecho a propósito para comprobar que falla)
 const window_sinLecho = () => typeof globalThis !== 'undefined' && !!globalThis.__sinLecho;
@@ -117,6 +119,17 @@ export function colorJuego(st, y, s, s1, lap, xm, ym, sal = [0, 0, 0], rio = nul
   // bajo el bosque, el suelo es de hojarasca (más pardo y oscuro)
   if (st && st.bioma && st.bioma !== 'nieve') { const d = bosqueEn(st, s, xm, ym).d * (1 - playa); c = c.map((v, q) => v + (HOJARASCA[q] - v) * Math.min(1, d * 0.75)); pHoja = Math.min(1, d * 0.9); }
   if (rio && rio.dm < rio.ancho / 2 + 3.5 && !window_sinLecho()) { c = conLecho(c, st, rio, xm, ym); pTierra = Math.max(pTierra, 1 - suave(-0.3, 1.6, rio.dm - rio.ancho / 2)); }
+  // la marisma de las desembocaduras (13 nov, riberas y costas; src/logica/vegetacion.js, marismaEn): barro gris verdoso
+  // con hierba salada a manchas y charcos de barro más oscuro, en vez del prado; el barro con la textura de la tierra
+  if (st && st.bioma && rio) {
+    const m = marismaEn(y, sp, rio, xm, ym);
+    if (m > 0) {
+      const charco = suave(0.6, 0.68, fbm(xm / 8, ym / 8, 89, 3)), hierba = suave(0.45, 0.6, fbm(xm / 5, ym / 5, 91, 2));
+      const col = MARISMA.map((v, q) => v + (BARRO[q] * 0.8 - v) * charco * 0.8 + (SALADA[q] - v) * hierba * (1 - charco) * 0.6);
+      c = c.map((v, q) => v + (col[q] - v) * m);
+      pTierra = Math.max(pTierra, m * (1 - hierba * 0.6));
+    }
+  }
   // la hierba, algo menos chillona: hacia el verde oliva pajizo de la referencia (diseno/referencia/aspecto_del_juego.jpg)
   const g = (1 - pRoca) * (1 - pTierra) * (1 - pHoja) * 0.3, L = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
   c = [c[0] + (L * 1.06 - c[0]) * g, c[1] + (L - c[1]) * g, c[2] + (L * 0.86 - c[2]) * g];

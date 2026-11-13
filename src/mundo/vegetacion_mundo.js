@@ -243,8 +243,13 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
       instancias(lista.filter(e => dist(e) >= 25), m.lejos.geo, m.lejos.mats, nombre + 'Lejos', color, { ...opc, sombra: false });
     };
     for (const [tipo, m] of [['helechos', heM], ['ortigas', M('ortigas')], ['hierba_larga', M('hierba_larga')]]) {
-      if (m) porNiveles(deTipo(tipo), m, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: tipo === 'helechos', subir: () => 0.03 });
+      if (m) porNiveles(deTipo(tipo), m, 'soto_' + tipo, e => (e.sal ? c.setRGB(0.92, 0.95, 0.8).multiplyScalar(e.tono) : c.setScalar(e.tono)), { sombra: tipo === 'helechos', subir: () => 0.03 });
     }
+    // (riberas y costas, 13 nov) los juncos del agua somera y de la marisma, y la hierba de duna de la playa (la hierba
+    // alta, de color paja); la hierba de la marisma, más verde grisácea
+    const juM = M('juncos'), hlM = M('hierba_larga');
+    if (juM) porNiveles(deTipo('junco_agua'), juM, 'soto_juncos', e => c.setScalar(e.tono * (e.sal ? 0.95 : 1)));
+    if (hlM) porNiveles(deTipo('hierba_duna'), hlM, 'soto_duna', e => c.setRGB(1.15, 1.02, 0.7).multiplyScalar(e.tono));
     const cantoM = M('canto');
     if (cantoM) porNiveles(deTipo('canto'), cantoM, 'soto_canto', e => c.setRGB(0.78, 0.8, 0.7).multiplyScalar(e.tono), { sombra: true, subir: e => e.tam * 0.2 });
     const ms = modelosSotobosque();
@@ -287,7 +292,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     if (ocupadoUlt) despejarMallas(mallas, ocupadoUlt);
     cuenta = { ...(cuenta || {}), arboles: arboles.length, especies: Object.fromEntries(ESPECIES.map(e => [e, arboles.filter(a => a.especie === e).length])),
       jovenes: arboles.filter(a => a.edad === 'joven').length,
-      hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, soto: Object.fromEntries(['helechos', 'ortigas', 'hierba_larga', 'canto', 'flor', 'tocon', 'tronco'].map(t => [t, deTipo(t).length])), trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
+      hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, soto: Object.fromEntries(['helechos', 'ortigas', 'hierba_larga', 'canto', 'flor', 'tocon', 'tronco', 'junco_agua', 'hierba_duna'].map(t => [t, deTipo(t).length])), trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
   }
 
   // Los cascotes de una roca rota: de 7 a 9 trozos de un azar fijo por su nombre, por donde estaba, a ras de suelo.
