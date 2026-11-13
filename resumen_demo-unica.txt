@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2761 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3098 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4492 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3171 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2756 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3125 KB
+dist/kinhold_trozos.html 2777 KB
+hilo de los trozos 23 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — v191: con pocos fotogramas se anda a la velocidad de siempre (valravnx, 12 nov: con pocos fps su chica andaba «hiperlenta»). Antes cada fotograma contaba como mucho 0,05 s, así que por debajo de 20 fps todo el juego iba a cámara lenta; ahora el tiempo del juego va al real (hasta medio segundo por fotograma, la vuelta de otra pestaña no salta) y el paso de andar se parte en trozos de 0,05 s para no atravesar paredes ni orillas.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 423 s

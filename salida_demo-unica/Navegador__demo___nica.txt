@@ -1,0 +1,98 @@
+Vista pc
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 103.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 1 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 811.1, 'peor': 814, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 22, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 117.9
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 1 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 1035.3, 'peor': 1035, 'triangulos': 866694, 'dibujados': 53, 'geometrias': 35, 'texturas': 33, 'memoriaJS': 22, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 3.600000000000001}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 2.8800000000000017}
+  OK   construir: cargado también avanza — 2.88 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 1 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 1081.2, 'peor': 1081, 'triangulos': 966812, 'dibujados': 70, 'geometrias': 39, 'texturas': 44, 'memoriaJS': 22, 'personajes': 9, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 866694 → 966812
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	1 por segundo
+Cada fotograma	1104.7 ms de
+  OK   construir: el botón de medir y mandar al servidor — o lo lleva)
+Medida para el servidor
+
+Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Medir 10 s y mandarlo al servidor
+  OK   construir: la toma de 1 s trae fotogramas, peor, triángulos y llamadas — {'segundos': 1.1, 'fotogramas': 1, 'fps': 0.9, 'ms': 1099.2, 'peor': 1099, 'lentos': 1, 'triangulos': 966812, 'triangulosMax': 966812, 'llamadas': 70, 'llamadasMax': 70}
+  OK   construir: y lo que se sabe del aparato — {'navegador': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36', 'grafica': 'ANGLE (Google, Vu
+  OK   construir: mientras mide, lo dice — entras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Midiendo… 7 s
+  OK   construir: sin servidor, dice que no se ha podido mandar — No se ha podido mandar: sin conexión con el servidor.
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:38357/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+Vista movil
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 121.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 4 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 5, 'ms': 213.2, 'peor': 221, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 23, 'personajes': 1, 'resolucion': 0.5, 'ancho': 195, 'alto': 422}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 109.2
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 2 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 2, 'ms': 423.2, 'peor': 442, 'triangulos': 504686, 'dibujados': 43, 'geometrias': 30, 'texturas': 29, 'memoriaJS': 23, 'personajes': 1, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 6.648840000000079}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 4.916735999999863}
+  OK   construir: cargado también avanza — 4.92 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 2 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 2, 'ms': 431, 'peor': 434, 'triangulos': 583740, 'dibujados': 60, 'geometrias': 35, 'texturas': 41, 'memoriaJS': 23, 'personajes': 9, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 504686 → 583740
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	2 por segundo
+Cada fotograma	434 ms de me
+  OK   construir: el botón de medir y mandar al servidor — o lo lleva)
+Medida para el servidor
+
+Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Medir 10 s y mandarlo al servidor
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:38357/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+  FALLA menú en en: todo traducido — v191: con pocos fotogramas se anda a la velocidad de siempre (valravnx, 12 nov: con pocos fps su chica andaba «hiperlenta»). Antes cada fotograma contaba como mucho 0,05 s, así que por debajo de 20 fps todo el juego iba a cámara lenta; ahora el tiempo del juego va al real (hasta medio segundo por fotograma, la vuelta de otra pestaña no salta) y el paso de andar se parte en trozos de 0,05 s para no atravesar paredes ni orillas.
+  OK   menú en en: nada tapado
+  FALLA menú en ru: todo traducido — v191: con pocos fotogramas se anda a la velocidad de siempre (valravnx, 12 nov: con pocos fps su chica andaba «hiperlenta»). Antes cada fotograma contaba como mucho 0,05 s, así que por debajo de 20 fps todo el juego iba a cámara lenta; ahora el tiempo del juego va al real (hasta medio segundo por fotograma, la vuelta de otra pestaña no salta) y el paso de andar se parte en trozos de 0,05 s para no atravesar paredes ni orillas.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
