@@ -16,6 +16,9 @@
 //    hoyo de barro (cavado y bordeado de piedras) y el cesto (de juncos trenzados): las varas tumbadas en la horquilla,
 //    la paja en montón alrededor del palo y los juncos de pie apoyados en él, el barro llenando el hoyo y lo pequeño
 //    subiendo dentro del cesto.
+//  - el raspador de pieles (P9, 13 nov): un bastidor de cuatro varas atadas en cuadro, con las dos de los lados
+//    hincadas y algo echadas hacia atrás; la piel dejada en él se ve tensada dentro con la cuerda, pasada por sus
+//    agujeros hasta las varas (la que está por raspar, con su pelo; la limpia, pálida), y las demás, al pie.
 //  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
 //    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
 //    almohada de juncos).
@@ -37,7 +40,7 @@ import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
 import { modeloHacha } from './personaje.js';
-import { modeloHachaPiedra, modeloMazoPiedra } from './modelos_objetos.js';
+import { modeloHachaPiedra, modeloMazoPiedra, contornoPiel, PIEL_LIMPIA } from './modelos_objetos.js';
 import { conMeshy, hayMeshy, precargarMeshy } from '../mundo/meshy_objetos.js';
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
@@ -304,6 +307,72 @@ function llenoSecadero(dep, id, colgado = []) {
   return tiras.length ? mallas(L) : new THREE.Group();
 }
 
+// El raspador de pieles (P9, 13 nov): el bastidor de cuatro varas. Las de los lados, hincadas y echadas hacia atrás
+// (ECHA: lo que retroceden por metro de alto); las de arriba y abajo, atadas por delante y más largas que el cuadro.
+// En su plano: u, de lado a lado; h, la altura.
+const RASPADOR = { u: 0.6, abajo: 0.32, arriba: 1.42, alto: 1.6, echa: 0.22, sobra: 0.14 };
+const enBastidor = (u, h, delante = 0) => new THREE.Vector3(u, h, -h * RASPADOR.echa + delante);
+const CUERDA_C = 0xb8a27a;
+function cuerdaEntre(L, a, b, r = 0.006) {
+  const d = new THREE.Vector3().subVectors(b, a), q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
+  const c = a.clone().addScaledVector(d, 0.5);
+  L.add(cil(r, r, d.length(), 4), CUERDA_C, c.x, c.y, c.z, new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), { tex: 'paja', sinSuelo: true });
+}
+function raspador(id) {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.07 }), { u: U, abajo, arriba, alto, sobra } = RASPADOR;
+  for (const s of [-1, 1]) {   // las de los lados, hincadas
+    const p0 = enBastidor(s * U, -0.12), p1 = enBastidor(s * (U + 0.02 * az(id, s)), alto);
+    varaEntre(L, p0, p1, 0.028);
+  }
+  for (const [h, k] of [[abajo, 1], [arriba, 2]]) {   // las de arriba y abajo, por delante de las de los lados
+    const a = enBastidor(-U - sobra - az(id, k) * 0.05, h, 0.035), b = enBastidor(U + sobra + az(id, k + 5) * 0.05, h + (az(id, k + 9) - 0.5) * 0.04, 0.035);
+    varaEntre(L, a, b, 0.024);
+    for (const s of [-1, 1]) {   // la atadura de cada cruce: unas vueltas de cuerda en aspa
+      const c = enBastidor(s * U, h, 0.018);
+      for (const g of [0.75, -0.75]) L.add(new THREE.TorusGeometry(0.036, 0.007, 4, 10), CUERDA_C, c.x, c.y, c.z, { x: Math.atan(RASPADOR.echa), z: g }, { tex: 'paja', sinSuelo: true });
+    }
+  }
+  // la cuerda que sobra, enrollada en la vara de un lado (para tensar la piel)
+  const r = enBastidor(-U, 0.62, 0.0);
+  for (let i = 0; i < 4; i++) L.add(new THREE.TorusGeometry(0.033, 0.006, 4, 10), CUERDA_C, r.x, r.y + i * 0.016, r.z, { x: Math.PI / 2 + Math.atan(RASPADOR.echa) }, { tex: 'paja', sinSuelo: true });
+  return mallas(L);
+}
+// La piel tensada en el bastidor (la que hay dejada en él: primero la que está por raspar, con su pelo por detrás y la
+// carne hacia fuera; si no, una limpia) y lo demás dejado, al pie, delante.
+function llenoRaspador(dep, id) {
+  const g = new THREE.Group(), { u: U, abajo, arriba } = RASPADOR, cual = dep.piel > 0 ? 'piel' : dep.piel_limpia > 0 ? 'piel_limpia' : null;
+  if (cual) {
+    const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 }), h0 = (abajo + arriba) / 2 + 0.03, esc = 1.36;
+    const borde = contornoPiel(id, esc), forma = new THREE.Shape(borde);
+    const geo = new THREE.ExtrudeGeometry(forma, { depth: 0.008, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.008, bevelSegments: 1, curveSegments: 4 });
+    const c = enBastidor(0, h0, 0.02);
+    const color = cual === 'piel' ? 0x8a6d55 : PIEL_LIMPIA;   // por raspar: la cara de la carne, rosada y parda; limpia, pálida
+    L.add(geo, color, c.x, c.y, c.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'liso', sinSuelo: true, rayas: v => 0.9 + 0.1 * Math.cos(v.x * 13 + v.y * 5) });
+    if (cual === 'piel') {   // el pelo, por detrás: la misma piel, un poco más atrás y algo menor (se ve solo desde atrás)
+      const d = enBastidor(0, h0, 0.013);
+      L.add(geo.clone(), 0x6a523a, d.x, d.y, d.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'liso', sinSuelo: true, escala: new THREE.Vector3(0.985, 0.985, 1) });
+    }
+    // las lazadas: de cada agujero del borde a la vara más cercana
+    borde.forEach((b, i) => {
+      if (i % 2) return;
+      const h = h0 + b.y, cand = [[Math.sign(b.x || 1) * U, h, Math.abs(Math.abs(b.x) - U)], [b.x, b.y < 0 ? abajo : arriba, Math.abs(b.y < 0 ? h - abajo : arriba - h)]];
+      const [uu, hh] = cand[0][2] < cand[1][2] ? cand[0] : cand[1];
+      cuerdaEntre(L, enBastidor(b.x * 0.97, h0 + b.y * 0.97, 0.022), enBastidor(uu, hh, 0.02));
+    });
+    g.add(mallas(L));
+  }
+  // lo demás, al pie: la piel o las pieles que esperan, las limpias…
+  let k = 0;
+  for (const [t, n] of Object.entries(dep)) {
+    const queda = t === cual ? n - 1 : n;
+    if (!(queda > 0)) continue;
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n: queda } });
+    m.position.set(-0.35 + k++ * 0.6, 0, 0.55); m.scale.setScalar(0.85); m.rotation.y = az(id + t, 3) * 0.8 - 0.4;
+    m.name = 'deposito_' + t; g.add(m);
+  }
+  return g;
+}
+
 // El soporte de varas: dos caballetes de varas cruzadas en aspa, atados en el cruce; las varas se tumban a lo largo de X
 // en la horquilla de arriba, sin tocar el suelo.
 const SOPORTE = { x: 0.6, cruce: 0.62, abre: 0.34 };
@@ -487,7 +556,7 @@ function camaJuncos(id) {
 export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
-  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero };
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -686,7 +755,7 @@ function varaCorrea(L, a, b) {
   const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), c = a.clone().addScaledVector(d, 0.5);
   L.add(new THREE.BoxGeometry(0.02, d.length(), 0.004), CUERO_COLG, c.x, c.y, c.z, m, { tex: 'liso', sinSuelo: true });
 }
-const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero };
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -737,7 +806,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {

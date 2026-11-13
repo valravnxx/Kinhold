@@ -8,6 +8,8 @@
 //  - haz de juncos: tallos verdes y finos, largos (1,3 m), atados en dos sitios.
 //  - haz de mimbre: varas de sauce peladas, finas y rectas (1,5 m), atadas en dos sitios.
 //  - piel: una piel curtida estirada, de contorno irregular con las patas, el pelo hacia arriba.
+//  - piel limpia (P9, 13 nov, la del raspador): la misma piel, raspada de carne y grasa: la cara de dentro hacia arriba,
+//    pálida y algo traslúcida, más tiesa (apenas ondula) y con el borde recortado de los agujeros del bastidor.
 //  - resina: unos grumos de color ámbar sobre un trozo de corteza.
 //  - cordel: una madeja de cordel fino enrollada, con una vuelta que la ata.
 //  - cuerda: una adujada de cuerda más gruesa, en espiras.
@@ -90,12 +92,31 @@ function fibra(n, id) {
 const juncos = (n, id) => { const L = lote(0.06); haz(L, { n: 22, largo: 1.3, r: 0.006, color: JUNCO, punta: JUNCO_PUNTA, id, tex: 'paja', abre: 0.05 }); return mallas(L); };
 const mimbre = (n, id) => { const L = lote(0.06); haz(L, { n: 24, largo: 1.5, r: 0.005, color: MIMBRE, id, abre: 0.015 }); return mallas(L); };
 
+export const PIEL_LIMPIA = 0xb8a07c;
+// contorno: la forma de la piel estirada (cuerpo ovalado, las patas y el cuello), en el plano XY
+export function contornoPiel(id, escala = 1) {
+  const P = [[0, 0.36], [0.07, 0.3], [0.16, 0.31], [0.27, 0.38], [0.24, 0.24], [0.21, 0.08], [0.22, -0.12], [0.26, -0.3], [0.3, -0.42], [0.15, -0.33], [0.06, -0.38], [0, -0.42]];
+  return [...P, ...P.slice(1, -1).reverse().map(([x, y]) => [-x, y])].map(([x, y], i) => new THREE.Vector2(x * (1 + (az(id, i) - 0.5) * 0.12) * escala, y * escala));
+}
+function pielLimpia(n, id) {
+  const L = lote(0.02);
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(contornoPiel(id)), { depth: 0.006, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.006, bevelSegments: 1, curveSegments: 4 });
+  g.rotateX(-Math.PI / 2);
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + 0.008 * Math.sin(p.getX(i) * 7 + 2) * Math.cos(p.getZ(i) * 5));
+  g.computeVertexNormals();
+  // la cara de dentro raspada: pálida, con vetas algo más oscuras donde quedó la membrana
+  L.add(g, PIEL_LIMPIA, 0, 0.006, 0, { y: az(id, 40) }, { tex: 'liso', rayas: (v) => 0.9 + 0.1 * Math.cos(v.x * 11 + v.z * 4) });
+  for (let k = 0; k < 8; k++) {   // los agujeros del bastidor, por el borde
+    const a = k / 8 * Math.PI * 2, r = 0.2 + az(id, k + 9) * 0.03, x = Math.cos(a) * r * 0.75, z = Math.sin(a) * r * 1.4, t = az(id, 40);
+    L.add(new THREE.CircleGeometry(0.008, 6), 0x3a2c20, x * Math.cos(t) + z * Math.sin(t), 0.019, -x * Math.sin(t) + z * Math.cos(t), { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  }
+  return mallas(L);
+}
 function piel(n, id) {
   const L = lote(0.02);
   // el contorno de una piel de ciervo o de cabra estirada: cuerpo ovalado, las cuatro patas y el cuello
-  const P = [[0, 0.36], [0.07, 0.3], [0.16, 0.31], [0.27, 0.38], [0.24, 0.24], [0.21, 0.08], [0.22, -0.12], [0.26, -0.3], [0.3, -0.42], [0.15, -0.33], [0.06, -0.38], [0, -0.42]];
-  const pts = [...P, ...P.slice(1, -1).reverse().map(([x, y]) => [-x, y])].map(([x, y], i) => new THREE.Vector2(x * (1 + (az(id, i) - 0.5) * 0.12), y));
-  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.01, bevelSegments: 2, curveSegments: 4 });
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(contornoPiel(id)), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.01, bevelSegments: 2, curveSegments: 4 });
   g.rotateX(-Math.PI / 2);
   // un poco ondulada, como se queda una piel en el suelo
   const p = g.attributes.position;
@@ -532,7 +553,7 @@ export const MODELO_OBJETO = {
   estaca: estacas,
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
   semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
-  fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
+  fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

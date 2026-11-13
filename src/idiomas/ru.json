@@ -2873,5 +2873,13 @@
  "El campo ya está labrado: sus estacas no se mueven.": "Поле уже вспахано: его колышки не переставить.",
  "v201: labrar con la azada (P11, la granja básica). Con la azada en la mano, dentro de un campo cerrado y limpio de tu tierra, Usar labra delante de ti (unos 2 s): cada pasada voltea un círculo de 1,2 m, sin pasar del linde, y el aviso dice cuántos m² del campo llevas. Donde quedan árboles, tocones, matas o piedras, antes hay que limpiar; lo labrado no se vuelve a labrar. La tierra labrada se ve parda, con sus surcos a lo largo del campo y sin hierba, y la ven todos; el servidor pone la hora. Labrado el campo, sus estacas ya no se mueven.": "v201: вспашка мотыгой (P11, простое хозяйство). С мотыгой в руке, внутри закрытого и расчищенного поля на своей земле, «Использовать» вскапывает землю перед вами (около 2 с): каждый проход переворачивает круг радиусом 1,2 м, не выходя за межу, а сообщение говорит, сколько м² поля уже вскопано. Где остались деревья, пни, кусты или камни, сначала нужно расчистить; вскопанное заново не вскапывается. Вскопанная земля бурая, с бороздами вдоль поля и без травы, и её видят все; время ставит сервер. Когда поле вскопано, его колья больше не переставляются.",
  "v201, provisional: el círculo de cada pasada (1,2 m de radio, en casillas de 1 m), 2 s por pasada, alcance de 3 m, y el barbecho: si en 14 días no se siembra, la tierra labrada vuelve a ser hierba (y se puede labrar otra vez).": "v201, предварительно: круг каждого прохода (радиус 1,2 м, клетками по 1 м), 2 с на проход, досягаемость 3 м, и пар: если за 14 дней ничего не посеять, вскопанная земля снова зарастает травой (и её можно вскопать снова).",
- "Demo única · v201 (Labrar con la azada)": "Единая демо · v201 (Вспашка мотыгой)"
+ "Demo única · v201 (Labrar con la azada)": "Единая демо · v201 (Вспашка мотыгой)",
+ "Piel limpia": "Очищенная шкура",
+ "el raspador de pieles": "рама для выскабливания шкур",
+ "Raspador de pieles": "Рама для выскабливания шкур",
+ "un raspador de pieles": "рама для выскабливания шкур",
+ "En el raspador de pieles": "На раме для выскабливания шкур",
+ "Un bastidor de varas donde se tensa la piel para rasparla con la lasca de sílex: da la piel limpia": "Рама из жердей, на которой натягивают шкуру и выскабливают её кремнёвым отщепом: даёт очищенную шкуру",
+ "La piel sin carne ni grasa: para el zurrón; luego, paso previo al cuero.": "Шкура без мяса и жира: для котомки; потом — шаг перед кожей.",
+ "A la espalda: 2 huecos medianos y 2 pequeños, de lo que sea.": "На спину: 2 средних и 2 малых места, для чего угодно."
 }
