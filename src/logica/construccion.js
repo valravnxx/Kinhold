@@ -2,6 +2,7 @@
 import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALES_INICIALES, CLASE_PESO } from './piezas.js';
 import { MOTIVO_REY } from './zonas_rey.js';
 import { alisa, centroCasilla, validarPasada, RADIO_CIMIENTO, BORDE as BORDE_NIVELADO } from './nivelado.js';
+import { exportarCampos, importarCampos } from './campos.js';
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón sin zonas (pruebas sueltas y prototipos sin mundo) (m)
 // Tu tierra (valravnx, 4 nov): la zona entera (src/logica/comarcas.js, aproximadamente 1,2 km²) en la que pones tu
@@ -129,6 +130,10 @@ export class Mundo {
     // el suelo nivelado para construir (src/logica/nivelado.js): las pasadas de la brocha y lo que alisan los cimientos,
     // por orden, con su autor. Se quedan aunque se desmonte lo de encima (la tierra movida no vuelve sola)
     this.nivelados = [];
+    // los campos de cultivo marcados con estacas (src/logica/campos.js, P11)
+    this.campos = [];
+    // lo que la lógica sola no sabe del terreno, para los campos (lo pone el servidor; no se guarda)
+    this.entorno = null;
   }
 
   // --- materiales ---
@@ -205,6 +210,7 @@ export class Mundo {
     const fuera = new Set(p.construcciones), fueraM = new Set(p.muebles);
     this.construcciones = this.construcciones.filter(c => !fuera.has(c));
     this.decoracion = this.decoracion.filter(d => !fueraM.has(d));
+    this.campos = this.campos.filter(c => c.dueno !== yo);   // los campos de su tierra, también
     delete this.mojones[yo];
     delete this.invitados[yo];
     return { ok: true, perdidas: { construcciones: p.construcciones.length, piezas: p.piezas, muebles: p.muebles.length } };
@@ -801,6 +807,7 @@ export class Mundo {
       construcciones: this.construcciones.map(c => ({ id: c.id, ox: c.ox, oz: c.oz, oy: c.oy || 0, rot: c.rot, piezas: [...c.piezas.values()] })),
       decoracion: this.decoracion,
       nivelados: this.nivelados,
+      campos: exportarCampos(this.campos),
     };
   }
   static importar(datos) {
@@ -822,6 +829,8 @@ export class Mundo {
     m.decoracion = datos.decoracion || [];
     // los guardados de antes del 31 oct no tienen oy ni nivelados: todo a la altura 0, como se construyó
     m.nivelados = Array.isArray(datos.nivelados) ? datos.nivelados.map(n => ({ ...n })) : [];
+    // los guardados de antes del 13 nov no tienen campos
+    m.campos = importarCampos(datos.campos);
     return m;
   }
 }

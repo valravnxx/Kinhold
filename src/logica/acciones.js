@@ -9,6 +9,7 @@ import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 import { AUTOR_REY } from './abandono.js';
+import { clavarEstaca, quitarEstaca } from './campos.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
 export const AUTOR_LOCAL = 'jugador:local';
@@ -64,6 +65,8 @@ const CAMPOS_CONSTRUCCION = {
   colocar: { pieza: 't', x: 'n', z: 'n', k: 'n', rot: 'n', dir: 'n' },
   decorar: { pieza: 't', x: 'n', y: 'n', z: 'n', rot: 'n' },
   nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
+  estaca: { x: 'n', z: 'n' },         // clavar una estaca del campo que marcas (src/logica/campos.js, P11)
+  quitar_estaca: { campo: 'n', i: 'n' }, // y quitarla (vuelve a lo que llevas)
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -89,7 +92,7 @@ const CAMPOS_CONSTRUCCION = {
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
 // Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -169,6 +172,20 @@ function aplicarConstruccion(m, a, invs) {
       return m.colocar(m.candidata(a.pieza, a.x, a.z, a.k, a.rot, a.dir, a.y === undefined ? 0 : a.y), true, a.autor);
     }
     case 'nivelar': return m.nivelar(a, a.autor);
+    // los campos (P11): la estaca sale de lo que llevas al clavarla y vuelve a lo que llevas al quitarla; al rehacer una
+    // ya cobrada («lleva»), ni se cobra ni se devuelve, y sin inventarios (pruebas sueltas, sin servidor), tampoco
+    case 'estaca': {
+      const inv = invs ? invs.de(a.autor) : null;
+      if (invs) delete a.lleva;
+      const gastar = inv ? () => (inv.cuantos('estaca') >= 1 ? (inv.gastar('estaca', 1), { ok: true }) : { ok: false, motivo: 'No llevas ninguna estaca.' }) : undefined;
+      return pagada(clavarEstaca(m, a.x, a.z, a.autor, gastar), a, invs);
+    }
+    case 'quitar_estaca': {
+      const inv = invs ? invs.de(a.autor) : null;
+      if (invs) delete a.lleva;
+      const devolver = inv ? () => { const r = inv.meterDonde('estaca', 1); return r.ok ? { ok: true } : { ok: false, motivo: 'No te cabe la estaca: haz sitio.' }; } : undefined;
+      return pagada(quitarEstaca(m, a.campo, a.i, a.autor, devolver), a, invs);
+    }
     case 'entregar': case 'trabajar': case 'subir': {
       const c = m.construcciones.find(x => x.id === a.construccion);
       if (!c) return { ok: false, motivo: 'No existe.' };

@@ -138,6 +138,8 @@ export const RECETAS = {
   // con las manos
   cordel:            r('Cordel de fibra', 'manos', 'cordel', { fibra: 3 }, 15),
   palo_cavador:      r('Palo cavador', 'manos', 'palo_cavador', { rama: 1 }, 10),
+  // la estaca de marcar el campo (P11; valravnx, 13 nov: «cada una hecha de 1 rama»): la punta, aguzada con las manos
+  estaca:            r('Estaca', 'manos', 'estaca', { rama: 1 }, 6),
   // el taladro de fuego de arco (7 nov; el documento de sistemas lo nombra para encender la hoguera sin decir de qué se
   // hace): una rama da el arco y el huso, otra la tabla, y el cordel tensa el arco. Provisional (diario y registro)
   taladro_fuego:     r('Taladro de fuego', 'manos', 'taladro_fuego', { rama: 2, cordel: 1 }, 20),
@@ -189,6 +191,7 @@ export const RECETAS = {
 export const PARA = {
   cordel: 'Para atar; también sirve como cinturón de cordel (1 hueco).',
   palo_cavador: 'Cava barro y raíces, poco eficiente.',
+  estaca: 'Marca el campo: con ella en la mano, Usar la clava donde estás; de 3 a 16, y la última junto a la primera lo cierra.',
   taladro_fuego: 'Con la yesca, enciende la hoguera o el hogar.',
   honda: 'Caza menor.',
   lenero: 'A la espalda: solo leña y troncos cortos.',

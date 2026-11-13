@@ -307,8 +307,12 @@ function atenderAccion(S, c, msg) {
   const sitioAntes = sitioAccion(mundo, accion), antes = comunDe(mundo);
   // las obras, solo al alcance de donde el servidor tiene al jugador (lo que diga el navegador no cuenta)
   const lejos = sinArcon || contraTerreno ? null : fueraDeAlcance(mundo, accion, presencia.ultimo.get(autor));
-  const r = soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
-  if (sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
+  // los campos (P11): la estaca, donde está el jugador (lo que diga el navegador no cuenta), y el linde, contra el
+  // agua, la pendiente y los puestos de trabajo (src/logica/campos.js, mundo.entorno)
+  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
+  if (accion.tipo === 'estaca') mundo.entorno = entornoCampos(S);
+  const r = lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
+  if (lejosCampo || sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
   const entrada = registro.entradas[registro.entradas.length - 1];
   registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con el mundo
   appendFileSync(archivo, JSON.stringify(entrada) + '\n');
@@ -377,4 +381,22 @@ function cerrar(S, c) {
   if (L) apartados.set(autor, { L, hasta: reloj() + gracia });
   registrar(`sale ${autor}`);
   for (const otro of clientes.keys()) enviar(otro, { tipo: 'sale', autor });
+}
+
+// La estaca se clava donde está el jugador, y se quita estando a su lado (como mucho a 3 m de donde lo tiene el servidor).
+function fueraDelCampo(mundo, a, pos) {
+  if (!pos || !Number.isFinite(pos.x) || !Number.isFinite(pos.z)) return { ok: false, motivo: 'El servidor aún no sabe dónde estás.' };
+  let p = a;
+  if (a.tipo === 'quitar_estaca') { const c = (mundo.campos || []).find(x => x.id === a.campo); p = c && Number.isInteger(a.i) ? c.puntos[a.i] : null; if (!p) return null; }
+  if (!Number.isFinite(p.x) || !Number.isFinite(p.z)) return null;
+  return Math.hypot(p.x - pos.x, p.z - pos.z) > 3 ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
+}
+// Lo que la lógica de los campos no sabe del terreno: el agua, la pendiente (m por m, en 3 m) y los puestos de trabajo.
+function entornoCampos(S) {
+  const t = S.terreno, est = S.objetos && S.objetos.fab ? S.objetos.fab.estaciones : {};
+  return {
+    agua: t ? (x, z) => t.aguaEn(x, z) !== null : null,
+    pendiente: t ? (x, z) => Math.hypot(t.suelo(x + 1.5, z) - t.suelo(x - 1.5, z), t.suelo(x, z + 1.5) - t.suelo(x, z - 1.5)) / 3 : null,
+    ocupado: (x, z) => Object.values(est || {}).some(e => Math.hypot(e.x - x, e.z - z) < 1.2),
+  };
 }

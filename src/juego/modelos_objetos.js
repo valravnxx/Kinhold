@@ -493,8 +493,27 @@ function bandolera(n, id) {
   return mallas(L);
 }
 
+// La estaca de marcar el campo (P11): una rama recta de 1 m con su corteza, la punta aguzada a golpes de lasca (madera
+// clara) y la cabeza cortada. En el lote L, de pie con la punta en (x, y, z) y hacia abajo, o con giro (Euler) dado.
+export function estacaEn(L, x, y, z, giro = null, id = 'e') {
+  const largo = 1, g = giro ? new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ')) : new THREE.Matrix4();
+  const en = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(g).add(new THREE.Vector3(x, y, z));
+  const pon = (geo, color, py, opc) => { const c = en(0, py, 0), m = g.clone(); L.add(geo, color, c.x, c.y, c.z, m, opc); };
+  pon(cil(0.021, 0.019, largo - 0.16, 7), 'corteza', 0.16 + (largo - 0.16) / 2, { tex: 'corteza', sinSuelo: true });
+  pon(new THREE.ConeGeometry(0.019, 0.16, 7).rotateX(Math.PI), 0xa8875a, 0.08, { plano: true, tex: 'veta', sinSuelo: true });   // la punta aguzada
+  pon(new THREE.CircleGeometry(0.021, 7).rotateX(-Math.PI / 2), 'corte', largo + 0.001, { sinSuelo: true });                  // la cabeza cortada
+  const yM = 0.62 + az(id, 5) * 0.2, cM = en(0.03, yM + 0.03, 0);   // un muñón de ramita, de lado y hacia arriba
+  L.add(cil(0.006, 0.009, 0.09, 5), 'corteza', cM.x, cM.y, cM.z, g.clone().multiply(new THREE.Matrix4().makeRotationZ(-0.9)), { tex: 'corteza', sinSuelo: true });
+}
+function estacas(n, id) {
+  const L = lote(0.04);
+  for (let k = 0; k < Math.min(3, Math.max(1, n || 1)); k++) estacaEn(L, -0.5 + k * 0.03, 0.022 + k * 0.012, -0.06 + k * 0.06, { z: -Math.PI / 2, y: (az(id, k) - 0.5) * 0.25 }, id + k);
+  return mallas(L);
+}
+
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
+  estaca: estacas,
   carne_cruda: carne(false), carne_asada: carne(true),
   semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,

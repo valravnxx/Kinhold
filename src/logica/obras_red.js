@@ -20,11 +20,15 @@ import { trozoDe } from './trozos_red.js';
 export function sitioAccion(mundo, a) {
   if (!a || typeof a !== 'object') return null;
   switch (a.tipo) {
-    case 'nivelar': case 'decorar': case 'colocar':
+    case 'nivelar': case 'decorar': case 'colocar': case 'estaca':
       return Number.isFinite(a.x) && Number.isFinite(a.z) ? { x: a.x, z: a.z } : null;
     case 'entregar': case 'trabajar': case 'subir': case 'desmontar': case 'usar': {
       const c = mundo.construcciones.find(x => x.id === a.construccion);
       return c ? { x: c.ox, z: c.oz } : null;
+    }
+    case 'quitar_estaca': {
+      const c = (mundo.campos || []).find(x => x.id === a.campo), p = c && Number.isInteger(a.i) && c.puntos[a.i];
+      return p ? { x: p.x, z: p.z } : null;
     }
     case 'quitar': {
       const d = mundo.decoracion.find(x => x.id === a.id);
@@ -58,5 +62,6 @@ export function obrasEnTrozos(mundo, trozos) {
     construcciones: d.construcciones.filter(c => en(c.ox, c.oz)),
     decoracion: d.decoracion.filter(x => en(x.x, x.z)),
     nivelados: d.nivelados.filter(n => en(n.x, n.z)),
+    campos: (d.campos || []).filter(c => c.puntos.some(p => en(p.x, p.z))),
   };
 }

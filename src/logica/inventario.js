@@ -93,6 +93,7 @@ export const CATALOGO = {
   carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'),
   // (P11, 13 nov) las semillas silvestres (src/logica/recoleccion.js): la cebada silvestre (sus espigas, que se siembran),
   // las habas (se siembran, o se comen asadas al fuego) y las semillas de la col silvestre y del nabo silvestre
+  estaca: R('Estaca', 'M'),   // la de marcar el campo (P11)
   semilla_cebada: R('Cebada silvestre', 'P'), habas: R('Habas', 'P'), habas_asadas: R('Habas asadas', 'P'),
   semilla_col: R('Semillas de col', 'P'), semilla_nabo: R('Semillas de nabo', 'P'),
   piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
