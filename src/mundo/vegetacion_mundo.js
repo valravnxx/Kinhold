@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { modelosPlantas, despejarMallas } from './decorado.js';
 import { modelosEspecies, ESPECIES, radioTronco, tamanoArbol } from './especies.js';
 import { naturaleza, hayNaturaleza, detalleNaturaleza } from './naturaleza_meshy.js';
+import { modelosSotobosque, RADIO_TOCON, LARGO_TRONCO } from './sotobosque.js';
 import { material } from './estilos.js';
 import { ROCAS_COLOR, lin } from './color_suelo.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
@@ -64,6 +65,12 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
 
   // Los trozos hechos: clave → { i, j, arboles (obstáculos), piedras, hierba? { hierba, flores, matas } }
   const trozos = new Map(), clave = (i, j) => i + ',' + j;
+  const estorbosSoto = (e) => {
+    if (e.tipo === 'tocon') return [{ x: e.x, z: e.z, r: RADIO_TOCON * e.tam, veg: true }];
+    if (e.tipo !== 'tronco') return null;
+    const ux = Math.cos(e.giro), uz = -Math.sin(e.giro), paso = LARGO_TRONCO * e.tam / 3;
+    return [-1, 0, 1].map(k => ({ x: e.x + ux * k * paso, z: e.z + uz * k * paso, r: 0.32 * e.tam, veg: true }));
+  };
   function hacerTrozo(i, j, conHierba) {
     const v = vegetacionTrozo(pai, altW, semilla, i, j, conHierba);
     let t = trozos.get(clave(i, j));
@@ -80,8 +87,10 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     }
     if (conHierba && !t.hierba) {
       const fuera = (l) => l.map(esc).filter(e => lejos(e, CLARO));
-      t.hierba = { hierba: fuera(v.hierba), flores: fuera(v.flores), matas: fuera(v.matas).map(e => ({ ...e, id: idMata(e.x, e.z), ob: { x: e.x, z: e.z, r: 0.55 * e.tam, mata: true, veg: true } })) };
-      const todo = [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas];
+      t.hierba = { hierba: fuera(v.hierba), flores: fuera(v.flores), matas: fuera(v.matas).map(e => ({ ...e, id: idMata(e.x, e.z), ob: { x: e.x, z: e.z, r: 0.55 * e.tam, mata: true, veg: true } })),
+        // el sotobosque (13 nov): los tocones viejos y los troncos caídos estorban al andar (el tronco, con tres círculos a lo largo)
+        soto: fuera(v.sotobosque || []).map(e => ({ ...e, obs: estorbosSoto(e) })) };
+      const todo = [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas, ...t.hierba.soto];
       for (const e of todo) e.yb = e.y;
       alNivel(todo, cajaTrozo(i, j));
     }
@@ -113,7 +122,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     for (const t of trozos.values()) {
       const b = cajaTrozo(t.i, t.j);
       if (!cajas.some(c => c.x1 >= b.x0 && c.x0 <= b.x1 && c.z1 >= b.z0 && c.z0 <= b.z1)) continue;
-      const lista = [...t.arboles, ...t.piedras, ...(t.hierba ? [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas] : [])];
+      const lista = [...t.arboles, ...t.piedras, ...(t.hierba ? [...t.hierba.hierba, ...t.hierba.flores, ...t.hierba.matas, ...t.hierba.soto] : [])];
       const antesY = lista.map(e => e.y);
       alNivel(lista, b);
       lista.forEach((e, q) => { if (Math.abs(e.y - antesY[q]) > 1e-4) n++; });
@@ -155,7 +164,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     const nuevas = [], nuevasMallas = [];
     const dist = (e) => Math.hypot(e.x - P.x, e.z - P.z), enCuadro = (e) => Math.abs(e.x - P.x) <= C && Math.abs(e.z - P.z) <= C;
     const H = medidas.hierba;
-    let arboles = [], piedras = [], hierba = [], flores = [], matas = [], cascotes = [];
+    let arboles = [], piedras = [], hierba = [], flores = [], matas = [], cascotes = [], soto = [];
     for (const t of trozos.values()) {
       for (const a of t.arboles) if (enCuadro(a)) arboles.push(a);
       for (const e of t.piedras) if (enCuadro(e)) { if (!e.id || api.rocaEnPie(e.id)) piedras.push(e); else cascotes.push(...cascotesDe(e)); }
@@ -163,6 +172,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
         for (const e of t.hierba.hierba) if (dist(e) <= H) hierba.push(e);
         for (const e of t.hierba.flores) if (dist(e) <= H) flores.push(e);
         for (const e of t.hierba.matas) if (dist(e) <= H && api.mataEnPie(e.id)) matas.push(e);
+        for (const e of t.hierba.soto) if (dist(e) <= H) soto.push(e);
       }
     }
     // árboles: si hay más de los que aguanta el aparato, se quitan los más lejanos (no al azar: lo de cerca no cambia)
@@ -221,6 +231,22 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     instancias(matasC, (mM ? mM.cerca : pl.matorral).geo, (mM ? mM.cerca : pl.matorral).mats, 'matorrales', e => c.setScalar(e.tono), { sombra: true, obst: matasC.map(e => e.ob) });
     if (matasA.length) instancias(matasA, mM.alto.geo, mM.alto.mats, 'matorralesAlto', e => c.setScalar(e.tono), { sombra: true, obst: matasA.map(e => e.ob) });
     if (heM) instancias(helechos, heM.cerca.geo, heM.cerca.mats, 'helechos', e => c.setScalar(e.tono), { sombra: true, obst: helechos.map(e => e.ob), subir: () => 0.03 });
+    // el sotobosque (13 nov, src/logica/vegetacion.js): helechos, ortigas, hierba alta y cantos con musgo al pie de los
+    // árboles y en las lindes, manchas de flores, y tocones viejos y troncos caídos (src/mundo/sotobosque.js). Se esconde
+    // donde se construye, como la hierba; con las plantas de código (sin los de Meshy), solo las flores y la madera
+    const deTipo = (t) => soto.filter(e => e.tipo === t);
+    for (const [tipo, m] of [['helechos', heM], ['ortigas', M('ortigas')], ['hierba_larga', M('hierba_larga')]]) {
+      if (m) instancias(deTipo(tipo), m.cerca.geo, m.cerca.mats, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: tipo === 'helechos', subir: () => 0.03 });
+    }
+    const cantoM = M('canto');
+    if (cantoM) instancias(deTipo('canto'), cantoM.cerca.geo, cantoM.cerca.mats, 'soto_canto', e => c.setRGB(0.78, 0.8, 0.7).multiplyScalar(e.tono), { sombra: true, subir: e => e.tam * 0.2 });
+    if (fM) instancias(deTipo('flor'), fM.cerca.geo, fM.cerca.mats, 'soto_flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.65));
+    else instancias(deTipo('flor'), pl.flor, material('fijo'), 'soto_flores', e => c.set(FLORES[e.color]));
+    const ms = modelosSotobosque();
+    for (const tipo of ['tocon', 'tronco']) {
+      const l = deTipo(tipo);
+      instancias(l, ms[tipo].geo, ms[tipo].mats, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: true, obst: l.map(e => ({ set oculto(v) { for (const o of e.obs) o.oculto = v; } })) });   // (el tronco, sus tres círculos)
+    }
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía
     // anaranjada), hundidas 0,2 m como en el mapa; no se esconden al construir (chocan, como antes)
     const colorRoca = e => { const k = ROCAS_COLOR[e.roca] || ROCAS_COLOR.caliza, t = (v) => 0.5 * lin(v) / 0.4 + 0.5 * 0.8; return c.setRGB(t(k[0]), t(k[1]), t(k[2])); };
@@ -251,11 +277,11 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     vivas = nuevas; mallas = nuevasMallas; deArboles = arboles; tapan = new Set(); centro = { x: P.x, z: P.z };
     const otros = obstaculos.filter(q => !q.veg);
     obstaculos.length = 0;
-    obstaculos.push(...otros, ...arboles, ...matas.map(e => e.ob), ...piedras.map(e => e.ob).filter(Boolean));
+    obstaculos.push(...otros, ...arboles, ...matas.map(e => e.ob), ...piedras.map(e => e.ob).filter(Boolean), ...soto.flatMap(e => e.obs || []));
     if (ocupadoUlt) despejarMallas(mallas, ocupadoUlt);
     cuenta = { ...(cuenta || {}), arboles: arboles.length, especies: Object.fromEntries(ESPECIES.map(e => [e, arboles.filter(a => a.especie === e).length])),
       jovenes: arboles.filter(a => a.edad === 'joven').length,
-      hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
+      hierba: hierba.length, flores: flores.length, matas: matas.length, piedras: piedras.length, soto: Object.fromEntries(['helechos', 'ortigas', 'hierba_larga', 'canto', 'flor', 'tocon', 'tronco'].map(t => [t, deTipo(t).length])), trozos: trozos.size, puestas: (cuenta?.puestas || 0) + 1 };
   }
 
   // Los cascotes de una roca rota: de 7 a 9 trozos de un azar fijo por su nombre, por donde estaba, a ras de suelo.
