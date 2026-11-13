@@ -39,8 +39,8 @@ export const DENSIDAD_RECOGIDA = {
   // que no han dado nada: así lo de antes sigue en el mismo sitio.
   // (13 nov, valravnx: «potenciar una localidad como una desembocadura para tener mucho más surplus de juncos… hacer
   // un buen stock o incluso comerciar») en la marisma de las desembocaduras, muchos más
-  juncos:       { rio: 0.12, ribera: 0.05, marisma: 0.45 },
-  barro:        { rio: 0.16, ribera: 0.04, marisma: 0.1 },   // (y el barro de la marisma)
+  juncos:       { rio: 0.12, ribera: 0.05, marisma: 0.6 },
+  barro:        { rio: 0.16, ribera: 0.04, marisma: 0.15 },   // (y el barro de la marisma)
   yesquero:     { bosque: 0.05 },
   // (P4) para comer: arbustos de bayas en el bosque (sobre todo en sus bordes, donde es claro: el del bosque se
   // multiplica por su densidad) y en los claros, y setas en el suelo del bosque. También después, en las celdas vacías.

@@ -490,7 +490,9 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
       const lista = rec.puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
       for (const { geo, mat, siempre, cortado } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
-        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
+        // (13 nov, valravnx: los juncos, más grandes: de 1,3 a unos 1,7 m)
+        const esc = tipo === 'juncos' ? 1.3 : 1;
+        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
         im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices, siempre, cortado });
       }

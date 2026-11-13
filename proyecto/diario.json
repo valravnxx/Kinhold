@@ -6718,5 +6718,17 @@
   "pruebas": "Comprobador de código correcto. En la nube: la lógica (prueba_campos.mjs 34/0: clavar, cerrar con su superficie, quitar y mover, tierra/agua/pendiente/obras/otros campos, y el servidor con dos jugadores; cada prueba nueva rota a propósito con MUTAR y falla), el recorrido de jugador (TODO CORRECTO) y el navegador «marcar el campo con estacas» (clavar, cerrar a 120 m², quitar y recerrar, la zona del rey rechaza, y el otro jugador lo ve en el móvil; TODO CORRECTO). Falla en la nube, como en main, «internet con Caddy» (prueba_nube.mjs 25/27, systemd-analyze de la máquina de GitHub): no toca este cambio. La primera vez el recorrido falló solo en la caza de la liebre (al azar, la liebre huía); repetido, salió bien. Los iconos, 605/0.",
   "capturas": "capturas/demo-v198",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T15:59:13+01:00",
+  "fin": "2026-11-13T16:04:40+01:00",
+  "titulo": "Juncos más grandes (demo v199)",
+  "hito": "aspecto",
+  "hecho": [
+   "Los juncos que se recogen, de 1,3 a unos 1,7 m, y los de adorno, de unos 0,8 a 1,1 m (valravnx: «más grandes»).",
+   "Más matas de juncos para recoger en la marisma de las desembocaduras (unas 17 veces las de la orilla de un río), con algo más de barro."
+  ],
+  "pruebas": "Recogida de lógica correcta y comprobador de código. Sin capturas: valravnx lo prueba a mano.",
+  "estado": "ok"
  }
 ]

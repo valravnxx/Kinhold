@@ -1,6 +1,8 @@
 // Decisiones tomadas en la demo única, para revisar.
-export const VERSION_DEMO = "Demo única · v198 (Marcar el campo con estacas)";
+export const VERSION_DEMO = "Demo única · v199 (Juncos más grandes)";
 export const REGISTRO_DEMO = [
+  "v199: los juncos, más grandes (valravnx, 13 nov): los que se recogen, de unos 1,7 m, y los de adorno, de unos 1,1 m; y más matas de juncos para recoger en la marisma de las desembocaduras, con algo más de barro.",
+  "v199, provisional: el tamaño de los juncos y cuántos hay en la marisma.",
   "v198: marcar el campo con estacas (P11, la granja básica). Con una estaca en la mano (se hace con las manos, de 1 rama), Usar la clava donde estás; de 3 a 16 estacas, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar el agua, una pendiente fuerte, una obra, un puesto ni otro campo; el servidor lo valida y todos lo ven. Mientras el campo está vacío, cada estaca se quita (vuelve a lo que llevas) para moverla. Las estacas se clavan recias y una cuerda atada de una a otra marca el linde por encima de la hierba (al limpiar el campo, más adelante, se verá también la tierra pisada).",
   "v198, provisional: de 3 a 16 estacas, hasta 50 m entre dos seguidas, pendiente máxima de 0,35 m/m, campo mínimo de 4 m²; la estaca tarda 6 s en hacerse.",
   "v197: riberas y costas. En los ríos, juncos en el agua somera del borde y hierba alta, ortigas y helechos en la orilla (antes, nada a menos de 4 m del cauce); el bosque llega hasta el río, y los valles bajos tierra adentro, que no tenían ningún árbol, tienen bosque. En las desembocaduras, la marisma: barro con hierba salada, juncal y muchos juncos que se recogen (unas 12 veces los de la orilla de un río), y algo de barro. En la playa, hierba de duna. Los juncos, de Meshy: la mata que se corta, la cortada (hasta que vuelve a crecer) y la de adorno, rala y seca, que no vale.",
