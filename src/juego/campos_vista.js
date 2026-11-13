@@ -19,24 +19,27 @@ const COLOR_LINDE = new THREE.Color(0x9a8566);   // el pardo cálido del camino 
 const MAT_LINDE = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
 
 // La tierra labrada (P11, «Labrar con la azada»): tierra parda recién volteada, con sus surcos (4 por metro) de lomo claro
-// y fondo oscuro y terrones sueltos. Textura hecha en un lienzo una vez; se repite cada metro, en coordenadas del mundo,
+// y fondo oscuro y terrones sueltos. Textura hecha en un lienzo una vez; se repite cada 2 m a lo largo y cada metro de través, en coordenadas del mundo,
 // girada a lo largo del lado más largo del campo (así los surcos van rectos de una punta a otra).
 let texLabrado = null;
 function texturaLabrado() {
   if (texLabrado) return texLabrado;
   if (typeof document === 'undefined') return null;
-  const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const N = 256, cv = document.createElement('canvas'); cv.width = N * 2; cv.height = N;   // 2 m a lo largo, 1 m de través
   const g = cv.getContext('2d');
   let s = 7; const az = () => ((s = (s * 16807) % 2147483647) / 2147483647);
-  for (let y = 0; y < N; y++) {
-    // el perfil del surco: lomo (claro) y fondo (oscuro), cuatro por metro
-    const f = Math.cos((y / N) * Math.PI * 2 * 4), l = 0.78 + 0.22 * f;
-    g.fillStyle = `rgb(${Math.round(92 * l)},${Math.round(77 * l)},${Math.round(62 * l)})`;   // pardo gris cálido, como la tierra de la referencia
-    g.fillRect(0, y, N, 1);
+  // el perfil del surco: lomo (claro) y fondo (oscuro), cuatro por metro, algo ondulados y desiguales (no de regla)
+  const img = g.createImageData(N * 2, N);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N * 2; x++) {
+    const ax = x / (N * 2) * Math.PI * 2;
+    const f = Math.cos((y / N) * Math.PI * 2 * 4 + 0.35 * Math.sin(ax * 3) + 0.2 * Math.sin(ax * 7 + y * 0.05));
+    const l = 0.8 + 0.2 * f * (0.75 + 0.25 * Math.sin(ax * 5 + 1.3)), o = (y * N * 2 + x) * 4;
+    img.data[o] = 146 * l; img.data[o + 1] = 124 * l; img.data[o + 2] = 100 * l; img.data[o + 3] = 255;   // pardo gris cálido, como la tierra de la referencia
   }
-  for (let k = 0; k < 2600; k++) {   // los terrones y el grano de la tierra
-    const x = az() * N, y = az() * N, r = 0.6 + az() * az() * 3.2, v = 0.6 + az() * 0.6;
-    g.fillStyle = `rgba(${Math.round(108 * v)},${Math.round(90 * v)},${Math.round(72 * v)},${0.35 + az() * 0.4})`;
+  g.putImageData(img, 0, 0);
+  for (let k = 0; k < 5200; k++) {   // los terrones y el grano de la tierra
+    const x = az() * N * 2, y = az() * N, r = 0.6 + az() * az() * 3.2, v = 0.6 + az() * 0.6;
+    g.fillStyle = `rgba(${Math.round(156 * v)},${Math.round(134 * v)},${Math.round(108 * v)},${0.35 + az() * 0.4})`;
     g.beginPath(); g.ellipse(x, y, r * 1.6, r, 0, 0, 6.283); g.fill();
   }
   texLabrado = new THREE.CanvasTexture(cv);
@@ -46,7 +49,6 @@ function texturaLabrado() {
   return texLabrado;
 }
 let matLabrado = null;      // (uno para todos: no se rehace con cada cambio)
-const RADIO_TERRON = 0.74;   // cada casilla labrada, un disco algo mayor que ella: juntos dan un borde redondeado
 
 export function crearCamposVista({ escena, sueloEn }) {
   const raiz = new THREE.Group();
@@ -92,29 +94,53 @@ export function crearCamposVista({ escena, sueloEn }) {
     geos.push(g);
   }
 
-  // lo labrado de un campo: un disco por casilla, pegado al suelo, con la textura de los surcos girada a lo largo del
-  // campo (uv en metros del mundo: las casillas casan sin costuras)
+  // lo labrado de un campo: una malla de cuartos de metro pegada al suelo sobre las casillas labradas, opaca dentro y que
+  // se funde con la hierba en el borde (un canto irregular, no un recorte), sin pasar del linde; con la textura de los
+  // surcos girada a lo largo del campo (uv en metros del mundo) y algo de variación de color para que no se vea repetida
   function labrado(c, ahora, geos) {
     const casillas = casillasLabradas(c, ahora);
     if (!casillas.length) return;
     let mejor = null;   // el lado más largo: hacia dónde van los surcos
     for (const [a, b] of ladosDe(c)) { const L = Math.hypot(b.x - a.x, b.z - a.z); if (!mejor || L > mejor.L) mejor = { L, ang: Math.atan2(b.z - a.z, b.x - a.x) }; }
-    const co = Math.cos(-mejor.ang), si = Math.sin(-mejor.ang), SEG = 12;
-    const pos = [], uv = [], idx = [];
-    for (const k of casillas) {
-      const cx = k.x + 0.5, cz = k.z + 0.5, b = pos.length / 3;
-      const pon = (x, z) => { pos.push(x, sueloEn(x, z) + SOBRE + 0.012, z); uv.push(x * co - z * si, x * si + z * co); };
-      pon(cx, cz);
-      for (let s = 0; s < SEG; s++) {   // el borde del disco, sin pasar del linde (se acerca al centro hasta quedar dentro)
-        const a = s / SEG * 6.2832; let rr = RADIO_TERRON;
-        for (let q = 0; q < 6 && !dentroPoligono(c.puntos, cx + Math.cos(a) * rr, cz + Math.sin(a) * rr); q++) rr *= 0.7;
-        pon(cx + Math.cos(a) * rr, cz + Math.sin(a) * rr);
+    const co = Math.cos(-mejor.ang), si = Math.sin(-mejor.ang);
+    const hay = new Set(casillas.map(k => `${k.x},${k.z}`));
+    let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+    for (const k of casillas) { x0 = Math.min(x0, k.x - 1); z0 = Math.min(z0, k.z - 1); x1 = Math.max(x1, k.x + 2); z1 = Math.max(z1, k.z + 2); }
+    const P = 0.25, nx = Math.round((x1 - x0) / P), nz = Math.round((z1 - z0) / P);
+    const ruido = (x, z) => Math.sin(x * 2.7 + z * 1.3) * Math.cos(z * 2.1 - x * 0.8) * 0.6 + Math.sin(x * 7.3 - z * 5.9) * 0.4;   // −1…1
+    // lo lejos que está (x, z) de la casilla labrada más cercana (0 dentro de una)
+    const lejos = (x, z) => {
+      let d = Infinity;
+      const cx = Math.floor(x), cz = Math.floor(z);
+      for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+        const kx = cx + i, kz = cz + j;
+        if (!hay.has(`${kx},${kz}`)) continue;
+        const dx = Math.max(kx - x, 0, x - kx - 1), dz = Math.max(kz - z, 0, z - kz - 1);
+        d = Math.min(d, Math.hypot(dx, dz));
       }
-      for (let s = 0; s < SEG; s++) idx.push(b, b + 1 + ((s + 1) % SEG), b + 1 + s);
+      return d;
+    };
+    const suave = (e0, e1, v) => { const t = Math.min(1, Math.max(0, (v - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+    const pos = [], uv = [], col = [], idx = [], alfa = [];
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
+      const x = x0 + i * P, z = z0 + j * P;
+      // el canto: opaco en lo labrado y hasta 0,1 m fuera; de ahí a 0,3 m se funde con la hierba, irregular; nada fuera del linde
+      let al = suave(0.3, 0.12, lejos(x, z) + ruido(x, z) * 0.1);
+      if (!dentroPoligono(c.puntos, x, z)) al = 0;
+      const v = 0.9 + 0.1 * ruido(x * 0.37 + 5, z * 0.41 - 3);   // manchas grandes, más claras y más oscuras
+      pos.push(x, sueloEn(x, z) + SOBRE + 0.012, z); uv.push((x * co - z * si) * 0.5, x * si + z * co); col.push(v, v * 0.985, v * 0.97, al); alfa.push(al);
     }
+    const fila = nx + 1;
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const a = j * fila + i, b = a + 1, d = a + fila, e = d + 1;
+      if (alfa[a] + alfa[b] + alfa[d] + alfa[e] <= 0) continue;
+      idx.push(a, d, b, b, d, e);
+    }
+    if (!idx.length) return;
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 4));
     g.setIndex(idx); g.computeVertexNormals();
     geos.push(g);
   }
@@ -134,7 +160,7 @@ export function crearCamposVista({ escena, sueloEn }) {
     if (lindes.length) { const m = new THREE.Mesh(mergeGeometries(lindes), MAT_LINDE); m.receiveShadow = true; raiz.add(m); }
     if (cuerdas.length) { const m = new THREE.Mesh(mergeGeometries(cuerdas), MAT_CUERDA); m.castShadow = true; raiz.add(m); }
     if (labrados.length) {
-      if (!matLabrado) { const t = texturaLabrado(); matLabrado = new THREE.MeshLambertMaterial({ map: t, color: t ? 0xffffff : 0x684f36, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); }
+      if (!matLabrado) { const t = texturaLabrado(); matLabrado = new THREE.MeshLambertMaterial({ map: t, color: t ? 0xffffff : 0x8a7058, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); }
       const m = new THREE.Mesh(mergeGeometries(labrados), matLabrado);
       m.receiveShadow = true; m.name = 'tierra_labrada'; raiz.add(m);
     }
