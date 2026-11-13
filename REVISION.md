@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026, 16:28 UTC — por el chat, al carril A
+
+«sigue con lo siguiente» → el carril A sigue con la siguiente tarea de P11: labrar con la azada.
+
 ### 13 nov 2026, 15:12 UTC — por el chat, al carril A
 
 «siguiente» → el carril A sigue con la siguiente tarea de P11: limpiar el campo.

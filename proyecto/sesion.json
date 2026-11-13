@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-13T16:28:41+00:00",
+  "tarea": "Labrar con la azada: con la azada en la mano, cada pasada voltea un círculo de tierra donde apuntas (1,2 m de radio, unos 2 s; provisional), solo dentro del linde y donde no queda nada por limpiar; gasta aguante y cansancio. El suelo pasa a tierra labrada (un material nuevo del suelo, con surcos) y la hierba densa deja de salir ahí; el servidor guarda lo labrado (1 bit por m²); lo labrado y no sembrado vuelve a ser hierba con el tiempo. Capturas al lado de la referencia. Cadena: azada ← el banco de tronco",
+  "hito": "granja",
+  "rama": "trabajo/20261113-1628"
+ },
  "B": null,
  "chat:trabajo/20261113-1710-aspecto-rocas": {
   "inicio": "2026-11-13T17:08:43+01:00",
