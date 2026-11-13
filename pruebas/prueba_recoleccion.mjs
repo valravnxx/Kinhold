@@ -84,7 +84,7 @@ console.log('Recoger con autor: va al inventario por huecos');
 console.log('Juncos, barro y yesca (lo que pide la casa humilde y la hoguera, 7 nov)');
 {
   const R = RECOLECTABLES;
-  comprobar('juncos: riberas y orilla, con cuchillo, se cortan, de 1 a 3 haces medianos (valravnx, 8 nov), una estación', R.juncos.donde.join() === 'rio,ribera' && R.juncos.con === 'cuchillo' && R.juncos.accion === 'cortar' && R.juncos.da === 'junco' && R.juncos.min === 1 && R.juncos.max === 3 && CATALOGO.junco.tam === 'M' && R.juncos.vuelve === 30 * DIA);
+  comprobar('juncos: riberas, orilla y marisma (13 nov), con cuchillo, se cortan, de 1 a 3 haces medianos (valravnx, 8 nov), una estación', R.juncos.donde.join() === 'rio,ribera,marisma' && R.juncos.con === 'cuchillo' && R.juncos.accion === 'cortar' && R.juncos.da === 'junco' && R.juncos.min === 1 && R.juncos.max === 3 && CATALOGO.junco.tam === 'M' && R.juncos.vuelve === 30 * DIA);
   comprobar('barro: la orilla, se cava con palo o pala, 1 cesta mediana, inagotable', R.barro.donde.includes('rio') && R.barro.con === 'cavar' && R.barro.da === 'barro' && CATALOGO.barro.tam === 'M' && R.barro.vuelve === 0);
   comprobar('hongos yesqueros: en el bosque, con las manos, 1–2 de yesca pequeña', R.yesquero.donde.join() === 'bosque' && R.yesquero.con === 'manos' && R.yesquero.da === 'yesca' && R.yesquero.min === 1 && R.yesquero.max === 2 && CATALOGO.yesca.tam === 'P');
   const pts = [{ id: 'juncos:0', tipo: 'juncos', x: 0, z: 0 }, { id: 'barro:0', tipo: 'barro', x: 3, z: 0 }, { id: 'yesquero:0', tipo: 'yesquero', x: 6, z: 0 }];
