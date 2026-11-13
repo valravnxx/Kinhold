@@ -6547,6 +6547,22 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-13T05:35:32+01:00",
+  "fin": "2026-11-13T09:07:36+01:00",
+  "titulo": "El sotobosque (demo v193)",
+  "hito": "aspecto",
+  "hecho": [
+   "Al pie de los árboles, corros de helechos, ortigas, hierba alta y cantos, más a un lado que a otro; en las lindes, hierba alta y ortigas; en el prado, manchas de flores del mismo color; en el bosque, tocones viejos y troncos caídos que estorban al andar.",
+   "Según el bioma: muchos helechos en los bosques húmedos, pocos en el encinar y el matorral. Nada de eso, ni las flores, sale sobre la tierra desnuda.",
+   "Los árboles, la hierba, las matas y las piedras siguen exactamente donde estaban (comprobado con una huella de 169 trozos).",
+   "Lo de lejos, con los modelos de menos detalle; solo lo de al lado lleva el entero y sombra.",
+   "El tocón viejo y el tronco caído son de código por ahora; hacerlos con Meshy queda en la lista del hito de Meshy (valravnx: «código temporal y en lista para meshy a futuro»)."
+  ],
+  "pruebas": "Lógica de la vegetación con el sotobosque, correcta (y falla al romperla a propósito). Revisor en la nube: bien el bosque de lejos visto de cerca y el mazo de piedra; la lógica falla solo en systemd-analyze en la máquina de GitHub, igual que en main. Comprobador de código correcto.",
+  "capturas": "capturas/demo-v193",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-13T05:15:10+00:00",
   "fin": "2026-11-13T05:16:51+00:00",
   "titulo": "P11, la granja básica: planificada (chat con valravnx)",
@@ -6572,5 +6588,50 @@
   ],
   "pruebas": "En la nube: lógica bien (salvo systemd-analyze, de la máquina de la nube, y una vez el combate con dos clientes por tiempo agotado; aquí pasa 82/82), el recorrido 248/248, y bien el hogar, la cama ligada, los colgaderos, el mazo, los avisos de las necesidades, despiezar y asar, el inventario, el acabado de construir y la velocidad con pocos fotogramas; los almacenajes, bien en la última vuelta (salvo el contador desplegado, que falla igual en main). El panel de fabricar: lo de PC, con el secadero, bien; el móvil se cuelga. Aquí: comida 44/44, fabricación 197/197, orígenes, iconos, idiomas y fuego, bien; rota a propósito (MUTAR=2), la de comida falla.",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T05:29:33+00:00",
+  "fin": "2026-11-13T07:02:19+00:00",
+  "titulo": "P11: las semillas silvestres (a medias, sin publicar)",
+  "hito": "granja",
+  "hecho": [
+   "En el mundo, en las celdas que no dan otra cosa: cebada silvestre y habas silvestres en los claros, col silvestre y nabo silvestre en la ribera. Se recogen con las manos; la planta se queda y se van las espigas, las vainas o los tallos en flor, que vuelven en una estación.",
+   "Dan cebada silvestre, habas, semillas de col y semillas de nabo (pequeños): caben en el cinturón, en la cesta de recolección y en el cesto. Las habas crudas no se comen; 3 al fuego dan 3 habas asadas (6 de hambre cada una).",
+   "Sus modelos en el mundo y en el suelo, e iconos nuevos en docs/recursos/iconos-v17 (la v16 es la del secadero, en la rama del chat: quien una la segunda tiene que volver a sacarlos).",
+   "Decisiones provisionales: cuánto da cada planta (2–4 de cebada y de semillas, 3–6 habas), cuántas hay, 30 s para asar las habas.",
+   "Pruebas: las cuatro semillas, con su zona, el cinturón, la cesta y las habas asadas, en prueba_recoleccion; la col y el nabo junto a los ríos, en prueba_recogida_mundo; recogerlas en el juego, PC y móvil, en prueba_recogida_mundo_navegador. Las semillas salen de PENDIENTES en prueba_origenes.",
+   "No se publica: la segunda mirada a las capturas dijo que no. Las habas tenían los tallos casi negros y al recogerlas no se notaba que se iban las vainas. La col y el nabo tenían los tallos de flor negros. Ya están cambiados en la rama trabajo/20261113-0529 (tallos verdes, vainas más grandes y por fuera de las hojas), pero sin capturas nuevas. La siguiente sesión pasa el revisor, mira las capturas de cerca y publica la v193 si sale bien.",
+   "Además, en las capturas del móvil la planta queda fuera de cuadro (detrás del mando): hay que encuadrarla en la prueba."
+  ],
+  "pruebas": "Comprobador de código limpio. Pruebas de node aquí: recolección 66/66, recogida en el mundo bien, orígenes 54/54, inventario, necesidades y fabricación bien. Cada prueba nueva se rompió a propósito una vez (MUTAR=3, MUTAR=2) y falla. En la nube (antes del último cambio de color), bien: recorrido, lo que se recoge en el mundo, las bayas, recoger, inventario, despiezar y asar, demo única (tras añadir la traducción del registro v191, que faltaba) y lo demás de estaciones. Fallan cosas que no toca este cambio: lógica (systemd-analyze en la máquina de GitHub; falla igual en main) y, sin comprobar si fallan igual en main, «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, en armas y mujer) y «panel de fabricación» (el texto de la pestaña de puestos). El revisor pidió también grupos de estaciones solo por un color, y se pasaron igual.",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T07:23:23+00:00",
+  "fin": "2026-11-13T09:00:08+00:00",
+  "titulo": "P11: las semillas silvestres (sigue a medias, sin publicar)",
+  "hito": "granja",
+  "hecho": [
+   "Retomada desde su rama (trabajo/20261113-0529) y unida con main: la v193 es ahora el sotobosque, así que las semillas saldrán como v194.",
+   "Las capturas de las semillas, con la planta a un lado del personaje (antes el cuerpo la tapaba y, en el móvil, quedaba detrás del mando).",
+   "Las vainas de las habas, más gruesas, de verde claro y más por fuera de las hojas: ahora se nota bien al recogerlas.",
+   "No se publica: la segunda mirada dijo que no. Algunas vainas maduras salían casi negras, los tallos de flor de la col y el nabo eran oscuros y finos y sus silicuas, abiertas en X, parecían un fallo. Ya están cambiados en la rama (tallos más gruesos y claros, silicuas pegadas al tallo, vainas maduras pardo oliva), pero sin capturas nuevas: la siguiente sesión pasa «lo que se recoge en el mundo», lo mira de cerca y publica la v194 si sale bien."
+  ],
+  "pruebas": "Revisor en la nube: bien el recorrido, lo que se recoge en el mundo (dos veces), recoger del suelo y de las plantas, las bayas, el inventario, despiezar y asar, el hogar, la cama, los colgaderos, el mazo, los avisos y la demo única. Fallan «lo que llevas se ve puesto», «panel de fabricación» y «los almacenajes de la base», y fallan igual en main (comprobado en la nube); la lógica falla solo en systemd-analyze en la máquina de GitHub, como en main. Comprobador de código correcto.",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T09:23:18+00:00",
+  "fin": "2026-11-13T09:28:13+00:00",
+  "titulo": "P10, hierro y tablas: planificado",
+  "hito": "hierro",
+  "hecho": [
+   "Once tareas de una sesión, con la cadena de cada cosa hasta el mundo: el hierro de pantano con pala y criba; el horno de reducción y la lupia; el fuelle, la fragua y la barra; el mango, el hacha de hierro, el pico y los clavos; la sierra y las tablas; las rocas grandes con el pico; las vetas de hierro en la roca; la arcilla y el horno cerámico; las tejas; las piezas de nivel 2 a la vista; y el recorrido de jugador. Después, la revisión.",
+   "El primer mineral es el de pantano: el pico ya pide hierro, así que la roca solo llega después. En Whitholm casi no hay turberas (3 km²) y la veta pequeña más cercana a la salida está a unos 10 km: decisión provisional, las manchas de hierro de pantano salen por las señales del GDD (tierra encharcada y agua rojiza) en las vegas llanas junto a los arroyos y en las turberas.",
+   "Decisiones provisionales (sistemas no las da): el mazo de piedra hace de martillo en la primera fragua; el yunque de piedra va dentro de la fragua (12 piedras, 4 barros y el fuelle); el fuelle, 2 cueros y 2 varas; el mango, 1 vara; 1 tronco corto da 4 tablas; 2 cestas de arcilla dan 10 tejas; el horno cerámico, 6 cestas de arcilla y 10 piedras. Las herraduras esperan a P8 (congelado).",
+   "pruebas/prueba_origenes.mjs: lo esencial del hierro (17 cosas) en su lista, en PENDIENTES con su tarea viva."
+  ],
+  "pruebas": "prueba_origenes.mjs: 92 bien; rota a propósito (MUTAR=2), fallan las 17 del hierro. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
  }
 ]

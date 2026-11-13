@@ -17,7 +17,7 @@ const suave = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)
 
 // el tamaño de las celdas de cada cosa (m) y su capa de azar (las mismas que en el mapa)
 export const CELDA = { arbol: 4.5, hierba: 0.85, piedra: 2.5, canto: 1.3 };
-const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4 };
+const CAPA = { arbol: 1, hierba: 2, piedra: 3, canto: 4, soto: 5 };
 export const DENSIDAD_BOSQUE = 0.55;   // de cerca, la densidad de un bosque de verdad (la del mapa)
 // Jóvenes y adultos, bien distintos (revisión del 1 nov; GDD apartado 8 y sistemas apartado 3): cada árbol sale con su
 // edad. El joven mide de 3 a 5 m (su propio modelo, fino y de copa rala: src/mundo/especies.js, a 4 m a escala 1) y
@@ -30,6 +30,13 @@ export const parteJovenes = (d, linde) => Math.min(0.85, 0.1 + 0.45 * linde + 0.
 export const TAM_ADULTO = 0.95;     // (de antes: ya no decide la edad, que lleva cada árbol; se queda para lo guardado)
 export const CLARO_ARBOLES = 8;     // m sin árboles alrededor del sitio de salida (el personaje empieza en (0, 4) de la escena)
 const PRADO = { pradera: 1, mixto: 0.8, caducifolio: 0.7, encinar: 0.55, taiga: 0.5, brezal: 0.6, matorral: 0.45, turbera: 0.8, alpino: 0.6 };
+// Las calvas de tierra del prado (de 0 a 1), las mismas que pinta el suelo (src/mundo/color_suelo.js): con un ruido grande
+// que tuerce su silueta, otro fino en el borde y otro muy grande que cambia su tamaño. Aquí, para no poner flores ni
+// sotobosque encima (12 nov: salían flores sobre la tierra desnuda). Sin la pendiente ni la playa, que pone el suelo.
+export function calvaTierra(x, z) {
+  const ux = x + (fbm(x / 25, z / 25, 51, 2) - 0.5) * 9, uz = z + (fbm(x / 25, z / 25, 53, 2) - 0.5) * 9;
+  return suave(0.66, 0.76, fbm(ux / 16, uz / 16, 41, 3) + (fbm(x / 4.5, z / 4.5, 47, 2) - 0.5) * 0.14 + (fbm(x / 90, z / 90, 55, 2) - 0.5) * 0.12);
+}
 const PASO_PEND = 3;                   // la pendiente, con vecinos a 3 m (la forma del terreno, no cada piedrecita)
 
 // paisaje: crearPaisaje(mapa). alt(x, z): la altura exacta del suelo (alturaMundo). semilla: la del mapa.
@@ -66,22 +73,27 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     const i0 = Math.ceil((a0 - 2) / paso), i1 = Math.floor((a1 + 2) / paso), j0 = Math.ceil((b0 - 2) / paso), j1 = Math.floor((b1 + 2) / paso);
     for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) fn(i * paso, j * paso, azarCelda(i, j, capa, semilla));
   };
-  const R = { arboles: [], hierba: [], flores: [], matas: [], piedras: [] };
+  const R = { arboles: [], hierba: [], flores: [], matas: [], piedras: [], sotobosque: [] };
 
   // árboles: rejilla desordenada de 4,5 m; los adultos de 8 a 14 m (los de antes, 6–11 m, un 30 % más), ±15 % cada uno;
-  // los jóvenes, de 3 a 5 m
-  recorrer(CELDA.arbol, CAPA.arbol, x0, z0, x1, z1, (cx, cz, r) => {
+  // los jóvenes, de 3 a 5 m. arbolDeCelda: lo que sale en una celda (también lo mira el sotobosque, de las celdas de al
+  // lado); dentro(x, z): si cae en lo que se pide. Devuelve null (nada), o { arbol, d, linde, s, x, z } (arbol null: el
+  // bosque de ahí no llega a tener árbol en esa celda: el sitio de un tocón viejo o de un tronco caído)
+  const arbolDeCelda = (cx, cz, r, dentro) => {
     const x = cx + (r() - 0.5) * 4, z = cz + (r() - 0.5) * 4, u = r(), q = r(), v = r(), giro = r() * 6.3, tono = 0.82 + r() * 0.3;
-    if (x < x0 || x > x1 || z < z0 || z > z1) return;
-    const s = sitioEn(x, z); if (!s || s.y < 1.5) return;
+    if (!dentro(x, z)) return null;
+    const s = sitioEn(x, z); if (!s || s.y < 1.5) return null;
     const w = r();   // (el último: así lo de antes de cada árbol sale igual)
     const { d, especie, tam, linde } = bosqueEn(s.st, s.s, x, z, { semilla, u });
-    if (!especie || q > d * DENSIDAD_BOSQUE) return;
+    if (!especie || q > d * DENSIDAD_BOSQUE) return { arbol: null, d, linde, s, x, z };
     const pj = parteJovenes(d, linde);
     // el joven: tam es su alto en m / 4 (su modelo mide 4 m), de 3 a 5 m repartidos con el mismo azar w
-    if (w < pj) R.arboles.push({ x, z, y: s.y, especie, edad: 'joven', tam: (ALTO_JOVEN[0] + (ALTO_JOVEN[1] - ALTO_JOVEN[0]) * (w / pj)) / 4, giro, tono });
-    else R.arboles.push({ x, z, y: s.y, especie, edad: 'adulto', tam: CRECE_ADULTO * tam * (0.85 + v * 0.3), giro, tono });
-  });
+    const arbol = w < pj ? { x, z, y: s.y, especie, edad: 'joven', tam: (ALTO_JOVEN[0] + (ALTO_JOVEN[1] - ALTO_JOVEN[0]) * (w / pj)) / 4, giro, tono }
+      : { x, z, y: s.y, especie, edad: 'adulto', tam: CRECE_ADULTO * tam * (0.85 + v * 0.3), giro, tono };
+    return { arbol, d, linde, s, x, z };
+  };
+  const enCuadro = (x, z) => x >= x0 && x <= x1 && z >= z0 && z <= z1;
+  recorrer(CELDA.arbol, CAPA.arbol, x0, z0, x1, z1, (cx, cz, r) => { const a = arbolDeCelda(cx, cz, r, enCuadro); if (a && a.arbol) R.arboles.push(a.arbol); });
 
   // hierba, flores y matorrales: más en los claros que bajo el bosque; calvas de tierra
   if (hierba) {
@@ -100,8 +112,51 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
       const pFlor = 0.035 * prado * (1 - d);
       const pMata = 0.007 * (0.4 + d * (1 - d) * 3) + 0.02 * d + 0.03 * linde * (1 - linde) * (d > 0.02);
       if (t < pHierba) R.hierba.push({ x, z, y: s.y, tam: 0.8 + a * 0.9, giro: b * 6.3, tono: 0.85 + c * 0.3 });
-      else if (t < pHierba + pFlor) R.flores.push({ x, z, y: s.y, tam: 0.8 + a * 0.5, giro: b * 6.3, color: Math.floor(c * 3) });
+      else if (t < pHierba + pFlor) { if (calvaTierra(x, z) < 0.3) R.flores.push({ x, z, y: s.y, tam: 0.8 + a * 0.5, giro: b * 6.3, color: Math.floor(c * 3) }); }   // (el reparto de las matas no cambia)
       else if (t < pHierba + pFlor + pMata) R.matas.push({ x, z, y: s.y - 0.05, tam: 0.5 + a * 0.6, giro: b * 6.3, tono: 0.85 + c * 0.3 });
+      else {
+        // (el sotobosque) manchas de flores, a corros y todas del mismo color en cada mancha; y en las lindes del
+        // bosque, hierba alta y ortigas (con un azar más de la celda, el último: lo de antes no cambia)
+        const f = r(), mancha = suave(0.6, 0.72, fbm(x / 12, z / 12, 61, 2)), lejosTierra = calvaTierra(x, z) < 0.25;
+        if (lejosTierra && f < 0.55 * prado * (1 - d) * mancha * mancha) R.sotobosque.push({ x, z, y: s.y, tipo: 'flor', tam: 0.8 + a * 0.5, giro: b * 6.3, color: Math.min(2, Math.floor(fbm(x / 40, z / 40, 63, 1) * 3)) });
+        else if (lejosTierra && f > 1 - 0.07 * linde * (d > 0.02)) R.sotobosque.push({ x, z, y: s.y, tipo: c < 0.7 ? 'hierba_larga' : 'ortigas', tam: 0.65 + a * 0.5, giro: b * 6.3, tono: 0.85 + c * 0.3 });
+      }
+    });
+
+    // El sotobosque al pie de los árboles (13 nov, el hito «El aspecto»): un corro de 2 a 6 helechos, ortigas, hierbas
+    // altas y cantos con musgo, más a un lado que a otro; y donde el bosque no llega a tener árbol, a veces un tocón
+    // viejo o un tronco caído. Según el bioma: helechos en los bosques húmedos, pocos en el encinar y el matorral.
+    // Solo adorno (no se recoge ni lo valida el servidor); los tocones y los troncos estorban al andar
+    // (src/mundo/vegetacion_mundo.js). Se miran las celdas de los árboles de alrededor, también las de fuera: así un
+    // corro que cruza el borde de un trozo sale entero.
+    const HELECHO = { caducifolio: 1, mixto: 0.9, turbera: 0.8, taiga: 0.6, pradera: 0.45, brezal: 0.35, encinar: 0.2, alpino: 0.2, matorral: 0.12 };
+    const pon = (x, z, tipo, tam, giro, tono) => {
+      if (!dentro(x, z)) return;
+      const s = sitioEn(x, z); if (!s || s.st.bioma === 'nieve' || s.y < 1 || s.s > 0.7 || calvaTierra(x, z) > 0.3) return;
+      R.sotobosque.push({ x, z, y: s.y, tipo, tam, giro, tono });
+    };
+    recorrer(CELDA.arbol, CAPA.arbol, a0 - 4, b0 - 4, a1 + 4, b1 + 4, (cx, cz, r) => {
+      const a = arbolDeCelda(cx, cz, r, () => true); if (!a) return;
+      const q = azarCelda(Math.round(cx / CELDA.arbol), Math.round(cz / CELDA.arbol), CAPA.soto, semilla), t = q();
+      if (!a.arbol) {
+        if (a.d < 0.35) return;
+        const giro = q() * 6.3, tam = 0.8 + q() * 0.5, tono = 0.85 + q() * 0.25;
+        if (t < 0.06 * a.d) pon(a.x, a.z, 'tocon', tam, giro, tono);
+        else if (t < 0.11 * a.d) pon(a.x, a.z, 'tronco', tam, giro, tono);
+        return;
+      }
+      const adulto = a.arbol.edad === 'adulto';
+      if (t > (adulto ? 0.6 : 0.25) * Math.min(1, 0.35 + 0.6 * a.d + 0.5 * a.linde)) return;
+      const hel = (HELECHO[a.s.st.bioma] ?? 0.4) * (0.3 + 0.7 * a.d), ort = 0.08 + 0.35 * a.linde, can = 0.3, alta = 0.3 * (1 - a.d);
+      const n = 2 + Math.floor(q() * 5), lado = q() * 6.3, r0 = (adulto ? 0.45 : 0.2) * a.arbol.tam;
+      for (let k = 0; k < n; k++) {
+        const ang = lado + (q() - 0.5) * 2.6, dd = r0 + 0.35 + q() * 2.2, e = q() * (hel + ort + can + alta), u = q(), giro = q() * 6.3, tono = 0.85 + q() * 0.3;
+        const x = a.x + Math.cos(ang) * dd, z = a.z + Math.sin(ang) * dd;
+        if (e < hel) pon(x, z, 'helechos', 0.7 + u * 0.6, giro, tono);
+        else if (e < hel + ort) pon(x, z, 'ortigas', 0.6 + u * 0.5, giro, tono);
+        else if (e < hel + ort + can) pon(x, z, 'canto', 0.18 + u * u * 0.3, giro, tono);
+        else pon(x, z, 'hierba_larga', 0.65 + u * 0.5, giro, tono);
+      }
     });
   }
 

@@ -1512,13 +1512,15 @@
     },
     {
      "nombre": "Sotobosque: helechos, matas y cantos en grupos al pie de los árboles y en las lindes, troncos caídos, tocones y manchas de flores, según el bioma",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T05:35:32+01:00",
-     "rama": "trabajo/20261113-0535-aspecto-sotobosque"
+     "fin": "2026-11-13T09:07:36+01:00"
     },
     {
      "nombre": "Riberas y costas (valravnx, 28 oct): el suelo según su material, los cauces según su tamaño, las costas según la roca (playa, acantilado, marisma) y la vegetación de ribera y de costa",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T09:14:19+01:00",
+     "rama": "trabajo/20261113-0915-aspecto-riberas"
     },
     {
      "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
@@ -1539,6 +1541,12 @@
     {
      "nombre": "Revisión completa y publicación",
      "estado": "pendiente"
+    },
+    {
+     "nombre": "El modo maqueta al 100 % en Ajustes: desenfoque por distancia, más fuerte y más fino, y el color de juguete",
+     "estado": "en_curso",
+     "inicio": "2026-11-13T11:39:15+01:00",
+     "rama": "trabajo/20261113-1139-maqueta"
     }
    ]
   },
@@ -1647,6 +1655,10 @@
      "estado": "hecho",
      "inicio": "2026-11-11T12:54:00+01:00",
      "fin": "2026-11-11T14:47:08+01:00"
+    },
+    {
+     "nombre": "El tocón viejo y el tronco caído del sotobosque, con Meshy (valravnx, 13 nov: «código temporal y en lista para meshy a futuro»): hoy son de código (src/mundo/sotobosque.js) y desentonan con los árboles de Meshy",
+     "estado": "congelado"
     }
    ],
    "lleva": "chat"
@@ -2233,7 +2245,9 @@
     },
     {
      "nombre": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano (como las bayas, en las celdas que no dan otra cosa) y caben en el cinturón y en el cesto; las habas se comen asadas al fuego. Cadena: se recogen con las manos; el cesto ← 3 haces de juncos",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T05:29:33+00:00",
+     "rama": "trabajo/20261113-0529"
     },
     {
      "nombre": "Marcar el campo con estacas: la estaca (1 rama, con las manos; valravnx) se clava donde estás; de 3 a 16, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar obras, otros campos ni el agua, y sin pasar de una pendiente; mientras esté vacío, las estacas se mueven o se quitan. Lógica pura con autor (src/logica/campos.js), en el servidor, y todos lo ven. Cadena: rama ← se recoge en el bosque",
@@ -2329,12 +2343,59 @@
    "id": "hierro",
    "num": "P10",
    "nombre": "Hierro y tablas",
-   "jugable": "Hierro de pantano, carbón, horno de reducción y fragua; hacha de hierro, sierra, pico, clavos y herraduras; tablas, y las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y la cantera.",
-   "estado": "pendiente",
-   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo.",
+   "jugable": "Hierro de pantano con pala y criba, horno de reducción, fuelle y fragua; hacha de hierro, pico, sierra y clavos; tablas; arcilla, horno cerámico y tejas; las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y las vetas de hierro con el pico.",
+   "estado": "en_curso",
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo. Planificado el 13 nov: el primer mineral es el de pantano (pala y criba), porque el pico ya pide hierro; las manchas, por las señales del GDD (tierra encharcada y agua rojiza), en las vegas y las turberas (Whitholm casi no tiene turberas). El carbón y el cuero del fuelle salen de P9. Las herraduras esperan a P8 (congelado): sin caballo no se usan.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (hierro de pantano, carbonera, horno de reducción, fragua, herramientas de hierro, sierra y tablas, las piezas de nivel 2 escondidas), con la cadena de cada material hasta el mundo",
+     "estado": "hecho",
+     "inicio": "2026-11-13T09:23:18+00:00",
+     "rama": "trabajo/20261113-0923",
+     "fin": "2026-11-13T09:28:13+00:00"
+    },
+    {
+     "nombre": "El hierro de pantano: en las vegas llanas junto a los arroyos y en las turberas salen manchas de tierra encharcada con agua rojiza (la señal del GDD; lógica pura por celdas, de la semilla del mundo, las mismas para todos); con la pala de madera y la criba, cada pasada en una mancha da 1 mineral de hierro (lo decide el servidor, con su autor); cada mancha da unos pocos y vuelve a salir en unos meses reales. La criba (2 mimbres y 1 vara, en el banco de tronco). Capturas de la mancha al lado de la referencia. Cadena: pala de madera ← banco de tronco con 1 tronco corto; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La fragua y la barra de hierro: el fuelle (2 cueros y 2 varas, en el banco de tronco) y la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que se enciende con carbón; en ella, con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro. Cadena: cuero ← las cubas de curtido (P9); lupia ← el horno de reducción; mazo de piedra ← piedra, rama y 2 cordeles, a mano",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua, el hacha de hierro (1 barra y 1 mango: tala los adultos y trocea más deprisa, como ya sabe la tala), el pico (1 barra y 1 mango) y los clavos (1 barra da 10). Cada herramienta se ve en la mano. Cadena: barra ← la fragua; vara ← talar un árbol joven",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La sierra y las tablas: la sierra de tronzar (2 barras y 2 mangos, en la fragua) tronza el tronco largo más deprisa que el hacha; en el banco de tronco, con la sierra, 1 tronco corto da 4 tablas. La tabla se guarda en el acopio de troncos. Cadena: tronco corto ← tronzar el tronco largo de un árbol adulto; sierra ← la fragua",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las rocas grandes y la cantera: con el pico se rompen las rocas grandes y los afloramientos que el mazo no puede, a golpes que cansan, por el servidor y con su autor; dan bloques de piedra en bruto y piedra suelta, y vuelven a salir en unos meses reales, como las medianas. Cadena: pico ← la fragua",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las vetas de hierro en la roca: las vetas pequeñas del mapa (una cada 14 km, GDD) se ven en el mundo como un afloramiento de roca rojiza y, con el pico, dan mineral de hierro, mucho más que una mancha de pantano antes de agotarse. Capturas al lado de la referencia. Cadena: pico ← la fragua",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La arcilla y el horno cerámico: en la ribera, junto a donde sale el barro, se cava con la pala de madera 1 cesta de arcilla (inagotable, como el barro); el horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) como estación, que se enciende con leña. Cadena: pala de madera ← el banco de tronco; leña ← partir un tronco corto con el hacha",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las tejas: en el horno cerámico encendido, 2 cestas de arcilla dan 10 tejas al cabo de un rato real (por tiempo transcurrido, en el servidor). Con ellas, el tejado y el remate de teja. Cadena: arcilla y horno cerámico ← la tarea anterior; leña ← partir un tronco corto",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las piezas de nivel 2 a la vista: la tabla, el clavo, la barra de hierro y la teja dejan de estar escondidas (src/logica/piezas.js, MATERIALES_POSTERIORES; la paja sigue hasta la era de P11) y el tramo pasa al nivel 2: suelo, muros (liso, con puerta y con ventana) y escalera de tablas, tejados y remates de tablillas y de teja, puerta de tablas, contraventana, trampilla, chimenea, muro de entramado, empalizada con su puerta, adarve, polea, polipasto y los muebles de tablas (mesa, banco, arcón, estantería y barril). Cada una en captura de cerca al lado de la referencia y de la v5; lo que no esté a la altura, en la lista para valravnx",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador del hierro, sin arcón: criba hierro de pantano, construye el horno de reducción y saca una lupia, hace el fuelle, la fragua y una barra, el hacha, el pico, la sierra y clavos; sierra tablas, rompe una roca grande, cava arcilla, cuece tejas y pone un suelo de tablas y un tejado de teja (con el reloj acelerado)",
      "estado": "pendiente"
     },
     {
@@ -4269,6 +4330,13 @@
      "archivo": "jugar/demo/v192.html",
      "capturas": "capturas/demo-v192",
      "notas": "El suelo con materiales: hierba, tierra, roca y hojarasca mezcladas según el sitio, con relieve; calvas de tierra irregulares y la hierba densa fuera de la tierra."
+    },
+    {
+     "v": "v193",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v193.html",
+     "capturas": "capturas/demo-v193",
+     "notas": "El sotobosque: corros de helechos, ortigas, hierba alta y cantos al pie de los árboles, manchas de flores, tocones viejos y troncos caídos (de código, hasta hacerlos con Meshy)."
     }
    ]
   },

@@ -1,0 +1,87 @@
+// Kinhold — el tocón viejo y el tronco caído del sotobosque (13 nov, el hito «El aspecto»): la madera muerta del bosque,
+// donde el bosque no llega a tener árbol (dónde va cada uno lo dice la lógica: src/logica/vegetacion.js, «sotobosque»).
+// Hechos por código con las mismas texturas que el tocón y los troncos de la tala (src/juego/tala.js, src/juego/suelo.js),
+// pero viejos: la corteza más oscura, el corte gastado, roto y no de hacha, y raíces que asoman. (Sin musgo: la media esfera con la textura de hojas se leía como hojas sueltas.) Los
+// helechos, las ortigas, la hierba alta y los cantos del sotobosque son los de Meshy (src/mundo/naturaleza_meshy.js).
+//
+// Cada uno vuelve como { geo, mats } (una sola geometría con un grupo por textura), para dibujarlo instanciado.
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { Lote, materialTex } from './estilos.js';
+import { cil } from './decorado.js';
+
+let cache = null;
+
+// junta lo de un Lote con textura en una geometría con grupos, y su lista de materiales en el mismo orden
+function juntar(L) {
+  const grupos = L.cerrar(null, true), geos = [], mats = [];
+  for (const [tex, lista] of Object.entries(grupos)) { geos.push(mergeGeometries(lista)); mats.push(materialTex(tex)); }
+  const geo = mergeGeometries(geos, true);
+  geo.computeBoundingSphere();
+  return { geo, mats };
+}
+
+// El tocón viejo: unos 0,3 m de radio y 0,5 m de alto (a escala 1), la boca rota en picos (no el corte limpio del hacha),
+// y cuatro raíces que se meten en el suelo.
+function toconViejo() {
+  const L = new Lote({ rangoSuelo: 0.25, variacion: 0.08 });
+  const r = 0.3, h = 0.42;
+  L.add(cil(r * 0.9, r * 1.12, h, 10), 'corteza', 0, h / 2 - 0.06, 0);
+  // la boca: el corte gastado, un poco más abajo que el borde, y tres picos de madera rota alrededor
+  L.add(new THREE.CircleGeometry(r * 0.86, 10), 'corte', 0, h - 0.1, 0, { x: -Math.PI / 2 + 0.05 }, { sinSuelo: true, brillo: 0.7 });
+  for (let k = 0; k < 3; k++) {
+    const a = k * 2.2 + 0.4, alto = 0.07 + 0.05 * k;
+    L.add(new THREE.ConeGeometry(r * 0.16, alto, 5), 'corteza', Math.cos(a) * r * 0.72, h - 0.07 + alto / 2, Math.sin(a) * r * 0.72, { y: a }, { sinSuelo: true });
+  }
+  // las raíces: conos tumbados que salen del pie y se meten en el suelo
+  for (let k = 0; k < 4; k++) {
+    // (bien metidas en el suelo: tumbadas, salían como patas)
+    const a = k * 1.57 + 0.3, m = new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2 + 0.75));
+    L.add(cil(0.02, r * 0.38, 0.38, 6), 'corteza', Math.cos(a) * r * 0.95, 0.0, Math.sin(a) * r * 0.95, m);
+  }
+    return juntar(L);
+}
+
+// El tronco caído: 3,6 m de largo y 0,24 m de radio (a escala 1), tumbado a lo largo de X y algo hundido, una punta
+// rota en pico y la otra con el pie y sus raíces al aire, y dos muñones de rama.
+function troncoCaido() {
+  const L = new Lote({ rangoSuelo: 0.12, variacion: 0.08 });   // (con más, el tronco tumbado entero salía casi negro)
+  const largo = 3.6, r = 0.24, tumbado = new THREE.Matrix4().makeRotationZ(Math.PI / 2);
+  L.add(cil(r * 0.85, r, largo, 10), 'corteza', 0, r * 0.75, 0, tumbado);
+  // la punta rota (hacia +X): un cono corto en pico
+  L.add(new THREE.ConeGeometry(r * 0.85, 0.35, 6), 'corteza', largo / 2 + 0.16, r * 0.75, 0, new THREE.Matrix4().makeRotationZ(-Math.PI / 2), { plano: true });
+  // el pie (hacia −X): más ancho, con el corte gastado y las raíces al aire
+  L.add(cil(r * 1.05, r * 1.3, 0.4, 10), 'corteza', -largo / 2 - 0.15, r * 0.85, 0, tumbado);
+  L.add(new THREE.CircleGeometry(r * 1.2, 10), 'corte', -largo / 2 - 0.36, r * 0.85, 0, { y: -Math.PI / 2 }, { sinSuelo: true, brillo: 0.65 });
+  for (let k = 0; k < 4; k++) {
+    const a = k * 1.57 + 0.6, m = new THREE.Matrix4().makeRotationX(a).multiply(new THREE.Matrix4().makeRotationZ(0.5));
+    L.add(cil(0.012, r * 0.3, 0.55, 5), 'corteza', -largo / 2 - 0.3, r * 0.85 + Math.sin(a) * r * 0.9, Math.cos(a) * r * 0.9, m);
+  }
+  // dos muñones de rama, hacia arriba y a un lado
+  L.add(cil(0.03, 0.06, 0.4, 6), 'corteza', 0.5, r * 0.75 + r + 0.12, 0.05, { z: -0.5 });
+  L.add(cil(0.025, 0.05, 0.32, 6), 'corteza', -0.7, r * 0.75 + 0.1, r + 0.1, { x: 1.1 });
+  return juntar(L);
+}
+
+// El corro de flores: una docena de tallos de 15 a 30 cm en medio metro, con su flor (blanca: la tiñe el color de cada
+// mancha) y unas hojas abajo. Las flores sueltas de antes (una por sitio) no se leían como mancha.
+function corroFlores() {
+  const L = new Lote({ rangoSuelo: 0.25, variacion: 0.1 });
+  let h = 7;
+  const r = () => { h = (Math.imul(h, 1103515245) + 12345) >>> 0; return h / 4294967296; };
+  for (let k = 0; k < 12; k++) {
+    const a = r() * 6.3, d = Math.sqrt(r()) * 0.28, x = Math.cos(a) * d, z = Math.sin(a) * d, alto = 0.15 + r() * 0.15, inc = (r() - 0.5) * 0.4;
+    L.add(cil(0.005, 0.007, alto, 3), 'hierba', x, alto / 2, z, { x: inc, z: (r() - 0.5) * 0.4 }, { sinSuelo: true });
+    L.add(new THREE.IcosahedronGeometry(0.014 + r() * 0.01, 0), 0xffffff, x + Math.sin((r() - 0.5) * 0.4) * alto * 0.5, alto, z + Math.sin(inc) * alto, null, { sinSuelo: true, escala: new THREE.Vector3(1.3, 0.6, 1.3) });
+  }
+  for (let k = 0; k < 5; k++) L.add(new THREE.ConeGeometry(0.04, 0.12, 3), 'hierba', (r() - 0.5) * 0.4, 0.05, (r() - 0.5) * 0.4, { x: (r() - 0.5) * 0.8, z: (r() - 0.5) * 0.8 });
+  const geo = mergeGeometries(L.cerrar());
+  geo.computeBoundingSphere();
+  return { geo, mats: materialTex('liso') };
+}
+
+export function modelosSotobosque() {
+  return cache || (cache = { tocon: toconViejo(), tronco: troncoCaido(), flores: corroFlores() });
+}
+// lo que estorba al andar, a escala 1: el radio del tocón, y el tronco como tres círculos a lo largo de él
+export const RADIO_TOCON = 0.42, LARGO_TRONCO = 3.6;
