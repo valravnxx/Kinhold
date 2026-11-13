@@ -307,6 +307,9 @@ try:
         SECADERO = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar'), ahora = Date.now();
           f.estaciones['secadero:vista'] = {{ id: 'secadero:vista', tipo: 'secadero', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ carne_cruda: 2 }},
             colgado: [{{ hasta: ahora - 1000 }}, {{ hasta: ahora + 3 * 3600e3 }}] }};
+          // que se quede aunque el servidor vuelva a mandar las estaciones (las de verdad, más este)
+          K.__vista = f.estaciones['secadero:vista'];
+          if (!K.estacionesV.__poner) {{ K.estacionesV.__poner = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner(l); if (K.__vista) {{ K.fabCliente.estaciones[K.__vista.id] = K.__vista; K.estacionesV.refrescar(); }} }}; }}
           K.estacionesV.refrescar(); }})"""
         A.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
         n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_secadero'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
