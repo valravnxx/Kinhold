@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026, 20:14 UTC — por el chat, al carril A
+
+«sigue» → el carril A sigue con la siguiente tarea de P11: cosechar.
+
 ### 13 nov 2026, 20:12 UTC — por el chat
 
 «sigue con los hitos de oficios» → una sesión de chat sigue con P9 (oficios): el raspador de pieles, la piel limpia y el zurrón (rama `trabajo/20261113-2012-oficios`), anunciada como chat para no pisar al carril A, que sigue vivo con la granja.
