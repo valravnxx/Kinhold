@@ -97,7 +97,10 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
   const arbolDeCelda = (cx, cz, r, dentro) => {
     const x = cx + (r() - 0.5) * 4, z = cz + (r() - 0.5) * 4, u = r(), q = r(), v = r(), giro = r() * 6.3, tono = 0.82 + r() * 0.3;
     if (!dentro(x, z)) return null;
-    const s = sitioEn(x, z, 0.35); if (!s || s.y < 1.5) return null;
+    // (por debajo de 1,5 m, solo lejos del mar: antes, nada; y las vegas bajas de los ríos, a 1,2 m tierra adentro,
+    // quedaban sin bosque, con una franja de prado entre el río y los árboles)
+    const s = sitioEn(x, z, 0.35); if (!s || (s.y < 1.5 && (s.y < 0.8 || !(s.st.costa > 120) || globalThis.__orillaVieja))) return null;
+    if (s.y < 1.8 && tramos.length && marismaEn(s.y, s.s, paisaje.rioCerca(x, z, tramos), x, z) > 0.3) return null;   // (en la marisma, no)
     const w = r();   // (el último: así lo de antes de cada árbol sale igual)
     const { d, especie, tam, linde } = bosqueEn(s.st, s.s, x, z, { semilla, u });
     if (!especie || q > d * DENSIDAD_BOSQUE) return { arbol: null, d, linde, s, x, z };
