@@ -239,12 +239,12 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
     const nx = -gx / s, nz = -gz / s, alto = 2 + u * 2.5 + Math.min(3, s), roca = paisaje.sitio(x, z, y)?.roca;
     // (en el juego se ven de cerca: más metidas en la pared que en el visor, para que asomen como un frente y no como un
     // peñasco suelto)
-    R.paredes.push({ x: x - nx * alto * 0.3, z: z - nz * alto * 0.3, y: y - alto * 0.25, alto, giro: Math.atan2(nx, nz) + (v - 0.5) * 0.5, variante: Math.floor(w * 5), inclina: (k - 0.5) * 0.25, tono: 0.85 + t * 0.3, roca, pend: s });
+    R.paredes.push({ x: x - nx * alto * 0.3, z: z - nz * alto * 0.3, y: y - alto * 0.25, alto, giro: Math.atan2(nx, nz) + (v - 0.5) * 0.5, variante: Math.floor(w * 5), inclina: (k - 0.5) * 0.25, tono: 0.85 + t * 0.3, roca, pend: s, cara: Math.atan2(nx, nz) });
     const arriba = alt(x - nx * 4, z - nz * 4), abajo = alt(x + nx * 4, z + nz * 4);
     for (let h = abajo + 3; h < arriba - 2; h += 4 + r()) {
       if (Math.abs(h - y) < 3) continue;
       const a2 = 2.2 + r() * 2.5;
-      R.paredes.push({ x: x - nx * a2 * 0.3 + (r() - 0.5) * 1.5, z: z - nz * a2 * 0.3 + (r() - 0.5) * 1.5, y: h - a2 * 0.3, alto: a2, giro: Math.atan2(nx, nz) + (r() - 0.5) * 0.6, variante: Math.floor(r() * 5), inclina: (r() - 0.5) * 0.25, tono: 0.8 + r() * 0.35, roca, pend: s });
+      R.paredes.push({ x: x - nx * a2 * 0.3 + (r() - 0.5) * 1.5, z: z - nz * a2 * 0.3 + (r() - 0.5) * 1.5, y: h - a2 * 0.3, alto: a2, giro: Math.atan2(nx, nz) + (r() - 0.5) * 0.6, variante: Math.floor(r() * 5), inclina: (r() - 0.5) * 0.25, tono: 0.8 + r() * 0.35, roca, pend: s, cara: Math.atan2(nx, nz) });
     }
   });
 
