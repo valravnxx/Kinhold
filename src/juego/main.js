@@ -2488,7 +2488,7 @@ function golpeSiega(a) {
   const sg = a.siega, r = accion({ tipo: 'segar', campo: sg.campo.id, x: redondoMm(sg.x), z: redondoMm(sg.z), t: Date.now() });
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); reconstruir(); actualizarUI();
-  mostrarAviso(r.gavillas ? tr('Segados {n} m²: {g} gavillas al suelo.', { n: r.segadas, g: r.gavillas }) : tr('Segados {n} m².', { n: r.segadas }));
+  mostrarAviso(r.gavillas > 1 ? tr('Segados {n} m²: {g} gavillas al suelo.', { n: r.segadas, g: r.gavillas }) : r.gavillas ? tr('Segados {n} m²: una gavilla al suelo.', { n: r.segadas }) : tr('Segados {n} m².', { n: r.segadas }));
 }
 function empezarCosecha(cp) {
   estado.talando = { cosecha: cp, x: cp.x, z: cp.z }; estado.golpeEn = SEGUNDOS_COGER;

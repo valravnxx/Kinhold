@@ -336,7 +336,7 @@ try:
         A.evaluate(f"{K}.estado.golpeEn = 0")
         l = servidorMundo(lambda l: any(e.get('tipo') == 'segar' and e.get('ok') for e in l))
         comprobar('se siega en el servidor', l is not None, A.evaluate(AVISO))
-        comprobar('el aviso dice lo segado y las gavillas', esperar(A, f"/Segados \\d+ m²: \\d+ gavillas al suelo/.test({AVISO})", 5000), A.evaluate(AVISO))
+        comprobar('el aviso dice lo segado y las gavillas', esperar(A, f"/Segados \\d+ m²: (una gavilla|\\d+ gavillas) al suelo/.test({AVISO})", 5000), A.evaluate(AVISO))
         comprobar('las gavillas quedan en el suelo y se ven', esperar(A, f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'gavilla') && !!{K}.escena.getObjectByName('suelo_gavilla')", 8000), A.evaluate(f"JSON.stringify({K}.sueloObjetos.suelo.objetos.map(o => o.cosa))"))
         for xx in (x0 + 3.8, x0 + 6.2):
             ir(A, xx, z0 + 0.6, 0); A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(600)
