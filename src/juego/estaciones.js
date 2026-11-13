@@ -277,7 +277,10 @@ function secadero(id) {
 // Lo colgado en el secadero: primero la carne ya seca, luego la que se está secando (cada encargo, una tira) y al
 // final lo que se ha dejado colgado sin poner a secar (la carne cruda, roja). Cinco sitios por cuerda; lo que no cabe
 // en las cuerdas no se ve (se secan como mucho 10 a la vez y lo depositado son hasta 20 cosas).
-const COLOR_TIRA = { cruda: 0x7a2b27, secando: 0x5e2a1e, seca: 0x40210f };
+// Los colores, apagados (a la luz del juego, el rojo vivo parecía un banderín): la cruda, rojo oscuro; la que se seca,
+// parda rojiza; la seca, parda oscura. Cada tira es irregular (más ancha arriba, bordes y largo que varían, algo
+// combada) y la seca, más corta y fina (encoge al secarse).
+const COLOR_TIRA = { cruda: 0x5c2620, secando: 0x4a2419, seca: 0x352014 };
 function llenoSecadero(dep, id, colgado = []) {
   const L = new Lote({ rangoSuelo: 0.4, variacion: 0.06 }), { x: X, z: Z, cuerda, comba, sitios } = SECADERO, tiras = [];
   for (const c of colgado) tiras.push(c.listo ? 'seca' : 'secando');
@@ -285,10 +288,17 @@ function llenoSecadero(dep, id, colgado = []) {
   for (let i = 0; i < (dep.carne_cruda || 0); i++) tiras.push('cruda');
   tiras.slice(0, 2 * sitios).forEach((t, i) => {
     const sz = i % 2 ? 1 : -1, k = Math.floor(i / 2), u = (k + 0.5) / sitios, x = -X + 2 * X * u + (az(id, i) - 0.5) * 0.05;
-    const y = cuerda - comba * 4 * u * (1 - u), largo = t === 'seca' ? 0.28 : 0.34, ancho = t === 'seca' ? 0.08 : 0.1;
-    const tira = new THREE.BoxGeometry(ancho, largo, 0.018, 1, 3, 1), p = tira.attributes.position;
-    for (let j = 0; j < p.count; j++) { const yy = p.getY(j); p.setX(j, p.getX(j) * (1 - 0.35 * (0.5 - yy / largo))); }   // más estrecha abajo
-    L.add(tira, COLOR_TIRA[t], x, y - 0.02 - largo / 2, sz * Z, { y: (az(id, i + 40) - 0.5) * 0.8, z: (az(id, i + 60) - 0.5) * 0.12 }, { tex: 'liso', sinSuelo: true, brillo: t === 'seca' ? 0.85 : 1.05 });
+    const encoge = t === 'seca' ? 0.8 : t === 'secando' ? 0.9 : 1;
+    const y = cuerda - comba * 4 * u * (1 - u), largo = (0.26 + az(id, i + 80) * 0.1) * encoge, ancho = (0.07 + az(id, i + 90) * 0.03) * encoge;
+    const tira = new THREE.BoxGeometry(ancho, largo, 0.016 * encoge, 2, 5, 1), p = tira.attributes.position;
+    for (let j = 0; j < p.count; j++) {
+      const xx = p.getX(j), yy = p.getY(j), f = yy / largo;   // f: de -0,5 (abajo) a 0,5 (arriba)
+      const borde = 1 + (az(id, i * 13 + Math.round(f * 10) + (xx > 0 ? 50 : 0)) - 0.5) * 0.35;   // el borde, irregular
+      p.setX(j, xx * (1 - 0.4 * (0.5 - f)) * borde);   // más estrecha abajo
+      p.setZ(j, p.getZ(j) + Math.sin((f + 0.5) * 3) * 0.012 * (az(id, i + 70) - 0.5) * 2);   // algo combada
+    }
+    tira.computeVertexNormals();
+    L.add(tira, COLOR_TIRA[t], x, y - 0.02 - largo / 2, sz * Z, { y: (az(id, i + 40) - 0.5) * 0.8, z: (az(id, i + 60) - 0.5) * 0.12 }, { tex: 'liso', sinSuelo: true, brillo: 0.85 });
     L.add(new THREE.TorusGeometry(0.014, 0.004, 4, 8), 0xb8a27a, x, y - 0.012, sz * Z, { y: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });   // el nudo
   });
   return tiras.length ? mallas(L) : new THREE.Group();

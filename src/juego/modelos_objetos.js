@@ -183,7 +183,7 @@ function carne(asada) {
   };
 }
 // La carne seca (P9, 13 nov): tres tiras oscuras y arrugadas, más finas que la carne fresca, sobre la hoja.
-const SECA = 0x4a2214, SECA_CLARA = 0x6a3322;
+const SECA = 0x352014, SECA_CLARA = 0x4a2a1a;
 function carneSeca(n, id) {
   const L = lote(0.04);
   { const hoja = new THREE.CircleGeometry(0.1, 10); hoja.rotateX(-Math.PI / 2); hoja.scale(2.2, 1, 1.2); L.add(hoja, HOJA_BAYA, 0, 0.003, 0, { y: az(id, 1) * 0.5 }, { tex: 'liso' }); }
