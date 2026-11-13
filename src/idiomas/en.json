@@ -2860,5 +2860,15 @@
  "Está limpio.": "It is clear.",
  "v200: limpiar el campo (P11, la granja básica). Dentro de un campo cerrado, lo que se tala ya no vuelve a crecer: queda el tocón. El tocón se arranca a golpes con la azada o el palo cavador en la mano (Usar; con el palo cavador, el doble de golpes), después de limpiar el árbol caído con el hacha; arrancado, se va para siempre y deja leña a su lado. Al entrar en un campo, y al cerrarlo, se dice lo que queda por limpiar dentro de su linde: árboles, árboles caídos, tocones, matas y piedras sueltas (las matas se desbrozan y las piedras se recogen, como siempre).": "v200: clearing the field (P11, the basic farm). Inside a closed field, what is felled no longer grows back: the stump stays. The stump is pulled up with blows of the hoe or the digging stick in your hand (Use; with the digging stick, twice as many blows), after clearing the fallen tree with the axe; once pulled up it is gone for good and leaves firewood beside it. On entering a field, and on closing it, you are told what is still to clear inside its boundary: trees, fallen trees, stumps, bushes and loose stones (bushes are cleared and stones picked up, as always).",
  "v200, provisional: los golpes para arrancar un tocón (6 el joven y 14 el adulto con la azada; el doble con el palo cavador) y la leña que deja (2 el joven, 4 el adulto).": "v200, provisional: the blows to pull up a stump (6 for a young tree and 14 for a mature one with the hoe; twice as many with the digging stick) and the firewood it leaves (2 young, 4 mature).",
- "Demo única · v200 (Limpiar el campo)": "Single demo · v200 (Clearing the field)"
+ "Demo única · v200 (Limpiar el campo)": "Single demo · v200 (Clearing the field)",
+ "Labrar": "Till",
+ "Ya está labrado aquí": "Already tilled here",
+ "Labras la tierra.": "You till the soil.",
+ "Tierra labrada: {n} de {a} m² del campo.": "Tilled soil: {n} of the field's {a} m².",
+ "Ahí ya está labrado.": "That's already tilled.",
+ "Antes limpia ahí: quedan árboles, tocones, matas o piedras.": "Clear it first: there are still trees, stumps, bushes or stones.",
+ "Necesitas la azada en la mano para labrar.": "You need the hoe in your hand to till.",
+ "Fuera del campo: se labra dentro de su linde.": "Outside the field: you till inside its boundary.",
+ "Aquí no hay ningún campo cerrado.": "There's no closed field here.",
+ "El campo ya está labrado: sus estacas no se mueven.": "The field is already tilled: its stakes can't be moved."
 }

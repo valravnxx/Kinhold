@@ -2860,5 +2860,15 @@
  "Está limpio.": "Оно расчищено.",
  "v200: limpiar el campo (P11, la granja básica). Dentro de un campo cerrado, lo que se tala ya no vuelve a crecer: queda el tocón. El tocón se arranca a golpes con la azada o el palo cavador en la mano (Usar; con el palo cavador, el doble de golpes), después de limpiar el árbol caído con el hacha; arrancado, se va para siempre y deja leña a su lado. Al entrar en un campo, y al cerrarlo, se dice lo que queda por limpiar dentro de su linde: árboles, árboles caídos, tocones, matas y piedras sueltas (las matas se desbrozan y las piedras se recogen, como siempre).": "v200: расчистка поля (P11, простая ферма). Внутри замкнутого поля срубленное больше не отрастает: остаётся пень. Пень корчуют ударами мотыги или палки-копалки в руке («Использовать»; палкой-копалкой — вдвое больше ударов), после того как упавшее дерево очищено топором; выкорчеванный, он исчезает навсегда и оставляет рядом дрова. При входе на поле и при его замыкании сообщается, что ещё осталось расчистить внутри межи: деревья, упавшие деревья, пни, кусты и камни (кусты вырубают, а камни собирают, как всегда).",
  "v200, provisional: los golpes para arrancar un tocón (6 el joven y 14 el adulto con la azada; el doble con el palo cavador) y la leña que deja (2 el joven, 4 el adulto).": "v200, временно: число ударов, чтобы выкорчевать пень (6 у молодого и 14 у взрослого мотыгой; вдвое больше палкой-копалкой) и сколько дров он оставляет (2 у молодого, 4 у взрослого).",
- "Demo única · v200 (Limpiar el campo)": "Единая демо · v200 (Расчистка поля)"
+ "Demo única · v200 (Limpiar el campo)": "Единая демо · v200 (Расчистка поля)",
+ "Labrar": "Пахать",
+ "Ya está labrado aquí": "Здесь уже вспахано",
+ "Labras la tierra.": "Ты пашешь землю.",
+ "Tierra labrada: {n} de {a} m² del campo.": "Вспахано: {n} из {a} м² поля.",
+ "Ahí ya está labrado.": "Там уже вспахано.",
+ "Antes limpia ahí: quedan árboles, tocones, matas o piedras.": "Сначала расчисти: там ещё деревья, пни, кусты или камни.",
+ "Necesitas la azada en la mano para labrar.": "Чтобы пахать, нужна мотыга в руке.",
+ "Fuera del campo: se labra dentro de su linde.": "Вне поля: пахать можно только внутри межи.",
+ "Aquí no hay ningún campo cerrado.": "Здесь нет замкнутого поля.",
+ "El campo ya está labrado: sus estacas no se mueven.": "Поле уже вспахано: его колышки не переставить."
 }

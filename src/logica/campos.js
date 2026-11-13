@@ -188,9 +188,14 @@ export const SEGUNDOS_LABRAR = 2;
 export const PLAZO_BARBECHO = 14 * 24 * 3600 * 1000;   // ms: dos semanas reales sin sembrar y vuelve a ser hierba
 // la rejilla del campo: casillas de 1 m desde la esquina de su recuadro
 export function rejilla(c) {
+  // (se guarda en el campo mientras no cambien sus estacas: el decorado la pregunta para cada mata de hierba)
+  const n = c.puntos.length, clave = n ? `${n}:${c.puntos[0].x},${c.puntos[0].z}:${c.puntos[n - 1].x},${c.puntos[n - 1].z}` : '';
+  if (c._rej && c._rej.clave === clave) return c._rej;
   const xs = c.puntos.map(p => p.x), zs = c.puntos.map(p => p.z);
   const x0 = Math.floor(Math.min(...xs)), z0 = Math.floor(Math.min(...zs));
-  return { x0, z0, w: Math.max(1, Math.ceil(Math.max(...xs)) - x0), h: Math.max(1, Math.ceil(Math.max(...zs)) - z0) };
+  const r = { clave, x0, z0, w: Math.max(1, Math.ceil(Math.max(...xs)) - x0), h: Math.max(1, Math.ceil(Math.max(...zs)) - z0) };
+  Object.defineProperty(c, '_rej', { value: r, writable: true, enumerable: false, configurable: true });
+  return r;
 }
 const aBase64 = (u8) => (globalThis.Buffer ? globalThis.Buffer.from(u8).toString('base64') : btoa(Array.from(u8, b => String.fromCharCode(b)).join('')));
 function deBase64(t, n) {

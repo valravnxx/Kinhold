@@ -5,7 +5,8 @@
 # (F) en las cuatro esquinas de un campo de 12 × 10 m; la quinta, junto a la primera, lo cierra (sin gastar otra) y el
 # servidor lo guarda con su superficie (120 m²). Se ven las estacas clavadas y el linde de tierra pisada. Junto a una
 # estaca, Usar la quita (vuelve a la mano) y el campo queda abierto; clavada otra vez, se cierra de nuevo. Fuera de su
-# tierra no se clava. En el móvil (390×844), el otro jugador ve el campo igual.
+# tierra no se clava. Con la azada, Usar labra un círculo de tierra delante de él (P11), lo guarda el servidor con su hora y
+# se ve la tierra labrada; labrado, las estacas ya no se quitan. En el móvil (390×844), el otro jugador lo ve igual.
 # Las ramas y las estacas de más salen del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba los campos en el
 # juego; la lógica y el servidor, en pruebas/prueba_campos.mjs.
 # MUTAR=1 tira los mensajes de acciones que manda la página (como si el campo fuera solo del navegador): falla.
@@ -108,6 +109,8 @@ for (let r = 20; r < 3000; r += 10) { const id = T.zona(-r, 4); if (id === null 
   for (let dx = -40; dx > -400; dx -= 7) for (let dz = -60; dz < 60; dz += 7) {
     const x0 = -r + dx, z0 = 4 + dz; let bien = true;
     for (let i = -2; i <= 14 && bien; i += 1) for (let j = -2; j <= 12 && bien; j += 1) { const x = x0 + i, z = z0 + j; if (T.zona(x, z) !== id || T.aguaEn(x, z) !== null || pend(x, z) > 0.2 || !T.enIsla(x, z)) bien = false; }
+    // (y nada por limpiar en medio, para labrarlo: P11)
+    if (bien) { const q = T.cercaDe(x0 + 6, z0 + 5, 6); if (q.arboles.length || q.matas.length || q.piedras.length) bien = false; }
     if (bien) { console.log(JSON.stringify({ x: x0, z: z0 })); process.exit(0); } }
   break; }
 console.log('null');"""
@@ -216,6 +219,32 @@ try:
         ir(A, p0['x'] + 0.5, p0['z'] + 0.5); usar(A)
         comprobar('y se cierra otra vez (11 × 9 + … m²)', esperar(A, f"{K}.mundo.campos[0].cerrado && {K}.mundo.campos[0].area > 100 && {K}.mundo.campos[0].area < 120", 8000), A.evaluate(f"JSON.stringify({K}.mundo.campos[0])"))
 
+        print('Labra con la azada (P11)')
+        A.evaluate(f"(() => {{ const l = {K}.inventario.lugares; for (const m of ['mano:der', 'mano:izq']) if (l[m]) {K}.soltarAlSuelo(m); }})()"); A.wait_for_timeout(600)
+        coger(A, 'azada', 1, 'mano:der')
+        comprobar('el servidor le da la azada (arcón de pruebas)', servidorDice(lambda d: cuantos(d, yo, 'azada') == 1) is not None)
+        esperar(A, f"{K}.inventario.cuantos('azada') === 1", 5000)
+        ir(A, x0 + 6, z0 + 3.4, 0)
+        comprobar('con la azada, dentro de su campo, Usar dice «Labrar»', texto_usar(A) == 'Labrar', texto_usar(A))
+        A.evaluate(f"{K}.usar()")
+        comprobar('Usar empieza a labrar (unos 2 s)', A.evaluate(f"!!({K}.estado.talando && {K}.estado.talando.labranza)"))
+        A.evaluate(f"{K}.estado.golpeEn = 0")
+        l = servidorMundo(lambda l: any(e.get('tipo') == 'labrar' and e.get('ok') for e in l))
+        comprobar('la pasada se labra en el servidor, con su hora', l is not None and any(e.get('tipo') == 'labrar' and e.get('ok') and (e.get('datos') or {}).get('t', 0) > 1e12 for e in l), A.evaluate(AVISO))
+        comprobar('el aviso dice cuánto lleva labrado', esperar(A, f"/Tierra labrada: \\d+ de \\d+ m²/.test({AVISO})", 5000), A.evaluate(AVISO))
+        comprobar('se ve la tierra labrada', esperar(A, f"!!{K}.escena.getObjectByName('tierra_labrada')", 8000))
+        for dx in (-1.6, 1.6, 3.2):
+            ir(A, x0 + 6 + dx, z0 + 3.4, 0); A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(500)
+        servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'labrar' and e.get('ok')) >= 4)
+        ir(A, x0 + 6, z0 + 3.4, 0)
+        comprobar('donde ya está labrado lo dice', texto_usar(A) == 'Ya está labrado aquí', texto_usar(A))
+        comprobar('labrado, sus estacas ya no se quitan', A.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'El campo ya está labrado: sus estacas no se mueven.')
+        A.add_style_tag(content='#menuUsar { visibility: hidden !important; }')
+        ir(A, x0 + 6, z0 - 2.5, 0); A.evaluate(f"{K}.cam.yaw = Math.PI; {K}.cam.dist = 7; {K}.cam.pitch = 0.5"); A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_labrado.png')
+        ir(A, x0 + 7.5, z0 + 2.2, 0); A.evaluate(f"{K}.cam.yaw = Math.PI + 0.6; {K}.cam.dist = 3; {K}.cam.pitch = 0.42"); A.wait_for_timeout(2000)
+        captura(A, f'{SALIDA}/PC_labrado_de_cerca.png')
+
         print('Fuera de su tierra, no')
         A.evaluate(f"(() => {{ const l = {K}.inventario.lugares; if (!l['mano:der'] && !l['mano:izq']) {K}.accionInventario({{ tipo: 'coger', objeto: 'estaca', cantidad: 1, a: 'mano:der' }}); }})()")
         esperar(A, f"{K}.inventario.cuantos('estaca') >= 1", 5000); A.wait_for_timeout(500)
@@ -227,6 +256,7 @@ try:
         print('El otro jugador, en el móvil, lo ve')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         ir(B, x0 - 3, z0 + 5, 2.4)
+        comprobar('y ve la tierra labrada', esperar(B, f"!!{K}.escena.getObjectByName('tierra_labrada')", 20000))
         comprobar('le llega el campo, cerrado', esperar(B, f"{K}.mundo.campos.length === 1 && {K}.mundo.campos[0].cerrado", 20000), B.evaluate(f"JSON.stringify({K}.mundo.campos)"))
         B.evaluate(f"{K}.cam.yaw = 2.4 + Math.PI; {K}.cam.dist = 11; {K}.cam.pitch = 0.7"); B.wait_for_timeout(3000)
         captura(B, f'{SALIDA}/movil_campo.png')
