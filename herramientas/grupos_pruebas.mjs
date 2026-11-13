@@ -31,7 +31,7 @@ export const TOCA = {
   'el-dia-y-la-noche': [/^pruebas\/sitio_prueba\.py$/, /^src\/(logica|mundo)\/cielo\.js$/, /^src\/mundo\/ambiente\.js$/],
   'los-avisos-de-las-necesidades': [/^src\/juego\/avisos_necesidades\.js$/, /^src\/logica\/necesidades\.js$/],
   'las-bayas-y-las-setas': [/^src\/logica\/recoleccion\.js$/],
-  'el-bosque-de-lejos-visto-de-cerca': [/^src\/mundo\/(horizonte|vegetacion_mundo|especies)\.js$/, /^src\/logica\/horizonte\.js$/],
+  'el-bosque-de-lejos-visto-de-cerca': [/^src\/mundo\/(horizonte|vegetacion_mundo|especies|sotobosque)\.js$/, /^src\/logica\/horizonte\.js$/],
   'el-mazo-de-piedra-y-romper-rocas': [/^src\/mundo\/vegetacion_mundo\.js$/, /^src\/juego\/modelos_objetos\.js$/],
   'el-mimbre-la-corteza-y-la-resina': [/^src\/juego\/tala\.js$/],
   'recoger-del-suelo-y-de-las-plantas': [/^src\/(logica|juego)\/recoleccion\.js$/],

@@ -7,12 +7,15 @@
 // Uso: node pruebas/prueba_vegetacion.mjs    MUTAR=1 → el segundo cuadro con otra semilla: tiene que fallar.
 // MUTAR=2 → dos de los cuatro trozos con otra semilla: tiene que fallar.
 // MUTAR=3 → los jóvenes se miden con el modelo del adulto (como si no tuvieran el suyo): tiene que fallar.
+// MUTAR=4 → el sotobosque se mide contra los árboles movidos 20 m: tiene que fallar.
+//   - el sotobosque (13 nov): siempre igual por trozos, nada en el agua ni sobre la tierra desnuda (tampoco las flores),
+//     los helechos y los cantos al pie de los árboles, y la madera muerta solo en el bosque
 //   - jóvenes y adultos bien distintos (revisión del 1 nov): los jóvenes de 3 a 5 m, más en lindes y claros que dentro
 //     del bosque; los adultos, un 30 % más altos que los de antes
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, MEZCLA_BOSQUE, bosqueEn } from '../src/logica/paisaje.js';
 import { alturaMundo, SALIDA, SALIDAS } from '../src/logica/whitholm.js';
-import { vegetacionEn, vegetacionTrozo, LADO_VEG, ALTO_JOVEN, CRECE_ADULTO } from '../src/logica/vegetacion.js';
+import { vegetacionEn, vegetacionTrozo, LADO_VEG, ALTO_JOVEN, CRECE_ADULTO, calvaTierra } from '../src/logica/vegetacion.js';
 import { TAMANO_ESPECIE, TAMANO_JOVEN } from '../src/mundo/especies.js';
 
 const MUTAR = process.env.MUTAR || '';
@@ -28,7 +31,7 @@ const X = SALIDA.x, Z = SALIDA.z;
 const a = vegetacionEn(pai, alt, sem, cuadro(X, Z, 150), { x: X, z: Z, r: 40 });
 const b = vegetacionEn(pai, alt, MUTAR === '1' ? sem + 1 : sem, cuadro(X + 130, Z - 70, 150), { x: X + 20, z: Z, r: 40 });
 const a2 = vegetacionEn(pai, alt, sem, cuadro(X, Z, 150), { x: X, z: Z, r: 40 });
-const firma = (l) => l.map(e => `${e.x.toFixed(3)},${e.z.toFixed(3)},${e.especie || e.roca || ''},${e.tam.toFixed(3)},${e.giro.toFixed(3)}`).sort().join('|');
+const firma = (l) => l.map(e => `${e.x.toFixed(3)},${e.z.toFixed(3)},${e.especie || e.roca || e.tipo || ''},${e.tam.toFixed(3)},${e.giro.toFixed(3)}`).sort().join('|');
 const comun = { x0: X - 20, z0: Z - 150, x1: X + 150, z1: Z + 80 };
 const en = (l, c) => l.filter(e => e.x >= c.x0 && e.x <= c.x1 && e.z >= c.z0 && e.z <= c.z1);
 comprobar('repetir el mismo cuadro da lo mismo', firma(a.arboles) === firma(a2.arboles) && firma(a.hierba) === firma(a2.hierba) && firma(a.piedras) === firma(a2.piedras));
@@ -45,13 +48,13 @@ comprobar('la hierba, solo dentro de su círculo', a.hierba.every(e => Math.hypo
   const i0 = Math.floor(X / LADO_VEG), j0 = Math.floor(Z / LADO_VEG), L = LADO_VEG;
   const c = { x0: i0 * L, z0: j0 * L, x1: (i0 + 2) * L, z1: (j0 + 2) * L };
   const g = vegetacionEn(pai, alt, sem, c, c), suyo = (e) => e.x >= c.x0 && e.x < c.x1 && e.z >= c.z0 && e.z < c.z1;
-  const t = { arboles: [], piedras: [], hierba: [], flores: [], matas: [] };
+  const t = { arboles: [], piedras: [], hierba: [], flores: [], matas: [], sotobosque: [] };
   for (const [di, dj] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
     const v = vegetacionTrozo(pai, alt, MUTAR === '2' && di ? sem + 1 : sem, i0 + di, j0 + dj, true);
     for (const k of Object.keys(t)) t[k].push(...v[k]);
   }
   const igual = Object.keys(t).every(k => firma(g[k].filter(suyo)) === firma(t[k]));
-  comprobar('cuatro trozos juntos dan lo mismo que su cuadro (árboles, piedras, hierba, flores y matas), sin repetir nada', igual && t.hierba.length > 0,
+  comprobar('cuatro trozos juntos dan lo mismo que su cuadro (árboles, piedras, hierba, flores, matas y sotobosque), sin repetir nada', igual && t.hierba.length > 0,
     Object.keys(t).map(k => `${k} ${t[k].length}/${g[k].filter(suyo).length}`).join(', '));
 }
 
@@ -103,6 +106,35 @@ comprobar('los adultos, bien distintos: el doble de altos que los jóvenes o má
 comprobar(`los adultos, ${CRECE_ADULTO} veces los de antes`, CRECE_ADULTO === 1.3 && media(adu) > 7.5, `${media(adu).toFixed(1)} m de media`);
 comprobar('más jóvenes en lindes y claros que dentro del bosque cerrado', nLinde > 20 && nDentro > 20 && jLinde / nLinde > 1.5 * (jDentro / nDentro),
   `${(100 * jLinde / Math.max(1, nLinde)).toFixed(0)} % de ${nLinde} frente a ${(100 * jDentro / Math.max(1, nDentro)).toFixed(0)} % de ${nDentro}`);
+
+// el sotobosque, en los mismos sitios de salida
+{
+  let sAgua = 0, sTierra = 0, fTierra = 0, madera = 0, maderaMal = 0, n = 0;
+  const dHelecho = [], dAzar = [], tipos = {};
+  for (const [x, z] of SALIDAS.filter(([x, z]) => (x / 1000 * 3 + z / 1000) % 7 === 0)) {
+    const v = vegetacionEn(pai, alt, sem, cuadro(x, z, 80), { x, z, r: 40 });
+    const tramos = pai.riosEn(x - 80, z - 80, x + 80, z + 80);
+    const arb = MUTAR === '4' ? v.arboles.map(a => ({ ...a, x: a.x + 20 })) : v.arboles;
+    const cerca = (e) => Math.min(...arb.map(a => Math.hypot(a.x - e.x, a.z - e.z)));
+    for (const e of v.sotobosque) {
+      n++; tipos[e.tipo] = (tipos[e.tipo] || 0) + 1;
+      if (alt(e.x, e.z) < 1 || pai.agua(e.x, e.z, tramos) !== null) sAgua++;
+      if (calvaTierra(e.x, e.z) > 0.3) sTierra++;
+      if (e.tipo === 'helechos' || e.tipo === 'canto') dHelecho.push(cerca(e));
+      if (e.tipo === 'tocon' || e.tipo === 'tronco') { madera++; const st = pai.sitio(e.x, e.z, alt(e.x, e.z)); if (bosqueEn(st, 0, e.x, e.z, { semilla: sem }).d < 0.3) maderaMal++; }
+    }
+    for (const e of v.flores) if (calvaTierra(e.x, e.z) > 0.3) fTierra++;
+    // sitios al azar del mismo círculo, para comparar lo lejos que quedan del árbol más cercano
+    for (let k = 0; k < 60 && arb.length; k++) { const a = k * 2.4, r = 40 * Math.sqrt((k + 0.5) / 60); dAzar.push(cerca({ x: x + Math.cos(a) * r, z: z + Math.sin(a) * r })); }
+  }
+  const mediana = (l) => { const o = [...l].sort((a, b) => a - b); return o[Math.floor(o.length / 2)] ?? Infinity; };
+  comprobar('hay sotobosque de cada tipo', ['helechos', 'ortigas', 'hierba_larga', 'canto', 'flor', 'tocon', 'tronco'].every(t => tipos[t] > 0), JSON.stringify(tipos));
+  comprobar('el sotobosque, nada en el agua', sAgua === 0, `${sAgua} de ${n}`);
+  comprobar('ni el sotobosque ni las flores sobre la tierra desnuda', sTierra === 0 && fTierra === 0, `${sTierra} del sotobosque y ${fTierra} flores`);
+  comprobar('los helechos y los cantos, al pie de los árboles (a menos de 3,5 m del más cercano, de mediana; los sitios al azar, mucho más lejos)',
+    dHelecho.length > 50 && mediana(dHelecho) < 3.5 && mediana(dHelecho) < 0.5 * mediana(dAzar), `mediana ${mediana(dHelecho).toFixed(1)} m frente a ${mediana(dAzar).toFixed(1)} m al azar`);
+  comprobar('los tocones viejos y los troncos caídos, solo en el bosque', madera > 0 && maderaMal === 0, `${madera}, ${maderaMal} fuera del bosque`);
+}
 
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');
 process.exit(fallos ? 1 : 0);

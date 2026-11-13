@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026 — por el chat, sobre el sotobosque
+
+El tocón viejo y el tronco caído, hechos por código, desentonan con los árboles de Meshy. valravnx: «codigo temporal y en lista para meshy a futuro» → se quedan los de código por ahora y entra la tarea de hacerlos con Meshy en el hito «El arte con Meshy» (`congelado`, como lo demás de Meshy que no es naturaleza en curso, hasta que él diga).
+
 ### 13 nov 2026, 05:15 UTC — por el chat: decisiones sobre el estudio de la granja (`diseno/estudios/granja.html`)
 
 1. El campo se marca **con estacas**, cada una hecha de **1 rama**.
