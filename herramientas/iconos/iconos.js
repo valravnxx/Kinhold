@@ -50,7 +50,7 @@ const DENTRO = { lenero: { lena: 9, tronco_corto: 1 }, cesta_recoleccion: { baya
   correa_escudo: { escudo: 1 }, fardo: { piel: 8 }, caja_herramientas: { cuchillo: 1, azada: 1 } };
 const deEspalda = t => { const g = new THREE.Group(); g.add(mallas(loteEspalda(t, DENTRO[t] || {}).L)); g.rotation.y = 0.5; return g; };
 // lo largo y plano tumbado en el suelo (haces, troncos, la piel, la honda): en diagonal y visto casi desde arriba
-const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'honda', 'tronco_delgado', 'tronco_largo', 'rama']);
+const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca']);
 const desdeArriba = o => { const g = new THREE.Group(); o.updateMatrixWorld(true); const s = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()); o.rotation.y += s.x >= s.z ? Math.PI / 4 : -Math.PI / 4; g.add(o); g.userData.arriba = true; return g; };
 const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
 

@@ -66,6 +66,8 @@ import { crearMovimiento } from './movimiento.js';
 import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
+import { crearCamposVista } from './campos_vista.js';
+import { estacaCercana, cerraria, campoAbierto, MAX_ESTACAS } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -461,7 +463,7 @@ const raizConstr = new THREE.Group();
 escena.add(raizConstr);
 const raizDeco = new THREE.Group();
 escena.add(raizDeco);
-let mallasMojon = [], anilloTierra = null;
+let mallasMojon = [], anilloTierra = null, camposV = null;
 // el material del anillo de la tierra es siempre el mismo: si se tirara al rehacer, se volvería a compilar su sombreador
 const MAT_ANILLO = new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false });
 const registroMallas = []; // {obj, c, key, deco}
@@ -651,6 +653,9 @@ function reconstruir() {
     g.userData.mojon = autor; g.traverse(o => { o.userData.ref = g; });
     escena.add(g); mallasMojon.push(g);
   }
+  // los campos marcados con estacas (P11), de todos
+  if (!camposV) camposV = crearCamposVista({ escena, sueloEn });
+  camposV.poner(mundo.campos);
   const mio = miMojon();
   if (mio && !hayZonas()) {
     const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), MAT_ANILLO);
@@ -1720,6 +1725,16 @@ function accionPrincipal() {
     if (de) return A(tr(segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), inventario().lugares[de].tipo, o, () => cargarRastra(o, { de }), { alto: 0.4 });
     return A(tr(segun(o, 'Arrastrar la rastra ({c})', 'Empujar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), o.cosa.tipo, o, () => engancharRastra(o), { alto: 0.4 });
   }
+  // los campos (P11): con una estaca en la mano, Usar la clava donde estás (o, junto a la primera, cierra el campo); al
+  // lado de una estaca clavada, Usar la quita (vuelve a lo que llevas) para moverla
+  if (!it && pj.k === 0) {
+    const ec = estacaCercana(mundo, pj.x, pj.z, 1.2), mano = estacaEnMano(inventario());
+    if (mano) {
+      const cierra = cerraria(mundo, yoAutor(), pj.x, pj.z), ab = campoAbierto(mundo, yoAutor());
+      if (cierra || !ec) return A(cierra ? tr('Cerrar el campo') : ab ? tr('Clavar una estaca ({n} de {m})', { n: ab.puntos.length + 1, m: MAX_ESTACAS }) : tr('Clavar una estaca'), 'estaca', yo, clavarEstaca, { alto: 0.9 });
+    }
+    if (ec) return A(ec.campo.cerrado ? tr('Quitar la estaca (campo de {a} m²)', { a: ec.campo.area }) : tr('Quitar la estaca'), 'estaca', ec, () => quitarEstaca(ec), { alto: 0.9 });
+  }
   // delante de una estación de fabricar, Usar abre el panel en su pestaña, con lo que tiene encima (estudio del panel,
   // valravnx, 6 nov)
   const est = !it && pj.k === 0 ? estacionParaUsar() : null;
@@ -1957,6 +1972,24 @@ function beber() {
 // Despiezar la liebre cazada (9 nov; src/logica/comida.js): la receta de las manos, con la liebre del suelo a tu lado y
 // la lasca encima; al terminar, se recoge sola la carne cruda y la piel (como desde el panel de fabricar).
 function liebreAlLado() { const o = sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now()).find(x => x.cosa.tipo === 'liebre'); return o ? { x: o.x, z: o.z, id: o.id } : null; }
+// La estaca que lleva en una mano el inventario inv: { ruta } o null.
+function estacaEnMano(inv) {
+  for (const ruta of ['mano:der', 'mano:izq']) { const c = inv.lugares[ruta]; if (c && c.tipo === 'estaca') return { ruta }; }
+  return null;
+}
+// Clavar una estaca donde estás (por la lógica de los campos con tu autor; en línea, la decide el servidor)
+function clavarEstaca() {
+  const r = accion({ tipo: 'estaca', x: redondoMm(pj.x), z: redondoMm(pj.z) });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.cerrado ? tr('Campo cerrado: {a} m².', { a: r.area }) : r.nuevo ? tr('Primera estaca del campo: ve clavando las demás por el linde (de 3 a 16).') : tr('Estaca clavada ({n}).', { n: r.estacas }));
+}
+function quitarEstaca(ec) {
+  const r = accion({ tipo: 'quitar_estaca', campo: ec.campo.id, i: ec.i });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(tr('Estaca quitada: el campo queda abierto hasta que lo vuelvas a cerrar.'));
+}
 function despiezar() {
   hacerFabricacion({ tipo: 'fabricar', receta: 'despiezar_liebre', estacion: null, x: pj.x, z: pj.z }, (r) => {
     if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }

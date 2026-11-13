@@ -59,7 +59,6 @@ const PENDIENTES = {
   est_carbonera: ['aún no hay carbonera', 'La carbonera y el carbón'],
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
-  estaca: ['aún no se hace', 'Marcar el campo con estacas'],
   gavilla: ['sale de segar la cebada', 'Cosechar: la cebada se siega'],
   col: ['sale del huerto', 'Cosechar: la cebada se siega'],
   nabo: ['sale del huerto', 'Cosechar: la cebada se siega'],
