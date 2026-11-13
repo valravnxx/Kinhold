@@ -279,7 +279,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
             // (la pared tiene la pendiente de la ladera, no está a plomo: la pieza se echa hacia atrás lo que le falta a la
             // ladera para estar vertical, y se pone con su cara a ras de la ladera, no metida dentro)
             const esc = e.alto / ALTO_PARED[v], atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.8, fuera = e.alto * 0.27;
-            o.position.set(e.x + Math.sin(e.giro) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(e.giro) * fuera); o.rotation.set(-atras + e.inclina * 0.3, e.giro + Math.PI, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc);   // (la cara de Meshy mira a −z: media vuelta) o.updateMatrix(); im.setMatrixAt(k, o.matrix);
+            o.position.set(e.x + Math.sin(e.giro) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(e.giro) * fuera); o.rotation.set(-atras + e.inclina * 0.3, e.giro + Math.PI, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc); o.updateMatrix(); im.setMatrixAt(k, o.matrix);   // (la cara de Meshy mira a −z: media vuelta)
             im.setColorAt(k, colorRoca(e).lerp(blanco, 0.45).multiplyScalar(e.tono));
           });
           im.castShadow = nivel !== 'lejos'; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
