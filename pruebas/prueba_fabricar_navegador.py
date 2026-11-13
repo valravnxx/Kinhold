@@ -173,8 +173,9 @@ try:
         A.evaluate(f"{K}.cambiarModo('construir')"); A.wait_for_timeout(200)
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
-        comprobar('la pestaña «Puestos de trabajo», con los cinco puestos (el hogar, 8 nov; el secadero, 13 nov), lo que piden y dónde van', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and len(menu) == 5 and any('Secadero' in m and '4 tronco delgado' in m and 'solo fuera' in m for m in menu) and any('Piedra de tallar' in m and '1 piedra' in m for m in menu) and any('Hoguera' in m and 'solo fuera' in m for m in menu) and any('Hogar' in m and 'solo dentro' in m for m in menu), str(menu))
+        nombres = [m.split('\n')[0] for m in menu]
+        comprobar('la pestaña «Puestos de trabajo», con los cinco puestos (el hogar, 8 nov; el secadero, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'], str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
