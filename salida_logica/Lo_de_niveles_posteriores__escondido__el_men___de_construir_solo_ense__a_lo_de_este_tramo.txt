@@ -1,0 +1,52 @@
+  OK   guardada para su nivel: Tejado de teja
+  OK   guardada para su nivel: Remate de teja (esquina)
+  OK   guardada para su nivel: Chimenea
+  OK   guardada para su nivel: Adarve
+  OK   guardada para su nivel: Empalizada
+  OK   guardada para su nivel: Puerta de empalizada
+  OK   guardada para su nivel: Polea
+  OK   guardada para su nivel: Polipasto con torno
+  OK   guardada para su nivel: Escalera de tablas
+  OK   mueble caro guardado: Cama de madera
+  OK   mueble caro guardado: Mesa
+  OK   mueble caro guardado: Banco
+  OK   mueble caro guardado: Arcón
+  OK   mueble caro guardado: Barril
+  OK   mueble caro guardado: Estantería
+  OK   a la vista: Mojón
+  OK   a la vista: Cimiento de piedra
+  OK   a la vista: Cimiento de troncos
+  OK   a la vista: Suelo de troncos
+  OK   a la vista: Poste
+  OK   a la vista: Viga
+  OK   a la vista: Muro de zarzo y barro
+  OK   a la vista: Muro de zarzo y barro con puerta
+  OK   a la vista: Muro de zarzo y barro con ventana
+  OK   a la vista: Muro de troncos
+  OK   a la vista: Muro de troncos con puerta
+  OK   a la vista: Muro de troncos con ventana
+  OK   a la vista: Medio muro
+  OK   a la vista: Tejado de juncos
+  OK   a la vista: Remate de juncos (esquina)
+  OK   a la vista: Escalera de mano
+  OK   a la vista: Andamio
+  OK   a la vista: Puerta de varas
+  OK   a la vista: Cerca de varas
+  OK   a la vista: Portillo de varas
+  OK   mueble a la vista: Taburete
+  OK   mueble a la vista: Estandarte
+  FALLA escondido, sin paja que lo haga: Tejado de paja
+  FALLA escondido, sin paja que lo haga: Remate de paja (esquina)
+  FALLA mueble escondido, sin paja que lo haga: Cama de paja
+  FALLA mueble escondido, sin paja que lo haga: Antorcha de pie
+  FALLA mueble escondido, sin paja que lo haga: Alfombra de piel
+  OK   la pestaña «tierra» tiene algo
+  OK   la pestaña «base» tiene algo
+  OK   la pestaña «estructura» tiene algo
+  OK   la pestaña «muro» tiene algo
+  OK   la pestaña «tejado» tiene algo
+  OK   la pestaña «acceso» tiene algo
+  OK   la pestaña «exterior» tiene algo
+  OK   la pestaña de muebles tiene algo
+
+45 correctas, 5 fallos
