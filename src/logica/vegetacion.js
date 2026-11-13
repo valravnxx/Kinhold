@@ -97,9 +97,9 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
   const arbolDeCelda = (cx, cz, r, dentro) => {
     const x = cx + (r() - 0.5) * 4, z = cz + (r() - 0.5) * 4, u = r(), q = r(), v = r(), giro = r() * 6.3, tono = 0.82 + r() * 0.3;
     if (!dentro(x, z)) return null;
-    // (por debajo de 1,5 m, solo lejos del mar: antes, nada; y las vegas bajas de los ríos, a 1,2 m tierra adentro,
+    // (por debajo de 1,5 m, solo lejos del mar: antes, nada; y las vegas bajas de los ríos, a menos de 1 m tierra adentro,
     // quedaban sin bosque, con una franja de prado entre el río y los árboles)
-    const s = sitioEn(x, z, 0.35); if (!s || (s.y < 1.5 && (s.y < 0.8 || !(s.st.costa > 120) || globalThis.__orillaVieja))) return null;
+    const s = sitioEn(x, z, 0.35); if (!s || (s.y < 1.5 && (!(s.st.costa > 120) || globalThis.__orillaVieja))) return null;
     if (s.y < 1.8 && tramos.length && marismaEn(s.y, s.s, paisaje.rioCerca(x, z, tramos), x, z) > 0.3) return null;   // (en la marisma, no)
     const w = r();   // (el último: así lo de antes de cada árbol sale igual)
     const { d, especie, tam, linde } = bosqueEn(s.st, s.s, x, z, { semilla, u });
@@ -172,8 +172,9 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
       const st = paisaje.sitio(x, z, y); if (!st || !st.bioma || st.bioma === 'nieve') return;
       const m = marismaEn(y, pendiente(x, z), c, x, z);
       if (m > 0.3) {
-        // (los juncos de la marisma se recogen: son puntos de recogida, src/logica/recogida_mundo.js; aquí, la hierba salada)
-        if (q < 0.2 * m * mancha) R.sotobosque.push({ x, z, y, tipo: 'hierba_larga', tam: 0.6 + u * 0.6, giro, tono, sal: true });
+        // (los juncos de la marisma se recogen: son puntos de recogida, src/logica/recogida_mundo.js, que se marcan al
+        // acercarse; estos, de adorno, para que se vea como un juncal, y la hierba salada)
+        if (q < 0.3 * m * mancha) R.sotobosque.push({ x, z, y, tipo: u < 0.5 ? 'junco_agua' : 'hierba_larga', tam: 0.6 + u * 0.6, giro, tono, sal: true });
         return;
       }
       if (b > 4 || calvaTierra(x, z) > 0.3) return;

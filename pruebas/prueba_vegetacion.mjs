@@ -165,7 +165,7 @@ comprobar('más jóvenes en lindes y claros que dentro del bosque cerrado', nLin
   comprobar('la marisma, con sus juncos y su hierba salada, solo en la desembocadura', sal > 100 && salFuera === 0, `${sal}, ${salFuera} lejos del mar`);
   comprobar('la hierba de duna, solo junto al mar', dunaFuera === 0, `${duna}, ${dunaFuera} lejos`);
   // el bosque llega hasta el agua (valravnx, 13 nov): en el río de la demo, árboles a menos de 4 m del cauce, en seco
-  { const [x, z] = [174500, 47900], v = vegetacionEn(pai, alt, sem, cuadro(x, z, 120)), tr = pai.riosEn(x - 120, z - 120, x + 120, z + 120);   // (un río en el bosque)
+  { const [x, z] = [186000, 39200], v = vegetacionEn(pai, alt, sem, cuadro(x, z, 120)), tr = pai.riosEn(x - 120, z - 120, x + 120, z + 120);   // (un río en el bosque, tierra adentro)
     let cerca = 0, mojados = 0; for (const a of v.arboles) { const c = pai.rioCerca(a.x, a.z, tr), n = pai.agua(a.x, a.z, tr); if (c.dm - c.ancho / 2 < 4) cerca++; if (n !== null && alt(a.x, a.z) < n + 0.3) mojados++; }
     comprobar('el bosque llega hasta la orilla del río (árboles a menos de 4 m del cauce), sin ninguno en el agua', (globalThis.__orillaVieja ? 0 : cerca) > 0 && mojados === 0, `${cerca} a menos de 4 m, ${mojados} en el agua`); }
   comprobar('lejos del mar no hay marisma', marismaEn(1, 0, { dm: 30, ancho: 8, costa: Infinity }, 0, 0) === 0 && marismaEn(1, 0, { dm: 30, ancho: 8, costa: 200 }, 0, 0) > 0.3);
