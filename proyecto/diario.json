@@ -6559,5 +6559,22 @@
   ],
   "pruebas": "prueba_origenes.mjs: todo bien; rota a propósito (MUTAR=2), falla. Sin código del juego cambiado: nada en la nube.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:29:33+00:00",
+  "fin": "2026-11-13T07:02:19+00:00",
+  "titulo": "P11: las semillas silvestres (a medias, sin publicar)",
+  "hito": "granja",
+  "hecho": [
+   "En el mundo, en las celdas que no dan otra cosa: cebada silvestre y habas silvestres en los claros, col silvestre y nabo silvestre en la ribera. Se recogen con las manos; la planta se queda y se van las espigas, las vainas o los tallos en flor, que vuelven en una estación.",
+   "Dan cebada silvestre, habas, semillas de col y semillas de nabo (pequeños): caben en el cinturón, en la cesta de recolección y en el cesto. Las habas crudas no se comen; 3 al fuego dan 3 habas asadas (6 de hambre cada una).",
+   "Sus modelos en el mundo y en el suelo, e iconos nuevos en docs/recursos/iconos-v17 (la v16 es la del secadero, en la rama del chat: quien una la segunda tiene que volver a sacarlos).",
+   "Decisiones provisionales: cuánto da cada planta (2–4 de cebada y de semillas, 3–6 habas), cuántas hay, 30 s para asar las habas.",
+   "Pruebas: las cuatro semillas, con su zona, el cinturón, la cesta y las habas asadas, en prueba_recoleccion; la col y el nabo junto a los ríos, en prueba_recogida_mundo; recogerlas en el juego, PC y móvil, en prueba_recogida_mundo_navegador. Las semillas salen de PENDIENTES en prueba_origenes.",
+   "No se publica: la segunda mirada a las capturas dijo que no. Las habas tenían los tallos casi negros y al recogerlas no se notaba que se iban las vainas. La col y el nabo tenían los tallos de flor negros. Ya están cambiados en la rama trabajo/20261113-0529 (tallos verdes, vainas más grandes y por fuera de las hojas), pero sin capturas nuevas. La siguiente sesión pasa el revisor, mira las capturas de cerca y publica la v193 si sale bien.",
+   "Además, en las capturas del móvil la planta queda fuera de cuadro (detrás del mando): hay que encuadrarla en la prueba."
+  ],
+  "pruebas": "Comprobador de código limpio. Pruebas de node aquí: recolección 66/66, recogida en el mundo bien, orígenes 54/54, inventario, necesidades y fabricación bien. Cada prueba nueva se rompió a propósito una vez (MUTAR=3, MUTAR=2) y falla. En la nube (antes del último cambio de color), bien: recorrido, lo que se recoge en el mundo, las bayas, recoger, inventario, despiezar y asar, demo única (tras añadir la traducción del registro v191, que faltaba) y lo demás de estaciones. Fallan cosas que no toca este cambio: lógica (systemd-analyze en la máquina de GitHub; falla igual en main) y, sin comprobar si fallan igual en main, «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, en armas y mujer) y «panel de fabricación» (el texto de la pestaña de puestos). El revisor pidió también grupos de estaciones solo por un color, y se pasaron igual.",
+  "estado": "fallo"
  }
 ]
