@@ -1,0 +1,8 @@
+  OK    tierra adentro, casi nada a menos de 1 m sobre el mar (antes, llanos de kilómetros a 0,4 m) — 0 de 7783 puntos (0.00 %)
+  OK    y ningún punto justo a 0,4 m (el suelo plano de antes) — 0
+  OK    el llano de (206500, 60000): sobre el mar, con relieve, hierba y matas — de 5.80 a 7.20 m · hierba 4246 · matas 22
+  OK    el llano de (200500, 64000): sobre el mar, con relieve, hierba y matas — de 5.71 a 6.84 m · hierba 3800 · matas 22
+  OK    el llano de (210000, 27000): sobre el mar, con relieve, hierba y matas — de 6.38 a 7.70 m · hierba 3226 · matas 26
+  OK    la costa (la playa) sigue igual — 0 de 94 puntos cambian
+
+6 bien, 0 mal

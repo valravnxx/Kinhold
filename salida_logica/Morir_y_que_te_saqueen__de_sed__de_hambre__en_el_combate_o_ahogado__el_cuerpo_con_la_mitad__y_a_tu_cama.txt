@@ -1,0 +1,42 @@
+La lógica (src/logica/muerte.js)
+  OK   sin sed ni hambre al máximo, no se pierde sangre
+  OK   con la sed al máximo, la sangre entera en unos 20 minutos
+  OK   con el hambre al máximo, en unos 40
+  OK   las dos a la vez, antes
+  OK   de qué se muere: de sed antes que de hambre
+  OK   el cuerpo, una hora real
+  OK   despojar: el inventario queda vacío
+  OK   y saca cada cosa, también lo de dentro (el contenedor, vacío) — [["hacha_piedra",1],["piedra",1],["bayas",6],["bolsa_cintura",1],["camisa_lino",1],["pantalon_lino",1]]
+  OK   la mitad queda y la mitad se rompe, por unidades, sin crear ni perder nada — 11 unidades
+  OK   y cuál, al azar (no siempre lo mismo) — 30 repartos distintos en 40
+  OK   si es impar, la del medio a suertes
+  OK   lo que queda, en corro alrededor del cuerpo (a menos de 2 m: se coge desde ahí)
+  OK   al volver: sed y hambre a 60 como mucho, descansado
+  OK   vuelve a su cama si la tiene; si no, a su salida
+  OK   el cuerpo queda con su hora
+Con el servidor de verdad (de sed en 1,5 s, el cuerpo 3 s)
+  OK   lleva lo suyo (hacha y piedra en las manos, camisa y pantalón)
+  OK   con la sed al máximo, la sangre baja sola — 73.3
+  OK   sin beber, se muere de sed (se lo dice el servidor) — "De sed"
+  OK   y vuelve a su cama ligada — {"x":70,"y":0,"z":45,"giro":0.5}
+  OK   su cuerpo queda donde cayó
+  OK   los demás lo ven tumbado (presencia «muerto») y con su aspecto — {"autor":"cuerpo:1:jugador:f3f28793","t":1993,"x":60,"y":0,"z":40,"giro":0.5,"anim":"muerto"}
+  OK   vuelve sano (un luchador nuevo, con la sangre llena)
+  OK   con la sed a 60 y descansado — {"hambre":0.031555555555555545,"sed":60.00555555555556,"frio":0,"cansancio":0}
+  OK   no lleva nada (lo suyo está en el cuerpo o roto)
+  OK   la mitad de lo que llevaba, al suelo alrededor del cuerpo — 2 de 4
+  OK   a menos de 2 m (se coge desde el cuerpo)
+  OK   queda en el registro, con su autor, lo que queda y lo que se rompe
+  OK   cualquiera puede cogerlo del cuerpo — hacha_piedra
+  OK   lo que su navegador manda aún desde donde murió no cuenta — [70,45]
+  OK   y desde la cama ya sí
+  OK   pasada su hora, el cuerpo se va (los demás dejan de verlo)
+En el combate: quien cae, muere
+  OK   cae en el combate y muere (no se levanta curado donde cayó)
+  OK   sin cama, sin terreno: vuelve a su sitio de salida (aquí, el centro) — {"x":0,"y":0,"z":0,"giro":0}
+Ahogado: lo dice su navegador, y el servidor mira el agua
+  OK   en seco no te ahogas (no sirve para volver a casa) — Aquí no te ahogas.
+  OK   en el agua honda, sí: ahogado
+  OK   de sed no se puede decir: eso lo ve el servidor
+
+36 bien, 0 mal
