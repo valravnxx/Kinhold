@@ -1,0 +1,31 @@
+  OK   el campo de Ana, labrado (casi entero) — 99 m²
+  OK   sembrado: dos pasadas de cebada y tres plantas
+  OK   sin la hoz en la mano, no — Necesitas la hoz en la mano para segar.
+  OK   la cebada verde no se siega — La cebada aún no está madura.
+  OK   con la hoz, una pasada siega un círculo de 1,2 m (4 m²) y deja 1 gavilla en el suelo — {"ok":true,"campo":1,"segadas":4,"gavillas":1,"sobra":{"gavilla":1},"sobraEn":{"x":-2,"z":0}}
+  OK   y guarda lo que sobra (1,5 m²) para la siguiente — 1.5
+  OK   lo segado ya no está sembrado (sigue labrado)
+  OK   segada entera, unas 4 gavillas cada 10 m² (lo que da un puñado) — 12 de 12 m², 4 gavillas
+  OK   y lo verde sigue en pie
+  OK   donde ya está segado, no — Aquí no hay cebada que segar.
+  OK   en tierra ajena, no — Fuera de tu tierra.
+  OK   el nabo verde no se coge — Aún no está madura.
+  OK   las habas maduras se cogen a mano y dan 4 habas (a lo que llevas) — {"ok":true,"campo":1,"cultivo":"habas","da":{"habas":4},"sobra":{}}
+  OK   la col da la col y 3 semillas (lo que no cabe en las manos, al suelo) — {"ok":true,"campo":1,"cultivo":"col","da":{"col":1,"semilla_col":3},"sobra":{"semilla_col":3}}
+  OK   y ya no están en el campo
+  OK   donde no hay nada, no — Aquí no hay nada que coger.
+  OK   el nabo, maduro, da el nabo y 3 semillas — {"ok":true,"campo":1,"cultivo":"nabo","da":{"nabo":1,"semilla_nabo":3},"sobra":{"nabo":1,"semilla_nabo":3}}
+  OK   la col y el nabo se comen, crudos o asados (que sacian más)
+  OK   y se estropean pronto
+  OK   las gavillas van al almiar y la col y el nabo al cesto
+  OK   rehecho desde el registro da el mismo mundo
+  OK   se guarda y se lee: lo segado y lo cogido, igual
+El servidor de verdad: pone la hora, mira que estés cerca y lo reparte
+  OK   Ana labra en el servidor
+  OK   Ana siembra la cebada
+  OK   a más de 3 m de donde está, no — Estás demasiado lejos.
+  OK   con la hoz y cerca, siega
+  OK   y la gavilla queda en el suelo, donde se siega — {"id":"s1","cosa":{"tipo":"gavilla","n":1},"x":0.2,"z":0.3,"autor":"jugador:d79deada","soltado":1794602258304,"desaparece":null}
+  OK   Bruno lo ve (con la hora del servidor)
+
+28 bien, 0 mal

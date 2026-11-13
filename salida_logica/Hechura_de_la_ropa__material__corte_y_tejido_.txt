@@ -1,0 +1,49 @@
+Hechura de la ropa
+  OK   las prendas de tela del taller tienen hechura (y son teñibles)
+  OK   el sombrero y el calzado no tienen hechura
+  OK   la cota de malla, sin tela: solo larga o corta, y no se cose en el banco
+  OK   los tejidos del GDD
+  OK   por defecto, cada prenda como en el taller — {"material":"lana","corte":"largo","tejido":"liso"}
+  OK   lo que no vale vuelve al de siempre — {"material":"lana","corte":"largo","tejido":"liso"}
+  OK   cada prenda solo con sus cortes (las calzas no se acortan)
+  OK   cada prenda solo con sus materiales (el manto, de lana)
+  OK   una hechura válida se guarda y no cambia al normalizarla otra vez
+  OK   con su material de siempre, el color sin teñir del taller
+  OK   con otro material, el de ese material (túnica de lino: lino crudo, más claro)
+  OK   cortes: largo entero, más corto cuanto más corto
+  OK   la lana tiene más grano que el lino
+  OK   colores apagados (nada chillón)
+  OK   todos los cortes tienen nombre
+Recetas y coser
+  OK   gambesón: 4 telas, relleno e hilo en el banco (sistemas.html) — {"estacion":"banco","piden":{"tela_lana":4,"hilo":1,"relleno":1}}
+  OK   la tela pedida es la del tejido elegido
+  OK   sin bastante tela, dice lo que falta — {"falta":{"tela_lino_cuadros":1,"hilo":1}}
+  OK   con todo, sale la prenda con su hechura, su tinte y su autor — {"hecha":{"prenda":"tunica","hechura":{"material":"lino","corte":"corto","tejido":"cuadros"},"tinte":"glasto","autor":"ana"},"gasta":{"tela_lino_cuadros":2,"hilo":1}}
+  OK   un tinte que no es de esa prenda queda sin teñir
+  OK   sin autor no se cose
+  OK   la cota de malla no se cose en el banco
+La prenda cosida en el inventario: su hechura y su tinte van con ella
+  OK   los rasgos de una prenda: su hechura y su tinte, limpios — {"hechura":{"material":"lana","corte":"corto","tejido":"sarga"},"tinte":"glasto"}
+  OK   el material es el de la prenda del catálogo (la camisa de lana, de lana)
+  OK   lo de siempre no se apunta (los guardados viejos siguen igual)
+  OK   un tinte de otra paleta o desconocido no vale (zapatos: cuero; cota: no se tiñe)
+  OK   la cota corta en el inventario
+  OK   dos túnicas con distinta hechura no son la misma
+  OK   se coge con su hechura y su tinte — {"tipo":"tunica_lana","n":1,"hechura":{"material":"lana","corte":"corto","tejido":"sarga"},"tinte":"glasto"}
+  OK   cada prenda la suya: otra túnica no entra donde ya hay una
+  OK   al quitársela y ponerse la otra, cada una sigue con lo suyo
+  OK   se guarda y se carga con su hechura y su tinte
+  OK   un guardado con hechura o tinte que no valen: la de siempre — {"tipo":"tunica_lana","n":1}
+  OK   acción con hechura que no es un objeto: rechazada
+  OK   al soltarla al suelo y cogerla otra vez, sigue con lo suyo — {"tipo":"tunica_lana","n":1,"hechura":{"material":"lana","corte":"corto","tejido":"sarga"},"tinte":"glasto"}
+Lo que se ve puesto
+  OK   las capas de lo puesto (descalzo sin calzado) — tunica,cota,descalzo
+  OK   la túnica, corta, de sarga y azul; la cota, corta
+  OK   la camisa de lana se ve de lana
+  OK   sin tinte propio, el de siempre (la túnica parda del taller)
+  OK   en la mujer, la túnica se dibuja como vestido, con su tinte
+  OK   el nombre lleva la hechura y el tinte — Túnica de lana · Corto, Sarga · Azul de glasto
+  OK   en línea: el aspecto lleva los tintes y la hechura, comprobados
+  OK   en línea: lo que no vale, el de siempre; sin tintes, no se manda nada
+
+Hechura: 43 bien, 0 mal
