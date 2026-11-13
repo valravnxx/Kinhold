@@ -62,7 +62,10 @@ const TINTE_CEBADA = [[0.92, 1, 0.8], [0.62, 1, 0.5], [0.8, 1, 0.52], [1.18, 1.0
 // Un constructor de mallas pequeñas con color por vértice (las normales hacia arriba, como la hierba densa: luz suave).
 function constructor() {
   const pos = [], col = [], nor = [], idx = [];
-  const v = (x, y, z, c, ny = 1) => { pos.push(x, y, z); col.push(c.r, c.g, c.b); nor.push(0, ny, 0); return pos.length / 3 - 1; };
+  // (los colores, apagados como los de la referencia: algo hacia el gris y algo más oscuros, que con la normal hacia
+  // arriba todo sale muy iluminado)
+  const apagar = (c) => { const l = c.r * 0.3 + c.g * 0.59 + c.b * 0.11; return [(c.r + (l - c.r) * 0.35) * 0.78, (c.g + (l - c.g) * 0.35) * 0.78, (c.b + (l - c.b) * 0.35) * 0.78]; };
+  const v = (x, y, z, c, ny = 1) => { pos.push(x, y, z); col.push(...apagar(c)); nor.push(0, ny, 0); return pos.length / 3 - 1; };
   return {
     // una hoja o un tallo: de (x, z) en el suelo, hacia el ángulo a, que sube «alto», se abre «fuera» y cae «cae» en la
     // punta; ancho en la base; c0 en el pie, c1 en la punta. ancha: hoja ancha (rombo) en vez de tira
@@ -78,7 +81,8 @@ function constructor() {
     bola(x, y, z, r, c, achata = 0.85) {
       const g = new THREE.IcosahedronGeometry(r, 1), p = g.attributes.position, n = g.attributes.normal;
       const base = pos.length / 3;
-      for (let i = 0; i < p.count; i++) { pos.push(x + p.getX(i), y + p.getY(i) * achata, z + p.getZ(i)); const k = 0.82 + 0.18 * (p.getY(i) / r * 0.5 + 0.5); col.push(c.r * k, c.g * k, c.b * k); nor.push(n.getX(i), n.getY(i), n.getZ(i)); }
+      const ca = apagar(c);
+      for (let i = 0; i < p.count; i++) { pos.push(x + p.getX(i), y + p.getY(i) * achata, z + p.getZ(i)); const k = 0.82 + 0.18 * (p.getY(i) / r * 0.5 + 0.5); col.push(ca[0] * k, ca[1] * k, ca[2] * k); nor.push(n.getX(i), n.getY(i), n.getZ(i)); }
       const ix = g.index ? g.index.array : [...Array(p.count).keys()];
       for (const i of ix) idx.push(base + i);
       g.dispose();

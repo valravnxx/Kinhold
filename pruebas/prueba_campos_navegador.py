@@ -327,7 +327,7 @@ try:
         captura(B, f'{SALIDA}/movil_campo.png')
         ir(B, x0 + 0.9, z0 - 1.1, 2.6); B.evaluate(f"{K}.cam.yaw = 2.6 + Math.PI; {K}.cam.dist = 3; {K}.cam.pitch = 0.35"); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_estaca_de_cerca.png')
-        ir(B, x0 + 8.5, z0 + 1.2, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3.5; {K}.cam.pitch = 0.75"); B.wait_for_timeout(2000)
+        ir(B, x0 + 8.5, z0 + 3.2, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.6"); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_sembrado_de_cerca.png')
         comprobar('a Bruno no le deja quitar las estacas de otro (lo dice)', (B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'Fuera de tu tierra.'))
 
