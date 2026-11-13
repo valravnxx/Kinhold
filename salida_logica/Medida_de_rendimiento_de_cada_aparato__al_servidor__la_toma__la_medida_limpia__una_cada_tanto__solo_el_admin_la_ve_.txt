@@ -1,0 +1,19 @@
+Lógica pura
+  OK   sin fotogramas, no hay resultado
+  OK   la toma: media, peor, lentos, triángulos y llamadas (y descarta tiempos imposibles) — {"segundos":0.1,"fotogramas":3,"fps":30,"ms":33.3,"peor":68,"lentos":1,"triangulos":2000,"triangulosMax":3000,"llamadas":20,"llamadasMax":30}
+  OK   una medida buena sale limpia (textos cortos, sin lo que no toca, lo que no es número, fuera) — {"navegador":"a ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ","grafica":"Tarjeta de prueba","ancho":1920,"alto":1080,"resolucion":1,"nucleos":8,"memoria":null,"tactil":false}
+  OK   las medidas raras no valen
+  OK   una cada tanto: la primera sí; enseguida, no; pasado el rato, sí
+  OK   el resumen se lee de un vistazo — 58 fps · peor 41 ms · 120 mil tri · 85 llamadas · 1920×1080 ×1 · alta
+Servidor
+  OK   un jugador manda su medida — {"tipo":"rendimiento","id":3,"que":"enviar","ok":true}
+  OK   otra enseguida, no — {"tipo":"rendimiento","id":4,"que":"enviar","ok":false,"motivo":"Espera un poco antes de mandar otra medida."}
+  OK   una que no vale, no (y no cuenta para la espera)
+  OK   el admin manda la suya — {"tipo":"rendimiento","id":4,"que":"enviar","ok":true}
+  OK   quedan en rendimiento.jsonl con la hora y la cuenta — [["Otro",31],["Valravnx",60]]
+  OK   otra cuenta no las ve — {"ok":false}
+  OK   el admin ve las últimas, la más nueva primero — ["Valravnx","Otro"]
+  OK   (el admin vuelve a entrar con su cuenta) — {"ok":true}
+  OK   al volver a arrancar el servidor, el admin las sigue viendo — {"ok":true,"n":2}
+
+15 bien, 0 mal
