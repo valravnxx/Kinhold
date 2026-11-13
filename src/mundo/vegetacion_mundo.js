@@ -278,8 +278,13 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
           l.forEach((e, k) => {
             // (la pared tiene la pendiente de la ladera, no está a plomo: la pieza se echa hacia atrás lo que le falta a la
             // ladera para estar vertical, y se pone con su cara a ras de la ladera, no metida dentro)
-            const esc = e.alto / ALTO_PARED[v], gi = e.cara ?? e.giro, atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.9, fuera = e.alto * 0.06;   // (más fuera, se veían de perfil, con su corte plano)
-            o.position.set(e.x + Math.sin(gi) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(gi) * fuera); o.rotation.set(-atras + e.inclina * 0.3, (e.cara ?? e.giro) + (e.giro - (e.cara ?? e.giro)) * 0.3, 0, 'YXZ'); o.scale.set(esc * (1.1 + e.tono * 0.3), esc, esc * 0.7);   // (de cara a la ladera casi del todo y más anchas, que se solapen: torcidas, se les veía el corte de los lados) o.updateMatrix(); im.setMatrixAt(k, o.matrix);   // (la cara de Meshy mira a +z, medido en el modelo; algo menos honda)
+            // (más metidas: más fuera, se veían de perfil, con su corte plano; de cara a la ladera casi del todo y más anchas,
+            // que se solapen: torcidas, se les veía el corte de los lados; la cara de Meshy mira a +z, medido en el modelo)
+            const esc = e.alto / ALTO_PARED[v], gi = e.cara ?? e.giro, atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.9, fuera = e.alto * 0.06;
+            o.position.set(e.x + Math.sin(gi) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(gi) * fuera);
+            o.rotation.set(-atras + e.inclina * 0.3, gi + (e.giro - gi) * 0.3, 0, 'YXZ');
+            o.scale.set(esc * (1.1 + e.tono * 0.3), esc, esc * 0.7);
+            o.updateMatrix(); im.setMatrixAt(k, o.matrix);
             im.setColorAt(k, colorRoca(e).lerp(blanco, 0.45).multiplyScalar(e.tono));
           });
           im.castShadow = nivel !== 'lejos'; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
