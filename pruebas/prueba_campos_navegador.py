@@ -246,6 +246,8 @@ try:
         captura(A, f'{SALIDA}/PC_labrado_de_cerca.png')
 
         print('Fuera de su tierra, no')
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der', cantidad: 1 }})")   # deja la azada: la mano, para la estaca
+        esperar(A, f"!{K}.inventario.lugares['mano:der']", 5000)
         A.evaluate(f"(() => {{ const l = {K}.inventario.lugares; if (!l['mano:der'] && !l['mano:izq']) {K}.accionInventario({{ tipo: 'coger', objeto: 'estaca', cantidad: 1, a: 'mano:der' }}); }})()")
         esperar(A, f"{K}.inventario.cuantos('estaca') >= 1", 5000); A.wait_for_timeout(500)
         ir(A, 3, 6); usar(A)
