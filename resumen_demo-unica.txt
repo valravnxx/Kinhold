@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2792 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3131 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4537 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3202 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2786 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3160 KB
+dist/kinhold_trozos.html 2807 KB
+hilo de los trozos 23 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v196 (El secadero); v196: el secadero (P9, «Oficios del asentamiento»). Un puesto nuevo en Construir, «Puestos de trabajo»: cuatro troncos delgados hincados de postes y dos cuerdas tendidas, fuera y en tu tierra. Se le cuelga carne cruda (Usar: dejar en él), que colgada no se estropea; en su pestaña del panel de fabricar, «Carne seca» pone a secar cada carne cruda y al cabo de 6 h se recoge su carne seca (1 cruda, 1 seca: valravnx, «no seamos tan duros, que cazar cuesta»); lo colgado se seca todo a la vez, que no se estropea y sacia como la asada. La carne que se seca se ve colgada para todos: la cruda, roja; la que se está secando, más oscura; la seca, parda y más fina. La carne seca cabe en el cesto. El panel dice en horas lo que falta.; v196, provisional: 6 h reales para secar la carne (dos días de juego), 30 s de trabajo para levantar el secadero, hasta 10 carnes secándose a la vez en cada uno, cuánto sacia la seca (como la asada) y que va solo fuera y en tu tierra.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 431 s

@@ -1,0 +1,98 @@
+Vista pc
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 103.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 1 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 815.2, 'peor': 818, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 23, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 117.9
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 1 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 1054.5, 'peor': 1055, 'triangulos': 1006522, 'dibujados': 63, 'geometrias': 40, 'texturas': 33, 'memoriaJS': 23, 'personajes': 1, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 3.600000000000001}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 2.8800000000000017}
+  OK   construir: cargado también avanza — 2.88 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 1 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 1, 'ms': 1112.4, 'peor': 1112, 'triangulos': 1165692, 'dibujados': 80, 'geometrias': 44, 'texturas': 44, 'memoriaJS': 23, 'personajes': 9, 'resolucion': 0.75, 'ancho': 960, 'alto': 600}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 1006522 → 1165692
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	1 por segundo
+Cada fotograma	1136.8 ms de
+  OK   construir: el botón de medir y mandar al servidor — o lo lleva)
+Medida para el servidor
+
+Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Medir 10 s y mandarlo al servidor
+  OK   construir: la toma de 1 s trae fotogramas, peor, triángulos y llamadas — {'segundos': 2.2, 'fotogramas': 2, 'fps': 0.9, 'ms': 1110.6, 'peor': 1113, 'lentos': 2, 'triangulos': 1165692, 'triangulosMax': 1165692, 'llamadas': 80, 'llamadasMax': 80}
+  OK   construir: y lo que se sabe del aparato — {'navegador': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36', 'grafica': 'ANGLE (Google, Vu
+  OK   construir: mientras mide, lo dice — entras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Midiendo… 5 s
+  OK   construir: sin servidor, dice que no se ha podido mandar — No se ha podido mandar: sin conexión con el servidor.
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:33015/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+Vista movil
+  OK   menú: dos partes (Jugar y Personaje)
+  OK   menú: sin personaje elegido lo dice
+  OK   menú: [data-ir=construir] se ve y no está tapado
+  OK   menú: [data-ir=personaje] se ve y no está tapado
+  OK   personaje: botón Menú arriba y libre
+  OK   personaje: se dibuja la escena — 121.7
+  OK   personaje: botón de fps libre
+  OK   personaje: el botón dice los fps — 5 fps
+  OK   personaje: mide triángulos, dibujos y memoria — {'fps': 5, 'ms': 211.1, 'peor': 212, 'triangulos': 55312, 'dibujados': 23, 'geometrias': 14, 'texturas': 18, 'memoriaJS': 26, 'personajes': 1, 'resolucion': 0.5, 'ancho': 195, 'alto': 422}
+  OK   personaje: cuenta 1 personaje(s) — 1
+  OK   menú: resume el personaje elegido — Tu personaje: mujer, con vestido y gambesón.
+  OK   construir: el personaje elegido, con la ropa del visor pasada al inventario — {'s': 'mujer', 'c': ['gambeson']}
+  OK   construir: botón «Salir» libre, al pie del menú
+  OK   construir: se dibuja — 109.2
+  OK   construir: botón de fps libre
+  OK   construir: el botón dice los fps — 2 fps
+  OK   construir: mide triángulos, dibujos y memoria — {'fps': 2, 'ms': 449.1, 'peor': 466, 'triangulos': 603218, 'dibujados': 53, 'geometrias': 35, 'texturas': 29, 'memoriaJS': 26, 'personajes': 1, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir: cuenta 1 personaje(s) — 1
+  OK   construir: corre con la carrera nueva a su ritmo natural — {'m': 'correr', 'r': 0.8429354249631715, 'n': 4.270789782215271}
+  OK   construir: se llena todo con acciones con autor — {'ok': True, 'f': 1, 'autor': 'jugador:local'}
+  OK   construir: sin carga anda a 3,6 m/s — {'vel': 3.6, 'd': 6.755399999999998}
+  OK   construir: cargado al máximo en todo, al 80% (2,88 m/s) — {'vel': 2.8800000000000003, 'd': 5.373791999999902}
+  OK   construir: cargado también avanza — 5.37 m
+  OK   construir: lo que llevas queda guardado
+  OK   construir: al soltarlo todo vuelve a la velocidad de siempre
+  OK   construir_9: botón de fps libre
+  OK   construir_9: el botón dice los fps — 2 fps
+  OK   construir_9: mide triángulos, dibujos y memoria — {'fps': 2, 'ms': 457.3, 'peor': 459, 'triangulos': 700522, 'dibujados': 71, 'geometrias': 40, 'texturas': 41, 'memoriaJS': 26, 'personajes': 9, 'resolucion': 0.75, 'ancho': 292, 'alto': 633}
+  OK   construir_9: cuenta 9 personaje(s) — 9
+  OK   construir: con 8 más hay más triángulos (los de Meshy, unos 3.000 cada uno) — 603218 → 700522
+  OK   construir: el panel enseña los números — Rendimiento en este aparato
+Fotogramas	2 por segundo
+Cada fotograma	461.2 ms de 
+  OK   construir: el botón de medir y mandar al servidor — o lo lleva)
+Medida para el servidor
+
+Juega con normalidad mientras mide: se manda lo que tarda cada fotograma, los triángulos, las llamadas de dibujo y este aparato.
+
+Medir 10 s y mandarlo al servidor
+  OK   vuelve al menú
+  OK   un enlace a «Duelo» lleva a «Jugar» — http://127.0.0.1:33015/jugar/demo/prueba.html?sinservidor=1&salida=0&modo=construir
+  OK   sin errores en la consola
+  FALLA menú en en: todo traducido — Demo única · v196 (El secadero); v196: el secadero (P9, «Oficios del asentamiento»). Un puesto nuevo en Construir, «Puestos de trabajo»: cuatro troncos delgados hincados de postes y dos cuerdas tendidas, fuera y en tu tierra. Se le cuelga carne cruda (Usar: dejar en él), que colgada no se estropea; en su pestaña del panel de fabricar, «Carne seca» pone a secar cada carne cruda y al cabo de 6 h se recoge su carne seca (1 cruda, 1 seca: valravnx, «no seamos tan duros, que cazar cuesta»); lo colgado se seca todo a la vez, que no se estropea y sacia como la asada. La carne que se seca se ve colgada para todos: la cruda, roja; la que se está secando, más oscura; la seca, parda y más fina. La carne seca cabe en el cesto. El panel dice en horas lo que falta.; v196, provisional: 6 h reales para secar la carne (dos días de juego), 30 s de trabajo para levantar el secadero, hasta 10 carnes secándose a la vez en cada uno, cuánto sacia la seca (como la asada) y que va solo fuera y en tu tierra.
+  OK   menú en en: nada tapado
+  FALLA menú en ru: todo traducido — Demo única · v196 (El secadero); v196: el secadero (P9, «Oficios del asentamiento»). Un puesto nuevo en Construir, «Puestos de trabajo»: cuatro troncos delgados hincados de postes y dos cuerdas tendidas, fuera y en tu tierra. Se le cuelga carne cruda (Usar: dejar en él), que colgada no se estropea; en su pestaña del panel de fabricar, «Carne seca» pone a secar cada carne cruda y al cabo de 6 h se recoge su carne seca (1 cruda, 1 seca: valravnx, «no seamos tan duros, que cazar cuesta»); lo colgado se seca todo a la vez, que no se estropea y sacia como la asada. La carne que se seca se ve colgada para todos: la cruda, roja; la que se está secando, más oscura; la seca, parda y más fina. La carne seca cabe en el cesto. El panel dice en horas lo que falta.; v196, provisional: 6 h reales para secar la carne (dos días de juego), 30 s de trabajo para levantar el secadero, hasta 10 carnes secándose a la vez en cada uno, cuánto sacia la seca (como la asada) y que va solo fuera y en tu tierra.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
