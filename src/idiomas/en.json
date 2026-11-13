@@ -2755,5 +2755,17 @@
  "v192: el suelo con materiales (hito «El aspecto»). El suelo ya no es un verde liso con ruido: mezcla cuatro texturas de verdad (hierba, tierra, roca y hojarasca, libres CC0 de ambientCG) según lo que hay en cada sitio: roca en las paredes, tierra en las calvas, la playa y el lecho de los ríos, hojarasca bajo el bosque y hierba en el prado. Entre una y otra, el borde va por la altura de cada textura (asoman primero las piedrecitas), y con relieve en las calidades que lo llevan. A lo lejos y donde se ve muy de canto, el detalle se va para que no haga rayas. Y la hierba densa ya no crece sobre la tierra ni la hojarasca.": "v192: ground with materials (milestone «The look»). The ground is no longer a plain green with noise: it blends four real textures (grass, earth, rock and leaf litter, free CC0 from ambientCG) according to what is in each place: rock on cliffs, earth on bare patches, beaches and riverbeds, leaf litter under the forest and grass in the meadow. Between one and another, the edge follows each texture's height (the small stones show first), and with relief at the qualities that have it. In the distance and where it is seen at a steep angle, the detail fades so it does not make stripes. And the dense grass no longer grows on earth or leaf litter.",
  "v192, provisional: qué texturas (Ground037, Ground106, Rock028 y Ground078), cuánto suelo ocupa cada una (de 2 a 3,5 m), el color de la tierra de las calvas (pardo grisáceo) y el relieve por calidad (nada en el móvil básico, algo menos en los otros móviles).": "v192, provisional: which textures (Ground037, Ground106, Rock028 and Ground078), how much ground each one covers (from 2 to 3.5 m), the colour of the earth on bare patches (greyish brown) and the relief per quality (none on basic mobile, a little less on the other mobiles).",
  "El suelo con materiales": "Ground with materials",
- "Demo única · v192 (El suelo con materiales)": "Single demo · v192 (Ground with materials)"
+ "Demo única · v192 (El suelo con materiales)": "Single demo · v192 (Ground with materials)",
+ "Secadero": "Drying rack",
+ "el secadero": "the drying rack",
+ "un secadero": "a drying rack",
+ "En el secadero": "On the drying rack",
+ "{h} h": "{h} h",
+ "te quedan {h} h {m} min": "{h} h {m} min left",
+ "te quedan {m} min": "{m} min left",
+ "Carne seca": "Dried meat",
+ "Secar carne: colgada aquí no se estropea, y seca dura mucho": "Dry meat: hung here it does not spoil, and dried it keeps a long time",
+ "Comida que no se estropea y sacia como la asada.": "Food that does not spoil and fills you up like roast meat.",
+ "v191: con pocos fotogramas se anda a la velocidad de siempre (valravnx, 12 nov: con pocos fps su chica andaba «hiperlenta»). Antes cada fotograma contaba como mucho 0,05 s, así que por debajo de 20 fps todo el juego iba a cámara lenta; ahora el tiempo del juego va al real (hasta medio segundo por fotograma, la vuelta de otra pestaña no salta) y el paso de andar se parte en trozos de 0,05 s para no atravesar paredes ni orillas.": "v191: with few frames you walk at the usual speed (valravnx, 12 Nov: with low fps his partner walked «super slowly»). Before, each frame counted for at most 0.05 s, so below 20 fps the whole game ran in slow motion; now game time follows real time (up to half a second per frame, so coming back from another tab does not jump) and each walking step is split into 0.05 s pieces so you do not pass through walls or shores.",
+ "El secadero va en tu tierra (o en la de quien te invita).": "The drying rack goes on your land (or on the land of whoever invites you)."
 }

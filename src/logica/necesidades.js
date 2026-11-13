@@ -132,7 +132,7 @@ export function hayAguaCerca(aguaEn, x, z) {
 // Comer (P4): lo que se come y cuánta hambre quita cada uno (decisión provisional; el documento solo dice que lo
 // cocinado sacia más). Una mata de bayas da de 3 a 6: entre 15 y 30 puntos. La carne de una liebre (9 nov; src/logica/
 // comida.js): cruda, 12; asada, 35 (una comida de verdad: algo más de un tercio del hambre).
-export const NUTRE = { bayas: 5, setas: 7, carne_cruda: 12, carne_asada: 35 };
+export const NUTRE = { bayas: 5, setas: 7, carne_cruda: 12, carne_asada: 35, carne_seca: 35 };   // la seca (P9), como la asada
 export const comestible = (tipo) => Object.prototype.hasOwnProperty.call(NUTRE, tipo);
 
 // los círculos que salen ahora: [{ que, fuerte }]

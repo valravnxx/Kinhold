@@ -90,7 +90,7 @@ export const CATALOGO = {
   // de los animales, el campo y el agua
   liebre: R('Liebre', 'M'),   // (9 nov) la cazada lanzando la lanza en el modo arma, entera: se despieza
   // (9 nov) lo que da la liebre al despiezarla (src/logica/comida.js): la carne cruda se estropea; asada, sacia más
-  carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'),
+  carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'), carne_seca: R('Carne seca', 'P'),   // (13 nov) la del secadero
   piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
   grano: R('Grano', 'P'), harina: R('Harina', 'P'), agua: R('Agua', 'P'),
   flecha: R('Flecha', 'P'), virote: R('Virote', 'P'), anzuelo: R('Anzuelo y sedal', 'P'),

@@ -76,6 +76,7 @@ export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que
 export const COLA_ESTACION = 3;             // encargos sin terminar por estación
 export const COLA_MANOS = 1;
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
+export const SECAR_CARNE = 6 * 3600;           // s que tarda la carne en secarse en el secadero (provisional)
 export const MAX_RATO_ESTACION = 5;         // s de trabajo como mucho en una sola acción (como en las obras)
 
 // Los usos: qué estaciones dan cada uno. Una receta pide un uso, no una estación concreta.
@@ -84,6 +85,7 @@ export const USOS = {
   fuego:  { nombre: 'Al fuego', estaciones: ['hoguera', 'hogar'] },
   tallar: { nombre: 'En la piedra de tallar', estaciones: ['piedra_tallar'] },
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
+  secar:  { nombre: 'En el secadero', estaciones: ['secadero'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -115,7 +117,12 @@ export const ESTACIONES = {
   // 8 haces de juncos y 2 cordel; el refugio, 40 s de trabajo y la cama, 25 s (diario y registro).
   refugio_ramas:  { nombre: 'Refugio de ramas', un: 'un refugio de ramas', uso: 'cama', coste: { rama: 12, cordel: 4 }, donde: 'fuera', trabajo: 40, tierra: true, hace: 'Un tejadillo de ramas apoyado en un travesaño, con un lecho de ramas debajo: para dormir cuando aún no tienes casa' },
   cama_juncos:    { nombre: 'Cama de juncos', un: 'una cama de juncos', uso: 'cama', coste: { junco: 8, cordel: 2 }, donde: 'dentro', trabajo: 25, tierra: true, hace: 'Un lecho de haces de juncos atados con cordel, dentro de la casa' },
-  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
+  // el secadero (P9, 13 nov; documento de sistemas: «4 postes + 2 cuerdas — secar carne, pieles, fibras, hierbas, heno»):
+  // cuatro troncos delgados hincados de postes y dos cuerdas tendidas entre ellos; fuera y en tu tierra. Lo que se
+  // cuelga (lo depositado) no se estropea mientras está colgado, y la carne puesta a secar (su cola) se ve colgada para
+  // todos (cuelga: true). Provisional (diario y registro): 30 s de trabajo para levantarlo.
+  secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
@@ -167,6 +174,11 @@ export const RECETAS = {
   antorcha_resina:   r('Antorcha (con resina)', 'fuego', 'antorcha', { rama: 1, resina: 1 }, 20),
   // asar la carne (9 nov; src/logica/comida.js): sacia más que cruda y no se estropea. Tiempo, provisional
   asar_carne:        r('Carne asada', 'fuego', 'carne_asada', { carne_cruda: 1 }, 45),
+  // en el secadero (P9, 13 nov; documento de sistemas: «carne seca — 2 carne + (sal opcional) — secadero — dura
+  // mucho»): 2 carnes crudas colgadas dan 1 carne seca al cabo de SECAR_CARNE; lo que tarda se cuenta por tiempo
+  // transcurrido (la cola de la estación guarda cuándo termina), así que el servidor no tiene que simular nada. Sin sal
+  // (aún no hay). Provisional (diario y registro): 6 h reales, dos días de juego.
+  secar_carne:       r('Carne seca', 'secar', 'carne_seca', { carne_cruda: 2 }, SECAR_CARNE),
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -194,6 +206,7 @@ export const PARA = {
   fardo: 'A la espalda: pieles, tela, fibras, paja, juncos y mimbre.',
   arpon: 'Pesca.',
   odre: 'Agua; va al hombro.',
+  secar_carne: 'Comida que no se estropea y sacia como la asada.',
   yesca: 'Prende la chispa para encender la hoguera o el hogar.',
   yesca_corteza: 'Prende la chispa para encender la hoguera o el hogar.',
   lasca_silex: 'Corta fibra y juncos, despieza.',
@@ -385,7 +398,7 @@ export class Fabricacion {
     const e = ESTACIONES[tipo];
     if (e.donde === 'fuera' && dentro) return { ok: false, motivo: `${e.nombre}: solo fuera, no bajo techo.` };
     if (e.donde === 'dentro' && !dentro) return { ok: false, motivo: `${e.nombre}: solo dentro de la casa.` };
-    if (e.tierra && enTierra === false) return { ok: false, motivo: e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).' : 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
+    if (e.tierra && enTierra === false) return { ok: false, motivo: e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).' : e.uso === 'secar' ? 'El secadero va en tu tierra (o en la de quien te invita).' : 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
     return { ok: true };
   }
   // Poner el marco de un puesto en (x, z) (y: la altura del suelo en el que se apoya, si se da): no gasta nada; su

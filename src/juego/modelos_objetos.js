@@ -182,6 +182,20 @@ function carne(asada) {
     return mallas(L);
   };
 }
+// La carne seca (P9, 13 nov): tres tiras oscuras y arrugadas, más finas que la carne fresca, sobre la hoja.
+const SECA = 0x4a2214, SECA_CLARA = 0x6a3322;
+function carneSeca(n, id) {
+  const L = lote(0.04);
+  { const hoja = new THREE.CircleGeometry(0.1, 10); hoja.rotateX(-Math.PI / 2); hoja.scale(2.2, 1, 1.2); L.add(hoja, HOJA_BAYA, 0, 0.003, 0, { y: az(id, 1) * 0.5 }, { tex: 'liso' }); }
+  const k = 3;
+  for (let i = 0; i < k; i++) {
+    const largo = 0.2 + az(id, i + 5) * 0.04, tira = new THREE.BoxGeometry(largo, 0.01, 0.03, 8, 1, 1), p = tira.attributes.position;
+    for (let j = 0; j < p.count; j++) { const x = p.getX(j); p.setY(j, p.getY(j) + Math.sin(x * 38 + i) * 0.004); p.setZ(j, p.getZ(j) * (1 - 0.3 * Math.abs(x / largo))); }   // arrugada y más fina en las puntas
+    tira.computeVertexNormals();
+    L.add(tira, i === 1 ? SECA_CLARA : SECA, (az(id, i + 9) - 0.5) * 0.02, 0.012 + i * 0.011, (i - 1) * 0.034, { y: (az(id, i + 20) - 0.5) * 0.35 }, { tex: 'liso', sinSuelo: true, brillo: 0.85 });
+  }
+  return mallas(L);
+}
 function setas(n, id) {
   const L = lote(0.03);
   const seta = (x, z, h, r, inclX, inclZ, g) => {
@@ -441,7 +455,7 @@ function bandolera(n, id) {
 
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
-  carne_cruda: carne(false), carne_asada: carne(true),
+  carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,

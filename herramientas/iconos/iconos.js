@@ -76,7 +76,10 @@ for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
 const LLENOS = { acopio_troncos: { tronco_delgado: 7 }, pila_piedras: { piedra: 22 }, lenera: { lena: 14, rama: 6 },
   soporte_varas: { vara: 9 }, almiar: { paja: 14, junco: 4 }, hoyo_barro: { barro: 9 }, cesto: { fibra: 10, silex: 4, cordel: 2 },
   colgadero_mochilas: { lenero: 1, cesta_recoleccion: 1, porta_piedras: 1 }, colgadero_herramientas: { hacha_piedra: 1, palo_cavador: 1, azada: 1, pala_madera: 1, hoz_silex: 1 } };
-const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t)); return o; };
+// el secadero (P9): con carne colgada, seca y por secar
+LLENOS.secadero = { carne_cruda: 2 };
+const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }] };
+const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
 for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };
 
 // Con ?conjunto=piezas (sacar.py … conjunto=piezas), solo las piezas de construir del tramo (pz_<pieza>), los muebles
