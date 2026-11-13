@@ -313,7 +313,7 @@ function llenoSecadero(dep, id, colgado = []) {
 const RASPADOR = { u: 0.6, abajo: 0.32, arriba: 1.42, alto: 1.6, echa: 0.22, sobra: 0.14 };
 const enBastidor = (u, h, delante = 0) => new THREE.Vector3(u, h, -h * RASPADOR.echa + delante);
 const CUERDA_C = 0xb8a27a;
-function cuerdaEntre(L, a, b, r = 0.006) {
+function cuerdaEntre(L, a, b, r = 0.008) {
   const d = new THREE.Vector3().subVectors(b, a), q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
   const c = a.clone().addScaledVector(d, 0.5);
   L.add(cil(r, r, d.length(), 4), CUERDA_C, c.x, c.y, c.z, new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), { tex: 'paja', sinSuelo: true });
@@ -347,10 +347,11 @@ function llenoRaspador(dep, id) {
     const geo = new THREE.ExtrudeGeometry(forma, { depth: 0.008, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.008, bevelSegments: 1, curveSegments: 4 });
     const c = enBastidor(0, h0, 0.02);
     const color = cual === 'piel' ? 0x8a6d55 : PIEL_LIMPIA;   // por raspar: la cara de la carne, rosada y parda; limpia, pálida
-    L.add(geo, color, c.x, c.y, c.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'liso', sinSuelo: true, rayas: v => 0.9 + 0.1 * Math.cos(v.x * 13 + v.y * 5) });
+    // (la textura de manchas suaves, la del follaje, da a la piel su moteado: sin ella era un cartón liso)
+    L.add(geo, color, c.x, c.y, c.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'hojas', sinSuelo: true, rayas: v => 0.84 + 0.1 * Math.cos(v.x * 13 + v.y * 5) + 0.06 * Math.cos(v.y * 31 - v.x * 7) });
     if (cual === 'piel') {   // el pelo, por detrás: la misma piel, un poco más atrás y algo menor (se ve solo desde atrás)
       const d = enBastidor(0, h0, 0.013);
-      L.add(geo.clone(), 0x6a523a, d.x, d.y, d.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'liso', sinSuelo: true, escala: new THREE.Vector3(0.985, 0.985, 1) });
+      L.add(geo.clone(), 0x7d6346, d.x, d.y, d.z, { x: -Math.atan(RASPADOR.echa) }, { tex: 'hojas', sinSuelo: true, escala: new THREE.Vector3(0.985, 0.985, 1), rayas: v => 0.86 + 0.14 * Math.cos(v.x * 9) * Math.cos(v.y * 6) });
     }
     // las lazadas: de cada agujero del borde a la vara más cercana
     borde.forEach((b, i) => {

@@ -328,7 +328,7 @@ try:
         captura(A, f'{SALIDA}/PC_panel_secadero.png')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
 
-        print('El raspador de pieles (P9, 13 nov): uno con una piel por raspar tensada (y otra al pie) y otro con una limpia; su pestaña; y el zurrón a la espalda')
+        print('El raspador de pieles (P9, 13 nov): uno con una piel por raspar tensada (y otra al pie) y otro con una limpia; y su pestaña (el zurrón puesto, en prueba_llevado_navegador.py)')
         RASPADOR = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar');
           K.__vistas = K.__vistas || {{}};
           K.__vistas['raspador:vista'] = {{ id: 'raspador:vista', tipo: 'raspador', x: e.x + dx, z: e.z + dz, giro: 0, autor: K.enLinea.red.yo, cola: [], deposito: {{ piel: 2 }} }};
@@ -355,15 +355,6 @@ try:
         comprobar('la ficha dice para qué sirve y que hace falta la lasca de sílex', 'zurrón' in t and re.search('lasca', t, re.I) is not None, t[:300])
         captura(A, f'{SALIDA}/PC_panel_raspador.png')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
-        # el zurrón a la espalda (solo para mirarlo, aquí): de espaldas y de lado
-        A.evaluate(f"(() => {{ {K}.inventario.lugares.espalda = {{ tipo: 'zurron', n: 1, dentro: [null, null, null, null] }}; }})()")
-        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 1.5, z: e.z + 2.5, rot: Math.PI }}); {K}.cam.yaw = 0; {K}.cam.dist = 2.0; {K}.cam.pitch = 0.2; }})()""")
-        A.wait_for_timeout(1500)
-        comprobar('el zurrón se lleva a la espalda', A.evaluate(f"({K}.inventario.lugares.espalda || {{}}).tipo") == 'zurron')
-        captura(A, f'{SALIDA}/PC_zurron_espalda.png')
-        A.evaluate(f"(() => {{ {K}.cam.yaw = 1.2; {K}.cam.dist = 1.8; {K}.cam.pitch = 0.15; }})()")
-        A.wait_for_timeout(1500)
-        captura(A, f'{SALIDA}/PC_zurron_lado.png')
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
@@ -435,9 +426,6 @@ try:
         comprobar('y su panel, sin salirse de lado', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"raspar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_panel_raspador.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()")
-        B.evaluate(f"(() => {{ {K}.inventario.lugares.espalda = {{ tipo: 'zurron', n: 1, dentro: [null, null, null, null] }}; const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 1.5, z: e.z + 2.5, rot: Math.PI }}); {K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.25; }})()")
-        B.wait_for_timeout(1500)
-        captura(B, f'{SALIDA}/movil_zurron_espalda.png')
 
         print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
         A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")

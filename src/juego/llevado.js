@@ -273,7 +273,7 @@ function espalda(t, dentro) {
   if (t === 'zurron') {
     // (P9, 13 nov: ya se hace, de 2 pieles limpias y 1 cordel) un morral de piel sin curtir, panzudo y blando: el cuerpo
     // redondeado, plano contra la espalda; la solapa de borde redondo que cae por delante, cerrada con un palito
-    // atravesado en un lazo de cordel; y las costuras de los lados, cosidas a punto largo con el mismo cordel
+    // atravesado en un lazo de cordel
     // el cuerpo y la solapa, del mismo óvalo deformado (casi cuadrado, plano detrás, más lleno abajo); la solapa, la parte
     // de arriba y de delante, algo mayor, como una concha que cae por encima
     const forma = (g, k) => {
@@ -286,7 +286,7 @@ function espalda(t, dentro) {
       g.computeVertexNormals();
       return g;
     };
-    const E = v3(0.14, 0.17, 0.085), Y0 = -0.03, Z0 = 0.03;
+    const E = v3(0.14, 0.17, 0.085), Y0 = -0.03, Z0 = -0.005;   // (pegado a la espalda: plano detrás)
     L.add(forma(new THREE.SphereGeometry(1, 16, 12), 1), PIEL_CRUDA, 0, Y0, Z0, null, { escala: E, tex: 'liso', rayas: v => 0.92 + 0.08 * Math.cos(v.x * 30 + v.y * 12) });
     // la superficie de delante del cuerpo en (x, y): la deformación de forma(), al revés
     const delante = (x, y) => {
@@ -306,10 +306,6 @@ function espalda(t, dentro) {
     const yb = abajo + 0.004, zb = delante(0, yb) + 0.012;
     L.add(cil(0.007, 0.007, 0.06, 5), 'madera', 0, yb - 0.014, zb, { z: Math.PI / 2 }, { tex: 'veta' });   // el palito
     L.add(new THREE.TorusGeometry(0.012, 0.003, 4, 8), FIBRA, 0, yb, zb - 0.002, { x: 0.2 }, { tex: 'liso' });   // su lazo, de la solapa
-    for (const s of [-1, 1]) for (let k = 0; k < 5; k++) {   // las costuras de los lados, a punto largo, bajo la solapa
-      const y = Y0 - 0.03 - k * 0.028, x = s * (E.x * 0.84 - k * k * 0.003);
-      L.add(cajaR(0.006, 0.02, 0.006, 0.001), 0x3a2a1c, x, y, delante(x * 0.9, y) + 0.002, { z: s * 0.35 }, { tex: 'liso' });
-    }
     return { L, alto: 0.36 };
   }
   if (t === 'fardo') {
