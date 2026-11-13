@@ -1,0 +1,22 @@
+  OK   repetir el mismo cuadro da lo mismo
+  OK   los árboles de la parte en común, iguales en los dos cuadros — 815 y 815
+  OK   las piedras de la parte en común, iguales — 44
+  OK   la hierba de donde se solapan, igual — 796
+  OK   la hierba, solo dentro de su círculo
+  OK   cuatro trozos juntos dan lo mismo que su cuadro (árboles, piedras, hierba, flores, matas y sotobosque), sin repetir nada — arboles 82/82, piedras 1/1, hierba 938/938, flores 23/23, matas 149/149, sotobosque 217/217
+  OK   nada en el mar, en la orilla ni en los ríos — 0 cosas en el agua
+  OK   cada árbol es de una especie de su bioma (o una conífera en el límite del bosque) — 3436 árboles, 0 fuera de su bioma
+  OK   en la isla salen varias especies — roble, fresno, abeto, abedul, haya
+  OK   más hierba en los claros que bajo el bosque cerrado — 68.6 frente a 22.6 matas por 100 m²
+  OK   cada árbol lleva su edad (joven o adulto) — 1871 jóvenes, 1565 adultos, 0 sin edad
+  OK   los jóvenes miden de 3 a 5 m — de 3.00 a 5.00 m
+  OK   los adultos, bien distintos: el doble de altos que los jóvenes o más, de media — 10.6 m frente a 4.0 m
+  OK   los adultos, 1.3 veces los de antes — 10.6 m de media
+  OK   más jóvenes en lindes y claros que dentro del bosque cerrado — 61 % de 2228 frente a 26 % de 231
+  OK   hay sotobosque de cada tipo — {"flor":5960,"hierba_larga":684,"ortigas":337,"helechos":71,"canto":47,"tocon":5,"tronco":4}
+  OK   el sotobosque, nada en el agua — 0 de 7108
+  OK   ni el sotobosque ni las flores sobre la tierra desnuda — 0 del sotobosque y 0 flores
+  OK   los helechos y los cantos, al pie de los árboles (a menos de 3,5 m del más cercano, de mediana; los sitios al azar, mucho más lejos) — mediana 1.8 m frente a 17.8 m al azar
+  OK   los tocones viejos y los troncos caídos, solo en el bosque — 9, 0 fuera del bosque
+
+Todo bien

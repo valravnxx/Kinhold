@@ -1,0 +1,63 @@
+El fuego, solo
+  OK   la hoguera tiene fuego; las otras estaciones no
+  OK   sus ramas puestas son las de su coste
+  OK   recién hecha: apagada, sin cenizas, con 12 min de ramas puestas — {"hasta":0,"combustible":720,"cenizas":false}
+  OK   se enciende: arde lo que tenía puesto — {"hasta":1794075120000,"combustible":0,"cenizas":false}
+  OK   encendida no se vuelve a encender
+  OK   una leña la hace arder 10 min más
+  OK   a los 21 min sigue ardiendo; le queda 1 min
+  OK   a los 23 min se ha apagado sola y quedan cenizas — {"encendida":false,"brasas":false,"queda":0,"combustible":0,"cenizas":true}
+  OK   sin nada puesto no se enciende
+  OK   apagada, la rama queda puesta (sigue apagada, con cenizas)
+  OK   y se vuelve a encender
+  OK   al fuego solo van ramas o leña
+  OK   como mucho 60 min por delante — 4 leñas, 3120 s
+  OK   lo guardado raro se limpia
+  OK   calor: 1 junto al fuego, la mitad a 2 m, nada a 4 m
+  OK   la apagada no calienta, ni la que ya se ha apagado
+En la hoguera: encender, echar leña y las recetas al fuego
+  OK   levantada: tiene su fuego, apagado y con sus ramas — {"hasta":0,"combustible":720,"cenizas":false}
+  OK   sin taladro ni yesca no se enciende — Para encenderla hace falta llevar el taladro de fuego y yesca.
+  OK   con el taladro pero sin yesca, tampoco — Para encenderla hace falta llevar yesca.
+  OK   de lejos, no — Estás demasiado lejos de la estación.
+  OK   con yesca y taladro, se enciende: gasta 1 yesca y el taladro sigue
+  OK   le echa una rama de lo que lleva: arde 3 min más
+  OK   sin leña encima, no echa nada — No llevas leña.
+  OK   encendida, se endurece la lanza al fuego
+  OK   apagada sola (a los 15 min), ya no — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+  OK   y en la lista sale casi, con el fuego apagado
+  OK   el fuego se guarda y se carga
+  OK   un guardado de antes del fuego: la hoguera, apagada y con sus ramas puestas
+El hogar de la casa: solo dentro, más duradero y en brasas
+  OK   el hogar es del fuego, solo dentro, de piedra y barro — {"piedra":8,"barro":2}
+  OK   fuera de la casa no se pone
+  OK   levantado: apagado y sin nada puesto (es de piedra y barro) — {"hasta":0,"combustible":0,"cenizas":false}
+  OK   una leña en el hogar arde 15 min (1,5 veces más que en la hoguera) — {"hasta":0,"combustible":900,"cenizas":false}
+  OK   se enciende con yesca y taladro
+  OK   le caben 2 h por delante (la hoguera, 1 h) — 8 leñas
+  OK   la hoguera no se deja en brasas
+  OK   en brasas: sin llama, y los 10 min que le quedaban duran 4 veces más (40 min) — {"r":{"ok":true,"estacion":"hogar:1","brasas":true,"hasta":1794077100000},"f":{"hasta":1794077100000,"combustible":0,"cenizas":false,"brasas":true}}
+  OK   con brasas no se fabrica (hace falta llama) — Está en brasas: avívalo para que vuelva la llama.
+  OK   las brasas calientan la mitad
+  OK   mientras hay brasas no se desmonta
+  OK   las brasas se guardan y se cargan
+  OK   se aviva sin yesca ni nada: vuelve la llama con lo que quedaba (20 min de brasas son 5 de llama) — {"hasta":1794076200000,"combustible":0,"cenizas":false}
+  OK   avivado, ya se fabrica
+  OK   si se acaban las brasas, se apaga: cenizas
+Con autor, en el registro
+  OK   sin autor no vale
+  OK   Blas no la enciende con la yesca de Ana — Para encenderla hace falta llevar el taladro de fuego y yesca.
+  OK   Ana la enciende; la hora la pone quien valida
+  OK   y le echa su leña
+  OK   echar sin decir qué: datos no válidos — Datos no válidos.
+  OK   el registro anota lo encendido (con la yesca gastada) y lo echado — [{"estacion":"hoguera:1","encendida":true,"hasta":1794075120000,"gastado":{"yesca":1}},{"estacion":"hoguera:1","echado":{"lena":1},"ardiendo":true},null]
+Por el servidor: todos la ven igual, y en tierra de otro no se toca
+  OK   Ana la enciende por el servidor y se manda a todos
+  OK   lo que ven todos: encendida, con lo que le queda (no la hora del servidor) — {"encendida":true,"queda":660,"combustible":0,"cenizas":false}
+  OK   pasada su hora, la ven apagada y con cenizas — {"encendida":false,"queda":0,"combustible":0,"cenizas":true}
+  OK   Blas, en tierra de otro, no le echa nada — Es tierra de otro.
+  OK   el servidor la guarda encendida y la carga igual
+  OK   Ana deja el hogar en brasas por el servidor y todos lo ven en brasas — {"encendida":false,"brasas":true,"queda":3540,"combustible":0,"cenizas":false}
+  OK   y el registro lo anota con su autor — {"n":5,"autor":"ana","tipo":"brasas_fuego","datos":{"estacion":"hogar:2","x":3.5,"z":0},"ok":true,"ahora":1794556863712,"resultado":{"estacion":"hogar:2","brasas":true,"hasta":1794560463712}}
+
+56 bien, 0 mal
