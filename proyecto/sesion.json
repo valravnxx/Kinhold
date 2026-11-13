@@ -5,5 +5,11 @@
   "hito": "granja",
   "rama": "trabajo/20261113-1512"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261113-1710-aspecto-rocas": {
+  "inicio": "2026-11-13T17:08:43+01:00",
+  "tarea": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
+  "hito": "aspecto",
+  "rama": "trabajo/20261113-1710-aspecto-rocas"
+ }
 }
