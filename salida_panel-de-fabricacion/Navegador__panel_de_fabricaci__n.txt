@@ -1,0 +1,206 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+El panel se abre con el botón y con H
+  OK   sale la pestaña «Fabricar»
+  OK   el botón lo abre
+  OK   en la pestaña «Con las manos»
+  OK   H lo cierra
+  OK   y H lo vuelve a abrir
+  OK   en «Todo», todas las recetas, a la vista (sin aprender ninguna)
+  OK   cada carta con su imagen, que carga
+  OK   y ninguna receta sale «sin modelo aún»
+Con 3 fibras en la mano
+  OK   el servidor le da las 3 fibras (arcón de pruebas)
+  OK   el cordel, en «Puedes hacerlo ya» — {'cls': 'fab-carta fab-ya fab-sel', 'txt': 'Cordel de fibra\nya', 'sec': 'fab-sec fab-sec-ya'}
+  OK   y su ficha dice que la fibra está en las manos (3 de 3), y para qué sirve — Cordel de fibra
+
+Para atar; también sirve como cinturón de cordel (1 hueco).
+
+Con las manos
+15 s
+Lo que pide
+Fibra crudaen las manos
+3 de 3
+Hacer · 15 s
+  OK   la carta dice «ya»
+  OK   con las manos no sale «×3» (se hace una cosa a la vez)
+  OK   sin puestos de trabajo, cada sitio dice que no hay cerca, y «Con las manos», en cualquier sitio
+  OK   el leñero, en «Te falta algo», con lo que falta en rojo en su ficha — Leñero
+
+A la espalda: solo leña y troncos cortos.
+
+Con las manos
+30 s
+Lo que pide
+Ramafaltan 4
+0 de 4
+Cordel de fibrafaltan 2
+0 de 2
+Hacer antes: 1 cordel de fibra (con 3 fibra cruda · 15 s)
+Te falta: 4 rama y 2 cordel de fibra
+  OK   y el atajo «Hacer antes: 1 cordel de fibra», que dice con qué y cuánto tarda — Leñero
+
+A la espalda: solo leña y troncos cortos.
+
+Con las manos
+30 s
+Lo que pide
+Ramafaltan 4
+0 de 4
+Cordel de fibrafaltan 2
+0 de 2
+Hacer antes: 1 cordel de fibra (con 3 fibra cruda · 15 s)
+Te falta: 4 rama y 2 cordel de fibra
+  OK   la lasca, en gris, con la piedra de tallar que hace falta — Lasca de sílex
+
+Corta fibra y juncos, despieza.
+
+En la piedra de tallar
+20 s
+Lo que pide
+Sílex
+1
+Piedra
+1
+
+Hace falta una piedra de tallar a tu lado.
+Hacer (con el atajo) y recoger, por el servidor
+  OK   el servidor gasta la fibra de lo que lleva
+  OK   sale en «En marcha», con lo que le queda y su barra
+  OK   terminado (15 s), sale «Recoger»
+  OK   y el cordel es suyo en el servidor
+  OK   y el panel dice lo que recoge
+Los puestos de trabajo, como obra, desde el menú de construcción (valravnx, 6 nov)
+  OK   en el panel ya no se ponen estaciones
+  OK   la pestaña «Puestos de trabajo», con los cinco puestos (el hogar, 8 nov; el secadero, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide) — ['Hoguera\n6\n/1\n4\n/0', 'Hogar\n8\n/1\n2\n/0', 'Piedra de tallar\n1\n/1', 'Banco de trabajo de tronco\n2\n/0', 'Secadero\n4\n/0\n2\n/0']
+  OK   el marco se puede poner a su lado — {'ok': True}
+  OK   lejos, no (el marco se pone a tu lado)
+  OK   el servidor tiene el marco, de su autor, y no ha gastado nada
+  OK   y se dibuja como obra: tenue, con su armazón de estacas
+  OK   en el menú del clic derecho: la obra y quitar el marco — ['Obra: Piedra de tallar', 'Quitar el marco: Piedra de tallar']
+  OK   Usar le lleva la piedra y trabaja en él hasta levantarlo (en el servidor) — Construyendo: 41 %
+  OK   y se dibuja levantada, sin armazón
+  OK   y el aviso lo dice — Puesto terminado (Piedra de tallar): ya se puede usar.
+  OK   la lasca pasa a «Te falta algo» — {'cls': 'fab-carta fab-casi', 'txt': 'Lasca de sílex\nfaltan 2', 'sec': 'fab-sec fab-sec-casi'}
+  OK   y la pestaña de la piedra de tallar dice que está a tu lado
+Lejos de la piedra de tallar, la pestaña dice a cuántos pasos
+  OK   a 9 m, la pestaña de la piedra de tallar dice «a 9 pasos» — a 9 pasos
+Depositar en la piedra de tallar (valravnx, 6 nov): sus recetas gastan lo depositado en ella
+  lleva: {"mano:der":"cordel"}
+  OK   Usar delante de la piedra de tallar abre el panel en su pestaña — tallar
+  OK   con lo que tiene encima (nada) y lo que lleva para dejar
+  OK   con el sílex en la mano, la lasca sigue en «Te falta algo» (no está depositado)
+  OK   sale el cordel que lleva, para dejarlo
+  OK   dejarlo lo deposita en el servidor
+  OK   y sale encima de la piedra de tallar, para cogerlo
+  OK   cogerlo lo devuelve a lo que lleva
+  OK   coge una piedra con la mano libre
+  OK   la ficha de la lasca tiene el atajo «Poner en la piedra de tallar lo que falta: 1 sílex y 1 piedra (los llevas tú)» — Lasca de sílex
+
+Corta fibra y juncos, despieza.
+
+En la piedra de tallar
+20 s
+Lo que pide (de lo que está en la estación)
+Sílexfaltan 1
+0 de 1
+Piedrafaltan 1
+0 de 1
+Poner en la piedra de tallar lo que falta: 1 sílex y 1 piedra (los llevas tú)
+Te falta: 1 sílex y 1 piedra
+  OK   de un toque: el servidor tiene el sílex y la piedra en la piedra de tallar — [{'id': 'piedra_tallar:1', 'tipo': 'piedra_tallar', 'x': 1, 'z': 0.2, 'autor': 'jugador:495bd425', 'cola': [], 'deposito': {'cordel': 1, 'piedra': 1, 'silex': 1}, 'y': -0.006, 'giro': 0}]
+  OK   la lasca pasa a «Puedes hacerlo ya», y su ficha dice que sale de la estación — {'cls': 'fab-carta fab-ya fab-sel', 'txt': 'Lasca de sílex\nya', 'sec': 'fab-sec fab-sec-ya'}
+  OK   y se ven puestos encima de la piedra de tallar
+Reparar en su puesto (10 nov): el hacha de piedra gastada, en la piedra de tallar, con el cordel dejado en ella
+  OK   coge un hacha de piedra (nueva)
+  OK   nueva, el menú no ofrece repararla
+  OK   talando, el servidor gasta el hacha — {'id': 'arbol:13,-85', 'x': 1.3058716924861073, 'z': -8.47679267078638}
+  OK   gastada, junto a la piedra de tallar, el menú del clic derecho ofrece «Reparar: hacha de piedra» — ['Usar: Piedra de tallar', 'Reparar: hacha de piedra']
+  OK   y sale en el menú, junto al puesto — ['Usar: Piedra de tallar', 'Reparar: hacha de piedra']
+  OK   al elegirlo, el servidor la repara (de 2 usos a 0: recupera hasta 84) y gasta el cordel dejado en la piedra de tallar
+  OK   y lo dice, con lo que le queda — Reparado: hacha de piedra. Le quedan 168 usos de 168.
+  OK   nueva otra vez, el menú ya no ofrece repararla
+El secadero (P9, 13 nov), con carne colgada: seca, secándose y por secar (solo para mirarlo: se dibuja aquí), y su pestaña
+  OK   el secadero se dibuja, con lo colgado — 2
+  OK   su pestaña «Secadero», con la carne seca: 1 carne cruda, 6 h — Secadero
+Secar carne: colgada aquí no se estropea, y seca dura mucho · sus recetas gastan lo que está en ella
+Todo
+2
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+a tu lado
+1
+Banco de tronco
+no hay cerca
+Secadero
+a tu lado
+1
+Colgado en el secadero
+2 de 20 · toca para coger
+2
+C
+  OK   la ficha dice lo que tarda (6 h) y para qué sirve — Carne seca
+
+Comida que no se estropea y sacia como la asada.
+
+En el secadero
+6 h
+da Carne seca
+Lo que pide (de lo que está en la estación)
+Carne crudaen la estación
+1 de 1
+Hacer · 6 h
+×3
+En el móvil, otro jugador
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_fabricar_navegador.py", line 331, in <module>
+    ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
+                    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_fabricar_navegador.py", line 95, in entrar
+    crear_cuenta(pg, 60000)   # (en el móvil de la nube la pantalla de la cuenta tarda en salir)
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_fabricar_navegador.py", line 84, in crear_cuenta
+    return crear_y_confirmar(pg, codigos, f'artesano{_n[0]}', 'clave-de-prueba-123')
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/correo_prueba.py", line 31, in crear_y_confirmar
+    pg.fill('#pcClave', clave); pg.fill('#pcClave2', clave); pg.click('#pcIr')
+                                                             ~~~~~~~~^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#pcIr")
+    - locator resolved to <button id="pcIr" type="submit" class="pc-ir">Crear cuenta</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+
