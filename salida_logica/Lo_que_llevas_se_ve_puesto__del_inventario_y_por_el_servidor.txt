@@ -1,0 +1,22 @@
+Del inventario a lo que se ve
+  OK   el cinturón y lo de cada hueco, en su orden — ["hacha_piedra",null,"bayas",null]
+  OK   la espalda y lo de dentro sumado por tipo — {"tronco_corto":1,"lena":5}
+  OK   el hombro y la mano izquierda (con cuántos)
+  OK   lo grande va una vez, en las dos manos — {"cintura":null,"colgado":[],"espalda":null,"dentro":{},"hombro":null,"der":"tronco_corto","izq":null,"n":{"der":1,"izq":0},"dos":true}
+  OK   con lo puesto, nada encima
+Lo que llega por la red se comprueba
+  OK   lo que no va en su sitio o no existe, fuera — {"cintura":null,"colgado":[],"espalda":null,"dentro":{},"hombro":"tronco_corto","der":null,"izq":null,"n":{"der":0,"izq":0},"dos":false}
+  OK   sin cinturón no cuelga nada; sin espalda, no hay nada dentro
+  OK   lo colgado: solo lo que cabe en un hueco del cinturón, como mucho 4 — ["espada",null,null,"bayas"]
+  OK   lo de dentro: solo tipos que existen y números enteros — {"tronco_corto":2}
+  OK   en la mano, al menos uno
+  OK   lo que no es un objeto, null
+El servidor reparte lo que lleva cada uno
+  OK   B recibe el aspecto de A con lo que lleva según el servidor (nada) — {"cintura":null,"colgado":[],"espalda":null,"dentro":{},"hombro":null,"der":null,"izq":null,"n":{"der":0,"izq":0},"dos":false}
+  OK   A coge un cinto de cuero del arcón
+  OK   B lo recibe sin que A mande nada más — {"cintura":"cinto_cuero","colgado":[],"espalda":null,"dentro":{},"hombro":null,"der":null,"izq":null,"n":{"der":0,"izq":0},"dos":false}
+  OK   y el leñero a la espalda, con el cinturón aún puesto — {"cintura":"cinto_cuero","colgado":[],"espalda":"lenero","dentro":{},"hombro":null,"der":null,"izq":null,"n":{"der":0,"izq":0},"dos":false}
+  OK   si no cambia lo que se ve, no se vuelve a mandar
+  OK   el que llega después lo ve en la bienvenida — {"cintura":"cinto_cuero","colgado":[],"espalda":"lenero","dentro":{},"hombro":null,"der":null,"izq":null,"n":{"der":0,"izq":0},"dos":false}
+
+17 correctas, 0 fallidas
