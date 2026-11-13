@@ -303,6 +303,27 @@ try:
         comprobar('nueva otra vez, el menú ya no ofrece repararla', 'Reparar: hacha de piedra' not in A.evaluate(f"{K}.opcionesUsar()"))
         A.evaluate(f"(() => {{ const l = ['mano:der', 'mano:izq'].find(l => {K}.inventario.lugares[l] && {K}.inventario.lugares[l].tipo === 'hacha_piedra'); if (l) {K}.accionInventario({{ tipo: 'soltar', de: l }}); }})()")
 
+        print('El secadero (P9, 13 nov), con carne colgada: seca, secándose y por secar (solo para mirarlo: se dibuja aquí), y su pestaña')
+        SECADERO = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar'), ahora = Date.now();
+          f.estaciones['secadero:vista'] = {{ id: 'secadero:vista', tipo: 'secadero', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ carne_cruda: 2 }},
+            colgado: [{{ hasta: ahora - 1000 }}, {{ hasta: ahora + 3 * 3600e3 }}] }};
+          K.estacionesV.refrescar(); }})"""
+        A.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
+        n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_secadero'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
+        comprobar('el secadero se dibuja, con lo colgado', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_secadero')") and n > 0, str(n))
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.8, z: e.z + 1.6, rot: 2.3 }}); {K}.cam.yaw = 0.25; {K}.cam.dist = 4.2; {K}.cam.pitch = 0.32; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_secadero.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.4, z: e.z + 0.6, rot: 2 }}); {K}.cam.yaw = 0.05; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.12; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_secadero_cerca.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 0.4, z: e.z + 1.2 }}); }})()""")
+        A.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); A.wait_for_timeout(800)
+        comprobar('su pestaña «Secadero», con la carne seca: 2 carnes crudas, 6 h', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && /Carne seca/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
+        t = elegir(A, 'secar_carne')
+        comprobar('la ficha dice lo que tarda (6 h) y para qué sirve', '6 h' in t and 'no se estropea' in t, t[:300])
+        captura(A, f'{SALIDA}/PC_panel_secadero.png')
+        A.evaluate(f"{K}.panelFabricar.cerrar()")
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
@@ -351,27 +372,7 @@ try:
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_tres_estaciones.png')
 
-        print('El secadero (P9, 13 nov), con carne colgada: seca, secándose y por secar (solo para mirarlo: se dibuja aquí), y su pestaña')
-        SECADERO = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar'), ahora = Date.now();
-          f.estaciones['secadero:vista'] = {{ id: 'secadero:vista', tipo: 'secadero', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ carne_cruda: 2 }},
-            colgado: [{{ hasta: ahora - 1000 }}, {{ hasta: ahora + 3 * 3600e3 }}] }};
-          K.estacionesV.refrescar(); }})"""
-        A.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
-        n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_secadero'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
-        comprobar('el secadero se dibuja, con lo colgado', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_secadero')") and n > 0, str(n))
-        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.8, z: e.z + 1.6, rot: 2.3 }}); {K}.cam.yaw = 0.25; {K}.cam.dist = 4.2; {K}.cam.pitch = 0.32; }})()""")
-        A.wait_for_timeout(2500)
-        captura(A, f'{SALIDA}/PC_secadero.png')
-        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.4, z: e.z + 0.6, rot: 2 }}); {K}.cam.yaw = 0.05; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.12; }})()""")
-        A.wait_for_timeout(2500)
-        captura(A, f'{SALIDA}/PC_secadero_cerca.png')
-        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 0.4, z: e.z + 1.2 }}); }})()""")
-        A.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); A.wait_for_timeout(800)
-        comprobar('su pestaña «Secadero», con la carne seca: 2 carnes crudas, 6 h', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && /Carne seca/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
-        t = elegir(A, 'secar_carne')
-        comprobar('la ficha dice lo que tarda (6 h) y para qué sirve', '6 h' in t and 'no se estropea' in t, t[:300])
-        captura(A, f'{SALIDA}/PC_panel_secadero.png')
-        A.evaluate(f"{K}.panelFabricar.cerrar()")
+        print('El secadero, en el móvil')
         B.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
         B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.6, z: e.z + 1.8, rot: 2.3 }}); {K}.cam.yaw = 0.3; {K}.cam.dist = 3.8; {K}.cam.pitch = 0.3; }})()""")
         comprobar('en el móvil, también', esperar(B, f"!!{K}.escena.getObjectByName('estacion_secadero')", 8000))
