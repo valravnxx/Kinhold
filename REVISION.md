@@ -6,6 +6,14 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 13 nov 2026, 05:15 UTC — por el chat: decisiones sobre el estudio de la granja (`diseno/estudios/granja.html`)
+
+1. El campo se marca **con estacas**, cada una hecha de **1 rama**.
+2. En la granja básica, sin estaciones, **los cultivos tardan una semana real** en madurar (se ajusta al calendario cuando llegue).
+3. Los primeros cultivos: **los que se puedan meter de manera normal en el juego** (los de su bioma que no piden nada que aún no exista).
+4. **La granja básica va antes que los oficios (P9)**: «así ya tendremos materiales y podremos usar los acopios de plantas que hasta ahora solo usamos para juncos» (el almiar y los demás acopios de plantas, para lo que se cosecha).
+→ P11 pasa delante de P9 en el roadmap y queda en curso; P9 vuelve a pendiente (ya planificado). La planificación de P11 sale del estudio y de estas respuestas (sustituye las casillas de 2 × 2 m del documento de sistemas).
+
 ### 13 nov 2026 — por el chat, sobre la granja
 
 «la granja se tendrá que ir siempre expandiendo poco a poco, ahora necesitaríamos planificar la más básica; los plots de plantar deben tener la escala que toca en la vida real (unos tomatitos no ocupan tanto; el trigo requiere más espacio); no me gustan los plots cuadrados para plantaciones grandes: designar una zona de siembra que haya que limpiar de árboles, delimitada por varios puntos haciendo la forma, y luego arar un círculo a tu alrededor o donde apuntas; así uno grande tiene más trabajo pero da buen resultado; alejarse del típico mueble:cultivo. Es orientativo: valoración y estudio de cómo integrarlo.» → Estudio en `diseno/estudios/granja.html` (no cambia el roadmap hasta que valravnx decida).

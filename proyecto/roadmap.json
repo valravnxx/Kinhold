@@ -2218,6 +2218,24 @@
    "nota": "valravnx, 13 nov: congelado hasta que él diga; los animales necesitan más modelos de Meshy y que él aprenda a hacerles el esqueleto. Mientras, P9."
   },
   {
+   "id": "granja",
+   "num": "P11",
+   "nombre": "El año y los campos",
+   "jugable": "Las estaciones del año (un mes real cada una), que también cambian el mundo (hojas, nieve); sembrar con semillas silvestres, cuidar y cosechar; trillar; grano, paja (el tejado de paja), lino (hilo y tela) y legumbres; pan en el horno de barro.",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo."
+  },
+  {
    "id": "oficios",
    "num": "P9",
    "nombre": "Oficios del asentamiento",
@@ -2287,26 +2305,6 @@
      "estado": "pendiente"
     }
    ]
-  },
-  {
-   "id": "granja",
-   "num": "P11",
-   "nombre": "El año y los campos",
-   "jugable": "Las estaciones del año (un mes real cada una), que también cambian el mundo (hojas, nieve); sembrar con semillas silvestres, cuidar y cosechar; trillar; grano, paja (el tejado de paja), lino (hilo y tela) y legumbres; pan en el horno de barro.",
-   "estado": "en_curso",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
-     "estado": "en_curso",
-     "inicio": "2026-11-13T05:13:23+00:00",
-     "rama": "trabajo/20261113-0514-granja"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo."
   },
   {
    "id": "ganaderia",
