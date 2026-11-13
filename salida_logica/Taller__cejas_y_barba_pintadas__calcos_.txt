@@ -1,0 +1,15 @@
+Calcos en docs/recursos/personajes/taller-v24
+  OK   hombre: hay cejas
+  OK   hombre: las cejas ocupan al menos 6000 píxeles de su textura — 10665 px (1.0 % de 1024×1024)
+  OK   hombre: la caja de las cejas mide más de un sexto del lado en las dos direcciones — 505×448 de 1024×1024
+  OK   hombre: las cejas no se cortan en el borde de su malla (sin escalones) — 0.00 % de lo pintado
+  OK   hombre: hay barba corta y túnica
+  OK   hombre: la barba clarea en pelos sueltos, sin neblina gris (alfa entre 0,2 y 0,7 en menos del 7 % de lo pintado) — 4.6 %
+  OK   hombre: la barba baja por el cuello hasta la ropa (alfa medio > 0,6 en los 3 cm sobre la túnica) — 0.82 en 18 puntos
+  OK   hombre: bajo la barbilla, sin motas a media garganta (piel a la vista en menos del 6 % de 2 a 4,5 cm sobre la túnica) — 5.0 % de 2914 muestras
+  OK   hombre: el bigote no se aparta más de 6,5 mm de la piel (sin banda gruesa) — 5.7 mm
+  OK   mujer: hay cejas
+  OK   mujer: las cejas ocupan al menos 6000 píxeles de su textura — 16797 px (1.6 % de 1024×1024)
+  OK   mujer: la caja de las cejas mide más de un sexto del lado en las dos direcciones — 652×653 de 1024×1024
+  OK   mujer: las cejas no se cortan en el borde de su malla (sin escalones) — 0.00 % de lo pintado
+Calcos: 13 bien, 0 mal
