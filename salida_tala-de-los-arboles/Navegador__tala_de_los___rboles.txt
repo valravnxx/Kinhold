@@ -1,0 +1,59 @@
+PC: talar un árbol joven con hacha de piedra
+  OK   sin hacha no se tala: lo dice — Necesitas un hacha en la mano para talar.
+  OK   el hacha de piedra está en el catálogo y se coge con la mano
+  OK   con el hacha en la mano, Usar junto al árbol tala
+  OK   cada golpe se cuenta y dice cuántos faltan — Talas el árbol: faltan 6 golpes.
+  OK   el golpe va al registro con su autor
+  OK   con los golpes que pide, cae — {'ok': True, 'cae': True, 'limpio': False, 'faltan': 0, 'motivo': '', 'dir': -2.03}
+  OK   ya no está en pie (queda el tocón) y Usar no lo encuentra
+  OK   el árbol cae (se ve caer)
+  OK   lo que deja no se ve mientras cae
+  OK   se asienta: acaba tumbado en el suelo (o apoyado) y se queda así (12 nov: entero, hasta que se limpia) — {'t': 1.969, 'dura': 2.1, 'angulo': 1.4895789473684211, 'final': 1.52, 'apoyo': None} · se queda a 1.52
+  OK   al soltarse suena el chasquido y, al dar en el suelo, el golpe
+  OK   un árbol que cruje suena y tiembla — arbol:114,1619
+  OK   y luego se queda como estaba
+  OK   caído, se queda entero en el suelo donde se asentó
+  OK   y aún no ha dejado nada en el suelo
+  OK   junto a su tronco, con el hacha, la acción es limpiarlo — Limpiar el árbol caído
+  OK   Usar lo empieza a limpiar
+  OK   cada golpe lo dice — Limpias el árbol caído: faltan 2 golpes.
+  OK   con sus golpes queda limpio — {'ok': True, 'cae': False, 'limpio': True, 'faltan': 0, 'motivo': '', 'dir': -2.03}
+  OK   limpio, el árbol caído ya no está
+  OK   queda el tocón en el sitio
+  OK   el árbol del bosque ya no se dibuja
+  OK   en el suelo, un tronco delgado y de 2 a 4 varas (no ramas) — [{'tipo': 'tronco_delgado', 'n': 1, 'x': 21.8, 'z': 10.69}, {'tipo': 'vara', 'n': 2, 'x': 20.27, 'z': 9.94}]
+  OK   el tronco queda tumbado a lo largo de donde cayó — -3.6 y -2.03
+  OK   se ven, donde cayó el árbol
+  OK   las varas se ven como palos de 1,6 m tumbados — 1.61 m
+  OK   el tronco delgado se coge con Usar (en las dos manos) — {"tipo":"tronco_delgado","n":1}
+  OK   el tronco delgado se echa al hombro y deja las manos libres — {'ok': True}
+  OK   con la postura de llevarlo al hombro — hombroQuieto
+PC: se guarda y vuelve a crecer
+  OK   al recargar sigue el tocón
+  OK   pasado su tiempo, vuelve a crecer: sin tocón y otra vez en el bosque
+PC: el adulto con hacha de piedra, muy lento
+  OK   un golpe de piedra a un adulto: faltan 55 — {'ok': True, 'cae': False, 'limpio': False, 'faltan': 55, 'motivo': '', 'dir': None}
+  OK   con el hacha de hierro cae enseguida — {'ok': True, 'cae': True, 'limpio': False, 'faltan': 0, 'motivo': '', 'dir': -1.11}
+  OK   y limpio, deja un tronco largo y las ramas — {'ok': True, 'cae': False, 'limpio': True, 'faltan': 0, 'motivo': '', 'dir': -1.11}
+PC: arrancar el tocón con la azada (P11, limpiar el campo)
+  OK   sin azada ni palo cavador, Usar junto al tocón no lo arranca — Coger del suelo: 1 × Hacha de piedra
+  OK   con la azada en la mano, junto al tocón, la acción es «Arrancar el tocón» — Arrancar el tocón
+  OK   Usar empieza a arrancarlo
+  OK   cada golpe lo dice — Arrancas el tocón: faltan 13 golpes.
+  OK   con sus golpes queda arrancado — {'ok': True, 'arrancado': True, 'faltan': 0, 'motivo': ''}
+  OK   arrancado: el tocón ya no está
+  OK   deja 4 de leña en el suelo — 4
+  OK   arrancado, ya no vuelve a crecer aunque pase su tiempo
+  OK   sin errores en la consola (PC)
+Móvil: talar con el botón Usar
+  OK   móvil: el botón Usar tala
+  OK   móvil: cae y queda caído, entero
+  OK   móvil: el botón Usar lo limpia
+  OK   móvil: limpio, deja el tronco delgado — {'ok': True, 'cae': False, 'limpio': True, 'faltan': 0, 'motivo': '', 'dir': -2.03}
+Móvil: arrancar el tocón con el palo cavador
+  OK   móvil: con el palo cavador, «Arrancar el tocón» — Arrancar el tocón
+  OK   móvil: el botón Usar lo arranca
+  OK   móvil: con el palo cavador, el doble de golpes: arrancado — {'ok': True, 'arrancado': True, 'faltan': 0, 'motivo': ''}
+  OK   sin errores en la consola (móvil)
+
+TODO CORRECTO
