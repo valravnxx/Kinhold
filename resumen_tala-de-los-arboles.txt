@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2826 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3166 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4592 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3236 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2821 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3197 KB
+dist/kinhold_trozos.html 2843 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: tala de los árboles
+    at eval (eval at evaluate (:311:30), <anonymous>:5:83)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+!! FALLA: python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/tala
+
+HAY FALLOS
+tardó 46 s

@@ -1,0 +1,62 @@
+PC: talar un árbol joven con hacha de piedra
+  OK   sin hacha no se tala: lo dice — Necesitas un hacha en la mano para talar.
+  OK   el hacha de piedra está en el catálogo y se coge con la mano
+  OK   con el hacha en la mano, Usar junto al árbol tala
+  OK   cada golpe se cuenta y dice cuántos faltan — La boca está abierta: caerá hacia este lado. Córtalo por detrás y apártate.
+  OK   el golpe va al registro con su autor
+  FALLA con los golpes que pide, cae — {'ok': True, 'cae': False, 'limpio': True, 'faltan': 0, 'motivo': '', 'dir': -2.03}
+  OK   ya no está en pie (queda el tocón) y Usar no lo encuentra
+  OK   el árbol cae (se ve caer)
+  FALLA lo que deja no se ve mientras cae
+  FALLA se asienta: acaba tumbado en el suelo (o apoyado) y se queda así (12 nov: entero, hasta que se limpia) — None · se queda a None
+  OK   al soltarse suena el chasquido y, al dar en el suelo, el golpe
+  OK   un árbol que cruje suena y tiembla — arbol:114,1619
+  OK   y luego se queda como estaba
+  FALLA caído, se queda entero en el suelo donde se asentó
+  FALLA y aún no ha dejado nada en el suelo
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_tala_navegador.py", line 138, in <module>
+    junto_caido(pg, j, dist=8, pitch=0.85, giro=0.6)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_tala_navegador.py", line 79, in junto_caido
+    pg.evaluate(f"""(() => {{ const k = {K}, t = k.talaV.tala.tendido('{a['id']}', Date.now());
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      const mx = t.x0 + (t.x1 - t.x0) * {en}, mz = t.z0 + (t.z1 - t.z0) * {en}, l = Math.hypot(t.x1 - t.x0, t.z1 - t.z0) || 1;
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      const px = -(t.z1 - t.z0) / l, pz = (t.x1 - t.x0) / l;
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      k.pj.k = 0; k.pj.x = mx + px * 1.0; k.pj.z = mz + pz * 1.0; k.pj.y = 0; k.pj.rot = Math.atan2(mx - k.pj.x, mz - k.pj.z);
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      k.cam.yaw = k.pj.rot + Math.PI + {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()""")
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of null (reading 'x0')
+    at eval (eval at evaluate (:311:30), <anonymous>:2:20)
+    at eval (eval at evaluate (:311:30), <anonymous>:5:83)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
