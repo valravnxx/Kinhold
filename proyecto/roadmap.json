@@ -2245,9 +2245,9 @@
     },
     {
      "nombre": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano (como las bayas, en las celdas que no dan otra cosa) y caben en el cinturón y en el cesto; las habas se comen asadas al fuego. Cadena: se recogen con las manos; el cesto ← 3 haces de juncos",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T05:29:33+00:00",
-     "rama": "trabajo/20261113-0529"
+     "fin": "2026-11-13T12:38:22+00:00"
     },
     {
      "nombre": "Marcar el campo con estacas: la estaca (1 rama, con las manos; valravnx) se clava donde estás; de 3 a 16, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar obras, otros campos ni el agua, y sin pasar de una pendiente; mientras esté vacío, las estacas se mueven o se quitan. Lógica pura con autor (src/logica/campos.js), en el servidor, y todos lo ven. Cadena: rama ← se recoge en el bosque",
@@ -4337,6 +4337,13 @@
      "archivo": "jugar/demo/v193.html",
      "capturas": "capturas/demo-v193",
      "notas": "El sotobosque: corros de helechos, ortigas, hierba alta y cantos al pie de los árboles, manchas de flores, tocones viejos y troncos caídos (de código, hasta hacerlos con Meshy)."
+    },
+    {
+     "v": "v194",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v194.html",
+     "capturas": "capturas/demo-v194",
+     "notas": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano y caben en el cinturón y en el cesto; las habas se asan al fuego."
     }
    ]
   },
