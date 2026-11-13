@@ -6530,5 +6530,20 @@
   ],
   "pruebas": "Sin pruebas: cambio del plan.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T04:33:44+00:00",
+  "fin": "2026-11-13T04:36:24+00:00",
+  "titulo": "P9, Oficios del asentamiento: planificado (chat con valravnx)",
+  "hito": "oficios",
+  "hecho": [
+   "valravnx, por el chat: «hazlo» (planificar P9 ahora).",
+   "Siete tareas de una sesión, con la cadena de cada material hasta el mundo: el secadero y la carne seca; el raspador, la piel limpia y el zurrón; el cubo lleno de agua y la corteza de roble; las cubas de curtido y el cuero; el huso y el hilo; los zapatos y el cinto de cuero; la carbonera y el carbón. Después, el recorrido de jugador y la revisión.",
+   "La piel sale de la liebre de P4, así que el cuero no espera a los animales de P8. La silla, las alforjas y el heno esperan a P8; el horno de barro y el pan, a P11 (piden paja y harina).",
+   "Decisiones provisionales: el hilo, de la fibra cruda que ya se recoge (el lino y la lana llegarán con los campos y las ovejas); la hebilla del cinto, de madera (como dice el GDD); el agua de las cubas, con el cubo de madera lleno en el río.",
+   "pruebas/prueba_origenes.mjs: lista nueva de lo esencial de cada hito vivo (ESENCIAL), con las 15 cosas que deja P9 en PENDIENTES y su tarea viva; antes de pasar el hito a revisión no puede quedar nada suyo."
+  ],
+  "pruebas": "prueba_origenes.mjs: 36 bien; rota a propósito (MUTAR=2, como si sus tareas ya estuvieran hechas), 15 fallos. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
  }
 ]
