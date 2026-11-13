@@ -46,8 +46,15 @@ export const DENSIDAD_RECOGIDA = {
   setas:        { bosque: 0.04 },
   // (8 nov) las mimbreras de la ribera y de la orilla, también después (lo de antes, en su sitio)
   mimbre:       { ribera: 0.035, rio: 0.05 },
+  // (P11, 13 nov) las semillas silvestres: cebada y habas en los claros, col y nabo en la ribera; también después, al
+  // final (lo de antes, en su sitio). Provisional: algo menos que las bayas del claro la cebada y las habas, y en la
+  // ribera algo más que el mimbre
+  cebada_silvestre: { claro: 0.05 },
+  habas_silvestres: { claro: 0.035 },
+  col_silvestre:    { ribera: 0.05 },
+  nabo_silvestre:   { ribera: 0.05 },
 };
-const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre'];
+const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre', 'cebada_silvestre', 'habas_silvestres', 'col_silvestre', 'nabo_silvestre'];
 // Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
 // al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
 // la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo

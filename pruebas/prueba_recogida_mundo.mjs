@@ -6,7 +6,8 @@
 //   - siempre lo mismo: repetir da lo mismo, y cuatro trozos juntos dan lo mismo que su cuadro; el nombre, por su sitio
 //   - alrededor de cada sitio de salida hay de todo lo que se necesita para empezar, y en la isla salen los cinco tipos
 //   - lo recogido de un punto que se va (su trozo queda lejos) se guarda y vuelve con él
-// Uso: node pruebas/prueba_recogida_mundo.mjs    MUTAR=1 → los puntos, con las zonas del llano (por distancia al centro,
+// Uso: node pruebas/prueba_recogida_mundo.mjs    MUTAR=2 → como si no hubiera col ni nabo silvestres (tiene que fallar)
+//      MUTAR=1 → los puntos, con las zonas del llano (por distancia al centro,
 // como antes): tiene que fallar.
 import { generarMapa, SEMILLA_MUNDO, LADO_MUNDO } from '../src/logica/mapa.js';
 import { crearPaisaje, bosqueEn } from '../src/logica/paisaje.js';
@@ -36,8 +37,8 @@ const todos = [];
 for (const [x, z] of muestras) todos.push(...puntosDe({ x0: x, z0: z, x1: x + 64, z1: z + 64 }));
 const cuenta = {}; for (const p of todos) cuenta[p.tipo] = (cuenta[p.tipo] || 0) + 1;
 console.log('  en la muestra de la isla:', JSON.stringify(cuenta));
-// (los juncos, el barro y las mimbreras solo salen en la orilla y la ribera: se miran junto a un río, en el 4)
-const DE_ORILLA = ['juncos', 'barro', 'mimbre'];
+// (los juncos, el barro, las mimbreras y (P11) la col y el nabo silvestres solo salen en la orilla y la ribera: se miran junto a un río, en el 4)
+const DE_ORILLA = ['juncos', 'barro', 'mimbre', 'col_silvestre', 'nabo_silvestre'];
 comprobar('en la isla salen todos los tipos (menos los de la orilla y el matorral, que sale de la vegetación)', Object.keys(RECOLECTABLES).every(t => DE_ORILLA.includes(t) || !RECOLECTABLES[t].donde.length || cuenta[t] > 0), JSON.stringify(cuenta));
 
 // 2) cada punto, en su sitio (se vuelve a mirar el terreno, sin fiarse de las zonas que trae)
@@ -93,6 +94,14 @@ comprobar('las densidades solo usan zonas del documento', Object.entries(DENSIDA
   console.log('  junto a un río:', JSON.stringify(cr));
   comprobar('junto a los ríos sale piedra, sílex y fibra', cr.piedra > 0 && cr.silex > 0 && (cr.ortiga || 0) + (cr.hierba_larga || 0) > 0, JSON.stringify(cr));
   comprobar('y juncos y barro (lo que pide la casa humilde)', cr.juncos > 0 && cr.barro > 0, JSON.stringify(cr));
+  // (P11) las semillas de la ribera, para el huerto
+  // (son pocas: se buscan a lo largo de los ríos de la isla hasta dar con las dos, en la ribera)
+  const sem = {};
+  for (const rr of pai.rios.filter(q => q.length > 10).slice(0, 6)) for (let k = 2; k < rr.length - 1 && !(sem.col_silvestre && sem.nabo_silvestre); k += Math.max(1, Math.floor(rr.length / 8))) {
+    const x = rr[k].p[0] * 1000, z = rr[k].p[1] * 1000;
+    for (const q of puntosDe(cuadro(x, z, 48))) if (q.tipo === 'col_silvestre' || q.tipo === 'nabo_silvestre') { if (!q.zonas.includes('ribera')) sem.fuera = (sem.fuera || 0) + 1; else sem[q.tipo] = (sem[q.tipo] || 0) + 1; }
+  }
+  comprobar('y col silvestre y nabo silvestre en la ribera (las semillas del huerto)', MUTAR === '2' ? false : sem.col_silvestre > 0 && sem.nabo_silvestre > 0 && !sem.fuera, JSON.stringify(sem));
 }
 
 // 5) alrededor del sitio de salida común (a menos de 300 m): ramas, piedra, sílex y fibra para empezar. De los sitios de

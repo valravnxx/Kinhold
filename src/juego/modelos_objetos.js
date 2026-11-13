@@ -30,6 +30,10 @@
 //  - carne cruda (9 nov, la de la liebre despiezada): el lomo y los dos cuartos traseros, rojo oscuro con la tela
 //    blanquecina por encima y la punta del hueso de cada pata, sobre una hoja.
 //  - carne asada (9 nov): lo mismo, tostado, con las puntas del hueso quemadas y alguna mancha quemada, sobre una hoja.
+//  - las semillas silvestres (P11, 13 nov), cada una sobre una hoja ancha como las bayas: la cebada silvestre, un manojo
+//    de espigas pajizas con sus aristas; las habas, unas vainas verde oscuro y unas habas sueltas, pardo verdosas; las
+//    asadas, tostadas y alguna partida; las semillas de col y de nabo, un montoncito de granos redondos y pequeños
+//    (pardo rojizos los de la col, casi negros los del nabo) con unas silicuas secas al lado.
 //  - yesca (7 nov): un trozo de hongo yesquero cortado (pardo, con su corte claro y aterciopelado) junto a un nido de
 //    fibra seca deshilachada, pálida.
 import * as THREE from 'three';
@@ -196,6 +200,56 @@ function setas(n, id) {
   seta(0.05, 0.03, 0.055, 0.036, -0.1, 0.12, az(id, 2) * 3);
   seta(0.01, -0.06, 0.06, 0.04, Math.PI / 2 - 0.15, 0, az(id, 3) * 6);   // la tumbada
   return mallas(L);
+}
+
+// (P11) las semillas silvestres
+const ESPIGA = 0xcdb46a, ARISTA = 0xd9c991, VAINA = 0x4a5a30, HABA = 0x8a7a4e, HABA_ASADA = 0x5a3d22, SILICUA_SECA = 0xa49a62;
+function hojaBase(L, id, r = 0.075) {
+  const hoja = new THREE.CircleGeometry(r, 10); hoja.rotateX(-Math.PI / 2); hoja.scale(1.5, 1, 1);
+  const p = hoja.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, (p.getX(i) ** 2 + p.getZ(i) ** 2) * 1.6);
+  L.add(hoja, HOJA_BAYA, 0, 0.003, 0, { y: az(id, 1) }, { tex: 'liso' });
+}
+function cebada(n, id) {
+  const L = lote(0.03);
+  const k = Math.min(9, 4 + (n || 1));
+  for (let i = 0; i < k; i++) {   // espigas tumbadas, en abanico, con su trozo de caña
+    const g = (i - (k - 1) / 2) * 0.16 + az(id, i) * 0.1, m = new THREE.Matrix4().makeRotationY(g).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2)).setPosition(-0.06, 0, 0);
+    const cana = cil(0.002, 0.0025, 0.12, 3); cana.translate(0, 0.0, 0);
+    L.add(cana, 0xb3a46a, 0, 0.012 + (i % 2) * 0.006, 0, m, { sinSuelo: true });
+    for (let g2 = 0; g2 < 7; g2++) {   // la espiga: los granos en dos filas, gruesos, y una arista corta en cada uno
+      const gr = new THREE.IcosahedronGeometry(0.0075, 0); gr.scale(0.8, 1.5, 0.8); gr.translate((g2 % 2 ? 0.005 : -0.005), 0.07 + g2 * 0.011, 0);
+      L.add(gr, ESPIGA, 0, 0.012 + (i % 2) * 0.006, 0, m, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
+      const ar = new THREE.CylinderGeometry(0.0009, 0.0009, 0.05, 3); ar.translate(g2 % 2 ? 0.006 : -0.006, 0.1 + g2 * 0.011, 0);
+      L.add(ar, ARISTA, 0, 0.012 + (i % 2) * 0.006, 0, m.clone().multiply(new THREE.Matrix4().makeRotationZ(g2 % 2 ? -0.15 : 0.15)), { sinSuelo: true, brillo: 1.1 });
+    }
+  }
+  return mallas(L);
+}
+function habas(asadas) {
+  return (n, id) => {
+    const L = lote(0.03); hojaBase(L, id);
+    if (!asadas) for (let i = 0; i < 2; i++) {   // dos vainas enteras
+      const v = new THREE.CapsuleGeometry(0.011, 0.075, 2, 6); v.rotateZ(Math.PI / 2);
+      L.add(v, VAINA, -0.02 + i * 0.015, 0.014, -0.03 + i * 0.03, { y: az(id, i) * 0.8 - 0.4 }, { escala: v3(1, 0.8, 1.25), tex: 'liso', sinSuelo: true, brillo: 1.05 });
+    }
+    const k = Math.min(10, 4 + (n || 1));
+    for (let i = 0; i < k; i++) {   // las habas sueltas: ovaladas y algo aplastadas
+      const a = i * 2.399, d = 0.01 + Math.sqrt(i / k) * 0.045;
+      L.add(new THREE.SphereGeometry(0.011, 8, 6), asadas ? (i % 3 ? HABA_ASADA : TOSTADO) : HABA, Math.cos(a) * d * 1.3 + (asadas ? 0 : 0.02), 0.016 + (i < 3 ? 0.008 : 0), Math.sin(a) * d + (asadas ? 0 : 0.02), { y: a }, { escala: v3(1.3, 0.7, 1), tex: 'liso', sinSuelo: true });
+    }
+    return mallas(L);
+  };
+}
+function semillas(color) {
+  return (n, id) => {
+    const L = lote(0.03); hojaBase(L, id, 0.06);
+    for (let i = 0; i < 3; i++) L.add(cil(0.003, 0.003, 0.07, 3), SILICUA_SECA, -0.04 + i * 0.012, 0.01, 0.025, { z: Math.PI / 2, y: az(id, i) - 0.5 }, { sinSuelo: true });
+    for (let i = 0; i < 22; i++) {   // el montoncito de granos
+      const a = i * 2.399, d = Math.sqrt(i / 22) * 0.03, y = 0.012 + (0.03 - d) * 0.5;
+      L.add(new THREE.IcosahedronGeometry(0.005, 0), color, Math.cos(a) * d + 0.01, y, Math.sin(a) * d - 0.005, null, { tex: 'liso', sinSuelo: true });
+    }
+    return mallas(L);
+  };
 }
 
 function resina(n, id) {
@@ -442,6 +496,7 @@ function bandolera(n, id) {
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   carne_cruda: carne(false), carne_asada: carne(true),
+  semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,

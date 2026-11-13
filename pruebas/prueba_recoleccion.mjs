@@ -4,10 +4,14 @@ import { RECOLECTABLES, TIEMPOS, Recoleccion, repartirPuntos, cantidadDe, ejecut
   guardarRecoleccion, cargarRecoleccion, migrarRecoleccion, VERSION_RECOLECCION } from '../src/logica/recoleccion.js';
 import { Inventarios, Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
+import { RECETAS } from '../src/logica/fabricacion.js';
+import { comestible } from '../src/logica/necesidades.js';
 
 if (process.env.MUTAR === '1') { RECOLECTABLES.ramas.donde.push('claro'); RECOLECTABLES.ramas.vuelve = 0; }
 // MUTAR=2: los juncos y el barro, sin herramienta (como si no se mirara): las pruebas deben FALLAR
 if (process.env.MUTAR === '2') { RECOLECTABLES.juncos.con = 'manos'; RECOLECTABLES.barro.con = 'manos'; }
+// MUTAR=3: la cebada silvestre, en el bosque (como si no fuera del claro): las pruebas deben FALLAR
+if (process.env.MUTAR === '3') RECOLECTABLES.cebada_silvestre.donde = ['bosque'];
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -164,6 +168,26 @@ console.log('Se guarda en el navegador y no se pierde');
   const menos = cargarRecoleccion(almacen, new Recoleccion(puntos.filter(q => q.id !== p.id)));
   comprobar('lo guardado de un punto que ya no existe se descarta', Object.keys(menos.estado).length === 0);
   comprobar('un guardado roto o sin versión se descarta sin romper', migrarRecoleccion({ estado: {} }) === null && cargarRecoleccion({ getItem: () => '{roto' }, new Recoleccion(puntos)).puntos.length === puntos.length);
+}
+
+console.log('Las semillas silvestres (P11): cebada y habas en los claros, col y nabo en la ribera, a mano');
+{
+  const R = RECOLECTABLES, sem = { cebada_silvestre: ['claro', 'semilla_cebada'], habas_silvestres: ['claro', 'habas'], col_silvestre: ['ribera', 'semilla_col'], nabo_silvestre: ['ribera', 'semilla_nabo'] };
+  for (const [t, [zona, da]] of Object.entries(sem)) comprobar(`${R[t].nombre}: en ${zona}, con las manos, da ${da} (pequeño)`, R[t].donde.join() === zona && R[t].con === 'manos' && R[t].da === da && CATALOGO[da].tam === 'P' && R[t].vuelve === TIEMPOS.estacion);
+  const zonasS = (x, z) => x < 0 ? ['claro'] : ['ribera'];
+  const ps = repartirPuntos({ semilla: 9, cuantos: { cebada_silvestre: 3, habas_silvestres: 3, col_silvestre: 3, nabo_silvestre: 3 }, zonas: zonasS, radio: 40 });
+  comprobar('cada una sale solo en su zona', ps.length === 12 && ps.every(p => zonasS(p.x, p.z).includes(sem[p.tipo][0])), `${ps.length} puntos`);
+  const rec = new Recoleccion(ps), inv = Inventario.inicial(), t0 = 1000;
+  const c = ps.find(p => p.tipo === 'cebada_silvestre'), r = rec.recoger(inv, c.id, c.x, c.z, t0);
+  comprobar('se recoge la cebada silvestre con las manos libres', r.ok && inv.cuantos('semilla_cebada') === r.cantidad && r.cantidad >= 2 && r.cantidad <= 4, r.motivo || `${r.cantidad}`);
+  comprobar('la planta se queda (se van las espigas) y vuelven en una estación', rec.enPie(c.id, t0) && !rec.disponible(c.id, t0 + 29 * DIA) && rec.disponible(c.id, t0 + 30 * DIA));
+  // caben en el cinturón (un hueco pequeño) y en la cesta de recolección
+  const enCinturon = Inventario.inicial(); enCinturon.lugares.cintura = { tipo: 'cordel', n: 1, dentro: [null] };
+  enCinturon.lugares['mano:der'] = { tipo: 'rama', n: 1 }; enCinturon.lugares['mano:izq'] = { tipo: 'rama', n: 1 };   // (las manos llenas: al cinturón)
+  const h = ps.find(p => p.tipo === 'habas_silvestres'), r2 = rec.recoger(enCinturon, h.id, h.x, h.z, t0);
+  comprobar('las habas caben en el cinturón', r2.ok && enCinturon.lugares.cintura.dentro[0]?.tipo === 'habas' && enCinturon.cuantos('habas') >= 3, r2.motivo || JSON.stringify(enCinturon.lugares.cintura));
+  comprobar('las habas crudas no se comen; 3 al fuego dan 3 asadas, que sí', !comestible('habas') && comestible('habas_asadas') && RECETAS.asar_habas.uso === 'fuego' && RECETAS.asar_habas.gasta.habas === 3 && RECETAS.asar_habas.n === 3);
+  comprobar('y en la cesta de recolección', ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo'].every(t => CATALOGO.cesta_recoleccion.admite.includes(t)));
 }
 
 console.log(`\n${ok} correctas, ${mal} fallidas`);

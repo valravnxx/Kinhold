@@ -6633,5 +6633,21 @@
   ],
   "pruebas": "En la nube: lógica bien (salvo systemd-analyze, de la máquina de la nube, y una vez el combate con dos clientes por tiempo agotado; aquí pasa 82/82), el recorrido 248/248, y bien el hogar, la cama ligada, los colgaderos, el mazo, los avisos de las necesidades, despiezar y asar, el inventario, el acabado de construir y la velocidad con pocos fotogramas; los almacenajes, bien en la última vuelta (salvo el contador desplegado, que falla igual en main). El panel de fabricar: lo de PC, con el secadero, bien; el móvil se cuelga. Aquí: comida 44/44, fabricación 197/197, orígenes, iconos, idiomas y fuego, bien; rota a propósito (MUTAR=2), la de comida falla.",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T10:28:33+00:00",
+  "fin": "2026-11-13T12:38:22+00:00",
+  "titulo": "P11: las semillas silvestres (demo v194)",
+  "hito": "granja",
+  "hecho": [
+   "Retomada desde su rama. La segunda mirada volvió a decir que no a las capturas de antes: las vainas de las habas parecían salchichas sueltas alrededor de la planta y los tallos de flor de la col se cortaban de golpe, con las flores como flotando.",
+   "Por qué se cortaban: los tallos de flor de la col y del nabo estaban medio enterrados. add() pone a cero la posición que venía en el giro, así que cada tallo quedaba centrado en el suelo. Ahora la posición va aparte y cada tallo sale entero de la roseta, con las flores en la punta y las silicuas pegadas.",
+   "Las vainas de las habas, rehechas: alargadas, algo curvas y de punta, cada una con su rabillo al tallo y colgando hacia fuera (de 30 a 60°). Las verdes, de verde claro, y alguna madura, pardo oliva.",
+   "Publicada la demo v194: cebada silvestre y habas silvestres en los claros, col silvestre y nabo silvestre en la ribera. Se recogen con las manos y caben en el cinturón, en la cesta de recolección y en el cesto; 3 habas al fuego dan 3 habas asadas.",
+   "La segunda mirada, un agente aparte, dijo que sí a las capturas nuevas de PC y de móvil. Deja dos retoques que no bloquean: más curva en las vainas y las hojas de la col más redondeadas."
+  ],
+  "pruebas": "Comprobador de código correcto. Aquí: recolección 66/66, lo que se recoge en el mundo (lógica) bien, orígenes 88/88. La nube estaba atascada: más de 20 ejecuciones colgadas de otras sesiones (sobre todo «panel de fabricación») ocupan las máquinas y lo nuevo se quedaba en cola. Por eso «lo que se recoge en el mundo», en el navegador, se pasó aquí, entero en PC y en móvil (TODO CORRECTO), y en la nube solo salió la demo única (bien). Lo demás del revisor ya había pasado en la nube la sesión anterior y desde entonces solo cambian los modelos de las cuatro plantas: se quitó con --sin por eso. No comprobado: «lo que se recoge en el mundo» en la nube con el último cambio. Choques: la rama de riberas (chat) toca recoleccion.js y recogida_mundo.js, y la de la maqueta toca los idiomas; ninguna está en main, así que las repasa a mano la que una después.",
+  "capturas": "capturas/demo-v194",
+  "estado": "ok"
  }
 ]
