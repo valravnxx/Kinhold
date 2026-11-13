@@ -6530,5 +6530,51 @@
   ],
   "pruebas": "Sin pruebas: cambio del plan.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T04:33:44+00:00",
+  "fin": "2026-11-13T04:36:24+00:00",
+  "titulo": "P9, Oficios del asentamiento: planificado (chat con valravnx)",
+  "hito": "oficios",
+  "hecho": [
+   "valravnx, por el chat: «hazlo» (planificar P9 ahora).",
+   "Siete tareas de una sesión, con la cadena de cada material hasta el mundo: el secadero y la carne seca; el raspador, la piel limpia y el zurrón; el cubo lleno de agua y la corteza de roble; las cubas de curtido y el cuero; el huso y el hilo; los zapatos y el cinto de cuero; la carbonera y el carbón. Después, el recorrido de jugador y la revisión.",
+   "La piel sale de la liebre de P4, así que el cuero no espera a los animales de P8. La silla, las alforjas y el heno esperan a P8; el horno de barro y el pan, a P11 (piden paja y harina).",
+   "Decisiones provisionales: el hilo, de la fibra cruda que ya se recoge (el lino y la lana llegarán con los campos y las ovejas); la hebilla del cinto, de madera (como dice el GDD); el agua de las cubas, con el cubo de madera lleno en el río.",
+   "pruebas/prueba_origenes.mjs: lista nueva de lo esencial de cada hito vivo (ESENCIAL), con las 15 cosas que deja P9 en PENDIENTES y su tarea viva; antes de pasar el hito a revisión no puede quedar nada suyo."
+  ],
+  "pruebas": "prueba_origenes.mjs: 36 bien; rota a propósito (MUTAR=2, como si sus tareas ya estuvieran hechas), 15 fallos. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:15:10+00:00",
+  "fin": "2026-11-13T05:16:51+00:00",
+  "titulo": "P11, la granja básica: planificada (chat con valravnx)",
+  "hito": "granja",
+  "hecho": [
+   "valravnx, por el chat, tras el estudio de la granja: el campo con estacas de 1 rama, una semana real para crecer, los cultivos que entren de manera normal, y la granja antes que los oficios («así ya tendremos materiales y podremos usar los acopios de plantas»). «Comienza ya».",
+   "Siete tareas de una sesión, con la cadena de cada cosa hasta el mundo: las semillas silvestres; marcar el campo con estacas; limpiarlo; labrar con la azada; sembrar y crecer; cosechar; la era y trillar. Después, el recorrido de jugador y la revisión.",
+   "Los primeros cultivos, los que no piden nada que aún no exista: cebada (grano y paja), habas, col y nabo. El lino espera (pide enriarlo para dar fibra) y el trigo y el pan también (piden el molino y el horno).",
+   "La granja (P11) pasa delante de los oficios (P9) en el roadmap. pruebas/prueba_origenes.mjs: lo esencial de la granja (11 cosas) en su lista, en PENDIENTES con su tarea viva."
+  ],
+  "pruebas": "prueba_origenes.mjs: todo bien; rota a propósito (MUTAR=2), falla. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:29:33+00:00",
+  "fin": "2026-11-13T07:02:19+00:00",
+  "titulo": "P11: las semillas silvestres (a medias, sin publicar)",
+  "hito": "granja",
+  "hecho": [
+   "En el mundo, en las celdas que no dan otra cosa: cebada silvestre y habas silvestres en los claros, col silvestre y nabo silvestre en la ribera. Se recogen con las manos; la planta se queda y se van las espigas, las vainas o los tallos en flor, que vuelven en una estación.",
+   "Dan cebada silvestre, habas, semillas de col y semillas de nabo (pequeños): caben en el cinturón, en la cesta de recolección y en el cesto. Las habas crudas no se comen; 3 al fuego dan 3 habas asadas (6 de hambre cada una).",
+   "Sus modelos en el mundo y en el suelo, e iconos nuevos en docs/recursos/iconos-v17 (la v16 es la del secadero, en la rama del chat: quien una la segunda tiene que volver a sacarlos).",
+   "Decisiones provisionales: cuánto da cada planta (2–4 de cebada y de semillas, 3–6 habas), cuántas hay, 30 s para asar las habas.",
+   "Pruebas: las cuatro semillas, con su zona, el cinturón, la cesta y las habas asadas, en prueba_recoleccion; la col y el nabo junto a los ríos, en prueba_recogida_mundo; recogerlas en el juego, PC y móvil, en prueba_recogida_mundo_navegador. Las semillas salen de PENDIENTES en prueba_origenes.",
+   "No se publica: la segunda mirada a las capturas dijo que no. Las habas tenían los tallos casi negros y al recogerlas no se notaba que se iban las vainas. La col y el nabo tenían los tallos de flor negros. Ya están cambiados en la rama trabajo/20261113-0529 (tallos verdes, vainas más grandes y por fuera de las hojas), pero sin capturas nuevas. La siguiente sesión pasa el revisor, mira las capturas de cerca y publica la v193 si sale bien.",
+   "Además, en las capturas del móvil la planta queda fuera de cuadro (detrás del mando): hay que encuadrarla en la prueba."
+  ],
+  "pruebas": "Comprobador de código limpio. Pruebas de node aquí: recolección 66/66, recogida en el mundo bien, orígenes 54/54, inventario, necesidades y fabricación bien. Cada prueba nueva se rompió a propósito una vez (MUTAR=3, MUTAR=2) y falla. En la nube (antes del último cambio de color), bien: recorrido, lo que se recoge en el mundo, las bayas, recoger, inventario, despiezar y asar, demo única (tras añadir la traducción del registro v191, que faltaba) y lo demás de estaciones. Fallan cosas que no toca este cambio: lógica (systemd-analyze en la máquina de GitHub; falla igual en main) y, sin comprobar si fallan igual en main, «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, en armas y mujer) y «panel de fabricación» (el texto de la pestaña de puestos). El revisor pidió también grupos de estaciones solo por un color, y se pasaron igual.",
+  "estado": "fallo"
  }
 ]

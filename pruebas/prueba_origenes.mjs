@@ -7,7 +7,8 @@
 //     puerta, cada uno con alguna de sus piezas hecha solo con lo que se consigue. Esto no tiene excepciones.
 //  2. Cada pieza y cada mueble que el menú de construir enseña en este tramo, cada estación y cada receta, o se puede
 //     hacer, o está en PENDIENTES con la tarea viva del roadmap que le dará su origen (que exista y no esté hecha).
-//  3. Nada sobra en PENDIENTES (lo que ya se puede hacer sale de la lista).
+//  3. Lo esencial de cada hito vivo (ESENCIAL) se puede tener, o espera en PENDIENTES con su tarea viva.
+//  4. Nada sobra en PENDIENTES (lo que ya se puede hacer sale de la lista).
 // Uso: node pruebas/prueba_origenes.mjs
 //      MUTAR=1 → como si los juncos no se pudieran cortar (sin tejado de la casa humilde: tiene que fallar)
 //      MUTAR=2 → como si la tarea de lo pendiente ya estuviera hecha (tiene que fallar)
@@ -40,7 +41,44 @@ const CASA_HUMILDE = {
 // después: src/logica/piezas.js, MATERIALES_POSTERIORES)
 // (8 nov: vacío. El mimbre, la resina y la corteza ya salen del mundo; 9 nov: la piel, de despiezar la liebre que se
 // caza con la lanza, y con ella vuelven la honda y el odre)
-const PENDIENTES = {};
+const PENDIENTES = {
+  // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
+  est_secadero: ['aún no hay secadero', 'El secadero y la carne seca'],
+  carne_seca: ['sale del secadero', 'El secadero y la carne seca'],
+  est_raspador: ['aún no hay raspador', 'El raspador de pieles, la piel limpia y el zurrón'],
+  piel_limpia: ['sale del raspador', 'El raspador de pieles, la piel limpia y el zurrón'],
+  zurron: ['pide piel limpia', 'El raspador de pieles, la piel limpia y el zurrón'],
+  agua: ['el cubo aún no se llena en el río', 'El cubo lleno de agua y la corteza de roble'],
+  corteza_roble: ['descortezar aún da la misma corteza en todos los árboles', 'El cubo lleno de agua y la corteza de roble'],
+  est_cubas_curtido: ['aún no hay cubas de curtido', 'Las cubas de curtido y el cuero'],
+  cuero: ['sale de las cubas', 'Las cubas de curtido y el cuero'],
+  huso: ['aún no se hace', 'El huso y el hilo'],
+  hilo: ['sale del huso', 'El huso y el hilo'],
+  zapatos_cuero: ['piden cuero e hilo', 'Los zapatos y el cinto de cuero'],
+  cinto_cuero: ['pide cuero', 'Los zapatos y el cinto de cuero'],
+  est_carbonera: ['aún no hay carbonera', 'La carbonera y el carbón'],
+  carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
+  // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
+  semilla_cebada: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  habas: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  semilla_col: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  semilla_nabo: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  estaca: ['aún no se hace', 'Marcar el campo con estacas'],
+  gavilla: ['sale de segar la cebada', 'Cosechar: la cebada se siega'],
+  col: ['sale del huerto', 'Cosechar: la cebada se siega'],
+  nabo: ['sale del huerto', 'Cosechar: la cebada se siega'],
+  est_era: ['aún no hay era', 'La era y trillar'],
+  grano: ['sale de trillar', 'La era y trillar'],
+  paja: ['sale de trillar', 'La era y trillar'],
+};
+// Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede
+// tener partiendo de nada, o espera en PENDIENTES con su tarea viva. Antes de pasar el hito a revisión (paso 9), nada
+// suyo puede quedar en PENDIENTES. Las estaciones, con «est_» delante.
+const ESENCIAL = {
+  oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
+    'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
+  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'grano', 'paja'],
+};
 
 // ---- lo que se puede tener, partiendo de nada ----
 const hay = new Set(), como = {};   // tipo del catálogo → cómo se consigue (la primera vez)
@@ -103,8 +141,21 @@ for (const [m, quien] of falta) {
   ok(`«${m}» sale de algún sitio o tiene su tarea viva`, !!p && viva(p[1]),
     `lo piden ${quien.join(', ')}${p ? ` · pendiente: ${p[0]} (tarea «${p[1]}»${viva(p[1]) ? '' : ': no existe o ya está hecha'})` : ' · no está en PENDIENTES'}`);
 }
-// ---- 3. nada sobra en PENDIENTES ----
-for (const m of Object.keys(PENDIENTES)) ok(`«${m}», en PENDIENTES, de verdad aún no sale de ningún sitio`, falta.has(m));
+// ---- 3. lo esencial de cada hito vivo ----
+const esencial = new Set();
+console.log('\nLo que cada hito vivo deja hecho');
+for (const [id, lista] of Object.entries(ESENCIAL)) {
+  const hito = roadmap.hitos.find(x => x.id === id);
+  if (!hito || hito.estado === 'congelado' || hito.estado === 'hecho') continue;
+  for (const m of lista) {
+    esencial.add(m);
+    const p = PENDIENTES[m];
+    ok(`${id}: «${m}» se puede tener o espera su tarea viva`, hay.has(m) || (!!p && viva(p[1])),
+      hay.has(m) ? como[m] : p ? `pendiente: ${p[0]} (tarea «${p[1]}»${viva(p[1]) ? '' : ': no existe o ya está hecha'})` : 'no está en PENDIENTES');
+  }
+}
+// ---- 4. nada sobra en PENDIENTES ----
+for (const m of Object.keys(PENDIENTES)) ok(`«${m}», en PENDIENTES, de verdad aún no sale de ningún sitio`, falta.has(m) || (esencial.has(m) && !hay.has(m)));
 
 console.log(`\n${bien} bien, ${mal} mal`);
 process.exit(mal ? 1 : 0);

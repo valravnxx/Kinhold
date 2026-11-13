@@ -2222,18 +2222,108 @@
    "nota": "valravnx, 13 nov: congelado hasta que él diga; los animales necesitan más modelos de Meshy y que él aprenda a hacerles el esqueleto. Mientras, P9."
   },
   {
+   "id": "granja",
+   "num": "P11",
+   "nombre": "El año y los campos",
+   "jugable": "La granja básica: semillas silvestres; el campo con la forma que marcas con estacas, que se limpia y se labra a mano; sembrar, crecer en una semana real, segar y trillar: grano, paja (el tejado de paja), habas, coles y nabos. Las estaciones del año, el lino y el pan, más adelante.",
+   "estado": "en_curso",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
+     "estado": "hecho",
+     "inicio": "2026-11-13T05:15:10+00:00",
+     "rama": "trabajo/20261113-0514-granja",
+     "fin": "2026-11-13T05:16:51+00:00"
+    },
+    {
+     "nombre": "Las semillas silvestres: cebada silvestre y habas en los claros, col silvestre y nabo en la ribera, que se recogen a mano (como las bayas, en las celdas que no dan otra cosa) y caben en el cinturón y en el cesto; las habas se comen asadas al fuego. Cadena: se recogen con las manos; el cesto ← 3 haces de juncos",
+     "estado": "en_curso",
+     "inicio": "2026-11-13T05:29:33+00:00",
+     "rama": "trabajo/20261113-0529"
+    },
+    {
+     "nombre": "Marcar el campo con estacas: la estaca (1 rama, con las manos; valravnx) se clava donde estás; de 3 a 16, y al clavar la última junto a la primera el campo se cierra, con su linde y su superficie en m². Solo en tu tierra o en la de quien te invita, sin cruzar obras, otros campos ni el agua, y sin pasar de una pendiente; mientras esté vacío, las estacas se mueven o se quitan. Lógica pura con autor (src/logica/campos.js), en el servidor, y todos lo ven. Cadena: rama ← se recoge en el bosque",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Limpiar el campo: dentro de un campo los árboles no vuelven a crecer; arrancar el tocón a golpes con la azada o el palo cavador (deja leña); las matas se desbrozan y las piedras sueltas se recogen; el campo dice lo que queda por limpiar. Cadena: azada ← rama, piedra y cuerda en el banco de tronco; palo cavador ← 1 rama",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Labrar con la azada: con la azada en la mano, cada pasada voltea un círculo de tierra donde apuntas (1,2 m de radio, unos 2 s; provisional), solo dentro del linde y donde no queda nada por limpiar; gasta aguante y cansancio. El suelo pasa a tierra labrada (un material nuevo del suelo, con surcos) y la hierba densa deja de salir ahí; el servidor guarda lo labrado (1 bit por m²); lo labrado y no sembrado vuelve a ser hierba con el tiempo. Capturas al lado de la referencia. Cadena: azada ← el banco de tronco",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Sembrar y crecer: la cebada a voleo (cada pasada esparce un círculo de 2 m sobre lo labrado y gasta 1 puñado cada 10 m²; provisional) y las habas, la col y el nabo planta a planta, a su distancia; crecen por fases que se ven (brote, verde, espiga o cabeza, maduro) en una semana real (valravnx), por tiempo transcurrido en el servidor, y todos lo ven igual. Las plantas se dibujan con la técnica de la hierba densa (instancias por celdas) y de lejos con el color del suelo; fotogramas medidos en el móvil. Cadena: semillas ← las silvestres; tierra labrada ← la azada",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Cosechar: la cebada se siega con la hoz de sílex a pasadas (deja gavillas en el suelo); las habas, la col y el nabo se cogen a mano; cada planta madura da unas 4 veces lo sembrado (la proporción de la época; provisional); la col y el nabo se comen (crudos o al fuego) y no duran mucho. Las gavillas van al almiar y lo pequeño al cesto (los acopios de plantas). Cadena: hoz ← rama y 3 lascas en el banco de tronco; lasca ← sílex en la piedra de tallar",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La era y trillar: la era (8 piedras y un suelo apisonado, fuera, en tu tierra) como estación; en ella, las gavillas con el mayal dan grano de cebada (que es también su semilla) y paja. La paja deja de estar escondida: el tejado de paja y el almiar lleno se pueden hacer. Cadena: piedra ← se recoge; mayal ← 2 ramas y cuerda en el banco de tronco; gavillas ← la siega",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era y pone un tejado de paja",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ],
+   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco."
+  },
+  {
    "id": "oficios",
    "num": "P9",
    "nombre": "Oficios del asentamiento",
-   "jugable": "Secadero, raspador y cubas de curtido (cuero), carbonera, huso y horno de barro; la silla de montar y las alforjas del caballo; el mimbre, la resina y la corteza.",
+   "jugable": "Secadero (carne seca), raspador de pieles (piel limpia y zurrón), cubas de curtido (cuero con corteza de roble), huso (hilo), zapatos y cinto de cuero, y carbonera (carbón).",
    "estado": "en_curso",
-   "nota": "valravnx, 13 nov: se empieza antes que P8 (los animales esperan). Lo que necesita el caballo (la silla y las alforjas) espera a P8.",
+   "nota": "valravnx, 13 nov: se empieza antes que P8 (los animales esperan). Lo que necesita el caballo (la silla y las alforjas, y el heno que come) espera a P8; el horno de barro y el pan, a P11 (piden paja y harina, que salen del cereal). La piel, de la liebre de P4. Las estaciones nuevas, por código con el estilo v5 hasta que valravnx mande sus modelos.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (secadero, curtido, carbonera, huso, horno de barro, silla y alforjas), con la cadena de cada material hasta el mundo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T04:33:44+00:00",
-     "rama": "trabajo/20261113-0433-oficios"
+     "rama": "trabajo/20261113-0433-oficios",
+     "fin": "2026-11-13T04:36:24+00:00"
+    },
+    {
+     "nombre": "El secadero y la carne seca: el secadero (4 troncos delgados de postes y 2 cuerdas, en tu tierra, fuera) como estación; se cuelgan 2 carnes crudas y al cabo de unas horas reales dan 1 carne seca, que no se estropea y sacia como la asada. Lo que tarda se calcula por tiempo transcurrido en la lógica pura (lo decide el servidor), y sirve luego a las cubas y a la carbonera. Cadena: tronco delgado ← talar un árbol joven con el hacha de piedra; cuerda ← 3 cordeles en el banco de tronco ← fibra a mano; carne cruda ← despiezar la liebre con la lasca ← cazarla con la lanza endurecida",
+     "estado": "en_curso",
+     "inicio": "2026-11-13T05:19:44+00:00",
+     "rama": "trabajo/20261113-0518-secadero"
+    },
+    {
+     "nombre": "El raspador de pieles, la piel limpia y el zurrón: el bastidor (4 varas y 1 cuerda) como estación; en él, con la lasca de sílex, 1 piel → 1 piel limpia; y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco: mochila mixta pequeña). Cadena: vara ← talar un árbol joven; piel ← despiezar la liebre; cordel ← fibra",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El cubo lleno de agua y la corteza de roble: el cubo de madera se llena en el río (agua, para las cubas) y se vacía; descortezar un roble en pie da corteza de roble (las demás especies, corteza). Cadena: cubo ← banco de tronco con un tronco corto ← trocear un tronco con el hacha; roble ← los bosques templados; descortezar ← la lasca de sílex o el hacha",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las cubas de curtido y el cuero: las cubas (un hoyo cavado con el palo cavador, 2 cestas de barro y 2 troncos cortos) como estación, fuera; se llenan con el cubo de agua; 1 piel limpia y 2 cortezas de roble dan 1 cuero al cabo de días reales (por tiempo transcurrido, en el servidor). Cadena: barro ← la ribera con el palo cavador; tronco corto ← trocear; piel limpia ← el raspador; corteza de roble y agua ← la tarea anterior",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El huso y el hilo: el huso (1 vara y 1 piedra, con las manos) es una herramienta; con él, 2 fibras → 1 hilo (de la fibra cruda que se recoge; el lino y la lana, cuando haya campos y ovejas). Cadena: vara ← talar un árbol joven; piedra y fibra ← se recogen a mano",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Los zapatos y el cinto de cuero: zapatos de cuero (1 cuero y 1 hilo, en el banco de tronco; la prenda ya existe y se ve puesta) y cinto de cuero (2 cueros y 1 rama para la hebilla de madera, en el banco: 3 huecos, uno mediano). Cadena: cuero ← las cubas; hilo ← el huso; rama ← se recoge",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de los oficios, sin arcón: cuelga carne en el secadero, raspa la piel de una liebre y hace el zurrón, llena el cubo, descorteza un roble y curte un cuero (con el reloj acelerado), hila, hace los zapatos y el cinto de cuero y saca carbón de la carbonera",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2258,24 +2348,6 @@
      "estado": "pendiente"
     }
    ]
-  },
-  {
-   "id": "granja",
-   "num": "P11",
-   "nombre": "El año y los campos",
-   "jugable": "Las estaciones del año (un mes real cada una), que también cambian el mundo (hojas, nieve); sembrar con semillas silvestres, cuidar y cosechar; trillar; grano, paja (el tejado de paja), lino (hilo y tela) y legumbres; pan en el horno de barro.",
-   "estado": "pendiente",
-   "tareas": [
-    {
-     "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
-    }
-   ],
-   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo."
   },
   {
    "id": "ganaderia",
