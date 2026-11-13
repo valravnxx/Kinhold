@@ -1,0 +1,163 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Va a la zona de al lado y pone su mojón
+  OK   pone su mojón en la zona de al lado (en el servidor) — Primera pieza: fija la rejilla de una construcción nueva. Gira con R o el botón Girar.
+Levanta una pila de piedras desde «Almacenajes»
+  OK   la pestaña «Almacenajes»: los siete (acopio de troncos, pila de piedras, leñera, soporte de varas, almiar, hoyo de barro y cesto) y los dos colgaderos (8 nov), y no los puestos de trabajo — ['Acopio de troncos', 'Pila de piedras', 'Leñera', 'Soporte de varas', 'Almiar', 'Hoyo de barro', 'Colgadero de mochilas', 'Colgadero de herramientas', 'Cesto']
+  OK   y en «Puestos de trabajo» no salen — ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco']
+  OK   el servidor le da 4 piedras (arcón de pruebas)
+  OK   el servidor guarda el giro con que se pone (Girar ×6: 90°) — {'id': 'pila_piedras:1', 'tipo': 'pila_piedras', 'x': -409, 'z': 4.2, 'autor': 'jugador:246ee48c', 'cola': [], 'deposito': {}, 'obra': {'entregado': {}, 'trabajo': 0, 'aportes': []}, 'y': 46.312, 'giro': 1.571}
+  OK   y se dibuja con ese giro
+  OK   el servidor tiene el marco de la pila — Marco puesto: llévale 4 piedra y trabaja en él (Usar).
+  OK   Usar le lleva sus 4 piedras
+  OK   y trabajando en ella queda levantada (en el servidor) — Construyendo: 94 %
+  OK   se dibuja sin armazón, con su lecho de losas
+Guardar y sacar, desde el panel
+  OK   en el menú de Usar: «Guardar y sacar: Pila de piedras» — ['Guardar y sacar: Pila de piedras']
+  OK   el panel se abre con la pila, sin recetas — Pila de piedras
+Guarda la piedra suelta
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+0 de 40 · toc
+  OK   dice qué guarda y cuánto cabe (vacía, 0 de 40) y que la obra no coge de ahí — Pila de piedras
+Guarda la piedra suelta
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+0 de 40 · toca para sacar
+
+Vacío: aquí se guarda piedra.
+
+Lo que llevas
+toca para guardar
+
+No llevas nada que se 
+  OK   de lo que lleva, solo se puede guardar la piedra (las ramas, no) — ['Guardar aquí: Piedra']
+  OK   guarda 3 piedras: en el servidor
+  OK   el panel lo dice (3 de 40) y se ven puestas en la pila — Pila de piedras
+Guarda la piedra suelta
+Todo
+1
+Con las manos
+en cualquier sitio
+1
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+3 de 40 · toca para sacar
+3
+Piedra
+Lo que llevas
+toca para guardar
+
+No llevas nada que se guarde aquí (piedra
+  OK   saca las piedras: vuelven a sus manos (en el servidor)
+  OK   la llena: 40 piedras (en el servidor) — {'piedra': 40}
+  OK   llena, no cabe ni una más (el panel lo dice) — Pila de piedras
+Guarda la piedra suelta
+Todo
+1
+Con las manos
+en cualquier sitio
+1
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+40 de 40 · toca para sacar
+40
+Piedra
+Lo que llevas
+toca para guardar
+
+No cabe nada más.
+
+La obra no coge de a
+  OK   y se ve llena: 40 piedras en montón — 40
+  OK   el contador de arriba va plegado: «En tu tierra» y el total, sin la lista — En tu tierra
+40
+  FALLA y desplegado cuenta lo guardado: 40 piedras — En tu tierra
+40
+40 piedra
+El acopio de troncos y la leñera, llenos (solo para mirarlos: se dibujan en este navegador)
+  FALLA el acopio, con sus 12 troncos puestos
+  FALLA la leñera, con su leña y sus ramas
+El soporte de varas, el almiar, el hoyo de barro y el cesto (8 nov), llenos y vacíos (solo para mirarlos)
+  FALLA soporte_varas: se dibuja con lo guardado — 1
+  OK   almiar: se dibuja con lo guardado — 11
+  OK   hoyo_barro: se dibuja con lo guardado — 1
+  FALLA cesto: se dibuja con lo guardado — 4
+En el móvil, el otro jugador la ve llena; es tierra de otro
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_almacenajes_navegador.py", line 261, in <module>
+    ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
+                    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_almacenajes_navegador.py", line 89, in entrar
+    crear_cuenta(pg, 60000)   # (en el móvil de la nube la pantalla de la cuenta tarda en salir)
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_almacenajes_navegador.py", line 78, in crear_cuenta
+    return crear_y_confirmar(pg, codigos, f'acopiador{_n[0]}', 'clave-de-prueba-123')
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/correo_prueba.py", line 31, in crear_y_confirmar
+    pg.fill('#pcClave', clave); pg.fill('#pcClave2', clave); pg.click('#pcIr')
+                                                             ~~~~~~~~^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11102, in click
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.click(
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+        )
+        ^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 889, in click
+    return await self._main_frame._click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 594, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#pcIr")
+    - locator resolved to <button id="pcIr" type="submit" class="pc-ir">Crear cuenta</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+    - click action done
+    - waiting for scheduled navigations to finish
+
