@@ -301,8 +301,8 @@ try:
         comprobar('a la semana, todo maduro', A.evaluate(f"['planta_cebada_3', 'planta_col_3', 'planta_nabo_3', 'planta_habas_3'].every(n => !!{K}.escena.getObjectByName(n))"))
         ir(A, x0 + 6.5, z0 + 1.6, 0); A.evaluate(f"{K}.cam.yaw = Math.PI; {K}.cam.dist = 5; {K}.cam.pitch = 0.42"); A.wait_for_timeout(1500)
         captura(A, f'{SALIDA}/PC_maduro.png')
-        ir(A, x0 + 6, z0 - 70, 0); A.wait_for_timeout(1500)
-        comprobar('de lejos (a 70 m) las plantas no se dibujan', A.evaluate(f"{K}.camposV.raiz.children.filter(g => g.name === 'sembrado').every(g => !g.visible)"))
+        ir(A, x0 + 6, z0 - 70, 0)
+        comprobar('de lejos (a 70 m) las plantas no se dibujan', esperar(A, f"(() => {{ const g = {K}.camposV.raiz.children.filter(g => g.name === 'sembrado'); return g.length > 0 && g.every(g => !g.visible); }})()", 10000))
         A.evaluate(f"{K}.camposV.poner({K}.mundo.campos)")   # (lo adelantado se queda en este navegador: no se manda)
         ir(A, x0 + 6, z0 + 3.4, 0)
 
@@ -327,7 +327,7 @@ try:
         captura(B, f'{SALIDA}/movil_campo.png')
         ir(B, x0 + 0.9, z0 - 1.1, 2.6); B.evaluate(f"{K}.cam.yaw = 2.6 + Math.PI; {K}.cam.dist = 3; {K}.cam.pitch = 0.35"); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_estaca_de_cerca.png')
-        ir(B, x0 + 8.5, z0 + 2.6, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3; {K}.cam.pitch = 0.5"); B.wait_for_timeout(2000)
+        ir(B, x0 + 8.5, z0 + 1.2, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3.5; {K}.cam.pitch = 0.75"); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_sembrado_de_cerca.png')
         comprobar('a Bruno no le deja quitar las estacas de otro (lo dice)', (B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'Fuera de tu tierra.'))
 

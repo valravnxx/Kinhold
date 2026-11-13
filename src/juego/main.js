@@ -2571,7 +2571,7 @@ function pasoMundo() {
   // (con la cámara libre del admin, el paisaje se prepara alrededor de la cámara)
   const foco = camLibre.activa ? { ...pj, x: camLibre.x, z: camLibre.z } : pj;
   const ms = mundoJ.paso(foco.x, foco.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(foco) : 0) + (hierbaDensa && mundoListo ? hierbaDensa.paso(foco, performance.now() / 1000) : 0);
-  if (camposV && mundoListo) camposV.paso(foco);   // (P11) lo sembrado: de cerca, las plantas; de lejos, el color del suelo
+  if (camposV) camposV.paso(foco);   // (P11) lo sembrado: de cerca, las plantas; de lejos, el color del suelo
   // el dosel de cerca empieza donde acaban los árboles de verdad (su cuadro, alrededor de donde se pusieron)
   if (mundoJ.horizonte && decorado.centro) mundoJ.horizonte.cuadroArboles(decorado.centro.x, decorado.centro.z, MEDIDAS_VEGETACION.cuadro);
   if (mundoListo) mirarTierras();

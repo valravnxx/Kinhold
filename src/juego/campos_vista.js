@@ -93,6 +93,9 @@ function constructor() {
       for (let k = 0; k < 3; k++) { const a1 = s[k], a2 = s[(k + 1) % 3]; idx.push(b, a1, a2, a1, t, a2); }
     },
     cerrar() {
+      // las hojas, por las dos caras con la misma normal hacia arriba (con DoubleSide, la de detrás saldría oscura)
+      const n = idx.length;
+      for (let i = 0; i < n; i += 3) idx.push(idx[i], idx[i + 2], idx[i + 1]);
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
       g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
@@ -106,11 +109,11 @@ function constructor() {
 function formaPlanta(cultivo, f) {
   const k = constructor(), r = (i) => ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
   if (cultivo === 'cebada') {   // una mata de cebada: varias hojas y, desde la espiga, sus tallos con la espiga
-    const verde = [C(0x6f9a46), C(0x5a8a3c), C(0x86a24c), C(0xb89a58)][f], punta = [C(0x9cc068), C(0x8fb460), C(0xb4b46a), C(0xd8bf78)][f];
-    const n = [4, 6, 5, 5][f], alto = [0.07, 0.34, 0.5, 0.58][f];
+    const verde = [C(0x6f9a46), C(0x5a8a3c), C(0x5e843a), C(0xb89a58)][f], punta = [C(0x9cc068), C(0x8fb460), C(0x8ea456), C(0xd8bf78)][f];
+    const n = [4, 6, 5, 5][f], alto = [0.1, 0.34, 0.5, 0.58][f];
     for (let i = 0; i < n; i++) { const a = i * 2.4 + r(i) * 0.6; k.hoja(Math.cos(a) * 0.03, Math.sin(a) * 0.03, a, alto * (0.75 + 0.35 * r(i + 7)), alto * (f ? 0.32 : 0.5), 0.022, verde, punta, { cae: f ? alto * 0.18 : 0 }); }
     if (f >= 2) {
-      const espiga = f === 2 ? C(0xa4ae5a) : C(0xdcc27c);
+      const espiga = f === 2 ? C(0x9aa65a) : C(0xdcc27c);
       for (let i = 0; i < 4; i++) {
         const a = i * 1.57 + r(i + 3), sx = Math.cos(a) * 0.035, sz = Math.sin(a) * 0.035, h = alto * (1.05 + 0.25 * r(i + 11)), lean = 0.06 + 0.05 * r(i + 5);
         k.hoja(sx, sz, a, h, lean, 0.008, verde, espiga);
@@ -122,7 +125,7 @@ function formaPlanta(cultivo, f) {
   } else if (cultivo === 'habas') {   // un tallo recto con pares de hojas redondas, luego vainas; seca, negruzca
     const tallo = [C(0x6a9a4a), C(0x4f7d38), C(0x4f7d38), C(0x4a3a28)][f], hoja = [C(0x7fae58), C(0x56843e), C(0x5a8642), C(0x6a5434)][f];
     const alto = [0.06, 0.3, 0.55, 0.5][f];
-    if (f === 0) { k.hoja(0, 0, 0.3, 0.06, 0.04, 0.03, tallo, hoja, { ancha: true }); k.hoja(0, 0, 3.4, 0.05, 0.04, 0.03, tallo, hoja, { ancha: true }); }
+    if (f === 0) { k.hoja(0, 0, 0.3, 0.08, 0.05, 0.035, tallo, hoja, { ancha: true }); k.hoja(0, 0, 3.4, 0.07, 0.05, 0.035, tallo, hoja, { ancha: true }); }
     else {
       k.hoja(0, 0, 0, alto, 0.01, 0.018, tallo, tallo); k.hoja(0, 0, 1.57, alto, 0.01, 0.018, tallo, tallo);
       const pisos = f === 1 ? 3 : 4;
@@ -137,12 +140,12 @@ function formaPlanta(cultivo, f) {
     }
   } else if (cultivo === 'col') {   // una roseta de hojas anchas azuladas y, en el centro, el cogollo
     const hoja = [C(0x7fa868), C(0x6e9278), C(0x6a8e74), C(0x6c8c70)][f], borde = [C(0x9ac07a), C(0x8eae90), C(0x8aaa8a), C(0x8aa684)][f];
-    const n = [3, 7, 9, 10][f], largo = [0.05, 0.22, 0.26, 0.3][f];
+    const n = [3, 7, 9, 10][f], largo = [0.08, 0.22, 0.26, 0.3][f];
     for (let i = 0; i < n; i++) { const a = i * 2.4; k.hoja(0, 0, a, largo * (f ? 0.55 : 1), largo, largo * 0.45, hoja, borde, { ancha: true, cae: f ? largo * 0.15 : 0, y0: f ? 0.02 : 0 }); }
     if (f >= 2) k.bola(0, f === 2 ? 0.1 : 0.13, 0, f === 2 ? 0.1 : 0.14, C(0xa8c49a), 0.8);
   } else {   // el nabo: hojas rectas y algo rizadas y, al engordar, la raíz blanca y morada que asoma
     const hoja = [C(0x7aac58), C(0x5e9444), C(0x5a8e42), C(0x6a8a44)][f], punta = [C(0x92c06c), C(0x7aac58), C(0x76a656), C(0x8a9a52)][f];
-    const n = [3, 6, 7, 7][f], alto = [0.05, 0.2, 0.28, 0.3][f];
+    const n = [3, 6, 7, 7][f], alto = [0.08, 0.2, 0.28, 0.3][f];
     for (let i = 0; i < n; i++) { const a = i * 2.4 + r(i); k.hoja(0, 0, a, alto * (0.8 + 0.3 * r(i + 2)), alto * 0.45, alto * 0.18, hoja, punta, { ancha: true, cae: alto * 0.1, y0: f >= 2 ? 0.03 : 0 }); }
     if (f >= 2) { const rr = f === 2 ? 0.045 : 0.065; k.bola(0, 0, 0, rr, C(0xe6dcd6), 1); k.bola(0, rr * 0.75, 0, rr * 0.8, C(0x8e5a7c), 0.6); }
   }
@@ -274,7 +277,7 @@ export function crearCamposVista({ escena, sueloEn }) {
       x0 = Math.min(x0, p.x); z0 = Math.min(z0, p.z); x1 = Math.max(x1, p.x); z1 = Math.max(z1, p.z);
     }
     if (!porForma.size) return;
-    if (!matPlantas) matPlantas = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    if (!matPlantas) matPlantas = new THREE.MeshLambertMaterial({ vertexColors: true });
     const g = new THREE.Group(); g.name = 'sembrado';
     const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), P = new THREE.Vector3(), S = new THREE.Vector3();
     for (const { cultivo, f, l } of porForma.values()) {
