@@ -1,0 +1,29 @@
+[
+ {
+  "nombre": "pared_estratos",
+  "alto": 4,
+  "imagen_id": "01a1d5c3-4c72-71a4-a472-abbbc5540f4f",
+  "modelo_id": "01a1d5c3-af4b-77d9-9e2a-9a8cc76c510f",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "pared_grietas",
+  "alto": 4,
+  "imagen_id": "01a1d5c5-9e8e-74ec-8db0-1e4bb3358c09",
+  "modelo_id": "01a1d5c6-01b9-76f1-bb3b-52d7e4845a37",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "pared_saliente",
+  "alto": 3,
+  "imagen_id": "01a1d5c8-0ef7-7332-8d80-8b451615e622",
+  "modelo_id": "01a1d5c8-71c2-709c-8c41-55293855394c",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
