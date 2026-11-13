@@ -221,7 +221,7 @@ export function modelosRecoleccion() {
   // (P11, 13 nov) las semillas silvestres. Cada planta se queda (siempre) y se va lo que tiene la semilla, que es lo que
   // se coge: las espigas de la cebada, las vainas de las habas y los tallos en flor (con sus silicuas) de la col y del nabo.
   // Que se distingan bien entre la hierba (valravnx, 7 nov: que lo que se recoge se vea): la cebada, pajiza y alta; las
-  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas verdes que cuelgan por fuera; la col, hojas anchas de verde azulado; el
+  // habas, una mata erguida de hoja gris verdosa con flores blancas y vainas gruesas de verde claro que cuelgan por fuera; la col, hojas anchas de verde azulado; el
   // nabo, hojas de verde vivo; las dos, con tallos de flor amarilla.
   const hojaAncha = (largo, ancho) => {   // una hoja ovalada, algo cóncava, que sale del centro hacia fuera (eje +x)
     const s = new THREE.Shape(); s.moveTo(0, 0);
@@ -257,7 +257,7 @@ export function modelosRecoleccion() {
     }
   };
   const CEBADA_TALLO = 0x9c9a5c, CEBADA_TALLO_SECO = 0xb3a46a, CEBADA_ESPIGA = 0xcdb46a, CEBADA_ARISTA = 0xd9c991;
-  const HABA_TALLO = 0x6f8f4c, HABA_HOJA = 0x6f8a5c, HABA_HOJA_OSC = 0x5b7549, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x66803e, HABA_VAINA_OSC = 0x3e3f26;
+  const HABA_TALLO = 0x6f8f4c, HABA_HOJA = 0x6f8a5c, HABA_HOJA_OSC = 0x5b7549, HABA_FLOR = 0xe9e4d8, HABA_MANCHA = 0x2a2426, HABA_VAINA = 0x9aa95a, HABA_VAINA_OSC = 0x4f5130;
   const COL_HOJA = 0x62806a, COL_HOJA_OSC = 0x506c58, NABO_HOJA = 0x5f8a3e, NABO_HOJA_OSC = 0x4d7433, FLOR_AMARILLA = 0xe2c53a, FLOR_AMARILLA_PALIDA = 0xd9cf6a, SILICUA = 0x7d8a46;
   // la cebada silvestre: una mata de cañas finas (0,6–0,9 m), pajizas, con hojas estrechas abajo; las espigas, que es lo
   // que se coge, cabizbajas y con sus aristas largas
@@ -285,7 +285,7 @@ export function modelosRecoleccion() {
     }
   }, { doble: true, rangoSuelo: 0.3 });
   // las habas silvestres: una mata erguida (unos 0,6 m) de tallos recios, hojas ovaladas gris verdosas, flores blancas
-  // con su mancha oscura y, lo que se coge, las vainas gruesas que cuelgan, verde oscuro y alguna ya negra
+  // con su mancha oscura y, lo que se coge, las vainas gruesas que cuelgan, de verde claro y alguna ya oscura
   const habasTallos = [];
   for (let k = 0; k < 9; k++) { const a = k * 0.7 + 0.3, d = 0.04 + (k % 3) * 0.05, h = 0.55 + (k % 3) * 0.1; habasTallos.push({ a, d, h }); }
   const habasPlanta = geoLote(L => {
@@ -304,8 +304,8 @@ export function modelosRecoleccion() {
   }, { doble: true, rangoSuelo: 0.25 });
   const habasVainas = geoLote(L => {
     for (const [k, { a, d, h }] of habasTallos.entries()) for (let n = 0; n < 4; n++) {   // por fuera de las hojas, para que se vean (y se note al cogerlas)
-      const y = h * (0.3 + n * 0.15), b = a + n * 1.6 + 0.8, x = Math.cos(a) * d + Math.cos(b) * 0.07, z = Math.sin(a) * d + Math.sin(b) * 0.07;
-      const v = new THREE.CapsuleGeometry(0.017, 0.1, 2, 6); v.translate(0, -0.045, 0);
+      const y = h * (0.3 + n * 0.15), b = a + n * 1.6 + 0.8, x = Math.cos(a) * d + Math.cos(b) * 0.09, z = Math.sin(a) * d + Math.sin(b) * 0.09;
+      const v = new THREE.CapsuleGeometry(0.021, 0.13, 2, 6); v.translate(0, -0.06, 0);
       L.add(v, (k + n) % 4 === 0 ? HABA_VAINA_OSC : HABA_VAINA, x, y, z, { y: -b, z: 0.35 }, { escala: new THREE.Vector3(1.25, 1, 0.9), sinSuelo: true, tex: 'liso', brillo: 1.05 });
     }
   }, { rangoSuelo: 0.25 });

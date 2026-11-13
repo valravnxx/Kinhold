@@ -178,11 +178,11 @@ with sync_playwright() as p:
             comprobar(f'cerca de la orilla hay {tipo} (a menos de 300 m)', MUTAR != '2' and tipo in SEM)
             if tipo not in SEM: continue
             x, z, pid = SEM[tipo]
-            # la planta, más allá de ti (1,2 m) y a tu derecha (0,5 m), para que el cuerpo no la tape; en el móvil (pantalla
+            # la planta, más allá de ti (1,1 m) y a tu derecha (0,75 m; en el móvil, 0,5), para que el cuerpo no la tape; en el móvil (pantalla
             # estrecha) la cámara algo más lejos, para que quepan los dos y la planta no quede detrás del mando
-            dcam = 3.2 if movil else 2.6
+            dcam, lado = (3.2, 0.5) if movil else (2.6, 0.75)
             pg.evaluate(f"""([x, z]) => {{ const k = {K}, O = k.mundoJ.salida, Y = -Math.PI / 2 + 0.3, fx = -Math.sin(Y), fz = -Math.cos(Y), rx = -fz, rz = fx;
-                const px = x - O.x - fx * 1.2 - rx * 0.5, pz = z - O.z - fz * 1.2 - rz * 0.5;
+                const px = x - O.x - fx * 1.1 - rx * {lado}, pz = z - O.z - fz * 1.1 - rz * {lado};
                 k.pj.x = px; k.pj.z = pz; k.pj.rot = Math.atan2(x - O.x - px, z - O.z - pz); k.cam.dist = {dcam}; k.cam.pitch = 0.42; k.cam.yaw = Y; }}""", [x, z])
             pg.wait_for_timeout(500)
             try: pg.wait_for_function(LISTO, timeout=240000)
