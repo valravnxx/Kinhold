@@ -1,0 +1,146 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2761 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3098 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4491 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3168 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2756 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3127 KB
+dist/kinhold_trozos.html 2778 KB
+hilo de los trozos 24 KB
+
+== Lógica de construcción
+  OK   el segundo tramo de una pendiente arranca 1 tramo más arriba
+  OK   remate de esquina: limatesa baja hacia los dos aleros, limahoya sube
+
+Resultado: 273 correctas, 0 fallidas
+
+== Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo
+  OK   la pestaña «exterior» tiene algo
+  OK   la pestaña de muebles tiene algo
+
+50 correctas, 0 fallos
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Modelos
+  OK   Cimiento de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 106 rayos sin madera
+  OK   Cimiento de troncos con vecino a un lado: testas solo hacia fuera
+
+Resultado: 184 correctas, 0 fallidas
+
+== Lógica de combate
+  OK   con el botón pulsado, un movimiento claro hacia arriba cambia a alto
+  OK   y luego a la derecha, sin soltar
+
+Resultado: 125 correctas, 0 fallidas
+
+== Acciones con autor
+  OK   ningún archivo fuera de la lógica pura cambia el mundo directamente (93 revisados)
+  OK   la construcción y el combate usan las acciones
+
+Resultado: 41 correctas, 0 fallidas
+
+== Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar
+  OK   y construye en su tierra nueva
+  OK   rehecho desde el registro da el mismo mundo
+
+30 bien, 0 mal
+
+== Alcance de las obras: el servidor solo deja entregar, subir, trabajar y desmontar junto a la obra y en su planta
+  OK   lo que devuelve (6 piedras): lo que le cabe a lo que lleva y lo demás al suelo a sus pies, nada al arcón — mano 3, suelo 3, arcón 106 → 106
+  OK   lo que no existe lo dice la acción misma — No existe.
+
+29 bien, 0 mal
+
+== Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba
+  OK   el servidor no deja a Bruno desmontar lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   a Ana, sí
+
+35 bien, 0 mal
+
+== La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus invitados (15 sin obra terminada), avisos por correo y ruinas
+  OK   con obra terminada, el día 20 sigue siendo suya
+  OK   el día 30, al rey
+
+41 bien, 0 mal
+
+== Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio
+  OK   naturaleza en PC: cada perfil, igual o más detalle que el anterior, y el más alto más que el más bajo — pc-1 {"cerca":24,"alto":8} · pc-2 {"cerca":40,"alto":16} · pc-3 {"cerca":60,"alto":30}
+  OK   naturaleza: el PC alto lleva el modelo de cerca hasta 60 m y el de más detalle hasta 30
+
+36 bien, 0 mal
+
+== El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento
+El reloj del servidor
+  OK   la bienvenida lleva el reloj del servidor (la hora del cielo) — 1794565443084
+
+24 correctas, 0 fallan
+
+== Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor
+  OK   de noche, sin fuego y con lo del principio, el frío sube — 20.60
+  OK   a 1 m de una hoguera encendida, baja — 20.60 → 20.19
+
+58 correctas, 0 fallan
+
+== Desconectarse: dormido en el mundo, atacable unos minutos fuera de tu tierra, en el servidor
+  OK   pone su mojón
+  OK   al irse en su tierra, dormido y protegido (fuera del combate) desde el primer momento
+
+26 correctas, 0 fallos
+
+== Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cuerpo con la mitad, y a tu cama
+  OK   en el agua honda, sí: ahogado
+  OK   de sed no se puede decir: eso lo ve el servidor
+
+36 bien, 0 mal
+
+== Las liebres: pastan, se ponen alerta y huyen de quien se acerca; las mueve el servidor
+  OK   el otro la ve en el mismo sitio y haciendo lo mismo — 12.08, 76.85
+  OK   a quien se va lejos se le dice que esas liebres ya no están — 6 fuera
+
+18 bien, 0 mal
+
+== El modo arma con lo de la mano: puños, hacha, lanza; lanzar la lanza y la piedra apuntando, y cazar la liebre
+  OK   sin piedras, vuelve a los puños — punos
+  OK   el palo cavador se gasta con cada golpe que alcanza, y su navegador lo sabe — herida; usado 1, golpes 1
+
+25 bien, 0 mal
+
+== Despiezar y asar: la liebre con la lasca, la carne al fuego, la cruda se estropea
+  OK   la de dentro de la mochila, también
+  OK   la del suelo pasada su hora desaparece; lo demás, no — {"cambia":true,"estropeadas":{"carne_cruda":1}}
+
+27 bien, 0 mal
+
+== Herramientas y armas que se gastan: el hacha de piedra tala 3 adultos y se rompe
+  OK   el gambesón (tela), lo de paja y la cota de malla (fragua), aún no se reparan
+  OK   el desgaste de la ropa se guarda y se carga — {"tipo":"camisa_lino","n":1,"usado":100}
+
+48 bien, 0 mal
+
+== Desbrozar matorrales y arbustos, en la lógica y en el servidor
+  bien  uno que no existe, no — Ahí no hay nada que recoger.
+  bien  lo desbrozado sale en lo que se reparte (quitado)
+
+27/27 bien
+
+== El mazo de piedra y romper rocas, en la lógica y en el servidor
+  bien  lo roto sale en lo que se reparte (quitado)
+  bien  y se guarda: al volver a abrir el servidor sigue rota
+
+32/32 bien
+
+== El mimbre, la corteza y la resina, en la lógica y en el servidor
