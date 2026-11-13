@@ -14,14 +14,15 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 
 export const ESPECIES_MESHY = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fresno', 'encina'];
 export const LISTA_NATURALEZA = [...ESPECIES_MESHY, ...ESPECIES_MESHY.map(e => e + '_joven'),
-  'matorral', 'arbusto_bayas', 'roca', 'pena', 'canto', 'hierba_larga', 'ortigas', 'juncos', 'helechos'];
+  'matorral', 'arbusto_bayas', 'roca', 'pena', 'canto', 'hierba_larga', 'ortigas', 'juncos', 'helechos',
+  'junco_recoger', 'junco_cortado', 'junco_adorno'];   // (13 nov, valravnx: los juncos que se recogen, cortados y de adorno)
 
 // la carpeta, al lado de la de los personajes que da cada prototipo (src/mundo/eleccion.js: recursosTaller)
 export const carpetaNaturaleza = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/personajes\/[^/]*\/?$/, 'naturaleza/meshy-v1/');
 
 let cargados = null, cargando = null, carpetaCargada = null, cargandoAlto = null, version = 0;
 // las plantas finas (hojas de una sola capa), por las dos caras
-const DOS_CARAS = new Set(['hierba_larga', 'ortigas', 'juncos', 'helechos']);
+const DOS_CARAS = new Set(['hierba_larga', 'ortigas', 'juncos', 'helechos', 'junco_recoger', 'junco_cortado', 'junco_adorno']);
 const ROCAS = new Set(['roca', 'pena', 'canto']);
 // cuánta luz del cielo de más (o de menos) se llevan las plantas: 1,4 de día y 0,7 de noche (lo cambia el cielo)
 export const rellenoPlantas = { value: 1.4 };

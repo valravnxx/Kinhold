@@ -247,7 +247,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     }
     // (riberas y costas, 13 nov) los juncos del agua somera y de la marisma, y la hierba de duna de la playa (la hierba
     // alta, de color paja); la hierba de la marisma, más verde grisácea
-    const juM = M('juncos'), hlM = M('hierba_larga');
+    const juM = M('junco_adorno') || M('juncos'), hlM = M('hierba_larga');   // (13 nov: los de adorno, distintos de los que se recogen)
     if (juM) porNiveles(deTipo('junco_agua'), juM, 'soto_juncos', e => c.setScalar(e.tono * (e.sal ? 0.95 : 1)));
     if (hlM) porNiveles(deTipo('hierba_duna'), hlM, 'soto_duna', e => c.setRGB(1.15, 1.02, 0.7).multiplyScalar(e.tono));
     const cantoM = M('canto');

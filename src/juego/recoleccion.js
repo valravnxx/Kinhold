@@ -224,8 +224,9 @@ export function modelosRecoleccion() {
   // espigas) y el arbusto de las bayas, con las bayas puestas por su cara de fuera
   const M = (n) => { const m = naturaleza(n); return m ? [{ geo: m.cerca.geo, mat: m.cerca.mats }] : null; };
   const arbustoM = naturaleza('arbusto_bayas'), bayasM = arbustoM ? bayasSobre(arbustoM.cerca.geo) : null;
-  // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo
-  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('juncos') || juncos, barro, yesquero, pena,
+  // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo; (13 nov) la mata de juncos cortada (cortado:
+  // true) sale solo mientras no ha vuelto a crecer, en lugar de la entera
+  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('junco_recoger') ? [...M('junco_recoger'), ...M('junco_cortado').map(m => ({ ...m, cortado: true }))] : (M('juncos') || juncos), barro, yesquero, pena,
     bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas] });
 }
 
@@ -285,18 +286,19 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
   const mallas = [];
   for (const tipo of Object.keys(RECOLECTABLES)) {
     const lista = puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-    for (const { geo, mat, siempre } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
+    for (const { geo, mat, siempre, cortado } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
+      if (cortado) continue;   // (en el llano de la demo no hay juncos)
       const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
       lista.forEach((p, i) => { o.position.set(p.x, altura(p.x, p.z) - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : ''); grupo.add(im);
+      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); grupo.add(im);
       mallas.push({ im, lista, matrices, siempre });
     }
   }
   let ocupado = () => false;
   const visible = (p, ahora, siempre) => (siempre ? rec.enPie(p.id, ahora) : rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z);
   function refrescar(ahora = Date.now()) {
-    for (const { im, lista, matrices, siempre } of mallas) {
-      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora, siempre) ? matrices[i] : CERO));
+    for (const { im, lista, matrices, siempre, cortado } of mallas) {
+      lista.forEach((p, i) => im.setMatrixAt(i, (cortado ? rec.enPie(p.id, ahora) && !rec.disponible(p.id, ahora) && !ocupado(p.x, p.z) && !p.tapado : visible(p, ahora, siempre)) ? matrices[i] : CERO));
       im.instanceMatrix.needsUpdate = true;
     }
   }
@@ -373,19 +375,19 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     for (const p of rec.puntos) { p.tapado = tapado(p); p.y = altura(p.x, p.z); }
     for (const tipo of Object.keys(RECOLECTABLES)) {
       const lista = rec.puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-      for (const { geo, mat, siempre } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
+      for (const { geo, mat, siempre, cortado } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : ''); im.frustumCulled = false; grupo.add(im);
-        mallas.push({ im, lista, matrices, siempre });
+        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
+        mallas.push({ im, lista, matrices, siempre, cortado });
       }
     }
     cuenta.trozos = trozos.size; cuenta.puntos = rec.puntos.length;
     refrescar();
   }
   function refrescar(ahora = Date.now()) {
-    for (const { im, lista, matrices, siempre } of mallas) {
-      lista.forEach((p, i) => im.setMatrixAt(i, visible(p, ahora, siempre) ? matrices[i] : CERO));
+    for (const { im, lista, matrices, siempre, cortado } of mallas) {
+      lista.forEach((p, i) => im.setMatrixAt(i, (cortado ? rec.enPie(p.id, ahora) && !rec.disponible(p.id, ahora) && !ocupado(p.x, p.z) && !p.tapado : visible(p, ahora, siempre)) ? matrices[i] : CERO));
       im.instanceMatrix.needsUpdate = true;
     }
   }
