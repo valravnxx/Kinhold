@@ -13,6 +13,7 @@
 //   { tipo: 'soltar_suelo', de, cantidad?, x, z } — al suelo, a tus pies
 //   { tipo: 'coger_suelo', objeto, x, z, a?, cantidad? } — del suelo a lo que llevas
 //   { tipo: 'talar', arbol, x, z, ax, az, edad }  — un golpe de hacha a un árbol (src/logica/tala.js); lo que deja cae al suelo
+//   { tipo: 'arrancar', arbol, x, z, ax, az, edad } — un golpe de azada o de palo cavador a su tocón (P11); la leña, al suelo
 //   { tipo: 'descortezar' | 'sangrar', arbol, x, z, ax, az, edad, especie } — la corteza y la resina del árbol en pie
 //     (src/logica/tala.js), a lo que llevas
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
@@ -81,7 +82,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'arrancar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -92,7 +93,8 @@ export class ObjetosServidor {
   // terreno: el mundo que conoce el servidor (crearTerreno), o null. puedeTocar(autor, x, z) → { ok, motivo? }: si puede
   // poner algo ahí (en tierra de otro, solo su dueño y sus invitados; Construccion.puedeTocar).
   // bajoTecho(x, z): si ese sitio está bajo techo (Construccion.bajoTecho; los puestos de trabajo: la hoguera, solo fuera).
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null, obrasCerca = () => [] } = {}) {
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null, obrasCerca = () => [], sinRebrote = null } = {}) {
+    this.sinRebrote = sinRebrote;  // (x, z) → dentro de un campo: lo talado no vuelve a crecer (src/logica/campos.js)
     this.obrasCerca = obrasCerca;  // las piezas de las obras cerca de (x, z): con lo que puede dar un árbol al caer
     this.puedeTocar = puedeTocar;
     this.bajoTecho = bajoTecho;
@@ -100,7 +102,7 @@ export class ObjetosServidor {
     this.terreno = terreno;
     this.invs = new Inventarios();
     this.ponerSuelo(new Suelo());
-    this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala(); this.tala.obstaculosEn = this.alrededorTala();
+    this.tala = new Tala([]); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala(); this.tala.obstaculosEn = this.alrededorTala(); this.tala.sinRebrote = this.sinRebrote;
     this.recoleccion = new Recoleccion([]); this.recoleccion.entre = ENTRE_GOLPES_RED;
     this.posicion = posicion;
     this.enTierras = enTierras;
@@ -126,10 +128,10 @@ export class ObjetosServidor {
       if (!p) r = this.anotar(a, { ok: false, motivo: 'El servidor aún no sabe dónde estás.' }, ahora);
       else if (!num(a.x) || !num(a.z)) r = this.anotar(a, { ok: false, motivo: 'Datos no válidos.' }, ahora);
       else if (Math.hypot(a.x - p.x, a.z - p.z) > TOLERANCIA) r = this.anotar(a, { ok: false, motivo: 'No estás ahí.' }, ahora);
-      else if (a.tipo === 'talar' || a.tipo === 'descortezar' || a.tipo === 'sangrar') {
+      else if (a.tipo === 'talar' || a.tipo === 'descortezar' || a.tipo === 'sangrar' || a.tipo === 'arrancar') {
         const fallo = this.conocerArbol(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarTala(this.tala, this.invs, this.suelo, this.registro, a, ahora);
-        suelo = !!(r.ok && r.limpio);   // (12 nov) lo que deja cae al suelo al limpiar el caído, no al caer
+        suelo = !!(r.ok && (r.limpio || r.arrancado));   // (12 nov) lo que deja cae al suelo al limpiar el caído, no al caer; y la leña del tocón arrancado
       } else if (a.tipo === 'trocear') {
         r = ejecutarTroceo(this.troceo, this.invs, this.registro, a, ahora, this.enTierras);
         suelo = !!(r.ok && r.termina);
@@ -296,7 +298,7 @@ export class ObjetosServidor {
     let arboles = lista(datos.arboles, a => a && txt(a.id) && num(a.x) && num(a.z) && Object.hasOwn(DA, a.edad));
     // con el terreno, solo los que de verdad están en el mundo, y como son en él (lo guardado antes lo decía el navegador)
     if (this.terreno) arboles = arboles.map(a => this.terreno.arbol(a.id, a.x, a.z)).filter(Boolean);
-    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad, ...(txt(a.especie) ? { especie: a.especie } : {}), ...(num(a.alto) ? { alto: a.alto, tam: a.tam } : {}) }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala(); this.tala.obstaculosEn = this.alrededorTala();
+    this.tala = new Tala(arboles.map(a => ({ id: a.id, x: a.x, z: a.z, edad: a.edad, ...(txt(a.especie) ? { especie: a.especie } : {}), ...(num(a.alto) ? { alto: a.alto, tam: a.tam } : {}) }))).importar(datos.tala); this.tala.entre = ENTRE_GOLPES_RED; this.tala.alturaEn = this.alturaTala(); this.tala.obstaculosEn = this.alrededorTala(); this.tala.sinRebrote = this.sinRebrote;
     this.troceo.importar(datos.troceo, ahora);
     let puntos = lista(datos.puntos, q => q && txt(q.id) && num(q.x) && num(q.z) && Object.hasOwn(RECOLECTABLES, q.tipo));
     if (this.terreno) puntos = puntos.map(q => this.terreno.punto(q.id, q.x, q.z)).filter(Boolean);

@@ -62,6 +62,17 @@ import { gastar } from './desgaste.js';
 const DIA = 24 * 3600 * 1000;
 export const SEMANA = 7 * DIA;
 export const ALCANCE_TALA = 1.8;        // m, desde el centro del tronco
+// Arrancar el tocón (P11, «Limpiar el campo», 13 nov): a golpes con la azada o el palo cavador en la mano. Lo que vale
+// cada golpe de cada herramienta, los golpes de azada que pide cada tocón (con el palo cavador, el doble) y la leña que
+// deja. Arrancado, el tocón se va y el árbol ya no vuelve a crecer ahí. Decisiones provisionales (registro y diario).
+export const ARRANCAN = { azada: 1, palo_cavador: 0.5 };
+export const GOLPES_TOCON = { joven: 6, adulto: 14 };
+export const LENA_TOCON = { joven: 2, adulto: 4 };
+// La herramienta de arrancar que lleva en las manos el inventario inv (la derecha primero): { ruta, tipo } o null.
+export function arrancaEnMano(inv) {
+  for (const ruta of ['mano:der', 'mano:izq']) { const c = inv.lugares[ruta]; if (c && Object.hasOwn(ARRANCAN, c.tipo)) return { ruta, tipo: c.tipo }; }
+  return null;
+}
 export const ENTRE_GOLPES = 800;        // ms
 export const ESCALA_ADULTO = 1.1;       // desde este tamaño del modelo, el árbol es adulto
 export const HACHAS = { hacha_piedra: 'piedra', hacha_hierro: 'hierro', hacha_mano: 'hierro' };
@@ -288,6 +299,7 @@ export class Tala {
     this.ultimoGolpe = {};  // autor → ms (no se guarda: solo frena los golpes demasiado seguidos)
     this.entre = ENTRE_GOLPES; // ms entre golpe y golpe del mismo autor (el servidor pide menos: la red los junta)
     this.alturaEn = null;      // (x, z) → altura del suelo, para la cuesta (el servidor le pone la de su terreno)
+    this.sinRebrote = null;    // (x, z) → bool: dentro de un campo (src/logica/campos.js) lo talado no vuelve a crecer
     this.obstaculosEn = null;  // (x, z, r) → lo de alrededor para la caída (árboles { id, x, z, edad, especie, alto } y
                                // obras { id, tipo: 'obra', x, z, r, arriba }); sin él, los árboles que conoce
   }
@@ -301,12 +313,25 @@ export class Tala {
     for (const id of fuera) this.porId.delete(id);
     this.arboles = this.arboles.filter(a => !fuera.has(a.id));
   }
+  // Cuándo vuelve a crecer el árbol id: nunca si se le arrancó el tocón o si está dentro de un campo (P11); si no, su
+  // «vuelve». 0 si no está talado.
+  vuelveDe(id) {
+    const e = this.estado[id];
+    if (!e || !e.vuelve) return 0;
+    if (e.arrancado) return Infinity;
+    const a = this.porId.get(id);
+    return a && this.sinRebrote && this.sinRebrote(a.x, a.z) ? Infinity : e.vuelve;
+  }
   // ¿Está en pie? (no talado, o ya ha vuelto a crecer)
-  enPie(id, ahora) { const e = this.estado[id]; return this.porId.has(id) && (!e || !e.vuelve || ahora >= e.vuelve); }
+  enPie(id, ahora) { const e = this.estado[id]; return this.porId.has(id) && (!e || !e.vuelve || ahora >= this.vuelveDe(id)); }
+  // ¿Queda su tocón? (talado, limpio si cayó, sin arrancar y sin haber vuelto a crecer)
+  tocon(id, ahora) { const e = this.estado[id]; return !!(e && e.vuelve && !e.arrancado && !Number.isFinite(e.ang) && this.porId.has(id) && ahora < this.vuelveDe(id)); }
+  // ¿Se le arrancó el tocón? (ya no hay nada: ni árbol ni tocón)
+  arrancado(id) { const e = this.estado[id]; return !!(e && e.arrancado); }
   // Los tocones de ahora: [{ arbol, caido, vuelve, dir }]
   tocones(ahora) {
     const r = [];
-    for (const [id, e] of Object.entries(this.estado)) if (e.vuelve && ahora < e.vuelve && this.porId.has(id)) r.push({ arbol: this.porId.get(id), caido: e.caido, vuelve: e.vuelve, dir: e.dir, ...(Number.isFinite(e.ang) ? { ang: e.ang } : {}) });
+    for (const [id, e] of Object.entries(this.estado)) if (e.vuelve && !e.arrancado && ahora < this.vuelveDe(id) && this.porId.has(id)) r.push({ arbol: this.porId.get(id), caido: e.caido, vuelve: e.vuelve, dir: e.dir, ...(Number.isFinite(e.ang) ? { ang: e.ang } : {}) });
     return r;
   }
   // Lo de alrededor del árbol a con lo que puede dar al caer (simularCaida): los troncos de los árboles en pie (los que
@@ -317,7 +342,7 @@ export class Tala {
     const r = [];
     for (const o of lista) {
       if (o.tipo === 'obra') { r.push(o); continue; }
-      if (o.id === a.id || (this.estado[o.id] && this.estado[o.id].vuelve > ahora)) continue;   // ni él ni los tocones
+      if (o.id === a.id || (this.estado[o.id] && this.estado[o.id].vuelve && this.vuelveDe(o.id) > ahora)) continue;   // ni él ni los tocones
       r.push({ id: o.id, tipo: 'arbol', x: o.x, z: o.z, r: radioArbol(o.edad, o.especie, o.tam), arriba: suelo(o.x, o.z) + altoDe(o) });
     }
     return r;
@@ -370,7 +395,7 @@ export class Tala {
     return { ok: true, cae: true, golpes: e.golpes, faltan: 0, hacha: h.tipo, hacia: redondo(hacia), dir: redondo(dir), por, vuelve: ahora + d.vuelve, caida, ...gasto };
   }
   // ¿Está el árbol id caído y sin limpiar? (talado, aún sin volver a crecer, con su ángulo de caído)
-  caido(id, ahora) { const e = this.estado[id]; return !!(e && e.vuelve && ahora < e.vuelve && Number.isFinite(e.ang) && this.porId.has(id)); }
+  caido(id, ahora) { const e = this.estado[id]; return !!(e && e.vuelve && ahora < this.vuelveDe(id) && Number.isFinite(e.ang) && this.porId.has(id)); }
   // Los árboles caídos de ahora: [{ arbol, dir, ang, limpia }]
   caidos(ahora) {
     const r = [];
@@ -411,6 +436,29 @@ export class Tala {
     const deja = [{ tipo: d.tronco, n: 1, ...en(d.largo * 0.5 + 0.7) }, { tipo: d.menudo, n: ramas, ...en(d.largo + 1.1) }];
     delete e.ang; delete e.limpia;   // limpio: queda el tocón
     return { ok: true, limpia: true, limpio: true, faltan: 0, hacha: h.tipo, dir, deja, ...gasto };
+  }
+
+  // Un golpe de azada o de palo cavador al tocón del árbol id (P11, limpiar el campo), estando en (x, z). Al último, el
+  // tocón se va (ya no vuelve a crecer) y deja leña a su lado. Devuelve lo que falta, o, al terminar, lo que deja.
+  arrancar(inv, id, x, z, ahora, autor) {
+    const a = this.porId.get(id);
+    if (!a) return { ok: false, motivo: 'Ahí no hay ningún tocón.' };
+    if (this.caido(id, ahora)) return { ok: false, motivo: 'Antes limpia el árbol caído con el hacha.' };
+    if (!this.tocon(id, ahora)) return { ok: false, motivo: this.enPie(id, ahora) ? 'Primero hay que talar el árbol.' : 'Ahí no hay ningún tocón.' };
+    if (Math.hypot(a.x - x, a.z - z) > ALCANCE_TALA) return { ok: false, motivo: 'Está demasiado lejos.' };
+    const h = arrancaEnMano(inv);
+    if (!h) return { ok: false, motivo: 'Necesitas una azada o un palo cavador en la mano para arrancar el tocón.' };
+    const ult = this.ultimoGolpe[autor];
+    if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
+    this.ultimoGolpe[autor] = ahora;
+    const e = this.estado[id], total = GOLPES_TOCON[a.edad] || GOLPES_TOCON.joven;
+    e.arranca = (e.arranca || 0) + ARRANCAN[h.tipo] / total;
+    const g = gastar(inv, h.ruta), gasto = g ? { desgaste: { usado: g.usado, vida: g.vida }, ...(g.roto ? { seRompe: h.tipo } : {}) } : {};
+    if (e.arranca < 1 - 1e-9) return { ok: true, arranca: true, arrancado: false, faltan: Math.max(1, Math.ceil((1 - e.arranca) * total / ARRANCAN[h.tipo] - 1e-9)), con: h.tipo, ...gasto };
+    delete e.arranca; e.arrancado = ahora;
+    const n = LENA_TOCON[a.edad] || LENA_TOCON.joven, lado = Math.atan2(x - a.x, z - a.z);
+    const deja = [{ tipo: 'lena', n, x: redondo(a.x + Math.sin(lado) * 0.6), z: redondo(a.z + Math.cos(lado) * 0.6) }];
+    return { ok: true, arranca: true, arrancado: true, faltan: 0, con: h.tipo, deja, ...gasto };
   }
 
   // Lo que se le puede hacer al árbol id en pie: { descortezar, sangrar, resina: 'lista' | 'sangrando' | null }.
@@ -477,6 +525,9 @@ export class Tala {
         Object.assign(x, { caido: num(e.caido) ? e.caido : e.vuelve, vuelve: e.vuelve, dir: num(e.dir) ? e.dir : 0, golpes: 0, parte: 0 }); delete x.bx; delete x.bz; delete x.bp; delete x.desc; delete x.resina;
         // caído sin limpiar (12 nov): su ángulo y lo que lleva limpiado (lo talado antes, ya limpio)
         if (num(e.ang) && e.ang > 0 && e.ang < 3) { x.ang = e.ang; x.limpia = num(e.limpia) ? Math.min(0.999, Math.max(0, e.limpia)) : 0; }
+        // el tocón arrancado (13 nov: ya no vuelve) o lo que lleva arrancado
+        if (num(e.arrancado) && e.arrancado > 0) x.arrancado = e.arrancado;
+        else if (num(e.arranca) && e.arranca > 0) x.arranca = Math.min(0.999, e.arranca);
       }
       this.estado[id] = x;
     }
@@ -514,11 +565,15 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
   if (!a || typeof a !== 'object') r = { ok: false, motivo: 'Acción no válida.' };
   else if (!txt(a.autor)) r = { ok: false, motivo: 'Acción sin autor.' };
-  else if (a.tipo !== 'talar' && a.tipo !== 'descortezar' && a.tipo !== 'sangrar') r = { ok: false, motivo: 'Acción desconocida.' };
+  else if (a.tipo !== 'talar' && a.tipo !== 'descortezar' && a.tipo !== 'sangrar' && a.tipo !== 'arrancar') r = { ok: false, motivo: 'Acción desconocida.' };
   else if (!txt(a.arbol) || !Number.isFinite(a.x) || !Number.isFinite(a.z)) r = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
   else if (a.tipo === 'descortezar') r = tala.descortezar(invs.de(a.autor), a.arbol, a.x, a.z, ahora);
   else if (a.tipo === 'sangrar') r = tala.sangrar(invs.de(a.autor), a.arbol, a.x, a.z, ahora);
+  else if (a.tipo === 'arrancar') {   // el tocón (P11): la leña que deja, al suelo a nombre del autor
+    r = tala.arrancar(invs.de(a.autor), a.arbol, a.x, a.z, ahora, a.autor);
+    if (r.ok && r.arrancado) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false, 0).id);
+  }
   else {
     r = tala.golpe(invs.de(a.autor), a.arbol, a.x, a.z, ahora, a.autor);
     // al limpiar el caído: el tronco y las varas, tumbados a lo largo de donde cayó (se dibujan a lo largo de x); las
@@ -527,7 +582,8 @@ export function ejecutarTala(tala, invs, suelo, registro, accion, ahora) {
   }
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
-  if (r.ok && a.tipo !== 'talar') e.resultado = { objeto: r.objeto, cantidad: r.cantidad };
+  if (r.ok && a.tipo === 'arrancar') e.resultado = r.arrancado ? { arrancado: true, deja: r.deja.map(o => ({ tipo: o.tipo, n: o.n })) } : { arranca: true, faltan: r.faltan };
+  else if (r.ok && a.tipo !== 'talar') e.resultado = { objeto: r.objeto, cantidad: r.cantidad };
   else if (r.ok) e.resultado = r.cae ? { cae: true } : r.limpio ? { limpio: true, deja: r.deja.map(o => ({ tipo: o.tipo, n: o.n })) } : r.limpia ? { limpia: true } : { golpes: r.golpes };
   if (r.ok && r.seRompe) e.resultado.seRompe = r.seRompe;   // el hacha se ha roto con este golpe
   return r;

@@ -5,6 +5,7 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { ObjetosServidor } from '../../src/logica/objetos_red.js';
 import { trozoDe } from '../../src/logica/trozos_red.js';
+import { campoEn } from '../../src/logica/campos.js';
 import { saciar as saciarNecesidad, redondear as redondearNecesidades, NUTRE, comestible } from '../../src/logica/necesidades.js';
 import { reemplazar, reemplazarSinEsperar } from '../guardado.mjs';
 
@@ -19,6 +20,7 @@ export function instalarObjetos(S) {
     bajoTecho: (x, z) => mundo.bajoTecho(x, z),           // los puestos de trabajo: la hoguera, solo fuera
     alMuro: (x, z) => mundo.muroCercano(x, z, 0.5),       // los colgaderos, pegados a un muro
     obrasCerca: (x, z, r) => mundo.obrasCerca(x, z, r),   // con lo que puede dar un árbol al caer (src/logica/tala.js)
+    sinRebrote: (x, z) => !!campoEn(mundo, x, z),           // dentro de un campo (P11), lo talado no vuelve a crecer
   });
   if (existsSync(archivoObjetos)) {
     try { objetos.importar(JSON.parse(readFileSync(archivoObjetos, 'utf8'))); } catch (e) { registrar(`objetos.json no válido, se empieza de cero: ${e && e.message}`); }
@@ -103,7 +105,7 @@ export function atenderObjeto(S, c, msg) {
   // ese momento, otra vez con dónde está entonces (el que se aparta a tiempo se libra). La herida lleva su autor.
   if (r.ok && r.cae && r.caida) caidaHiere(autor, msg.accion.arbol, r.caida);
   // lo descortezado y lo sangrado (8 nov): lo de ese árbol, a quien lo tiene alrededor
-  if (r.ok && (msg.accion.tipo === 'descortezar' || msg.accion.tipo === 'sangrar')) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo) }));
+  if (r.ok && (msg.accion.tipo === 'descortezar' || msg.accion.tipo === 'sangrar' || r.arrancado)) aSuTrozo(objetos.sitioArbol(msg.accion.arbol), (otro, solo) => enviar(otro, { tipo: 'tala', estado: objetos.talaVisible(solo) }));
   if (r.suelo) repartirSuelo(ahora);
   if (r.estaciones) repartirEstaciones();
   if (r.ok && (msg.accion.tipo === 'recoger' || msg.accion.tipo === 'desbrozar' || r.rota)) aSuTrozo(objetos.sitioPunto(msg.accion.punto), (otro, solo) => enviar(otro, { tipo: 'recoleccion', estado: objetos.recoleccionVisible(solo) }));

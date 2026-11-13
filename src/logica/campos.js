@@ -161,6 +161,19 @@ export function quitarEstaca(m, campo, i, autor, devolver = () => ({ ok: true })
   return { ok: true, campo: c.id, estacas: c.puntos.length };
 }
 
+// Lo que queda por limpiar en el campo c (P11, «Limpiar el campo»): de cada lista de cosas con { x, z } (los árboles en
+// pie, los caídos, los tocones, las matas y las piedras sueltas de alrededor), cuántas caen dentro de su linde.
+// Devuelve { arboles, caidos, tocones, matas, piedras, total }.
+export function porLimpiar(c, cosas = {}) {
+  const r = { arboles: 0, caidos: 0, tocones: 0, matas: 0, piedras: 0, total: 0 };
+  if (!c || !c.cerrado || c.puntos.length < MIN_ESTACAS) return r;
+  for (const k of ['arboles', 'caidos', 'tocones', 'matas', 'piedras']) {
+    for (const o of cosas[k] || []) if (o && num(o.x) && num(o.z) && dentroPoligono(c.puntos, o.x, o.z)) r[k]++;
+    r.total += r[k];
+  }
+  return r;
+}
+
 // Para guardar y leer el mundo (Mundo.exportar / importar).
 export const exportarCampos = (l) => (l || []).map(c => ({ ...c, puntos: c.puntos.map(p => ({ ...p })) }));
 export function importarCampos(l) {

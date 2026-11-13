@@ -56,7 +56,7 @@ import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
-import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON } from '../logica/tala.js';
+import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
@@ -67,7 +67,7 @@ import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
-import { estacaCercana, cerraria, campoAbierto, MAX_ESTACAS } from '../logica/campos.js';
+import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -278,11 +278,15 @@ const zonasRey = comarcasMundo ? crearZonasRey(comarcasMundo) : null;
 if (comarcasMundo) ponerZonas(zonasDeEscena(comarcasMundo, mundoJ.salida), zonasRey.es);
 const vigiaRey = tierrasRey ? vigiaTierras(window.__mutarTierras ? () => false : tierrasRey.en) : null;
 let cartelTierras = null, cartelHasta = 0, tierrasMirado = 0;
+let campoPisado = null;   // el campo en el que está el jugador (para decir lo que queda por limpiar al entrar)
 function mirarTierras() {
   const t = performance.now();
   if (cartelTierras && !cartelTierras.hidden && t > cartelHasta) cartelTierras.hidden = true;
   if (t - tierrasMirado < 400) return;
   tierrasMirado = t;
+  // al entrar en un campo cerrado (P11), dice lo que queda por limpiar en él
+  const cEn = campoEn(mundo, pj.x, pj.z), idC = cEn ? cEn.id : null;
+  if (idC !== campoPisado) { campoPisado = idC; if (cEn) mostrarAviso(textoLimpiar(cEn)); }
   const cambio = vigiaRey.mirar(pj.x, pj.z);
   if (!cambio) return;
   if (!cartelTierras) {
@@ -352,6 +356,8 @@ if (hierbaDensa) hierbaDensa.estorbos = () => recoleccion.puntos || [];   // (a 
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.tierraDe(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
 const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos, oyente: () => pj });
+// dentro de un campo (P11), lo talado no vuelve a crecer: se ve el tocón hasta que se arranca
+talaV.tala.sinRebrote = (x, z) => !!campoEn(mundo, x, z);
 // en el mundo, lo que crece sigue al jugador: los árboles que llegan pasan por la tala (su tocón, si se taló) y los
 // que se van se sueltan; al ponerlos, los talados no se dibujan
 if (decorado.paso) {
@@ -1713,6 +1719,8 @@ function accionPrincipal() {
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
   if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
+  // con la azada o el palo cavador en la mano, junto a un tocón, se arranca a golpes (P11, limpiar el campo)
+  if (!it && pj.k === 0 && arrancaEnMano(inventario()) && toconCercano()) { const tc = toconCercano(); return A(tr('Arrancar el tocón'), arrancaEnMano(inventario()).tipo, tc, () => empezarArranque(tc), { alto: 0.4, prog: estado.talando && estado.talando.arranque === tc.o ? progresoGolpes(estado.talando) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
   if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
@@ -2247,6 +2255,7 @@ function golpeTala() {
   if (a.troceo) { golpeTroceo(a.troceo); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
   if (a.rotura) { golpeRotura(a); return; }
+  if (a.arranque) { golpeArranque(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
     objetosRed.mandar({ tipo: 'talar', arbol: a.id, x: pj.x, z: pj.z, ax: a.x, az: a.z, edad: a.edad || edadDeEscala(a.escala) }, (r) => {
@@ -2349,6 +2358,51 @@ function rocaCercana() {
   if (pj.k !== 0 || !decorado.rocasCerca) return null;
   const e = decorado.rocasCerca(pj.x, pj.z, 1.2)[0];
   return e ? { id: e.id, x: e.x, z: e.z, tam: e.tam } : null;
+}
+// Arrancar el tocón (P11, src/logica/tala.js): con la azada o el palo cavador en la mano, a golpes; al último se va
+// (ya no vuelve a crecer) y deja leña. En un campo, dice luego lo que queda por limpiar.
+function toconCercano() { return pj.k === 0 ? talaV.toconCercano(pj.x, pj.z) : null; }
+function empezarArranque(tc) {
+  if (!arrancaEnMano(inventario())) { mostrarAviso(tr('Necesitas una azada o un palo cavador en la mano para arrancar el tocón.'), true); return; }
+  estado.talando = { arranque: tc.o, x: tc.x, z: tc.z }; estado.golpeEn = 0.45;
+  pj.rot = Math.atan2(tc.x - pj.x, tc.z - pj.z);
+  mostrarAviso(tr('Arrancas el tocón.'));
+}
+function golpeArranque(a) {
+  estado.golpeEn = RITMO_TALA;
+  const o = a.arranque;
+  const fin = (r) => {
+    if (estado.talando !== a) return;   // ya ha dejado de golpear
+    if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
+    if (r.seRompe) { estado.talando = null; mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[r.seRompe].nombre).toLowerCase() }), true); if (!r.arrancado) return; }
+    if (!r.arrancado) { mostrarAviso(r.faltan === 1 ? tr('Arrancas el tocón: falta 1 golpe.') : tr('Arrancas el tocón: faltan {n} golpes.', { n: r.faltan })); return; }
+    estado.talando = null;
+    const lena = (r.deja || [])[0], c = campoEn(mundo, o.x, o.z);
+    mostrarAviso(tr('Tocón arrancado: deja {n} de leña.', { n: lena ? lena.n : 0 }) + (c ? ' ' + textoLimpiar(c) : ''));
+  };
+  const datos = { tipo: 'arrancar', arbol: o.id, x: pj.x, z: pj.z, ax: o.x, az: o.z, edad: o.edad || edadDeEscala(o.escala) };
+  if (objetosRed) { objetosRed.mandar(datos, fin); return; }
+  fin(talaV.arrancar(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z));
+}
+// Lo que queda por limpiar en el campo c (P11; src/logica/campos.js, porLimpiar): árboles en pie, caídos, tocones,
+// matas y piedras sueltas dentro de su linde, de lo que este navegador tiene cargado.
+function quedaEnCampo(c) {
+  const xs = c.puntos.map(p => p.x), zs = c.puntos.map(p => p.z), cx = (Math.min(...xs) + Math.max(...xs)) / 2, cz = (Math.min(...zs) + Math.max(...zs)) / 2;
+  const R = Math.max(...c.puntos.map(p => Math.hypot(p.x - cx, p.z - cz))) + 0.5, ahora = Date.now();
+  const arboles = obstaculos.filter(o => o.arbol && o.id && talaV.enPie(o, ahora) && Math.hypot(o.x - cx, o.z - cz) <= R);
+  const caidos = talaV.tala.caidos(ahora).map(k => k.arbol), tocones = talaV.tala.tocones(ahora).filter(k => k.ang === undefined).map(k => k.arbol);
+  const matas = [...(decorado.matasCerca ? decorado.matasCerca(cx, cz, R) : []), ...(recoleccion.arbustosCerca ? recoleccion.arbustosCerca(cx, cz, R) : [])];
+  const piedras = (recoleccion.cercanos ? recoleccion.cercanos(cx, cz, R) : []).filter(p => p.tipo === 'piedra');
+  return porLimpiar(c, { arboles, caidos, tocones, matas, piedras });
+}
+function textoLimpiar(c) {
+  const q = quedaEnCampo(c), partes = [];
+  const n = (k, uno, varios) => { if (q[k]) partes.push(q[k] === 1 ? tr(uno) : tr(varios, { n: q[k] })); };
+  n('arboles', '1 árbol', '{n} árboles'); n('caidos', '1 árbol caído', '{n} árboles caídos'); n('tocones', '1 tocón', '{n} tocones');
+  n('matas', '1 mata', '{n} matas'); n('piedras', '1 piedra suelta', '{n} piedras sueltas');
+  if (!partes.length) return tr('Campo de {a} m²: limpio.', { a: c.area });
+  return tr('Campo de {a} m²: queda por limpiar {q}.', { a: c.area, q: partes.join(', ') });
 }
 function empezarRotura(o) {
   if (!mazoEnMano(inventario())) { mostrarAviso(tr(QUE_PIDE.romper), true); return; }

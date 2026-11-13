@@ -99,6 +99,7 @@ paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whithol
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, el sotobosque, las riberas y las costas" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Marcar el campo con estacas: clavar, cerrar con su superficie, quitar y mover; tierra, agua, pendiente, obras y otros campos; el servidor" node pruebas/prueba_campos.mjs
+paso "Limpiar el campo: arrancar el tocón con la azada o el palo cavador, deja leña y no vuelve a crecer; dentro de un campo no rebrota; lo que queda por limpiar" node pruebas/prueba_limpiar_campo.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs
