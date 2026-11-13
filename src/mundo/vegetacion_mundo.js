@@ -267,7 +267,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // la roca de los cortados (13 nov; src/logica/vegetacion.js, «paredes»): las piezas de roca del visor del mapa
     // (src/mundo/rocas.js), del tono de su roca apagado como el del estilo v5, igual que allí
     // (13 nov, valravnx: con las piezas de pared de Meshy, si han llegado: en estratos, con grietas y el saliente; de 4, 4
-    // y 3 m de alto, con la base en el suelo y la cara a +z, medio metidas en la ladera; si no, las de código del visor)
+    // y 3 m de alto, con la base en el suelo y la cara a −z, medio metidas en la ladera; si no, las de código del visor)
     const paredesM = ['pared_estratos', 'pared_grietas', 'pared_saliente'].map(n => M(n)), ALTO_PARED = [4, 4, 3];
     if (paredesM.every(Boolean)) {
       paredesM.forEach((m, v) => {
@@ -277,7 +277,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
           const im = new THREE.InstancedMesh(m[nivel].geo, m[nivel].mats, l.length);
           l.forEach((e, k) => {
             const esc = e.alto / ALTO_PARED[v];
-            o.position.set(e.x, e.y - e.alto * 0.3, e.z); o.rotation.set(e.inclina * 0.5, e.giro, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
+            o.position.set(e.x, e.y - e.alto * 0.3, e.z); o.rotation.set(e.inclina * 0.5, e.giro + Math.PI, 0, 'YXZ'); o.scale.set(esc * (0.85 + e.tono * 0.3), esc, esc);   // (la cara de Meshy mira a −z: media vuelta) o.updateMatrix(); im.setMatrixAt(k, o.matrix);
             im.setColorAt(k, colorRoca(e).lerp(blanco, 0.45).multiplyScalar(e.tono));
           });
           im.castShadow = nivel !== 'lejos'; im.receiveShadow = true; im.name = 'rocaPared'; nuevas.push(im);
