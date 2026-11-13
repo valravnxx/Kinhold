@@ -58,6 +58,18 @@ const PENDIENTES = {
   cinto_cuero: ['pide cuero', 'Los zapatos y el cinto de cuero'],
   est_carbonera: ['aún no hay carbonera', 'La carbonera y el carbón'],
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
+  // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
+  semilla_cebada: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  habas: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  semilla_col: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  semilla_nabo: ['aún no hay semillas silvestres', 'Las semillas silvestres'],
+  estaca: ['aún no se hace', 'Marcar el campo con estacas'],
+  gavilla: ['sale de segar la cebada', 'Cosechar: la cebada se siega'],
+  col: ['sale del huerto', 'Cosechar: la cebada se siega'],
+  nabo: ['sale del huerto', 'Cosechar: la cebada se siega'],
+  est_era: ['aún no hay era', 'La era y trillar'],
+  grano: ['sale de trillar', 'La era y trillar'],
+  paja: ['sale de trillar', 'La era y trillar'],
 };
 // Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede
 // tener partiendo de nada, o espera en PENDIENTES con su tarea viva. Antes de pasar el hito a revisión (paso 9), nada
@@ -65,6 +77,7 @@ const PENDIENTES = {
 const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
+  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'grano', 'paja'],
 };
 
 // ---- lo que se puede tener, partiendo de nada ----

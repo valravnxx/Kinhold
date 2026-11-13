@@ -6545,5 +6545,19 @@
   ],
   "pruebas": "prueba_origenes.mjs: 36 bien; rota a propósito (MUTAR=2, como si sus tareas ya estuvieran hechas), 15 fallos. Sin código del juego cambiado: nada en la nube.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T05:15:10+00:00",
+  "fin": "2026-11-13T05:16:51+00:00",
+  "titulo": "P11, la granja básica: planificada (chat con valravnx)",
+  "hito": "granja",
+  "hecho": [
+   "valravnx, por el chat, tras el estudio de la granja: el campo con estacas de 1 rama, una semana real para crecer, los cultivos que entren de manera normal, y la granja antes que los oficios («así ya tendremos materiales y podremos usar los acopios de plantas»). «Comienza ya».",
+   "Siete tareas de una sesión, con la cadena de cada cosa hasta el mundo: las semillas silvestres; marcar el campo con estacas; limpiarlo; labrar con la azada; sembrar y crecer; cosechar; la era y trillar. Después, el recorrido de jugador y la revisión.",
+   "Los primeros cultivos, los que no piden nada que aún no exista: cebada (grano y paja), habas, col y nabo. El lino espera (pide enriarlo para dar fibra) y el trigo y el pan también (piden el molino y el horno).",
+   "La granja (P11) pasa delante de los oficios (P9) en el roadmap. pruebas/prueba_origenes.mjs: lo esencial de la granja (11 cosas) en su lista, en PENDIENTES con su tarea viva."
+  ],
+  "pruebas": "prueba_origenes.mjs: todo bien; rota a propósito (MUTAR=2), falla. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
  }
 ]
