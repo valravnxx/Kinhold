@@ -98,6 +98,7 @@ paso "Los materiales del suelo: hierba, tierra, roca y hojarasca" node pruebas/p
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, y el sotobosque" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
+paso "Marcar el campo con estacas: clavar, cerrar con su superficie, quitar y mover; tierra, agua, pendiente, obras y otros campos; el servidor" node pruebas/prueba_campos.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs
@@ -176,6 +177,7 @@ paso "Navegador: personaje" python3 pruebas/prueba_personaje_navegador.py dist/k
 paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html "$C/demo"
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: lo que se recoge en el mundo" python3 pruebas/prueba_recogida_mundo_navegador.py dist/kinhold_demo.html "$C/recogida_mundo"
+paso "Navegador: marcar el campo con estacas" python3 pruebas/prueba_campos_navegador.py dist/kinhold_demo.html "$C/campos"
 paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
 paso "Navegador: volver donde lo dejaste" python3 pruebas/prueba_volver_navegador.py dist/kinhold_demo.html "$C/volver"
 paso "Navegador: lo que llevas en línea (inventario, suelo, tala y recogida por el servidor)" python3 pruebas/prueba_objetos_en_linea_navegador.py dist/kinhold_demo.html "$C/objetos_en_linea"

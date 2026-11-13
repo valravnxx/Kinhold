@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -358,6 +358,7 @@ function enMano(t) {
   if (sinModelo(t)) { hatillo(L, 0, 0.04, 0.03, 1); L.generico = true; }
   else if (t === 'piedra' || t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.06, 3);
   else if (t === 'silex') L.add(new THREE.IcosahedronGeometry(0.045, 1), 0xd8d2c4, 0, 0, 0.01, null, { plano: true, escala: v3(1.3, 0.8, 1), tex: 'piedra' });
+  else if (t === 'estaca') estacaEn(L, 0, -0.42, 0, { x: 0.05 });   // cogida por el medio, la punta abajo (P11)
   else if (t === 'rama' || t === 'vara') {
     L.add(cil(0.016, 0.022, t === 'vara' ? 1.6 : 1.0, 6), t === 'vara' ? 'madera' : 'corteza', 0, 0.1, 0, { x: 0.05 }, { tex: t === 'vara' ? 'veta' : 'corteza' });
     if (t === 'rama') L.add(cil(0.006, 0.01, 0.3, 5), 'corteza', 0.05, 0.35, 0, { z: -0.5 }, { tex: 'corteza' });
