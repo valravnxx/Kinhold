@@ -280,8 +280,8 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
             // ladera para estar vertical, y se pone con su cara a ras de la ladera, no metida dentro)
             // (más metidas: más fuera, se veían de perfil, con su corte plano; de cara a la ladera casi del todo y más anchas,
             // que se solapen: torcidas, se les veía el corte de los lados; la cara de Meshy mira a +z, medido en el modelo)
-            const esc = e.alto / ALTO_PARED[v], gi = e.cara ?? e.giro, atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.9, fuera = e.alto * 0.06;
-            o.position.set(e.x + Math.sin(gi) * fuera, e.y - e.alto * 0.2, e.z + Math.cos(gi) * fuera);
+            const esc = 2.2 * e.alto / ALTO_PARED[v], gi = e.cara ?? e.giro, atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.6, fuera = e.alto * 0.1;   // (2,2 veces: en una pared ancha de decenas de metros, a su tamaño eran placas pegadas)
+            o.position.set(e.x + Math.sin(gi) * fuera, e.y - e.alto * 0.6, e.z + Math.cos(gi) * fuera);
             o.rotation.set(-atras + e.inclina * 0.3, gi + (e.giro - gi) * 0.3, 0, 'YXZ');
             o.scale.set(esc * (1.1 + e.tono * 0.3), esc, esc * 0.7);
             o.updateMatrix(); im.setMatrixAt(k, o.matrix);
