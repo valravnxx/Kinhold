@@ -123,7 +123,7 @@ export const ESTACIONES = {
   // cuelga (lo depositado) no se estropea mientras está colgado, y la carne puesta a secar (su cola) se ve colgada para
   // todos (cuelga: true). Provisional (diario y registro): 30 s de trabajo para levantarlo.
   secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
-  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
@@ -181,6 +181,8 @@ export const RECETAS = {
   // transcurrido (la cola de la estación guarda cuándo termina), así que el servidor no tiene que simular nada. Sin sal
   // (aún no hay). Provisional (diario y registro): 6 h reales, dos días de juego.
   secar_carne:       r('Carne seca', 'secar', 'carne_seca', { carne_cruda: 1 }, SECAR_CARNE),
+  // asar las habas (P11, 13 nov): crudas no se comen (son las silvestres: amargas); un puñado de 3 al fuego. Tiempo, provisional
+  asar_habas:        r('Habas asadas', 'fuego', 'habas_asadas', { habas: 3 }, 30, 3),
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -217,6 +219,7 @@ export const PARA = {
   lanza_endurecida: 'Caza y defensa.',
   despiezar_liebre: 'Carne cruda (se estropea en unas horas) y una piel pequeña.',
   asar_carne: 'Sacia mucho más que la cruda y no se estropea.',
+  asar_habas: 'Las habas silvestres solo se comen asadas.',
   antorcha: 'Luz; dura un rato.',
   antorcha_resina: 'Luz; dura un rato.',
   cuerda: 'Base de casi todo.',

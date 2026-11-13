@@ -119,7 +119,7 @@ export function ponerRendimiento(boton) {
       (g && g.detalle ? `<div class="gente">${tr('Niveles de detalle:')} <button data-detalle="1" class="${g.detalle() ? 'sel' : ''}">${tr('sí')}</button><button data-detalle="0" class="${g.detalle() ? '' : 'sel'}">${tr('no (todos enteros)')}</button></div>` : '') +
       (G ? `<div class="gente perfiles">${tr('Calidad gráfica:')} ${G.PERFILES.map(p => `<button data-perfil="${p.id}" class="${G.perfil === p.id ? 'sel' : ''}">${tr(p.nombre)}${p.id === G.sugerido ? ' ★' : ''}</button>`).join('')}</div>` +
         `<p>${tr('★ el que sugiere este aparato. El que elijas se queda guardado en este navegador.')}</p>` +
-        (G.ponerMaqueta ? `<div class="gente">${tr('Desenfoque de maqueta:')} <button data-maqueta="1" class="${G.maqueta ? 'sel' : ''}">${tr('sí')}</button><button data-maqueta="0" class="${G.maqueta ? '' : 'sel'}">${tr('no')}</button>${G.puedeMaqueta ? '' : ` <small>${tr('(esta calidad no lo lleva)')}</small>`}</div>` : '') : '');
+        (G.ponerMaqueta ? `<div class="gente">${tr('Desenfoque de maqueta:')} <button data-maqueta="1" class="${(G.nivelMaqueta ?? +G.maqueta) === 1 ? 'sel' : ''}">${tr('sí')}</button><button data-maqueta="2" class="${G.nivelMaqueta === 2 ? 'sel' : ''}">${tr('100 %')}</button><button data-maqueta="0" class="${G.maqueta ? '' : 'sel'}">${tr('no')}</button>${G.puedeMaqueta ? '' : ` <small>${tr('(esta calidad no lo lleva)')}</small>`}</div>` : '') : '');
     // la medida al servidor, aparte: solo se rehace si cambia (si no, el botón se rehace cada segundo y se pierde el toque)
     const html = bloqueEnvio();
     if (html !== htmlEnvio) {
@@ -129,7 +129,7 @@ export function ponerRendimiento(boton) {
     }
     for (const x of datos.querySelectorAll('[data-gente]')) x.onclick = () => { g.poner(+x.dataset.gente); refrescar(); };
     for (const x of panel.querySelectorAll('[data-perfil]')) x.onclick = () => { G.poner(x.dataset.perfil); refrescar(); };
-    for (const x of panel.querySelectorAll('[data-maqueta]')) x.onclick = () => { G.ponerMaqueta(x.dataset.maqueta === '1'); refrescar(); };
+    for (const x of panel.querySelectorAll('[data-maqueta]')) x.onclick = () => { G.ponerMaqueta(Number(x.dataset.maqueta)); refrescar(); };
     for (const x of panel.querySelectorAll('[data-detalle]')) x.onclick = () => { g.detalle(x.dataset.detalle === '1'); refrescar(); };
   }
   setInterval(refrescar, 1000);

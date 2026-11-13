@@ -91,6 +91,10 @@ export const CATALOGO = {
   liebre: R('Liebre', 'M'),   // (9 nov) la cazada lanzando la lanza en el modo arma, entera: se despieza
   // (9 nov) lo que da la liebre al despiezarla (src/logica/comida.js): la carne cruda se estropea; asada, sacia más
   carne_cruda: R('Carne cruda', 'P'), carne_asada: R('Carne asada', 'P'), carne_seca: R('Carne seca', 'P'),   // (13 nov) la del secadero
+  // (P11, 13 nov) las semillas silvestres (src/logica/recoleccion.js): la cebada silvestre (sus espigas, que se siembran),
+  // las habas (se siembran, o se comen asadas al fuego) y las semillas de la col silvestre y del nabo silvestre
+  semilla_cebada: R('Cebada silvestre', 'P'), habas: R('Habas', 'P'), habas_asadas: R('Habas asadas', 'P'),
+  semilla_col: R('Semillas de col', 'P'), semilla_nabo: R('Semillas de nabo', 'P'),
   piel: R('Piel', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
   grano: R('Grano', 'P'), harina: R('Harina', 'P'), agua: R('Agua', 'P'),
   flecha: R('Flecha', 'P'), virote: R('Virote', 'P'), anzuelo: R('Anzuelo y sedal', 'P'),
@@ -128,7 +132,7 @@ export const CATALOGO = {
   cinto_armas: { nombre: 'Cinto de armas', tam: 'M', lugar: 'cintura', huecos: [{ tam: 'M', admite: ['espada'] }, { tam: 'P' }, { tam: 'P' }] },
   // mochilas y bastidores de función única (espalda)
   lenero: { nombre: 'Leñero', tam: 'G', lugar: 'espalda', huecos: [...hs('G', 2), ...hs('M', 4)], admite: ['lena', 'tronco_corto'] },
-  cesta_recoleccion: { nombre: 'Cesta de recolección', tam: 'G', lugar: 'espalda', huecos: hs('P', 6), admite: ['bayas', 'setas', 'hierbas', 'frutos_secos', 'huevo'] },
+  cesta_recoleccion: { nombre: 'Cesta de recolección', tam: 'G', lugar: 'espalda', huecos: hs('P', 6), admite: ['bayas', 'setas', 'hierbas', 'frutos_secos', 'huevo', 'semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo'] },
   fardo: { nombre: 'Fardo atado', tam: 'G', lugar: 'espalda', huecos: hs('M', 4), admite: ['piel', 'tela', 'fibra', 'paja', 'junco', 'mimbre'] }, // los juncos y el mimbre, con la paja (valravnx, 7 nov)
   zurron: { nombre: 'Zurrón de piel', tam: 'G', lugar: 'espalda', huecos: [...hs('M', 2), ...hs('P', 2)] },
   mochila_bastidor: { nombre: 'Mochila de bastidor', tam: 'G', lugar: 'espalda', huecos: [...hs('M', 4), ...hs('P', 4)] },
