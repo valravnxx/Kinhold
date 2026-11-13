@@ -94,6 +94,11 @@ def pestana(pg, k):
 
 
 
+def coger(pg, objeto, n, a):
+    r = pg.evaluate(f"""(() => {{ const l = {K}.inventario.lugares, a = !l['{a}'] ? '{a}' : ['mano:der', 'mano:izq'].find(m => !l[m]);
+      if (!a) return 'manos llenas: ' + JSON.stringify([l['mano:der'], l['mano:izq']]);
+      const r = {K}.accionInventario({{ tipo: 'coger', objeto: '{objeto}', cantidad: {n}, a }}); return r && r.ok === false ? r.motivo : ''; }})()""")
+    if r: print(f'  (coger {n} {objeto}: {r})')
 def sitio_campo():
     # en la zona de al lado de la salida, al oeste: un rectángulo de 12 × 10 m en seco, llano y todo de la misma zona
     js = """import { terrenoWhitholm } from './src/logica/terreno_servidor.js';
