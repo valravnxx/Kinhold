@@ -1,0 +1,280 @@
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Va a la zona de al lado y pone su mojón
+  OK   pone su mojón en la zona de al lado (en el servidor) — Primera pieza: fija la rejilla de una construcción nueva. Gira con R o el botón Girar.
+Levanta una pila de piedras desde «Almacenajes»
+  OK   la pestaña «Almacenajes»: los siete (acopio de troncos, pila de piedras, leñera, soporte de varas, almiar, hoyo de barro y cesto) y los dos colgaderos (8 nov), y no los puestos de trabajo — ['Acopio de troncos', 'Pila de piedras', 'Leñera', 'Soporte de varas', 'Almiar', 'Hoyo de barro', 'Colgadero de mochilas', 'Colgadero de herramientas', 'Cesto']
+  OK   y en «Puestos de trabajo» no salen — ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco']
+  OK   el servidor le da 4 piedras (arcón de pruebas)
+  OK   el servidor guarda el giro con que se pone (Girar ×6: 90°) — {'id': 'pila_piedras:1', 'tipo': 'pila_piedras', 'x': -409, 'z': 4.2, 'autor': 'jugador:6ed97eed', 'cola': [], 'deposito': {}, 'obra': {'entregado': {}, 'trabajo': 0, 'aportes': []}, 'y': 46.312, 'giro': 1.571}
+  OK   y se dibuja con ese giro
+  OK   el servidor tiene el marco de la pila — Marco puesto: llévale 4 piedra y trabaja en él (Usar).
+  OK   Usar le lleva sus 4 piedras
+  OK   y trabajando en ella queda levantada (en el servidor) — Construyendo: 73 %
+  OK   se dibuja sin armazón, con su lecho de losas
+Guardar y sacar, desde el panel
+  OK   en el menú de Usar: «Guardar y sacar: Pila de piedras» — ['Guardar y sacar: Pila de piedras']
+  OK   el panel se abre con la pila, sin recetas — Pila de piedras
+Guarda la piedra suelta
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+0 de 40 · toc
+  OK   dice qué guarda y cuánto cabe (vacía, 0 de 40) y que la obra no coge de ahí — Pila de piedras
+Guarda la piedra suelta
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+0 de 40 · toca para sacar
+
+Vacío: aquí se guarda piedra.
+
+Lo que llevas
+toca para guardar
+
+No llevas nada que se 
+  OK   de lo que lleva, solo se puede guardar la piedra (las ramas, no) — ['Guardar aquí: Piedra']
+  OK   guarda 3 piedras: en el servidor
+  OK   el panel lo dice (3 de 40) y se ven puestas en la pila — Pila de piedras
+Guarda la piedra suelta
+Todo
+1
+Con las manos
+en cualquier sitio
+1
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+3 de 40 · toca para sacar
+3
+Piedra
+Lo que llevas
+toca para guardar
+
+No llevas nada que se guarde aquí (piedra
+  OK   saca las piedras: vuelven a sus manos (en el servidor)
+  OK   la llena: 40 piedras (en el servidor) — {'piedra': 40}
+  OK   llena, no cabe ni una más (el panel lo dice) — Pila de piedras
+Guarda la piedra suelta
+Todo
+1
+Con las manos
+en cualquier sitio
+1
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+40 de 40 · toca para sacar
+40
+Piedra
+Lo que llevas
+toca para guardar
+
+No cabe nada más.
+
+La obra no coge de a
+  OK   y se ve llena: 40 piedras en montón — 40
+  OK   el contador de arriba va plegado: «En tu tierra» y el total, sin la lista — En tu tierra
+40
+  FALLA y desplegado cuenta lo guardado: 40 piedras — En tu tierra
+40
+40 piedra
+El acopio de troncos y la leñera, llenos (solo para mirarlos: se dibujan en este navegador)
+  OK   el acopio, con sus 12 troncos puestos
+  OK   la leñera, con su leña y sus ramas
+El soporte de varas, el almiar, el hoyo de barro y el cesto (8 nov), llenos y vacíos (solo para mirarlos)
+  OK   soporte_varas: se dibuja con lo guardado — 1
+  OK   almiar: se dibuja con lo guardado — 11
+  OK   hoyo_barro: se dibuja con lo guardado — 1
+  OK   cesto: se dibuja con lo guardado — 4
+En el móvil, el otro jugador la ve llena; es tierra de otro
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  OK   le llega la pila, con sus 40 piedras
+  OK   y la ve llena — 40
+  OK   su panel, sin salirse de lado — Pila de piedras
+Guarda la piedra suelta
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Guardado en la pila de piedras
+40 de 40 · to
+  OK   pero no saca nada: es tierra de otro — Es tierra de otro: solo su dueño y sus invitados.
+  OK   en el móvil, el almiar y el cesto se ven igual
+La pestaña «Tu tierra» (la interfaz nueva): lo almacenado, quién construye y «Quitarle», cuándo vuelve al rey
+  OK   invita al otro a su tierra — {'ok': True}
+  OK   Tu tierra: la pila de piedras con lo que tiene (40 de 40, 40 piedras) — Tu tierra
+Estás en tu tierra.
+Es tuya la zona entera donde está tu mojón.
+Lo almacenado
+Pila de piedras 40 de 40 · a 3 m
+40
+Cesto 24 de 30 · a 4 m
+12
+6
+4
+2
+Hoyo de barro 12 de 16 · a 6 m
+12
+Almiar 23 de 24 · a 7 m
+18
+5
+Soporte de varas 20 de 24 · a 8 m
+20
+Almiar 6 de 24 · a 9 m
+6
+Soporte de varas 0 de 24 · a 11 m
+vacío
+
+La obra no coge de aquí sola: saca lo que vayas a usar y llévalo.
+
+Quién puede
+  OK   recuerda que la obra no coge de ahí sola — Tu tierra
+Estás en tu tierra.
+Es tuya la zona entera donde está tu mojón.
+Lo almacenado
+Pila de piedras 40 de 40 · a 3 m
+40
+Cesto 24 de 30 · a 4 m
+12
+6
+4
+2
+Hoyo de barro 12 de 16 · a 6 m
+12
+Almiar 23 de 24 · a 7 m
+18
+5
+Soporte de varas 20 de 24 · a 8 m
+20
+Almiar 6 de 24 · a 9 m
+6
+Soporte de varas 0 de 24 · a 11 m
+vacío
+
+La obra no coge de aquí sola: saca lo que vayas a usar y llévalo.
+
+Quién puede
+  OK   quién puede construir: tú y el invitado, con «Quitarle» — Tu tierra
+Estás en tu tierra.
+Es tuya la zona entera donde está tu mojón.
+Lo almacenado
+Pila de piedras 40 de 40 · a 3 m
+40
+Cesto 24 de 30 · a 4 m
+12
+6
+4
+2
+Hoyo de barro 12 de 16 · a 6 m
+12
+Almiar 23 de 24 · a 7 m
+18
+5
+Soporte de varas 20 de 24 · a 8 m
+20
+Almiar 6 de 24 · a 9 m
+6
+Soporte de varas 0 de 24 · a 11 m
+vacío
+
+La obra no coge de aquí sola: saca lo que vayas a usar y llévalo.
+
+Quién puede construir en ella
+Tú
+dueño
+Invitado 1
+a 5 m de ti
+Quitarle
+Si no se usa
+
+Mientras entréis tú o tus invitados, sigue siendo tuya. Si pasan 15 días sin que entre nadie, vuelve al rey: el mojón se va y 
+  OK   y cuándo vuelve al rey (15 días: aún no hay obra terminada; con fecha) —  coge de aquí sola: saca lo que vayas a usar y llévalo.
+
+Quién puede construir en ella
+Tú
+dueño
+Invitado 1
+a 5 m de ti
+Quitarle
+Si no se usa
+
+Mientras entréis tú o tus invitados, sigue siendo tuya. Si pasan 15 días sin que entre nadie, vuelve al rey: el mojón se va y lo construido queda como ruina. Son 15 porque aún no hay ninguna obra terminada; con una, 30.
+
+Si nadie entra desde hoy, volvería al rey el 28 de noviembre.
+
+Te avisamos por correo una semana antes y el último día.
+
+Verla en el mapa
+  OK   en el móvil, sin salirse de lado
+  OK   «Quitarle»: ya no puede construir (lo dice el servidor al otro) — Tu tierra
+Estás en tu tierra.
+Es tuya la zona entera donde está tu mojón.
+Lo almacenado
+Pila de piedras 40 de 40 · a 3 m
+40
+Cesto 24 de 30 · a 4 m
+12
+6
+4
+2
+Hoyo de barro 12 de 16 · a 6 m
+12
+Almiar 23 de 24 · a 7 m
+18
+5
+Soporte de varas 20 de 24 · a 8 m
+20
+Almiar 6 de 24 · a 9 m
+6
+Soporte de varas 0 de 24 · a 11 m
+vacío
+
+La obra no coge de aquí sola: saca lo que vayas a usar y llévalo.
+
+Quién puede construir en ella
+Tú
+dueño
+
+Para invitar a alguien, ponte a su lado y elige «Invitar a tu tierra».
+
+Si no se usa
+
+Mientras entréis tú o tus invitados, sigue siendo tuya. Si pasan 15 días sin que entr
+Desmontarla, desde Desmontar (el dueño, en PC)
+  OK   al apuntarla, la elige y dice que se recupera el 75 % — Pila de piedras: recuperas el 75 % del material, y lo que guarda cae al suelo.
+  OK   desmontada en el servidor — Pila de piedras: recuperas el 75 % del material, y lo que guarda cae al suelo.
+  OK   y sus 40 piedras y 3 de su material (el 75 % de 4), en el suelo — 43
+  OK   ya no se dibuja
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+1 FALLOS
