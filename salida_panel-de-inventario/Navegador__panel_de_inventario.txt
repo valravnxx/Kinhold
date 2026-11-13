@@ -1,0 +1,123 @@
+PC: arrastrar del arcón a la silueta y a los huecos
+  OK   el botón abre el panel
+  OK   10 cuadros de equipo (8 capas de ropa, y la cintura y la espalda en «Lo que llevas») — 10
+  OK   el panel se llama «Equipo» (el botón y el título)
+  OK   las manos y el hombro, en el panel
+  OK   lo del arcón, con la imagen de su modelo
+  OK   lo de la camisa puesta se ve con su imagen (la prenda dibujada)
+  OK   el retrato es tu personaje dibujado (un 10–60 % del cuadro) — 0.27
+  OK   empieza con camisa y pantalón de lino
+  OK   sin cinturón no hay cuadros de cintura
+  OK   tres columnas, una al lado de otra: Ropa, Lo que llevas y A tus pies — [['eq-ropa', 54, 484], ['eq-llevas', 538, 372], ['eq-pies', 910, 316]]
+  OK   los huecos vacíos enseñan la silueta de lo que va (la cabeza y la mano izquierda)
+  OK   arrastrar el cinto de cuero a la cintura se lo pone — cinto_cuero:1
+  OK   con el cinto, sus 3 huecos abiertos en «Lo que llevas» — 3
+  OK   el cuchillo, arrastrado a un hueco pequeño del cinto — cuchillo:1
+  OK   el hacha (mediana) no entra en un hueco pequeño, y se dice por qué — No cabe en ese hueco.
+  OK   el leñero, abierto a la vez que el cinto, con sus 6 huecos — lenero:1 · 
+  OK   la leña entra en el leñero, una pila entera — lena:3
+  OK   la piedra no entra en el leñero
+  OK   el personaje se pone la túnica que dice el inventario — ['tunica', 'descalzo']
+  OK   con el hacha en la mano, el saco no se sube al hombro (valravnx, 1 nov) — Para llevar eso al hombro, las manos tienen que ir vacías: guarda o suelta lo que llevas en ellas.
+  OK   del arcón: el hacha con las manos y el odre colgado al hombro — hacha_mano:1 · odre:1
+  OK   el hacha se ve en la mano del personaje
+  OK   abajo se ve lo que llevas en la mano y al hombro — 
+      En la mano derecha: Hacha de manoSoltar
+      Al hombro: OdreSoltarAl cinto: Cuchillo          
+  OK   la barra de abajo: las dos manos, el hombro y el cinto, cada cosa con su imagen y su botón de soltar — {'huecos': 4, 'imgs': 3, 'soltar': 2, 'hombro': True, 'fondo': 'url("http://127.0.0.1:42939/recursos/interfaz-v1/hueco.webp")'}
+  OK   arrastrar el cuchillo del cinto al arcón lo deja
+  OK   se ve la carga y la velocidad — Carga: 42% · velocidad al andar: 97%
+  OK   cada cambio queda en el registro de acciones con autor — 10
+  OK   «Soltar» deja lo de la mano (y el hacha ya no se ve)
+  OK   y lo del hombro; sin nada, abajo quedan las dos manos vacías (sin nada que soltar)
+  OK   lo que llevas se guarda al recargar
+  OK   la tecla I abre el panel
+  OK   la ficha del hacha dice cuánto le queda (18 usos de 168), con su barra en rojo — Le quedan 18 usos de 168
+  OK   la ficha del hacha dice dónde y con qué se repara (la piedra de tallar, un cordel) — Equipo
+Toca algo para ver qué es; clic derecho o mantener: a la mano o al suelo.
+ROPA
+Cabeza
+Sobre todo
+Abrigo
+Túnica de lana
+Guantes
+Exterior
+Camisa
+Camisa de lino
+Piernas
+Pantalón de lino
+Pies
+LO QUE LLEVAS
+Mano derecha
+Hacha de piedra
+Mano izquierda
+Al hombro
+Cintura
+Cinto de cuero
+Espalda
+Leñero
+  OK   la ficha de la camisa dice cuánto le queda (150 usos de 600) y que se zurce en el banco con fibra — Le quedan 150 usos de 600 · Equipo
+Toca algo para ver qué es; clic derecho o mantener: a la mano o al suelo.
+ROPA
+Cabeza
+Sobre todo
+Abrigo
+Túnica de lana
+Guantes
+Exterior
+Camisa
+Camisa de lino
+Piernas
+Pantalón de lino
+Pies
+LO QUE LLEVAS
+Mano derecha
+Mano izquierda
+Al hombro
+Cintura
+Cinto de cuero
+Espalda
+Leñero
+Cinto de cuero
+
+  OK   al recargar, el personaje lleva otra vez la túnica — ['tunica', 'descalzo']
+  OK   la túnica cosida entra con su hechura y su tinte — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'corto', 'tejido': 'sarga'}, 'tinte': 'glasto'}
+  OK   su cuadro dice la hechura y el tinte — Túnica de lana · Corto, Sarga · Azul de glasto
+  (puesta: el personaje de Meshy aún no dibuja tintes ni hechuras; no se mira)
+  OK   otra túnica cosida, con lo suyo (cuadros y verde) — {'tipo': 'tunica_lana', 'n': 1, 'hechura': {'material': 'lana', 'corte': 'largo', 'tejido': 'cuadros'}, 'tinte': 'verde'}
+  OK   la ficha de lo puesto dice qué es, dónde lo llevas y qué se puede hacer — Túnica de lana · Cuadros · Verde ·  · Lo llevas puesto (abrigo). ·  · mediano · 0.8 kg ·  · Le quedan 900 usos de 900 ·  · Se repara en el banco de tronco, dejando en el puesto 1 fibra cruda: puesta o en la mano, Usar junto a él. ·  · Quitártelo a las manos · Mover… · Dejarlo en el suelo · Al arcón
+  OK   la ficha enseña su imagen grande
+  OK   «Quitártelo a las manos»: la túnica pasa a la mano y deja de verse puesta — tunica_lana:1 · ['cota', 'descalzo'] · Lo llevas en las manos.
+  OK   y sale en su cuadro de la mano
+  OK   de la mano, «Ponértelo» la vuelve a poner
+  OK   «Dejarlo en el suelo»: el cinturón puesto queda a tus pies — None · 0→1
+  OK   sin cinturón, ya no salen sus huecos
+  OK   el cinto dejado en el suelo sale en «A tus pies» — 3
+  OK   tocar lo de tus pies da su ficha («En el suelo, a tus pies») con «Cogerlo con las manos» y «Mover…»
+  OK   clic derecho en lo de tus pies lo coge a la mano — mano:der: hacha_mano:1 · 3→2 · Lo coges del suelo.
+  OK   clic derecho en lo de la mano lo deja en el suelo
+  OK   «Mover…» y tocar la mano lleva allí la leña — lena:3
+  OK   quitarse queda en el registro de acciones con autor — 1
+  OK   y lo cierra
+  OK   sin errores en la página (PC)
+Móvil: tocar y pantalla completa
+  OK   en el móvil el panel ocupa casi la pantalla (el tablero del menú) — {'x': 10, 'y': 88, 'width': 370, 'height': 680}
+  OK   tocar la cuerda y luego la cintura se la pone
+  OK   la cuerda trenzada da 2 cuadros de cintura — 2
+  OK   bayas en el primer hueco de la cuerda (pila de 10) — bayas:10
+  OK   el tronco corto (grande) se coge con las dos manos
+  OK   «Ponérselo» pone el zurrón a la espalda
+  OK   móvil: la ficha sale abajo y deja ver el equipo — {'x': 28, 'y': 529.421875, 'width': 334, 'height': 220.578125}
+  OK   móvil: la ficha de la espalda deja dejarlo en el suelo
+  OK   móvil: la ficha del cuchillo dice cuánto le queda (300 usos de 400) — Le quedan 300 usos de 400
+  OK   móvil: el cuchillo (de hierro) no dice que se repare aún
+  OK   móvil: se abre en «Lo que llevas», sin la ropa
+  OK   móvil: la pestaña «Ropa» enseña la ropa y el personaje, y no lo que llevas
+  OK   móvil: mantener el dedo en el tronco de las manos lo deja a tus pies — None
+  OK   móvil: y mantenerlo en lo de tus pies lo vuelve a coger — tronco_corto:1
+  OK   móvil: la ficha del gambesón dice lo que le queda (300 de 900) y que aún no se repara — Le quedan 300 usos de 900
+  OK   el ✕ cierra el panel
+  OK   en el móvil, lo que llevas se ve abajo sin salirse de la pantalla — {'x': 162, 'y': 771, 'width': 127, 'height': 47}
+  OK   sin errores en la página (móvil)
+
+TODO CORRECTO
