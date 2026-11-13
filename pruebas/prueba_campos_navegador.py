@@ -217,7 +217,9 @@ try:
         A.evaluate(f"(() => {{ const l = {K}.inventario.lugares; if (!l['mano:der'] && !l['mano:izq']) {K}.accionInventario({{ tipo: 'coger', objeto: 'estaca', cantidad: 1, a: 'mano:der' }}); }})()")
         esperar(A, f"{K}.inventario.cuantos('estaca') >= 1", 5000); A.wait_for_timeout(500)
         ir(A, 3, 6); usar(A)
-        comprobar('en la zona del rey no se clava, y no crea campo', esperar(A, f"/Fuera de tu tierra/.test({AVISO})", 5000) and A.evaluate(f"{K}.mundo.campos.length") == 1, f"aviso={A.evaluate(AVISO)} · campos={A.evaluate(f'{K}.mundo.campos.length')}")
+        # (3,6) está en la zona del rey, a ~590 m del campo: su trozo no lleva el campo, así que no hay ninguno cargado aquí;
+        # si la estaca se clavara (mal), aparecería un campo nuevo. Se comprueba que la rechaza y que no crea ninguno.
+        comprobar('en la zona del rey no se clava, y no crea campo', esperar(A, f"/Fuera de tu tierra/.test({AVISO})", 5000) and A.evaluate(f"{K}.mundo.campos.length") == 0, f"aviso={A.evaluate(AVISO)} · campos={A.evaluate(f'{K}.mundo.campos.length')}")
 
         print('El otro jugador, en el móvil, lo ve')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
