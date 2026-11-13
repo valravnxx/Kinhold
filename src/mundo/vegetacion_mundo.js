@@ -251,7 +251,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     instancias(deTipo('flor'), ms.flores.geo, ms.flores.mats, 'soto_flores', e => c.set(FLORES[e.color]).lerp(blanco, 0.25));
     for (const tipo of ['tocon', 'tronco']) {
       const l = deTipo(tipo);
-      instancias(l, ms[tipo].geo, ms[tipo].mats, 'soto_' + tipo, e => c.setScalar(e.tono), { sombra: true, obst: l.map(e => ({ set oculto(v) { for (const o of e.obs) o.oculto = v; } })) });   // (el tronco, sus tres círculos)
+      instancias(l, ms[tipo].geo, ms[tipo].mats, 'soto_' + tipo, e => c.setScalar(e.tono * 1.15), { sombra: true, obst: l.map(e => ({ set oculto(v) { for (const o of e.obs) o.oculto = v; } })) });   // (el tronco, sus tres círculos)
     }
     // piedras sueltas, del color de la roca del sitio a medias con el gris de las del estilo v5 (la arenisca sola salía
     // anaranjada), hundidas 0,2 m como en el mapa; no se esconden al construir (chocan, como antes)
