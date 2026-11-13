@@ -9,7 +9,7 @@ import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 import { AUTOR_REY } from './abandono.js';
-import { clavarEstaca, quitarEstaca } from './campos.js';
+import { clavarEstaca, quitarEstaca, labrar } from './campos.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
 export const AUTOR_LOCAL = 'jugador:local';
@@ -67,6 +67,7 @@ const CAMPOS_CONSTRUCCION = {
   nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
   estaca: { x: 'n', z: 'n' },         // clavar una estaca del campo que marcas (src/logica/campos.js, P11)
   quitar_estaca: { campo: 'n', i: 'n' }, // y quitarla (vuelve a lo que llevas)
+  labrar: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // una pasada de azada en el campo (t: la hora, la pone el servidor)
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -92,7 +93,7 @@ const CAMPOS_CONSTRUCCION = {
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
 // Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -179,6 +180,14 @@ function aplicarConstruccion(m, a, invs) {
       if (invs) delete a.lleva;
       const gastar = inv ? () => (inv.cuantos('estaca') >= 1 ? (inv.gastar('estaca', 1), { ok: true }) : { ok: false, motivo: 'No llevas ninguna estaca.' }) : undefined;
       return pagada(clavarEstaca(m, a.x, a.z, a.autor, gastar), a, invs);
+    }
+    case 'labrar': {   // (P11) con la azada en la mano (no gasta nada; al rehacer una ya hecha, no se mira)
+      if (invs) {
+        delete a.lleva;
+        const l = invs.de(a.autor).lugares;
+        if (!['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'azada')) return { ok: false, motivo: 'Necesitas la azada en la mano para labrar.' };
+      }
+      return pagada(labrar(m, a.campo, a.x, a.z, a.t, a.autor), a, invs);
     }
     case 'quitar_estaca': {
       const inv = invs ? invs.de(a.autor) : null;

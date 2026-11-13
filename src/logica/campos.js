@@ -152,6 +152,7 @@ export function quitarEstaca(m, campo, i, autor, devolver = () => ({ ok: true })
   if (!m.dentroDeTierra(p.x, p.z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
   const otro = campoAbierto(m, autor);
   if (otro && otro !== c) return { ok: false, motivo: 'Termina antes el campo que estás marcando.' };
+  if (c.labrado) return { ok: false, motivo: 'El campo ya está labrado: sus estacas no se mueven.' };
   const d = devolver();
   if (!d.ok) return d;
   if (c.cerrado) { c.puntos = [...c.puntos.slice(i + 1), ...c.puntos.slice(0, i)]; c.cerrado = false; c.area = 0; }
@@ -175,9 +176,93 @@ export function porLimpiar(c, cosas = {}) {
 }
 
 // Para guardar y leer el mundo (Mundo.exportar / importar).
-export const exportarCampos = (l) => (l || []).map(c => ({ ...c, puntos: c.puntos.map(p => ({ ...p })) }));
+// ---------- Labrar (P11, «Labrar con la azada», 13 nov) ----------
+// Con la azada en la mano, cada pasada voltea la tierra en un círculo de RADIO_LABRAR m alrededor de donde apuntas (a
+// lo sumo ALCANCE_LABRAR m de donde estás), solo dentro del linde de un campo cerrado y donde no queda nada por limpiar.
+// Lo labrado se guarda por casillas de 1 m (1 bit por m²) en la rejilla del campo; lo que se labra y no se siembra vuelve
+// a ser hierba pasado PLAZO_BARBECHO desde la última pasada (decisiones provisionales: registro y diario).
+// La hora de la pasada (a.t) la pone el servidor: así, al rehacer el mundo, todos cuentan el mismo plazo.
+export const RADIO_LABRAR = 1.2;
+export const ALCANCE_LABRAR = 3;
+export const SEGUNDOS_LABRAR = 2;
+export const PLAZO_BARBECHO = 14 * 24 * 3600 * 1000;   // ms: dos semanas reales sin sembrar y vuelve a ser hierba
+// la rejilla del campo: casillas de 1 m desde la esquina de su recuadro
+export function rejilla(c) {
+  const xs = c.puntos.map(p => p.x), zs = c.puntos.map(p => p.z);
+  const x0 = Math.floor(Math.min(...xs)), z0 = Math.floor(Math.min(...zs));
+  return { x0, z0, w: Math.max(1, Math.ceil(Math.max(...xs)) - x0), h: Math.max(1, Math.ceil(Math.max(...zs)) - z0) };
+}
+const aBase64 = (u8) => (globalThis.Buffer ? globalThis.Buffer.from(u8).toString('base64') : btoa(Array.from(u8, b => String.fromCharCode(b)).join('')));
+function deBase64(t, n) {
+  const u8 = new Uint8Array(n);
+  try {
+    const b = globalThis.Buffer ? globalThis.Buffer.from(t, 'base64') : Uint8Array.from(atob(t), ch => ch.charCodeAt(0));
+    u8.set(b.subarray ? b.subarray(0, n) : b.slice(0, n));
+  } catch (e) { /* roto: sin labrar */ }
+  return u8;
+}
+// los bits de lo labrado (en memoria, sin guardar: se rehacen de c.labrado)
+function bits(c) {
+  if (!c._bits) {
+    const r = rejilla(c), n = Math.ceil(r.w * r.h / 8);
+    Object.defineProperty(c, '_bits', { value: c.labrado ? deBase64(c.labrado, n) : new Uint8Array(n), writable: true, enumerable: false, configurable: true });
+  }
+  return c._bits;
+}
+// ¿Sigue labrado el campo (no ha pasado el plazo desde la última pasada)?
+export const labradoVivo = (c, ahora) => !!(c && c.labradoEn && ahora - c.labradoEn <= PLAZO_BARBECHO);
+// ¿Está labrado (x, z) en el campo c a la hora ahora?
+export function labradoEn(c, x, z, ahora) {
+  if (!labradoVivo(c, ahora)) return false;
+  const r = rejilla(c), i = Math.floor(x) - r.x0, j = Math.floor(z) - r.z0;
+  if (i < 0 || j < 0 || i >= r.w || j >= r.h) return false;
+  const k = j * r.w + i;
+  return !!(bits(c)[k >> 3] & (1 << (k & 7)));
+}
+// Las casillas labradas del campo (sus esquinas, en m): [{ x, z }]
+export function casillasLabradas(c, ahora) {
+  if (!labradoVivo(c, ahora)) return [];
+  const r = rejilla(c), b = bits(c), out = [];
+  for (let k = 0; k < r.w * r.h; k++) if (b[k >> 3] & (1 << (k & 7))) out.push({ x: r.x0 + (k % r.w), z: r.z0 + Math.floor(k / r.w) });
+  return out;
+}
+// ¿Algún sitio labrado de algún campo en (x, z)?
+export const labradoAqui = (m, x, z, ahora) => (m.campos || []).some(c => c.cerrado && labradoEn(c, x, z, ahora));
+// Una pasada de azada en (x, z) del campo de id campo, a la hora t. entorno.estorbo(x, z, r): lo que queda por limpiar
+// ahí (lo dice quien tiene el mundo: el servidor). Devuelve { ok, campo, nuevas, labradas } o { ok: false, motivo }.
+export function labrar(m, campo, x, z, t, autor) {
+  if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
+  const c = (m.campos || []).find(k => k.id === campo);
+  if (!c || !c.cerrado) return { ok: false, motivo: 'Aquí no hay ningún campo cerrado.' };
+  if (!m.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  if (!dentroPoligono(c.puntos, x, z)) return { ok: false, motivo: 'Fuera del campo: se labra dentro de su linde.' };
+  const e = m.entorno || null;
+  if (e && e.estorbo && e.estorbo(x, z, RADIO_LABRAR, c)) return { ok: false, motivo: 'Antes limpia ahí: quedan árboles, tocones, matas o piedras.' };
+  const r = rejilla(c);
+  if (!labradoVivo(c, t)) c._bits = new Uint8Array(Math.ceil(r.w * r.h / 8));   // pasado el plazo, vuelve a ser hierba
+  const b = bits(c);
+  let nuevas = 0;
+  const i0 = Math.floor(x - RADIO_LABRAR) - r.x0, i1 = Math.floor(x + RADIO_LABRAR) - r.x0, j0 = Math.floor(z - RADIO_LABRAR) - r.z0, j1 = Math.floor(z + RADIO_LABRAR) - r.z0;
+  for (let j = Math.max(0, j0); j <= Math.min(r.h - 1, j1); j++) for (let i = Math.max(0, i0); i <= Math.min(r.w - 1, i1); i++) {
+    const cx = r.x0 + i + 0.5, cz = r.z0 + j + 0.5;
+    if ((cx - x) ** 2 + (cz - z) ** 2 > RADIO_LABRAR * RADIO_LABRAR || !dentroPoligono(c.puntos, cx, cz)) continue;
+    const k = j * r.w + i;
+    if (!(b[k >> 3] & (1 << (k & 7)))) { b[k >> 3] |= 1 << (k & 7); nuevas++; }
+  }
+  if (!nuevas) return { ok: false, motivo: 'Ahí ya está labrado.' };
+  c.labradoEn = t;
+  c.labrado = aBase64(b);
+  let labradas = 0; for (const v of b) { let q = v; while (q) { labradas += q & 1; q >>= 1; } }
+  return { ok: true, campo: c.id, nuevas, labradas };
+}
+
+// Para guardar y leer el mundo (Mundo.exportar / importar).
+export const exportarCampos = (l) => (l || []).map(c => ({ id: c.id, dueno: c.dueno, autor: c.autor, puntos: c.puntos.map(p => ({ ...p })), cerrado: c.cerrado, area: c.area,
+  ...(c.labrado ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}) }));
 export function importarCampos(l) {
   if (!Array.isArray(l)) return [];
   return l.filter(c => c && Number.isInteger(c.id) && Array.isArray(c.puntos))
-    .map(c => ({ id: c.id, dueno: c.dueno, autor: c.autor, puntos: c.puntos.filter(p => p && num(p.x) && num(p.z)).map(p => ({ x: p.x, z: p.z })), cerrado: !!c.cerrado, area: num(c.area) ? c.area : 0 }));
+    .map(c => ({ id: c.id, dueno: c.dueno, autor: c.autor, puntos: c.puntos.filter(p => p && num(p.x) && num(p.z)).map(p => ({ x: p.x, z: p.z })), cerrado: !!c.cerrado, area: num(c.area) ? c.area : 0,
+      // (13 nov) lo labrado: los bits en base64 y la hora de la última pasada
+      ...(typeof c.labrado === 'string' && c.labrado.length < 200000 && num(c.labradoEn) ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}) }));
 }
