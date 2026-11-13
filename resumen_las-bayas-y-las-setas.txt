@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2765 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3103 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4494 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3171 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2759 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3132 KB
+dist/kinhold_trozos.html 2780 KB
+hilo de los trozos 23 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: las bayas y las setas
+  OK   móvil: las setas se ven y al cogerlas desaparecen enteras — {'recoger_setas': True} → {'recoger_setas': False}, 4 setas
+  OK   móvil: sin errores en la página
+
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 280 s
