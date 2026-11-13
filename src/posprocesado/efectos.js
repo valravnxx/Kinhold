@@ -79,7 +79,8 @@ export function crearPosprocesado(renderer, escena, camara, { sol = null, foco =
     composer.addPass(new EffectPass(camara, ...lista));
     // el desenfoque de maqueta (arriba y abajo de la pantalla), en los perfiles que pueden con una pasada más
     // (on.maqueta === 2: el modo maqueta al 100 %, con la distancia y el color de juguete)
-    if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, on.maqueta === 2 ? new MaquetaFuerteEffect({ vivo: cieloVivo }) : new MaquetaEffect({ vivo: cieloVivo })));
+    if (on.maqueta === 2 && perfil.desenfoque) for (const eje of ['h', 'v']) composer.addPass(new EffectPass(camara, new MaquetaFuerteEffect({ vivo: cieloVivo, eje })));
+    else if (on.maqueta && perfil.desenfoque) composer.addPass(new EffectPass(camara, new MaquetaEffect({ vivo: cieloVivo })));
     if (SMAA[perfil.suavizado] !== undefined) composer.addPass(new EffectPass(camara, new SMAAEffect({ preset: SMAA[perfil.suavizado] })));
     composer.setSize(renderer.domElement.clientWidth || innerWidth, renderer.domElement.clientHeight || innerHeight, false);
   }
