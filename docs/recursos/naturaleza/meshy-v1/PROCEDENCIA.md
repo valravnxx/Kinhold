@@ -10,3 +10,7 @@
   medida de los de código, el pie en el suelo, tres mallas por modelo («cerca» con la textura en WebP; «medio» y «lejos»
   con el color de la textura en los vértices y menos triángulos), el pie oscurecido y meshopt.
 - Licencia: la de las condiciones de Meshy para la cuenta de valravnx (no comprobado aquí el texto exacto).
+- Los tres juncos de las riberas y la marisma (valravnx, 13 nov 2026: «haz con meshy tanto los juncos recolectables, juncos
+  cortados y juncos que no valen para recoger»): `junco_recoger` (la mata que se corta), `junco_cortado` (lo que queda
+  hasta que vuelve a crecer) y `junco_adorno` (la mata rala y seca que no vale), hechos igual, con Meshy y el prompt de
+  estilo, el 13 nov de 2026 (unos 117 créditos), y preparados con `herramientas/meshy/preparar_naturaleza.mjs`.
