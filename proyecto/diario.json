@@ -6685,5 +6685,22 @@
   "pruebas": "En la nube: el panel de fabricar (PC y móvil) con el secadero, bien (dos veces; el móvil flakea al crear la cuenta del 2.º jugador, cosa del runner sin GPU, no del cambio). Lógica aquí: comida 44/44, fabricación 197/197, orígenes 86/86, iconos 597/597, necesidades 58/58. Tras unir main, el revisor: bien recorrido 248/248, demo-única (tras añadir las traducciones v196), despiezar-y-asar, el-hogar, la-cama-ligada, los-colgaderos, el-mazo, panel-inventario, avisos, velocidad, construir-con-acabado. No bloquean: logica (solo el systemd-analyze de la máquina de la nube, falla igual en main) y los-almacenajes (el «contador desplegado», que ya fallaba en main, y el mismo flaky del móvil; mi cambio de estaciones.js solo añade el secadero, no toca los almacenajes).",
   "capturas": "capturas/demo-v196",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T09:14:19+01:00",
+  "fin": "2026-11-13T15:45:28+01:00",
+  "titulo": "Riberas y costas (demo v197)",
+  "hito": "aspecto",
+  "hecho": [
+   "En los ríos, juncos en el agua somera del borde y hierba alta, ortigas y helechos en la orilla: antes no se ponía nada a menos de 4 m del cauce.",
+   "El bosque llega hasta el río (valravnx: «en el bosque me gustaría verlo más real»): vale el suelo en seco, el dosel de lejos también, y los valles bajos tierra adentro, que no tenían ningún árbol por estar a menos de 1,5 m sobre el mar, tienen bosque.",
+   "La marisma de las desembocaduras: barro con hierba salada y juncal, sin árboles.",
+   "Los juncos de la marisma se recogen, unas 12 veces los de la orilla de un río, y hay algo de barro (valravnx: potenciar la desembocadura para hacer acopio o comerciar).",
+   "Hierba de duna en la parte alta de la arena de la playa.",
+   "Los juncos, de Meshy (117 créditos): la mata que se corta, la cortada mientras vuelve a crecer y la de adorno, rala y seca."
+  ],
+  "pruebas": "Lógica de la vegetación, de la recogida y de los orígenes, correcta, con pruebas nuevas que fallan al romperlas a propósito. Revisión mínima, como pidió valravnx (él lo prueba a mano): una captura de los juncos en la marisma; no comprobado: la segunda mirada, ni las pruebas de navegador en la nube con lo último.",
+  "capturas": "capturas/demo-v197",
+  "estado": "ok"
  }
 ]
