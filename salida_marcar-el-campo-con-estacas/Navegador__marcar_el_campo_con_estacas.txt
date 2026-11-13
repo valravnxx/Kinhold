@@ -1,0 +1,82 @@
+  OK   hay un sitio llano y seco para el campo en la zona de al lado
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Pone su mojón junto al campo
+  OK   pone su mojón (en el servidor) — Primera pieza: fija la rejilla de una construcción nueva. Gira con R o el botón Girar.
+Se hace una estaca con 1 rama, con las manos
+  OK   en el panel: la estaca, con 1 rama y para qué sirve — Estaca
+
+Marca el campo: con ella en la mano, Usar la clava donde estás; de 3 a 16, y la última junto a la primera lo cierra.
+
+Con las manos
+6 s
+Lo que pide
+Ramaen las manos
+1 de 1
+Hacer · 6 s
+  OK   con su imagen, que carga
+  OK   terminada, sale «Recoger»
+  OK   y la estaca es suya en el servidor (la rama, gastada)
+Clava las estacas en las esquinas y cierra el campo
+  OK   con la estaca en la mano, Usar dice «Clavar una estaca» — Clavar una estaca
+  OK   estaca 1, clavada (en el servidor) — Primera estaca del campo: ve clavando las demás por el linde (de 3 a 16).
+  OK   la segunda dice cuántas lleva («2 de 16») — Clavar una estaca (2 de 16)
+  OK   estaca 2, clavada (en el servidor) — Estaca clavada (2).
+  OK   estaca 3, clavada (en el servidor) — Estaca clavada (3).
+  OK   estaca 4, clavada (en el servidor) — Estaca clavada (4).
+  OK   y las tres primeras salen de lo que lleva
+  OK   junto a la primera, Usar dice «Cerrar el campo» — Cerrar el campo
+  OK   cierra el campo (en el servidor) — Campo cerrado: 120 m². Queda por limpiar: 1 mata.
+  OK   el aviso dice su superficie: 120 m² — Campo cerrado: 120 m². Queda por limpiar: 1 mata.
+  OK   cerrarlo no gasta otra estaca
+  OK   en el navegador: un campo cerrado de 4 estacas y 120 m² — [{"id":1,"dueno":"jugador:5f9b21da","autor":"jugador:5f9b21da","puntos":[{"x":-634,"z":35},{"x":-622,"z":35},{"x":-622,"z":45},{"x":-634,"z":45}],"cerrado":true,"area":120}]
+  OK   se dibujan las estacas y el linde
+Quitar una estaca y volver a clavarla
+  OK   junto a una estaca, Usar dice «Quitar la estaca (campo de 120 m²)» — Quitar la estaca (campo de 120 m²)
+  OK   quitada: vuelve a lo que lleva (lo dice el servidor) — lleva 2 · Estaca quitada: el campo queda abierto hasta que lo vuelvas a cerrar.
+  OK   y el campo queda abierto, con 3 estacas
+  OK   clavada un poco más allá — Estaca clavada (4).
+  OK   y se cierra otra vez (11 × 9 + … m²) — {"id":1,"dueno":"jugador:5f9b21da","autor":"jugador:5f9b21da","puntos":[{"x":-634,"z":45},{"x":-634,"z":35},{"x":-622,"z":35},{"x":-623,"z":44}],"cerrado":true,"area":109}
+Labra con la azada (P11)
+  OK   el servidor le da la azada (arcón de pruebas)
+  OK   con la azada, dentro de su campo, Usar dice «Labrar» — Labrar
+  OK   Usar empieza a labrar (unos 2 s)
+  OK   la pasada se labra en el servidor, con su hora — Tierra labrada: 4 de 109 m² del campo.
+  OK   el aviso dice cuánto lleva labrado — Tierra labrada: 4 de 109 m² del campo.
+  OK   se ve la tierra labrada
+  OK   donde ya está labrado lo dice — Ya está labrado aquí
+  OK   labrado, sus estacas ya no se quitan
+Siembra: la cebada a voleo y las habas, la col y el nabo planta a planta (P11)
+  OK   coge la cebada silvestre en la mano
+  OK   con la cebada en la mano, sobre lo labrado, Usar dice «Sembrar cebada a voleo» — Sembrar cebada a voleo
+  OK   la cebada se siembra en el servidor, con su hora — Cebada sembrada: 14 de 109 m² del campo (gastas 1).
+  OK   el aviso dice cuánto lleva sembrado y lo que gasta — Cebada sembrada: 14 de 109 m² del campo (gastas 1).
+  OK   gasta un puñado
+  OK   se ven las matas de cebada (brote)
+  OK   donde ya está sembrado lo dice — Ahí no queda tierra labrada sin sembrar.
+  OK   con habas en la mano, Usar dice «Plantar» — Plantar: habas
+  OK   habas: junto a otra, demasiado cerca (lo dice) — Demasiado cerca de otra planta.
+  OK   con col en la mano, Usar dice «Plantar» — Plantar: col
+  OK   col: junto a otra, demasiado cerca (lo dice) — Demasiado cerca de otra planta.
+  OK   con nabo en la mano, Usar dice «Plantar» — Plantar: nabo
+  OK   nabo: junto a otra, demasiado cerca (lo dice) — Demasiado cerca de otra planta.
+  OK   las 12 plantas, en el servidor — 13
+  OK   y en el campo, cada una a su sitio — [{"c":"habas","x":-626.5,"z":40,"t":1794597794046},{"c":"habas","x":-625.85,"z":40,"t":1794597798270},{"c":"habas","x":-625.2,"z":40,"t":1794597802609},{"c":"habas","x":-624.55,"z":40,"t":1794597806819},{"c":"col","x":-626.5,"z":41.3,"t":1794597826453},{"c":"col","x":-625.85,"z":41.3,"t":1794597830669},{"c":"col","x":-625.2,"z":41.3,"t":1794597834801},{"c":"col","x":-624.55,"z":41.3,"t":1794597839038},{"c":"nabo","x":-626.5,"z":42.6,"t":1794597858737},{"c":"nabo","x":-625.85,"z":42.6,"t":1794597862880},{"c":"nabo","x":-625.2,"z":42.6,"t":1794597867144},{"c":"nabo","x":-624.55,"z":42.6,"t":1794597871232}]
+  OK   crecido: la cebada verde y las plantas en sus cuatro fases
+  OK   a los cinco días, la cebada en espiga y la col y el nabo con su cabeza
+  OK   a la semana, todo maduro
+  OK   de lejos (a 70 m) las plantas no se dibujan
+Fuera de su tierra, no
+  OK   deja la azada y coge una estaca — {"tipo":"estaca","n":1}
+  OK   en la zona del rey no se clava, y no crea campo — aviso=Fuera de tu tierra. · campos=0
+El otro jugador, en el móvil, lo ve
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  OK   y ve la tierra labrada
+  OK   y ve lo sembrado (la cebada y las plantas, recién brotadas)
+  OK   le llega el campo, cerrado — [{"id":1,"dueno":"jugador:5f9b21da","autor":"jugador:5f9b21da","puntos":[{"x":-634,"z":45},{"x":-634,"z":35},{"x":-622,"z":35},{"x":-623,"z":44}],"cerrado":true,"area":109,"labrado":"AAAAAAAA+IM/+IM/+AMA","labradoEn":1794597750426,"voleo":{"t":[1794597767075],"celdas":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAAAAAAAAQEBAQAAAAAAAAAAAQEBAQAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAA"},"plantas":[{"c":"habas","x":-626.5,"z":40,"t":1794597794046},{"c":"habas","x":-625.85,"z":40,"t":1794597798270},{"c":"habas","x":-625.2,"z":40,"t":1794597802609},{"c":"habas","x":-624.55,"z":40,"t":1794597806819},{"c":"col","x":-626.5,"z":41.3,"t":1794597826453},{"c":"col","x":-625.85,"z":41.3,"t":1794597830669},{"c":"col","x":-625.2,"z":41.3,"t":1794597834801},{"c":"col","x":-624.55,"z":41.3,"t":1794597839038},{"c":"nabo","x":-626.5,"z":42.6,"t":1794597858737},{"c":"nabo","x":-625.85,"z":42.6,"t":1794597862880},{"c":"nabo","x":-625.2,"z":42.6,"t":1794597867144},{"c":"nabo","x":-624.55,"z":42.6,"t":1794597871232}]}]
+  OK   a Bruno no le deja quitar las estacas de otro (lo dice)
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+TODO CORRECTO
