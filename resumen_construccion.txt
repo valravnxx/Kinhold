@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2832 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3173 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4599 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3242 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2827 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3203 KB
+dist/kinhold_trozos.html 2849 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: construcción
+  OK   después de recargar sigue lo construido — 232 → 232
+  OK   si vuelve a pasar enseguida no recarga en bucle: ofrece Recargar
+
+Resultado: 6 fallos: a media escalera vas subiendo, andando se llega arriba: planta 1, sobre el suelo, abierta, la escalera vuelve a subir a la planta 1, se anda por los dos tramos seguidos sin bajar, se sube andando por la escalera de tablas hasta el adarve, Usar en el adarve, junto a la escalera de mano, baja al suelo
+!! FALLA: python3 pruebas/prueba_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/construccion
+
+HAY FALLOS
+tardó 1873 s
