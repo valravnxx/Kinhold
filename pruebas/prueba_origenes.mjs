@@ -70,6 +70,24 @@ const PENDIENTES = {
   est_era: ['aún no hay era', 'La era y trillar'],
   grano: ['sale de trillar', 'La era y trillar'],
   paja: ['sale de trillar', 'La era y trillar'],
+  // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
+  criba: ['aún no se hace', 'El hierro de pantano'],
+  mineral_hierro: ['aún no hay manchas de hierro de pantano', 'El hierro de pantano'],
+  est_horno_reduccion: ['aún no hay horno de reducción', 'El horno de reducción y la lupia'],
+  lupia: ['sale del horno de reducción', 'El horno de reducción y la lupia'],
+  fuelle: ['aún no se hace', 'La fragua y la barra de hierro'],
+  est_fragua: ['aún no hay fragua', 'La fragua y la barra de hierro'],
+  barra_hierro: ['sale de la fragua', 'La fragua y la barra de hierro'],
+  mango: ['aún no se hace', 'Las primeras herramientas de hierro'],
+  hacha_hierro: ['sale de la fragua', 'Las primeras herramientas de hierro'],
+  pico: ['sale de la fragua', 'Las primeras herramientas de hierro'],
+  clavo: ['sale de la fragua', 'Las primeras herramientas de hierro'],
+  sierra: ['sale de la fragua', 'La sierra y las tablas'],
+  tabla: ['sale de serrar con la sierra', 'La sierra y las tablas'],
+  bloque_piedra: ['sale de romper rocas grandes con el pico', 'Las rocas grandes y la cantera'],
+  arcilla: ['aún no se cava', 'La arcilla y el horno cerámico'],
+  est_horno_ceramico: ['aún no hay horno cerámico', 'La arcilla y el horno cerámico'],
+  teja: ['sale del horno cerámico', 'Las tejas: en el horno cerámico'],
 };
 // Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede
 // tener partiendo de nada, o espera en PENDIENTES con su tarea viva. Antes de pasar el hito a revisión (paso 9), nada
@@ -78,6 +96,8 @@ const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'grano', 'paja'],
+  hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
+    'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
 
 // ---- lo que se puede tener, partiendo de nada ----

@@ -6606,5 +6606,19 @@
   ],
   "pruebas": "Revisor en la nube: bien el recorrido, lo que se recoge en el mundo (dos veces), recoger del suelo y de las plantas, las bayas, el inventario, despiezar y asar, el hogar, la cama, los colgaderos, el mazo, los avisos y la demo única. Fallan «lo que llevas se ve puesto», «panel de fabricación» y «los almacenajes de la base», y fallan igual en main (comprobado en la nube); la lógica falla solo en systemd-analyze en la máquina de GitHub, como en main. Comprobador de código correcto.",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T09:23:18+00:00",
+  "fin": "2026-11-13T09:28:13+00:00",
+  "titulo": "P10, hierro y tablas: planificado",
+  "hito": "hierro",
+  "hecho": [
+   "Once tareas de una sesión, con la cadena de cada cosa hasta el mundo: el hierro de pantano con pala y criba; el horno de reducción y la lupia; el fuelle, la fragua y la barra; el mango, el hacha de hierro, el pico y los clavos; la sierra y las tablas; las rocas grandes con el pico; las vetas de hierro en la roca; la arcilla y el horno cerámico; las tejas; las piezas de nivel 2 a la vista; y el recorrido de jugador. Después, la revisión.",
+   "El primer mineral es el de pantano: el pico ya pide hierro, así que la roca solo llega después. En Whitholm casi no hay turberas (3 km²) y la veta pequeña más cercana a la salida está a unos 10 km: decisión provisional, las manchas de hierro de pantano salen por las señales del GDD (tierra encharcada y agua rojiza) en las vegas llanas junto a los arroyos y en las turberas.",
+   "Decisiones provisionales (sistemas no las da): el mazo de piedra hace de martillo en la primera fragua; el yunque de piedra va dentro de la fragua (12 piedras, 4 barros y el fuelle); el fuelle, 2 cueros y 2 varas; el mango, 1 vara; 1 tronco corto da 4 tablas; 2 cestas de arcilla dan 10 tejas; el horno cerámico, 6 cestas de arcilla y 10 piedras. Las herraduras esperan a P8 (congelado).",
+   "pruebas/prueba_origenes.mjs: lo esencial del hierro (17 cosas) en su lista, en PENDIENTES con su tarea viva."
+  ],
+  "pruebas": "prueba_origenes.mjs: 92 bien; rota a propósito (MUTAR=2), fallan las 17 del hierro. Sin código del juego cambiado: nada en la nube.",
+  "estado": "ok"
  }
 ]

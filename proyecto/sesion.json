@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-13T09:23:18+00:00",
-  "tarea": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (hierro de pantano, carbonera, horno de reducción, fragua, herramientas de hierro, sierra y tablas, las piezas de nivel 2 escondidas), con la cadena de cada material hasta el mundo",
-  "hito": "hierro",
-  "rama": "trabajo/20261113-0923"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261113-0518-secadero": {
   "inicio": "2026-11-13T05:19:44+00:00",
