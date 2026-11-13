@@ -2221,15 +2221,48 @@
    "id": "oficios",
    "num": "P9",
    "nombre": "Oficios del asentamiento",
-   "jugable": "Secadero, raspador y cubas de curtido (cuero), carbonera, huso y horno de barro; la silla de montar y las alforjas del caballo; el mimbre, la resina y la corteza.",
+   "jugable": "Secadero (carne seca), raspador de pieles (piel limpia y zurrón), cubas de curtido (cuero con corteza de roble), huso (hilo), zapatos y cinto de cuero, y carbonera (carbón).",
    "estado": "en_curso",
-   "nota": "valravnx, 13 nov: se empieza antes que P8 (los animales esperan). Lo que necesita el caballo (la silla y las alforjas) espera a P8.",
+   "nota": "valravnx, 13 nov: se empieza antes que P8 (los animales esperan). Lo que necesita el caballo (la silla y las alforjas, y el heno que come) espera a P8; el horno de barro y el pan, a P11 (piden paja y harina, que salen del cereal). La piel, de la liebre de P4. Las estaciones nuevas, por código con el estilo v5 hasta que valravnx mande sus modelos.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (secadero, curtido, carbonera, huso, horno de barro, silla y alforjas), con la cadena de cada material hasta el mundo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T04:33:44+00:00",
-     "rama": "trabajo/20261113-0433-oficios"
+     "rama": "trabajo/20261113-0433-oficios",
+     "fin": "2026-11-13T04:36:24+00:00"
+    },
+    {
+     "nombre": "El secadero y la carne seca: el secadero (4 troncos delgados de postes y 2 cuerdas, en tu tierra, fuera) como estación; se cuelgan 2 carnes crudas y al cabo de unas horas reales dan 1 carne seca, que no se estropea y sacia como la asada. Lo que tarda se calcula por tiempo transcurrido en la lógica pura (lo decide el servidor), y sirve luego a las cubas y a la carbonera. Cadena: tronco delgado ← talar un árbol joven con el hacha de piedra; cuerda ← 3 cordeles en el banco de tronco ← fibra a mano; carne cruda ← despiezar la liebre con la lasca ← cazarla con la lanza endurecida",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El raspador de pieles, la piel limpia y el zurrón: el bastidor (4 varas y 1 cuerda) como estación; en él, con la lasca de sílex, 1 piel → 1 piel limpia; y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco: mochila mixta pequeña). Cadena: vara ← talar un árbol joven; piel ← despiezar la liebre; cordel ← fibra",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El cubo lleno de agua y la corteza de roble: el cubo de madera se llena en el río (agua, para las cubas) y se vacía; descortezar un roble en pie da corteza de roble (las demás especies, corteza). Cadena: cubo ← banco de tronco con un tronco corto ← trocear un tronco con el hacha; roble ← los bosques templados; descortezar ← la lasca de sílex o el hacha",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Las cubas de curtido y el cuero: las cubas (un hoyo cavado con el palo cavador, 2 cestas de barro y 2 troncos cortos) como estación, fuera; se llenan con el cubo de agua; 1 piel limpia y 2 cortezas de roble dan 1 cuero al cabo de días reales (por tiempo transcurrido, en el servidor). Cadena: barro ← la ribera con el palo cavador; tronco corto ← trocear; piel limpia ← el raspador; corteza de roble y agua ← la tarea anterior",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El huso y el hilo: el huso (1 vara y 1 piedra, con las manos) es una herramienta; con él, 2 fibras → 1 hilo (de la fibra cruda que se recoge; el lino y la lana, cuando haya campos y ovejas). Cadena: vara ← talar un árbol joven; piedra y fibra ← se recogen a mano",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Los zapatos y el cinto de cuero: zapatos de cuero (1 cuero y 1 hilo, en el banco de tronco; la prenda ya existe y se ve puesta) y cinto de cuero (2 cueros y 1 rama para la hebilla de madera, en el banco: 3 huecos, uno mediano). Cadena: cuero ← las cubas; hilo ← el huso; rama ← se recoge",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de los oficios, sin arcón: cuelga carne en el secadero, raspa la piel de una liebre y hace el zurrón, llena el cubo, descorteza un roble y curte un cuero (con el reloj acelerado), hila, hace los zapatos y el cinto de cuero y saca carbón de la carbonera",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
