@@ -172,7 +172,8 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
       const st = paisaje.sitio(x, z, y); if (!st || !st.bioma || st.bioma === 'nieve') return;
       const m = marismaEn(y, pendiente(x, z), c, x, z);
       if (m > 0.3) {
-        if (q < 0.45 * m * mancha) R.sotobosque.push({ x, z, y, tipo: u < 0.6 ? 'junco_agua' : 'hierba_larga', tam: 0.6 + u * 0.6, giro, tono, sal: true });
+        // (los juncos de la marisma se recogen: son puntos de recogida, src/logica/recogida_mundo.js; aquí, la hierba salada)
+        if (q < 0.2 * m * mancha) R.sotobosque.push({ x, z, y, tipo: 'hierba_larga', tam: 0.6 + u * 0.6, giro, tono, sal: true });
         return;
       }
       if (b > 4 || calvaTierra(x, z) > 0.3) return;

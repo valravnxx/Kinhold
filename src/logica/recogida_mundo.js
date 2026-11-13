@@ -21,7 +21,7 @@
 //  - Nada a menos de 1,2 m del sitio posible de un árbol (para no caer dentro de un tronco).
 import { azarCelda } from './azar.js';
 import { bosqueEn } from './paisaje.js';
-import { CELDA as CELDA_VEG } from './vegetacion.js';
+import { CELDA as CELDA_VEG, marismaEn } from './vegetacion.js';
 import { RECOLECTABLES } from './recoleccion.js';
 
 export const CELDA_RECOGIDA = 8;
@@ -37,8 +37,10 @@ export const DENSIDAD_RECOGIDA = {
   // (7 nov) lo que pide la casa humilde y la hoguera: juncos en la orilla y la ribera, barro en la orilla y hongos
   // yesqueros en los tocones viejos del bosque. Se miran después de los sueltos del claro (DESPUES), solo en las celdas
   // que no han dado nada: así lo de antes sigue en el mismo sitio.
-  juncos:       { rio: 0.12, ribera: 0.05 },
-  barro:        { rio: 0.16, ribera: 0.04 },
+  // (13 nov, valravnx: «potenciar una localidad como una desembocadura para tener mucho más surplus de juncos… hacer
+  // un buen stock o incluso comerciar») en la marisma de las desembocaduras, muchos más
+  juncos:       { rio: 0.12, ribera: 0.05, marisma: 0.45 },
+  barro:        { rio: 0.16, ribera: 0.04, marisma: 0.1 },   // (y el barro de la marisma)
   yesquero:     { bosque: 0.05 },
   // (P4) para comer: arbustos de bayas en el bosque (sobre todo en sus bordes, donde es claro: el del bosque se
   // multiplica por su densidad) y en los claros, y setas en el suelo del bosque. También después, en las celdas vacías.
@@ -76,6 +78,8 @@ export function zonasRecogida(paisaje, alt, semilla, x, z, tramos) {
   const { dm, ancho } = paisaje.rioCerca(x, z, tramos), orilla = dm - ancho / 2;
   if (orilla < 4) zonas.push('rio');
   if (orilla < 16) zonas.push('ribera');
+  // la marisma de las desembocaduras (src/logica/vegetacion.js, marismaEn)
+  if (y < 1.8 && marismaEn(y, s, paisaje.rioCerca(x, z, tramos), x, z) > 0.3) zonas.push('marisma');
   return { zonas, d, y, s };
 }
 
