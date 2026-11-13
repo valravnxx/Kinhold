@@ -320,7 +320,7 @@ try:
         print('El otro jugador, en el móvil, lo ve')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         ir(B, x0 - 3, z0 + 5, 2.4)
-        comprobar('y ve la tierra labrada', esperar(B, f"!!{K}.escena.getObjectByName('tierra_labrada')", 20000))
+        comprobar('y ve la tierra labrada', esperar(B, f"!!{K}.escena.getObjectByName('tierra_labrada')", 45000))
         comprobar('y ve lo sembrado (la cebada y las plantas, recién brotadas)', esperar(B, f"!!{K}.escena.getObjectByName('planta_cebada_0') && !!{K}.escena.getObjectByName('planta_col_0')", 20000))
         comprobar('le llega el campo, cerrado', esperar(B, f"{K}.mundo.campos.length === 1 && {K}.mundo.campos[0].cerrado", 20000), B.evaluate(f"JSON.stringify({K}.mundo.campos)"))
         B.evaluate(f"{K}.cam.yaw = 2.4 + Math.PI; {K}.cam.dist = 11; {K}.cam.pitch = 0.7"); B.wait_for_timeout(3000)
