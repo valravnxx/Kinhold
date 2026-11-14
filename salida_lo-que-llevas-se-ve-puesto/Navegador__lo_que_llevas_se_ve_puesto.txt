@@ -1,0 +1,74 @@
+== pc
+  OK   lenero: el cinturón rodea la cintura — centro [0.016, 0.957, 0.027], ancho 0.403, pelvis [0.012, 0.93, -0.04]
+  OK   lenero: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.019, 1.094, -0.165], fondo 0.548
+  OK   lenero: lo del hombro va por encima de la cintura — centro [-0.104, 1.361, -0.162]
+  OK   lenero: lo de la mano r está en la mano — [-0.252, 0.802, 0.082] · mano [-0.264, 0.98, -0.039]
+  OK   lenero: se ve todo lo que lleva — piezas ['cinturon', 'colgado_1', 'colgado_2', 'espalda', 'hacha_colgada', 'hombro', 'mano_r'], faltan []
+  OK   mochila: el cinturón rodea la cintura — centro [0.023, 0.974, 0.037], ancho 0.401, pelvis [-0.023, 0.949, -0.031]
+  OK   mochila: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.036, 1.103, -0.139], fondo 0.58
+  OK   mochila: lo del hombro va por encima de la cintura — centro [0.113, 1.153, 0.018]
+  OK   mochila: lo de la mano l está en la mano — [0.291, 0.899, -0.024] · mano [0.259, 1.02, -0.064]
+  OK   mochila: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'espalda', 'hombro', 'mano_l'], faltan []
+  OK   cesta: el cinturón rodea la cintura — centro [-0.016, 0.946, 0.028], ancho 0.41, pelvis [-0.039, 0.944, -0.053]
+  OK   cesta: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [-0.016, 1.17, -0.188], fondo 0.603
+  OK   cesta: lo del hombro va por encima de la cintura — centro [0.069, 1.165, 0.018]
+  OK   cesta: lo de la mano r está en la mano — [-0.387, 0.806, -0.05] · mano [-0.326, 0.999, -0.083]
+  OK   cesta: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'espalda', 'hombro', 'mano_r'], faltan []
+  OK   armas: el cinturón rodea la cintura — centro [0.068, 0.914, 0.058], ancho 0.404, pelvis [0.009, 0.903, -0.026]
+  OK   armas: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.093, 1.063, -0.051], fondo 0.591
+  OK   armas: lo del hombro va por encima de la cintura — centro [-0.171, 1.496, 0.061]
+  OK   armas: con el tronco al hombro, la postura de llevarlo — hombroQuieto
+  OK   armas: la mano derecha sujeta el tronco (sobre el hombro, cerca del tronco) — mano [-0.052, 1.518, 0.133] · tronco [-0.171, 1.496, 0.061] · cuello [0.068, 1.299, 0.12]
+  OK   armas: el tronco va al lado de la cabeza, sin taparla — 27.0 cm de lado entre la cabeza y el centro del tronco (radio 10 cm)
+  OK   armas: el tronco apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 6.1 cm
+  FALLA armas: la mano encima del tronco y por delante del hombro — mano [-0.052, 1.518, 0.133] · tronco [-0.171, 1.496, 0.061] · hombro [-0.093, 1.334, 0.061]
+  OK   armas: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'espalda', 'hombro'], faltan []
+  OK   zurron: el cinturón rodea la cintura — centro [0.048, 1.011, 0.009], ancho 0.432, pelvis [0.032, 0.959, -0.014]
+  OK   zurron: lo de la espalda va detrás (-Z) y a la altura de la espalda — centro [0.074, 1.232, -0.146], fondo 0.468
+  OK   zurron: lo grande, delante, entre las dos manos — [0.191, 1.099, 0.147] · entre las manos [0.184, 1.077, 0.085]
+  OK   zurron: y el personaje lo sujeta (postura de llevar en brazos) — cargar
+  OK   zurron: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'espalda', 'manos'], faltan []
+  OK   a_mano: el cinturón rodea la cintura — centro [-0.009, 0.962, -0.005], ancho 0.394, pelvis [0.01, 0.936, -0.041]
+  OK   a_mano: lo de la mano l está en la mano — [0.265, 0.874, 0.027] · mano [0.285, 0.98, -0.069]
+  OK   a_mano: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'colgado_2', 'colgado_3', 'mano_l'], faltan []
+  OK   a_mano: lo hecho a mano, cada uno con su modelo (sin bolsa ni hatillo) — con el de relleno: []
+  OK   a_mano: el hacha de piedra en la mano es la de piedra y se ve — {'nombre': 'hacha_piedra', 'visible': True}
+  FALLA a_mano2: el cinturón rodea la cintura — centro [0.022, 0.948, 0.01], ancho 0.415, pelvis [-0.043, 0.942, -0.056]
+  OK   a_mano2: lo de la mano r está en la mano — [-0.313, 0.8, 0.079] · mano [-0.324, 0.98, -0.085]
+  OK   a_mano2: lo de la mano l está en la mano — [0.248, 0.903, -0.004] · mano [0.237, 1.02, -0.078]
+  OK   a_mano2: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'colgado_1', 'mano_l', 'mano_r'], faltan []
+  OK   a_mano2: lo hecho a mano, cada uno con su modelo (sin bolsa ni hatillo) — con el de relleno: []
+  OK   a_mano3: el cinturón rodea la cintura — centro [0.015, 0.947, 0.026], ancho 0.408, pelvis [-0.035, 0.949, -0.046]
+  OK   a_mano3: lo de la mano r está en la mano — [-0.261, 0.789, 0.158] · mano [-0.314, 1.005, -0.098]
+  OK   a_mano3: lo de la mano l está en la mano — [0.276, 0.905, -0.027] · mano [0.263, 1.011, -0.102]
+  OK   a_mano3: se ve todo lo que lleva — piezas ['cinturon', 'colgado_0', 'mano_l', 'mano_r'], faltan []
+  OK   a_mano3: lo hecho a mano, cada uno con su modelo (sin bolsa ni hatillo) — con el de relleno: []
+  OK   lenero_en_manos: el cinturón rodea la cintura — centro [0.042, 0.963, 0.044], ancho 0.409, pelvis [0.032, 0.959, -0.014]
+  OK   lenero_en_manos: lo grande, delante, entre las dos manos — [0.196, 0.977, 0.111] · entre las manos [0.184, 1.077, 0.085]
+  OK   lenero_en_manos: y el personaje lo sujeta (postura de llevar en brazos) — cargar
+  OK   lenero_en_manos: se ve todo lo que lleva — piezas ['cinturon', 'manos'], faltan []
+  OK   lenero_en_manos: lo hecho a mano, cada uno con su modelo (sin bolsa ni hatillo) — con el de relleno: []
+  OK   lenero_en_manos: el leñero cogido delante, entre las dos manos — [0.196, 0.977, 0.111, 0.357, 0.647, 0.285]
+  OK   correa de zurron: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4) — {'peor': 0.031, 'donde': [0.042, 1.256, 0.133], 'n': 57}
+  FALLA correa de carcaj: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4) — {'peor': 0.068, 'donde': [0.174, 1.097, 0.099], 'n': 57}
+  FALLA correa de escudo: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4) — {'peor': 0.05, 'donde': [0.201, 1.096, 0.012], 'n': 57}
+  OK   con el hacha de mano, se ve la de hierro (no se queda la de piedra) — hacha
+Al andar, cada pieza sigue a su hueso
+  OK   el personaje anda — correr
+  OK   andando, la rama sigue en la mano — 0.213 m de la mano
+  OK   andando, el leñero sigue detrás — [0.019, 1.162, -0.101]
+  OK   la mano se ha movido con la animación (si no, la prueba no prueba nada) — 0.509 m
+  OK   sin nada encima, no se dibuja nada
+  OK   pc: sin errores en la página
+  OK   pc: la mujer, elegida (se carga la de Meshy, con sus animaciones)
+  OK   mujer: con el tronco al hombro, la postura de llevarlo — hombroQuieto
+  OK   mujer: el tronco va al lado de la cabeza, sin taparla — 24.2 cm de lado entre la cabeza y el centro del tronco (radio 10 cm)
+  OK   mujer: el tronco apoyado sobre el hombro (de 2 a 9 cm por encima de la articulación) — 6.1 cm
+  FALLA mujer: la mano encima del tronco y por delante del hombro — mano [-0.075, 1.435, 0.121] · tronco [-0.16, 1.361, 0.09] · hombro [-0.082, 1.199, 0.09]
+  OK   pc (mujer): sin errores en la página
+== movil
+  OK   movil: sin errores en la página
+  OK   movil: la mujer, elegida (se carga la de Meshy, con sus animaciones)
+  OK   movil (mujer): sin errores en la página
+
+FALLAN: armas: la mano encima del tronco y por delante del hombro, a_mano2: el cinturón rodea la cintura, correa de carcaj: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4), correa de escudo: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4), mujer: la mano encima del tronco y por delante del hombro
