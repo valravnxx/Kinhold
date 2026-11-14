@@ -145,8 +145,8 @@ function troncoCorto(L, x, y, z, largo, r, eje = 'x') {
     L.add(new THREE.CircleGeometry(r * 0.97, 9), 'corte', x + (eje === 'x' ? d : 0), y, z + (eje === 'z' ? d : 0), eje === 'x' ? { y: s * Math.PI / 2 } : { y: s > 0 ? 0 : Math.PI }, { sinSuelo: true });
   }
 }
-function piedra(L, x, y, z, r, s) {
-  L.add(new THREE.IcosahedronGeometry(r, 1), azar(s) < 0.5 ? 'piedra' : 'piedraOsc', x, y, z, { y: s * 2.1, x: s * 0.7 }, { escala: v3(1.2, 0.8, 1), plano: true });
+function piedra(L, x, y, z, r, s, color = null) {
+  L.add(new THREE.IcosahedronGeometry(r, 1), color ?? (azar(s) < 0.5 ? 'piedra' : 'piedraOsc'), x, y, z, { y: s * 2.1, x: s * 0.7 }, { escala: v3(1.2, 0.8, 1), plano: true });
 }
 // bolsa de cuero cerrada con un cordón (lo pequeño colgado del cinto)
 function bolsa(L, x, y, z, s = 1, color = CUERO) {
@@ -388,7 +388,8 @@ const sinModelo = t => globalThis.__sinModelosManos && HECHOS_A_MANO.has(t);
 function enMano(t) {
   const L = nuevoLote();
   if (sinModelo(t)) { hatillo(L, 0, 0.04, 0.03, 1); L.generico = true; }
-  else if (t === 'piedra' || t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.06, 3);
+  else if (t === 'piedra') piedra(L, 0, 0, 0.01, 0.06, 3);
+  else if (t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.05, 3, 0x7a5636);   // (P10) el terrón de mineral, pardo de óxido
   else if (t === 'silex') L.add(new THREE.IcosahedronGeometry(0.045, 1), 0xd8d2c4, 0, 0, 0.01, null, { plano: true, escala: v3(1.3, 0.8, 1), tex: 'piedra' });
   else if (t === 'estaca') estacaEn(L, 0, -0.42, 0, { x: 0.05 });   // cogida por el medio, la punta abajo (P11)
   else if (t === 'rama' || t === 'vara') {
