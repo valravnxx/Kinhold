@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 16:32 UTC — por el chat, aprobación de P11
+
+valravnx: «aprueba el hito actual, pero ten en cuenta de que eso es un sistema que debe ser ampliado en un futuro… tiene que ser bastante más complejo y tener bastante más cositas… anotan el GDD actual y que se tenga presente… cuando se tenga que hacer una fase 2… por ahora los sistemas están bien, así que aprueba» → P11, El año y los campos, pasa a `hecho`. En el GDD (sección 15, Agricultura, y en inglés y ruso): la granja de hoy es la primera fase; habrá una fase 2 más compleja, como hito propio cuando toque.
+
 ### 14 nov 2026 — por el chat, sobre trillar
 
 valravnx: «quiero criba de grano si es realista, por favor, adaptemos para ello… he visto cribas medievales en museos» → tarea nueva en P11, antes del recorrido de la granja: trillar en la era da grano sin limpiar y paja, y con la criba se saca el grano de cebada limpio que se siembra El recorrido de la granja la incluye. Después: «haremos cribas de grano separadas» → la criba de grano es su propia herramienta (aro de madera curvada con el fondo de piel limpia agujereada: 1 piel limpia y 1 vara en el banco de tronco), distinta de la del mineral; la paja va al almiar y el grano al cesto.

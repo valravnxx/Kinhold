@@ -2248,7 +2248,7 @@
    "num": "P11",
    "nombre": "El año y los campos",
    "jugable": "La granja básica: semillas silvestres; el campo con la forma que marcas con estacas, que se limpia y se labra a mano; sembrar, crecer en una semana real, segar y trillar: grano, paja (el tejado de paja), habas, coles y nabos. Las estaciones del año, el lino y el pan, más adelante.",
-   "estado": "en_curso",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
@@ -2317,16 +2317,19 @@
     },
     {
      "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era, criba el grano y pone un tejado de paja",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T08:23:07+00:00",
-     "rama": "trabajo/20261114-0823"
+     "fin": "2026-11-14T16:01:24+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-14T16:25:45+00:00",
+     "rama": "trabajo/20261114-1625",
+     "fin": "2026-11-14T16:26:18+00:00"
     }
    ],
-   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco."
+   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco. Aprobado por valravnx el 14 nov: los sistemas están bien por ahora, pero es la primera fase; la granja tiene que ser bastante más compleja y tener más cosas (fase 2, anotada en el GDD, sección 15)."
   },
   {
    "id": "lluvia",

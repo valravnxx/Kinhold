@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y la granja (P11, 14 nov), en pruebas/recorrido_granja.mjs: el paso 22. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -52,6 +52,8 @@ import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.j
 import { crearServidor } from '../servidor/servidor.mjs';
 import { despojar, MOTIVOS } from '../src/logica/muerte.js';
 import { msDeHora } from '../src/logica/cielo.js';
+import { granja } from './recorrido_granja.mjs';
+import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
 
@@ -1778,6 +1780,19 @@ try {
         }
       } else comprobar('la liebre cazada está a sus pies, junto a la hoguera', false);
     }
+    // (para trabajar en la granja sin repetir todo lo de antes: KINHOLD_RECORRIDO_GUARDAR=<carpeta> guarda aquí el mundo
+    // y la ficha del jugador y sale; pruebas/recorrido_granja.mjs, ejecutado solo con KINHOLD_RECORRIDO_DESDE=<carpeta>,
+    // sigue desde ahí. No cambia nada del recorrido normal.)
+    if (process.env.KINHOLD_RECORRIDO_GUARDAR) {
+      const destino = process.env.KINHOLD_RECORRIDO_GUARDAR, ahora = Date.now();
+      J2.ws.close(); await pausa(300); await s.cerrar(); s = null;
+      cpSync(dir, destino, { recursive: true });
+      writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ficha: J2.bienvenida.ficha || J.bienvenida.ficha, yo: J2.bienvenida.autor, pos: J2.pos, ahora, base, sitioCaza }));
+      console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes de la granja)`);
+      J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
+    }
+    // P11, la granja básica (14 nov): pruebas/recorrido_granja.mjs
+    await granja({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, base });
     J2.ws.close();
   }
 
