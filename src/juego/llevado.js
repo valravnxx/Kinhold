@@ -672,9 +672,9 @@ export function crearLlevado(j) {
           // el morral (el zurrón): sale de lo alto de la bolsa, sube por la espalda al hombro y, tras el costado, vuelve a la bolsa
           const yB = yCentro + morral;
           // (sale de lo alto de la bolsa algo a la derecha, por donde sube al hombro: sin dar la vuelta en gancho)
-          ini = [v3(cE.cx - 0.03, yB + 0.17, zAtras - 0.01)];
-          guia = [v3(x0 - 0.04, yB + 0.25, zA), v3(x0 - 0.07, (yB + 0.25 + h.y) / 2, zA), ...hombro, ...delante];
-          fin = [v3(cE.cx + 0.12, yB + 0.02, zAtras - 0.03)];
+          // (los dos cabos, pegados a la espalda por detrás de la bolsa, que va contra ella: vista de espaldas, la correa
+          // asoma de lo alto de la bolsa sin dar la vuelta en gancho por el aire, y por el costado no va tiesa como una vara)
+          guia = [v3(x0 - 0.03, yB + 0.1, zA), v3(x0 - 0.04, yB + 0.25, zA), v3(x0 - 0.07, (yB + 0.25 + h.y) / 2, zA), ...hombro, ...delante, v3(x0 + 0.12, yB + 0.02, zA)];
         } else {
           // el carcaj y el escudo: un tahalí entero, de la cadera izquierda por la espalda al hombro derecho y por el pecho a la cadera
           guia = [v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12), v3(x0 + 0.1, cin.y + 0.08, zA), v3(x0 - 0.02, yM + 0.05, zA), ...hombro, ...delante];
