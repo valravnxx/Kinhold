@@ -12,7 +12,7 @@ import { Limitador } from '../../src/logica/limites.js';
 import { GRATIS_AUTOCONSTRUIR } from '../../src/logica/admin.js';
 import { trozoDe, LADO_RED, RADIO_RED } from '../../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../../src/logica/obras_red.js';
-import { ALCANCE_LABRAR, ALCANCE_SEMBRAR, ALCANCE_SEGAR, labradoEn } from '../../src/logica/campos.js';
+import { ALCANCE_LABRAR, ALCANCE_SEMBRAR, ALCANCE_SEGAR, ALCANCE_ESCARDAR, labradoEn } from '../../src/logica/campos.js';
 import { dejarSobra } from '../../src/logica/suelo.js';
 import { limpiarTexto, validarFrase, FRASES, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../../src/logica/charla.js';
 import { redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades } from '../../src/logica/necesidades.js';
@@ -311,8 +311,8 @@ function atenderAccion(S, c, msg) {
   // los campos (P11): la estaca, donde está el jugador (lo que diga el navegador no cuenta), y el linde, contra el
   // agua, la pendiente y los puestos de trabajo (src/logica/campos.js, mundo.entorno)
   // (la hora la pone el servidor; solo en la prueba de cosechar, con KINHOLD_PRUEBAS_HORA=campos, una pasada al sembrar)
-  if (['labrar', 'sembrar', 'segar', 'coger_planta'].includes(accion.tipo)) accion.t = S.horaCampos && accion.tipo === 'sembrar' && Number.isFinite(accion.t) && accion.t < Date.now() ? accion.t : Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
-  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' || accion.tipo === 'labrar' || accion.tipo === 'sembrar' || accion.tipo === 'segar' || accion.tipo === 'coger_planta' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
+  if (['labrar', 'sembrar', 'segar', 'coger_planta', 'escardar'].includes(accion.tipo)) accion.t = S.horaCampos && accion.tipo === 'sembrar' && Number.isFinite(accion.t) && accion.t < Date.now() ? accion.t : Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
+  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' || accion.tipo === 'labrar' || accion.tipo === 'sembrar' || accion.tipo === 'segar' || accion.tipo === 'coger_planta' || accion.tipo === 'escardar' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
   if (accion.tipo === 'estaca' || accion.tipo === 'labrar') mundo.entorno = entornoCampos(S);
   const r = lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
   if (lejosCampo || sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
@@ -331,6 +331,7 @@ function atenderAccion(S, c, msg) {
   if (r.ok && accion.tipo === 'trabajar') cansar(autor, 'trabajar');   // cada rato de obra cansa
   if (r.ok && accion.tipo === 'labrar') cansar(autor, 'labrar');       // y cada pasada de azada (P11)
   if (r.ok && accion.tipo === 'segar') cansar(autor, 'segar');         // y de hoz
+  if (r.ok && accion.tipo === 'escardar') cansar(autor, 'escardar');   // y de escarda (14 nov)
   if (r.ok) {
     // solo a quien tiene su trozo alrededor (y al autor); lo que no tiene sitio, a todos
     const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
@@ -395,7 +396,7 @@ function fueraDelCampo(mundo, a, pos) {
   let p = a;
   if (a.tipo === 'quitar_estaca') { const c = (mundo.campos || []).find(x => x.id === a.campo); p = c && Number.isInteger(a.i) ? c.puntos[a.i] : null; if (!p) return null; }
   if (!Number.isFinite(p.x) || !Number.isFinite(p.z)) return null;
-  return Math.hypot(p.x - pos.x, p.z - pos.z) > (a.tipo === 'labrar' ? ALCANCE_LABRAR + 0.5 : a.tipo === 'sembrar' ? ALCANCE_SEMBRAR + 0.5 : a.tipo === 'segar' ? ALCANCE_SEGAR + 0.5 : 3) ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
+  return Math.hypot(p.x - pos.x, p.z - pos.z) > (a.tipo === 'labrar' ? ALCANCE_LABRAR + 0.5 : a.tipo === 'sembrar' ? ALCANCE_SEMBRAR + 0.5 : a.tipo === 'segar' ? ALCANCE_SEGAR + 0.5 : a.tipo === 'escardar' ? ALCANCE_ESCARDAR + 0.5 : 3) ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
 }
 // Lo que la lógica de los campos no sabe del terreno: el agua, la pendiente (m por m, en 3 m) y los puestos de trabajo.
 function entornoCampos(S) {

@@ -9,7 +9,7 @@ import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 import { AUTOR_REY } from './abandono.js';
-import { clavarEstaca, quitarEstaca, labrar, sembrar, segar, cogerPlanta, CULTIVOS } from './campos.js';
+import { clavarEstaca, quitarEstaca, labrar, sembrar, segar, cogerPlanta, escardar, CULTIVOS } from './campos.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
 export const AUTOR_LOCAL = 'jugador:local';
@@ -70,7 +70,8 @@ const CAMPOS_CONSTRUCCION = {
   labrar: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // una pasada de azada en el campo (t: la hora, la pone el servidor)
   sembrar: { campo: 'n', cultivo: 't', x: 'n', z: 'n', t: 'n' },
   segar: { campo: 'n', x: 'n', z: 'n', t: 'n' },          // segar la cebada madura con la hoz (deja gavillas en el suelo)
-  coger_planta: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // coger a mano la planta madura (habas, col, nabo)   // sembrar en lo labrado (a voleo o una planta; t: del servidor)
+  coger_planta: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // coger a mano la planta madura (habas, col, nabo)
+  escardar: { campo: 'n', x: 'n', z: 'n', t: 'n' },       // quitar las malas hierbas de lo sembrado (con las manos o la azada; 14 nov)   // sembrar en lo labrado (a voleo o una planta; t: del servidor)
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -96,7 +97,7 @@ const CAMPOS_CONSTRUCCION = {
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
 // Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta', 'escardar']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -219,6 +220,14 @@ function aplicarConstruccion(m, a, invs) {
       const inv = invs.de(a.autor), sobra = {};
       for (const [tipo, n] of Object.entries(r.da)) { let k = n; while (k > 0 && !inv.meterDonde(tipo, k).ok) k--; if (n - k > 0) sobra[tipo] = n - k; }
       return pagada({ ...r, sobra }, a, invs);
+    }
+    case 'escardar': {   // (P11, 14 nov) con las manos vacías o con la azada en la mano (no gasta nada)
+      if (invs) {
+        delete a.lleva;
+        const l = invs.de(a.autor).lugares, manos = ['mano:der', 'mano:izq'];
+        if (!manos.some(r => l[r] && l[r].tipo === 'azada') && manos.some(r => l[r])) return { ok: false, motivo: 'Para escardar, las manos vacías o la azada.' };
+      }
+      return pagada(escardar(m, a.campo, a.x, a.z, a.t, a.autor), a, invs);
     }
     case 'quitar_estaca': {
       const inv = invs ? invs.de(a.autor) : null;
