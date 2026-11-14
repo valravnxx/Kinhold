@@ -1,0 +1,18 @@
+  OK   PC: en la vega del río hay una mancha de hierro de pantano — {'id': 'hierro_pantano:1845873,454783', 'x': -8.73, 'z': -801.69}
+  OK   PC: se ven la turba, la juncia y los charcos de agua rojiza — {'planta': True, 'agua': True}
+  OK   PC: sin pala ni criba, Usar no saca nada
+  OK   PC: con la pala y la criba, Usar criba: 1 mineral de hierro junto a la mancha — 1
+  OK   PC: y la mancha sigue (le quedan pasadas)
+  OK   PC: de 3 a 5 pasadas, el montoncito crece con cada una — 4
+  OK   PC: agotada, los charcos se van y la turba y la juncia se quedan — {'planta': True, 'agua': False}
+  OK   PC: sin errores en la página
+  OK   móvil: en la vega del río hay una mancha de hierro de pantano — {'id': 'hierro_pantano:1845873,454783', 'x': -8.73, 'z': -801.69}
+  OK   móvil: se ven la turba, la juncia y los charcos de agua rojiza — {'planta': True, 'agua': True}
+  OK   móvil: sin pala ni criba, Usar no saca nada
+  OK   móvil: con la pala y la criba, Usar criba: 1 mineral de hierro junto a la mancha — 1
+  OK   móvil: y la mancha sigue (le quedan pasadas)
+  OK   móvil: de 3 a 5 pasadas, el montoncito crece con cada una — 4
+  OK   móvil: agotada, los charcos se van y la turba y la juncia se quedan — {'planta': True, 'agua': False}
+  OK   móvil: sin errores en la página
+
+Todo correcto
