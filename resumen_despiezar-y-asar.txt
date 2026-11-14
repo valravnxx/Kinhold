@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2873 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3217 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4674 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3283 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2867 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3248 KB
+dist/kinhold_trozos.html 2889 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: despiezar y asar
+  OK   movil: (la carne cruda, la asada y la piel, en el suelo) — {"carne_cruda": 2, "carne_asada": 2, "piel": 2}
+  OK   movil: sin errores en la página
+
+Todo bien
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 317 s
