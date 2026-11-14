@@ -157,6 +157,7 @@ paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_pospr
 paso "Navegador: el perfil gráfico en el juego" python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html "$C/graficos_juego"
 paso "Navegador: la hierba densa" python3 pruebas/prueba_hierba_navegador.py dist/kinhold_demo.html "$C/hierba"
 paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py dist/kinhold_demo.html "$C/cielo"
+paso "Navegador: la lluvia se ve" python3 pruebas/prueba_lluvia_navegador.py dist/kinhold_demo.html "$C/lluvia"
 paso "Navegador: los avisos de las necesidades" python3 pruebas/prueba_avisos_navegador.py dist/kinhold_demo.html "$C/avisos"
 paso "Navegador: las bayas y las setas" python3 pruebas/prueba_bayas_navegador.py dist/kinhold_demo.html "$C/bayas"
 paso "Navegador: desbrozar matorrales y arbustos" python3 pruebas/prueba_desbroce_navegador.py dist/kinhold_demo.html "$C/desbroce"

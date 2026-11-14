@@ -29,6 +29,7 @@ export const TOCA = {
   'el-perfil-grafico-en-el-juego': [/^src\/juego\/graficos\.js$/, /^src\/posprocesado\//],
   'la-hierba-densa': [/^src\/mundo\/hierba_densa\.js$/],
   'el-dia-y-la-noche': [/^pruebas\/sitio_prueba\.py$/, /^src\/(logica|mundo)\/cielo\.js$/, /^src\/mundo\/ambiente\.js$/],
+  'la-lluvia-se-ve': [/^src\/mundo\/(lluvia|tiempo_vista|cielo)\.js$/, /^src\/logica\/tiempo\.js$/, /^src\/posprocesado\/niebla\.js$/],   // (P11b: la lluvia y el cielo cubierto)
   'los-avisos-de-las-necesidades': [/^src\/juego\/avisos_necesidades\.js$/, /^src\/logica\/necesidades\.js$/],
   'las-bayas-y-las-setas': [/^src\/logica\/recoleccion\.js$/],
   'el-bosque-de-lejos-visto-de-cerca': [/^src\/mundo\/(horizonte|vegetacion_mundo|especies|sotobosque)\.js$/, /^src\/logica\/horizonte\.js$/],

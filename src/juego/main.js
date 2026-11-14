@@ -15,6 +15,7 @@ import { tieneObraTerminada, DIAS as DIAS_ABANDONO, DIAS_SIN_OBRA, DIA as DIA_MS
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
+import { crearTiempoVista } from '../mundo/tiempo_vista.js';
 import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
@@ -239,7 +240,10 @@ let desfaseReloj = 0;
 let necesidades = null;
 const avisosNec = montarAvisos({ sentarse: () => sentarse(), sentado: () => !!estado.sentado });   // sus círculos a la derecha (src/juego/avisos_necesidades.js)   // hambre, sed, frío y cansancio, como las manda el servidor (P4; src/logica/necesidades.js)
 const cielo = crearCielo({ ambiente, reloj: () => Date.now() + desfaseReloj });
-cielo.paso();
+// el tiempo que hace (P11b, la lluvia; src/mundo/tiempo_vista.js y src/logica/tiempo.js): el que dice la lógica donde
+// estás y a la hora del servidor (igual para todos); nubla el cielo y hace llover alrededor de la cámara. (pj, más abajo)
+const tiempoV = crearTiempoVista({ escena, camara, cielo, reloj: () => Date.now() + desfaseReloj, donde: () => pj, movil: estado.esTactil });
+cielo.paso();   // (el tiempo, desde el primer fotograma: pj aún no está)
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
 // que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
 // el sitio común, que es donde está lo que construyó. En línea, la escena va relativa al sitio común (las posiciones y
@@ -2945,6 +2949,7 @@ function paso() {
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
+  tiempoV.paso(dt);
   cielo.paso();
   graficos.dibujar(dt);
   requestAnimationFrame(paso);
@@ -3475,6 +3480,7 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
+  tiempoV,   // el tiempo que hace, a la vista (P11b: la lluvia y el cielo cubierto)
   get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, hierbaDensa, combate, cielo, ambiente,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
