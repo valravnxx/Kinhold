@@ -473,8 +473,9 @@ function sueloEra(id) {
     // el corro de trillar (de 0,55 a 1,1 m), más claro y liso; el centro y el borde, algo más oscuros; y unas manchas
     const corro = Math.exp(-(((rr - 0.85) / 0.28) ** 2)), mancha = (az(id, `m${i},${j}`) - 0.5) * 0.08;
     // y junto a las piedras, la tierra más oscura y removida (donde se hincaron): su sombra de contacto
-    const k = (0.74 + 0.1 * corro - 0.1 * Math.max(0, (rr - ERA + 0.25) / 0.6) + mancha) * (1 - 0.16 * Math.exp(-(((rr - ERA) / 0.1) ** 2)));
-    const alfa = rr <= ERA + 0.02 ? 1 : Math.max(0, 1 - (rr - ERA - 0.02) / (R + canto[j] - ERA - 0.02)) ** 1.4;
+    const k = (0.74 + 0.1 * corro - 0.1 * Math.max(0, (rr - ERA + 0.25) / 0.6) + mancha) * (1 - 0.28 * Math.exp(-(((rr - ERA) / 0.16) ** 2)));
+    // (lo opaco también se mete y se sale con el canto: la hierba se come la tierra a trozos, sin círculo limpio)
+    const lleno = ERA - 0.05 + canto[j] * 0.8, alfa = rr <= lleno ? 1 : Math.max(0, 1 - (rr - lleno) / (R + canto[j] - lleno)) ** 1.4;
     col.push(k, k * 0.96, k * 0.9, alfa);
   }
   for (let j = 0; j < LADOS; j++) idx.push(0, 1 + (j + 1) % LADOS, 1 + j);
@@ -495,7 +496,7 @@ function era(id) {
   // las 8 piedras, hincadas de canto en el borde y medio enterradas, a lo largo del borde (con su cara larga hacia fuera)
   for (let i = 0; i < 8; i++) {
     const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.22, r = ERA + 0.02, alto = 0.6 + az(id, i + 20) * 0.3;
-    L.add(piedraIrregular(0.2, 1, id + 'e' + i, 0.2), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, -0.045, Math.sin(a) * r,   // (hundidas: un tercio bajo tierra)
+    L.add(piedraIrregular(0.2, 1, id + 'e' + i, 0.2), 'piedraOsc', Math.cos(a) * r, -0.075, Math.sin(a) * r,   // (hundidas: un tercio bajo tierra)
       { y: -a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.3, z: (az(id, i + 30) - 0.5) * 0.25 }, { escala: new THREE.Vector3(1.55, alto, 0.6), plano: true });
   }
   // alguna losa plana asomando en lo apisonado, gastada
