@@ -6875,5 +6875,20 @@
   ],
   "pruebas": "Comprobador de código correcto. En la nube, lo que llevas: las correas pegadas (zurrón, carcaj y escudo), bien; fallan la mano sobre el tronco al hombro (hombre y mujer), y fallan igual en main (pasada aquí). Segunda mirada de un agente aparte: no (ver arriba). Capturas en PC y en móvil, del hombre y de la mujer, solo para revisar.",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-14T05:23:38+00:00",
+  "fin": "2026-11-14T06:29:51+00:00",
+  "titulo": "P11: la era y trillar, sigue a medias (la segunda mirada aún dice que no y el móvil no llega en la nube)",
+  "hito": "granja",
+  "hecho": [
+   "En la rama trabajo/20261113-2224, unida con main. La segunda mirada de un agente aparte dijo que no a la era: un disco casi crema que brillaba más que la hierba y que la tierra de la referencia, con el borde redondo y las piedras posadas encima.",
+   "La tierra de la era, parda en vez de casi crema; el canto con lóbulos que entran y salen de la hierba, también en lo opaco; la tierra más oscura junto a las piedras; las 8 piedras, oscuras y hundidas un tercio. La segunda vuelta de la segunda mirada aún dijo que no (el círculo y las piedras posadas) antes del último cambio, que solo se ha visto en el muestrario.",
+   "La prueba del panel: con ROMPER=era, las dos comprobaciones de la era (sin hierba encima y tendida sobre el terreno) fallan en la nube, como deben; y mientras entra el móvil, el PC dibuja un fotograma por segundo.",
+   "No se publica: falta la segunda mirada con lo último y la era en el móvil."
+  ],
+  "pruebas": "Comprobador de código correcto. En la nube, el panel de fabricar tres veces: en PC, bien (con la era sin hierba encima, tendida y con las gavillas); el móvil se queda al crear la cuenta en dos de tres (en la otra pasó la cuenta y paró un fallo de la propia prueba, ya arreglado). El PC de valravnx no estaba encendido para pruebas. No comprobado: la era en el móvil, ni el último cambio de aspecto en el juego.",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]
