@@ -6859,5 +6859,21 @@
   "pruebas": "Escardar en la lógica y en el servidor, 27 de 27 (rota a propósito, falla); los campos en el navegador, con escardar en línea, bien; el recorrido y los avisos de las necesidades, bien. La velocidad con pocos fotogramas, con la escalera nueva (rota a propósito, falla). La de construir mide sus escaleras paso a paso (la máquina de la nube va a muy pocos fotogramas). En la lógica falla el servidor de prueba en internet por avisos del sistema de la máquina de la nube, que este cambio no toca. Segunda mirada aparte de las malas hierbas: primero dijo que no (planas, flores como pastillas, acianos diminutos), arreglado; después, sí.",
   "capturas": "capturas/demo-v207",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T09:44:17+00:00",
+  "fin": "2026-11-14T12:09:21+00:00",
+  "titulo": "P11: cribar el grano (demo v208)",
+  "hito": "granja",
+  "hecho": [
+   "valravnx pidió por el chat una criba de grano realista, como las medievales que ha visto en museos, y separada de la del mineral.",
+   "Trillar una gavilla en la era da ahora grano sin limpiar (revuelto con granzas, tierra y chinas) y paja.",
+   "La criba de grano, su propia herramienta: un aro de vara curvada, con la veta a lo largo y el solape cosido, y el fondo de piel limpia agujereada a punzón. Se hace en el banco de tronco con 1 piel limpia y 1 vara, llevando la lasca.",
+   "Con la criba en lo que llevas, «Cribar el grano» (con las manos, en cualquier sitio) da 1 puñado de grano de cebada limpio, el que se siembra, por cada puñado de grano sin limpiar, por el servidor y con su autor; la criba no se gasta.",
+   "La criba se ve en la mano, cogida por el aro y colgando junto a la pierna, y en el suelo; el grano sin limpiar, como un montón con granzas, briznas y chinas. El grano sin limpiar va al cesto; la paja, al almiar."
+  ],
+  "pruebas": "Comprobador de código correcto. Trillar y cribar 35/0 (rota a propósito con MUTAR=1, falla), orígenes 77/0, iconos 684/0. En la nube: el panel de fabricar en PC y en el móvil, el recorrido de jugador, la cama, el mazo, el inventario y despiezar, bien. En la lógica falla solo prueba_nube (systemd-analyze de la máquina de GitHub), como en main. «Lo que llevas se ve puesto» falla en la correa y el cinturón con tronco y armas, que este cambio no toca (no comprobado si falla igual en main; la rama de la correa está a medias). Segunda mirada de un agente aparte: sí, tras dos vueltas (la veta del aro, la piel y el grano).",
+  "capturas": "capturas/demo-v208",
+  "estado": "ok"
  }
 ]
