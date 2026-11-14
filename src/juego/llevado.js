@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -404,6 +404,9 @@ function enMano(t) {
   else if (t === 'cuchillo') {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
+  } else if (t === 'criba_grano') {
+    // la criba de grano, cogida por el aro: cuelga de la mano, de canto, con el fondo hacia el cuerpo
+    cribaEn(L, CRIBA.alto / 2, -(CRIBA.r + CRIBA.grosor), 0, { z: Math.PI / 2 }, 'mano');
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
     for (const p of H.piezas) { p.m.premultiply(new THREE.Matrix4().makeTranslation(0, -0.25, 0)); L.piezas.push(p); }

@@ -629,11 +629,81 @@ function estacas(n, id) {
   return mallas(L);
 }
 
+// (P11, 14 nov) La criba de grano (valravnx: «quiero criba de grano si es realista»; ha visto cribas medievales en
+// museos): un aro de madera de unos 46 cm, una tira de vara rajada y curvada en redondo, con sus dos puntas solapadas y
+// cosidas con tiras; dentro, un segundo aro más bajo que pinza la piel. El fondo, piel limpia tensada y agujereada a
+// punzón (agujeros del tamaño de un grano, en hileras desde el centro). En el lote L, con el centro del fondo en (x, y, z)
+// y el giro (Euler YXZ) dado.
+export const CRIBA = { r: 0.23, alto: 0.075, grosor: 0.011 };
+export function cribaEn(L, x, y, z, giro = null, id = 'criba') {
+  const { r, alto, grosor } = CRIBA;
+  const g = giro ? new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ')) : new THREE.Matrix4();
+  const pon = (geo, color, px, py, pz, opc, rot = null) => {
+    const m = g.clone().multiply(new THREE.Matrix4().makeTranslation(px, py, pz)); if (rot) m.multiply(rot);
+    const c = new THREE.Vector3().setFromMatrixPosition(m).add(new THREE.Vector3(x, y, z));
+    m.setPosition(0, 0, 0); L.add(geo, color, c.x, c.y, c.z, m, { sinSuelo: true, ...opc });
+  };
+  // el aro de fuera: una banda con su grosor (perfil girado), algo irregular de alto
+  const perfil = [[r, 0], [r + grosor, 0], [r + grosor, alto], [r, alto * 0.97], [r, 0]].map(([a, b]) => new THREE.Vector2(a, b));
+  pon(new THREE.LatheGeometry(perfil, 28), 0x8f7350, 0, 0, 0, { tex: 'veta' });
+  // el aro de dentro, más bajo, que pinza la piel contra el de fuera
+  const perfil2 = [[r - grosor * 0.9, 0.004], [r, 0.004], [r, 0.03], [r - grosor * 0.9, 0.03], [r - grosor * 0.9, 0.004]].map(([a, b]) => new THREE.Vector2(a, b));
+  pon(new THREE.LatheGeometry(perfil2, 28), 0x7a6043, 0, 0, 0, { tex: 'veta' });
+  // el solape de las puntas del aro de fuera, cosido con tres puntadas de tira
+  const aS = az(id, 1) * Math.PI * 2, rot = new THREE.Matrix4().makeRotationY(-aS);
+  pon(cajaR(0.006, alto * 0.95, 0.09, 0.002), 0x846946, Math.cos(aS) * (r + grosor + 0.003), alto * 0.48, Math.sin(aS) * (r + grosor + 0.003), { tex: 'veta' }, rot);
+  for (let k = -1; k <= 1; k++) {
+    const a = aS + k * 0.13;
+    pon(new THREE.TorusGeometry(0.012, 0.0022, 3, 8), 0x5a4330, Math.cos(a) * (r + grosor / 2), alto * 0.5, Math.sin(a) * (r + grosor / 2), { tex: 'liso' }, new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeScale(0.7, 2.2, 1)));
+  }
+  // el fondo de piel limpia, tensada (apenas combada hacia abajo en el centro)
+  const fondo = new THREE.CircleGeometry(r + grosor * 0.2, 28, 0, Math.PI * 2); fondo.rotateX(-Math.PI / 2);
+  const fp = fondo.attributes.position; for (let i = 0; i < fp.count; i++) { const d = Math.hypot(fp.getX(i), fp.getZ(i)) / r; fp.setY(i, -0.006 * (1 - d * d)); }
+  fondo.computeVertexNormals();
+  pon(fondo, PIEL_LIMPIA, 0, 0.012, 0, { tex: 'liso', rayas: moteadoPiel(id, 1.2) });
+  // los agujeros a punzón, en anillos (de dentro afuera) hasta cerca del aro: del tamaño de un grano
+  for (let a = 1; a <= 7; a++) {
+    const ra = a * (r - 0.03) / 7, n = Math.round(6 * a);
+    for (let k = 0; k < n; k++) {
+      const t = (k + (a % 2) * 0.5) / n * Math.PI * 2, d = Math.hypot(Math.cos(t) * ra, Math.sin(t) * ra) / r;
+      pon(new THREE.CircleGeometry(0.0048, 5), 0x2e241b, Math.cos(t) * ra, 0.0145 - 0.006 * (1 - d * d), Math.sin(t) * ra, { tex: 'liso' }, new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+    }
+  }
+}
+function criba(n, id) {
+  const L = lote(0.03);
+  cribaEn(L, 0, 0.002, 0, { y: az(id, 9) * 6 }, id);
+  return mallas(L);
+}
+// (P11, 14 nov) el grano sin limpiar, recién trillado: un montoncito de granos de cebada revueltos con granzas (cascarillas
+// y aristas pálidas), briznas de paja y alguna china y terrón de la era
+function granoSucio(n, id) {
+  const L = lote(0.03);
+  // el montón: una cúpula baja del color del grano revuelto con granzas (más oscura a manchas), y los granos por encima
+  const mon = new THREE.SphereGeometry(0.062, 14, 6, 0, Math.PI * 2, 0, Math.PI / 2); mon.scale(1, 0.55, 1);
+  L.add(mon, 0xae9558, 0, 0, 0, null, { tex: 'liso', sinSuelo: true, rayas: v => 0.86 + 0.14 * Math.sin(v.x * 300 + v.z * 170) * Math.cos(v.z * 260 - v.y * 200) });
+  const k = 110;
+  for (let i = 0; i < k; i++) {   // los granos, en montón (más alto en el centro, unos encima de otros)
+    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / k) * 0.06, y = 0.002 + 0.034 * Math.sqrt(Math.max(0, 1 - (d / 0.062) ** 2));
+    const gr = new THREE.IcosahedronGeometry(0.0045, 0); gr.scale(0.75, 0.75, 1.5);
+    L.add(gr, ESPIGA, Math.cos(a) * d, y, Math.sin(a) * d, { y: az(id, i + 50) * 6, x: 0.4 }, { tex: 'liso', sinSuelo: true, brillo: 0.95 });
+  }
+  for (let i = 0; i < 26; i++) {   // granzas y aristas encima y alrededor
+    const a = az(id, i + 100) * 6.283, d = 0.01 + az(id, i + 130) * 0.06, y = 0.004 + 0.034 * Math.sqrt(Math.max(0, 1 - (d / 0.062) ** 2));
+    L.add(cil(0.0012, 0.0012, 0.02 + az(id, i + 160) * 0.035, 3), i % 3 ? ARISTA : 0xb3a46a, Math.cos(a) * d, y, Math.sin(a) * d, { z: Math.PI / 2 - 0.2, y: az(id, i + 190) * 6 }, { sinSuelo: true, brillo: 1.05 });
+  }
+  for (let i = 0; i < 7; i++) {   // chinas y terrones de la era
+    const a = az(id, i + 220) * 6.283, d = 0.02 + az(id, i + 240) * 0.05;
+    L.add(new THREE.IcosahedronGeometry(0.0035 + az(id, i + 260) * 0.003, 0), i % 2 ? 0x6e604f : 0x7a756c, Math.cos(a) * d, 0.003 + 0.034 * Math.sqrt(Math.max(0, 1 - (d / 0.062) ** 2)), Math.sin(a) * d, null, { tex: 'liso', sinSuelo: true, plano: true });
+  }
+  return mallas(L);
+}
+
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   estaca: estacas,
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
-  semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
+  semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: criba, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,

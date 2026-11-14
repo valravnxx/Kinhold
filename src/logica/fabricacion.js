@@ -133,8 +133,8 @@ export const ESTACIONES = {
   // la era (P11, «La era y trillar», 13 nov; estudio diseno/estudios/granja.html: «las gavillas, en la era (un suelo
   // apisonado, nueva estación), con el mayal: dan el grano y la paja»): un suelo redondo apisonado y bordeado de piedras,
   // fuera y en tu tierra. Provisional (diario y registro): 8 piedras y 30 s de trabajo (apisonar es lo que más cuesta).
-  era:            { nombre: 'Era', un: 'una era', uso: 'trillar', coste: { piedra: 8 }, donde: 'fuera', trabajo: 30, tierra: true, hace: 'Trillar las gavillas con el mayal: grano de cebada y paja' },
-  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
+  era:            { nombre: 'Era', un: 'una era', uso: 'trillar', coste: { piedra: 8 }, donde: 'fuera', trabajo: 30, tierra: true, hace: 'Trillar las gavillas con el mayal: grano sin limpiar y paja' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
@@ -212,10 +212,14 @@ export const RECETAS = {
   asar_col:          r('Col asada', 'fuego', 'col_asada', { col: 1 }, 40),
   asar_nabo:         r('Nabo asado', 'fuego', 'nabo_asado', { nabo: 1 }, 30),
   // en la era (P11, «La era y trillar»): cada gavilla, apaleada con el mayal (hay que llevarlo; no se gasta), da 1
-  // puñado de grano de cebada (que es también su semilla) y, además, 1 haz de paja. Con la siega (4 gavillas por cada
-  // 10 m², que se siembran con 1 puñado), la cosecha da unas 4 veces lo sembrado (la proporción de la época). Tiempo,
-  // provisional (diario y registro)
-  trillar:           { ...r('Trillar una gavilla', 'trillar', 'semilla_cebada', { gavilla: 1 }, 20), requiere: ['mayal'], tambien: { paja: 1 } },
+  // puñado de grano sin limpiar (con granzas, tierra y chinas de la era) y, además, 1 haz de paja. Con la siega (4
+  // gavillas por cada 10 m², que se siembran con 1 puñado), la cosecha da unas 4 veces lo sembrado (la proporción de la
+  // época). Tiempo, provisional (diario y registro)
+  trillar:           { ...r('Trillar una gavilla', 'trillar', 'grano_sucio', { gavilla: 1 }, 20), requiere: ['mayal'], tambien: { paja: 1 } },
+  // cribar el grano (P11, 14 nov; valravnx: «quiero criba de grano si es realista»): con las manos, en cualquier sitio,
+  // llevando la criba de grano (no se gasta): cada puñado de grano sin limpiar da 1 puñado de grano de cebada limpio, el
+  // que se siembra; las granzas y las chinas se quedan en la criba y se tiran. Tiempo, provisional (diario y registro)
+  cribar:            { ...r('Cribar el grano', 'manos', 'semilla_cebada', { grano_sucio: 1 }, 15), requiere: ['criba_grano'] },
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -228,6 +232,9 @@ export const RECETAS = {
   azada:             r('Azada de madera y piedra', 'banco', 'azada', { rama: 1, piedra: 1, cuerda: 1 }, 45),
   hoz_silex:         r('Hoz de sílex', 'banco', 'hoz_silex', { rama: 1, lasca_silex: 3 }, 45),
   mayal:             r('Mayal', 'banco', 'mayal', { rama: 2, cuerda: 1 }, 45),
+  // la criba de grano (P11, 14 nov): la vara, curvada en aro y atada, y la piel limpia tensada en el fondo y agujereada a
+  // punzón (con la lasca). Tiempo, provisional
+  criba_grano:       { ...r('Criba de grano', 'banco', 'criba_grano', { piel_limpia: 1, vara: 1 }, 60), requiere: ['lasca_silex'] },
   cubo:              r('Cubo de madera', 'banco', 'cubo', { tronco_corto: 1 }, 60),
   // el zurrón de piel (P9, 13 nov; documento de sistemas: «zurrón de piel — 2 piel limpia + cordel — banco — mochila mixta pequeña»): la
   // mochila mixta pequeña (src/logica/inventario.js: 2 huecos medianos y 2 pequeños). Tiempo, provisional
@@ -274,7 +281,9 @@ export const PARA = {
   azada: 'Preparar casillas de cultivo.',
   hoz_silex: 'Cosechar cereal.',
   mayal: 'Trillar.',
-  trillar: 'Grano de cebada, que se siembra, y paja: el tejado de paja, la cama de paja, el almiar.',
+  criba_grano: 'Cribar el grano sin limpiar: grano de cebada limpio, el que se siembra.',
+  cribar: 'Grano de cebada limpio, el que se siembra.',
+  trillar: 'Grano sin limpiar, que se criba, y paja: el tejado de paja, la cama de paja, el almiar.',
   cubo: 'Agua, leche.',
 };
 
