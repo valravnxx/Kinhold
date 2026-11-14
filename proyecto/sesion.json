@@ -1,15 +1,16 @@
 {
- "A": {
-  "inicio": "2026-11-14T10:23:07+00:00",
-  "tarea": "El hierro de pantano: en las vegas llanas junto a los arroyos y en las turberas salen manchas de tierra encharcada con agua rojiza (la señal del GDD; lógica pura por celdas, de la semilla del mundo, las mismas para todos); con la pala de madera y la criba, cada pasada en una mancha da 1 mineral de hierro (lo decide el servidor, con su autor); cada mancha da unos pocos y vuelve a salir en unos meses reales. La criba (2 mimbres y 1 vara, en el banco de tronco). Capturas de la mancha al lado de la referencia. Cadena: pala de madera ← banco de tronco con 1 tronco corto; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven",
-  "hito": "hierro",
-  "rama": "trabajo/20261114-0024"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261114-1404-regar": {
   "inicio": "2026-11-14T14:03:44+01:00",
   "tarea": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
   "hito": "lluvia",
   "rama": "trabajo/20261114-1404-regar"
+ },
+ "chat:trabajo/20261114-1700-mojon-admin": {
+  "inicio": "2026-11-14T16:49:45+01:00",
+  "tarea": "Admin: mojones de más para construcciones de prueba",
+  "hito": "aspecto",
+  "rama": "trabajo/20261114-1700-mojon-admin"
  }
 }

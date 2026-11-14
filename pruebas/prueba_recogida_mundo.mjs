@@ -50,7 +50,8 @@ for (const p of todos) {
   const s = Math.hypot(alt(p.x + 3, p.z) - alt(p.x - 3, p.z), alt(p.x, p.z + 3) - alt(p.x, p.z - 3)) / 6;
   const { dm, ancho } = pai.rioCerca(p.x, p.z, tramos), orilla = dm - ancho / 2;
   const { d } = bosqueEn(st, s, p.x, p.z, { semilla: sem });
-  const de = { bosque: d > 0.08, claro: d < 0.12 && s < 0.45, ladera: s > 0.2, caliza: st.roca === 'caliza', rio: orilla < 4, ribera: orilla < 16 };
+  const de = { bosque: d > 0.08, claro: d < 0.12 && s < 0.45, ladera: s > 0.2, caliza: st.roca === 'caliza', rio: orilla < 4, ribera: orilla < 16,
+    vega: orilla < 16 && s < 0.1, turbera: st.bioma === 'turbera' && s < 0.1 };   // (P10: el hierro de pantano)
   if (!RECOLECTABLES[p.tipo].donde.some(zona => de[zona])) malos.zona.push(`${p.id} (${Object.keys(de).filter(k => de[k]).join('+') || 'ninguna'})`);
   if (p.id !== idPunto(p.tipo, p.x, p.z)) malos.nombre.push(p.id);
   // el sitio posible de un árbol, a menos de 1,2 m

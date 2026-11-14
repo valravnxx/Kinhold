@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, cuboEn, CUBO } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -145,8 +145,8 @@ function troncoCorto(L, x, y, z, largo, r, eje = 'x') {
     L.add(new THREE.CircleGeometry(r * 0.97, 9), 'corte', x + (eje === 'x' ? d : 0), y, z + (eje === 'z' ? d : 0), eje === 'x' ? { y: s * Math.PI / 2 } : { y: s > 0 ? 0 : Math.PI }, { sinSuelo: true });
   }
 }
-function piedra(L, x, y, z, r, s) {
-  L.add(new THREE.IcosahedronGeometry(r, 1), azar(s) < 0.5 ? 'piedra' : 'piedraOsc', x, y, z, { y: s * 2.1, x: s * 0.7 }, { escala: v3(1.2, 0.8, 1), plano: true });
+function piedra(L, x, y, z, r, s, color = null) {
+  L.add(new THREE.IcosahedronGeometry(r, 1), color ?? (azar(s) < 0.5 ? 'piedra' : 'piedraOsc'), x, y, z, { y: s * 2.1, x: s * 0.7 }, { escala: v3(1.2, 0.8, 1), plano: true });
 }
 // bolsa de cuero cerrada con un cordón (lo pequeño colgado del cinto)
 function bolsa(L, x, y, z, s = 1, color = CUERO) {
@@ -388,7 +388,8 @@ const sinModelo = t => globalThis.__sinModelosManos && HECHOS_A_MANO.has(t);
 function enMano(t) {
   const L = nuevoLote();
   if (sinModelo(t)) { hatillo(L, 0, 0.04, 0.03, 1); L.generico = true; }
-  else if (t === 'piedra' || t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.06, 3);
+  else if (t === 'piedra') piedra(L, 0, 0, 0.01, 0.06, 3);
+  else if (t === 'mineral_hierro') piedra(L, 0, 0, 0.01, 0.05, 3, 0x7a5636);   // (P10) el terrón de mineral, pardo de óxido
   else if (t === 'silex') L.add(new THREE.IcosahedronGeometry(0.045, 1), 0xd8d2c4, 0, 0, 0.01, null, { plano: true, escala: v3(1.3, 0.8, 1), tex: 'piedra' });
   else if (t === 'estaca') estacaEn(L, 0, -0.42, 0, { x: 0.05 });   // cogida por el medio, la punta abajo (P11)
   else if (t === 'rama' || t === 'vara') {
@@ -404,6 +405,13 @@ function enMano(t) {
   else if (t === 'cuchillo') {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
+  } else if (t === 'criba') {
+    // (P10) cogida por el aro dentro del puño: el aro, a lo largo del puño (+Y) en el punto que se coge, y la criba
+    // colgando de canto hacia los dedos (+Z), el fondo hacia fuera del cuerpo (segunda mirada, 14 nov: antes flotaba
+    // junto a la mano abierta)
+    const C = nuevoLote(); loteCriba(C);
+    const m = new THREE.Matrix4().makeTranslation(0.035, 0, 0.228).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
+    for (const p of C.piezas) { p.m.premultiply(m); L.piezas.push(p); }
   } else if (t === 'criba_grano') {
     // la criba de grano, cogida por el aro: cuelga de la mano, de canto y junto a la pierna. En la base de la mano (con
     // el brazo caído, la palma hacia atrás): +Z hacia los dedos (abajo), +Y del meñique al índice (hacia el cuerpo); el
@@ -415,7 +423,10 @@ function enMano(t) {
     cuboEn(L, 0, -0.03, CUBO.alto + CUBO.asa - 0.025, { lleno: t === 'cubo_agua', giro: new THREE.Matrix4().makeRotationX(-Math.PI / 2), asa: 0 });
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
-    for (const p of H.piezas) { p.m.premultiply(new THREE.Matrix4().makeTranslation(0, -0.25, 0)); L.piezas.push(p); }
+    // (P10, 14 nov) la pala de madera, el mango dentro del puño e inclinado hacia abajo, la hoja hacia el suelo (antes
+    // salía de lado, cruzada; del todo hacia los dedos, el mango pasaba por la palma sin que la mano lo cerrara)
+    const m = t === 'pala_madera' ? new THREE.Matrix4().makeRotationX(0.62).multiply(new THREE.Matrix4().makeTranslation(0, -0.2, 0)) : new THREE.Matrix4().makeTranslation(0, -0.25, 0);
+    for (const p of H.piezas) { p.m.premultiply(m); L.piezas.push(p); }
   } else if (t === 'espada') {
     L.add(cil(0.014, 0.016, 0.1, 7), CUERO_OSC, 0, 0, 0, null, { tex: 'liso' });
     L.add(cajaR(0.2, 0.018, 0.024, 0.006), 'hierro', 0, 0.06, 0, { y: Math.PI / 2 });

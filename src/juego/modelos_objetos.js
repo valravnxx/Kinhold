@@ -19,6 +19,7 @@
 //  - nasa: un cono de mimbre con aros, la boca abierta y la punta atada.
 //  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
+//  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
 //  - cintos de cuero (7 nov, para el panel de equipo): la correa enrollada de canto, con la hebilla de hierro en la punta
@@ -504,6 +505,50 @@ function cubo(n, id) {
 }
 const cuboAgua = () => { const L = lote(0.1); cuboEn(L, 0, 0, 0, { lleno: true }); return mallas(L); };
 
+// La criba (P10): un aro de vara doblada (45 cm) con la pared baja de tiras de mimbre y el fondo tejido en cuadros,
+// para lavar la tierra del pantano. loteCriba(L) la pone en el lote L, el fondo en y = 0 y la boca hacia +Y.
+export function loteCriba(L, opc = {}) {
+  const r = 0.22, alto = 0.07;
+  L.add(cil(r, r * 0.97, alto, 22, true), MIMBRE, 0, alto / 2, 0, null, { tex: 'paja', rayas: (v) => 0.88 + 0.12 * Math.sin(v.y * 260), ...opc });
+  L.add(cil(r * 0.97, r * 0.95, alto, 22, true), 0x8f7a52, 0, alto / 2 + 0.002, 0, null, { escala: v3(-0.96, 1, 0.96), tex: 'paja', ...opc });   // por dentro
+  // el fondo: el disco oscuro (los huecos, por donde se cuela el agua y el barro) y encima las tiras de mimbre
+  // cruzadas, una por encima y otra por debajo (en dos alturas, como el tejido), cada una del largo que cabe en el aro
+  L.add(new THREE.CircleGeometry(r * 0.95, 22), 0x3b3125, 0, 0.006, 0, { x: -Math.PI / 2 }, { tex: 'liso', ...opc });
+  const N = 9, paso = (2 * r * 0.95) / N;
+  for (let i = 0; i < N; i++) {
+    const c = -r * 0.95 + paso * (i + 0.5), largo = 2 * Math.sqrt(Math.max(0, (r * 0.95) ** 2 - c * c));
+    for (const eje of [0, 1]) {
+      const g = new THREE.BoxGeometry(paso * 0.72, 0.006, largo);
+      L.add(g, (i + eje) % 2 ? MIMBRE : 0xa08a5c, eje ? 0 : c, 0.012 + ((i + eje) % 2) * 0.004, eje ? c : 0, { y: eje ? Math.PI / 2 : 0 }, { tex: 'paja', ...opc });
+    }
+  }
+  // los dos aros de vara (arriba y abajo) y una atadura de cordel
+  for (const y of [0.004, alto]) L.add(new THREE.TorusGeometry(r + 0.004, 0.009, 5, 26), 'madera', 0, y, 0, { x: Math.PI / 2 }, { tex: 'veta', ...opc });
+  L.add(new THREE.TorusGeometry(0.014, 0.004, 4, 8), CORDEL, r + 0.006, alto * 0.6, 0, { y: Math.PI / 2 }, { tex: 'liso', ...opc });
+}
+function criba(n, id) {
+  const L = lote(0.05);
+  loteCriba(L, { sinSuelo: true });
+  return mallas(L);
+}
+
+// El mineral de hierro de pantano (P10, 14 nov): un montoncito de terrones pardo rojizos, nudosos y porosos (el
+// mineral de las vegas: costras de óxido con la tierra pegada), alguno con manchas de ocre; más terrones con más.
+const OXIDO = 0x76583a, OXIDO_OSC = 0x4e3a28, OXIDO_ROJO = 0x7e5636, OCRE_COSTRA = 0xa47c46;   // (pardos de óxido; más rojo parecían bayas)
+function mineralHierro(n, id) {
+  const L = lote(0.04), k = Math.min(14, 3 + (n || 1) * 2);
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399 + az(id, i), capa = i < 7 ? 0 : i < 11 ? 1 : 2, d = capa === 2 ? 0.03 : capa ? 0.07 : 0.06 + Math.sqrt(i / 7) * 0.08;
+    const r = 0.04 + az(id, i + 30) * 0.025, g = new THREE.IcosahedronGeometry(r, 1);
+    const p = g.attributes.position;   // nudoso: cada vértice, hacia fuera o hacia dentro
+    for (let j = 0; j < p.count; j++) { const f = 0.78 + 0.4 * az(id + ':' + i, Math.round(p.getX(j) * 900) + ':' + Math.round(p.getY(j) * 900) + ':' + Math.round(p.getZ(j) * 900)); p.setXYZ(j, p.getX(j) * f, p.getY(j) * f * 0.75, p.getZ(j) * f); }
+    g.computeVertexNormals();
+    L.add(g, [OXIDO, OXIDO_OSC, OXIDO_ROJO][i % 3], Math.cos(a) * d * 1.2, r * 0.6 + capa * 0.05, Math.sin(a) * d, { y: az(id, i + 60) * 6, x: az(id, i + 70) }, { plano: true, tex: 'piedra' });
+    if (i % 3 !== 2) L.add(new THREE.IcosahedronGeometry(r * (i % 3 ? 0.45 : 0.32), 0), i % 2 ? OCRE_COSTRA : 0x8a6a3a, Math.cos(a) * d * 1.2 + r * 0.3, r * 1.0 + capa * 0.05, Math.sin(a) * d, null, { escala: v3(1.2, 0.4, 1), plano: true, tex: 'piedra', sinSuelo: true });
+  }
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -701,7 +746,7 @@ export function cribaEn(L, x, y, z, giro = null, id = 'criba') {
     }
   }
 }
-function criba(n, id) {
+function cribaGrano(n, id) {
   const L = lote(0.03);
   // (algo levantada: el suelo del mundo no es plano bajo los 46 cm del aro, y a ras se comía un trozo del fondo)
   cribaEn(L, 0, 0.03, 0, { y: az(id, 9) * 6 }, id);
@@ -741,9 +786,9 @@ function granoSucio(n, id) {
 export const MODELO_OBJETO = {
   estaca: estacas,
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
-  semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: criba, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
+  semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
