@@ -2364,8 +2364,8 @@
    "num": "P11c",
    "nombre": "La casa más fuerte: el tronco grande, la empalizada y el entramado",
    "estado": "en_curso",
-   "jugable": "El tronco largo de un árbol adulto se arrastra con cuerda y se lleva en la rastra; la rodaja de tronco hace por fin la carretilla; la empalizada con su portón sin hierro cierra tu tierra; el muro de entramado y la chimenea de piedra y barro mejoran la casa.",
-   "nota": "valravnx, 14 nov, por el chat, al aprobar P11: las piezas escondidas que ya salen de lo que hay (la empalizada, el muro de entramado y la chimenea solo estaban escondidas por ser de nivel 2) y el tronco grande, que hoy solo se tronza: «con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra». Va antes que los oficios. Lo que pide tablas o hierro sigue escondido hasta P10.",
+   "jugable": "El tronco largo de un árbol adulto se arrastra con cuerda y se lleva en la rastra; la rodaja de tronco hace por fin la carretilla; la empalizada con su portón sin hierro cierra tu tierra; el muro de entramado mejora la casa.",
+   "nota": "valravnx, 14 nov, por el chat, al aprobar P11: las piezas escondidas que ya salen de lo que hay (la empalizada y el muro de entramado solo estaban escondidos por ser de nivel 2) y el tronco grande, que hoy solo se tronza: «con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra». Va antes que los oficios. Lo que pide tablas o hierro sigue escondido hasta P10. Sin chimenea (valravnx, 14 nov: «poco realista en esa época y en ese nivel de casa»): la casa humilde tiene el hogar abierto en el suelo y el humo sale por el tejado; la chimenea, para las casas de piedra.",
    "tareas": [
     {
      "nombre": "El tronco largo en la rastra: con una cuerda en la mano se ata y se arrastra muy despacio, gastando mucho aguante (entre dos, más rápido), para arrimarlo a la rastra o a la obra; junto a la rastra (o con la rastra llevada a él) se sube a pulso con la cuerda, y cabe 1; uno solo la arrastra, más despacio que con 3 troncos cortos. Por el servidor con su autor, y todos lo ven. Números provisionales. Cadena: tronco largo ← talar un árbol adulto con el hacha de piedra; cuerda ← el banco de tronco; rastra ← 5 ramas y 2 cordeles con las manos",
@@ -2388,11 +2388,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "La chimenea de piedra y barro: deja de estar escondida (10 piedras y 4 barros), solo sobre cimiento de piedra, con fuego, luz y humo que sale por el tejado. Cadena: piedra ← se recoge o se rompe con el mazo; barro ← la ribera",
-     "estado": "pendiente"
-    },
-    {
-     "nombre": "Recorrido de jugador de la casa más fuerte, sin arcón: tala un árbol adulto, arrastra el tronco largo con cuerda, lo lleva en la rastra, saca la rodaja y hace la carretilla, levanta un tramo de empalizada con su portón, un muro de entramado y la chimenea",
+     "nombre": "Recorrido de jugador de la casa más fuerte, sin arcón: tala un árbol adulto, arrastra el tronco largo con cuerda, lo lleva en la rastra, saca la rodaja y hace la carretilla, levanta un tramo de empalizada con su portón y un muro de entramado",
      "estado": "pendiente"
     },
     {

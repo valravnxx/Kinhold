@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 17:42 UTC — por el chat, la chimenea
+
+valravnx: «la chimenea no es muy… poco realista en esa época y en ese nivel de casa?» → fuera de P11c: la casa humilde tiene el hogar abierto en el suelo (el de P3) y el humo sale por el tejado; la chimenea de obra queda para las casas de piedra (la revisión de rumbo).
+
 ### 14 nov 2026, 17:39 UTC — por el chat: la casa más fuerte, la canoa y el foso de aserrar
 
 - Las piezas que solo estaban escondidas por ser de nivel 2 y ya salen de lo que hay (la empalizada, el muro de entramado y la chimenea), y el tronco grande, que hoy solo se tronza. valravnx: «la rastra sí está… con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra, pero necesitamos uso para esos troncos grandes» → hito nuevo P11c «La casa más fuerte» (en curso, delante de los oficios): el tronco largo con cuerda y en la rastra, la rodaja de tronco y la carretilla, la empalizada, su portón sin hierro, el muro de entramado, la chimenea, el recorrido y la revisión.
