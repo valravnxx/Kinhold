@@ -1,0 +1,66 @@
+La lógica
+  OK   empiezan a 0
+  OK   el hambre llega al máximo en 90 minutos sin comer (dos comidas por día de juego como poco) — 90 min
+  OK   y la sed en 60, más rápida — 60 min
+  OK   no pasan de 100
+  OK   el frío va hacia lo que pide el sitio (en 10 minutos, casi entero) — 78.6
+  OK   y baja cuando el sitio no lo pide — 0.0
+  OK   correr cansa (10 s, 5 puntos) — 5.00
+  OK   durmiendo en la cama ligada se descansa mucho más que quieto (rendido, en poco más de un minuto) — 35.0
+  OK   sentado se descansa más que de pie quieto y menos que dormido — 40.0
+  OK   sentado y corriendo a la vez (no puede ser), cansa como correr
+  OK   lo que sube el aliento del combate cansa una décima parte (40 de aliento, 4) — 14
+  OK   el aliento no baja de 0,8 veces el cansancio (rendido: 80, sin golpe fuerte)
+  OK   quieto se descansa más que andando — 46.0 y 49.0
+  OK   andar con un tronco (12 kg) al hombro cansa — 3.60
+  OK   cada acción cansa lo suyo (talar 1,5; obra 2)
+  OK   con hambre al máximo, el cansancio sube el doble
+  OK   y las heridas se curan despacio
+  OK   con el cansancio al máximo, ni correr ni golpear fuerte
+  OK   con el frío al máximo, torpe
+  OK   avisos desde 40 y en fuerte desde 75 — [{"que":"sed","fuerte":false},{"que":"cansancio","fuerte":true}]
+  OK   comer y beber bajan lo suyo, sin pasar de 0
+  OK   lo guardado se limpia (números raros, fuera)
+Lo que se puede mover (el servidor no deja correr al rendido)
+  OK   rendido, 0,6 (andar sí, correr no); helado, 0,8; descansado, 1
+  OK   descansado, corre sin que el servidor le recorte — 0.00 m
+  OK   rendido, el servidor le recorta lo que corre de más — 930.00 m
+Beber del río (la lógica)
+  OK   con el agua a 1 m, hay agua cerca; a 2,5 m, también; a 4 m, no
+  OK   dentro del agua, también
+  OK   la noche: de 20 a 4 entera, de día nada y al anochecer a medias
+  OK   en la salida (9 °C), con lo del principio: de día sin frío y de noche sí (sale el aviso) — 0 / 50
+  OK   cada prenda abriga: con una túnica de lana encima, de noche apenas — lino 7, lana 17
+  OK   desnudo, más frío que vestido
+  OK   el bioma: en la taiga (1,5 °C) hace más frío, también de día
+  OK   bajo techo, la mitad
+  OK   junto al fuego (a 2 m o menos) no hay frío, y a 3 m algo
+  OK   un trago baja la sed 30 y van uno cada 1.5 s
+Con el servidor de verdad
+  OK   la bienvenida trae sus necesidades: un jugador nuevo, a 0 — {"hambre":0,"sed":0,"frio":0,"cansancio":0}
+  OK   le llegan solas, varias veces por segundo en la prueba (cada segundo en el de verdad) — 11 en 3 s
+  OK   suben solas con el tiempo: la sed más que el hambre — {"hambre":0.05,"sed":0.08,"frio":0,"cansancio":0}
+  OK   correr de verdad cansa (aunque el navegador diga que anda) — 1.4
+  OK   decir que corre sin moverse no cansa: descansa — 1.4 → 0.5
+  OK   lo que hace cansa (fabricar un cordel) —  0.5 → 0.8
+  OK   a otro jugador no le llegan las tuyas: las suyas, sin correr — {"hambre":0.16,"sed":0.24,"frio":0,"cansancio":0}
+  OK   sin bayas encima, no se come — No llevas nada de eso.
+  OK   comer una baya quita 5 de hambre y gasta una — {"hambre":45}, quedan 3
+  OK   una piedra no se come — Eso no se come.
+  OK   se comen las bayas y las setas
+  OK   sentado (lo dice su presencia y no se mueve) descansa más deprisa que de pie — en 2 s: de pie 0.80, sentado 2.00
+  OK   con cansancio 50, su aliento de combate (a 0) sube a 0,8 veces el cansancio y no baja de ahí — 39.8 (cansancio 49.8)
+  OK   lo que pelea (50 de aliento) cansa unos 5 — 4.67
+  OK   al salir se guardan (necesidades.json) — {"hambre":45.1,"sed":0.4,"frio":0,"cansancio":54.47}
+  OK   al volver, el mismo personaje sigue como estaba — {"hambre":45.1,"sed":0.4,"frio":0,"cansancio":54.47}
+Beber con el servidor de verdad y el terreno de Whitholm
+  OK   hay una orilla y un sitio seco cerca de la salida — {"orilla":{"x":-1.5155004139448496e-13,"z":-825},"seco":{"x":5,"z":0}}
+  OK   en seco, sin agua al lado, no se bebe (lo mira el servidor, donde te tiene) — Aquí no hay agua: busca un río, un lago o el mar.
+  OK   en la orilla se bebe: la sed baja 30 — {"sed":40.01}
+  OK   otro trago enseguida, no: trago a trago — Despacio: trago a trago.
+  OK   pasado el rato, otro trago — {"sed":10.06}
+El frío, con el servidor y el terreno
+  OK   de noche, sin fuego y con lo del principio, el frío sube — 20.60
+  OK   a 1 m de una hoguera encendida, baja — 20.60 → 20.19
+
+58 correctas, 0 fallan
