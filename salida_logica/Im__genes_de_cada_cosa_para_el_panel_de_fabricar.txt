@@ -1,0 +1,3 @@
+FALLO: «cubo_agua» está en el índice y dice si tiene su modelo
+FALLO: existe la imagen de «cubo_agua» (docs/recursos/iconos-v26/cubo_agua.webp)
+684 bien, 2 fallos · 119 imágenes que enseña el panel, 22 aún sin su modelo
