@@ -2722,7 +2722,7 @@ function paso() {
   // «hiperlenta»: antes se recortaba a 0,05 s por fotograma, así que por debajo de 20 fps todo iba a cámara lenta). Solo
   // se recorta un fotograma larguísimo (la pestaña de vuelta, un tirón de segundos), y el paso de andar se parte en
   // trozos de PASO_ANDAR para no atravesar paredes ni saltarse una orilla.
-  const dt = Math.min(reloj.getDelta(), window.__mutarVelocidad ? 0.05 : DT_MAX);   // (__mutarVelocidad: el recorte de antes, para romper a propósito pruebas/prueba_velocidad_navegador.py)
+  const dt = Math.min(reloj.getDelta(), window.__mutarVelocidad ? 0.05 : (window.__dtMax || DT_MAX));   // (__dtMax: solo la prueba de construir, que mide las escaleras paso a paso)   // (__mutarVelocidad: el recorte de antes, para romper a propósito pruebas/prueba_velocidad_navegador.py)
   if (mundoJ) pasoMundo();
   // el contador de arriba sigue a donde estás (entras o sales de tu tierra) y a lo que cambia en el suelo
   if (enLinea && performance.now() - ultimoMateriales > 500) { ultimoMateriales = performance.now(); pintarMateriales(); if (!$('panelTierra').hidden) pintarTierra(); }
@@ -2778,7 +2778,7 @@ function paso() {
       else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
       // y los pies siguen el suelo en cada trozo (14 nov): con un paso entero de golpe, en una escalera subías más de lo
       // que deja (src/juego/movimiento.js: más de 0,8 m de golpe es estar debajo) y no se subía con pocos fotogramas
-      if (trozos > 1 && modo !== 'nadar' && !window.__mutarVelocidad) pj.y += (alturaSuelo() - pj.y) * Math.min(1, h * 14);
+      if (trozos > 1 && modo !== 'nadar' && !window.__mutarEscalera) pj.y += (alturaSuelo() - pj.y) * Math.min(1, h * 14);
     }
     const objetivoRot = Math.atan2(dx, dz);
     let dr = objetivoRot - pj.rot;
