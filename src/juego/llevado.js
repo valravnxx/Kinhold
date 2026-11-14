@@ -166,6 +166,71 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
   return pts;
 }
 
+// Lo que se ha hecho con forma (el grupo `g`, en el espacio de la raíz) pasa a tener piel: cada vértice, con los huesos y
+// los pesos de los vértices del cuerpo que tiene más cerca (los 6 más cercanos, por cercanía), como la ropa. Así se
+// dobla con el cuerpo en vez de ir tieso atado a un hueso. Devuelve un grupo de mallas con piel (o null si no hay cuerpo).
+function enPiel(g, mh, raiz) {
+  raiz.updateMatrixWorld(true); g.updateMatrixWorld(true);
+  const fuentes = [];
+  mh.modelo.traverse(o => { if (o.isSkinnedMesh && o.visible && !o.userData.herramienta && !CABEZA.test(o.name) && o.geometry.attributes.skinIndex) fuentes.push(o); });
+  if (!fuentes.length) return null;
+  const ref = fuentes.reduce((a, o) => o.skeleton.bones.length > a.skeleton.bones.length ? o : a), sk = ref.skeleton;
+  const indice = new Map(sk.bones.map((b, i) => [b, i]));
+  // lo que ocupa (en el mundo), para mirar solo el cuerpo de alrededor
+  const caja = new THREE.Box3();
+  g.traverse(o => { if (o.isMesh) { o.geometry.computeBoundingBox(); caja.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
+  caja.applyMatrix4(raiz.matrixWorld).expandByScalar(0.12);
+  const P = [], H = [], p = new THREE.Vector3();
+  for (const o of fuentes) {
+    const pos = o.geometry.attributes.position, si = o.geometry.attributes.skinIndex, sw = o.geometry.attributes.skinWeight;
+    for (let i = 0; i < pos.count; i++) {
+      o.getVertexPosition(i, p).applyMatrix4(o.matrixWorld);
+      if (!caja.containsPoint(p)) continue;
+      const h = [];
+      for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k), b = indice.get(o.skeleton.bones[si.getComponent(i, k)]); if (w > 0 && b != null) h.push(b, w); }
+      if (h.length) { P.push(p.x, p.y, p.z); H.push(h); }
+    }
+  }
+  if (!H.length) return null;
+  const sale = new THREE.Group(); sale.name = 'llevado_correa_piel';
+  const M = new THREE.Matrix4(), Bm = new THREE.Matrix4(), Binv = ref.bindMatrix.clone().invert(), aRaiz = raiz.matrixWorld;
+  g.traverse(c => {
+    if (!c.isMesh) return;
+    const geo = c.geometry.clone(), pos = geo.attributes.position, nor = geo.attributes.normal, n = pos.count;
+    const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4), q = new THREE.Vector3(), d = new THREE.Vector3();
+    const aMundo = new THREE.Matrix4().multiplyMatrices(aRaiz, c.matrixWorld);
+    for (let v = 0; v < n; v++) {
+      q.fromBufferAttribute(pos, v).applyMatrix4(aMundo);
+      // los 6 vértices del cuerpo más cercanos
+      const cerca = [];
+      for (let k = 0; k < H.length; k++) {
+        const dx = P[k * 3] - q.x, dy = P[k * 3 + 1] - q.y, dz = P[k * 3 + 2] - q.z, dd = dx * dx + dy * dy + dz * dz;
+        if (cerca.length < 6 || dd < cerca[cerca.length - 1][0]) { cerca.push([dd, k]); cerca.sort((a, b) => a[0] - b[0]); if (cerca.length > 6) cerca.pop(); }
+      }
+      const suma = new Map();
+      for (const [dd, k] of cerca) { const f = 1 / (Math.sqrt(dd) + 0.01), h = H[k]; for (let t = 0; t < h.length; t += 2) suma.set(h[t], (suma.get(h[t]) || 0) + h[t + 1] * f); }
+      const top = [...suma].sort((a, b) => b[1] - a[1]).slice(0, 4), tot = top.reduce((s, x) => s + x[1], 0);
+      M.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      top.forEach(([b, w], k) => {
+        si[v * 4 + k] = b; sw[v * 4 + k] = w / tot;
+        Bm.multiplyMatrices(sk.bones[b].matrixWorld, sk.boneInverses[b]);
+        for (let e = 0; e < 16; e++) M.elements[e] += Bm.elements[e] * w / tot;
+      });
+      // lo que hay que poner en la malla para que, con esa piel y en la postura de ahora, quede donde está
+      const vuelta = Binv.clone().multiply(M.clone().invert());
+      q.applyMatrix4(vuelta); pos.setXYZ(v, q.x, q.y, q.z);
+      if (nor) { d.fromBufferAttribute(nor, v).transformDirection(aMundo).transformDirection(vuelta); nor.setXYZ(v, d.x, d.y, d.z); }
+    }
+    geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4));
+    geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+    const sm = new THREE.SkinnedMesh(geo, c.material);
+    sm.bind(sk, ref.bindMatrix); sm.frustumCulled = false; sm.castShadow = c.castShadow; sm.receiveShadow = c.receiveShadow;
+    sm.userData.herramienta = true; sm.name = c.name;
+    sale.add(sm);
+  });
+  return sale;
+}
+
 // ---------- piezas ----------
 // Banda de cuero que sigue el contorno (el cinto): `alto` de canto, `grueso` de grueso, separada `fuera` del cuerpo.
 function banda(c, alto, grueso, fuera) {
@@ -658,7 +723,6 @@ export function crearLlevado(j) {
       const m = new THREE.Matrix4().makeRotationY(Math.PI).setPosition(cE.cx, yCentro, zAtras);
       // las correas: de arriba del bulto, por encima del hombro, bajan por delante y vuelven bajo el brazo
       const zDel = cH.cz + cH.en(0);
-      let correaCruzada = null;
       if (cruzada) {
         // una sola correa, cruzada del hombro derecho a la cadera izquierda, pegada al cuerpo (segunda mirada del zurrón,
         // 14 nov: de lado hacía un arco en el aire sobre el hombro y por el costado entraba en el antebrazo): se traza
@@ -686,18 +750,19 @@ export function crearLlevado(j) {
         }
         const pegada = pegarAlCuerpo(medida, guia, cE, cH, 0.014), pts = [...ini, ...pegada, ...fin];
         const nor = [...ini.map(() => pegada[0].nor), ...pegada.map(p => p.nor), ...fin.map(() => pegada[pegada.length - 1].nor)];
-        const mi = new THREE.Matrix4().copy(m).invert();
-        correaCruzada = pegada.map(p => p.clone().applyMatrix4(mi).toArray());   // (en la pieza: se mueve con ella)
-        correa(L, pts.map(p => p.clone().applyMatrix4(mi)), 0.03, 0.006, CUERO, nor.map(d => d.clone().transformDirection(mi)));
+        // la correa, con piel (enPiel): se dobla con el cuerpo como la camisa, al respirar, al mover los brazos y al andar
+        // (atada al pecho, el omóplato y la camisa se movían por encima y la tapaban)
+        const Lc = nuevoLote(); correa(Lc, pts, 0.03, 0.006, CUERO, nor);
+        const piel = enPiel(deMano(Lc), mh, j.raiz);
+        if (piel) { piel.userData.correa = true; grupo.add(piel); }
+        else { const mi = new THREE.Matrix4().copy(m).invert(); correa(L, pts.map(p => p.clone().applyMatrix4(mi)), 0.03, 0.006, CUERO, nor.map(d => d.clone().transformDirection(mi))); }
       } else for (const s of [1, -1]) {
         const h = hombroDe(s), yA = yHombro - 0.16;
         const pts = [v3(cE.cx + s * 0.07, yHombro - 0.1, zAtras + 0.01), v3(h.x - s * 0.01, h.y, h.z - 0.03), v3(h.x + s * 0.005, h.y - 0.02, h.z + 0.04),
           puntoEn(cH, s * 0.6, 0.008, -0.08), puntoEn(contorno(medida, yA, 0.025) || cH, s * 1.15, 0.01), v3(cE.cx + s * 0.13, yCentro - alto * 0.3, zAtras + 0.02)];
         correa(L, pts.map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.032);
       }
-      const ge = pieza(L, 'espalda', m, pecho, invRaiz);
-      if (correaCruzada) ge.userData.correa = correaCruzada;   // (la prueba mide si va pegada al cuerpo)
-      grupo.add(ge);
+      grupo.add(pieza(L, 'espalda', m, pecho, invRaiz));
     }
 
     // al hombro

@@ -93,10 +93,13 @@ SEPARA_CORREA = '''() => { const K = window.__kinhold, j = K.jugador; K.escena.u
     const va = d3 * d6 - d5 * d4; if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) return b.clone().addScaledVector(c.clone().sub(b), (d4 - d3) / (d4 - d3 + d5 - d6));
     const den = 1 / (va + vb + vc); return a.clone().addScaledVector(ab, vb * den).addScaledVector(ac, vc * den); };
   let peor = 0, dondePeor = null;
-  for (const q of g.userData.correa) { const p = V().fromArray(q).applyMatrix4(g.matrix);   /* (lo de la pieza, donde va ahora) */ let d = 1e9;
+  /* los vértices de la correa, donde los pone ahora su piel */
+  const correa = []; g.traverse(o => { if (!o.isSkinnedMesh) return; const n = o.geometry.attributes.position.count;
+    for (let i = 0; i < n; i += 3) correa.push(o.getVertexPosition(i, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv)); });
+  for (const p of correa) { let d = 1e9;
     for (const [a, b, c] of tris) { if (Math.abs(a.y - p.y) > 0.15) continue; d = Math.min(d, cerca(p, a, b, c).distanceTo(p)); }
     if (d > peor) { peor = d; dondePeor = p.toArray().map(v => +v.toFixed(3)); } }
-  return { peor: +peor.toFixed(3), donde: dondePeor, n: g.userData.correa.length }; }'''
+  return { peor: +peor.toFixed(3), donde: dondePeor, n: correa.length }; }'''
 
 def equipar(pg, lugares):
     pg.evaluate('''(l) => { const K = window.__kinhold, inv = K.inventario;
