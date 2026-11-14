@@ -136,7 +136,7 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
         const a = ok.filter(k => k < i).pop(), b = ok.find(k => k > i);
         l = a == null && b == null ? 0.15 : a == null ? r[b].lejos : b == null ? r[a].lejos : r[a].lejos + (r[b].lejos - r[a].lejos) * (i - a) / (b - a);
       }
-      const q = x.o.clone().addScaledVector(x.d, l + fueraDe(x.d)); q.nor = x.d; return q;
+      const q = x.o.clone().addScaledVector(x.d, l + fueraDe(x.d)); q.nor = x.d; q.lejos = l; return q;
     });
   };
   const curva = new THREE.CatmullRomCurve3(guia, false, 'centripetal');
@@ -145,14 +145,17 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
   // y tensa, como va una correa de verdad: cada vuelta tira de cada punto hacia sus vecinos y, si así se mete en el
   // cuerpo, se queda en su superficie; donde el cuerpo se hunde (la abertura de la camisa, entre el pecho y el hombro)
   // pasa por encima, recta, sin escalones
-  const fuera_ = (p) => {
+  // (donde el rayo no cruza nada, un agujero de la malla medida, lo que dio al pegarla: si no, se metía en la espalda)
+  const base = pts.map(p => p.lejos);
+  const fuera_ = (p, i) => {
     const o = p.y >= cH.y ? v3(p.x, cH.y, cH.cz) : v3(cE.cx, p.y, (cE.cz + cH.cz) / 2), d = p.clone().sub(o), r = d.length(); d.normalize();
     _rayo.set(o, d); _rayo.far = 0.6;
     let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
+    if (lejos <= 0) lejos = base[i];
     const f = fueraDe(d), q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : p.clone(); q.nor = d; return q;
   };
   for (let vuelta = 0; vuelta < 24; vuelta++)
-    pts = pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : fuera_(p.clone().multiplyScalar(2).add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 4)));
+    pts = pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : fuera_(p.clone().multiplyScalar(2).add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 4), i));
   // las normales, suavizadas (la malla es de pocas caras: de una a otra, la correa daba saltos de luz)
   for (let vuelta = 0; vuelta < 4; vuelta++) {
     const N = pts.map(p => p.nor.clone());
@@ -667,8 +670,9 @@ export function crearLlevado(j) {
         if (morral != null) {
           // el morral (el zurrón): sale de lo alto de la bolsa, sube por la espalda al hombro y, tras el costado, vuelve a la bolsa
           const yB = yCentro + morral;
-          ini = [v3(cE.cx + 0.07, yB + 0.19, zAtras - 0.01)];
-          guia = [v3(x0 + 0.03, yB + 0.24, zA), v3(x0 - 0.04, (yB + 0.24 + h.y) / 2, zA), ...hombro, ...delante];
+          // (sale de lo alto de la bolsa algo a la derecha, por donde sube al hombro: sin dar la vuelta en gancho)
+          ini = [v3(cE.cx - 0.03, yB + 0.17, zAtras - 0.01)];
+          guia = [v3(x0 - 0.04, yB + 0.25, zA), v3(x0 - 0.07, (yB + 0.25 + h.y) / 2, zA), ...hombro, ...delante];
           fin = [v3(cE.cx + 0.12, yB + 0.02, zAtras - 0.03)];
         } else {
           // el carcaj y el escudo: un tahalí entero, de la cadera izquierda por la espalda al hombro derecho y por el pecho a la cadera
