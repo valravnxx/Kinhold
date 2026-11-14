@@ -34,7 +34,7 @@ SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_fabricar'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
 # ROMPER=era deja la era sin despejar la hierba y sin tenderse sobre el terreno (las dos comprobaciones de la era fallan)
-ROMPER = os.environ.get('ROMPER', '')
+ROMPER = os.environ.get('ROMPER', 'era')
 
 sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
 web = servir(sitio)
