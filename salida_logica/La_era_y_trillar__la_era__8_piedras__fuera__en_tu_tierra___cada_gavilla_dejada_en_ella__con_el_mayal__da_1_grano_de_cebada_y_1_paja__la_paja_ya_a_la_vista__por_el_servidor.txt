@@ -1,0 +1,35 @@
+La era
+  OK   la era: 8 piedras, fuera y en tu tierra; trilla — {"nombre":"Era","un":"una era","uso":"trillar","coste":{"piedra":8},"donde":"fuera","trabajo":30,"tierra":true,"hace":"Trillar las gavillas con el mayal: grano sin limpiar y paja"}
+  OK   trillar: 1 gavilla, con el mayal (no se gasta), da 1 grano sin limpiar y 1 paja — {"nombre":"Trillar una gavilla","uso":"trillar","da":"grano_sucio","n":1,"gasta":{"gavilla":1},"s":20,"requiere":["mayal"],"tambien":{"paja":1}}
+  OK   bajo techo no
+  OK   fuera de tu tierra no, y lo dice — La era va en tu tierra (o en la de quien te invita).
+Trillar en la era
+  OK   se levanta con las 8 piedras del suelo
+  OK   las gavillas se dejan en la era (sus recetas gastan de ahí)
+  OK   sin el mayal no se trilla, y lo dice — Para eso hace falta llevar mayal.
+  OK   con el mayal, se trilla una de las gavillas dejadas
+  OK   da 1 grano sin limpiar y 1 haz de paja (aún no grano de cebada) — {"ok":true,"dados":[{"objeto":"grano_sucio","cantidad":1,"donde":[["mano:izq",1]]},{"objeto":"paja","cantidad":1,"donde":[["espalda/0",1]]}],"quedan":false} grano 1, paja 1
+  OK   el mayal no se gasta
+  OK   sin era no se trilla — Hace falta una era a tu lado.
+Cribar el grano
+  OK   la criba de grano: 1 piel limpia y 1 vara en el banco de tronco, con la lasca — {"nombre":"Criba de grano","uso":"banco","da":"criba_grano","n":1,"gasta":{"piel_limpia":1,"vara":1},"s":60,"requiere":["lasca_silex"]}
+  OK   cribar: con las manos, 1 grano sin limpiar da 1 grano de cebada, con la criba (no se gasta) — {"nombre":"Cribar el grano","uso":"manos","da":"semilla_cebada","n":1,"gasta":{"grano_sucio":1},"s":15,"requiere":["criba_grano"]}
+  OK   el grano sin limpiar va al cesto y no al almiar; la paja, al almiar y no al cesto
+  OK   sin la criba no se criba, y dice qué hace falta — Para eso hace falta llevar criba de grano.
+  OK   el panel la enseña casi, sin herramienta — {"receta":"cribar","nombre":"Cribar el grano","uso":"manos","grupo":"casi","veces":0,"estacion":null,"conQue":"","gasta":{"grano_sucio":1},"da":"semilla_cebada","n":1,"s":15,"de":{"grano_sucio":{"encima":1,"suelo":0,"sitios":{"mano":1}}},"faltan":{},"requiere":["criba_grano"],"sinHerramienta":true}
+  OK   con la criba, en cualquier sitio, se criba un puñado
+  OK   y da 1 grano de cebada limpio, el que se siembra — {"ok":true,"dados":[{"objeto":"semilla_cebada","cantidad":1,"donde":[["cintura/0",1]]}],"quedan":false}
+  OK   la criba no se gasta
+La paja, ya a la vista
+  OK   el tejado de paja se enseña (en este tramo)
+  OK   la cama de paja también
+  OK   la paja va al almiar
+  OK   lo de después sigue escondido (la teja, lo de tablas)
+Por el servidor, con su autor
+  OK   lejos de la era, no — Estás demasiado lejos de la estación.
+  OK   cerca, se encarga
+  OK   y se recoge: grano sin limpiar y paja — {"ok":true,"dados":[{"objeto":"grano_sucio","cantidad":1,"donde":[["mano:izq",1]]},{"objeto":"paja","cantidad":1,"alSuelo":"s1"}],"quedan":false,"entrada":{"n":3,"autor":"ana","tipo":"recoger_fabricado","datos":{"estacion":"era:1","x":1,"z":0},"ok":true,"ahora":1794650728271,"resultado":{"dados":[["grano_sucio",1],["paja",1,"s1"]]}},"suelo":true,"estaciones":false} 1 0
+  OK   con la criba, cribar se encarga en el servidor
+  OK   y da el grano de cebada limpio — {"ok":true,"dados":[{"objeto":"semilla_cebada","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false,"entrada":{"n":5,"autor":"ana","tipo":"recoger_fabricado","datos":{"x":1,"z":0},"ok":true,"ahora":1794650783271,"resultado":{"dados":[["semilla_cebada",1]]}},"suelo":false,"estaciones":false} 1
+
+28 bien, 0 mal
