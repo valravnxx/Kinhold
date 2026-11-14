@@ -1,0 +1,55 @@
+La rastra en el catálogo y en el suelo
+  OK   es enorme: no se lleva encima
+  OK   del arcón de pruebas sale al suelo, a tus pies
+  OK   no desaparece aunque esté fuera de tus tierras
+  OK   el arcón solo saca al suelo lo que se arrastra
+  OK   no se coge del suelo con las manos — Eso es enorme: se arrastra, va en carro o entre varios.
+Engancharla y soltarla
+  OK   con algo en las manos no se engancha — Para arrastrarla necesitas las dos manos libres.
+  OK   lejos no se engancha
+  OK   con las manos libres y a su lado, se engancha
+  OK   queda en el registro con su autor
+  OK   otro no la engancha mientras la arrastras
+  OK   arrastrándola no coges nada con las manos — Tienes las manos en la rastra: suéltala antes.
+  OK   ni de lo que hay en el suelo
+  OK   detrás de quien mira a +x es a −x
+  OK   al soltarla se queda donde la dejas — {"id":"s1","cosa":{"tipo":"rastra","n":1,"carga":null},"x":28.4,"z":5,"autor":"ana","soltado":1793480400000,"desaparece":null,"giro":1.57}
+  OK   y ya coges con las manos
+  OK   si el sitio que dice no cuadra, se deja detrás de él — 60,3.4
+  OK   sin arrastrar ninguna, no se suelta nada
+  OK   sin autor no vale
+  OK   cada uno arrastra una sola
+Troncos delgados y varas (valravnx, 7 nov: «metelo ya»)
+  OK   el tronco delgado del hombro va a la rastra
+  OK   de una pila del suelo, hasta 5 troncos delgados — 5 
+  OK   con 5 troncos delgados (75 kg) va igual de despacio que con 3 cortos — 0.5
+  OK   y hasta 12 varas, que también pesan (frena algo) — 12 0.636 
+  OK   el tronco largo, no (es cosa de carro) — En la rastra solo van troncos (cortos o delgados), varas, piedras o un bloque de piedra.
+Cargarla y descargarla
+  OK   el tronco corto de las manos va a la rastra
+  OK   de una pila del suelo coge lo que quepa: 3 troncos cortos como mucho — 2 
+  OK   llena, no cabe más
+  OK   lleva una sola clase de cosa a la vez
+  OK   un hacha no va en la rastra
+  OK   vacía frena al 70 % y con 3 troncos cortos al 50 % («despacio») — 0.7 0.5
+  OK   arrastrándola no se descarga: hay que soltarla
+  OK   se queda donde la dejas con lo que lleva
+  OK   descargada, lo que lleva cae a su lado como una pila
+  OK   los troncos cortos no desaparecen
+  OK   vacía no se descarga
+  OK   un montón de piedras: hasta 24 — 24
+  OK   24 piedras frenan casi como tres troncos
+  OK   el bloque de piedra en bruto va en la rastra (uno)
+  OK   sin decir de dónde, no vale
+Guardado: el suelo guarda la rastra con lo que lleva
+  OK   al cargar sigue con su carga
+En el servidor (src/logica/objetos_red.js)
+  OK   el arcón de pruebas deja la rastra en el suelo del servidor
+  OK   el servidor mira dónde estás de verdad
+  OK   se engancha por el servidor y todos lo ven
+  OK   se suelta donde la ha llevado
+  OK   quien se va suelta la rastra donde estaba
+  OK   sin arcón de pruebas, no sale ninguna rastra
+  OK   al volver a arrancar el servidor la rastra sigue donde estaba
+
+47 bien, 0 mal
