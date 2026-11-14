@@ -133,6 +133,7 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
     });
   };
   const curva = new THREE.CatmullRomCurve3(guia, false, 'centripetal');
+  if (globalThis.__correaSinPegar) return curva.getSpacedPoints(n).map(p => Object.assign(p, { nor: v3(0, 0, 1) })); // solo para comprobar que la prueba falla
   let pts = pegar(curva.getSpacedPoints(n));
   for (let vuelta = 0; vuelta < 8; vuelta++)   // suavizado (los pliegues de la ropa no se marcan) y otra vez a la superficie
     pts = pegar(pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : p.clone().add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 3)));
@@ -630,6 +631,7 @@ export function crearLlevado(j) {
       const m = new THREE.Matrix4().makeRotationY(Math.PI).setPosition(cE.cx, yCentro, zAtras);
       // las correas: de arriba del bulto, por encima del hombro, bajan por delante y vuelven bajo el brazo
       const zDel = cH.cz + cH.en(0);
+      let correaCruzada = null;
       if (cruzada) {
         // una sola correa, cruzada del hombro derecho a la cadera izquierda, pegada al cuerpo (segunda mirada del zurrón,
         // 14 nov: de lado hacía un arco en el aire sobre el hombro y por el costado entraba en el antebrazo): se traza
@@ -655,6 +657,7 @@ export function crearLlevado(j) {
           guia = [v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12), v3(x0 + 0.1, cin.y + 0.08, zA), v3(x0 - 0.02, yM + 0.05, zA), ...hombro, ...delante];
         }
         const pegada = pegarAlCuerpo(medida, guia, cE, cH, 0.014), pts = [...ini, ...pegada, ...fin];
+        correaCruzada = pegada.map(p => p.toArray());
         const nor = [...ini.map(() => pegada[0].nor), ...pegada.map(p => p.nor), ...fin.map(() => pegada[pegada.length - 1].nor)];
         const mi = new THREE.Matrix4().copy(m).invert();
         correa(L, pts.map(p => p.clone().applyMatrix4(mi)), 0.03, 0.006, CUERO, nor.map(d => d.clone().transformDirection(mi)));
@@ -664,7 +667,9 @@ export function crearLlevado(j) {
           puntoEn(cH, s * 0.6, 0.008, -0.08), puntoEn(contorno(medida, yA, 0.025) || cH, s * 1.15, 0.01), v3(cE.cx + s * 0.13, yCentro - alto * 0.3, zAtras + 0.02)];
         correa(L, pts.map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.032);
       }
-      grupo.add(pieza(L, 'espalda', m, pecho, invRaiz));
+      const ge = pieza(L, 'espalda', m, pecho, invRaiz);
+      if (correaCruzada) ge.userData.correa = correaCruzada;   // (la prueba mide si va pegada al cuerpo)
+      grupo.add(ge);
     }
 
     // al hombro
