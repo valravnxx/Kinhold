@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y la granja (P11, 14 nov), en pruebas/recorrido_granja.mjs: el paso 22. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //

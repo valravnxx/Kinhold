@@ -4,6 +4,7 @@
 // con la azada que se hace en su banco y recoge las piedras), lo labra, siembra cebada a voleo y habas, col y nabo planta
 // a planta, escarda a mitad del crecimiento, cosecha con el reloj acelerado (siega la cebada con la hoz de sílex y coge
 // lo demás a mano), levanta una era, trilla las gavillas con el mayal y pone un tejado de paja.
+// Con MUTAR=2 (en pruebas/prueba_recorrido.mjs o aquí) lo sembrado no madura: tiene que FALLAR.
 // El reloj acelerado: lo sembrado tarda una semana real (src/logica/campos.js, CRECER); la prueba adelanta la hora a la
 // que se sembró, como adelanta la de lo que se fabrica. No le da nada: solo ahorra la espera.
 //
@@ -289,7 +290,8 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
 
   // 22i. Crece (el reloj acelerado): a mitad, escarda con las manos vacías; luego, maduro
   console.log('22h. Crece con el reloj acelerado: a mitad salen malas hierbas y las quita; luego madura');
-  const adelantarCampo = (ms) => { for (const p of campo.plantas || []) p.t -= ms; if (campo.voleo) campo.voleo.t = campo.voleo.t.map(t => t - ms); };
+  // (MUTAR=2: el reloj del campo no se adelanta, nada madura: la cosecha y lo que viene detrás tienen que FALLAR)
+  const adelantarCampo = (ms) => { if (process.env.MUTAR === '2') return; for (const p of campo.plantas || []) p.t -= ms; if (campo.voleo) campo.voleo.t = campo.voleo.t.map(t => t - ms); };
   adelantarCampo(CRECER * 0.3);
   await J.andar(deposito.x, deposito.z); await soltarManos();
   let escardadas = 0;
@@ -340,6 +342,14 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     await J.andar(p.x, p.z - 1);
     const rg = await J.accion({ tipo: 'segar', campo: cid, x: r2(p.x), z: r2(p.z), t: 0 });
     if (rg.ok) segados.push(rg.datos ? rg.datos.gavillas : 0);
+    await pausa(300);
+  }
+  // lo que quede suelto, casilla a casilla
+  for (let k = 0; k < 12 && casillasVoleo(campo).length; k++) {
+    const c = casillasVoleo(campo)[0], p = { x: c.x + 0.5, z: c.z + 0.5 };
+    await J.andar(p.x, p.z - 1);
+    const rg = await J.accion({ tipo: 'segar', campo: cid, x: r2(p.x), z: r2(p.z), t: 0 });
+    if (rg.ok) segados.push(rg.datos ? rg.datos.gavillas : 0); else break;
     await pausa(300);
   }
   const gavillas = s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'gavilla' && Math.abs(o.x - arbol.x) < L + 3 && Math.abs(o.z - arbol.z) < L + 3);
@@ -489,7 +499,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   const va = await varasA(andamio);
   if (va) { await J.andar(andamio.x + 1, andamio.z); await trabajar(andamio); }
-  comprobar('le lleva 2 cuerdas y 8 varas y lo levanta', terminada(andamio), `faltan ${falta(andamio, 'cuerda')} cuerdas y ${falta(andamio, 'vara')} varas · ${motivos.slice(0, 3).join(' | ')} · ${varasSuelo().length} montones de varas cerca`);
+  comprobar('le lleva 2 cuerdas y 8 varas y lo levanta', terminada(andamio), terminada(andamio) ? '' : `faltan ${falta(andamio, 'cuerda')} cuerdas y ${falta(andamio, 'vara')} varas · ${motivos.slice(0, 3).join(' | ')} · ${varasSuelo().length} montones de varas cerca`);
   // el tramo de paja: junto al tejado de juncos, en la casilla del andamio o al lado
   let tejado = null;
   for (const [dx, dz] of [[2, 0], [0, 2], [0, -2]]) {
