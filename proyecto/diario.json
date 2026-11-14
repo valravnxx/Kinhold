@@ -6890,5 +6890,20 @@
   "pruebas": "Comprobador de código correcto. En la nube, el panel de fabricar tres veces: en PC, bien (con la era sin hierba encima, tendida y con las gavillas); el móvil se queda al crear la cuenta en dos de tres (en la otra pasó la cuenta y paró un fallo de la propia prueba, ya arreglado). El PC de valravnx no estaba encendido para pruebas. No comprobado: la era en el móvil, ni el último cambio de aspecto en el juego.",
   "capturas": "",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T17:08:43+01:00",
+  "fin": "2026-11-14T07:44:34+01:00",
+  "titulo": "La roca de los acantilados (demo v205)",
+  "hito": "aspecto",
+  "hecho": [
+   "En las paredes anchas y altas de las sierras, riscos de Meshy acabados por todos los lados (en estratos, con grietas y moles), apilados y medio metidos en la ladera, del tono de la roca de cada sitio.",
+   "En los barrancos y las laderas estrechas, ninguno (valravnx: allí las piezas se veían de perfil).",
+   "Antes se probaron las rocas del visor del mapa (lisas y facetadas al lado de las peñas de Meshy) y unas piezas de pared de Meshy con la espalda plana (se veían bloques cortados de lado); valravnx pidió rocas que se vieran bien por todos los lados.",
+   "Meshy: 234 créditos en las dos tandas (las piezas de pared, que no entran, y los riscos)."
+  ],
+  "pruebas": "Lógica de la vegetación correcta, con la prueba nueva de la roca de los cortados (falla al romperla a propósito). Capturas en una pared ancha de la sierra desde seis ángulos. No comprobado: el móvil ni los fotogramas; la cámara aún se mete dentro de un risco si se acerca. valravnx lo prueba a mano.",
+  "capturas": "capturas/demo-v205",
+  "estado": "ok"
  }
 ]

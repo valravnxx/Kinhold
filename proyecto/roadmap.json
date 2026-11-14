@@ -1524,9 +1524,9 @@
     },
     {
      "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T17:08:43+01:00",
-     "rama": "trabajo/20261113-1710-aspecto-rocas"
+     "fin": "2026-11-14T07:44:34+01:00"
     },
     {
      "nombre": "Bruma cálida de distancia y horizonte: el bosque lejano como masa y el final del mundo contra el cielo",
@@ -4478,6 +4478,13 @@
      "archivo": "jugar/demo/v204.html",
      "capturas": "capturas/demo-v204",
      "notas": "El raspador de pieles (un bastidor de 4 varas y 1 cuerda), la piel limpia y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco)"
+    },
+    {
+     "v": "v205",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v205.html",
+     "capturas": "capturas/demo-v205",
+     "notas": "La roca de los acantilados: riscos de Meshy acabados por todos los lados en las paredes anchas y altas de las sierras."
     }
    ]
   },
