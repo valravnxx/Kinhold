@@ -49,6 +49,7 @@ def manos(pg, tipos):
     pg.evaluate(f"(t) => {{ const k = {K}, inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); if (t[0]) inv.coger(t[0], 1, 'mano:der'); if (t[1]) inv.coger(t[1], 1, 'mano:izq'); k.pintarTodoInventario(); k.vestir(); }}", tipos)
 
 def recorrido(pg, nombre, pref):
+    LJ = 0.6 if pref == 'movil' else 1.7   # (en el móvil, estrecho, el jugador más cerca: la mancha dentro del encuadre)
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
     pg.goto(BASE)
@@ -63,11 +64,11 @@ def recorrido(pg, nombre, pref):
     if not m: return
     if MUTAR: pg.evaluate(f"{K}.recoleccion.grupo.children.filter(c => c.name === 'recoger_hierro_pantano').forEach(c => c.name = 'recoger_hierro_pantano_planta')")
     manos(pg, [None, None])
-    mirar(pg, m['x'], m['z'])
+    mirar(pg, m['x'], m['z'], lejos=LJ)
     v = pg.evaluate(VIS, m['id'])
     comprobar(f'{nombre}: se ven la turba, la juncia y los charcos de agua rojiza', v['planta'] and v['agua'], str(v))
     pg.screenshot(path=f'{SALIDA}/{pref}_1_mancha.png', timeout=180000)
-    mirar(pg, m['x'], m['z'], d=6.5, pitch=0.62, yaw=2.4, lejos=2.6)
+    mirar(pg, m['x'], m['z'], d=6.5, pitch=0.62, yaw=2.4, lejos=2.6 if pref == 'pc' else 0.8)
     pg.screenshot(path=f'{SALIDA}/{pref}_2_mancha_lejos.png', timeout=180000)
     # sin pala ni criba
     pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 0.9; k.pj.z = z + 0.3; k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z); }}', [m['x'], m['z']]); pg.wait_for_timeout(600)
@@ -81,6 +82,10 @@ def recorrido(pg, nombre, pref):
         if k == 0:
             pg.evaluate(f'(() => {{ const k = {K}; k.cam.dist = 3.0; k.cam.pitch = 0.3; k.cam.yaw = k.pj.rot + Math.PI * 0.75; }})()'); pg.wait_for_timeout(2000)
             pg.screenshot(path=f'{SALIDA}/{pref}_3_cribando.png', timeout=180000)
+            # (segunda mirada) de lado, para que se vea la hoja de la pala, de un lado y del otro
+            for suf, giro in [('b', 0.45), ('c', 1.55)]:
+                pg.evaluate(f'(() => {{ const k = {K}; k.cam.dist = 2.6; k.cam.pitch = 0.22; k.cam.yaw = k.pj.rot + Math.PI * {giro}; }})()'); pg.wait_for_timeout(2000)
+                pg.screenshot(path=f'{SALIDA}/{pref}_3{suf}_cribando_lado.png', timeout=180000)
         antes = pg.evaluate(MINERAL, [m['x'], m['z']])
         pg.keyboard.press('f'); pg.wait_for_timeout(1500)
         despues = pg.evaluate(MINERAL, [m['x'], m['z']])
@@ -93,7 +98,7 @@ def recorrido(pg, nombre, pref):
     v = pg.evaluate(VIS, m['id'])
     comprobar(f'{nombre}: agotada, los charcos se van y la turba y la juncia se quedan', v['planta'] and not v['agua'], str(v))
     manos(pg, [None, None])
-    mirar(pg, m['x'], m['z'])
+    mirar(pg, m['x'], m['z'], lejos=LJ)
     pg.screenshot(path=f'{SALIDA}/{pref}_4_mancha_agotada.png', timeout=180000)
     # el mineral sacado, de cerca (14 nov: terrones pardo rojizos, no un hatillo)
     mo = pg.evaluate(f"(([x, z]) => {{ const o = {K}.sueloObjetos.suelo.visibles(Date.now()).find(o => o.cosa.tipo === 'mineral_hierro' && Math.hypot(o.x - x, o.z - z) < 2); return o ? {{ x: o.x, z: o.z }} : null; }})", [m['x'], m['z']])

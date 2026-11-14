@@ -86,11 +86,12 @@ function manchaCalco(capa) {
       const agua = paso(0.1, 0.32, w), orilla = paso(-0.02, 0.1, w);
       const tela = paso(0.66, 0.8, n3(u * 5 + 1, v * 7 + 3)) * agua * 0.45;   // la tela irisada, en vetas, apenas
       const brillo = paso(0.72, 0.92, n2(u * 4 - 3, v * 2 + 1)) * agua * 0.18;
-      // la orilla, costra ocre apagada; el agua, parda rojiza oscura (como el té fuerte), más oscura en lo hondo
-      const hondo = paso(0.3, 0.7, w);
-      R = mezcla(mezcla(0x7a, 0x55, agua), 0x3f, hondo) * (1 - tela) + 0x6a * tela + brillo * 60 + (n2(u * 14, v * 14) - 0.5) * 16;
-      G = mezcla(mezcla(0x55, 0x33, agua), 0x24, hondo) * (1 - tela) + 0x68 * tela + brillo * 55 + (n2(u * 14, v * 14) - 0.5) * 10;
-      B = mezcla(mezcla(0x30, 0x20, agua), 0x18, hondo) * (1 - tela) + 0x62 * tela + brillo * 50;
+      // (segunda mirada, 14 nov) la orilla, barro mojado más oscuro que el agua, mezclado con la turba (nada de ribete
+      // claro); el agua, pardo de té con un punto de óxido, más oscura en lo hondo, y el reflejo apagado del cielo
+      const hondo = paso(0.3, 0.7, w), cielo = brillo * 1.6;
+      R = mezcla(mezcla(0x30, 0x52, agua), 0x40, hondo) * (1 - tela) + 0x5e * tela + cielo * 70 + (n2(u * 14, v * 14) - 0.5) * 12;
+      G = mezcla(mezcla(0x26, 0x34, agua), 0x29, hondo) * (1 - tela) + 0x5c * tela + cielo * 78 + (n2(u * 14, v * 14) - 0.5) * 8;
+      B = mezcla(mezcla(0x1c, 0x22, agua), 0x1c, hondo) * (1 - tela) + 0x58 * tela + cielo * 88;
       A = orilla * (0.6 + 0.35 * agua);
     }
     d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
@@ -98,7 +99,7 @@ function manchaCalco(capa) {
   cx.putImageData(img, 0, 0);
   const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   const comun = { map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: capa === 'agua' ? -4 : -2, polygonOffsetUnits: capa === 'agua' ? -4 : -2 };
-  return (calcos[capa] = capa === 'agua' ? new THREE.MeshPhongMaterial({ ...comun, shininess: 60, specular: 0x4a4038 }) : new THREE.MeshLambertMaterial(comun));
+  return (calcos[capa] = capa === 'agua' ? new THREE.MeshPhongMaterial({ ...comun, shininess: 90, specular: 0x8c8a84 }) : new THREE.MeshLambertMaterial(comun));
 }
 function calcoGeo(ancho, fondo, y) { const g = new THREE.PlaneGeometry(ancho, fondo, 1, 1); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g; }
 
