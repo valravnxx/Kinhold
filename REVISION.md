@@ -6,6 +6,13 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 06:45 UTC — por el chat
+
+valravnx: «me has publicado 4 tareas fallidas seguidas, si tienes fallos de pc y movil, HAZ SOLO UNA. y ya está, no digas fallo… busca soluciones joder.» →
+- **Nada de entradas «fallo» en el diario** (salen como noticia en la web): una tarea que no se acaba en la sesión se queda en su rama con su commit «Avance: …», sin entrada en el diario; la entrada va cuando se publica. Las cinco «fallo» de esta noche, fuera del diario (siguen en el historial de git). CLAUDE.md, paso 8, al día.
+- **Si las pruebas de PC y de móvil no caben juntas, una cosa cada vez**: el móvil no se abre con el PC al lado (en la nube, sin tarjeta, se colgaba al crear la cuenta). En la prueba del panel de fabricar, el PC termina y se cierra, y luego entra el móvil solo.
+- Ante un bloqueo, buscar la solución en la misma sesión en vez de repetir lo mismo y apuntarlo como fallo.
+
 ### 14 nov 2026, 07:04 — por el chat
 
 - valravnx (tras el repaso del riego en la época): «meteremos regar en las que sí lo requieran, lo de huerto, y escardar, y adelantamos hito de lluvia, anota y comienza con el que veas más prioritario ahora». Hecho: tarea «Escardar» en P11 (la empieza el chat ahora: no depende de nada) y el hito nuevo P11b «La lluvia y el riego» justo detrás de P11 (antes que los oficios), con regar el huerto (col y nabo; el cereal y las habas, de secano, como en la época) dentro, porque regar depende de que llueva o no.
