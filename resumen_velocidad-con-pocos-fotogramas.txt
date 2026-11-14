@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2873 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3217 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4679 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3283 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2867 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3248 KB
+dist/kinhold_trozos.html 2889 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: velocidad con pocos fotogramas
+  OK   el juego va de verdad a pocos fotogramas — 5.7 fps
+  OK   se anda a la velocidad de siempre (3,6 m/s) con pocos fotogramas — 3.56 m/s
+  OK   sin errores en la página
+TODO BIEN
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 17 s
