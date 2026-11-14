@@ -31,8 +31,8 @@ void main(){
 const FRAG = `uniform vec3 uColor;uniform float uOpacidad;varying float vAlfa;
 void main(){if(vAlfa<0.01)discard;gl_FragColor=vec4(uColor,uOpacidad*vAlfa);}`;
 
-// cuantas: gotas (trazos); en el móvil, menos
-export function crearLluvia(escena, { cuantas = 4000 } = {}) {
+// cuantas: gotas (trazos); en el móvil, menos y en una caja más pequeña (caja, en m: las mismas gotas por metro cúbico)
+export function crearLluvia(escena, { cuantas = 4000, caja = CAJA } = {}) {
   const sem = new Float32Array(cuantas * 2 * 4), punta = new Float32Array(cuantas * 2), pos = new Float32Array(cuantas * 2 * 3);
   // un azar fijo (siempre las mismas gotas: las capturas se pueden comparar)
   let s = 12345;
@@ -46,7 +46,7 @@ export function crearLluvia(escena, { cuantas = 4000 } = {}) {
   geo.setAttribute('semilla', new THREE.BufferAttribute(sem, 4));
   geo.setAttribute('punta', new THREE.BufferAttribute(punta, 1));
   const uniforms = {
-    uCentro: { value: new THREE.Vector3() }, uCaja: { value: new THREE.Vector3(...CAJA) }, uT: { value: 0 },
+    uCentro: { value: new THREE.Vector3() }, uCaja: { value: new THREE.Vector3(...caja) }, uT: { value: 0 },
     uViento: { value: new THREE.Vector2(1.6, 0.7) }, uLargo: { value: LARGO }, uVel: { value: VELOCIDAD }, uCantidad: { value: 0 },
     uColor: { value: new THREE.Color(0xc9d2da) }, uOpacidad: { value: 0.3 },
   };
