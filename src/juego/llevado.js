@@ -60,7 +60,8 @@ function medir(mh, raiz) {
     }
     // y la superficie del tronco (los triángulos sin brazos ni cabeza): a ella se pegan las correas (pegarAlCuerpo)
     // (de los brazos, solo lo de encima de las axilas: lo alto y lo de delante del hombro, por donde pasa la correa; lo de
-    // más abajo cuelga junto al cuerpo y no es donde se apoya)
+    // más abajo cuelga junto al cuerpo y no es donde se apoya; pero lo de la camisa que va del brazo y queda contra la
+    // espalda, junto al omóplato, sí: si no, la correa se metía en la camisa por detrás del hombro)
     const cuelloDe = o.skeleton.bones.map(b => /neck/i.test(b.name) ? 1 : 0);
     const idx = g.index, n = idx ? idx.count : pos.count, vale = new Int8Array(pos.count), xyz = new Float32Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
@@ -68,7 +69,7 @@ function medir(mh, raiz) {
       for (let k = 0; k < 4; k++) { const wk = sw.getComponent(i, k); if (wk > w) { w = wk; mejor = si.getComponent(i, k); } }
       if (huesos[mejor] === 1 && cuelloDe[mejor] === 0) continue;   // (del cuello, solo lo de más abajo: el pecho que asoma por la camisa)
       o.getVertexPosition(i, p); p.applyMatrix4(m);
-      if (p.y < 0.8 || p.y > 1.8 || (huesos[mejor] === 2 && p.y < yAxila) || (huesos[mejor] === 1 && p.y > yAxila + 0.04)) continue;
+      if (p.y < 0.8 || p.y > 1.8 || (huesos[mejor] === 2 && p.y < yAxila && Math.abs(p.x) > 0.15) || (huesos[mejor] === 1 && p.y > yAxila + 0.04)) continue;
       vale[i] = 1; xyz[i * 3] = p.x; xyz[i * 3 + 1] = p.y; xyz[i * 3 + 2] = p.z;
     }
     for (let t = 0; t + 2 < n; t += 3) {
