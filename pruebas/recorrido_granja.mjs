@@ -421,6 +421,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   const paja = J.cuantos('paja') + enSuelo('paja', E, 3).reduce((t, o) => t + o.cosa.n, 0);
   comprobar('trilla las gavillas con el mayal: grano de cebada y paja', trilladas >= 4 && paja >= 4, `${dejadas} dejadas, ${trilladas} trilladas, ${paja} de paja · ${enMano()}`);
+  // (cuando llegue la criba, «Cribar el grano», trillar dará grano sin limpiar: aquí lo cribará antes de tenerlo como semilla)
   const grano = J.cuantos('semilla_cebada') + enSuelo('semilla_cebada', E, 3).reduce((t, o) => t + o.cosa.n, 0);
   comprobar('y el grano de cebada es también su semilla: tiene para sembrar otra vez', grano >= trilladas, `${grano}`);
   await soltarManos();
