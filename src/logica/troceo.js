@@ -67,6 +67,7 @@ export class Troceo {
     if (!o) return { ok: false, motivo: 'Ahí no hay nada que trocear.' };
     const t = TROCEO[o.cosa.tipo];
     if (!t) return { ok: false, motivo: 'Eso no se trocea.' };
+    if (o.arrastra) return { ok: false, motivo: 'Ese tronco está atado: que suelten antes la cuerda.' };
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_TROCEO) return { ok: false, motivo: 'Está demasiado lejos.' };
     const h = hachaEnMano(inv);
     if (!h) return { ok: false, motivo: t.accion === 'tronzar' ? 'Necesitas un hacha en la mano para tronzar.' : 'Necesitas un hacha en la mano para partir leña.' };

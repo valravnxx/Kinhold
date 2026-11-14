@@ -289,6 +289,7 @@ export class Inventario {
       if (l.startsWith('mano:')) {
         if (this.manosEn === 'rastra') return 'Tienes las manos en la rastra: suéltala antes.';
         if (this.manosEn === 'carretilla') return 'Tienes las manos en la carretilla: apárcala antes.';
+        if (this.manosEn === 'tronco_largo') return 'Tienes las manos en la cuerda del tronco: suéltala antes.';
         if (this.hombroCargado() && origen !== 'hombro') return 'Llevas algo al hombro: con eso, las manos no llevan nada.';
         if (this.manoBloqueada(l)) return 'Tienes las dos manos ocupadas.';
         if (d.tam === 'G') {
