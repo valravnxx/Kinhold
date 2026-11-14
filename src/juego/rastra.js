@@ -11,7 +11,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
-import { DETRAS, DELANTE_CARRETILLA } from '../logica/rastra.js';
+import { DETRAS, DELANTE_CARRETILLA, DETRAS_TRONCO } from '../logica/rastra.js';
 import { inclinarCarretilla, rodarCarretilla } from './carretilla.js';
 
 export const LARGO_VARAS = 3.2;      // m
@@ -102,6 +102,20 @@ export function modeloRastra(carga, id = 'r') {
         const m = new THREE.Matrix4().makeRotationY((az(id, 110 + i) - 0.5) * 0.06).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
         C.add(cil(r * 0.75, r, 1.6, 7), 'madera', x, y, z, m, { tex: 'veta' });
       }
+    } else if (carga.tipo === 'tronco_largo') {   // (P11c) uno, a lo largo, por encima de los travesaños: sobresale por detrás
+      const L2 = new Lote({ rangoSuelo: 0.4, variacion: 0.07 }), r = 0.18, largo = 4.5;
+      const m = new THREE.Matrix4().makeRotationY((az(id, 75) - 0.5) * 0.04).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+      L2.add(cil(r, r * 1.04, largo, 11), 'corteza', 0, 0, 0, m);
+      for (const s of [-1, 1]) L2.add(new THREE.CircleGeometry(r * 0.97, 11), 'corte', 0, 0, s * (largo / 2 + 0.002), new THREE.Matrix4().makeRotationY(s > 0 ? 0 : Math.PI), { sinSuelo: true });
+      // la cuerda con que se subió, atada en dos vueltas a los travesaños de en medio
+      for (const z of [0.95, 1.3]) L2.add(new THREE.TorusGeometry(r + 0.012, 0.009, 4, 12), 'lino', 0, -0.02, z - 0.1, { y: Math.PI / 2 }, { sinSuelo: true, tex: 'tejido' });
+      // gira sobre el travesaño de delante (z = 1,3): arrastrándola, la punta de atrás baja hasta rozar el suelo y la de
+      // delante queda a medio metro largo del que tira (centrado en z = 0,1: no llega a sus piernas)
+      const m2 = mallas(L2); m2.position.set(0, r, 0.1 - 1.3);
+      const t = new THREE.Group(); t.add(m2);
+      t.name = 'largo';
+      t.position.set(0, yC, 1.3);
+      cuerpo.add(t);
     } else if (carga.tipo === 'bloque_piedra') {
       C.add(new THREE.DodecahedronGeometry(0.34, 0), 'piedra', 0, yC + 0.2, 0.75, { y: az(id, 80) * 6, x: 0.3 }, { escala: new THREE.Vector3(1.15, 0.62, 1.4), plano: true });
     }
@@ -128,6 +142,9 @@ export function modeloRastra(carga, id = 'r') {
 export function inclinarRastra(raiz, arrastrando) {
   const c = raiz.getObjectByName('cuerpo');
   if (c) c.rotation.x = arrastrando ? -Math.asin(Math.min(0.9, (ALTO_MANOS - R_VARA) / A_MANOS)) : 0;
+  // el tronco largo, menos inclinado que la rastra (apoyado en el travesaño de delante): la punta de atrás roza el suelo
+  const l = c && c.getObjectByName('largo');
+  if (l) l.rotation.x = arrastrando ? 0.155 : -0.035;   // parada, la punta de atrás baja hasta el suelo (el peso va detrás)
 }
 
 // Cada fotograma: las rastras que alguien arrastra van detrás de él, como de una cuerda (el centro, a DETRAS m de él;
@@ -139,6 +156,7 @@ export function moverRastras(grupo, quien, altura) {
   const sitios = {};
   for (const obj of grupo.children) {
     if (obj.name === 'suelo_carretilla') { moverCarretilla(obj, quien, altura, sitios); continue; }
+    if (obj.name === 'suelo_tronco_largo') { moverTronco(obj, quien, altura, sitios); continue; }
     if (obj.name !== 'suelo_rastra') continue;
     const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
     inclinarRastra(obj, !!p);
@@ -167,4 +185,38 @@ function moverCarretilla(obj, quien, altura, sitios) {
   obj.position.set(x, altura(x, z) - 0.01, z);
   obj.rotation.set(0, p.giro, 0);
   sitios[obj.userData.id] = { x, z };
+}
+
+// El tronco largo a cuerda (P11c): va detrás del que tira, a DETRAS_TRONCO m de él, a lo largo de la cuerda (el modelo
+// del suelo está a lo largo de X), con la punta de delante algo levantada; una cuerda de la mano a la punta.
+const CUERDA_MAT = new THREE.MeshLambertMaterial({ color: 0xa8987a });   // la cuerda de lino, como el cordel de la rastra
+function moverTronco(obj, quien, altura, sitios) {
+  const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
+  let cu = obj.userData.cuerda;
+  if (!p) { delete obj.userData.sigue; if (cu) cu.visible = false; return; }
+  let s = obj.userData.sigue;
+  if (!s) s = obj.userData.sigue = { x: p.x - Math.sin(p.giro) * DETRAS_TRONCO, z: p.z - Math.cos(p.giro) * DETRAS_TRONCO };
+  const dx = s.x - p.x, dz = s.z - p.z, d = Math.hypot(dx, dz) || 1;
+  s.x = p.x + dx / d * DETRAS_TRONCO; s.z = p.z + dz / d * DETRAS_TRONCO;
+  const a = Math.atan2(p.x - s.x, p.z - s.z);
+  obj.position.set(s.x, altura(s.x, s.z) - 0.01, s.z);
+  obj.rotation.set(0, 0, 0);
+  obj.rotateY(a - Math.PI / 2);
+  obj.rotateZ(0.06);   // la punta de delante, algo levantada por la cuerda
+  // la cuerda: de la punta de delante (a 2,25 m del centro) a la mano derecha del que tira (si no se sabe, a la cadera)
+  if (!cu) {
+    cu = obj.userData.cuerda = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1, 5), CUERDA_MAT);
+    cu.castShadow = true;
+    obj.add(cu);
+  }
+  cu.visible = true;
+  const punta = new THREE.Vector3(2.25, 0.18 + 0.1, 0);
+  let mano = new THREE.Vector3(DETRAS_TRONCO - 0.3, 0.9, 0);
+  const w = p.mano && p.mano();
+  if (w) { obj.updateMatrixWorld(true); mano = obj.worldToLocal(w.clone()); }
+  const dir = mano.clone().sub(punta), largo = dir.length() || 1;
+  cu.position.copy(punta).addScaledVector(dir, 0.5);
+  cu.scale.set(1, largo, 1);
+  cu.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.divideScalar(largo));
+  sitios[obj.userData.id] = { x: s.x, z: s.z };
 }

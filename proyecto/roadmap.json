@@ -2369,9 +2369,9 @@
    "tareas": [
     {
      "nombre": "El tronco largo en la rastra: con una cuerda en la mano se ata y se arrastra muy despacio, gastando mucho aguante (entre dos, más rápido), para arrimarlo a la rastra o a la obra; junto a la rastra (o con la rastra llevada a él) se sube a pulso con la cuerda, y cabe 1; uno solo la arrastra, más despacio que con 3 troncos cortos. Por el servidor con su autor, y todos lo ven. Números provisionales. Cadena: tronco largo ← talar un árbol adulto con el hacha de piedra; cuerda ← el banco de tronco; rastra ← 5 ramas y 2 cordeles con las manos",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T18:23:12+00:00",
-     "rama": "trabajo/20261114-1823"
+     "fin": "2026-11-14T19:30:11+00:00"
     },
     {
      "nombre": "La rodaja de tronco y la carretilla: del tronco largo, con el hacha, se corta una rodaja (la rueda maciza: el árbol joven es demasiado fino) y la carretilla, que ya está programada pero no se podía fabricar, se hace con 1 rodaja, 2 varas y 1 tronco corto. Cadena: rodaja ← el tronco largo; vara ← el árbol joven; tronco corto ← tronzar el tronco largo",
@@ -4616,6 +4616,13 @@
      "archivo": "jugar/demo/v210.html",
      "capturas": null,
      "notas": "Mojones de más del admin: con autoconstruir, otro mojón en otra zona libre para construcciones de prueba; cada uno se quita aparte."
+    },
+    {
+     "v": "v211",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v211.html",
+     "capturas": "capturas/demo-v211",
+     "notas": "El tronco largo a cuerda y en la rastra (P11c): con una cuerda en la mano se ata y se arrastra muy despacio (entre dos, más rápido), y junto a una rastra parada se sube a ella; uno solo la arrastra con él."
     }
    ]
   },

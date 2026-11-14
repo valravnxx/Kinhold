@@ -1,7 +1,7 @@
 // Pruebas de la rastra (src/logica/rastra.js) y de la rastra en el servidor (src/logica/objetos_red.js).
 // Ejecutar: node pruebas/prueba_rastra.mjs
 // Con MUTAR=1 la rastra no lleva nada (no cabe nada en ella) y arrastrarla no frena: las pruebas deben FALLAR.
-import { Rastras, CABE_RASTRA, ALCANCE_RASTRA, DETRAS, factorRastra, sitioRastra, detrasDe, ejecutarRastra, ejecutarArconAlSuelo, VEL_VACIA, VEL_LLENA } from '../src/logica/rastra.js';
+import { Rastras, CABE_RASTRA, ALCANCE_RASTRA, DETRAS, DETRAS_TRONCO, factorTronco, VEL_TRONCO_SOLO, VEL_TRONCO_DOS, factorRastra, sitioRastra, detrasDe, ejecutarRastra, ejecutarArconAlSuelo, VEL_VACIA, VEL_LLENA } from '../src/logica/rastra.js';
 import { Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo, HORA } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
@@ -87,9 +87,55 @@ console.log('Troncos delgados y varas (valravnx, 7 nov: «metelo ya»)');
   const m2 = nuevo(), varas = m2.suelo.dejar({ tipo: 'vara', n: 14 }, 1.5, 0, T0, 'ana', false);
   r = hacer(m2, { autor: 'ana', tipo: 'cargar_rastra', objeto: m2.id, x: 1, z: 0, suelo: varas.id });
   comprobar('y hasta 12 varas, que también pesan (frena algo)', r.ok && r.lleva === 12 && factor({ tipo: 'vara', n: 12 }) < VEL_VACIA, `${r.lleva} ${factor({ tipo: 'vara', n: 12 })} ${r.motivo || ''}`);
-  const m3 = nuevo(), largo = m3.suelo.dejar({ tipo: 'tronco_largo', n: 1 }, 1.5, 0, T0, 'ana', false);
-  r = hacer(m3, { autor: 'ana', tipo: 'cargar_rastra', objeto: m3.id, x: 1, z: 0, suelo: largo.id });
-  comprobar('el tronco largo, no (es cosa de carro)', !r.ok && /solo van/.test(r.motivo), r.motivo);
+}
+
+console.log('El tronco largo: a cuerda y en la rastra (P11c)');
+{
+  const m = nuevo(), inv = m.invs.de('ana');
+  const pila = m.suelo.dejar({ tipo: 'tronco_largo', n: 2 }, 3, 0, T0, 'ana', false);
+  let r = hacer(m, { autor: 'ana', tipo: 'atar_tronco', objeto: pila.id, x: 3, z: 1 });
+  comprobar('sin cuerda en la mano no se ata', !r.ok && /cuerda/.test(r.motivo), r.motivo);
+  inv.coger('cuerda', 1, 'mano:der');
+  r = hacer(m, { autor: 'ana', tipo: 'atar_tronco', objeto: pila.id, x: 3, z: 9 });
+  comprobar('lejos, no', !r.ok && /lejos/.test(r.motivo), r.motivo);
+  r = hacer(m, { autor: 'ana', tipo: 'atar_tronco', objeto: pila.id, x: 3, z: 1 });
+  const t = m.suelo.porId(r.objeto, T0);
+  comprobar('con la cuerda en la mano se ata uno, apartado de la pila', r.ok && t && t.id !== pila.id && t.cosa.n === 1 && t.arrastra === 'ana' && m.suelo.porId(pila.id, T0).cosa.n === 1, r.motivo);
+  comprobar('con las manos en la cuerda no se coge nada', !!inv.noCabe(inv.buscar('mano:izq'), { tipo: 'piedra', n: 1 }));
+  comprobar('solo va muy despacio (más que la rastra llena)', factorTronco(t) === VEL_TRONCO_SOLO && VEL_TRONCO_SOLO < VEL_LLENA && factorTronco(t, 0) < VEL_TRONCO_SOLO, `${factorTronco(t)}`);
+  const ines = m.invs.de('ines'); ines.coger('cuerda', 1, 'mano:izq');
+  r = hacer(m, { autor: 'ines', tipo: 'atar_tronco', objeto: t.id, x: 4, z: 1 });
+  comprobar('otro con cuerda ayuda: entre dos, más rápido', r.ok && t.ayuda === 'ines' && factorTronco(t) === VEL_TRONCO_DOS && VEL_TRONCO_DOS > VEL_TRONCO_SOLO, r.motivo);
+  const ot = m.invs.de('oto'); ot.coger('cuerda', 1, 'mano:der');
+  comprobar('de uno no tiran tres', !hacer(m, { autor: 'oto', tipo: 'atar_tronco', objeto: t.id, x: 4, z: 1 }).ok);
+  r = hacer(m, { autor: 'ana', tipo: 'soltar_tronco', x: 10, z: 0, rx: 10 - DETRAS_TRONCO, rz: 0 });
+  comprobar('suelta el que tira: se queda donde lo ha llevado y sigue tirando el que ayudaba', r.ok && Math.abs(t.x - (10 - DETRAS_TRONCO)) < 0.01 && t.arrastra === 'ines' && !t.ayuda && !inv.manosEn, r.motivo);
+  r = hacer(m, { autor: 'ines', tipo: 'soltar_tronco', x: 10, z: 0, rx: 50, rz: 50 });
+  comprobar('un sitio que no cuadra: justo detrás del que tira', r.ok && Math.abs(Math.hypot(t.x - 10, t.z) - DETRAS_TRONCO) < 0.02 && !t.arrastra, r.motivo);
+  // a la rastra: llevada al tronco
+  const ra = m.suelo.porId(m.id, T0); ra.x = t.x + 1; ra.z = t.z;
+  inv.lugares['mano:der'] = null;
+  r = hacer(m, { autor: 'ana', tipo: 'cargar_rastra', objeto: m.id, x: t.x + 1, z: t.z, suelo: t.id });
+  comprobar('sin cuerda no se sube a la rastra', !r.ok && /cuerda/.test(r.motivo), r.motivo);
+  inv.coger('cuerda', 1, 'mano:der');
+  r = hacer(m, { autor: 'ana', tipo: 'cargar_rastra', objeto: m.id, x: t.x + 1, z: t.z, suelo: t.id });
+  comprobar('con cuerda se sube a pulso a la rastra, y cabe 1', r.ok && r.lleva === 1 && CABE_RASTRA.tronco_largo === 1 && !m.suelo.porId(t.id, T0), r.motivo);
+  comprobar('con el tronco largo la rastra va más despacio que con 3 cortos', factor({ tipo: 'tronco_largo', n: 1 }) < factor({ tipo: 'tronco_corto', n: 3 }), `${factor({ tipo: 'tronco_largo', n: 1 })}`);
+  const otro = m.suelo.porId(pila.id, T0);
+  r = hacer(m, { autor: 'ana', tipo: 'cargar_rastra', objeto: m.id, x: t.x + 1, z: t.z, suelo: otro.id });
+  comprobar('el segundo ya no cabe', !r.ok, r.motivo);
+  r = hacer(m, { autor: 'ana', tipo: 'enganchar_rastra', objeto: m.id, x: ra.x, z: ra.z });
+  comprobar('para arrastrarla, la cuerda fuera de las manos', !r.ok && /manos/.test(r.motivo), r.motivo);
+  inv.meterDonde('cuerda', 1); inv.lugares['mano:der'] = null;
+  r = hacer(m, { autor: 'ana', tipo: 'enganchar_rastra', objeto: m.id, x: ra.x, z: ra.z });
+  comprobar('uno solo la arrastra con el tronco largo', r.ok, r.motivo);
+  // tirando de uno atado, se arrima a la rastra y se sube
+  const m2 = nuevo(), i2 = m2.invs.de('ana');
+  i2.coger('cuerda', 1, 'mano:der');
+  const l2 = m2.suelo.dejar({ tipo: 'tronco_largo', n: 1 }, 1.5, 0, T0, 'ana', false);
+  hacer(m2, { autor: 'ana', tipo: 'atar_tronco', objeto: l2.id, x: 1.5, z: 1 });
+  r = hacer(m2, { autor: 'ana', tipo: 'cargar_rastra', objeto: m2.id, x: 1, z: 0, suelo: l2.id });
+  comprobar('el que tira de él lo sube a la rastra: se desata solo', r.ok && !i2.manosEn && !m2.rastras.troncoDe('ana', T0), r.motivo);
 }
 
 console.log('Cargarla y descargarla');
@@ -163,6 +209,12 @@ console.log('En el servidor (src/logica/objetos_red.js)');
   comprobar('se suelta donde la ha llevado', r.ok && Math.abs(o.x - 10) < 0.01 && Math.abs(o.z - (10 - DETRAS)) < 0.01 && !o.arrastra);
   os.ejecutar({ autor: 'ana', tipo: 'enganchar_rastra', objeto: id, x: 10, z: 10 }, T0);
   pos.ana = { x: 40, z: 0, giro: Math.PI / 2 };
+  const largo = os.suelo.dejar({ tipo: 'tronco_largo', n: 1 }, 60, 0, T0, 'ines', false);
+  os.invs.de('ines').coger('cuerda', 1, 'mano:der');
+  pos.ines = { x: 60, z: 1, giro: 0 };
+  comprobar('en el servidor se ata el tronco largo, y todos lo ven atado', os.ejecutar({ autor: 'ines', tipo: 'atar_tronco', objeto: largo.id, x: 60, z: 1 }, T0).ok && os.sueloVisible(T0).find(q => q.id === largo.id).arrastra === 'ines');
+  pos.ines = { x: 60, z: 20, giro: 0 };
+  comprobar('quien se va suelta el tronco detrás de él', os.soltarAlSalir('ines', T0) && Math.abs(os.sueloVisible(T0).find(q => q.id === largo.id).z - (20 - DETRAS_TRONCO)) < 0.02 && !os.sueloVisible(T0).find(q => q.id === largo.id).arrastra);
   comprobar('quien se va suelta la rastra donde estaba', os.soltarAlSalir('ana', T0) && Math.abs(os.sueloVisible(T0).find(q => q.id === id).x - (40 - DETRAS)) < 0.02);
   const sin = new ObjetosServidor({ posicion: a => pos[a] || null });
   comprobar('sin arcón de pruebas, no sale ninguna rastra', !sin.ejecutar({ autor: 'ana', tipo: 'arcon_al_suelo', objeto: 'rastra', x: 40, z: 0 }, T0).ok);

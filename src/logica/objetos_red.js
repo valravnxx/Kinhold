@@ -230,6 +230,12 @@ export class ObjetosServidor {
   // El que se va del juego suelta la rastra que arrastraba: se queda donde el servidor la tenía, detrás de su último
   // sitio. Devuelve true si ha cambiado el suelo.
   soltarAlSalir(autor, ahora) {
+    if (this.rastras.troncoDe(autor, ahora)) {   // y el tronco largo del que tiraba (src/logica/rastra.js)
+      const p = this.posicion(autor), o = this.rastras.troncoDe(autor, ahora);
+      const r = this.rastras.soltarTronco(this.invs.de(autor), autor, p ? p.x : o.x, p ? p.z : o.z, undefined, undefined, ahora, p && Number.isFinite(p.giro) ? p.giro : 0);
+      this.anotar({ autor, tipo: 'soltar_tronco', alSalir: true }, r, ahora);
+      return !!r.ok;
+    }
     if (!this.rastras.deAutor(autor, ahora)) return false;
     const p = this.posicion(autor);
     const o = this.rastras.deAutor(autor, ahora);
