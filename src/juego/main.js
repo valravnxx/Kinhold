@@ -51,7 +51,7 @@ import { crearSuelo } from './suelo.js';
 import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, tieneCon } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -1784,6 +1784,10 @@ function accionPrincipal() {
   if (est && panelFabricar) return A(tr(esAlmacen(est.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => panelFabricar.abrirEstacion(est.id), { alto: 0.6 });
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
+    // (P10) con la pala y la criba encima, junto a una mancha de hierro de pantano, se criba antes que coger del suelo el
+    // mineral que ya ha salido (cae a tus pies: se coge al terminar)
+    const rcs = recoleccion.cercano(pj.x, pj.z);
+    if (rcs && RECOLECTABLES[rcs.tipo].alSuelo && tieneCon(inventario(), rcs.tipo)) return A(verboRecoger(rcs), ICONO_RECOGER(rcs), rcs, () => recoger(rcs), { alto: 0.6 });
     const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
     if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);
@@ -1820,7 +1824,7 @@ function usar() {
   a.hacer();
 }
 // los juncos se cortan y el barro se cava (con su herramienta: src/logica/recoleccion.js); lo demás, se recoge
-const verboRecoger = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
+const verboRecoger = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cribar: tr('Cribar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre).toLowerCase() }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
 function textoInteractivo(it) {
   const p = it.p, n = tr(PIEZAS[p.tipo].nombre);
   return it.tipo === 'fuego' ? (p.apagado ? tr('Encender: {p}', { p: n }) : tr('Apagar: {p}', { p: n }))
@@ -2060,16 +2064,23 @@ function recoger(punto) {
     pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
     objetosRed.mandar({ tipo: 'recoger', punto: punto.id, x: pj.x, z: pj.z, px: punto.x, pz: punto.z, clase: punto.tipo }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
-      mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+      mostrarAviso(avisoRecoger(punto, r));
     });
     return;
   }
-  const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z);
+  const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z, Date.now(), sueloObjetos.suelo);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  if (r.deja) { sueloObjetos.guardar(); sueloObjetos.refrescar(); }   // (el mineral cribado, junto a la mancha)
   if (almacen) guardarInventarios(almacen, inventarios);
   panelInventario.pintar(); pintarLlevas(); vestir(); // lo recogido sale en el panel o en la línea de lo que llevas
   pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
-  mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+  mostrarAviso(avisoRecoger(punto, r));
+}
+// (P10) lo que da varias pasadas (la mancha de hierro de pantano) dice también cuántas le quedan
+function avisoRecoger(punto, r) {
+  const t = r.donde === 'suelo' ? tr('Sacas {n} × {c}: lo dejas junto a la mancha.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }) : tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) });
+  if (r.quedan === undefined) return t;
+  return t + ' ' + (r.quedan ? tr('A la mancha le quedan {n} pasadas.', { n: r.quedan }) : tr('La mancha se ha agotado: volverá a salir en unos meses.'));
 }
 
 // Descortezar un árbol en pie o sangrarlo (y coger su resina cuando sale): src/logica/tala.js, por el servidor.

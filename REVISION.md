@@ -8,7 +8,7 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ### 14 nov 2026 — por el chat, sobre trillar
 
-valravnx: «quiero criba de grano si es realista, por favor, adaptemos para ello… he visto cribas medievales en museos» → tarea nueva en P11, antes del recorrido de la granja: trillar en la era da grano sin limpiar y paja, y con la criba se saca el grano de cebada limpio que se siembra (la criba, la misma del hierro de pantano). El recorrido de la granja la incluye.
+valravnx: «quiero criba de grano si es realista, por favor, adaptemos para ello… he visto cribas medievales en museos» → tarea nueva en P11, antes del recorrido de la granja: trillar en la era da grano sin limpiar y paja, y con la criba se saca el grano de cebada limpio que se siembra El recorrido de la granja la incluye. Después: «haremos cribas de grano separadas» → la criba de grano es su propia herramienta (aro de madera curvada con el fondo de piel limpia agujereada: 1 piel limpia y 1 vara en el banco de tronco), distinta de la del mineral; la paja va al almiar y el grano al cesto.
 
 ### 14 nov 2026, 06:45 UTC — por el chat
 

@@ -19,6 +19,7 @@
 //  - nasa: un cono de mimbre con aros, la boca abierta y la punta atada.
 //  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
+//  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
 //  - cintos de cuero (7 nov, para el panel de equipo): la correa enrollada de canto, con la hebilla de hierro en la punta
@@ -485,6 +486,50 @@ function cubo(n, id) {
   return mallas(L);
 }
 
+// La criba (P10): un aro de vara doblada (45 cm) con la pared baja de tiras de mimbre y el fondo tejido en cuadros,
+// para lavar la tierra del pantano. loteCriba(L) la pone en el lote L, el fondo en y = 0 y la boca hacia +Y.
+export function loteCriba(L, opc = {}) {
+  const r = 0.22, alto = 0.07;
+  L.add(cil(r, r * 0.97, alto, 22, true), MIMBRE, 0, alto / 2, 0, null, { tex: 'paja', rayas: (v) => 0.88 + 0.12 * Math.sin(v.y * 260), ...opc });
+  L.add(cil(r * 0.97, r * 0.95, alto, 22, true), 0x8f7a52, 0, alto / 2 + 0.002, 0, null, { escala: v3(-0.96, 1, 0.96), tex: 'paja', ...opc });   // por dentro
+  // el fondo: el disco oscuro (los huecos, por donde se cuela el agua y el barro) y encima las tiras de mimbre
+  // cruzadas, una por encima y otra por debajo (en dos alturas, como el tejido), cada una del largo que cabe en el aro
+  L.add(new THREE.CircleGeometry(r * 0.95, 22), 0x3b3125, 0, 0.006, 0, { x: -Math.PI / 2 }, { tex: 'liso', ...opc });
+  const N = 9, paso = (2 * r * 0.95) / N;
+  for (let i = 0; i < N; i++) {
+    const c = -r * 0.95 + paso * (i + 0.5), largo = 2 * Math.sqrt(Math.max(0, (r * 0.95) ** 2 - c * c));
+    for (const eje of [0, 1]) {
+      const g = new THREE.BoxGeometry(paso * 0.72, 0.006, largo);
+      L.add(g, (i + eje) % 2 ? MIMBRE : 0xa08a5c, eje ? 0 : c, 0.012 + ((i + eje) % 2) * 0.004, eje ? c : 0, { y: eje ? Math.PI / 2 : 0 }, { tex: 'paja', ...opc });
+    }
+  }
+  // los dos aros de vara (arriba y abajo) y una atadura de cordel
+  for (const y of [0.004, alto]) L.add(new THREE.TorusGeometry(r + 0.004, 0.009, 5, 26), 'madera', 0, y, 0, { x: Math.PI / 2 }, { tex: 'veta', ...opc });
+  L.add(new THREE.TorusGeometry(0.014, 0.004, 4, 8), CORDEL, r + 0.006, alto * 0.6, 0, { y: Math.PI / 2 }, { tex: 'liso', ...opc });
+}
+function criba(n, id) {
+  const L = lote(0.05);
+  loteCriba(L, { sinSuelo: true });
+  return mallas(L);
+}
+
+// El mineral de hierro de pantano (P10, 14 nov): un montoncito de terrones pardo rojizos, nudosos y porosos (el
+// mineral de las vegas: costras de óxido con la tierra pegada), alguno con manchas de ocre; más terrones con más.
+const OXIDO = 0x76583a, OXIDO_OSC = 0x4e3a28, OXIDO_ROJO = 0x7e5636, OCRE_COSTRA = 0xa47c46;   // (pardos de óxido; más rojo parecían bayas)
+function mineralHierro(n, id) {
+  const L = lote(0.04), k = Math.min(14, 3 + (n || 1) * 2);
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399 + az(id, i), capa = i < 7 ? 0 : i < 11 ? 1 : 2, d = capa === 2 ? 0.03 : capa ? 0.07 : 0.06 + Math.sqrt(i / 7) * 0.08;
+    const r = 0.04 + az(id, i + 30) * 0.025, g = new THREE.IcosahedronGeometry(r, 1);
+    const p = g.attributes.position;   // nudoso: cada vértice, hacia fuera o hacia dentro
+    for (let j = 0; j < p.count; j++) { const f = 0.78 + 0.4 * az(id + ':' + i, Math.round(p.getX(j) * 900) + ':' + Math.round(p.getY(j) * 900) + ':' + Math.round(p.getZ(j) * 900)); p.setXYZ(j, p.getX(j) * f, p.getY(j) * f * 0.75, p.getZ(j) * f); }
+    g.computeVertexNormals();
+    L.add(g, [OXIDO, OXIDO_OSC, OXIDO_ROJO][i % 3], Math.cos(a) * d * 1.2, r * 0.6 + capa * 0.05, Math.sin(a) * d, { y: az(id, i + 60) * 6, x: az(id, i + 70) }, { plano: true, tex: 'piedra' });
+    if (i % 3 !== 2) L.add(new THREE.IcosahedronGeometry(r * (i % 3 ? 0.45 : 0.32), 0), i % 2 ? OCRE_COSTRA : 0x8a6a3a, Math.cos(a) * d * 1.2 + r * 0.3, r * 1.0 + capa * 0.05, Math.sin(a) * d, null, { escala: v3(1.2, 0.4, 1), plano: true, tex: 'piedra', sinSuelo: true });
+  }
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -629,13 +674,102 @@ function estacas(n, id) {
   return mallas(L);
 }
 
+// (P11, 14 nov) La criba de grano (valravnx: «quiero criba de grano si es realista»; ha visto cribas medievales en
+// museos): un aro de madera de unos 46 cm, una tira de vara rajada y curvada en redondo, con sus dos puntas solapadas y
+// cosidas con tiras; dentro, un segundo aro más bajo que pinza la piel. El fondo, piel limpia tensada y agujereada a
+// punzón (agujeros del tamaño de un grano, en hileras desde el centro). En el lote L, con el centro del fondo en (x, y, z)
+// y el giro (Euler YXZ) dado.
+export const CRIBA = { r: 0.23, alto: 0.075, grosor: 0.011 };
+const PIEL_CRIBA = 0x9a8262;   // la piel limpia ya usada: más oscura y curtida por el grano y el polvo
+export function cribaEn(L, x, y, z, giro = null, id = 'criba') {
+  const { r, alto, grosor } = CRIBA;
+  const g = giro ? new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ')) : new THREE.Matrix4();
+  const pon = (geo, color, px, py, pz, opc, rot = null) => {
+    const m = g.clone().multiply(new THREE.Matrix4().makeTranslation(px, py, pz)); if (rot) m.multiply(rot);
+    const c = new THREE.Vector3().setFromMatrixPosition(m).add(new THREE.Vector3(x, y, z));
+    m.setPosition(0, 0, 0); L.add(geo, color, c.x, c.y, c.z, m, { sinSuelo: true, ...opc });
+  };
+  // el aro de fuera: una banda con su grosor (perfil girado), algo irregular de alto
+  // (con muchos puntos a lo alto, para que la veta, a lo largo del aro, tenga dónde pintarse)
+  const N = 14, perfil = [[r, 0], [r + grosor, 0]];
+  for (let i = 1; i <= N; i++) perfil.push([r + grosor, alto * i / N]);
+  for (let i = N; i >= 0; i--) perfil.push([r, alto * 0.97 * i / N]);
+  for (let i = 0; i < perfil.length; i++) perfil[i] = new THREE.Vector2(perfil[i][0], perfil[i][1]);
+  const vetaAro = v => 0.88 + 0.09 * Math.sin(v.y * 330 + Math.atan2(v.z, v.x) * 2) + 0.05 * Math.sin(v.y * 900 + Math.atan2(v.z, v.x) * 5);   // la veta, a lo largo del aro (es una tira de vara rajada y curvada)
+  pon(new THREE.LatheGeometry(perfil, 28), 0x8a6d4a, 0, 0, 0, { tex: 'liso', rayas: vetaAro });
+  // el aro de dentro, más bajo, que pinza la piel contra el de fuera
+  const perfil2 = [[r - grosor * 0.9, 0.004], [r, 0.004], [r, 0.03], [r - grosor * 0.9, 0.03], [r - grosor * 0.9, 0.004]].map(([a, b]) => new THREE.Vector2(a, b));
+  pon(new THREE.LatheGeometry(perfil2, 28), 0x75593c, 0, 0, 0, { tex: 'liso', rayas: vetaAro });
+  // el solape de las puntas del aro de fuera, cosido con tres puntadas de tira
+  const aS = az(id, 1) * Math.PI * 2, rot = new THREE.Matrix4().makeRotationY(-aS);
+  pon(cajaR(0.007, alto * 0.95, 0.12, 0.002), 0x6f5539, Math.cos(aS) * (r + grosor + 0.003), alto * 0.48, Math.sin(aS) * (r + grosor + 0.003), { tex: 'veta' }, rot);
+  for (let k = -1; k <= 1; k++) {
+    const a = aS + k * 0.13;
+    pon(new THREE.TorusGeometry(0.012, 0.0022, 3, 8), 0x5a4330, Math.cos(a) * (r + grosor / 2), alto * 0.5, Math.sin(a) * (r + grosor / 2), { tex: 'liso' }, new THREE.Matrix4().makeRotationY(-a).multiply(new THREE.Matrix4().makeScale(0.7, 2.2, 1)));
+  }
+  // el fondo de piel limpia, tensada (apenas combada hacia abajo en el centro)
+  const fondo = new THREE.CircleGeometry(r + grosor * 0.2, 28, 0, Math.PI * 2); fondo.rotateX(-Math.PI / 2);
+  const fp = fondo.attributes.position; for (let i = 0; i < fp.count; i++) { const d = Math.hypot(fp.getX(i), fp.getZ(i)) / r; fp.setY(i, -0.006 * (1 - d * d)); }
+  fondo.computeVertexNormals();
+  pon(fondo, PIEL_CRIBA, 0, 0.012, 0, { tex: 'liso', rayas: moteadoPiel(id, 2.2) });
+  // y por debajo (la cara de fuera de la piel), para que se vea también de canto y desde abajo, con sus agujeros
+  const debajo = fondo.clone(); debajo.translate(0, -0.0012, 0);
+  { const ix = debajo.index; if (ix) for (let i = 0; i < ix.count; i += 3) { const t = ix.getX(i); ix.setX(i, ix.getX(i + 2)); ix.setX(i + 2, t); } }
+  debajo.computeVertexNormals();
+  pon(debajo, PIEL_CRIBA, 0, 0.012, 0, { tex: 'liso', rayas: moteadoPiel(id, 2.2) });
+  // los agujeros a punzón, en anillos (de dentro afuera) hasta cerca del aro: del tamaño de un grano
+  for (let a = 1; a <= 7; a++) {
+    const ra = a * (r - 0.03) / 7, n = Math.round(6 * a);
+    for (let k = 0; k < n; k++) {
+      const t = (k + (a % 2) * 0.5 + (az(id, a * 100 + k) - 0.5) * 0.35) / n * Math.PI * 2, rr = ra + (az(id, a * 100 + k + 50) - 0.5) * 0.008, d = rr / r, q = 0.8 + az(id, a * 100 + k + 70) * 0.5;
+      pon(new THREE.CircleGeometry(0.0048 * q, 5), 0x2e241b, Math.cos(t) * rr, 0.0145 - 0.006 * (1 - d * d), Math.sin(t) * rr, { tex: 'liso' }, new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+      pon(new THREE.CircleGeometry(0.0048 * q, 5), 0x2e241b, Math.cos(t) * rr, 0.0095 - 0.006 * (1 - d * d), Math.sin(t) * rr, { tex: 'liso' }, new THREE.Matrix4().makeRotationX(Math.PI / 2));
+    }
+  }
+}
+function cribaGrano(n, id) {
+  const L = lote(0.03);
+  // (algo levantada: el suelo del mundo no es plano bajo los 46 cm del aro, y a ras se comía un trozo del fondo)
+  cribaEn(L, 0, 0.03, 0, { y: az(id, 9) * 6 }, id);
+  return mallas(L);
+}
+// (P11, 14 nov) el grano sin limpiar, recién trillado: un montoncito de granos de cebada revueltos con granzas (cascarillas
+// y aristas pálidas), briznas de paja y alguna china y terrón de la era
+function granoSucio(n, id) {
+  const L = lote(0.03), H = 0.024, R = 0.065;   // un montón bajo, como el que queda al barrer la era
+  const alto = d => 0.002 + H * Math.sqrt(Math.max(0, 1 - (d / R) ** 2));
+  // el montón: una cúpula baja del pardo pajizo del grano revuelto con granzas y polvo de la era, a manchas
+  const mon = new THREE.SphereGeometry(R, 16, 6, 0, Math.PI * 2, 0, Math.PI / 2); mon.scale(1, H / R, 1);
+  L.add(mon, 0x8c7a52, 0, 0, 0, null, { tex: 'liso', sinSuelo: true, rayas: v => 0.84 + 0.16 * Math.sin(v.x * 300 + v.z * 170) * Math.cos(v.z * 260 - v.y * 200) });
+  const k = 120;
+  for (let i = 0; i < k; i++) {   // los granos, tumbados por encima del montón: ovalados, de color paja apagado
+    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / k) * R * 0.95;
+    const gr = new THREE.SphereGeometry(0.0042, 5, 3); gr.scale(0.8, 0.55, 1.6);
+    L.add(gr, i % 4 ? 0xa48f5c : 0x93804f, Math.cos(a) * d, alto(d), Math.sin(a) * d, { y: az(id, i + 50) * 6 }, { tex: 'liso', sinSuelo: true });
+  }
+  for (let i = 0; i < 40; i++) {   // las granzas: cascarillas planas y claras, y trozos de arista
+    const a = az(id, i + 100) * 6.283 + i * 0.7, d = Math.sqrt(az(id, i + 130)) * R * 0.95;
+    if (i % 2) { const c = new THREE.PlaneGeometry(0.006, 0.01); c.rotateX(-Math.PI / 2); L.add(c, 0xab9c72, Math.cos(a) * d, alto(d) + 0.002, Math.sin(a) * d, { y: az(id, i + 190) * 6 }, { tex: 'liso', sinSuelo: true }); }
+    else L.add(cil(0.0009, 0.0009, 0.012 + az(id, i + 160) * 0.012, 3), 0xa99a6e, Math.cos(a) * d, alto(d) + 0.002, Math.sin(a) * d, { z: Math.PI / 2, y: az(id, i + 190) * 6 }, { sinSuelo: true });
+  }
+  for (let i = 0; i < 6; i++) {   // briznas de paja, más largas, encima y saliendo del montón
+    const a = az(id, i + 300) * 6.283, d = az(id, i + 310) * R * 0.8;
+    L.add(cil(0.0016, 0.0016, 0.05 + az(id, i + 320) * 0.04, 3), 0xb9a46c, Math.cos(a) * d, alto(d) + 0.003, Math.sin(a) * d, { z: Math.PI / 2 - 0.08, y: az(id, i + 330) * 6 }, { tex: 'paja', sinSuelo: true });
+  }
+  for (let i = 0; i < 4; i++) {   // chinas y terrones de la era, que se ven
+    const a = az(id, i + 220) * 6.283 + i * 1.6, d = R * (0.35 + az(id, i + 240) * 0.55);
+    L.add(new THREE.IcosahedronGeometry(0.0042 + az(id, i + 260) * 0.0022, 0), i % 2 ? 0x5e5244 : 0x77736a, Math.cos(a) * d, alto(d) + 0.002, Math.sin(a) * d, { y: i }, { tex: 'liso', sinSuelo: true, plano: true });
+  }
+  return mallas(L);
+}
+
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   estaca: estacas,
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
-  semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
+  semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
