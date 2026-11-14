@@ -1,0 +1,29 @@
+[
+ {
+  "nombre": "risco_estratos",
+  "alto": 4,
+  "imagen_id": "01a1d8a4-775f-77ac-8f7d-ec0263224a77",
+  "modelo_id": "01a1d8a4-d965-7526-af20-1eebba7ef832",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "risco_grietas",
+  "alto": 4,
+  "imagen_id": "01a1d8a6-46c1-7482-afc8-1ba94847347a",
+  "modelo_id": "01a1d8a6-a991-7316-aac3-244588bb289e",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ },
+ {
+  "nombre": "risco_mole",
+  "alto": 3,
+  "imagen_id": "01a1d8a8-14b6-704f-ba37-fbdeaed870b6",
+  "modelo_id": "01a1d8a8-771d-7729-be14-226bad962ff4",
+  "estado": "SUCCEEDED",
+  "error": null,
+  "creditos": 39
+ }
+]
