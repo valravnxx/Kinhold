@@ -1,0 +1,24 @@
+Las tres salidas
+  OK   son tres, con nombres distintos: Lindholt, la ciudad y Motdale
+  OK   la de Lindholt es la salida común
+  OK   cada una en su comarca (Lindholt, Strandvang, Motdale) — Lindholt,Strandvang,Motdale
+  OK   cada una vale como sitio de salida (tierra firme, llano, lejos de los ríos)
+  OK   y está en una zona del rey: no se reclama
+  OK   la de la ciudad, junto a ella (fuera de su sitio, a menos de 150 m) y en su zona — 80 m
+Un personaje nuevo elige
+  OK   llega sin posición (aún no ha elegido) — null
+  OK   si sale y vuelve sin haber elegido, sigue sin posición (el latido no la apunta) — null
+  OK   una salida que no existe no vale — Esa salida no existe.
+  OK   elige Motdale y aparece allí — {"x":19404,"y":-53.47772787957268,"z":10720,"giro":0}
+  OK   en el suelo, donde el servidor lo deja estar
+  OK   no puede volver a elegir — Ya has empezado.
+Lo recuerda
+  OK   al volver con su ficha sale donde lo dejó, en Motdale (lo mandado desde la común antes de elegir no cuenta) — {"x":19405,"y":-53.454422082883724,"z":10720,"giro":0}
+  OK   otro nuevo elige la ciudad y aparece junto a ella — {"x":32993,"y":-90.0063925945433,"z":6524,"giro":0}
+Tras reiniciar el servidor
+  OK   sigue sabiendo dónde empezó cada uno (posiciones.json) — {"x":32993,"y":-90.0063925945433,"z":6524,"giro":0}
+  OK   y tampoco deja elegir otra vez — Ya has empezado.
+Con salidaComun (solo las pruebas de navegador)
+  OK   un nuevo empieza en la común sin elegir — {"x":0,"y":0,"z":0,"giro":0}
+
+17 bien, 0 mal
