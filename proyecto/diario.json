@@ -6843,5 +6843,21 @@
   "pruebas": "Comprobador de código correcto. Trillar 18/0 y orígenes sin la era ni la paja en PENDIENTES. En la nube, el panel de fabricar en PC y en el móvil: todo bien salvo la cuenta de los puestos del menú de construir en el móvil, que esperaba 6 y ya son 7 (corregida, no repetida). Las dos comprobaciones de la era fallan al romperlas a propósito. Segunda mirada de un agente aparte: sí.",
   "capturas": "capturas/demo-v206",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T07:06:08+01:00",
+  "fin": "2026-11-14T09:02:13+01:00",
+  "hito": "granja",
+  "titulo": "Escardar (demo v207)",
+  "hecho": [
+   "Mientras lo sembrado está verde o en espiga salen malas hierbas entre ello: rosetas de hojas anchas de verde grisáceo y, en espiga, amapolas y acianos (valravnx, 14 nov: «meteremos… escardar»).",
+   "Con las manos vacías o con la azada, delante de ellas, Usar dice Escardar y en unos 2 s las quita de un círculo de 1,2 m; lo hace el servidor con su hora y lo ven todos.",
+   "Es optativo y da más al cosechar: la cebada escardada da 5 gavillas por cada 4, y cada planta escardada da una más (provisional).",
+   "Con pocos fotogramas no se subían las escaleras (desde la v191): ahora los pies siguen el suelo en cada trozo del paso.",
+   "El hito nuevo P11b «La lluvia y el riego», justo después de P11, con regar el huerto (la col y el nabo; el cereal y las habas no se riegan, como en la época)."
+  ],
+  "pruebas": "Escardar en la lógica y en el servidor, 27 de 27 (rota a propósito, falla); los campos en el navegador, con escardar en línea, bien; el recorrido y los avisos de las necesidades, bien. La velocidad con pocos fotogramas, con la escalera nueva (rota a propósito, falla). La de construir mide sus escaleras paso a paso (la máquina de la nube va a muy pocos fotogramas). En la lógica falla el servidor de prueba en internet por avisos del sistema de la máquina de la nube, que este cambio no toca. Segunda mirada aparte de las malas hierbas: primero dijo que no (planas, flores como pastillas, acianos diminutos), arreglado; después, sí.",
+  "capturas": "capturas/demo-v207",
+  "estado": "ok"
  }
 ]

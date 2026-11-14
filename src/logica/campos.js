@@ -371,6 +371,7 @@ export function sembrar(m, campo, cultivo, x, z, t, autor, gastar = () => ({ ok:
     const g = gastar(punados);
     if (!g.ok) return g;
     c.voleo = { t: [...c.voleo.t, t], celdas: aBase64(u) };
+    if (c.escarda) { const b = bitsEscarda(c).slice(); for (let k = 0; k < u.length; k++) if (u[k] === nueva) b[k >> 3] &= ~(1 << (k & 7)); guardarEscarda(c, b); }   // (lo recién sembrado, aún sin escardar)
     return { ok: true, campo: c.id, cultivo, nuevas, punados };
   }
   if (!c.plantas) c.plantas = [];
@@ -424,19 +425,22 @@ export function segar(m, campo, x, z, t, autor) {
   const hay = cebadaCerca(c, x, z, t);
   if (!hay.maduras) return { ok: false, motivo: hay.verdes ? 'La cebada aún no está madura.' : 'Aquí no hay cebada que segar.' };
   const g = rejilla(c), u = celdasVoleo(c).slice();
-  let segadas = 0;
+  let segadas = 0, escardadas = 0, cuenta = 0;   // (cuenta: los m² que valen, con lo escardado de más)
   for (let j = Math.max(0, Math.floor(z - RADIO_SEGAR) - g.z0); j <= Math.min(g.h - 1, Math.floor(z + RADIO_SEGAR) - g.z0); j++)
     for (let i = Math.max(0, Math.floor(x - RADIO_SEGAR) - g.x0); i <= Math.min(g.w - 1, Math.floor(x + RADIO_SEGAR) - g.x0); i++) {
       const k = j * g.w + i, cx = g.x0 + i + 0.5, cz = g.z0 + j + 0.5;
       if (!u[k] || (cx - x) ** 2 + (cz - z) ** 2 > RADIO_SEGAR * RADIO_SEGAR) continue;
       if (!globalThis.__mutarCosechar && fase(c.voleo.t[u[k] - 1], t) !== MADURO) continue;   // (lo verde se queda)
       u[k] = 0; segadas++;
+      if (escardadaK(c, k)) { escardadas++; if (!globalThis.__mutarEscardar) cuenta += EXTRA_ESCARDA - 1; }
     }
-  const total = (num(c.segado) ? c.segado : 0) + segadas, gavillas = Math.floor(total / M2_POR_GAVILLA + 1e-9);
+  cuenta += segadas;
+  if (escardadas) { const b = bitsEscarda(c).slice(); for (let k = 0; k < u.length; k++) if (!u[k]) b[k >> 3] &= ~(1 << (k & 7)); guardarEscarda(c, b); }   // (lo segado, de nuevo sin escardar)
+  const total = (num(c.segado) ? c.segado : 0) + cuenta, gavillas = Math.floor(total / M2_POR_GAVILLA + 1e-9);
   c.segado = Math.round((total - gavillas * M2_POR_GAVILLA) * 100) / 100;
   c.voleo = { t: [...c.voleo.t], celdas: aBase64(u) };
   if (c.labradoEn < t) c.labradoEn = t;   // (lo segado queda labrado: el barbecho cuenta desde ahora)
-  return { ok: true, campo: c.id, segadas, gavillas };
+  return { ok: true, campo: c.id, segadas, gavillas, escardadas };
 }
 // Coger a mano la planta madura más cercana a (x, z) del campo. Devuelve { ok, campo, cultivo, da } o { ok: false, motivo }.
 export function cogerPlanta(m, campo, x, z, t, autor) {
@@ -448,7 +452,72 @@ export function cogerPlanta(m, campo, x, z, t, autor) {
   if (!p) return { ok: false, motivo: plantaMadura(c, x, z, t, 0.6, true) ? 'Aún no está madura.' : 'Aquí no hay nada que coger.' };
   c.plantas = c.plantas.filter((_, i) => i !== p.i);
   if (c.labradoEn < t) c.labradoEn = t;
-  return { ok: true, campo: c.id, cultivo: p.p.c, da: { ...DA_PLANTA[p.p.c] } };
+  const da = { ...DA_PLANTA[p.p.c] };
+  if (p.p.e && !globalThis.__mutarEscardar) { const k = p.p.c === 'habas' ? 'habas' : 'semilla_' + p.p.c; da[k] = (da[k] || 0) + 1; }   // (escardada, 1 más: una haba, o una semilla)
+  return { ok: true, campo: c.id, cultivo: p.p.c, da, escardada: !!p.p.e };
+}
+
+// ---------- Escardar (P11, «Escardar», 14 nov) ----------
+// valravnx, 14 nov: «meteremos… escardar». Mientras lo sembrado está verde o echando espiga (las fases 1 y 2) salen
+// malas hierbas entre ello, como en la época (la escarda de junio). Con las manos vacías o con la azada, cada pasada
+// escarda un círculo de RADIO_ESCARDAR m donde apuntas (unos 2 s): las casillas sembradas a voleo y las plantas que hay
+// en él, en esas fases. Es optativo y da más al cosechar: la cebada, cada m² escardado cuenta EXTRA_ESCARDA m² al hacer
+// gavillas (5 gavillas en vez de 4 de lo que siembra un puñado); cada planta escardada da 1 más de lo que da (decisiones
+// provisionales: registro y diario). Sin escardar se cosecha como siempre.
+// En el campo: c.escarda = base64 (1 bit por casilla de la rejilla, como lo labrado) y en cada planta, p.e = 1.
+export const RADIO_ESCARDAR = 1.2, ALCANCE_ESCARDAR = 3, SEGUNDOS_ESCARDAR = 2;
+export const EXTRA_ESCARDA = 1.25;
+// ¿Tiene malas hierbas algo sembrado a la hora t (y escardado o no), a la hora ahora? (fases verde y espiga)
+export const conHierbas = (t, ahora, escardado) => !escardado && (globalThis.__mutarEscardar ? true : fase(t, ahora) === 1 || fase(t, ahora) === 2);
+// los bits de lo escardado (en memoria, rehechos de c.escarda si cambia por fuera)
+function bitsEscarda(c) {
+  const r = rejilla(c), n = Math.ceil(r.w * r.h / 8);
+  if (c._esc && c._escDe === (c.escarda || null) && c._esc.length === n) return c._esc;
+  const b = c.escarda ? deBase64(c.escarda, n) : new Uint8Array(n);
+  Object.defineProperty(c, '_esc', { value: b, writable: true, enumerable: false, configurable: true });
+  Object.defineProperty(c, '_escDe', { value: c.escarda || null, writable: true, enumerable: false, configurable: true });
+  return b;
+}
+function guardarEscarda(c, b) {
+  c.escarda = aBase64(b);
+  Object.defineProperty(c, '_esc', { value: b, writable: true, enumerable: false, configurable: true });
+  Object.defineProperty(c, '_escDe', { value: c.escarda, writable: true, enumerable: false, configurable: true });
+}
+// ¿Está escardada la casilla k de la rejilla del campo?
+const escardadaK = (c, k) => !!(c.escarda && (bitsEscarda(c)[k >> 3] & (1 << (k & 7))));
+// ¿Está escardada la casilla de (x, z)?
+export function escardadoEn(c, x, z) {
+  if (!c || !c.escarda) return false;
+  const r = rejilla(c), i = Math.floor(x) - r.x0, j = Math.floor(z) - r.z0;
+  return i >= 0 && j >= 0 && i < r.w && j < r.h && escardadaK(c, j * r.w + i);
+}
+// Lo que tiene malas hierbas a menos de RADIO_ESCARDAR de (x, z), a la hora ahora: { casillas: [k], plantas: [i] }
+export function hierbasCerca(c, x, z, ahora) {
+  const out = { casillas: [], plantas: [] };
+  if (!c) return out;
+  if (c.voleo) {
+    const g = rejilla(c), u = celdasVoleo(c);
+    for (let j = Math.max(0, Math.floor(z - RADIO_ESCARDAR) - g.z0); j <= Math.min(g.h - 1, Math.floor(z + RADIO_ESCARDAR) - g.z0); j++)
+      for (let i = Math.max(0, Math.floor(x - RADIO_ESCARDAR) - g.x0); i <= Math.min(g.w - 1, Math.floor(x + RADIO_ESCARDAR) - g.x0); i++) {
+        const k = j * g.w + i, cx = g.x0 + i + 0.5, cz = g.z0 + j + 0.5;
+        if (!u[k] || (cx - x) ** 2 + (cz - z) ** 2 > RADIO_ESCARDAR * RADIO_ESCARDAR) continue;
+        if (conHierbas(c.voleo.t[u[k] - 1], ahora, escardadaK(c, k))) out.casillas.push(k);
+      }
+  }
+  ((c.plantas) || []).forEach((p, i) => { if ((p.x - x) ** 2 + (p.z - z) ** 2 <= RADIO_ESCARDAR * RADIO_ESCARDAR && conHierbas(p.t, ahora, p.e)) out.plantas.push(i); });
+  return out;
+}
+// Escardar en (x, z) del campo de id campo, a la hora t. Devuelve { ok, campo, casillas, plantas } o { ok: false, motivo }.
+export function escardar(m, campo, x, z, t, autor) {
+  if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
+  const c = (m.campos || []).find(k => k.id === campo);
+  if (!c || !c.cerrado) return { ok: false, motivo: 'Aquí no hay ningún campo cerrado.' };
+  if (!m.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  const h = hierbasCerca(c, x, z, t);
+  if (!h.casillas.length && !h.plantas.length) return { ok: false, motivo: 'Aquí no hay malas hierbas que quitar.' };
+  if (h.casillas.length) { const b = bitsEscarda(c).slice(); for (const k of h.casillas) b[k >> 3] |= 1 << (k & 7); guardarEscarda(c, b); }
+  if (h.plantas.length) c.plantas = c.plantas.map((p, i) => (h.plantas.includes(i) ? { ...p, e: 1 } : p));
+  return { ok: true, campo: c.id, casillas: h.casillas.length, plantas: h.plantas.length };
 }
 
 // Para guardar y leer el mundo (Mundo.exportar / importar).
@@ -456,7 +525,8 @@ export const exportarCampos = (l) => (l || []).map(c => ({ id: c.id, dueno: c.du
   ...(c.labrado ? { labrado: c.labrado, labradoEn: c.labradoEn } : {}),
   ...(c.voleo && c.voleo.t.length ? { voleo: { t: [...c.voleo.t], celdas: c.voleo.celdas } } : {}),
   ...(c.plantas && c.plantas.length ? { plantas: c.plantas.map(p => ({ ...p })) } : {}),
-  ...(c.segado ? { segado: c.segado } : {}) }));
+  ...(c.segado ? { segado: c.segado } : {}),
+  ...(c.escarda ? { escarda: c.escarda } : {}) }));
 export function importarCampos(l) {
   if (!Array.isArray(l)) return [];
   return l.filter(c => c && Number.isInteger(c.id) && Array.isArray(c.puntos))
@@ -466,5 +536,7 @@ export function importarCampos(l) {
       // (13 nov) lo sembrado: a voleo (las horas de cada pasada y un byte por casilla) y planta a planta
       ...(c.voleo && Array.isArray(c.voleo.t) && c.voleo.t.every(num) && typeof c.voleo.celdas === 'string' && c.voleo.celdas.length < 2000000 ? { voleo: { t: [...c.voleo.t], celdas: c.voleo.celdas } } : {}),
       ...(num(c.segado) && c.segado > 0 && c.segado < 100 ? { segado: c.segado } : {}),
-      ...(Array.isArray(c.plantas) ? { plantas: c.plantas.filter(p => p && CULTIVOS[p.c] && num(p.x) && num(p.z) && num(p.t)).map(p => ({ c: p.c, x: p.x, z: p.z, t: p.t })) } : {}) }));
+      // (14 nov) lo escardado: 1 bit por casilla, como lo labrado; en cada planta, e
+      ...(typeof c.escarda === 'string' && c.escarda.length < 200000 ? { escarda: c.escarda } : {}),
+      ...(Array.isArray(c.plantas) ? { plantas: c.plantas.filter(p => p && CULTIVOS[p.c] && num(p.x) && num(p.z) && num(p.t)).map(p => ({ c: p.c, x: p.x, z: p.z, t: p.t, ...(p.e ? { e: 1 } : {}) })) } : {}) }));
 }

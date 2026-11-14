@@ -347,6 +347,10 @@ with sync_playwright() as p:
             pg.wait_for_timeout(100); t += 100
         pg.keyboard.up(tecla)
         return t
+    # (las escaleras se miran paso a paso: con la máquina de pruebas a muy pocos fotogramas, cada fotograma avanzaría casi
+    # 2 m y se pasaría de largo; el juego cuenta el tiempo real desde el 12 nov. Que con pocos fotogramas se sube, en
+    # pruebas/prueba_velocidad_navegador.py)
+    ev("window.__dtMax = 0.05")
     # abajo, delante de la escalera, mirando hacia donde sube (+z)
     ev(f"{K}.pj.x=9; {K}.pj.z=-14.6; {K}.pj.k=0; {K}.pj.y=0; {K}.cam.yaw=Math.PI; {K}.cam.pitch=0.45; {K}.cam.dist=9")
     esperar(pg, 400)
