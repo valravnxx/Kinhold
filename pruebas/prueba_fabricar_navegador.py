@@ -385,9 +385,9 @@ try:
         print('En el móvil, otro jugador')
         # (mientras entra el móvil, el PC dibuja un fotograma por segundo: en la nube, sin tarjeta, los dos a la vez
         # dejaban la pantalla de la cuenta del móvil sin salir dos veces de tres; la red del PC sigue igual)
-        A.evaluate("window.__raf = window.requestAnimationFrame; window.requestAnimationFrame = f => setTimeout(() => window.__raf(f), 1000)")
+        A.evaluate("(() => { window.__raf = window.requestAnimationFrame; window.requestAnimationFrame = f => setTimeout(() => window.__raf(f), 1000); })()")
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
-        A.evaluate("window.requestAnimationFrame = window.__raf")
+        A.evaluate("(() => { window.requestAnimationFrame = window.__raf; })()")
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
         B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} - 0.6, z: {pos['z']} + 1.7, rot: 2.8 }}); {K}.cam.yaw = 0.35; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.75; }})()")
         comprobar('ve la piedra de tallar del otro', esperar(B, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 20000))
