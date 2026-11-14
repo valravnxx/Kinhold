@@ -102,13 +102,13 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     await J.andar(banco.x + 1, banco.z); await soltarManos();
     if (!(await juntar(['ortiga', 'hierba_larga'], 'fibra', 9, 250))) return { ok: false, motivo: `solo ${J.cuantos('fibra')} de fibra` };
     await J.andar(banco.x + 1, banco.z);
+    await soltarManos();   // (la fibra, a sus pies: con las manos se fabrica también de lo del suelo de al lado)
     for (let v = 0; v < 3; v++) {
       const q = await deMano('cordel');
       if (!q.ok) return q;
       const d = await depositar(banco, 'cordel');
       if (!d.ok) return d;
     }
-    const sobra = enLaMano('fibra'); if (sobra) await soltar(sobra);
     return enEstacion(banco, 'cuerda');
   };
 
@@ -314,10 +314,16 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     if (rl.ok) lascas++;
   }
   await soltarManos();
-  for (let k = 0; k < 3 && J.cuantos('lasca_silex') < 3; k++) await cogerSuelo('lasca_silex', tallar, 4, 3);
-  comprobar('talla 3 lascas (un sílex y una piedra cada una)', lascas === 3 && J.cuantos('lasca_silex') >= 3, `${lascas} · lleva ${J.cuantos('lasca_silex')} · ${enMano()}`);
-  await J.andar(banco.x + 1, banco.z);
-  for (let k = 0; k < 3; k++) await depositar(banco, 'lasca_silex');
+  const lascasSuelo = enSuelo('lasca_silex', tallar, 4).reduce((t, o) => t + o.cosa.n, 0);
+  comprobar('talla 3 lascas (un sílex y una piedra cada una)', lascas === 3 && lascasSuelo >= 3, `${lascas} · ${lascasSuelo} a sus pies`);
+  // las lleva al banco (una en cada mano: en dos viajes) y las deja en él
+  let enBanco = 0;
+  for (let k = 0; k < 4 && enBanco < 3; k++) {
+    await J.andar(tallar.x + 1, tallar.z);
+    for (const o of enSuelo('lasca_silex', tallar, 4)) { const libre = MANOS.find(l => !J.inv.lugares[l]); if (!libre || J.cuantos('lasca_silex') >= 3 - enBanco) break; await J.andar(o.x + 0.3, o.z); await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: libre, x: J.pos.x, z: J.pos.z }); }
+    await J.andar(banco.x + 1, banco.z);
+    while (J.cuantos('lasca_silex')) { const d = await depositar(banco, 'lasca_silex'); if (!d.ok) break; enBanco++; }
+  }
   await soltarManos();
   await juntar(['ramas'], 'rama', 1, 200);
   await J.andar(banco.x + 1, banco.z);
@@ -444,6 +450,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     await soltarManos();
     return !!(t.ok && t.datos.limpio);
   };
+  const motivos = [];
   const varasA = async (pz, enAlto = null) => {
     for (let v = 0; v < 12 && falta(pz, 'vara') > 0; v++) {
       if (!varasSuelo().length && !(await talarJoven())) break;
@@ -459,8 +466,9 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
         }
       }
       if (!J.cuantos('vara')) continue;
-      if (enAlto) { await enAlto(async () => J.accion({ tipo: 'entregar', construccion: casa.id, clave: pz.clave, material: 'vara', cantidad: J.cuantos('vara'), desde: 1 })); }
-      else { await J.andar(pz.x - 1, pz.z); await J.accion({ tipo: 'entregar', construccion: casa.id, clave: pz.clave, material: 'vara', cantidad: J.cuantos('vara') }); }
+      const n = Math.min(J.cuantos('vara'), falta(pz, 'vara'));
+      if (enAlto) { const e = await enAlto(async () => J.accion({ tipo: 'entregar', construccion: casa.id, clave: pz.clave, material: 'vara', cantidad: n, desde: 1 })); if (!e.ok) motivos.push(e.motivo); }
+      else { await J.andar(pz.x + 1, pz.z); const e = await J.accion({ tipo: 'entregar', construccion: casa.id, clave: pz.clave, material: 'vara', cantidad: n }); if (!e.ok) motivos.push(e.motivo); }
     }
     return falta(pz, 'vara') === 0;
   };
@@ -474,13 +482,14 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     const cs = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'cuerda' && dist(o, C) < 30), J.pos)[0];
     if (cs) { await cogerSuelo('cuerda', cs, 0.5); }
     else { const rq = await cuerda(); cuerdasHechas++; if (!rq.ok) break; }
-    await J.andar(andamio.x - 1, andamio.z);
-    await J.accion({ tipo: 'entregar', construccion: casa.id, clave: andamio.clave, material: 'cuerda', cantidad: Math.min(J.cuantos('cuerda'), falta(andamio, 'cuerda')) });
+    await J.andar(andamio.x + 1, andamio.z);
+    const e = await J.accion({ tipo: 'entregar', construccion: casa.id, clave: andamio.clave, material: 'cuerda', cantidad: Math.min(J.cuantos('cuerda'), falta(andamio, 'cuerda')) });
+    if (!e.ok) motivos.push(`cuerda: ${e.motivo} (lleva ${J.cuantos('cuerda')})`);
     await soltarManos();
   }
   const va = await varasA(andamio);
-  if (va) { await J.andar(andamio.x - 1, andamio.z); await trabajar(andamio); }
-  comprobar('le lleva 2 cuerdas y 8 varas y lo levanta', terminada(andamio), `faltan ${falta(andamio, 'cuerda')} cuerdas y ${falta(andamio, 'vara')} varas`);
+  if (va) { await J.andar(andamio.x + 1, andamio.z); await trabajar(andamio); }
+  comprobar('le lleva 2 cuerdas y 8 varas y lo levanta', terminada(andamio), `faltan ${falta(andamio, 'cuerda')} cuerdas y ${falta(andamio, 'vara')} varas · ${motivos.slice(0, 3).join(' | ')} · ${varasSuelo().length} montones de varas cerca`);
   // el tramo de paja: junto al tejado de juncos, en la casilla del andamio o al lado
   let tejado = null;
   for (const [dx, dz] of [[2, 0], [0, 2], [0, -2]]) {
