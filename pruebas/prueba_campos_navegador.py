@@ -380,7 +380,7 @@ try:
         ir(A, x0 + 10.8, z0 + 7.3, 0)
         comprobar('con las manos vacías, Usar no dice «Regar»', texto_usar(A) != 'Regar', texto_usar(A))
         # (de cerca: el personaje fuera del linde, de espaldas, y la cámara por encima de su hombro mirando el huerto)
-        ir(A, x0 + 10.1, z0 + 10.4, 3.1416); A.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.95"); A.wait_for_timeout(1500)
+        ir(A, x0 + 10.1, z0 + 9.7, 3.1416); A.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.95"); A.wait_for_timeout(1500)
         captura(A, f'{SALIDA}/PC_huerto_mustio_de_cerca.png')
         manos_vacias()
         coger(A, 'cubo', 1, 'mano:der')
@@ -409,7 +409,7 @@ try:
         comprobar('el cubo, vacío otra vez', esperar(A, EN_MANO('cubo'), 8000))
         comprobar('lo regado ya no está mustio; la otra col, sí', esperar(A, f"(() => {{ const m = {K}.escena.getObjectByName('planta_col_mustia_1'), b = {K}.escena.getObjectByName('planta_col_1'); return m && m.count === 1 && b && b.count >= 1 && !{K}.escena.getObjectByName('planta_nabo_mustia_1'); }})()", 8000))
         manos_vacias()
-        ir(A, x0 + 10.1, z0 + 10.4, 3.1416); A.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.95"); A.wait_for_timeout(1500)
+        ir(A, x0 + 10.1, z0 + 9.7, 3.1416); A.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.95"); A.wait_for_timeout(1500)
         captura(A, f'{SALIDA}/PC_regado_de_cerca.png')
 
         print('Cosecha (P11): lo sembrado «hace ocho días» (la hora la pone aquí el navegador: KINHOLD_PRUEBAS_HORA=campos)')
@@ -487,7 +487,7 @@ try:
         ir(B, x0 + 6, z0 + 7.0, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3.0; {K}.cam.pitch = 0.6"); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_escardado.png')
         comprobar('y ve la col mustia y la regada', esperar(B, f"!!{K}.escena.getObjectByName('planta_col_mustia_1') && !!{K}.escena.getObjectByName('planta_col_1')", 20000))
-        ir(B, x0 + 10.1, z0 + 10.4, 3.1416); B.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.8; {K}.cam.pitch = 0.95"); B.wait_for_timeout(2500)
+        ir(B, x0 + 10.1, z0 + 9.7, 3.1416); B.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.8; {K}.cam.pitch = 0.95"); B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_huerto_de_cerca.png')
         coger(B, 'cubo_agua', 1, 'mano:der')
         if esperar(B, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'cubo_agua'", 8000):

@@ -178,14 +178,14 @@ const FORMAS = {};
 const forma = (cultivo, f, mustia = false) => (FORMAS[cultivo + f + (mustia ? 'm' : '')] ||= mustia ? mustiar(forma(cultivo, f)) : formaPlanta(cultivo, f));
 // La planta mustia (regar el huerto, P11b): sin agua desde hace días, las hojas caen y se abren (más baja y más ancha) y
 // pierden el verde hacia un pardo amarillento
-const MUSTIO = C(0xa89a5c);
+const MUSTIO = C(0x6f6a44);   // (pardo oliva apagado: más amarillo, en la segunda mirada, salía lima)
 function mustiar(g0) {
   const g = g0.clone(), p = g.attributes.position, c = g.attributes.color;
   for (let i = 0; i < p.count; i++) {
     // (las hojas caídas: más bajas cuanto más lejos del centro, las puntas casi en el suelo)
     const x = p.getX(i), z = p.getZ(i), y = p.getY(i), r = Math.hypot(x, z), caida = Math.min(1, r / 0.2);
     p.setXYZ(i, x * (1 + 0.25 * caida), Math.max(0.004, y * (0.55 - 0.35 * caida)), z * (1 + 0.25 * caida));
-    c.setXYZ(i, c.getX(i) + (MUSTIO.r - c.getX(i)) * 0.55, c.getY(i) + (MUSTIO.g - c.getY(i)) * 0.55, c.getZ(i) + (MUSTIO.b - c.getZ(i)) * 0.55);
+    c.setXYZ(i, c.getX(i) + (MUSTIO.r - c.getX(i)) * 0.7, c.getY(i) + (MUSTIO.g - c.getY(i)) * 0.7, c.getZ(i) + (MUSTIO.b - c.getZ(i)) * 0.7);
   }
   return g;   // (sin rehacer las normales: las hojas van por las dos caras con la normal hacia arriba)
 }

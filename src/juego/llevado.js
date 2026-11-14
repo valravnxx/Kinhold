@@ -423,7 +423,7 @@ function enMano(t) {
     // (segunda mirada, 14 nov: el asa, dentro del puño, a lo ancho de los nudillos (+Y), no por encima de la mano; y
     // algo más pequeño en la mano, que se comía el muslo)
     const g = new THREE.Matrix4().makeRotationX(-Math.PI / 2).multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)).multiply(new THREE.Matrix4().makeScale(0.85, 0.85, 0.85));
-    cuboEn(L, 0, 0, (CUBO.alto + CUBO.asa) * 0.85 + 0.07, { lleno: t === 'cubo_agua', giro: g, asa: 0 });
+    cuboEn(L, 0, 0, (CUBO.alto + CUBO.asa) * 0.85, { lleno: t === 'cubo_agua', giro: g, asa: 0 });   // (lo alto del asa, en el centro de la O de la mano cerrada, como el mango de una herramienta)
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
     // (P10, 14 nov) la pala de madera, el mango dentro del puño e inclinado hacia abajo, la hoja hacia el suelo (antes
@@ -675,7 +675,7 @@ export function crearLlevado(j) {
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
       // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma
-      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
+      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo', 'cubo', 'cubo_agua'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
       const b = baseMano(mh, lado, invRaiz, largo ? 1.1 : 0.6); if (!b) continue;
       grupo.add(pieza(enMano(t), 'mano_' + lado, b.m, b.mano, invRaiz));
     }
