@@ -299,6 +299,8 @@ function atenderAccion(S, c, msg) {
   // las obras cobran de lo que llevas (los inventarios del servidor); el arcón de materiales y rellenarlo, solo si hay arcón de pruebas
   const usaInventario = USAN_INVENTARIO.has(accion.tipo) && !gratis;
   // admin_terminar solo la crea el servidor: nunca se acepta de un navegador
+  // un mojón de más (valravnx, 14 nov: para construcciones de prueba bonitas), solo la cuenta de admin con autoconstruir
+  if (accion.extra !== undefined && (accion.tipo !== 'mojon' || accion.extra !== true || !auto)) delete accion.extra;
   const soloServidor = accion.tipo === 'admin_terminar' || accion.tipo === 'tierra_al_rey';
   const sinArcon = soloServidor || (!arconPruebas && (accion.tipo === 'sacar_arcon' || accion.tipo === 'dejar_arcon' || accion.tipo === 'rellenar'));
   // con el terreno, las obras se miran contra él (la planta baja, solo si empieza una construcción nueva)

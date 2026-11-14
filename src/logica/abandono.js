@@ -10,6 +10,7 @@
 // - «Entrar» es estar en el mundo (decisión provisional, 6 nov): el servidor lo apunta al conectar y en cada latido
 //   mientras sigue conectado, solo si su cuenta puede entrar en el mundo (con el correo confirmado).
 // - Los dueños de antes de esto (sin nada apuntado) empiezan a contar desde la primera revisión.
+import { duenoBase } from './construccion.js';
 export const DIA = 24 * 60 * 60 * 1000;
 export const DIAS = 30;
 export const DIAS_SIN_OBRA = 15;
@@ -41,13 +42,15 @@ export class Abandono {
   // la última vez que entró el dueño o alguno de sus invitados (undefined si nadie)
   ultima(mundo, dueno) {
     let u;
-    for (const a of [dueno, ...(mundo.invitadosDe(dueno) || [])]) if (Number.isFinite(this.vistos[a]) && !(u >= this.vistos[a])) u = this.vistos[a];
+    // (un mojón de más del admin, «autor~N», cuenta lo que entra el admin y sus invitados)
+    const base = duenoBase(dueno);
+    for (const a of [base, ...(mundo.invitadosDe(base) || [])]) if (Number.isFinite(this.vistos[a]) && !(u >= this.vistos[a])) u = this.vistos[a];
     return u;
   }
   // Cómo está la tierra de un dueño: { desde, dias, hasta, quedan (ms) }
   plazo(mundo, dueno, ahora) {
     let desde = this.ultima(mundo, dueno);
-    if (desde === undefined) { desde = ahora; this.vistos[dueno] = ahora; }
+    if (desde === undefined) { desde = ahora; this.vistos[duenoBase(dueno)] = ahora; }
     const dias = tieneObraTerminada(mundo, dueno) ? DIAS : DIAS_SIN_OBRA, hasta = desde + dias * DIA;
     return { desde, dias, hasta, quedan: hasta - ahora };
   }
@@ -58,6 +61,7 @@ export class Abandono {
     for (const dueno of Object.keys(mundo.mojones)) {
       const p = this.plazo(mundo, dueno, ahora);
       if (p.quedan <= 0) { liberar.push({ dueno, desde: p.desde, dias: p.dias }); delete this.avisos[dueno]; continue; }
+      if (duenoBase(dueno) !== dueno) continue;   // (los mojones de más del admin no mandan correos: ya avisa el suyo)
       let a = this.avisos[dueno];
       if (!a || a.desde !== p.desde) a = this.avisos[dueno] = { desde: p.desde, semana: false, ultimo: false };
       if (p.quedan <= DIA) {

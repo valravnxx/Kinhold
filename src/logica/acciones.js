@@ -159,8 +159,10 @@ export function fueraDeAlcance(m, a, pos, holgura = 3) {
 
 function aplicarConstruccion(m, a, invs) {
   switch (a.tipo) {
-    case 'mojon': return pagada(m.colocarMojon(a.x, a.z, a.autor, pagaCon(m, a, invs)), a, invs);
-    case 'quitar_mojon': return m.quitarMojon(a.autor);
+    // extra: un mojón de más del admin (solo con su modo autoconstruir: lo mira el servidor, servidor/sistemas/conexion.mjs)
+    case 'mojon': return pagada(m.colocarMojon(a.x, a.z, a.autor, pagaCon(m, a, invs), a.extra === true), a, invs);
+    // mojon: cuál quitar (uno de los de más del admin, «autor~N»); sin él, el tuyo
+    case 'quitar_mojon': return m.quitarMojon(a.autor, texto(a.mojon) ? a.mojon : null);
     case 'invitar': return m.invitar(a.autor, a.a);
     case 'desinvitar': return m.desinvitar(a.autor, a.a);
     case 'tierra_al_rey': return a.autor === AUTOR_REY ? m.tierraAlRey(a.dueno) : { ok: false, motivo: 'Eso solo lo hace el rey.' };
