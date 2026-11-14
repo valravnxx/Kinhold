@@ -38,9 +38,10 @@ def esperar(pg, ms=2500):
         except Exception: pass
     pg.wait_for_timeout(1500)
 
-def mirar(pg, x, z, d=3.4, pitch=0.42, yaw=0.6, lejos=1.7, detras=False):
+def mirar(pg, x, z, d=3.4, pitch=0.42, yaw=0.6, lejos=1.7, detras=False, lado=False):
     # (detras: la cámara a la espalda del jugador, la mancha delante de él: para el móvil, estrecho)
     if detras: yaw = 'k.pj.rot + Math.PI'
+    if lado: yaw = 'k.pj.rot + Math.PI * 0.5'   # (de lado: el jugador no tapa lo que tiene delante)
     pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + {lejos}; k.pj.z = z + 0.6; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z); k.cam.dist = {d}; k.cam.pitch = {pitch}; k.cam.yaw = {yaw}; }}', [x, z])
     pg.wait_for_timeout(2500)
 
@@ -105,7 +106,7 @@ def recorrido(pg, nombre, pref):
     # el mineral sacado, de cerca (14 nov: terrones pardo rojizos, no un hatillo)
     mo = pg.evaluate(f"(([x, z]) => {{ const o = {K}.sueloObjetos.suelo.visibles(Date.now()).find(o => o.cosa.tipo === 'mineral_hierro' && Math.hypot(o.x - x, o.z - z) < 2); return o ? {{ x: o.x, z: o.z }} : null; }})", [m['x'], m['z']])
     if mo:
-        mirar(pg, mo['x'], mo['z'], d=1.6, pitch=0.75, lejos=1.1, detras=True)
+        mirar(pg, mo['x'], mo['z'], d=1.7, pitch=0.7, lejos=1.1, lado=True)
         pg.screenshot(path=f'{SALIDA}/{pref}_5_mineral.png', timeout=180000)
     comprobar(f'{nombre}: sin errores en la página', not errores, '; '.join(errores[:3]))
 
