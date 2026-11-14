@@ -411,7 +411,10 @@ function enMano(t) {
     for (const p of C.piezas) { p.m.premultiply(m); L.piezas.push(p); }
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
-    for (const p of H.piezas) { p.m.premultiply(new THREE.Matrix4().makeTranslation(0, -0.25, 0)); L.piezas.push(p); }
+    // (P10, 14 nov) la pala de madera, cogida cerca del extremo del mango y caída junto a la pierna, la hoja abajo (antes
+    // salía de lado, cruzada, como el hacha: el puño la ponía atravesada)
+    const m = t === 'pala_madera' ? new THREE.Matrix4().makeRotationX(1.25).multiply(new THREE.Matrix4().makeTranslation(0, -0.12, 0)) : new THREE.Matrix4().makeTranslation(0, -0.25, 0);
+    for (const p of H.piezas) { p.m.premultiply(m); L.piezas.push(p); }
   } else if (t === 'espada') {
     L.add(cil(0.014, 0.016, 0.1, 7), CUERO_OSC, 0, 0, 0, null, { tex: 'liso' });
     L.add(cajaR(0.2, 0.018, 0.024, 0.006), 'hierro', 0, 0.06, 0, { y: Math.PI / 2 });

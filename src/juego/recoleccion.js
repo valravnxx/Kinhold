@@ -75,21 +75,23 @@ function manchaCalco(capa) {
       R = mezcla(mezcla(0x5a, 0x45, turba), 0x2c, dentro * 0.8) + (mot - 0.5) * 34 + (grumo > 0.72 ? -10 : 0);
       G = mezcla(mezcla(0x58, 0x3b, turba), 0x25, dentro * 0.8) + (mot - 0.5) * 30 + (grumo > 0.72 ? -8 : 0);
       B = mezcla(mezcla(0x36, 0x2a, turba), 0x1c, dentro * 0.8) + (mot - 0.5) * 20;
-      A = paso(0.98, 0.7, rr) * (0.75 + 0.25 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
+      A = paso(0.98, 0.62, rr) * (0.85 + 0.15 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
     } else {
       // el charco más fuerte de los que tocan este sitio
-      let w = 0;
+      let w = -1;
       for (const [x0, y0, r0] of charcos) {
         const q = Math.hypot(u - x0, (v - y0) * 1.15) / r0 + (n1(u * 6 + x0 * 9, v * 6) - 0.5) * 0.55;
         w = Math.max(w, 1 - q);
       }
-      const agua = paso(0.12, 0.3, w), orilla = paso(-0.05, 0.12, w);
-      const tela = paso(0.62, 0.78, n3(u * 5 + 1, v * 7 + 3)) * agua;   // la tela irisada, en vetas
-      const brillo = paso(0.7, 0.9, n2(u * 4 - 3, v * 2 + 1)) * agua * 0.35;
-      R = mezcla(mezcla(0x8a, 0x6a, agua), 0x7e, tela) + brillo * 90 + (n2(u * 14, v * 14) - 0.5) * 22;
-      G = mezcla(mezcla(0x58, 0x36, agua), 0x78, tela) + brillo * 70 + (n2(u * 14, v * 14) - 0.5) * 14;
-      B = mezcla(mezcla(0x2a, 0x1e, agua), 0x6c, tela) + brillo * 60;
-      A = orilla * (agua > 0 ? 0.92 : 0.7);
+      const agua = paso(0.1, 0.32, w), orilla = paso(-0.02, 0.1, w);
+      const tela = paso(0.66, 0.8, n3(u * 5 + 1, v * 7 + 3)) * agua * 0.45;   // la tela irisada, en vetas, apenas
+      const brillo = paso(0.72, 0.92, n2(u * 4 - 3, v * 2 + 1)) * agua * 0.18;
+      // la orilla, costra ocre apagada; el agua, parda rojiza oscura (como el té fuerte), más oscura en lo hondo
+      const hondo = paso(0.3, 0.7, w);
+      R = mezcla(mezcla(0x7a, 0x55, agua), 0x3f, hondo) * (1 - tela) + 0x6a * tela + brillo * 60 + (n2(u * 14, v * 14) - 0.5) * 16;
+      G = mezcla(mezcla(0x55, 0x33, agua), 0x24, hondo) * (1 - tela) + 0x68 * tela + brillo * 55 + (n2(u * 14, v * 14) - 0.5) * 10;
+      B = mezcla(mezcla(0x30, 0x20, agua), 0x18, hondo) * (1 - tela) + 0x62 * tela + brillo * 50;
+      A = orilla * (0.6 + 0.35 * agua);
     }
     d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
   }
