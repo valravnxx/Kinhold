@@ -364,6 +364,7 @@ try:
           K.estacionesV.refrescar(); K.mirarEras(); }})"""
         A.evaluate(f"{ERA}({K}, -3.5, 1)")
         comprobar('y sin hierba encima: el suelo de la era despeja la hierba densa, las flores y las matas', A.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; return {K}.erasDespejadas().some(c => Math.hypot(c[0] - e.x, c[1] - e.z) < 0.01 && c[2] > 1.45); }})()"))
+        comprobar('y tendida sobre el terreno: su suelo y sus piedras siguen la cuesta (sin la explanada enterrada)', A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_era'), m = o && o.getObjectByName('modelo'); return !!m && m.userData.asentado === 'era' && !m.getObjectByName('bajo_tierra').visible; }})()"))
         comprobar('la era se dibuja, con las gavillas encima', A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_era'); return !!o && !!o.getObjectByName('deposito_gavilla'); }})()"))
         A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 2.2, z: e.z + 2.0, rot: 2.3 }}); {K}.cam.yaw = 0.7; {K}.cam.dist = 4.6; {K}.cam.pitch = 0.45; }})()""")
         A.wait_for_timeout(2500)

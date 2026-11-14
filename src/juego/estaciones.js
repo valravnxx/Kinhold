@@ -681,6 +681,7 @@ function camaJuncos(id) {
 // Dónde se tumba quien duerme en cada cama (en sus ejes: a lo largo de X, con la cabeza hacia -X) y a qué altura del
 // suelo queda el cuerpo: en el refugio, sobre el lecho de ramaje (al fondo); en la cama de juncos, encima del colchón.
 export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
+const ASENTAR = { era: true };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
   refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador, era };
@@ -990,6 +991,23 @@ export function crearEstaciones({ raiz, altura, fab }) {
     }
     return arden;
   }
+  // Lo que se tiende por el suelo (la era): cada punto, a la altura del terreno que tiene debajo (en ladera, su suelo y
+  // sus piedras siguen la cuesta, sin que la hierba tape la mitad ni queden piedras en el aire). Lo enterrado, fuera.
+  const sobreSuelo = (o, x, z) => {   // (lo que sube o baja el terreno en ese punto del puesto, respecto a su pie)
+    const c = Math.cos(o.rotation.y), s = Math.sin(o.rotation.y), h = altura(o.position.x + x * c + z * s, o.position.z - x * s + z * c);
+    return Number.isFinite(h) ? h - 0.01 - o.position.y : 0;
+  };
+  function asentar(modelo, o, tipo) {
+    if (window.__sinAsentar) return;   // (solo para ver que la prueba falla)
+    modelo.traverse(m => {
+      if (m.name === 'bajo_tierra') m.visible = false;
+      if (!m.isMesh || !m.visible) return;
+      const p = m.geometry.attributes.position;
+      for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + sobreSuelo(o, p.getX(i) + m.position.x, p.getZ(i) + m.position.z));
+      p.needsUpdate = true; m.geometry.computeBoundingSphere(); m.geometry.computeBoundingBox();
+    });
+    modelo.userData.asentado = tipo;
+  }
   function refrescar() {
     const hay = fab.estaciones;
     for (const [id, o] of vistas) if (!Object.hasOwn(hay, id)) { grupo.remove(o); vistas.delete(id); }
@@ -1002,6 +1020,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
         o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = Number.isFinite(e.giro) ? e.giro : az(e.id, 7) * Math.PI * 2;   // el giro con que se puso (7 nov); las de antes, al azar
         o.name = 'estacion_' + e.tipo; o.userData.id = e.id; o.userData.tipo = e.tipo;
         grupo.add(o); vistas.set(e.id, o);
+        if (ASENTAR[e.tipo]) asentar(modelo, o, e.tipo);
       }
       // en obra: tenue, con su armazón, y lo entregado al pie; levantada: con sus materiales y lo depositado
       const nivel = e.obra ? Math.min(4, Math.floor(4 * (e.obra.trabajo || 0) / ESTACIONES[e.tipo].trabajo)) : null;
@@ -1011,7 +1030,9 @@ export function crearEstaciones({ raiz, altura, fab }) {
       const montones = e.obra ? e.obra.entregado : e.deposito, firma = firmaDe(e);
       if (o.userData.firma !== firma) {
         const viejo = o.getObjectByName('deposito'); if (viejo) o.remove(viejo);
-        o.add(modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id, e.obra ? [] : colgadoAhora(e))); o.userData.firma = firma;
+        const dep = modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id, e.obra ? [] : colgadoAhora(e));
+        if (ASENTAR[e.tipo]) for (const c of dep.children) c.position.y += sobreSuelo(o, c.position.x, c.position.z);
+        o.add(dep); o.userData.firma = firma;
       }
     }
   }
