@@ -1,0 +1,10 @@
+Textos del juego: 1785; sin traducir (en): 4; con variables distintas: 0
+  FALTA (en)  Para escardar, las manos vacías o la azada.
+  FALTA (en)  Escardar
+  FALTA (en)  Arrancas las malas hierbas.
+  FALTA (en)  Escardado: dará más al cosecharlo.
+Textos del juego: 1785; sin traducir (ru): 4; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  Para escardar, las manos vacías o la azada.
+  FALTA (ru)  Escardar
+  FALTA (ru)  Arrancas las malas hierbas.
+  FALTA (ru)  Escardado: dará más al cosecharlo.

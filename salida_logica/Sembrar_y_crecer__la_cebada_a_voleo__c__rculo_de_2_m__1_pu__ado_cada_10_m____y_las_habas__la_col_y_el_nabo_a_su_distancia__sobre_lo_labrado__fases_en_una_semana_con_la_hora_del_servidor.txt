@@ -1,0 +1,30 @@
+  OK   el campo de Ana, labrado (casi entero) — 99 m²
+  OK   sin las habas en la mano, no — Necesitas las semillas en la mano para sembrar.
+  OK   con las habas en la mano, se planta una (y gasta una) — {"ok":true,"campo":1,"cultivo":"habas","planta":{"c":"habas","x":3.2,"z":3.2,"t":1000000000000}}
+  OK   demasiado cerca de otra, no (y no gasta) — Demasiado cerca de otra planta.
+  OK   a su distancia, sí
+  OK   la col pide más sitio que las habas — Demasiado cerca de otra planta.
+  OK   y a su distancia, sí
+  OK   con la col en la mano no se siembra nabo — Necesitas las semillas en la mano para sembrar.
+  OK   fuera del linde, no — Fuera del campo: se siembra dentro de su linde.
+  OK   la cebada a voleo siembra un círculo de 2 m (12 casillas) y gasta 1 puñado — {"ok":true,"campo":1,"cultivo":"cebada","nuevas":12,"punados":1}
+  OK   y se sabe cuándo se sembró cada casilla
+  OK   donde ya está sembrado, no — Ahí no queda tierra labrada sin sembrar.
+  OK   la cebada no cae encima de lo plantado — {"ok":true,"campo":1,"cultivo":"cebada","nuevas":11,"punados":1}
+  OK   tampoco se planta encima de la cebada — Ahí ya está sembrado.
+  OK   en tierra ajena, no — Fuera de tu tierra.
+  OK   recién sembrado, brote
+  OK   al segundo día, verde
+  OK   al quinto día, espiga (o cabeza)
+  OK   a la semana, maduro
+  OK   lo sembrado no vuelve a ser hierba (pasado el barbecho)
+  OK   rehecho desde el registro da el mismo mundo
+  OK   se guarda y se lee: lo sembrado sigue igual
+El servidor de verdad: pone la hora, mira que estés cerca y lo reparte
+  OK   Ana labra en el servidor
+  OK   a más de 3 m de donde está, no — Estás demasiado lejos.
+  OK   con la cebada en la mano y cerca, siembra
+  OK   la hora la pone el servidor (no la que manda el navegador)
+  OK   Bruno lo ve (con la hora del servidor)
+
+27 bien, 0 mal

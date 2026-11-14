@@ -1,0 +1,30 @@
+  OK   sembrado: dos pasadas de cebada (iguales) y cuatro plantas — 14 y 14 m²
+  OK   lo recién sembrado aún no tiene malas hierbas — 0 m²
+  OK   verde, sí (dentro del círculo de 1,2 m) — 4 m²
+  OK   y en espiga, también
+  OK   maduro, ya no
+  OK   con otra cosa en la mano, no — Para escardar, las manos vacías o la azada.
+  OK   recién sembrado, no hay nada que escardar — Aquí no hay malas hierbas que quitar.
+  OK   con las manos vacías, una pasada escarda un círculo de 1,2 m — {"ok":true,"campo":1,"casillas":4,"plantas":0}
+  OK   lo ya escardado, no otra vez — Aquí no hay malas hierbas que quitar.
+  OK   con la azada también; la pasada de la izquierda, escardada entera — 14 de 14 m²
+  OK   la de la derecha sigue con sus malas hierbas
+  OK   las plantas también (el haba de la izquierda) — {"ok":true,"campo":1,"casillas":0,"plantas":1}
+  OK   y la col de la izquierda; las de la derecha, no
+  OK   en tierra ajena, no — Fuera de tu tierra.
+  OK   escardar cansa como segar
+  OK   sin escardar, la cebada da lo de siempre (4 gavillas por cada 10 m²) — 14 m², 5 gavillas
+  OK   escardada, da 5 por cada 4 (cada m² cuenta 1,25) — 14 m², 7 gavillas (con 1.5 m² que sobraban)
+  OK   lo segado vuelve a estar sin escardar
+  OK   el haba sin escardar da 4 — 4
+  OK   la escardada, 5 — 9
+  OK   la col escardada da la col y 4 semillas (no 3) — {"col":1,"semilla_col":4}
+  OK   rehecho desde el registro da el mismo mundo
+  OK   se guarda y se lee: lo escardado y la col que queda, igual
+El servidor de verdad: pone la hora, mira que estés cerca y lo reparte
+  OK   Ana siembra la cebada en el servidor
+  OK   a más de 3 m de donde está, no — Estás demasiado lejos.
+  OK   con las manos vacías y cerca, escarda
+  OK   Bruno lo ve (con la hora del servidor, no la del navegador)
+
+27 bien, 0 mal

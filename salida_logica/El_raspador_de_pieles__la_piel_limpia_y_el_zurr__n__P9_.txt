@@ -1,0 +1,30 @@
+Lo que dice el documento de sistemas
+  OK   el raspador de pieles: un bastidor de 4 varas y 1 cuerda, fuera; da el raspar — {"nombre":"Raspador de pieles","un":"un raspador de pieles","uso":"raspar","coste":{"vara":4,"cuerda":1},"donde":"fuera","trabajo":20,"hace":"Un bastidor de varas donde se tensa la piel para rasparla con la lasca de sílex: da la piel limpia"}
+  OK   en él, 1 piel da 1 piel limpia, llevando la lasca de sílex — {"nombre":"Piel limpia","uso":"raspar","da":"piel_limpia","n":1,"gasta":{"piel":1},"s":60,"requiere":["lasca_silex"]}
+  OK   el zurrón: 2 pieles limpias y 1 cordel, en el banco de tronco — {"nombre":"Zurrón de piel","uso":"banco","da":"zurron","n":1,"gasta":{"piel_limpia":2,"cordel":1},"s":60}
+  OK   el zurrón es la mochila mixta pequeña: a la espalda, 2 huecos medianos y 2 pequeños, sin límite de qué
+  OK   la piel limpia es mediana, cabe en el fardo y no en el cesto
+Levantar el raspador y raspar una piel
+  OK   se pone su marco
+  OK   se levanta con las 4 varas y la cuerda
+  OK   las pieles se dejan en el raspador (como en los demás puestos)
+  OK   sin la lasca de sílex, no se raspa — Para eso hace falta llevar lasca de sílex.
+  OK   con la lasca, se pone a raspar una piel (se gasta una de las dejadas)
+  OK   antes de su tiempo no está — Aún no está terminado.
+  OK   después, se recoge la piel limpia y la lasca sigue (no se gasta) — {"ok":true,"dados":[{"objeto":"piel_limpia","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false}
+  OK   lejos del raspador, no — Hace falta un raspador de pieles a tu lado.
+  OK   sin raspador, no (ni con las manos) — Hace falta un raspador de pieles a tu lado.
+El zurrón de piel
+  OK   con una sola piel limpia, no — Falta en la estación: 1 de Piel limpia.
+  OK   con dos y un cordel, en el banco, sí (y el cordel de la cintura no se gasta)
+  OK   se recoge el zurrón — {"ok":true,"dados":[{"objeto":"zurron","cantidad":1,"donde":[["mano:der",1]]}],"quedan":false}
+  OK   el zurrón se pone a la espalda — {"ok":true}
+  OK   con sus 4 huecos — ["espalda/0","espalda/1","espalda/2","espalda/3"]
+  OK   y guarda lo que sea (una piedra, mediana; un sílex, pequeño) — [{"ok":true,"donde":[["espalda/0",1]]},{"ok":true,"donde":[["espalda/2",1]]},{"tipo":"zurron","n":1,"dentro":[{"tipo":"piedra","n":1},null,{"tipo":"silex","n":1},null]}]
+Por el servidor, con autor
+  OK   Ana deja una piel en el raspador
+  OK   y la raspa
+  OK   y recoge su piel limpia
+  OK   otro no se lleva lo de Ana — El servidor aún no sabe dónde estás.
+
+24 bien, 0 mal
