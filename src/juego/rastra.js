@@ -108,10 +108,10 @@ export function modeloRastra(carga, id = 'r') {
       L2.add(cil(r, r * 1.04, largo, 11), 'corteza', 0, 0, 0, m);
       for (const s of [-1, 1]) L2.add(new THREE.CircleGeometry(r * 0.97, 11), 'corte', 0, 0, s * (largo / 2 + 0.002), new THREE.Matrix4().makeRotationY(s > 0 ? 0 : Math.PI), { sinSuelo: true });
       // la cuerda con que se subió, atada en dos vueltas a los travesaños de en medio
-      for (const z of [0.95, 1.3]) L2.add(new THREE.TorusGeometry(r + 0.012, 0.009, 4, 12), 'lino', 0, -0.02, z - 0.3, { y: Math.PI / 2 }, { sinSuelo: true, tex: 'tejido' });
+      for (const z of [0.95, 1.3]) L2.add(new THREE.TorusGeometry(r + 0.012, 0.009, 4, 12), 'lino', 0, -0.02, z - 0.1, { y: Math.PI / 2 }, { sinSuelo: true, tex: 'tejido' });
       // gira sobre el travesaño de delante (z = 1,3): arrastrándola, la punta de atrás baja hasta rozar el suelo y la de
-      // delante queda a medio metro largo del que tira (centrado en z = 0,3: no llega a su espalda)
-      const m2 = mallas(L2); m2.position.set(0, r, 0.3 - 1.3);
+      // delante queda a medio metro largo del que tira (centrado en z = 0,1: no llega a sus piernas)
+      const m2 = mallas(L2); m2.position.set(0, r, 0.1 - 1.3);
       const t = new THREE.Group(); t.add(m2);
       t.name = 'largo';
       t.position.set(0, yC, 1.3);
@@ -144,7 +144,7 @@ export function inclinarRastra(raiz, arrastrando) {
   if (c) c.rotation.x = arrastrando ? -Math.asin(Math.min(0.9, (ALTO_MANOS - R_VARA) / A_MANOS)) : 0;
   // el tronco largo, menos inclinado que la rastra (apoyado en el travesaño de delante): la punta de atrás roza el suelo
   const l = c && c.getObjectByName('largo');
-  if (l) l.rotation.x = arrastrando ? 0.145 : 0;
+  if (l) l.rotation.x = arrastrando ? 0.155 : 0;
 }
 
 // Cada fotograma: las rastras que alguien arrastra van detrás de él, como de una cuerda (el centro, a DETRAS m de él;
