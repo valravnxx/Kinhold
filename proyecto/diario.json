@@ -6952,5 +6952,22 @@
   "pruebas": "Lógica de los mojones 23/23, quitar el mojón 30/30, tierra al rey 41/41; en la nube, recorrido, construcción y quitar el mojón, bien. En el grupo de lógica fallaron recogida, servidor en internet y una traducción vieja, que aquí pasan y no tocan este cambio. No comprobado: el mojón de más en el juego en línea con la cuenta de admin (lo prueba valravnx).",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T18:23:12+00:00",
+  "fin": "2026-11-14T19:30:11+00:00",
+  "titulo": "P11c: el tronco largo a cuerda y en la rastra",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "Con una cuerda en la mano, junto al tronco largo que deja un árbol adulto, Usar lo ata y se tira de él: va detrás, a lo largo de la cuerda, que llega a la mano.",
+   "Tirando de él se va muy despacio (al 30 %), no se corre y baja el aguante al andar; sin aguante, casi no se avanza. Otro con cuerda ayuda a tirar: entre dos, al 50 %.",
+   "Usar suelta la cuerda y el tronco se queda donde se ve; quien se va del juego lo suelta donde estaba.",
+   "Tirando de él junto a una rastra parada, Usar lo sube a pulso a ella (cabe uno; hace falta la cuerda); uno solo arrastra la rastra con él, al 42 %, más despacio que con 3 troncos cortos. En la rastra va apoyado en el travesaño de delante, con la punta de atrás rozando el suelo.",
+   "Un tronco atado no se tronza. Todo por el servidor con su autor, y todos lo ven.",
+   "Pruebas nuevas: 16 en prueba_rastra.mjs (con MUTAR=1 fallan) y el tronco largo en la de navegador de la rastra, en PC y en móvil."
+  ],
+  "pruebas": "Lógica de la rastra 64/64; en la nube, recorrido 288/288, la rastra, tronzar y partir, velocidad y panel de inventario, bien. En el grupo de lógica fallaron el servidor en internet (avisos de systemd de la máquina de la nube) y las imágenes del panel de fabricar (5 que faltan, igual en main): no tocan este cambio. No comprobado: dos jugadores tirando a la vez en línea (lo prueba la lógica del servidor).",
+  "capturas": "capturas/demo-v211",
+  "estado": "ok"
  }
 ]
