@@ -55,10 +55,11 @@ def foto(pg, ruta=None):
 def media(im, caja):
     return [round(x) for x in ImageStat.Stat(im.crop(caja)).mean]
 
-def trazos(a, b, caja):
-    """píxeles bastante más claros en b que en a (las gotas: trazos claros sobre lo de detrás)"""
-    d = ImageChops.subtract(b.crop(caja).convert('L'), a.crop(caja).convert('L'))
-    return sum(1 for v in d.getdata() if v > 10)
+def trazos(a, b, caja, umbral=10):
+    """píxeles que cambian en b respecto a a (las gotas: trazos sobre lo de detrás; contra el cielo gris claro, de poco
+    contraste, como la lluvia de verdad: ahí con un umbral más bajo)"""
+    d = ImageChops.difference(b.crop(caja).convert('L'), a.crop(caja).convert('L'))
+    return sum(1 for v in d.getdata() if v > umbral)
 
 def recorrido(pg, nombre, pref, movil):
     errores = []
@@ -90,7 +91,7 @@ def recorrido(pg, nombre, pref, movil):
     info = pg.evaluate(f'(() => {{ const l = {K}.tiempoV.lluvia; return {{ visible: l.malla.visible, cuantas: l.cuantas, cantidad: l.cantidad, tipo: l.malla.type }}; }})()')
     comprobar(f'{nombre}: lloviendo, las gotas en una sola malla de trazos', info['visible'] and info['tipo'] == 'LineSegments' and info['cantidad'] > 0.99, json.dumps(info))
     comprobar(f'{nombre}: {"en el móvil, menos gotas" if movil else "en el PC, más gotas"}', (info['cuantas'] <= 3000) if movil else (info['cuantas'] >= 3000), str(info['cuantas']))
-    n_abajo = trazos(im1, im2, abajo); n_cielo = trazos(im1, im2, cielo)
+    n_abajo = trazos(im1, im2, abajo); n_cielo = trazos(im1, im2, cielo, 3)
     area = (abajo[2] - abajo[0]) * (abajo[3] - abajo[1])
     comprobar(f'{nombre}: lloviendo, las gotas se ven (trazos claros sobre lo de detrás)', n_abajo > area * 0.004, f'{n_abajo} píxeles de {area}')
     comprobar(f'{nombre}: y también contra el cielo', n_cielo > 30, f'{n_cielo} píxeles')
