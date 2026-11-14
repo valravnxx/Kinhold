@@ -420,7 +420,7 @@ function texturaEra() {
   const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
   const g = cv.getContext('2d');
   let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
-  g.fillStyle = 'rgb(150,136,116)'; g.fillRect(0, 0, N, N);
+  g.fillStyle = 'rgb(138,124,104)'; g.fillRect(0, 0, N, N);
   const mancha = (n, rMin, rMax, col, a0, a1) => { for (let k = 0; k < n; k++) {
     const x = r() * N, y = r() * N, rr = rMin + r() * (rMax - rMin);
     for (const dx of [-N, 0, N]) for (const dy of [-N, 0, N]) {   // (repetida en los bordes: la textura se repite sin costura)
