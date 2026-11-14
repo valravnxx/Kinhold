@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026 — por el chat, sobre trillar
+
+valravnx: «quiero criba de grano si es realista, por favor, adaptemos para ello… he visto cribas medievales en museos» → tarea nueva en P11, antes del recorrido de la granja: trillar en la era da grano sin limpiar y paja, y con la criba se saca el grano de cebada limpio que se siembra (la criba, la misma del hierro de pantano). El recorrido de la granja la incluye.
+
 ### 14 nov 2026, 06:45 UTC — por el chat
 
 valravnx: «me has publicado 4 tareas fallidas seguidas, si tienes fallos de pc y movil, HAZ SOLO UNA. y ya está, no digas fallo… busca soluciones joder.» →
