@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 07:04 — por el chat
+
+- valravnx (tras el repaso del riego en la época): «meteremos regar en las que sí lo requieran, lo de huerto, y escardar, y adelantamos hito de lluvia, anota y comienza con el que veas más prioritario ahora». Hecho: tarea «Escardar» en P11 (la empieza el chat ahora: no depende de nada) y el hito nuevo P11b «La lluvia y el riego» justo detrás de P11 (antes que los oficios), con regar el huerto (col y nabo; el cereal y las habas, de secano, como en la época) dentro, porque regar depende de que llueva o no.
+
 ### 13 nov 2026, 20:14 UTC — por el chat, al carril A
 
 «sigue» → el carril A sigue con la siguiente tarea de P11: cosechar.

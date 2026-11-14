@@ -2296,6 +2296,12 @@
      "rama": "trabajo/20261113-2224"
     },
     {
+     "nombre": "Escardar: a mitad del crecimiento salen malas hierbas entre lo sembrado (se ven); quitarlas con las manos o la azada, a pasadas, da más cosecha (opcional: sin escardar se cosecha igual, algo menos); como en la época (la escarda de junio). Cadena: manos o azada ← el banco de tronco",
+     "estado": "en_curso",
+     "inicio": "2026-11-14T07:06:08+01:00",
+     "rama": "trabajo/20261114-0706-escardar"
+    },
+    {
      "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era y pone un tejado de paja",
      "estado": "pendiente"
     },
@@ -2305,6 +2311,32 @@
     }
    ],
    "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco."
+  },
+  {
+   "id": "lluvia",
+   "num": "P11b",
+   "nombre": "La lluvia y el riego",
+   "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o el pozo; el cereal y las habas, de secano, como en la época.",
+   "estado": "pendiente",
+   "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones).",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD (clima por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo), con la cadena de cada cosa hasta el mundo (el cubo ← tronco corto en el banco; el agua ← el río, el mar no)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Llueve: el tiempo del mundo (despejado, nublado, lluvia, niebla) por zonas grandes y por el reloj del servidor, igual para todos; la lluvia se ve (gotas, cielo gris, suelo mojado) y se oye, en PC y en móvil sin perder fotogramas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
   },
   {
    "id": "oficios",
