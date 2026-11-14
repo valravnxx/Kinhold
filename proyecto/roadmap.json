@@ -2298,9 +2298,9 @@
     },
     {
      "nombre": "Escardar: a mitad del crecimiento salen malas hierbas entre lo sembrado (se ven); quitarlas con las manos o la azada, a pasadas, da más cosecha (opcional: sin escardar se cosecha igual, algo menos); como en la época (la escarda de junio). Cadena: manos o azada ← el banco de tronco",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T07:06:08+01:00",
-     "rama": "trabajo/20261114-0706-escardar"
+     "fin": "2026-11-14T09:02:13+01:00"
     },
     {
      "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era y pone un tejado de paja",
@@ -4493,6 +4493,13 @@
      "archivo": "jugar/demo/v206.html",
      "capturas": "capturas/demo-v206",
      "notas": "v206: la era y trillar (P11, la granja básica). Un puesto nuevo en Construir, «Puestos de trabajo»: la era, un suelo redondo de tierra apisonada bordeado de 8 piedras, fuera y en tu tierra. Se le dejan las gavillas (Usar: dejar en ella) y, con el mayal en lo que llevas, en su pestaña del panel de fabricar, «Trillar una gavilla» da 1 puñado de grano de cebada, que se siembra, y 1 haz de paja. La cebada silvestre que se recoge pasa a llamarse grano de cebada: es lo mismo. La paja deja de estar escondida: el tejado y el remate de paja, la cama de paja, la antorcha de pie y la alfombra ya salen en Construir, y la paja va al almiar."
+    },
+    {
+     "v": "v207",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v207.html",
+     "capturas": "capturas/demo-v207",
+     "notas": "Escardar: malas hierbas en lo verde y en espiga; quitarlas con las manos o la azada da más al cosechar. Y las escaleras se suben con pocos fotogramas."
     }
    ]
   },
