@@ -527,7 +527,6 @@ try:
         B.tap('#btnFabricar'); B.wait_for_timeout(800)
         B.tap('#panelFabricar .fab-pest[data-pestana="manos"]'); B.wait_for_timeout(500)
         comprobar('en el móvil, «Cribar el grano» en «Con las manos», sin salirse de lado', B.evaluate("!!document.querySelector('#panelFabricar .fab-carta[data-fila=\"cribar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1"))
-        B.evaluate("(() => { const c = document.querySelector('#panelFabricar .fab-carta[data-fila=\"cribar\"]'); if (c) c.scrollIntoView({ block: 'center' }); })()"); B.wait_for_timeout(300)
         captura(B, f'{SALIDA}/movil_cribar.png')
         B.tap('#panelFabricar .fab-carta[data-fila="cribar"]'); B.wait_for_timeout(600)
         comprobar('en el móvil, su ficha pide la criba de grano', 'criba de grano' in B.evaluate("document.querySelector('#panelFabricar .fab-ficha').innerText").lower())
