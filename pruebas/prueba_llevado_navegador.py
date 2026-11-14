@@ -199,7 +199,7 @@ with sync_playwright() as pw:
             if disp == 'pc':
                 r = pg.evaluate(SEPARA_CORREA)
                 comprobar(f'correa de {nombre}: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4)', r is not None and r['peor'] < 0.05, str(r))
-            for v, (g, d, a) in ({'lado': (-1.5708, 1.4, 0.15), 'frente': (0.0, 1.4, 0.15), 'espalda': (3.1416, 1.4, 0.15)} if disp == 'pc' else {'lado': (-1.5708, 2.0, 0.15), 'frente': (0.4, 2.0, 0.15)}).items():
+            for v, (g, d, a) in ({'lado': (-1.5708, 1.4, 0.15), 'frente': (0.0, 1.4, 0.15), 'espalda': (3.1416, 1.4, 0.15)} if disp == 'pc' else {'lado': (-1.5708, 2.0, 0.15), 'frente': (0.4, 2.0, 0.15), 'espalda': (3.1416, 2.0, 0.15)}).items():
                 mirar(pg, g, d, a)
                 pg.screenshot(path=f'{SALIDA}/{disp}_correa_{nombre}_{v}.png')
         # lo hecho a mano, de cerca (en la mano y en el cinturón)
