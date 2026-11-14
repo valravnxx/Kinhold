@@ -40,7 +40,8 @@ export function crearTiempoVista({ escena, camara, cielo, reloj, donde, movil = 
     const llueve = Math.min(ahora.lluvia, ahora.nubes) * fuera;
     cielo.nublar(ahora.nubes);
     const c = cielo.actual, luz = c ? Math.min(1, Math.max(0.08, c.hemi.intensidad / 1.6)) : 1;
-    lluvia.paso(camara, llueve, luz, dt);
+    const p = donde();
+    lluvia.paso(camara, llueve, luz, dt, Number.isFinite(p.y) ? p.y : -1e4);
   }
 
   return {

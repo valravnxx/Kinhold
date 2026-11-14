@@ -10,14 +10,16 @@ import * as THREE from 'three';
 
 export const CAJA = [26, 16, 26];     // m: la caja que se repite, alrededor de la cámara
 export const VELOCIDAD = 9;           // m/s: lo que cae una gota (de verdad, unos 9 m/s)
-export const LARGO = 0.55;            // m: lo que mide el trazo (lo que recorre la gota mientras se ve)
+export const LARGO = 0.45;            // m: lo que mide el trazo (lo que recorre la gota mientras se ve)
 
 const VERT = `attribute vec4 semilla;attribute float punta;
-uniform vec3 uCentro;uniform vec3 uCaja;uniform float uT;uniform vec2 uViento;uniform float uLargo;uniform float uVel;uniform float uCantidad;
+uniform vec3 uCentro;uniform vec3 uCaja;uniform float uSuelo;uniform float uT;uniform vec2 uViento;uniform float uLargo;uniform float uVel;uniform float uCantidad;
 varying float vAlfa;
 void main(){
   // la gota en el mundo: su sitio en la caja, menos lo que ha caído, y la caja repetida alrededor de la cámara
-  vec3 caida=normalize(vec3(uViento.x,-uVel,uViento.y));
+  // (cada gota, algo distinta: un poco más o menos inclinada)
+  vec2 vi=uViento*(0.7+0.6*fract(semilla.w*7.13));
+  vec3 caida=normalize(vec3(vi.x,-uVel,vi.y));
   vec3 p=semilla.xyz*uCaja+caida*(uT*length(vec3(uViento.x,uVel,uViento.y))*(0.85+0.3*semilla.w));
   p=uCentro+(fract((p-uCentro)/uCaja+0.5)-0.5)*uCaja;
   p+=caida*punta*uLargo;
@@ -25,7 +27,9 @@ void main(){
   vec3 r=abs(p-uCentro)/(uCaja*0.5);
   float borde=1.0-smoothstep(0.65,1.0,max(r.x,max(r.y,r.z)));
   float cerca=smoothstep(2.0,5.0,distance(p,cameraPosition));   // (más cerca, un trazo enorme en la pantalla)
-  vAlfa=borde*cerca*step(semilla.w,uCantidad)*(1.0-0.75*punta);
+  // el trazo se desvanece en las dos puntas (tres puntos: 0, el medio y 1) y no llega al suelo de donde estás
+  float suelo=smoothstep(uSuelo+0.1,uSuelo+0.9,p.y);
+  vAlfa=borde*cerca*suelo*step(semilla.w,uCantidad)*(1.0-abs(punta*2.0-1.0))*(0.6+0.4*fract(semilla.w*31.7));
   gl_Position=projectionMatrix*viewMatrix*vec4(p,1.0);
 }`;
 const FRAG = `uniform vec3 uColor;uniform float uOpacidad;varying float vAlfa;
@@ -33,13 +37,15 @@ void main(){if(vAlfa<0.01)discard;gl_FragColor=vec4(uColor,uOpacidad*vAlfa);}`;
 
 // cuantas: gotas (trazos); en el móvil, menos y en una caja más pequeña (caja, en m: las mismas gotas por metro cúbico)
 export function crearLluvia(escena, { cuantas = 4000, caja = CAJA } = {}) {
-  const sem = new Float32Array(cuantas * 2 * 4), punta = new Float32Array(cuantas * 2), pos = new Float32Array(cuantas * 2 * 3);
+  const sem = new Float32Array(cuantas * 4 * 4), punta = new Float32Array(cuantas * 4), pos = new Float32Array(cuantas * 4 * 3);
   // un azar fijo (siempre las mismas gotas: las capturas se pueden comparar)
   let s = 12345;
   const azar = () => ((s = Math.imul(s ^ (s >>> 15), 2246822519) + 0x6d2b79f5 | 0) >>> 0) / 4294967296;
+  // dos trazos por gota (de la punta de arriba al medio y del medio a la de abajo), para que se desvanezca en las dos puntas
+  const PUNTAS = [0, 0.5, 0.5, 1];
   for (let i = 0; i < cuantas; i++) {
     const g = [azar(), azar(), azar(), azar()];
-    for (let k = 0; k < 2; k++) { sem.set(g, (i * 2 + k) * 4); punta[i * 2 + k] = k; }
+    for (let k = 0; k < 4; k++) { sem.set(g, (i * 4 + k) * 4); punta[i * 4 + k] = PUNTAS[k]; }
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));   // (no se usa: la posición sale de la semilla)
@@ -47,8 +53,8 @@ export function crearLluvia(escena, { cuantas = 4000, caja = CAJA } = {}) {
   geo.setAttribute('punta', new THREE.BufferAttribute(punta, 1));
   const uniforms = {
     uCentro: { value: new THREE.Vector3() }, uCaja: { value: new THREE.Vector3(...caja) }, uT: { value: 0 },
-    uViento: { value: new THREE.Vector2(1.6, 0.7) }, uLargo: { value: LARGO }, uVel: { value: VELOCIDAD }, uCantidad: { value: 0 },
-    uColor: { value: new THREE.Color(0xc9d2da) }, uOpacidad: { value: 0.3 },
+    uViento: { value: new THREE.Vector2(2.6, 1.2) }, uSuelo: { value: -1e4 }, uLargo: { value: LARGO }, uVel: { value: VELOCIDAD }, uCantidad: { value: 0 },
+    uColor: { value: new THREE.Color(0xc9d2da) }, uOpacidad: { value: 0.24 },
   };
   const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms, transparent: true, depthWrite: false, fog: false });
   const malla = new THREE.LineSegments(geo, mat);
@@ -61,13 +67,15 @@ export function crearLluvia(escena, { cuantas = 4000, caja = CAJA } = {}) {
   return {
     malla, cuantas,
     get cantidad() { return uniforms.uCantidad.value; },
-    // camara: la que dibuja; cantidad: 0–1; luz: lo clara que se ve una gota (0–1, más de día, menos de noche); dt en s
-    paso(camara, cantidad, luz = 1, dt = 1 / 60) {
+    // camara: la que dibuja; cantidad: 0–1; luz: lo clara que se ve una gota (0–1, más de día, menos de noche); dt en s;
+    // suelo: la altura del suelo donde estás (las gotas se apagan antes de llegar)
+    paso(camara, cantidad, luz = 1, dt = 1 / 60, suelo = -1e4) {
+      uniforms.uSuelo.value = suelo;
       t = (t + dt) % 3600;
       uniforms.uT.value = t;
       uniforms.uCantidad.value = cantidad;
       uniforms.uCentro.value.copy(camara.position);
-      uniforms.uColor.value.setRGB(0.7, 0.74, 0.78).multiplyScalar(0.25 + 0.75 * luz);
+      uniforms.uColor.value.setRGB(0.66, 0.72, 0.8).multiplyScalar(0.25 + 0.75 * luz);
       malla.visible = cantidad > 0.002;
     },
   };
