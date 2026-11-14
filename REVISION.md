@@ -6,7 +6,7 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
-### 14 nov 2026, 16:40 UTC — por el chat, aprobación de P11
+### 14 nov 2026, 16:32 UTC — por el chat, aprobación de P11
 
 valravnx: «aprueba el hito actual, pero ten en cuenta de que eso es un sistema que debe ser ampliado en un futuro… tiene que ser bastante más complejo y tener bastante más cositas… anotan el GDD actual y que se tenga presente… cuando se tenga que hacer una fase 2… por ahora los sistemas están bien, así que aprueba» → P11, El año y los campos, pasa a `hecho`. En el GDD (sección 15, Agricultura, y en inglés y ruso): la granja de hoy es la primera fase; habrá una fase 2 más compleja, como hito propio cuando toque.
 
