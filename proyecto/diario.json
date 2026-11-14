@@ -6969,5 +6969,22 @@
   "pruebas": "Lógica de la rastra 64/64; en la nube, recorrido 288/288, la rastra, tronzar y partir, velocidad y panel de inventario, bien. En el grupo de lógica fallaron el servidor en internet (avisos de systemd de la máquina de la nube) y las imágenes del panel de fabricar (5 que faltan, igual en main): no tocan este cambio. No comprobado: dos jugadores tirando a la vez en línea (lo prueba la lógica del servidor).",
   "capturas": "capturas/demo-v211",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T14:03:44+01:00",
+  "fin": "2026-11-14T20:32:07+01:00",
+  "hito": "lluvia",
+  "titulo": "Regar el huerto (demo v212)",
+  "hecho": [
+   "El mundo tiene su tiempo, igual para todos y sin guardar nada: por zonas de 1 km y por días, unos 3 de cada 10 llueve, en ratos de 3 h (valravnx, 14 nov: «adelantamos hito de lluvia»).",
+   "La col y el nabo, tras dos días sin lluvia ni riego, se ven mustios (las hojas caídas hasta el suelo, de un pardo oliva apagado) y crecen a la mitad; no se mueren: sin regar, la col madura a los 12 días en vez de 7.",
+   "Con el cubo vacío en la mano, junto al río, Usar lo llena; lleno, delante de la col o el nabo, Usar riega los de un círculo de 1,2 m y el cubo se vacía; lo hace el servidor con su hora y lo ven todos (valravnx: «meteremos regar en las que sí lo requieran, lo de huerto»).",
+   "La cebada y las habas no se riegan: son de secano, como en la época.",
+   "El cubo se ve en la mano, colgado del asa, vacío (de madera por dentro) o con el agua; y su imagen en el panel (iconos-v29).",
+   "Al unir main, las imágenes de las piezas vuelven a piezas-v2: la unión del hierro de pantano las había devuelto a v1 y las de paja salían sin imagen en Construir."
+  ],
+  "capturas": "capturas/demo-v212",
+  "estado": "ok",
+  "pruebas": "Regar en la lógica y en el servidor, 43 de 43 (rota a propósito, falla); orígenes, iconos e idiomas, bien. En la nube: los campos en el navegador con regar en línea (llenar el cubo en el río, regar y que el cubo se vacíe), el recorrido de jugador, construir, los avisos de las necesidades, la velocidad con pocos fotogramas, el panel de inventario, la demo única, el mazo, despiezar y el panel de fabricar, bien (este último falló una vez soltando la criba y pasó al repetirlo). En la lógica falla solo prueba_nube (systemd-analyze de la máquina de GitHub), como en main. «Lo que llevas se ve puesto» no se pasó: falla igual en main (la mano sobre el tronco y el cinturón), según el diario. Las pruebas de sembrar, cosechar y escardar, con lluvia fija (la sed es de regar); el recorrido de la granja, con la col y el nabo esperando lo que tardan sin agua. Segunda mirada de un agente aparte: tres vueltas (el asa en la mano, el cubo más pequeño y de madera por dentro, lo mustio caído y de color apagado); a la tercera, todo sí salvo que la mano no cierra los dedos: el personaje del taller no tiene dedos que se doblen (otra tarea). Las capturas de cerca del huerto y del cubo en PC, en una página del juego con el campo puesto solo en ella para encuadrar."
  }
 ]
