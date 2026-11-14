@@ -1,0 +1,6 @@
+  11.2 m en 3.1 s: 3.63 m/s, 7.4 fps
+  OK   el juego va de verdad a pocos fotogramas — 7.4 fps
+  OK   se anda a la velocidad de siempre (3,6 m/s) con pocos fotogramas — 3.63 m/s
+  OK   con pocos fotogramas, andando por la escalera de tablas se llega arriba (planta 1) — planta=1 y=2.62 z=-10.46
+  OK   sin errores en la página
+TODO BIEN
