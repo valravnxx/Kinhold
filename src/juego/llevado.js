@@ -152,7 +152,8 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
     _rayo.set(o, d); _rayo.far = 0.6;
     let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
     if (lejos <= 0) lejos = base[i];
-    const f = fueraDe(d), q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : p.clone(); q.nor = d; return q;
+    // (y, donde salva un hueco del cuerpo, como mucho a 3 cm de él: la tela de la camisa y su peso la llevan hacia dentro)
+    const f = fueraDe(d), q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : lejos > 0 && r > lejos + f + 0.03 ? o.addScaledVector(d, lejos + f + 0.03) : p.clone(); q.nor = d; return q;
   };
   for (let vuelta = 0; vuelta < 24; vuelta++)
     pts = pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : fuera_(p.clone().multiplyScalar(2).add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 4), i));
