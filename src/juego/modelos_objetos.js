@@ -678,7 +678,8 @@ export function cribaEn(L, x, y, z, giro = null, id = 'criba') {
 }
 function criba(n, id) {
   const L = lote(0.03);
-  cribaEn(L, 0, 0.002, 0, { y: az(id, 9) * 6 }, id);
+  // (algo levantada: el suelo del mundo no es plano bajo los 46 cm del aro, y a ras se comía un trozo del fondo)
+  cribaEn(L, 0, 0.03, 0, { y: az(id, 9) * 6 }, id);
   return mallas(L);
 }
 // (P11, 14 nov) el grano sin limpiar, recién trillado: un montoncito de granos de cebada revueltos con granzas (cascarillas
