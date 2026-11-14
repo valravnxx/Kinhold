@@ -1,0 +1,24 @@
+  OK   el campo de Ana, cerrado (100 m²)
+  OK   sin la azada en la mano, no — Necesitas la azada en la mano para labrar.
+  OK   con la azada, una pasada voltea un círculo de 1,2 m (4 casillas de 1 m) — {"ok":true,"campo":1,"nuevas":4,"labradas":4}
+  OK   y se sabe qué está labrado
+  OK   lo ya labrado no se vuelve a labrar — Ahí ya está labrado.
+  OK   fuera del linde, no (y no cambia nada) — Fuera del campo: se labra dentro de su linde.
+  OK   junto al linde, solo lo de dentro — {"ok":true,"campo":1,"nuevas":2,"labradas":6}
+  OK   en tierra ajena, no — Fuera de tu tierra.
+  OK   donde queda algo por limpiar, no — Antes limpia ahí: quedan árboles, tocones, matas o piedras.
+  OK   en un campo sin cerrar, no — Aquí no hay ningún campo cerrado.
+  OK   labrado, sus estacas ya no se mueven — El campo ya está labrado: sus estacas no se mueven.
+  OK   rehecho desde el registro da el mismo mundo
+  OK   se guarda y se lee: lo labrado sigue labrado
+  OK   las casillas labradas, de una en una
+  OK   pasado el plazo sin sembrar, vuelve a ser hierba
+  OK   y se puede volver a labrar (lo de antes ya no cuenta) — {"ok":true,"campo":1,"nuevas":4,"labradas":4}
+El servidor de verdad: pone la hora, mira que estés cerca y lo reparte
+  OK   Ana cierra su campo en el servidor — {"id":1,"dueno":"jugador:2e23893b","autor":"jugador:2e23893b","puntos":[{"x":-5,"z":-5},{"x":5,"z":-5},{"x":5,"z":5},{"x":-5,"z":5}],"cerrado":true,"area":100}
+  OK   donde apunta, a más de 3 m de donde está, no — Estás demasiado lejos.
+  OK   con la azada y cerca, labra
+  OK   la hora la pone el servidor (no la que manda el navegador)
+  OK   Bruno lo ve (con la hora del servidor)
+
+21 bien, 0 mal

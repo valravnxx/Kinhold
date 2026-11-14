@@ -1,0 +1,23 @@
+Primer arranque: sin estado guardado, desde el registro entero
+  OK   sin mundo_estado.json se reproduce el registro entero — 53 de 53
+  OK   y sale el mismo mundo que el de la partida
+  OK   la última acción es la última del registro — 53
+  OK   se guarda el estado entero
+Segundo arranque: desde el estado guardado y lo que vino después
+  OK   se parte del estado guardado
+  OK   solo se reproduce lo que vino después — 9 de 62
+  OK   el mundo compactado es el mismo que reproduciendo el registro entero
+  OK   y el mismo que el de la partida
+  OK   la cuenta de acciones sigue donde iba — 62 / 62
+  OK   el registro entero se queda (para auditar)
+  OK   lo que se hace después sale igual en los dos (mismas respuestas y mismo mundo) — [[false,"A esa obra no le falta ese material."],[true,""],[true,""]]
+Un estado que no casa con el registro no se usa
+  OK   con el estado al día no se reproduce nada
+Línea del mundo no válida, se descarta: {"n":62,"autor":"jugador:a","tipo":"trabajar","datos":{"construccion":1,"clave":
+  OK   si el registro es más corto que el estado, se rehace desde el registro — mundo_estado.json no casa con el registro: se rehace el mundo entero desde el registro
+Línea del mundo no válida, se descarta: {"n":62,"autor":"jugador:a","tipo":"trabajar","datos":{"construccion":1,"clave":
+  OK   si el registro es otro, se rehace desde el registro — mundo_estado.json no casa con el registro: se rehace el mundo entero desde el registro
+  OK   un mundo_estado.json roto no para el arranque: se rehace desde el registro
+  OK   tras un wipe, el mundo empieza vacío
+
+16 correctas, 0 fallan

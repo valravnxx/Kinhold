@@ -1,0 +1,9 @@
+  OK   sin cambios de código (diario, web, traducciones), nada en la nube
+  OK   tocar el mapa del rey pide solo su grupo — mapa-del-rey
+  OK   tocar la lógica del fuego pide la lógica, el recorrido, la hoguera y el hogar, y dice por qué — [["logica",["src/logica/fuego.js"]],["recorrido",["src/logica/fuego.js"]],["la-hoguera",["src/logica/fuego.js"]],["el-hogar",["src/logica/fuego.js"]]]
+  OK   tocar el archivo de prueba de un grupo pide ese grupo — la-hoguera
+  OK   lo nombrado a mano entra
+  OK   la tabla solo nombra grupos que existen
+  OK   cada grupo de navegador tiene su archivo de prueba
+
+Todo bien
