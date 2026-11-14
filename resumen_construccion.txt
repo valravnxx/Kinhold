@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2913 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3263 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4747 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3323 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2908 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3294 KB
+dist/kinhold_trozos.html 2930 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: construcción
+  OK   después de recargar sigue lo construido — 232 → 232
+  OK   si vuelve a pasar enseguida no recarga en bucle: ofrece Recargar
+
+Resultado: 1 fallos: sin errores en consola (PC)
+!! FALLA: python3 pruebas/prueba_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/construccion
+
+HAY FALLOS
+tardó 1922 s
