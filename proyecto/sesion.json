@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-14T00:24:09+00:00",
+  "tarea": "El hierro de pantano: en las vegas llanas junto a los arroyos y en las turberas salen manchas de tierra encharcada con agua rojiza (la señal del GDD; lógica pura por celdas, de la semilla del mundo, las mismas para todos); con la pala de madera y la criba, cada pasada en una mancha da 1 mineral de hierro (lo decide el servidor, con su autor); cada mancha da unos pocos y vuelve a salir en unos meses reales. La criba (2 mimbres y 1 vara, en el banco de tronco). Capturas de la mancha al lado de la referencia. Cadena: pala de madera ← banco de tronco con 1 tronco corto; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven",
+  "hito": "hierro",
+  "rama": "trabajo/20261114-0024"
+ },
  "B": null,
  "chat:trabajo/20261113-1710-aspecto-rocas": {
   "inicio": "2026-11-13T17:08:43+01:00",
