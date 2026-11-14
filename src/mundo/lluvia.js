@@ -24,7 +24,7 @@ void main(){
   // se apaga en los bordes de la caja y muy cerca de la cámara; y no sale si sobra para esta cantidad
   vec3 r=abs(p-uCentro)/(uCaja*0.5);
   float borde=1.0-smoothstep(0.65,1.0,max(r.x,max(r.y,r.z)));
-  float cerca=smoothstep(0.8,2.5,distance(p,cameraPosition));
+  float cerca=smoothstep(2.0,5.0,distance(p,cameraPosition));   // (más cerca, un trazo enorme en la pantalla)
   vAlfa=borde*cerca*step(semilla.w,uCantidad)*(1.0-0.75*punta);
   gl_Position=projectionMatrix*viewMatrix*vec4(p,1.0);
 }`;
