@@ -420,7 +420,10 @@ function enMano(t) {
   } else if (t === 'cubo' || t === 'cubo_agua') {
     // el cubo (P11b), colgado del asa: el asa en la mano y el cubo derecho debajo (en la base de la mano, +Z es abajo
     // con el brazo caído: el cubo, girado para que su arriba mire a -Z), algo apartado del muslo
-    cuboEn(L, 0, -0.03, CUBO.alto + CUBO.asa - 0.025, { lleno: t === 'cubo_agua', giro: new THREE.Matrix4().makeRotationX(-Math.PI / 2), asa: 0 });
+    // (segunda mirada, 14 nov: el asa, dentro del puño, a lo ancho de los nudillos (+Y), no por encima de la mano; y
+    // algo más pequeño en la mano, que se comía el muslo)
+    const g = new THREE.Matrix4().makeRotationX(-Math.PI / 2).multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)).multiply(new THREE.Matrix4().makeScale(0.85, 0.85, 0.85));
+    cuboEn(L, 0, 0, (CUBO.alto + CUBO.asa) * 0.85 + 0.07, { lleno: t === 'cubo_agua', giro: g, asa: 0 });
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
     // (P10, 14 nov) la pala de madera, el mango dentro del puño e inclinado hacia abajo, la hoja hacia el suelo (antes
