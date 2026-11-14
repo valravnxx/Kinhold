@@ -493,6 +493,8 @@ try:
         if esperar(B, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'cubo_agua'", 8000):
             B.evaluate(f"{K}.cam.yaw = Math.PI + 3.1416 - 0.9; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.3"); B.wait_for_timeout(2000)
             captura(B, f'{SALIDA}/movil_cubo_lleno_en_mano_de_cerca.png')
+            B.evaluate(f"{K}.cam.yaw = Math.PI + 3.1416 + 1.6; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.25"); B.wait_for_timeout(2000)
+            captura(B, f'{SALIDA}/movil_cubo_lleno_de_lado.png')
         comprobar('a Bruno no le deja quitar las estacas de otro (lo dice)', (B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'Fuera de tu tierra.'))
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:

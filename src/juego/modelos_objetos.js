@@ -490,7 +490,9 @@ export function cuboEn(L, x, y, z, { lleno = false, giro = null, asa = 0.4 } = {
   pon(new THREE.CircleGeometry(r0 * 0.97, D * 2), 'maderaOsc', 0, 0.025, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'veta', brillo: 0.85 }); // el fondo, visto por dentro
   // por dentro: un torno de arriba abajo (sus caras miran hacia dentro, a la luz que entra por la boca; segunda mirada,
   // 14 nov: el cilindro en espejo salía negro, como un agujero)
-  pon(new THREE.LatheGeometry([new THREE.Vector2(r1 * 0.955, alto - 0.004), new THREE.Vector2(r0 * 0.955, 0.024)], D * 2), 'maderaOsc', 0, 0, 0, null, { tex: 'veta', sinSuelo: true, brillo: 0.95 });
+  const dentro = new THREE.LatheGeometry([new THREE.Vector2(r1 * 0.955, alto - 0.004), new THREE.Vector2(r0 * 0.955, 0.024)], D * 2);
+  { const p = dentro.attributes.position, n = dentro.attributes.normal; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), l = Math.hypot(x, z) || 1; n.setXYZ(i, -x / l, 0.25, -z / l); } }   // (las normales, hacia el eje y algo hacia arriba: la luz entra por la boca)
+  pon(dentro, 'madera', 0, 0, 0, null, { tex: 'veta', sinSuelo: true });
   for (const f of [0.22, 0.78]) pon(new THREE.TorusGeometry(r0 + (r1 - r0) * f + 0.004, 0.007, 4, 28), MIMBRE, 0, alto * f, 0, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
   pon(tubo([v3(-r1, alto * 0.86, 0), v3(-0.1, alto + CUBO.asa, 0.02), v3(0.1, alto + CUBO.asa, 0.02), v3(r1, alto * 0.86, 0)], 0.007, 5), CUERDA, 0, 0, 0, { y: asa }, { tex: 'paja', sinSuelo: true });
   // el agua: un disco algo por debajo del borde, oscuro y con brillo (refleja el cielo), y su orilla más clara

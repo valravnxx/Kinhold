@@ -184,7 +184,7 @@ function mustiar(g0) {
   for (let i = 0; i < p.count; i++) {
     // (las hojas caídas: más bajas cuanto más lejos del centro, las puntas casi en el suelo)
     const x = p.getX(i), z = p.getZ(i), y = p.getY(i), r = Math.hypot(x, z), caida = Math.min(1, r / 0.2);
-    p.setXYZ(i, x * (1 + 0.25 * caida), Math.max(0.004, y * (0.55 - 0.35 * caida)), z * (1 + 0.25 * caida));
+    p.setXYZ(i, x * (1 + 0.25 * caida), Math.max(0.03, y * (0.55 - 0.35 * caida) + 0.02), z * (1 + 0.25 * caida));   // (no por debajo de los caballones de lo labrado: si no, la tierra les abría huecos)
     c.setXYZ(i, c.getX(i) + (MUSTIO.r - c.getX(i)) * 0.7, c.getY(i) + (MUSTIO.g - c.getY(i)) * 0.7, c.getZ(i) + (MUSTIO.b - c.getZ(i)) * 0.7);
   }
   return g;   // (sin rehacer las normales: las hojas van por las dos caras con la normal hacia arriba)
