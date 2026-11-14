@@ -455,8 +455,17 @@ export function loteCriba(L, opc = {}) {
   const r = 0.22, alto = 0.07;
   L.add(cil(r, r * 0.97, alto, 22, true), MIMBRE, 0, alto / 2, 0, null, { tex: 'paja', rayas: (v) => 0.88 + 0.12 * Math.sin(v.y * 260), ...opc });
   L.add(cil(r * 0.97, r * 0.95, alto, 22, true), 0x8f7a52, 0, alto / 2 + 0.002, 0, null, { escala: v3(-0.96, 1, 0.96), tex: 'paja', ...opc });   // por dentro
-  // el fondo: un disco con el tejido de cuadros (las tiras cruzadas, más claras, y los huecos oscuros)
-  L.add(new THREE.CircleGeometry(r * 0.95, 22), 0x9a845a, 0, 0.012, 0, { x: -Math.PI / 2 }, { tex: 'paja', rayas: (v) => ((Math.abs(Math.sin(v.x * 75)) > 0.82 || Math.abs(Math.sin(v.z * 75)) > 0.82) ? 0.55 : 1), ...opc });
+  // el fondo: el disco oscuro (los huecos, por donde se cuela el agua y el barro) y encima las tiras de mimbre
+  // cruzadas, una por encima y otra por debajo (en dos alturas, como el tejido), cada una del largo que cabe en el aro
+  L.add(new THREE.CircleGeometry(r * 0.95, 22), 0x3b3125, 0, 0.006, 0, { x: -Math.PI / 2 }, { tex: 'liso', ...opc });
+  const N = 9, paso = (2 * r * 0.95) / N;
+  for (let i = 0; i < N; i++) {
+    const c = -r * 0.95 + paso * (i + 0.5), largo = 2 * Math.sqrt(Math.max(0, (r * 0.95) ** 2 - c * c));
+    for (const eje of [0, 1]) {
+      const g = new THREE.BoxGeometry(paso * 0.72, 0.006, largo);
+      L.add(g, (i + eje) % 2 ? MIMBRE : 0xa08a5c, eje ? 0 : c, 0.012 + ((i + eje) % 2) * 0.004, eje ? c : 0, { y: eje ? Math.PI / 2 : 0 }, { tex: 'paja', ...opc });
+    }
+  }
   // los dos aros de vara (arriba y abajo) y una atadura de cordel
   for (const y of [0.004, alto]) L.add(new THREE.TorusGeometry(r + 0.004, 0.009, 5, 26), 'madera', 0, y, 0, { x: Math.PI / 2 }, { tex: 'veta', ...opc });
   L.add(new THREE.TorusGeometry(0.014, 0.004, 4, 8), CORDEL, r + 0.006, alto * 0.6, 0, { y: Math.PI / 2 }, { tex: 'liso', ...opc });
