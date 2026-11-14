@@ -2172,9 +2172,11 @@ const miTronco = () => rastras.troncoDe(yoSuelo(), Date.now());
 let sitiosRastra = {};   // id → { x, z }: dónde se ve cada rastra o carretilla que se lleva (para dejarla ahí)
 function pasoRastras() {
   const quien = (autor) => {
-    if (autor === yoSuelo()) return pj.k === 0 ? { x: pj.x, z: pj.z, giro: pj.rot } : null;
+    // mano: dónde está la mano derecha (la cuerda del tronco largo va a ella)
+    const mano = j => () => { const h = j && j.mh && j.mh.hueso && (j.mh.hueso.middle_01_r || j.mh.hueso.hand_r); return h ? h.getWorldPosition(new THREE.Vector3()) : null; };
+    if (autor === yoSuelo()) return pj.k === 0 ? { x: pj.x, z: pj.z, giro: pj.rot, mano: mano(jugador) } : null;
     const r = enLinea && enLinea.remotos.get(autor);
-    return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y } : null;
+    return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y, mano: mano(r.j) } : null;
   };
   sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura);
   const mia = miRastra(), ahora = Date.now();
