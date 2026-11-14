@@ -7,7 +7,8 @@
 #     en el suelo junto a la mancha, y el montoncito crece con cada pasada;
 #   - a la última pasada la mancha se agota: los charcos se van y la turba y la juncia se quedan;
 #   - sin errores en la página.
-# Capturas de cerca de la mancha (dos vistas), del jugador cribando con la pala y la criba, y de la mancha agotada.
+# Capturas de cerca de la mancha (dos vistas), del jugador cribando con la pala y la criba, de la mancha agotada y del
+# mineral sacado, de cerca.
 # Uso: python3 pruebas/prueba_hierro_pantano_navegador.py <html> <carpeta_capturas>
 # Rota a propósito (14 nov): MUTAR=1 deja los charcos siempre puestos (como si la mancha no se agotara): falla.
 import sys, os
@@ -94,6 +95,11 @@ def recorrido(pg, nombre, pref):
     manos(pg, [None, None])
     mirar(pg, m['x'], m['z'])
     pg.screenshot(path=f'{SALIDA}/{pref}_4_mancha_agotada.png', timeout=180000)
+    # el mineral sacado, de cerca (14 nov: terrones pardo rojizos, no un hatillo)
+    mo = pg.evaluate(f"(([x, z]) => {{ const o = {K}.sueloObjetos.suelo.visibles(Date.now()).find(o => o.cosa.tipo === 'mineral_hierro' && Math.hypot(o.x - x, o.z - z) < 2); return o ? {{ x: o.x, z: o.z }} : null; }})", [m['x'], m['z']])
+    if mo:
+        mirar(pg, mo['x'], mo['z'], d=1.8, pitch=0.6, yaw=2.2, lejos=0.7)
+        pg.screenshot(path=f'{SALIDA}/{pref}_5_mineral.png', timeout=180000)
     comprobar(f'{nombre}: sin errores en la página', not errores, '; '.join(errores[:3]))
 
 with sync_playwright() as pw:
