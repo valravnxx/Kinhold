@@ -177,7 +177,7 @@ with sync_playwright() as p:
     foto(pg, 'rastra_10_tronco_largo_a_cuerda')
     camara(pg, dist=3.4, pitch=0.22, giro=-0.35)
     foto(pg, 'rastra_11_tronco_largo_de_cerca')
-    camara(pg, dist=3.0, pitch=0.25, giro=-1.9)
+    camara(pg, dist=3.2, pitch=0.3, giro=2.4)
     foto(pg, 'rastra_16_cuerda_en_la_mano')
     # se arrima a la rastra (que está delante) y Usar lo sube
     pg.evaluate(f"(() => {{ const k = {K}, o = k.rastras.todas(Date.now())[0]; k.pj.x = o.x - 1.2; k.pj.z = o.z - 0.9; }})()")
@@ -200,6 +200,11 @@ with sync_playwright() as p:
     pg.evaluate(f"(() => {{ const k = {K}, o = k.rastras.todas(Date.now())[0]; k.pj.x = o.x - 1.6; k.pj.z = o.z - 1.6; k.pj.rot = Math.atan2(o.x - k.pj.x, o.z - k.pj.z); }})()")
     camara(pg, dist=5.5, pitch=0.85, giro=0.5)
     foto(pg, 'rastra_14_tronco_largo_rastra_parada')
+    # de lado y a ras de suelo, sin el personaje delante: la punta de atrás del tronco, en el suelo
+    pg.evaluate(f"(() => {{ const k = {K}, o = k.rastras.todas(Date.now())[0], g = o.giro || 0; k.pj.x = o.x + Math.cos(g) * 4.5; k.pj.z = o.z - Math.sin(g) * 4.5; k.pj.rot = Math.atan2(o.x - k.pj.x, o.z - k.pj.z); if (k.jugador.raiz) k.jugador.raiz.visible = false; }})()")
+    camara(pg, dist=1.2, pitch=0.06, giro=1.57)
+    foto(pg, 'rastra_17_tronco_largo_parada_de_lado')
+    pg.evaluate(f"(() => {{ const k = {K}; if (k.jugador.raiz) k.jugador.raiz.visible = true; }})()")
     comprobar('sin errores en la consola (PC)', not pg.errores, '; '.join(pg.errores[:3]))
     pg.close()
 
