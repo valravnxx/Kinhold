@@ -2335,7 +2335,9 @@
     },
     {
      "nombre": "La correa cruzada pegada al cuerpo (segunda mirada del zurrón, 14 nov): la del zurrón, el carcaj y la correa del escudo, que de lado no haga un arco en el aire sobre el hombro, que se vea cruzar el pecho por delante y que la vuelta por el costado no entre en el antebrazo ni en la cadera; capturas de lado, de frente y de espaldas, en PC y en móvil",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-14T04:24:55+00:00",
+     "rama": "trabajo/20261114-0424"
     },
     {
      "nombre": "El cubo lleno de agua y la corteza de roble: el cubo de madera se llena en el río (agua, para las cubas) y se vacía; descortezar un roble en pie da corteza de roble (las demás especies, corteza). Cadena: cubo ← banco de tronco con un tronco corto ← trocear un tronco con el hacha; roble ← los bosques templados; descortezar ← la lasca de sílex o el hacha",
