@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, alAlcance, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
+import { Mundo, alAlcance, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas, duenoBase } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra, USAN_INVENTARIO, reservaDe } from '../logica/acciones.js';
 import { NOMBRE_ZONA } from '../combate/logica.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA, enEsteTramo } from '../logica/piezas.js';
@@ -850,10 +850,13 @@ function evaluarColocacion() {
   fantasma.visible = true;
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
-    const pm = mundo.puedeMojon(x, z, yoAutor());
-    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : (autoconstruirAdmin() || mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario()))) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
+    // con el modo autoconstruir, el admin puede poner mojones de más (valravnx, 14 nov: para construcciones de prueba)
+    const extra = !!miMojon() && autoconstruirAdmin();
+    const pm = mundo.puedeMojon(x, z, yoAutor(), extra);
+    const v = miMojon() && !extra ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : (autoconstruirAdmin() || mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario()))) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
-    estado.candidato = { tipo: 'mojon', x, z, v };
+    estado.candidato = { tipo: 'mojon', x, z, v, extra };
+    if (v.ok && extra) mostrarAviso(tr('Admin: otro mojón (otra zona tuya, para construir de prueba).'));
     return;
   }
   if (sel.clase === 'nivelar') {
@@ -948,7 +951,7 @@ function colocar() {
     return;
   }
   let r;
-  if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z });
+  if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z, ...(ca.extra ? { extra: true } : {}) });
   else if (ca.tipo === 'nivelar') r = accion({ tipo: 'nivelar', x: redondoMm(ca.x), z: redondoMm(ca.z), y: ca.y, radio: estado.radioBrocha });
   else if (ca.tipo === 'deco') r = accion({ tipo: 'decorar', pieza: estado.sel.tipo, x: ca.x, y: ca.y, z: ca.z, rot: estado.rotDeco || 0 });
   else r = accion({ tipo: 'colocar', ...ca.datos });
@@ -972,13 +975,14 @@ function evaluarDesmontaje(hit) {
   if (!obj) { mostrarAviso(''); return; }
   if (obj.userData.mojon) {
     // tu mojón: quitarlo deja tu tierra y se pierde todo lo construido en ella (valravnx, 4 nov: que avise)
-    if (obj.userData.mojon !== yoAutor()) { mostrarAviso(t('mojonAjeno'), true); return; }
-    const p = mundo.perderiaSinMojon(yoAutor());
+    // (también uno de los de más del admin, «autor~N»: se quita solo ese, con lo de su zona)
+    if (duenoBase(obj.userData.mojon) !== yoAutor()) { mostrarAviso(t('mojonAjeno'), true); return; }
+    const p = mundo.perderiaSinMojon(yoAutor(), obj.userData.mojon);
     if (!p) { mostrarAviso(''); return; }
     resaltar(obj, 'naranja');
     for (const c of p.construcciones) for (const k of c.piezas.keys()) { const o = objDe(c, k); if (o) resaltar(o, 'rojo'); }
     for (const d of p.muebles) { const r = registroMallas.find(m => m.deco === d); if (r) resaltar(r.obj, 'rojo'); }
-    estado.pendienteDesmontar = { mojon: true };
+    estado.pendienteDesmontar = { mojon: obj.userData.mojon };
     $('btnConfirmar').textContent = tr('Quitar el mojón');
     const n = p.piezas + p.muebles.length;
     mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
@@ -1032,7 +1036,7 @@ function confirmarDesmontaje() {
     return;
   }
   let r;
-  if (pd.mojon) r = accion({ tipo: 'quitar_mojon' });
+  if (pd.mojon) r = accion({ tipo: 'quitar_mojon', ...(pd.mojon !== yoAutor() ? { mojon: pd.mojon } : {}) });
   else if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
   else r = accion({ tipo: 'desmontar', construccion: pd.c.id, clave: pd.key });
   estado.pendienteDesmontar = null;
@@ -1040,7 +1044,8 @@ function confirmarDesmontaje() {
     cambiarModo('mover'); guardar(); reconstruir();
     const n = r.perdidas ? r.perdidas.piezas + r.perdidas.muebles : 0;
     // el último: lo que diga la interfaz al cambiar de modo (el consejo del mojón) no lo tapa
-    mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
+    if (pd.mojon !== yoAutor()) mostrarAviso(tr('Mojón de pruebas quitado: su zona queda libre ({n} piezas y muebles perdidos).', { n }));
+    else mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
     limpiarResaltado(); $('confirmar').hidden = true;
     return;
   } else if (r.ok) {
@@ -2941,7 +2946,7 @@ const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: coma
   // las tierras de los demás (valravnx, 8 nov): cada mojón del mundo (los mojones y los invitados son de todos: los
   // manda el servidor a cada uno), y si su dueño te ha invitado a construir
   tomadas: () => { const yo = yoAutor(); return Object.entries(mundo.mojones)
-    .map(([a, m]) => ({ x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z, dueno: a, tuya: a === yo, invita: a !== yo && mundo.invitadosDe(a).includes(yo) })); },
+    .map(([a, m]) => ({ x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z, dueno: a, tuya: duenoBase(a) === yo, invita: duenoBase(a) !== yo && mundo.invitadosDe(duenoBase(a)).includes(yo) })); },
   zonasRey: zonasRey ? zonasRey.lista : [],   // las zonas del rey, de oro viejo
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) $('btnMapa').hidden = !mapaRey;   // (la pestaña del menú; la abre src/juego/menu_juego.js)

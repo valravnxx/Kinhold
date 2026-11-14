@@ -19,6 +19,12 @@ export const hayZonas = () => !!zonaDeSitio;
 export const DUENO_LOCAL = 'jugador:local';
 export const MAX_INVITADOS = 12;   // a cuántos puede invitar cada dueño a su tierra (provisional, 4 nov)
 const dueno = (autor) => (typeof autor === 'string' && autor ? autor : DUENO_LOCAL);
+// Los mojones de más del admin (valravnx, 14 nov: «en el modo admin poner otro mojón para hacer construcciones visuales
+// de prueba bonitas»): con el modo autoconstruir, la cuenta de admin puede poner más mojones, y cada uno le da su zona.
+// Se guardan como los demás, con la clave «autor~N» (N = 2, 3…); duenoBase da el autor de verdad. Lo de esas tierras
+// es suyo (y de sus invitados) como lo de su tierra; quitar uno pierde solo lo de su zona.
+export const SEP_EXTRA = '~';
+export const duenoBase = (k) => (typeof k === 'string' && k.includes(SEP_EXTRA) ? k.slice(0, k.indexOf(SEP_EXTRA)) : k);
 // la zona de un mojón (los de antes no la llevan apuntada: se mira en su sitio)
 const zonaDe = (m) => (m.zona !== undefined && m.zona !== null ? m.zona : zonaDeSitio ? zonaDeSitio(m.x, m.z) : null);
 export const DIST_ENGANCHE = 3 * MODULO; // a esta distancia de una construcción, se encaja en su rejilla
@@ -168,8 +174,9 @@ export class Mundo {
     return null;
   }
   // ¿se puede poner aquí el mojón de este autor? (sin pagar: lo mira también el navegador para la vista previa)
-  puedeMojon(x, z, autor) {
-    if (this.mojonDe(autor)) return { ok: false, motivo: 'Ya tienes un mojón.' };
+  // extra: un mojón de más (solo el admin con autoconstruir: lo mira el servidor)
+  puedeMojon(x, z, autor, extra = false) {
+    if (!extra && this.mojonDe(autor)) return { ok: false, motivo: 'Ya tienes un mojón.' };
     if (zonaDeSitio) {
       const zona = zonaDeSitio(x, z);
       if (zona === null || zona === undefined) return { ok: false, motivo: 'Ahí no hay tierra firme.' };
@@ -179,22 +186,26 @@ export class Mundo {
     return { ok: true };
   }
   // reserva: de dónde se paga (ver puedePagar); en línea, de lo que lleva el autor
-  colocarMojon(x, z, autor, reserva = this.reservaComun()) {
-    const v = this.puedeMojon(x, z, autor);
+  colocarMojon(x, z, autor, reserva = this.reservaComun(), extra = false) {
+    const v = this.puedeMojon(x, z, autor, extra);
     if (!v.ok) return v;
     const coste = PIEZAS.mojon.coste;
     if (!this.puedePagar(coste, reserva)) return this.sinMateriales(coste, reserva);
     this.pagar(coste, reserva);
     const m = { x, z }; if (zonaDeSitio) m.zona = zonaDeSitio(x, z);
-    this.mojones[dueno(autor)] = m;
-    return { ok: true, mojon: { ...m } };
+    const yo = dueno(autor);
+    let clave = yo;
+    if (extra && this.mojones[yo]) { let n = 2; while (this.mojones[yo + SEP_EXTRA + n]) n++; clave = yo + SEP_EXTRA + n; }
+    this.mojones[clave] = m;
+    return { ok: true, mojon: { ...m }, clave };
   }
   // Lo que se perdería al quitar el mojón (valravnx, 4 nov: «destruir el mojón y con ello dejar tu territorio, que
   // avise que se perderán cualquier construcción, para poder reposicionar»): las construcciones (con sus piezas y
   // obras) y los muebles de su tierra. Lo mira también el navegador para el aviso antes de confirmar.
-  perderiaSinMojon(autor) {
-    const yo = dueno(autor);
-    if (!this.mojonDe(yo)) return null;
+  // clave: cuál de sus mojones (los de más del admin, «autor~N»); sin ella, el suyo
+  perderiaSinMojon(autor, clave = null) {
+    const yo = clave === null ? dueno(autor) : clave;
+    if (duenoBase(yo) !== dueno(autor) || !this.mojones[yo]) return null;
     const construcciones = this.construcciones.filter(c => this.tierraDe(c.ox, c.oz) === yo);
     const muebles = this.decoracion.filter(d => this.tierraDe(d.x, d.z) === yo);
     return { construcciones, muebles, piezas: construcciones.reduce((n, c) => n + c.piezas.size, 0) };
@@ -203,9 +214,9 @@ export class Mundo {
   // quiera recuperar el 75 % lo desmonta antes). Los invitados dejan de serlo. Sin espera para volver a ponerlo (para
   // poder reposicionar; si se usara para bloquear a otros, se pondría una espera). Lo nivelado se queda (la tierra
   // movida no vuelve sola) y lo del suelo (troncos, piedras) no es construcción y sigue ahí.
-  quitarMojon(autor) {
-    const yo = dueno(autor);
-    const p = this.perderiaSinMojon(yo);
+  quitarMojon(autor, clave = null) {
+    const yo = clave === null ? dueno(autor) : clave;
+    const p = this.perderiaSinMojon(autor, yo);
     if (!p) return { ok: false, motivo: 'No tienes mojón.' };
     const fuera = new Set(p.construcciones), fueraM = new Set(p.muebles);
     this.construcciones = this.construcciones.filter(c => !fuera.has(c));
@@ -219,8 +230,8 @@ export class Mundo {
   // lo construido y los muebles se quedan, como ruina en tierra de nadie (cualquiera puede desmontarlo: puedeTocar).
   tierraAlRey(dueno_) {
     const yo = dueno(dueno_);
-    if (!this.mojonDe(yo)) return { ok: false, motivo: 'No tiene mojón.' };
-    const p = this.perderiaSinMojon(yo);
+    if (!this.mojones[yo]) return { ok: false, motivo: 'No tiene mojón.' };
+    const p = this.perderiaSinMojon(duenoBase(yo), yo);
     delete this.mojones[yo];
     delete this.invitados[yo];
     return { ok: true, ruinas: { construcciones: p.construcciones.length, piezas: p.piezas, muebles: p.muebles.length } };
@@ -236,9 +247,10 @@ export class Mundo {
   dentroDeTierra(x, z, autor) {
     const yo = dueno(autor), m = this.mojonDe(yo);
     if (m && (zonaDeSitio ? zonaDeSitio(x, z) === zonaDe(m) : Math.hypot(x - m.x, z - m.z) <= RADIO_MOJON)) return true;
-    if (!this.esInvitado(yo)) return false;
     const de = this.tierraDe(x, z);
-    return !!de && this.invitadosDe(de).includes(yo);
+    if (de && duenoBase(de) === yo) return true;   // la de uno de sus mojones de más
+    if (!this.esInvitado(yo)) return false;
+    return !!de && this.invitadosDe(duenoBase(de)).includes(yo);
   }
   // Lo tuyo es tuyo (hito «Jugar entre dos sin trampas»): ¿puede este autor tocar lo que hay en (x, z)? Desmontar,
   // abrir y cerrar puertas, encender y apagar el fuego y, cuando los haya, sacar de los almacenajes de la base. En

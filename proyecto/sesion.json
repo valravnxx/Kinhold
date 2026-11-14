@@ -1,16 +1,15 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-14T17:24:18+00:00",
+  "tarea": "La correa cruzada pegada al cuerpo (segunda mirada del zurrón, 14 nov): la del zurrón, el carcaj y la correa del escudo, que de lado no haga un arco en el aire sobre el hombro, que se vea cruzar el pecho por delante y que la vuelta por el costado no entre en el antebrazo ni en la cadera; capturas de lado, de frente y de espaldas, en PC y en móvil",
+  "hito": "oficios",
+  "rama": "trabajo/20261114-0424"
+ },
  "B": null,
  "chat:trabajo/20261114-1404-regar": {
   "inicio": "2026-11-14T14:03:44+01:00",
   "tarea": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
   "hito": "lluvia",
   "rama": "trabajo/20261114-1404-regar"
- },
- "chat:trabajo/20261114-1700-mojon-admin": {
-  "inicio": "2026-11-14T16:49:45+01:00",
-  "tarea": "Admin: mojones de más para construcciones de prueba",
-  "hito": "aspecto",
-  "rama": "trabajo/20261114-1700-mojon-admin"
  }
 }
