@@ -1558,9 +1558,9 @@
     },
     {
      "nombre": "Admin: mojones de más para construcciones de prueba",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T16:49:45+01:00",
-     "rama": "trabajo/20261114-1700-mojon-admin"
+     "fin": "2026-11-14T18:08:00+01:00"
     }
    ]
   },
@@ -2248,7 +2248,7 @@
    "num": "P11",
    "nombre": "El año y los campos",
    "jugable": "La granja básica: semillas silvestres; el campo con la forma que marcas con estacas, que se limpia y se labra a mano; sembrar, crecer en una semana real, segar y trillar: grano, paja (el tejado de paja), habas, coles y nabos. Las estaciones del año, el lino y el pan, más adelante.",
-   "estado": "en_curso",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
@@ -2323,10 +2323,13 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-14T16:25:45+00:00",
+     "rama": "trabajo/20261114-1625",
+     "fin": "2026-11-14T16:26:18+00:00"
     }
    ],
-   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco."
+   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco. Aprobado por valravnx el 14 nov: los sistemas están bien por ahora, pero es la primera fase; la granja tiene que ser bastante más compleja y tener más cosas (fase 2, anotada en el GDD, sección 15)."
   },
   {
    "id": "lluvia",
@@ -2349,6 +2352,80 @@
      "estado": "en_curso",
      "inicio": "2026-11-14T14:03:44+01:00",
      "rama": "trabajo/20261114-1404-regar"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "casa-fuerte",
+   "num": "P11c",
+   "nombre": "La casa más fuerte: el tronco grande, la empalizada y el entramado",
+   "estado": "en_curso",
+   "jugable": "El tronco largo de un árbol adulto se arrastra con cuerda y se lleva en la rastra; la rodaja de tronco hace por fin la carretilla; la empalizada con su portón sin hierro cierra tu tierra; el muro de entramado mejora la casa.",
+   "nota": "valravnx, 14 nov, por el chat, al aprobar P11: las piezas escondidas que ya salen de lo que hay (la empalizada y el muro de entramado solo estaban escondidos por ser de nivel 2) y el tronco grande, que hoy solo se tronza: «con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra». Va antes que los oficios. Lo que pide tablas o hierro sigue escondido hasta P10. Sin chimenea (valravnx, 14 nov: «poco realista en esa época y en ese nivel de casa»): la casa humilde tiene el hogar abierto en el suelo y el humo sale por el tejado; la chimenea, para las casas de piedra.",
+   "tareas": [
+    {
+     "nombre": "El tronco largo en la rastra: con una cuerda en la mano se ata y se arrastra muy despacio, gastando mucho aguante (entre dos, más rápido), para arrimarlo a la rastra o a la obra; junto a la rastra (o con la rastra llevada a él) se sube a pulso con la cuerda, y cabe 1; uno solo la arrastra, más despacio que con 3 troncos cortos. Por el servidor con su autor, y todos lo ven. Números provisionales. Cadena: tronco largo ← talar un árbol adulto con el hacha de piedra; cuerda ← el banco de tronco; rastra ← 5 ramas y 2 cordeles con las manos",
+     "estado": "en_curso",
+     "inicio": "2026-11-14T18:23:12+00:00",
+     "rama": "trabajo/20261114-1823"
+    },
+    {
+     "nombre": "La rodaja de tronco y la carretilla: del tronco largo, con el hacha, se corta una rodaja (la rueda maciza: el árbol joven es demasiado fino) y la carretilla, que ya está programada pero no se podía fabricar, se hace con 1 rodaja, 2 varas y 1 tronco corto. Cadena: rodaja ← el tronco largo; vara ← el árbol joven; tronco corto ← tronzar el tronco largo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La empalizada: deja de estar escondida (6 troncos delgados, clavados en el suelo y afilados), con el estilo v5 y capturas de cerca al lado de la referencia. Cadena: tronco delgado ← talar un árbol joven",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El portón de empalizada sin hierro: con goznes de madera y cuerda (troncos delgados y cuerdas; provisional), se abre y se cierra, y solo lo abren el dueño de la tierra y sus invitados. El de herrajes, con P10. Cadena: tronco delgado ← el árbol joven; cuerda ← el banco de tronco",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El muro de entramado: deja de estar escondido (2 troncos delgados, 2 varas y 3 barros), con su puerta y su ventana, comparado de cerca con las casas de entramado de la referencia. Cadena: tronco delgado y vara ← el árbol joven; barro ← la ribera",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de la casa más fuerte, sin arcón: tala un árbol adulto, arrastra el tronco largo con cuerda, lo lleva en la rastra, saca la rodaja y hace la carretilla, levanta un tramo de empalizada con su portón y un muro de entramado",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
+  },
+  {
+   "id": "canoa",
+   "num": "P11d",
+   "nombre": "La canoa",
+   "estado": "en_curso",
+   "jugable": "La canoa de un solo tronco, vaciada a mano con el hacha y el fuego, y el remo: con el remo se rema, bastante más rápido que corriendo; sin remar, va a la deriva con la corriente del río. Cabe otro sentado.",
+   "nota": "valravnx, 14 nov, por el chat: «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva». Da uso al tronco largo; la corriente de los ríos y el nado ya existen (src/logica/nado.js, paisaje.corriente). La animación de remar la hace valravnx (11 nov); hasta que llegue, una pose provisional con el remo. Va detrás de «La casa más fuerte». La navegación grande (barcos, el continente) sigue en su hito, congelado.",
+   "tareas": [
+    {
+     "nombre": "La canoa de un tronco: junto al agua, el tronco largo se vacía a mano con el hacha y con brasas que se raspan (por tiempo transcurrido, en el servidor; provisional), y queda una canoa en el suelo (enorme: se arrastra con cuerda o en la rastra hasta la orilla). Con el estilo v5 y capturas de cerca. Cadena: tronco largo ← el árbol adulto; hacha ← el banco de tronco; brasas ← la hoguera",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El remo: 1 tronco corto en el banco de tronco, con el hacha; se lleva en las dos manos. Cadena: tronco corto ← tronzar el tronco largo; banco ← 2 troncos cortos",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Echar la canoa al agua, subir y remar: se empuja desde la orilla al agua; se sube desde la orilla o el agua poco honda y se baja en la orilla. Con el remo, se rema bastante más rápido que corriendo (valravnx; la cifra, provisional); sin remo o sin remar, va a la deriva con la corriente del río (en el mar, despacio). Cabe otro sentado. Por el servidor con su autor, y todos la ven moverse. En PC y en el móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La canoa se queda donde la dejas: varada en la orilla no desaparece; en tu tierra queda a tu guarda (como la carretilla); fuera, cualquiera se la lleva",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de la canoa, sin arcón: vacía un tronco largo, hace el remo, lleva la canoa a la orilla, rema río arriba y río abajo, la deja ir a la deriva y la vara en la orilla",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2425,7 +2502,7 @@
    "nombre": "Hierro y tablas",
    "jugable": "Hierro de pantano con pala y criba, horno de reducción, fuelle y fragua; hacha de hierro, pico, sierra y clavos; tablas; arcilla, horno cerámico y tejas; las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y las vetas de hierro con el pico.",
    "estado": "en_curso",
-   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo. Planificado el 13 nov: el primer mineral es el de pantano (pala y criba), porque el pico ya pide hierro; las manchas, por las señales del GDD (tierra encharcada y agua rojiza), en las vegas y las turberas (Whitholm casi no tiene turberas). El carbón y el cuero del fuelle salen de P9. Las herraduras esperan a P8 (congelado): sin caballo no se usan.",
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo. Planificado el 13 nov: el primer mineral es el de pantano (pala y criba), porque el pico ya pide hierro; las manchas, por las señales del GDD (tierra encharcada y agua rojiza), en las vegas y las turberas (Whitholm casi no tiene turberas). El carbón y el cuero del fuelle salen de P9. Las herraduras esperan a P8 (congelado): sin caballo no se usan. Foso de aserrar (valravnx, 14 nov): «me encantaría que requiriera hacer el agujero en el suelo antes con lo de cavar»: el tronco largo encima de un foso cavado y una sierra larga (uno arriba y otro abajo; uno solo, despacio) dan tablones largos y vigas escuadradas. Llega con cavar (hito «Cavar y minar», congelado): hasta entonces, las tablas, en el banco con el tronco corto.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (hierro de pantano, carbonera, horno de reducción, fragua, herramientas de hierro, sierra y tablas, las piezas de nivel 2 escondidas), con la cadena de cada material hasta el mundo",
@@ -4532,6 +4609,13 @@
      "archivo": "jugar/demo/v209.html",
      "capturas": "capturas/demo-v209",
      "notas": "v209: el hierro de pantano (P10). En las vegas junto a los ríos y en las turberas salen manchas de tierra encharcada con agua parda rojiza; con la pala de madera y la criba, cada pasada saca 1 mineral de hierro, que queda junto a la mancha. La criba nueva: 2 mimbres y 1 vara, en el banco de tronco."
+    },
+    {
+     "v": "v210",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v210.html",
+     "capturas": null,
+     "notas": "Mojones de más del admin: con autoconstruir, otro mojón en otra zona libre para construcciones de prueba; cada uno se quita aparte."
     }
    ]
   },

@@ -1,16 +1,15 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-14T18:23:12+00:00",
+  "tarea": "El tronco largo en la rastra: con una cuerda en la mano se ata y se arrastra muy despacio, gastando mucho aguante (entre dos, más rápido), para arrimarlo a la rastra o a la obra; junto a la rastra (o con la rastra llevada a él) se sube a pulso con la cuerda, y cabe 1; uno solo la arrastra, más despacio que con 3 troncos cortos. Por el servidor con su autor, y todos lo ven. Números provisionales. Cadena: tronco largo ← talar un árbol adulto con el hacha de piedra; cuerda ← el banco de tronco; rastra ← 5 ramas y 2 cordeles con las manos",
+  "hito": "casa-fuerte",
+  "rama": "trabajo/20261114-1823"
+ },
  "B": null,
  "chat:trabajo/20261114-1404-regar": {
   "inicio": "2026-11-14T14:03:44+01:00",
   "tarea": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
   "hito": "lluvia",
   "rama": "trabajo/20261114-1404-regar"
- },
- "chat:trabajo/20261114-1700-mojon-admin": {
-  "inicio": "2026-11-14T16:49:45+01:00",
-  "tarea": "Admin: mojones de más para construcciones de prueba",
-  "hito": "aspecto",
-  "rama": "trabajo/20261114-1700-mojon-admin"
  }
 }

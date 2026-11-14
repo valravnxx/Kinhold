@@ -6,6 +6,24 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 17:47 UTC — por el chat, dónde va la chimenea
+
+valravnx: «la chimenea es más para las casas que ya eran de paredes de leño y cal con tejado de teja, ¿no?» y «apunta como está todo hablado» → al GDD (la casa humilde): hogar abierto en la casa humilde; la chimenea, de obra (piedra o ladrillo con mortero de cal), solo con cimiento de piedra y tejado de teja (nunca con paja o juncos), cuando lleguen la teja y la cal (tier 2 alto o tier 3). Para la revisión de rumbo, con lo demás de la casa rica.
+
+### 14 nov 2026, 17:42 UTC — por el chat, la chimenea
+
+valravnx: «la chimenea no es muy… poco realista en esa época y en ese nivel de casa?» → fuera de P11c: la casa humilde tiene el hogar abierto en el suelo (el de P3) y el humo sale por el tejado; la chimenea de obra queda para las casas de piedra (la revisión de rumbo).
+
+### 14 nov 2026, 17:39 UTC — por el chat: la casa más fuerte, la canoa y el foso de aserrar
+
+- Las piezas que solo estaban escondidas por ser de nivel 2 y ya salen de lo que hay (la empalizada, el muro de entramado y la chimenea), y el tronco grande, que hoy solo se tronza. valravnx: «la rastra sí está… con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra, pero necesitamos uso para esos troncos grandes» → hito nuevo P11c «La casa más fuerte» (en curso, delante de los oficios): el tronco largo con cuerda y en la rastra, la rodaja de tronco y la carretilla, la empalizada, su portón sin hierro, el muro de entramado, la chimenea, el recorrido y la revisión.
+- «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva» → hito nuevo P11d «La canoa» (en curso, detrás de P11c): la canoa de un tronco vaciada con hacha y brasas, el remo, echarla al agua y remar (sin remar, a la deriva con la corriente), dónde se queda, el recorrido y la revisión. La animación de remar, de valravnx; hasta entonces, una pose provisional.
+- «el foso de aserrar me encantaría que requiriera hacer el agujero en el suelo antes con lo de cavar» → anotado en la nota de P10: el foso de aserrar llega con cavar (congelado); hasta entonces, las tablas en el banco con el tronco corto. Para la revisión de rumbo.
+
+### 14 nov 2026, 16:32 UTC — por el chat, aprobación de P11
+
+valravnx: «aprueba el hito actual, pero ten en cuenta de que eso es un sistema que debe ser ampliado en un futuro… tiene que ser bastante más complejo y tener bastante más cositas… anotan el GDD actual y que se tenga presente… cuando se tenga que hacer una fase 2… por ahora los sistemas están bien, así que aprueba» → P11, El año y los campos, pasa a `hecho`. En el GDD (sección 15, Agricultura, y en inglés y ruso): la granja de hoy es la primera fase; habrá una fase 2 más compleja, como hito propio cuando toque.
+
 ### 14 nov 2026 — por el chat, sobre trillar
 
 valravnx: «quiero criba de grano si es realista, por favor, adaptemos para ello… he visto cribas medievales en museos» → tarea nueva en P11, antes del recorrido de la granja: trillar en la era da grano sin limpiar y paja, y con la criba se saca el grano de cebada limpio que se siembra El recorrido de la granja la incluye. Después: «haremos cribas de grano separadas» → la criba de grano es su propia herramienta (aro de madera curvada con el fondo de piel limpia agujereada: 1 piel limpia y 1 vara en el banco de tronco), distinta de la del mineral; la paja va al almiar y el grano al cesto.
