@@ -268,7 +268,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     // (src/mundo/rocas.js), del tono de su roca apagado como el del estilo v5, igual que allí
     // (13 nov, valravnx: con las piezas de pared de Meshy, si han llegado: en estratos, con grietas y el saliente; de 4, 4
     // y 3 m de alto, con la base en el suelo y la cara a +z, medio metidas en la ladera; si no, las de código del visor)
-    const paredesM = ['pared_estratos', 'pared_grietas', 'pared_saliente'].map(n => M(n)), ALTO_PARED = [4, 4, 3];
+    const paredesM = ['risco_estratos', 'risco_grietas', 'risco_mole'].map(n => M(n)), ALTO_PARED = [4, 4, 3];   // (14 nov: los riscos, acabados por todos los lados)
     if (paredesM.every(Boolean)) {
       paredesM.forEach((m, v) => {
         const lista = paredes.filter(e => e.variante % 3 === v); if (!lista.length) return;
@@ -282,7 +282,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
             // que se solapen: torcidas, se les veía el corte de los lados; la cara de Meshy mira a +z, medido en el modelo)
             const esc = 2.2 * e.alto / ALTO_PARED[v], gi = e.cara ?? e.giro, atras = (Math.PI / 2 - Math.atan(e.pend || 1.5)) * 0.6, fuera = e.alto * 0.1;   // (2,2 veces: en una pared ancha de decenas de metros, a su tamaño eran placas pegadas)
             o.position.set(e.x + Math.sin(gi) * fuera, e.y - e.alto * 0.6, e.z + Math.cos(gi) * fuera);
-            o.rotation.set(-atras + e.inclina * 0.3, gi + (e.giro - gi) * 0.3, 0, 'YXZ');
+            o.rotation.set(-atras + e.inclina * 0.3, e.giro + e.tono * 7, 0, 'YXZ');   // (acabados por todos los lados: cualquier giro)
             o.scale.set(esc * (1.1 + e.tono * 0.3), esc, esc * 0.7);
             o.updateMatrix(); im.setMatrixAt(k, o.matrix);
             im.setColorAt(k, colorRoca(e).lerp(blanco, 0.45).multiplyScalar(e.tono));

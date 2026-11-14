@@ -16,7 +16,7 @@ export const ESPECIES_MESHY = ['abeto', 'pino', 'abedul', 'roble', 'haya', 'fres
 export const LISTA_NATURALEZA = [...ESPECIES_MESHY, ...ESPECIES_MESHY.map(e => e + '_joven'),
   'matorral', 'arbusto_bayas', 'roca', 'pena', 'canto', 'hierba_larga', 'ortigas', 'juncos', 'helechos',
   'junco_recoger', 'junco_cortado', 'junco_adorno',
-  'pared_estratos', 'pared_grietas', 'pared_saliente'];   // (13 nov, valravnx: las piezas de pared de los acantilados)   // (13 nov, valravnx: los juncos que se recogen, cortados y de adorno)
+  'risco_estratos', 'risco_grietas', 'risco_mole'];   // (14 nov, valravnx: riscos acabados por todos los lados; las piezas de pared, con la espalda plana, se veían cortadas de lado)   // (13 nov, valravnx: las piezas de pared de los acantilados)   // (13 nov, valravnx: los juncos que se recogen, cortados y de adorno)
 
 // la carpeta, al lado de la de los personajes que da cada prototipo (src/mundo/eleccion.js: recursosTaller)
 export const carpetaNaturaleza = (recursos) => String(recursos || '../../recursos/personajes/taller/').replace(/personajes\/[^/]*\/?$/, 'naturaleza/meshy-v1/');

@@ -14,6 +14,7 @@
   cortados y juncos que no valen para recoger»): `junco_recoger` (la mata que se corta), `junco_cortado` (lo que queda
   hasta que vuelve a crecer) y `junco_adorno` (la mata rala y seca que no vale), hechos igual, con Meshy y el prompt de
   estilo, el 13 nov de 2026 (unos 117 créditos), y preparados con `herramientas/meshy/preparar_naturaleza.mjs`.
-- Las tres piezas de pared de los acantilados (valravnx, 13 nov 2026: «encargar rocas de pared a Meshy»): `pared_estratos`,
-  `pared_grietas` y `pared_saliente`, con Meshy y el prompt de estilo, el 13 nov de 2026 (unos 117 créditos), preparadas
-  con `herramientas/meshy/preparar_naturaleza.mjs`.
+- Los tres riscos de los acantilados (valravnx, 13–14 nov 2026: rocas de pared con Meshy, y luego «diseñar unas rocas que
+  se vean bien por todos los lados»): `risco_estratos`, `risco_grietas` y `risco_mole`, con Meshy y el prompt de estilo,
+  el 14 nov de 2026 (117 créditos; antes, el 13 nov, otras tres piezas de pared con la espalda plana, 117 créditos, que
+  no llegaron a entrar), preparados con `herramientas/meshy/preparar_naturaleza.mjs`.
