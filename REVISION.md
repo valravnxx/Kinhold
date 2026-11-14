@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 17:47 UTC — por el chat, dónde va la chimenea
+
+valravnx: «la chimenea es más para las casas que ya eran de paredes de leño y cal con tejado de teja, ¿no?» y «apunta como está todo hablado» → al GDD (la casa humilde): hogar abierto en la casa humilde; la chimenea, de obra (piedra o ladrillo con mortero de cal), solo con cimiento de piedra y tejado de teja (nunca con paja o juncos), cuando lleguen la teja y la cal (tier 2 alto o tier 3). Para la revisión de rumbo, con lo demás de la casa rica.
+
 ### 14 nov 2026, 17:42 UTC — por el chat, la chimenea
 
 valravnx: «la chimenea no es muy… poco realista en esa época y en ese nivel de casa?» → fuera de P11c: la casa humilde tiene el hogar abierto en el suelo (el de P3) y el humo sale por el tejado; la chimenea de obra queda para las casas de piedra (la revisión de rumbo).
