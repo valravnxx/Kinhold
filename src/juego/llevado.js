@@ -131,13 +131,17 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
       return { o, d, lejos: lejos > 0 ? lejos : null };
     });
     const ok = r.map((x, i) => x.lejos != null ? i : -1).filter(i => i >= 0);
+    const enSitio = r.map((x, i) => x.lejos == null ? null : (() => { const q = x.o.clone().addScaledVector(x.d, x.lejos + fueraDe(x.d)); q.nor = x.d; q.lejos = x.lejos; return q; })());
     return r.map((x, i) => {
-      let l = x.lejos;
-      if (l == null) {
-        const a = ok.filter(k => k < i).pop(), b = ok.find(k => k > i);
-        l = a == null && b == null ? 0.15 : a == null ? r[b].lejos : b == null ? r[a].lejos : r[a].lejos + (r[b].lejos - r[a].lejos) * (i - a) / (b - a);
-      }
-      const q = x.o.clone().addScaledVector(x.d, l + fueraDe(x.d)); q.nor = x.d; q.lejos = l; return q;
+      if (enSitio[i]) return enSitio[i];
+      // (sin cruce: en recto entre los vecinos que sí lo tienen. Antes se repartía lo lejos de cada uno, pero arriba y
+      // abajo de las axilas se mide desde sitios distintos y, en la abertura de la camisa, la correa salía 4 cm del pecho)
+      const a = ok.filter(k => k < i).pop(), b = ok.find(k => k > i);
+      let q;
+      if (a == null && b == null) q = x.o.clone().addScaledVector(x.d, 0.15);
+      else if (a == null || b == null) q = enSitio[a ?? b].clone();
+      else q = enSitio[a].clone().lerp(enSitio[b], (i - a) / (b - a));
+      q.nor = x.d; q.lejos = q.clone().sub(x.o).dot(x.d) - fueraDe(x.d); return q;
     });
   };
   const curva = new THREE.CatmullRomCurve3(guia, false, 'centripetal');
@@ -146,13 +150,14 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
   // y tensa, como va una correa de verdad: cada vuelta tira de cada punto hacia sus vecinos y, si así se mete en el
   // cuerpo, se queda en su superficie; donde el cuerpo se hunde (la abertura de la camisa, entre el pecho y el hombro)
   // pasa por encima, recta, sin escalones
-  // (donde el rayo no cruza nada, un agujero de la malla medida, lo que dio al pegarla: si no, se metía en la espalda)
+  // (donde el rayo no cruza nada, un agujero de la malla medida, no más adentro que el recto entre los vecinos que
+  // dio al pegarla: si no, por un agujero de la espalda se metía en ella)
   const base = pts.map(p => p.lejos);
   const fuera_ = (p, i) => {
     const o = p.y >= cH.y ? v3(p.x, cH.y, cH.cz) : v3(cE.cx, p.y, (cE.cz + cH.cz) / 2), d = p.clone().sub(o), r = d.length(); d.normalize();
     _rayo.set(o, d); _rayo.far = 0.6;
     let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
-    if (lejos <= 0) lejos = base[i];
+    if (lejos <= 0) { const f = fueraDe(d), q = r < base[i] + f ? o.addScaledVector(d, base[i] + f) : p.clone(); q.nor = d; return q; }
     // (y, donde salva un hueco del cuerpo, como mucho a 1,5 cm de él: la tela de la camisa y su peso la llevan hacia dentro; con 3, de lado se veía la hierba entre ella y el pecho)
     // (por delante, nada: sigue el pecho; con 6 mm y con 15, de lado aún se veía la hierba entre el pecho y la correa)
     const f = fueraDe(d), puente = 0.015 * (1 - Math.min(1, Math.max(0, d.z * 1.5)));
