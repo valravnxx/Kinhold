@@ -12,6 +12,7 @@ import { Limitador } from '../../src/logica/limites.js';
 import { GRATIS_AUTOCONSTRUIR } from '../../src/logica/admin.js';
 import { trozoDe, LADO_RED, RADIO_RED } from '../../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../../src/logica/obras_red.js';
+import { ALCANCE_LABRAR, ALCANCE_SEMBRAR, ALCANCE_SEGAR, labradoEn } from '../../src/logica/campos.js';
 import { dejarSobra } from '../../src/logica/suelo.js';
 import { limpiarTexto, validarFrase, FRASES, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../../src/logica/charla.js';
 import { redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades } from '../../src/logica/necesidades.js';
@@ -309,8 +310,10 @@ function atenderAccion(S, c, msg) {
   const lejos = sinArcon || contraTerreno ? null : fueraDeAlcance(mundo, accion, presencia.ultimo.get(autor));
   // los campos (P11): la estaca, donde está el jugador (lo que diga el navegador no cuenta), y el linde, contra el
   // agua, la pendiente y los puestos de trabajo (src/logica/campos.js, mundo.entorno)
-  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
-  if (accion.tipo === 'estaca') mundo.entorno = entornoCampos(S);
+  // (la hora la pone el servidor; solo en la prueba de cosechar, con KINHOLD_PRUEBAS_HORA=campos, una pasada al sembrar)
+  if (['labrar', 'sembrar', 'segar', 'coger_planta'].includes(accion.tipo)) accion.t = S.horaCampos && accion.tipo === 'sembrar' && Number.isFinite(accion.t) && accion.t < Date.now() ? accion.t : Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
+  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' || accion.tipo === 'labrar' || accion.tipo === 'sembrar' || accion.tipo === 'segar' || accion.tipo === 'coger_planta' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
+  if (accion.tipo === 'estaca' || accion.tipo === 'labrar') mundo.entorno = entornoCampos(S);
   const r = lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
   if (lejosCampo || sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
   const entrada = registro.entradas[registro.entradas.length - 1];
@@ -318,13 +321,16 @@ function atenderAccion(S, c, msg) {
   appendFileSync(archivo, JSON.stringify(entrada) + '\n');
   // lo desmontado que no le cabe cae al suelo a sus pies, donde el servidor lo tiene (sin arcón, valravnx 1 nov)
   const pos = presencia.ultimo.get(autor);
-  if (r.ok && r.sobra && pos && dejarSobra(objetos.suelo, r.sobra, pos.x, pos.z, Date.now(), autor, !!mundo.tierraDe(pos.x, pos.z))) repartirSuelo(Date.now());
+  const donde = r.ok && r.sobraEn ? r.sobraEn : pos;   // (las gavillas, donde se siega)
+  if (r.ok && r.sobra && donde && dejarSobra(objetos.suelo, r.sobra, donde.x, donde.z, Date.now(), autor, !!mundo.tierraDe(pos.x, pos.z))) repartirSuelo(Date.now());
   if (usaInventario && r.ok) guardarObjetos();
   enviar(ws, { tipo: 'resultado', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? {} : { motivo: r.motivo }) });
   // lo que llevas tal como queda (también si sale mal: el navegador lo había adelantado)
   if (usaInventario) enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
   if (usaInventario && r.ok) repartirLlevado(autor);
   if (r.ok && accion.tipo === 'trabajar') cansar(autor, 'trabajar');   // cada rato de obra cansa
+  if (r.ok && accion.tipo === 'labrar') cansar(autor, 'labrar');       // y cada pasada de azada (P11)
+  if (r.ok && accion.tipo === 'segar') cansar(autor, 'segar');         // y de hoz
   if (r.ok) {
     // solo a quien tiene su trozo alrededor (y al autor); lo que no tiene sitio, a todos
     const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
@@ -389,7 +395,7 @@ function fueraDelCampo(mundo, a, pos) {
   let p = a;
   if (a.tipo === 'quitar_estaca') { const c = (mundo.campos || []).find(x => x.id === a.campo); p = c && Number.isInteger(a.i) ? c.puntos[a.i] : null; if (!p) return null; }
   if (!Number.isFinite(p.x) || !Number.isFinite(p.z)) return null;
-  return Math.hypot(p.x - pos.x, p.z - pos.z) > 3 ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
+  return Math.hypot(p.x - pos.x, p.z - pos.z) > (a.tipo === 'labrar' ? ALCANCE_LABRAR + 0.5 : a.tipo === 'sembrar' ? ALCANCE_SEMBRAR + 0.5 : a.tipo === 'segar' ? ALCANCE_SEGAR + 0.5 : 3) ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
 }
 // Lo que la lógica de los campos no sabe del terreno: el agua, la pendiente (m por m, en 3 m) y los puestos de trabajo.
 function entornoCampos(S) {
@@ -398,5 +404,14 @@ function entornoCampos(S) {
     agua: t ? (x, z) => t.aguaEn(x, z) !== null : null,
     pendiente: t ? (x, z) => Math.hypot(t.suelo(x + 1.5, z) - t.suelo(x - 1.5, z), t.suelo(x, z + 1.5) - t.suelo(x, z - 1.5)) / 3 : null,
     ocupado: (x, z) => Object.values(est || {}).some(e => Math.hypot(e.x - x, e.z - z) < 1.2),
+    // lo que queda por limpiar a menos de r m de (x, z), para labrar (P11): árboles en pie, caídos o con su tocón (no
+    // los arrancados), matas sin desbrozar y piedras sin recoger (las de casillas ya labradas no cuentan: no se ven)
+    estorbo: t && t.cercaDe ? (x, z, r, c) => {
+      const ahora = Date.now(), tala = S.objetos.tala, rec = S.objetos.recoleccion, cerca = t.cercaDe(x, z, r + 0.6);
+      if (cerca.arboles.some(a => !tala.arrancado(a.id) && Math.hypot(a.x - x, a.z - z) <= r + 0.6)) return true;
+      const libre = (p) => c && labradoEn(c, p.x, p.z, ahora);
+      if (cerca.matas.some(p => rec.enPie(p.id, ahora) && !libre(p) && Math.hypot(p.x - x, p.z - z) <= r)) return true;
+      return cerca.piedras.some(p => (!rec.porId.has(p.id) || rec.disponible(p.id, ahora)) && !libre(p) && Math.hypot(p.x - x, p.z - z) <= r);
+    } : null,
   };
 }

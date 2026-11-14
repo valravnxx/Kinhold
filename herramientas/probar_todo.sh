@@ -49,6 +49,7 @@ paso "Morir y que te saqueen: de sed, de hambre, en el combate o ahogado; el cue
 paso "Las liebres: pastan, se ponen alerta y huyen de quien se acerca; las mueve el servidor" node pruebas/prueba_fauna.mjs
 paso "El modo arma con lo de la mano: puños, hacha, lanza; lanzar la lanza y la piedra apuntando, y cazar la liebre" node pruebas/prueba_arma_mano.mjs
 paso "Despiezar y asar: la liebre con la lasca, la carne al fuego, la cruda se estropea" node pruebas/prueba_comida.mjs
+paso "El raspador de pieles, la piel limpia y el zurrón (P9)" node pruebas/prueba_pieles.mjs
 paso "Herramientas y armas que se gastan: el hacha de piedra tala 3 adultos y se rompe" node pruebas/prueba_desgaste.mjs
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
@@ -99,6 +100,10 @@ paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whithol
 paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, el sotobosque, las riberas, las costas y la roca de los cortados" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Marcar el campo con estacas: clavar, cerrar con su superficie, quitar y mover; tierra, agua, pendiente, obras y otros campos; el servidor" node pruebas/prueba_campos.mjs
+paso "Limpiar el campo: arrancar el tocón con la azada o el palo cavador, deja leña y no vuelve a crecer; dentro de un campo no rebrota; lo que queda por limpiar" node pruebas/prueba_limpiar_campo.mjs
+paso "Labrar con la azada: pasadas de 1,2 m dentro del linde y donde está limpio, 1 bit por m², la hora del servidor y el barbecho" node pruebas/prueba_labrar.mjs
+paso "Sembrar y crecer: la cebada a voleo (círculo de 2 m, 1 puñado cada 10 m²) y las habas, la col y el nabo a su distancia, sobre lo labrado; fases en una semana con la hora del servidor" node pruebas/prueba_sembrar.mjs
+paso "Cosechar: la cebada madura se siega con la hoz (gavillas al suelo, 4 cada 10 m²) y las habas, la col y el nabo maduros se cogen a mano (4 veces lo sembrado); el servidor" node pruebas/prueba_cosechar.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs

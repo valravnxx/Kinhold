@@ -9,7 +9,7 @@ import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 import { AUTOR_REY } from './abandono.js';
-import { clavarEstaca, quitarEstaca } from './campos.js';
+import { clavarEstaca, quitarEstaca, labrar, sembrar, segar, cogerPlanta, CULTIVOS } from './campos.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
 export const AUTOR_LOCAL = 'jugador:local';
@@ -67,6 +67,10 @@ const CAMPOS_CONSTRUCCION = {
   nivelar: { x: 'n', z: 'n', y: 'n', radio: 'n' },   // una pasada de la brocha redonda (y: la altura a la que deja el suelo)
   estaca: { x: 'n', z: 'n' },         // clavar una estaca del campo que marcas (src/logica/campos.js, P11)
   quitar_estaca: { campo: 'n', i: 'n' }, // y quitarla (vuelve a lo que llevas)
+  labrar: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // una pasada de azada en el campo (t: la hora, la pone el servidor)
+  sembrar: { campo: 'n', cultivo: 't', x: 'n', z: 'n', t: 'n' },
+  segar: { campo: 'n', x: 'n', z: 'n', t: 'n' },          // segar la cebada madura con la hoz (deja gavillas en el suelo)
+  coger_planta: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // coger a mano la planta madura (habas, col, nabo)   // sembrar en lo labrado (a voleo o una planta; t: del servidor)
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -92,7 +96,7 @@ const CAMPOS_CONSTRUCCION = {
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
 // Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -179,6 +183,42 @@ function aplicarConstruccion(m, a, invs) {
       if (invs) delete a.lleva;
       const gastar = inv ? () => (inv.cuantos('estaca') >= 1 ? (inv.gastar('estaca', 1), { ok: true }) : { ok: false, motivo: 'No llevas ninguna estaca.' }) : undefined;
       return pagada(clavarEstaca(m, a.x, a.z, a.autor, gastar), a, invs);
+    }
+    case 'labrar': {   // (P11) con la azada en la mano (no gasta nada; al rehacer una ya hecha, no se mira)
+      if (invs) {
+        delete a.lleva;
+        const l = invs.de(a.autor).lugares;
+        if (!['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'azada')) return { ok: false, motivo: 'Necesitas la azada en la mano para labrar.' };
+      }
+      return pagada(labrar(m, a.campo, a.x, a.z, a.t, a.autor), a, invs);
+    }
+    case 'sembrar': {   // (P11) con las semillas en la mano; cobra de lo que lleva (al rehacer una ya hecha, no se mira)
+      let gastar;
+      if (invs) {
+        delete a.lleva;
+        const inv = invs.de(a.autor), cu = CULTIVOS[a.cultivo], l = inv.lugares;
+        if (!cu) return { ok: false, motivo: 'Eso no se siembra.' };
+        if (!['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === cu.semilla)) return { ok: false, motivo: 'Necesitas las semillas en la mano para sembrar.' };
+        gastar = (n) => (inv.cuantos(cu.semilla) >= n ? (inv.gastar(cu.semilla, n), { ok: true }) : { ok: false, motivo: 'No llevas bastantes semillas.' });
+      }
+      return pagada(sembrar(m, a.campo, a.cultivo, a.x, a.z, a.t, a.autor, gastar), a, invs);
+    }
+    case 'segar': {   // (P11) con la hoz en la mano; las gavillas, al suelo donde se siega (r.sobra: el servidor)
+      if (invs) {
+        delete a.lleva;
+        const l = invs.de(a.autor).lugares;
+        if (!['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'hoz_silex')) return { ok: false, motivo: 'Necesitas la hoz en la mano para segar.' };
+      }
+      const r = segar(m, a.campo, a.x, a.z, a.t, a.autor);
+      return pagada(r.ok && r.gavillas ? { ...r, sobra: { gavilla: r.gavillas }, sobraEn: { x: a.x, z: a.z } } : r, a, invs);
+    }
+    case 'coger_planta': {   // (P11) a mano: a lo que llevas lo que quepa, lo demás al suelo a tus pies
+      if (invs) delete a.lleva;
+      const r = cogerPlanta(m, a.campo, a.x, a.z, a.t, a.autor);
+      if (!r.ok || !invs) return r;
+      const inv = invs.de(a.autor), sobra = {};
+      for (const [tipo, n] of Object.entries(r.da)) { let k = n; while (k > 0 && !inv.meterDonde(tipo, k).ok) k--; if (n - k > 0) sobra[tipo] = n - k; }
+      return pagada({ ...r, sobra }, a, invs);
     }
     case 'quitar_estaca': {
       const inv = invs ? invs.de(a.autor) : null;

@@ -73,7 +73,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
   // en pie, src/mundo/vegetacion_mundo.js)
   function esconder(o) {
     if (o.malla) { original(o); o.malla.setMatrixAt(o.instancia, cero); o.malla.instanceMatrix.needsUpdate = true; }
-    if (!tocones.has(o.id)) {
+    if (!tocones.has(o.id) && !tala.arrancado(o.id)) {   // (P11) arrancado, ya no queda tocón
       const t = tocon(o); t.position.set(o.x, altura(o.x, o.z), o.z); t.rotation.y = (tala.estado[o.id]?.dir || 0);
       grupo.add(t); tocones.set(o.id, t);
     }
@@ -114,6 +114,7 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
   function refrescar(ahora = Date.now()) {
     for (const o of porId.values()) {
       if (tala.enPie(o.id, ahora)) { if (tocones.has(o.id)) mostrar(o); }
+      else if (tala.arrancado(o.id)) { esconder(o); const t = tocones.get(o.id); if (t) { grupo.remove(t); tocones.delete(o.id); } }
       else if (!tocones.has(o.id)) esconder(o);
       if (tala.caido(o.id, ahora)) tumbar(o); else levantar(o.id);
     }
@@ -215,6 +216,25 @@ export function crearTala({ raiz, obstaculos, altura, almacen, sueloObjetos, oye
       return mejor;
     },
     progresoLimpiar: (o) => tala.progresoLimpiar(o.id),
+    // el tocón al alcance de la azada desde (x, z) (P11, limpiar el campo): { o, d, x, z }, o null
+    toconCercano(x, z, ahora = Date.now()) {
+      let mejor = null;
+      for (const c of tala.tocones(ahora)) {
+        const o = porId.get(c.arbol.id);
+        if (!o || c.ang !== undefined || !tala.tocon(o.id, ahora)) continue;
+        const d = Math.hypot(o.x - x, o.z - z);
+        if (d <= ALCANCE_TALA && (!mejor || d < mejor.d)) mejor = { o, d, x: o.x, z: o.z };
+      }
+      return mejor;
+    },
+    progresoArrancar: (o) => Math.min(1, (tala.estado[o.id] && tala.estado[o.id].arranca) || 0),
+    // sin servidor (las pruebas): un golpe al tocón de o; arrancado, se va y deja la leña en el suelo
+    arrancar(invs, registro, autor, o, x, z, ahora = Date.now()) {
+      const r = ejecutarTala(tala, invs, sueloObjetos.suelo, registro, { autor, tipo: 'arrancar', arbol: o.id, x, z }, ahora);
+      if (r.ok) guardarlo();
+      if (r.ok && r.arrancado) { refrescar(ahora); sueloObjetos.guardar(); sueloObjetos.refrescar(); }
+      return r;
+    },
     get temblando() { return temblando.size; },
     get oidos() { return oidos; },   // lo que ha sonado (las pruebas)
     // el crujido de aviso (está a punto de caer): suena (más flojo de lejos) y el árbol tiembla un momento

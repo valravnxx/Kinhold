@@ -156,6 +156,17 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
           for (const a of arbolesDe(i, j).values()) if (Math.hypot(a.x - x, a.z - z) <= r) out.push(a);
       return out;
     },
+    // Lo que hay a menos de r m de (x, z) de la escena (P11, labrar: lo que queda por limpiar): { arboles, matas, piedras }
+    // (las matas: los matorrales y los arbustos de bayas; las piedras: las sueltas que se recogen)
+    cercaDe(x, z, r) {
+      const out = { arboles: [], matas: [], piedras: [] };
+      if (!num(x) || !num(z) || !num(r)) return out;
+      const rango = (L, f) => { for (let i = Math.floor((x - r + O.x) / L); i <= Math.floor((x + r + O.x) / L); i++) for (let j = Math.floor((z - r + O.z) / L); j <= Math.floor((z + r + O.z) / L); j++) f(i, j); };
+      const cerca = p => Math.hypot(p.x - x, p.z - z) <= r;
+      rango(LADO_VEG, (i, j) => { for (const a of arbolesDe(i, j).values()) if (cerca(a)) out.arboles.push(a); for (const m of matasDe(i, j).values()) if (cerca(m)) out.matas.push(m); });
+      rango(LADO_RECOGIDA, (i, j) => { for (const p of puntosDe(i, j).values()) if (cerca(p)) { if (p.tipo === 'piedra') out.piedras.push(p); else if (p.tipo === 'bayas') out.matas.push(p); } });
+      return out;
+    },
     // Lo mismo con un punto de recogida: { id, tipo, x, z } o null.
     punto(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;

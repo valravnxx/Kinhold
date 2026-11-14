@@ -20,7 +20,7 @@ import { trozoDe } from './trozos_red.js';
 export function sitioAccion(mundo, a) {
   if (!a || typeof a !== 'object') return null;
   switch (a.tipo) {
-    case 'nivelar': case 'decorar': case 'colocar': case 'estaca':
+    case 'nivelar': case 'decorar': case 'colocar': case 'estaca': case 'labrar': case 'sembrar': case 'segar': case 'coger_planta':
       return Number.isFinite(a.x) && Number.isFinite(a.z) ? { x: a.x, z: a.z } : null;
     case 'entregar': case 'trabajar': case 'subir': case 'desmontar': case 'usar': {
       const c = mundo.construcciones.find(x => x.id === a.construccion);

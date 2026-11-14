@@ -43,8 +43,8 @@
 //    Provisional (diario y registro): 8 piedras y 2 cestas de barro, 20 s de trabajo. Lo suyo del fuego (más duradero,
 //    se deja en brasas), en src/logica/fuego.js.
 //  - Quedan para cuando existan sus materiales u objetos: envueltas de piel (no hay prenda de pies de piel), anzuelo
-//    (no hay hueso), refugio de ramas (es una obra), carretilla (no hay rodaja de tronco), zurrón y chaleco (no hay
-//    piel limpia), vendas, y lo de cocinar y calentarse al fuego.
+//    (no hay hueso), refugio de ramas (es una obra), carretilla (no hay rodaja de tronco), chaleco (P9: el zurrón ya
+//    está, con la piel limpia del raspador), vendas, y lo de cocinar y calentarse al fuego.
 //  - Lo terminado va donde quepa en lo que llevas (como lo recogido del suelo); si no cabe, sigue esperando.
 //  - Lo depositado en una estación (6 nov): hasta DEPOSITO_MAX unidades en total; solo materiales sueltos (no lo que
 //    llevas puesto, ni un contenedor con algo dentro, ni una prenda cosida). Dejar y coger, a ALCANCE_ESTACION; en
@@ -87,6 +87,7 @@ export const USOS = {
   tallar: { nombre: 'En la piedra de tallar', estaciones: ['piedra_tallar'] },
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
   secar:  { nombre: 'En el secadero', estaciones: ['secadero'] },
+  raspar: { nombre: 'En el raspador de pieles', estaciones: ['raspador'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -105,7 +106,7 @@ export const ESTACIONES = {
   pila_piedras:   { nombre: 'Pila de piedras', un: 'una pila de piedras', uso: 'almacen', coste: { piedra: 4 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['piedra'], cabe: 40, hace: 'Guarda la piedra suelta' },
   lenera:         { nombre: 'Leñera', un: 'una leñera', uso: 'almacen', coste: { vara: 4, rama: 6 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['lena', 'rama'], cabe: 30, hace: 'Guarda la leña y las ramas, a cubierto' },
   soporte_varas:  { nombre: 'Soporte de varas', un: 'un soporte de varas', uso: 'almacen', coste: { vara: 4 }, donde: 'ambos', trabajo: 10, tierra: true, guarda: ['vara'], cabe: 24, hace: 'Guarda las varas, tumbadas en dos caballetes' },
-  almiar:         { nombre: 'Almiar', un: 'un almiar', uso: 'almacen', coste: { vara: 2 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['paja', 'junco'], cabe: 24, hace: 'Guarda la paja y los juncos, en montón alrededor de un palo' },
+  almiar:         { nombre: 'Almiar', un: 'un almiar', uso: 'almacen', coste: { vara: 2 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['paja', 'junco', 'gavilla'], cabe: 24, hace: 'Guarda la paja y los juncos, en montón alrededor de un palo' },
   hoyo_barro:     { nombre: 'Hoyo de barro', un: 'un hoyo de barro', uso: 'almacen', coste: { piedra: 6 }, requiere: ['palo_cavador'], donde: 'fuera', trabajo: 20, tierra: true, guarda: ['barro'], cabe: 16, hace: 'Guarda el barro húmedo, en un hoyo cavado y bordeado de piedras' },
   // los de dentro, colgados en un muro (muro: true; valravnx, 8 nov): lo que se lleva a la espalda, vacío, cada uno de
   // su estaquilla; y las herramientas, colgadas por la cabeza entre dos varas
@@ -123,7 +124,12 @@ export const ESTACIONES = {
   // cuelga (lo depositado) no se estropea mientras está colgado, y la carne puesta a secar (su cola) se ve colgada para
   // todos (cuelga: true). Provisional (diario y registro): 30 s de trabajo para levantarlo.
   secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
-  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
+  // el raspador de pieles (P9, 13 nov; documento de sistemas: «Raspador de pieles (bastidor) — 4 varas + cuerda — limpiar pieles»):
+  // un bastidor de cuatro varas atadas en cuadro, con dos de ellas hincadas de pies, donde la piel se tensa con la
+  // cuerda para rasparle la carne y la grasa con la lasca de sílex (que hay que llevar: no se gasta). Provisional
+  // (diario y registro): fuera, en cualquier sitio (no pide tu tierra), y 20 s de trabajo para levantarlo.
+  raspador:       { nombre: 'Raspador de pieles', un: 'un raspador de pieles', uso: 'raspar', coste: { vara: 4, cuerda: 1 }, donde: 'fuera', trabajo: 20, hace: 'Un bastidor de varas donde se tensa la piel para rasparla con la lasca de sílex: da la piel limpia' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
@@ -183,8 +189,15 @@ export const RECETAS = {
   // transcurrido (la cola de la estación guarda cuándo termina), así que el servidor no tiene que simular nada. Sin sal
   // (aún no hay). Provisional (diario y registro): 6 h reales, dos días de juego.
   secar_carne:       r('Carne seca', 'secar', 'carne_seca', { carne_cruda: 1 }, SECAR_CARNE),
+  // en el raspador de pieles (P9, 13 nov; documento de sistemas: «piel limpia — 1 piel — raspador — paso previo al cuero»): una piel
+  // tensada en el bastidor, raspada con la lasca de sílex (que se lleva y no se gasta). Tiempo, provisional (como lo
+  // del banco, algo más: es raspar la piel entera)
+  raspar_piel:       { ...r('Piel limpia', 'raspar', 'piel_limpia', { piel: 1 }, 60), requiere: ['lasca_silex'] },
   // asar las habas (P11, 13 nov): crudas no se comen (son las silvestres: amargas); un puñado de 3 al fuego. Tiempo, provisional
   asar_habas:        r('Habas asadas', 'fuego', 'habas_asadas', { habas: 3 }, 30, 3),
+  // la col y el nabo del campo (P11, cosechar): se comen crudos, o asados al fuego, que sacian más. Tiempo, provisional
+  asar_col:          r('Col asada', 'fuego', 'col_asada', { col: 1 }, 40),
+  asar_nabo:         r('Nabo asado', 'fuego', 'nabo_asado', { nabo: 1 }, 30),
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -198,6 +211,9 @@ export const RECETAS = {
   hoz_silex:         r('Hoz de sílex', 'banco', 'hoz_silex', { rama: 1, lasca_silex: 3 }, 45),
   mayal:             r('Mayal', 'banco', 'mayal', { rama: 2, cuerda: 1 }, 45),
   cubo:              r('Cubo de madera', 'banco', 'cubo', { tronco_corto: 1 }, 60),
+  // el zurrón de piel (P9, 13 nov; documento de sistemas: «zurrón de piel — 2 piel limpia + cordel — banco — mochila mixta pequeña»): la
+  // mochila mixta pequeña (src/logica/inventario.js: 2 huecos medianos y 2 pequeños). Tiempo, provisional
+  zurron:            r('Zurrón de piel', 'banco', 'zurron', { piel_limpia: 2, cordel: 1 }, 60),
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -214,6 +230,8 @@ export const PARA = {
   arpon: 'Pesca.',
   odre: 'Agua; va al hombro.',
   secar_carne: 'Comida que no se estropea y sacia como la asada.',
+  raspar_piel: 'La piel sin carne ni grasa: para el zurrón; luego, paso previo al cuero.',
+  zurron: 'A la espalda: 2 huecos medianos y 2 pequeños, de lo que sea.',
   yesca: 'Prende la chispa para encender la hoguera o el hogar.',
   yesca_corteza: 'Prende la chispa para encender la hoguera o el hogar.',
   lasca_silex: 'Corta fibra y juncos, despieza.',
@@ -223,6 +241,8 @@ export const PARA = {
   despiezar_liebre: 'Carne cruda (se estropea en unas horas) y una piel pequeña.',
   asar_carne: 'Sacia mucho más que la cruda y no se estropea.',
   asar_habas: 'Las habas silvestres solo se comen asadas.',
+  asar_col: 'Sacia más que cruda; se estropea pronto.',
+  asar_nabo: 'Sacia más que crudo; se estropea pronto.',
   antorcha: 'Luz; dura un rato.',
   antorcha_resina: 'Luz; dura un rato.',
   cuerda: 'Base de casi todo.',

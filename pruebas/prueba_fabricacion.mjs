@@ -66,7 +66,7 @@ console.log('Lo que dice el documento de sistemas (apartados 7 y 8)');
   comprobar('piedra de tallar: 1 piedra; da el tallar', E.piedra_tallar.uso === 'tallar' && igual(E.piedra_tallar.coste, { piedra: 1 }));
   comprobar('banco de tronco: 2 troncos cortos y herramienta de piedra; da el banco', E.banco_tronco.uso === 'banco' && igual(E.banco_tronco.coste, { tronco_corto: 2 }) && E.banco_tronco.requiere.includes('hacha_piedra'));
   comprobar('por uso, no por nivel: ni las estaciones ni las recetas llevan nivel', Object.values(E).every(e => !('nivel' in e)) && Object.values(RECETAS).every(r => !('nivel' in r) && !('donde' in r)));
-  comprobar('los usos: con las manos, al fuego (hoguera y hogar), piedra de tallar, banco de tronco y secadero (P9)', igual(Object.keys(USOS), ['manos', 'fuego', 'tallar', 'banco', 'secar']) && igual(USOS.secar.estaciones, ['secadero']) && igual(USOS.fuego.estaciones, ['hoguera', 'hogar']));
+  comprobar('los usos: con las manos, al fuego (hoguera y hogar), piedra de tallar, banco de tronco, secadero y raspador de pieles (P9)', igual(Object.keys(USOS), ['manos', 'fuego', 'tallar', 'banco', 'secar', 'raspar']) && igual(USOS.secar.estaciones, ['secadero']) && igual(USOS.raspar.estaciones, ['raspador']) && igual(USOS.fuego.estaciones, ['hoguera', 'hogar']));
   comprobar('cada estación da un uso que la nombra (o es un almacenaje o una cama, sin recetas), y dice cómo se nombra en una frase', Object.entries(E).every(([t, e]) => (e.uso === 'almacen' || e.uso === 'cama' ? !Object.values(RECETAS).some(r => r.uso === e.uso) : USOS[e.uso] && USOS[e.uso].estaciones.includes(t)) && /^una? /.test(e.un)));
   comprobar('cada estación de los usos existe (el hogar, también, 8 nov)', igual(Object.values(USOS).flatMap(u => u.estaciones).filter(t => !E[t]), []) && igual(estacionesDeUso('fuego'), ['hoguera', 'hogar']));
   const R = RECETAS;
@@ -341,11 +341,11 @@ console.log('Depositar en las estaciones y volver a coger');
 console.log('Los almacenajes de la base: acopio de troncos, pila de piedras y leñera (revisión del 1 nov)');
 {
   const E = ESTACIONES;
-  comprobar('los siete del documento de sistemas y los dos colgaderos (8 nov), sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja y juncos; barro; lo de la espalda; las herramientas; lo pequeño)',
+  comprobar('los siete del documento de sistemas y los dos colgaderos (8 nov), sin recetas: guardan lo suyo (troncos; piedra suelta; leña y ramas; varas; paja, juncos y gavillas; barro; lo de la espalda; las herramientas; lo pequeño)',
     igual(ALMACENAJES, ['acopio_troncos', 'pila_piedras', 'lenera', 'soporte_varas', 'almiar', 'hoyo_barro', 'colgadero_mochilas', 'colgadero_herramientas', 'cesto'])
     && E.colgadero_mochilas.guarda.includes('lenero') && E.colgadero_mochilas.guarda.every(t => CATALOGO[t].lugar === 'espalda')
     && E.colgadero_herramientas.guarda.includes('hacha_piedra') && E.colgadero_herramientas.guarda.every(t => CATALOGO[t].herramienta)
-    && igual(E.soporte_varas.guarda, ['vara']) && igual(E.almiar.guarda, ['paja', 'junco']) && igual(E.hoyo_barro.guarda, ['barro'])
+    && igual(E.soporte_varas.guarda, ['vara']) && igual(E.almiar.guarda, ['paja', 'junco', 'gavilla']) && igual(E.hoyo_barro.guarda, ['barro'])
     && ['silex', 'fibra', 'cordel', 'yesca'].every(t => E.cesto.guarda.includes(t)) && E.cesto.guarda.every(t => CATALOGO[t] && CATALOGO[t].tam === 'P')
     && E.acopio_troncos.guarda.includes('tronco_delgado') && igual(E.pila_piedras.guarda, ['piedra']) && igual(E.lenera.guarda, ['lena', 'rama']) && !Object.values(RECETAS).some(r => r.uso === 'almacen'));
   comprobar('su coste sale del mundo (varas, piedras, ramas y juncos; y el cordel de fibra de los colgaderos)', ALMACENAJES.every(t => Object.keys(E[t].coste).every(m => ['vara', 'piedra', 'rama', 'junco', 'cordel'].includes(m))));

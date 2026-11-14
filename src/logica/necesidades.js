@@ -42,7 +42,7 @@ export const RITMOS = {
   sentado: 1,                   // sentado a descansar, por segundo: rendido del todo, unos 100 s (provisional)
 };
 export const COMBATE = { paso: 0.1, suelo: 0.8 };
-export const ESFUERZOS = { talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
+export const ESFUERZOS = { labrar: 2, segar: 1.5, arrancar: 1.5, talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
 
 const recorta = (v) => Math.min(MAXIMO, Math.max(0, v));
 export const nuevas = () => ({ hambre: 0, sed: 0, frio: 0, cansancio: 0 });
@@ -133,7 +133,7 @@ export function hayAguaCerca(aguaEn, x, z) {
 // cocinado sacia más). Una mata de bayas da de 3 a 6: entre 15 y 30 puntos. La carne de una liebre (9 nov; src/logica/
 // comida.js): cruda, 12; asada, 35 (una comida de verdad: algo más de un tercio del hambre).
 // (P11, 13 nov) las habas asadas: 6 cada una (un puñado de 3, 18; provisional). Crudas no se comen.
-export const NUTRE = { bayas: 5, setas: 7, carne_cruda: 12, carne_asada: 35, carne_seca: 35, habas_asadas: 6 };   // la seca (P9), como la asada
+export const NUTRE = { bayas: 5, setas: 7, carne_cruda: 12, carne_asada: 35, carne_seca: 35, habas_asadas: 6, col: 8, nabo: 6, col_asada: 14, nabo_asado: 11 };   // (P11) la col y el nabo, crudos o asados (provisional)   // la seca (P9), como la asada
 export const comestible = (tipo) => Object.prototype.hasOwnProperty.call(NUTRE, tipo);
 
 // los círculos que salen ahora: [{ que, fuerte }]

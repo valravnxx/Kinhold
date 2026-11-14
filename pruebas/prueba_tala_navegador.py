@@ -7,6 +7,7 @@
 # Uso: python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html <carpeta>
 # Caído, el árbol se queda entero en el suelo (valravnx, 12 nov) y Usar con el hacha junto a su tronco lo limpia: al
 # terminar, deja el tronco y lo menudo.
+# Y (P11, 13 nov) el tocón se arranca con Usar llevando la azada o el palo cavador: se va, deja leña y no vuelve a crecer.
 # MUTAR=1: el árbol talado sigue «en pie» (sin tocón ni caída): tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, re
 from playwright.sync_api import sync_playwright
@@ -81,6 +82,15 @@ def junto_caido(pg, a, dist=5.5, pitch=0.45, giro=0.9, en=0.5):
       k.pj.k = 0; k.pj.x = mx + px * 1.0; k.pj.z = mz + pz * 1.0; k.pj.y = 0; k.pj.rot = Math.atan2(mx - k.pj.x, mz - k.pj.z);
       k.cam.yaw = k.pj.rot + Math.PI + {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()""")
 
+# golpes al tocón con la hora adelantada (P11, arrancar el tocón: src/logica/tala.js)
+def arranques(pg, a, n, desde=1):
+    return pg.evaluate(f"""(() => {{ const k = {K}, o = k.obstaculos.find(x => x.id === '{a['id']}'); let r;
+      for (let i = 0; i < {n}; i++) {{ r = k.talaV.arrancar(k.inventarios, k.registroAcciones, 'jugador:local', o, k.pj.x, k.pj.z, Date.now() + ({desde} + i) * 1000);
+        if (!r.ok || r.arrancado) break; }}
+      return {{ ok: r.ok, arrancado: !!r.arrancado, faltan: r.faltan, motivo: r.motivo || '' }}; }})()""")
+def tocones(pg): return pg.evaluate(f"{K}.talaV.grupo.children.filter(c => c.name === 'tocon').length")
+def lena(pg): return pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === 'lena').reduce((n, o) => n + o.cosa.n, 0)")
+
 def accion(pg): return pg.evaluate(f"(() => {{ const a = {K}.accionPrincipal(); return a ? a.texto : null; }})()")
 
 def en_pie(pg, a): return pg.evaluate(f"(() => {{ const k = {K}, o = k.obstaculos.find(x => x.id === '{a['id']}'); return k.talaV.enPie(o); }})()")
@@ -97,6 +107,9 @@ with sync_playwright() as p:
     pg.evaluate(f"{K}.usar()")
     comprobar('con el hacha en la mano, Usar junto al árbol tala', pg.evaluate(f"!!{K}.estado.talando"))
     pg.wait_for_function(f"{K}.talaV.tala.progreso('{j['id']}') > 0", timeout=60000)
+    # (el tiempo del juego va al real desde la v191: con pocos fotogramas, mientras se espera, seguiría dando golpes y
+    # el árbol caería aquí; se para el siguiente golpe, sin dejar de estar talando, y los demás los da la prueba)
+    pg.evaluate(f"{K}.estado.golpeEn = 1e9")
     comprobar('cada golpe se cuenta y dice cuántos faltan', 'faltan' in aviso(pg), aviso(pg))
     comprobar('el golpe va al registro con su autor', pg.evaluate(f"{K}.registroAcciones.entradas.some(e => e.tipo === 'talar' && e.autor === 'jugador:local' && e.ok)"))
     pg.wait_for_timeout(400)
@@ -106,11 +119,12 @@ with sync_playwright() as p:
     comprobar('con los golpes que pide, cae', r['ok'] and r['cae'], str(r))
     comprobar('ya no está en pie (queda el tocón) y Usar no lo encuentra', not en_pie(pg, j) and pg.evaluate(f"(() => {{ const a = {K}.arbolCercano(); return !a || a.id !== '{j['id']}'; }})()"))
     comprobar('el árbol cae (se ve caer)', pg.evaluate(f"{K}.talaV.cayendo === 1 && !!{K}.escena.getObjectByName('arbol_cayendo')"))
+    c = pg.evaluate(f"{K}.talaV.caidas[0] || null")   # (cómo caerá: se mira ya, que con pocos fotogramas la caída acaba enseguida)
     comprobar('lo que deja no se ve mientras cae', not pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_tronco_delgado')"))
     pg.wait_for_function(f"(() => {{ const c = {K}.escena.getObjectByName('arbol_cayendo'); return !c || c.quaternion.w < 0.94; }})()", timeout=60000)
     foto(pg, 'tala_02_cae')
     # la caída (12 nov): con la gravedad, rebota y se asienta según el terreno (o apoyado en lo que tenga delante)
-    c = pg.evaluate(f"{K}.talaV.caidas[0] || null")
+    c = pg.evaluate(f"{K}.talaV.caidas[0] || null") or c
     pg.wait_for_function(f"{K}.talaV.cayendo === 0", timeout=60000)
     ang = pg.evaluate(f"(() => {{ const p = {K}.escena.getObjectByName('arbol_caido'); return p ? 2 * Math.acos(Math.min(1, Math.abs(p.quaternion.w))) : null; }})()")
     comprobar('se asienta: acaba tumbado en el suelo (o apoyado) y se queda así (12 nov: entero, hasta que se limpia)', c is not None and ang is not None and abs(ang - c['final']) < 0.01 and (c['final'] > 1.1 or c['apoyo'] is not None), f"{c} · se queda a {ang}")
@@ -135,6 +149,7 @@ with sync_playwright() as p:
     pg.evaluate(f"{K}.usar()")
     comprobar('Usar lo empieza a limpiar', pg.evaluate(f"!!{K}.estado.talando"))
     pg.wait_for_function(f"{K}.talaV.tala.progresoLimpiar('{j['id']}') > 0", timeout=60000)
+    pg.evaluate(f"{K}.estado.golpeEn = 1e9")
     comprobar('cada golpe lo dice', 'Limpias el árbol caído' in aviso(pg), aviso(pg))
     foto(pg, 'tala_03d_limpiando')
     pg.evaluate(f"{K}.estado.talando = null")
@@ -200,6 +215,29 @@ with sync_playwright() as p:
     comprobar('y limpio, deja un tronco largo y las ramas', rl['limpio'] and pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'tronco_largo') && {K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'rama')"), str(rl))
     junto(pg, ad, dist=7.5, pitch=0.42, giro=1.3)
     foto(pg, 'tala_05_adulto_talado')
+    print('PC: arrancar el tocón con la azada (P11, limpiar el campo)')
+    pg.evaluate(f"(() => {{ const l = {K}.inventario.lugares; for (const m of ['mano:der', 'mano:izq']) if (l[m]) {K}.soltarAlSuelo(m); }})()")
+    junto(pg, ad, dist=3.6, pitch=0.42, giro=1.0)
+    comprobar('sin azada ni palo cavador, Usar junto al tocón no lo arranca', accion(pg) != 'Arrancar el tocón', str(accion(pg)))
+    en_mano(pg, 'azada')
+    comprobar('con la azada en la mano, junto al tocón, la acción es «Arrancar el tocón»', accion(pg) == 'Arrancar el tocón', str(accion(pg)))
+    pg.evaluate(f"{K}.talaV.tala.ultimoGolpe = {{}}")   # (los golpes de antes, con la hora adelantada: que no frenen el de ahora)
+    pg.evaluate(f"{K}.usar()")
+    comprobar('Usar empieza a arrancarlo', pg.evaluate(f"!!({K}.estado.talando && {K}.estado.talando.arranque)"))
+    pg.wait_for_function(f"({K}.talaV.tala.estado['{ad['id']}'].arranca || 0) > 0", timeout=60000)
+    pg.evaluate(f"{K}.estado.golpeEn = 1e9")
+    comprobar('cada golpe lo dice', 'Arrancas el tocón' in aviso(pg), aviso(pg))
+    foto(pg, 'tala_05b_arrancando')
+    pg.evaluate(f"{K}.estado.talando = null")
+    l0 = lena(pg)
+    ra = arranques(pg, ad, 40, desde=100)
+    comprobar('con sus golpes queda arrancado', ra['ok'] and ra['arrancado'], str(ra))
+    comprobar('arrancado: el tocón ya no está', tocones(pg) == 0)
+    comprobar('deja 4 de leña en el suelo', lena(pg) - l0 == 4, str(lena(pg) - l0))
+    pg.evaluate(f"{K}.talaV.tala.estado['{ad['id']}'].vuelve = Date.now() - 1; {K}.talaV.refrescar()")
+    comprobar('arrancado, ya no vuelve a crecer aunque pase su tiempo', not en_pie(pg, ad) and tocones(pg) == 0)
+    junto(pg, ad, dist=4.2, pitch=0.5, giro=1.0)
+    foto(pg, 'tala_05c_tocon_arrancado')
     comprobar('sin errores en la consola (PC)', not pg.errores, '; '.join(pg.errores[:3]))
     pg.close()
 
@@ -210,6 +248,7 @@ with sync_playwright() as p:
     en_mano(pg, 'hacha_piedra')
     pg.locator('#btnUsar').tap()
     pg.wait_for_function(f"{K}.talaV.tala.progreso('{j['id']}') > 0", timeout=60000)
+    pg.evaluate(f"{K}.estado.golpeEn = 1e9")
     comprobar('móvil: el botón Usar tala', pg.evaluate(f"!!{K}.estado.talando"))
     foto(pg, 'tala_06_movil_golpes')
     pg.evaluate(f"{K}.estado.talando = null")
@@ -221,12 +260,27 @@ with sync_playwright() as p:
     foto(pg, 'tala_07_movil_caido')
     pg.locator('#btnUsar').tap()
     pg.wait_for_function(f"{K}.talaV.tala.progresoLimpiar('{j['id']}') > 0", timeout=60000)
+    pg.evaluate(f"{K}.estado.golpeEn = 1e9")
     comprobar('móvil: el botón Usar lo limpia', pg.evaluate(f"!!{K}.estado.talando"))
     pg.evaluate(f"{K}.estado.talando = null")
     rl = golpes(pg, j, 10, desde=40)
     comprobar('móvil: limpio, deja el tronco delgado', rl['limpio'] and pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === 'tronco_delgado')"), str(rl))
     junto(pg, j, dist=4.2)
     foto(pg, 'tala_07_movil_tocon')
+    print('Móvil: arrancar el tocón con el palo cavador')
+    pg.evaluate(f"(() => {{ const l = {K}.inventario.lugares; for (const m of ['mano:der', 'mano:izq']) if (l[m]) {K}.soltarAlSuelo(m); }})()")
+    junto(pg, j, dist=3.4, pitch=0.45)
+    en_mano(pg, 'palo_cavador')
+    comprobar('móvil: con el palo cavador, «Arrancar el tocón»', accion(pg) == 'Arrancar el tocón', str(accion(pg)))
+    pg.evaluate(f"{K}.talaV.tala.ultimoGolpe = {{}}")
+    pg.locator('#btnUsar').tap()
+    pg.wait_for_function(f"({K}.talaV.tala.estado['{j['id']}'].arranca || 0) > 0", timeout=60000)
+    pg.evaluate(f"{K}.estado.golpeEn = 1e9")
+    comprobar('móvil: el botón Usar lo arranca', pg.evaluate(f"!!({K}.estado.talando && {K}.estado.talando.arranque)"))
+    foto(pg, 'tala_08_movil_arrancando')
+    pg.evaluate(f"{K}.estado.talando = null")
+    ra = arranques(pg, j, 20, desde=100)
+    comprobar('móvil: con el palo cavador, el doble de golpes: arrancado', ra['ok'] and ra['arrancado'] and tocones(pg) == 0, str(ra))
     comprobar('sin errores en la consola (móvil)', not pg.errores, '; '.join(pg.errores[:3]))
     nav.close()
 

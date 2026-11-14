@@ -56,7 +56,7 @@ import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
-import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON } from '../logica/tala.js';
+import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
@@ -67,7 +67,7 @@ import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
-import { estacaCercana, cerraria, campoAbierto, MAX_ESTACAS } from '../logica/campos.js';
+import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -278,11 +278,15 @@ const zonasRey = comarcasMundo ? crearZonasRey(comarcasMundo) : null;
 if (comarcasMundo) ponerZonas(zonasDeEscena(comarcasMundo, mundoJ.salida), zonasRey.es);
 const vigiaRey = tierrasRey ? vigiaTierras(window.__mutarTierras ? () => false : tierrasRey.en) : null;
 let cartelTierras = null, cartelHasta = 0, tierrasMirado = 0;
+let campoPisado = null;   // el campo en el que está el jugador (para decir lo que queda por limpiar al entrar)
 function mirarTierras() {
   const t = performance.now();
   if (cartelTierras && !cartelTierras.hidden && t > cartelHasta) cartelTierras.hidden = true;
   if (t - tierrasMirado < 400) return;
   tierrasMirado = t;
+  // al entrar en un campo cerrado (P11), dice lo que queda por limpiar en él
+  const cEn = campoEn(mundo, pj.x, pj.z), idC = cEn ? cEn.id : null;
+  if (idC !== campoPisado) { campoPisado = idC; if (cEn) mostrarAviso(textoLimpiar(cEn)); }
   const cambio = vigiaRey.mirar(pj.x, pj.z);
   if (!cambio) return;
   if (!cartelTierras) {
@@ -352,6 +356,8 @@ if (hierbaDensa) hierbaDensa.estorbos = () => recoleccion.puntos || [];   // (a 
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.tierraDe(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
 const talaV = crearTala({ raiz: escena, obstaculos, altura: decorado.altura, almacen, sueloObjetos, oyente: () => pj });
+// dentro de un campo (P11), lo talado no vuelve a crecer: se ve el tocón hasta que se arranca
+talaV.tala.sinRebrote = (x, z) => !!campoEn(mundo, x, z);
 // en el mundo, lo que crece sigue al jugador: los árboles que llegan pasan por la tala (su tocón, si se taló) y los
 // que se van se sueltan; al ponerlos, los talados no se dibujan
 if (decorado.paso) {
@@ -514,7 +520,11 @@ function despejarDecorado() {
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
   for (const mj of Object.values(mundo.mojones)) circ.push([mj.x, mj.z, 0.9]);
-  const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r);
+  // la tierra labrada (P11): ahí no sale hierba, ni flores, ni matas
+  const ahoraL = Date.now(), labrados = (mundo.campos || []).filter(c => c.cerrado && labradoVivo(c, ahoraL)).map(c => ({ c, r: rejilla(c) }));
+  const enLabrado = (x, z) => labrados.some(({ c, r }) => x >= r.x0 - 0.3 && z >= r.z0 - 0.3 && x <= r.x0 + r.w + 0.3 && z <= r.z0 + r.h + 0.3
+    && (labradoEn(c, x, z, ahoraL) || labradoEn(c, x + 0.25, z, ahoraL) || labradoEn(c, x - 0.25, z, ahoraL) || labradoEn(c, x, z + 0.25, ahoraL) || labradoEn(c, x, z - 0.25, ahoraL)));
+  const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r) || (labrados.length > 0 && enLabrado(x, z));
   estado.plantasOcultas = decorado.despejar(ocupado);
   recoleccion.despejar(ocupado); // lo que queda debajo de lo construido no se ve ni se recoge
   if (hierbaDensa) hierbaDensa.despejar(ocupado);
@@ -1713,6 +1723,27 @@ function accionPrincipal() {
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
   if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
+  // con la azada en la mano, dentro de tu campo: una pasada de azada delante de ti (P11, labrar)
+  if (!it && pj.k === 0 && azadaEnMano() && !toconCercano()) { const lb = sitioLabrar(); if (lb) return A(lb.hecho ? tr('Ya está labrado aquí') : tr('Labrar'), 'azada', lb, () => empezarLabranza(lb), { alto: 0.1, prog: estado.talando && estado.talando.labranza ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_LABRAR : 0 }); }
+  // cosechar (P11): delante de una planta madura de tu campo, Usar la coge a mano; con la hoz en la mano, junto a la
+  // cebada, se siega a pasadas
+  if (!it && pj.k === 0) {
+    const cp = sitioCoger();
+    if (cp) return A(tr('Coger: {c}', { c: tr(CULTIVOS[cp.planta.c].nombre) }), cp.planta.c === 'habas' ? 'habas' : cp.planta.c, cp, () => empezarCosecha(cp), { alto: 0.3, prog: estado.talando && estado.talando.cosecha ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_COGER : 0 });
+    const sg = hozEnMano() ? sitioSegar() : null;
+    if (sg) return A(sg.mal ? tr(sg.mal) : tr('Segar'), 'hoz_silex', sg, () => empezarSiega(sg), { alto: 0.4, prog: estado.talando && estado.talando.siega ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_SEGAR : 0 });
+  }
+  // con las semillas en la mano, dentro de tu campo labrado: la cebada a voleo y lo demás planta a planta (P11, sembrar)
+  if (!it && pj.k === 0 && semillaEnMano()) {
+    const sb = sitioSembrar();
+    if (sb) {
+      const cu = CULTIVOS[sb.cultivo], seg = cu.voleo ? SEGUNDOS_VOLEO : SEGUNDOS_PLANTAR;
+      const texto = sb.mal ? tr(sb.mal) : cu.voleo ? tr('Sembrar cebada a voleo') : tr('Plantar: {c}', { c: tr(cu.nombre) });
+      return A(texto, cu.semilla, sb, () => empezarSiembra(sb), { alto: 0.1, prog: estado.talando && estado.talando.siembra ? 1 - Math.max(0, estado.golpeEn) / seg : 0 });
+    }
+  }
+  // con la azada o el palo cavador en la mano, junto a un tocón, se arranca a golpes (P11, limpiar el campo)
+  if (!it && pj.k === 0 && arrancaEnMano(inventario()) && toconCercano()) { const tc = toconCercano(); return A(tr('Arrancar el tocón'), arrancaEnMano(inventario()).tipo, tc, () => empezarArranque(tc), { alto: 0.4, prog: estado.talando && estado.talando.arranque === tc.o ? progresoGolpes(estado.talando) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
   if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
@@ -1982,7 +2013,11 @@ function clavarEstaca() {
   const r = accion({ tipo: 'estaca', x: redondoMm(pj.x), z: redondoMm(pj.z) });
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); reconstruir(); actualizarUI();
-  mostrarAviso(r.cerrado ? tr('Campo cerrado: {a} m².', { a: r.area }) : r.nuevo ? tr('Primera estaca del campo: ve clavando las demás por el linde (de 3 a 16).') : tr('Estaca clavada ({n}).', { n: r.estacas }));
+  // al cerrarlo, dice también lo que queda por limpiar (y no lo vuelve a decir al pisarlo)
+  const cerrado = r.cerrado ? mundo.campos.find(c => c.id === r.campo) : null;
+  if (cerrado && campoEn(mundo, pj.x, pj.z) === cerrado) campoPisado = cerrado.id;
+  const resto = cerrado ? restoLimpiar(cerrado) : null;
+  mostrarAviso(r.cerrado ? tr('Campo cerrado: {a} m².', { a: r.area }) + ' ' + (resto ? tr('Queda por limpiar: {q}.', { q: resto }) : tr('Está limpio.')) : r.nuevo ? tr('Primera estaca del campo: ve clavando las demás por el linde (de 3 a 16).') : tr('Estaca clavada ({n}).', { n: r.estacas }));
 }
 function quitarEstaca(ec) {
   const r = accion({ tipo: 'quitar_estaca', campo: ec.campo.id, i: ec.i });
@@ -2247,6 +2282,11 @@ function golpeTala() {
   if (a.troceo) { golpeTroceo(a.troceo); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
   if (a.rotura) { golpeRotura(a); return; }
+  if (a.arranque) { golpeArranque(a); return; }
+  if (a.labranza) { golpeLabranza(a); return; }
+  if (a.siembra) { golpeSiembra(a); return; }
+  if (a.siega) { golpeSiega(a); return; }
+  if (a.cosecha) { golpeCosecha(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
     objetosRed.mandar({ tipo: 'talar', arbol: a.id, x: pj.x, z: pj.z, ax: a.x, az: a.z, edad: a.edad || edadDeEscala(a.escala) }, (r) => {
@@ -2350,6 +2390,167 @@ function rocaCercana() {
   const e = decorado.rocasCerca(pj.x, pj.z, 1.2)[0];
   return e ? { id: e.id, x: e.x, z: e.z, tam: e.tam } : null;
 }
+// Labrar (P11, src/logica/campos.js): con la azada en la mano, una pasada voltea un círculo de tierra delante de ti
+// (unos 2 s), dentro del linde de tu campo y donde no queda nada por limpiar.
+const ADELANTE_LABRAR = 1.6;   // m delante de ti: donde cae la azada
+function azadaEnMano() { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'azada'); }
+function sitioLabrar() {
+  const x = pj.x + Math.sin(pj.rot) * ADELANTE_LABRAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_LABRAR, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  return { x, z, campo: c, hecho: labradoEn(c, x, z, Date.now()) };
+}
+// lo que queda por limpiar a menos de r m de (x, z): lo mismo que mira el servidor (para decirlo sin mandarlo)
+function estorbaLabrar(x, z, r, c) {
+  const ahora = Date.now(), libre = p => labradoEn(c, p.x, p.z, ahora);
+  if (obstaculos.some(o => o.arbol && o.id && !talaV.tala.arrancado(o.id) && Math.hypot(o.x - x, o.z - z) <= r + 0.6)) return true;
+  const matas = [...(decorado.matasCerca ? decorado.matasCerca(x, z, r) : []), ...(recoleccion.arbustosCerca ? recoleccion.arbustosCerca(x, z, r) : [])];
+  if (matas.some(p => !libre(p))) return true;
+  return (recoleccion.cercanos ? recoleccion.cercanos(x, z, r) : []).some(p => p.tipo === 'piedra' && !libre(p));
+}
+function empezarLabranza(lb) {
+  if (lb.hecho) { mostrarAviso(tr('Ahí ya está labrado.')); return; }
+  if (estorbaLabrar(lb.x, lb.z, RADIO_LABRAR, lb.campo)) { mostrarAviso(tr('Antes limpia ahí: quedan árboles, tocones, matas o piedras.'), true); return; }
+  estado.talando = { labranza: lb, x: lb.x, z: lb.z }; estado.golpeEn = SEGUNDOS_LABRAR;
+  mostrarAviso(tr('Labras la tierra.'));
+}
+function golpeLabranza(a) {
+  estado.talando = null;
+  const lb = a.labranza, r = accion({ tipo: 'labrar', campo: lb.campo.id, x: redondoMm(lb.x), z: redondoMm(lb.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  const c = mundo.campos.find(k => k.id === r.campo), total = c ? casillasLabradas(c, Date.now()).length : r.labradas;
+  mostrarAviso(tr('Tierra labrada: {n} de {a} m² del campo.', { n: total, a: c ? c.area : '?' }));
+}
+// Sembrar (P11, src/logica/campos.js): con las semillas en la mano, sobre la tierra labrada de tu campo. La cebada, a
+// voleo, un círculo de 2 m donde apuntas (1,5 s); las habas, la col y el nabo, una planta delante de tus pies (1 s).
+const ADELANTE_VOLEO = 1.8, ADELANTE_PLANTAR = 0.7;   // m delante de ti
+function semillaEnMano() {
+  const l = inventario().lugares;
+  for (const r of ['mano:der', 'mano:izq']) if (l[r] && CULTIVO_DE_SEMILLA[l[r].tipo]) return CULTIVO_DE_SEMILLA[l[r].tipo];
+  return null;
+}
+function sitioSembrar() {
+  const cultivo = semillaEnMano();
+  if (!cultivo) return null;
+  const voleo = CULTIVOS[cultivo].voleo, d = voleo ? ADELANTE_VOLEO : ADELANTE_PLANTAR;
+  const x = pj.x + Math.sin(pj.rot) * d, z = pj.z + Math.cos(pj.rot) * d, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  const ahora = Date.now();
+  if (!casillasLabradas(c, ahora).length) return null;   // (sin nada labrado, nada que sembrar: el campo, sin aviso)
+  let mal = malSembrar(c, cultivo, x, z, ahora);
+  if (!mal && voleo) {   // ¿queda algo labrado y sin sembrar en el círculo?
+    let hay = false;
+    for (let i = Math.floor(x - RADIO_VOLEO); i <= Math.floor(x + RADIO_VOLEO) && !hay; i++) for (let j = Math.floor(z - RADIO_VOLEO); j <= Math.floor(z + RADIO_VOLEO) && !hay; j++)
+      if ((i + 0.5 - x) ** 2 + (j + 0.5 - z) ** 2 <= RADIO_VOLEO * RADIO_VOLEO && labradoEn(c, i + 0.5, j + 0.5, ahora) && voleoEn(c, i + 0.5, j + 0.5) === null) hay = true;
+    if (!hay) mal = 'Ahí no queda tierra labrada sin sembrar.';
+  }
+  return { x, z, campo: c, cultivo, mal };
+}
+function empezarSiembra(sb) {
+  if (sb.mal) { mostrarAviso(tr(sb.mal), true); return; }
+  const cu = CULTIVOS[sb.cultivo];
+  estado.talando = { siembra: sb, x: sb.x, z: sb.z }; estado.golpeEn = cu.voleo ? SEGUNDOS_VOLEO : SEGUNDOS_PLANTAR;
+  mostrarAviso(cu.voleo ? tr('Esparces la cebada.') : tr('Plantas: {c}.', { c: tr(cu.nombre) }));
+}
+function golpeSiembra(a) {
+  estado.talando = null;
+  const sb = a.siembra, r = accion({ tipo: 'sembrar', campo: sb.campo.id, cultivo: sb.cultivo, x: redondoMm(sb.x), z: redondoMm(sb.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  const c = mundo.campos.find(k => k.id === r.campo);
+  if (r.nuevas) mostrarAviso(tr('Cebada sembrada: {n} de {a} m² del campo (gastas {p}).', { n: c ? casillasVoleo(c).length : r.nuevas, a: c ? c.area : '?', p: r.punados }));
+  else mostrarAviso(tr('Plantado: {c} ({n} en el campo).', { c: tr(CULTIVOS[r.cultivo].nombre), n: c ? c.plantas.filter(p => p.c === r.cultivo).length : 1 }));
+}
+// Cosechar (P11, src/logica/campos.js): con la hoz en la mano, la cebada madura se siega a pasadas (unos 2 s; las
+// gavillas quedan en el suelo); las habas, la col y el nabo maduros se cogen a mano (1 s), a lo que llevas.
+const ADELANTE_SEGAR = 1.4, ADELANTE_COGER = 0.7;
+function hozEnMano() { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'hoz_silex'); }
+function sitioSegar() {
+  const x = pj.x + Math.sin(pj.rot) * ADELANTE_SEGAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_SEGAR, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  const h = cebadaCerca(c, x, z, Date.now());
+  if (!h.maduras && !h.verdes) return null;
+  return { x, z, campo: c, mal: h.maduras ? null : 'La cebada aún no está madura.' };
+}
+function sitioCoger() {
+  const x = pj.x + Math.sin(pj.rot) * ADELANTE_COGER, z = pj.z + Math.cos(pj.rot) * ADELANTE_COGER, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  const p = plantaMadura(c, x, z, Date.now(), 0.7);
+  return p ? { x: p.p.x, z: p.p.z, campo: c, planta: p.p } : null;
+}
+function empezarSiega(sg) {
+  if (sg.mal) { mostrarAviso(tr(sg.mal), true); return; }
+  estado.talando = { siega: sg, x: sg.x, z: sg.z }; estado.golpeEn = SEGUNDOS_SEGAR;
+  mostrarAviso(tr('Siegas la cebada.'));
+}
+function golpeSiega(a) {
+  estado.talando = null;
+  const sg = a.siega, r = accion({ tipo: 'segar', campo: sg.campo.id, x: redondoMm(sg.x), z: redondoMm(sg.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.gavillas > 1 ? tr('Segados {n} m²: {g} gavillas al suelo.', { n: r.segadas, g: r.gavillas }) : r.gavillas ? tr('Segados {n} m²: una gavilla al suelo.', { n: r.segadas }) : tr('Segados {n} m².', { n: r.segadas }));
+}
+function empezarCosecha(cp) {
+  estado.talando = { cosecha: cp, x: cp.x, z: cp.z }; estado.golpeEn = SEGUNDOS_COGER;
+  mostrarAviso(tr('Coges: {c}.', { c: tr(CULTIVOS[cp.planta.c].nombre) }));
+}
+function golpeCosecha(a) {
+  estado.talando = null;
+  const cp = a.cosecha, r = accion({ tipo: 'coger_planta', campo: cp.campo.id, x: redondoMm(cp.x), z: redondoMm(cp.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  const lista = Object.entries(r.da).map(([t, n]) => `${n} × ${tr(CATALOGO[t].nombre)}`).join(', ');
+  mostrarAviso(tr('Cosechado: {l}.', { l: lista }));
+}
+// Arrancar el tocón (P11, src/logica/tala.js): con la azada o el palo cavador en la mano, a golpes; al último se va
+// (ya no vuelve a crecer) y deja leña. En un campo, dice luego lo que queda por limpiar.
+function toconCercano() { return pj.k === 0 ? talaV.toconCercano(pj.x, pj.z) : null; }
+function empezarArranque(tc) {
+  if (!arrancaEnMano(inventario())) { mostrarAviso(tr('Necesitas una azada o un palo cavador en la mano para arrancar el tocón.'), true); return; }
+  estado.talando = { arranque: tc.o, x: tc.x, z: tc.z }; estado.golpeEn = 0.45;
+  pj.rot = Math.atan2(tc.x - pj.x, tc.z - pj.z);
+  mostrarAviso(tr('Arrancas el tocón.'));
+}
+function golpeArranque(a) {
+  estado.golpeEn = RITMO_TALA;
+  const o = a.arranque;
+  const fin = (r) => {
+    if (estado.talando !== a) return;   // ya ha dejado de golpear
+    if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
+    if (r.seRompe) { estado.talando = null; mostrarAviso(tr('Se te ha roto: {c}.', { c: tr(CATALOGO[r.seRompe].nombre).toLowerCase() }), true); if (!r.arrancado) return; }
+    if (!r.arrancado) { mostrarAviso(r.faltan === 1 ? tr('Arrancas el tocón: falta 1 golpe.') : tr('Arrancas el tocón: faltan {n} golpes.', { n: r.faltan })); return; }
+    estado.talando = null;
+    const lena = (r.deja || [])[0], c = campoEn(mundo, o.x, o.z);
+    mostrarAviso(tr('Tocón arrancado: deja {n} de leña.', { n: lena ? lena.n : 0 }) + (c ? ' ' + textoLimpiar(c) : ''));
+  };
+  const datos = { tipo: 'arrancar', arbol: o.id, x: pj.x, z: pj.z, ax: o.x, az: o.z, edad: o.edad || edadDeEscala(o.escala) };
+  if (objetosRed) { objetosRed.mandar(datos, fin); return; }
+  fin(talaV.arrancar(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z));
+}
+// Lo que queda por limpiar en el campo c (P11; src/logica/campos.js, porLimpiar): árboles en pie, caídos, tocones,
+// matas y piedras sueltas dentro de su linde, de lo que este navegador tiene cargado.
+function quedaEnCampo(c) {
+  const xs = c.puntos.map(p => p.x), zs = c.puntos.map(p => p.z), cx = (Math.min(...xs) + Math.max(...xs)) / 2, cz = (Math.min(...zs) + Math.max(...zs)) / 2;
+  const R = Math.max(...c.puntos.map(p => Math.hypot(p.x - cx, p.z - cz))) + 0.5, ahora = Date.now();
+  const arboles = obstaculos.filter(o => o.arbol && o.id && talaV.enPie(o, ahora) && Math.hypot(o.x - cx, o.z - cz) <= R);
+  const caidos = talaV.tala.caidos(ahora).map(k => k.arbol), tocones = talaV.tala.tocones(ahora).filter(k => k.ang === undefined).map(k => k.arbol);
+  const matas = [...(decorado.matasCerca ? decorado.matasCerca(cx, cz, R) : []), ...(recoleccion.arbustosCerca ? recoleccion.arbustosCerca(cx, cz, R) : [])];
+  const piedras = (recoleccion.cercanos ? recoleccion.cercanos(cx, cz, R) : []).filter(p => p.tipo === 'piedra');
+  return porLimpiar(c, { arboles, caidos, tocones, matas, piedras });
+}
+// lo que queda, dicho («1 árbol, 4 matas»), o null si está limpio
+function restoLimpiar(c) {
+  const q = quedaEnCampo(c), partes = [];
+  const n = (k, uno, varios) => { if (q[k]) partes.push(q[k] === 1 ? tr(uno) : tr(varios, { n: q[k] })); };
+  n('arboles', '1 árbol', '{n} árboles'); n('caidos', '1 árbol caído', '{n} árboles caídos'); n('tocones', '1 tocón', '{n} tocones');
+  n('matas', '1 mata', '{n} matas'); n('piedras', '1 piedra suelta', '{n} piedras sueltas');
+  return partes.length ? partes.join(', ') : null;
+}
+function textoLimpiar(c) {
+  const q = restoLimpiar(c);
+  return q ? tr('Campo de {a} m²: queda por limpiar {q}.', { a: c.area, q }) : tr('Campo de {a} m²: limpio.', { a: c.area });
+}
 function empezarRotura(o) {
   if (!mazoEnMano(inventario())) { mostrarAviso(tr(QUE_PIDE.romper), true); return; }
   estado.talando = { rotura: o, x: o.x, z: o.z }; estado.golpeEn = 0.45;
@@ -2421,6 +2622,7 @@ function pasoMundo() {
   // (con la cámara libre del admin, el paisaje se prepara alrededor de la cámara)
   const foco = camLibre.activa ? { ...pj, x: camLibre.x, z: camLibre.z } : pj;
   const ms = mundoJ.paso(foco.x, foco.z, { prisa: !mundoListo }) + (decorado.paso ? decorado.paso(foco) : 0) + (hierbaDensa && mundoListo ? hierbaDensa.paso(foco, performance.now() / 1000) : 0);
+  if (camposV) camposV.paso(foco);   // (P11) lo sembrado: de cerca, las plantas; de lejos, el color del suelo
   // el dosel de cerca empieza donde acaban los árboles de verdad (su cuadro, alrededor de donde se pusieron)
   if (mundoJ.horizonte && decorado.centro) mundoJ.horizonte.cuadroArboles(decorado.centro.x, decorado.centro.z, MEDIDAS_VEGETACION.cuadro);
   if (mundoListo) mirarTierras();
@@ -3135,6 +3337,7 @@ window.__kinhold = {
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },
+  get camposV() { return camposV; },   // los campos a la vista (P11: lo sembrado, para las pruebas)
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí

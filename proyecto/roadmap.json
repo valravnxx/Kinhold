@@ -2265,25 +2265,41 @@
     },
     {
      "nombre": "Limpiar el campo: dentro de un campo los árboles no vuelven a crecer; arrancar el tocón a golpes con la azada o el palo cavador (deja leña); las matas se desbrozan y las piedras sueltas se recogen; el campo dice lo que queda por limpiar. Cadena: azada ← rama, piedra y cuerda en el banco de tronco; palo cavador ← 1 rama",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T15:12:52+00:00",
-     "rama": "trabajo/20261113-1512"
+     "fin": "2026-11-13T16:15:37+00:00"
     },
     {
      "nombre": "Labrar con la azada: con la azada en la mano, cada pasada voltea un círculo de tierra donde apuntas (1,2 m de radio, unos 2 s; provisional), solo dentro del linde y donde no queda nada por limpiar; gasta aguante y cansancio. El suelo pasa a tierra labrada (un material nuevo del suelo, con surcos) y la hierba densa deja de salir ahí; el servidor guarda lo labrado (1 bit por m²); lo labrado y no sembrado vuelve a ser hierba con el tiempo. Capturas al lado de la referencia. Cadena: azada ← el banco de tronco",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-13T16:28:41+00:00",
+     "fin": "2026-11-13T18:12:53+00:00"
     },
     {
      "nombre": "Sembrar y crecer: la cebada a voleo (cada pasada esparce un círculo de 2 m sobre lo labrado y gasta 1 puñado cada 10 m²; provisional) y las habas, la col y el nabo planta a planta, a su distancia; crecen por fases que se ven (brote, verde, espiga o cabeza, maduro) en una semana real (valravnx), por tiempo transcurrido en el servidor, y todos lo ven igual. Las plantas se dibujan con la técnica de la hierba densa (instancias por celdas) y de lejos con el color del suelo; fotogramas medidos en el móvil. Cadena: semillas ← las silvestres; tierra labrada ← la azada",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-13T18:24:50+00:00",
+     "rama": "trabajo/20261113-1825",
+     "fin": "2026-11-13T20:12:49+00:00"
     },
     {
      "nombre": "Cosechar: la cebada se siega con la hoz de sílex a pasadas (deja gavillas en el suelo); las habas, la col y el nabo se cogen a mano; cada planta madura da unas 4 veces lo sembrado (la proporción de la época; provisional); la col y el nabo se comen (crudos o al fuego) y no duran mucho. Las gavillas van al almiar y lo pequeño al cesto (los acopios de plantas). Cadena: hoz ← rama y 3 lascas en el banco de tronco; lasca ← sílex en la piedra de tallar",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-13T20:14:47+00:00",
+     "rama": "trabajo/20261113-2015",
+     "fin": "2026-11-13T21:24:32+00:00"
     },
     {
      "nombre": "La era y trillar: la era (8 piedras y un suelo apisonado, fuera, en tu tierra) como estación; en ella, las gavillas con el mayal dan grano de cebada (que es también su semilla) y paja. La paja deja de estar escondida: el tejado de paja y el almiar lleno se pueden hacer. Cadena: piedra ← se recoge; mayal ← 2 ramas y cuerda en el banco de tronco; gavillas ← la siega",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-13T22:24:59+00:00",
+     "rama": "trabajo/20261113-2224"
+    },
+    {
+     "nombre": "Escardar: a mitad del crecimiento salen malas hierbas entre lo sembrado (se ven); quitarlas con las manos o la azada, a pasadas, da más cosecha (opcional: sin escardar se cosecha igual, algo menos); como en la época (la escarda de junio). Cadena: manos o azada ← el banco de tronco",
+     "estado": "en_curso",
+     "inicio": "2026-11-14T07:06:08+01:00",
+     "rama": "trabajo/20261114-0706-escardar"
     },
     {
      "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era y pone un tejado de paja",
@@ -2295,6 +2311,32 @@
     }
    ],
    "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco."
+  },
+  {
+   "id": "lluvia",
+   "num": "P11b",
+   "nombre": "La lluvia y el riego",
+   "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o el pozo; el cereal y las habas, de secano, como en la época.",
+   "estado": "pendiente",
+   "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones).",
+   "tareas": [
+    {
+     "nombre": "Planificar el hito: lista de tareas sacada del GDD (clima por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo), con la cadena de cada cosa hasta el mundo (el cubo ← tronco corto en el banco; el agua ← el río, el mar no)",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Llueve: el tiempo del mundo (despejado, nublado, lluvia, niebla) por zonas grandes y por el reloj del servidor, igual para todos; la lluvia se ve (gotas, cielo gris, suelo mojado) y se oye, en PC y en móvil sin perder fotogramas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "pendiente"
+    }
+   ]
   },
   {
    "id": "oficios",
@@ -2319,7 +2361,15 @@
     },
     {
      "nombre": "El raspador de pieles, la piel limpia y el zurrón: el bastidor (4 varas y 1 cuerda) como estación; en él, con la lasca de sílex, 1 piel → 1 piel limpia; y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco: mochila mixta pequeña). Cadena: vara ← talar un árbol joven; piel ← despiezar la liebre; cordel ← fibra",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-13T20:11:47+00:00",
+     "fin": "2026-11-14T01:29:16+00:00"
+    },
+    {
+     "nombre": "La correa cruzada pegada al cuerpo (segunda mirada del zurrón, 14 nov): la del zurrón, el carcaj y la correa del escudo, que de lado no haga un arco en el aire sobre el hombro, que se vea cruzar el pecho por delante y que la vuelta por el costado no entre en el antebrazo ni en la cadera; capturas de lado, de frente y de espaldas, en PC y en móvil",
+     "estado": "en_curso",
+     "inicio": "2026-11-14T04:24:55+00:00",
+     "rama": "trabajo/20261114-0424"
     },
     {
      "nombre": "El cubo lleno de agua y la corteza de roble: el cubo de madera se llena en el río (agua, para las cubas) y se vacía; descortezar un roble en pie da corteza de roble (las demás especies, corteza). Cadena: cubo ← banco de tronco con un tronco corto ← trocear un tronco con el hacha; roble ← los bosques templados; descortezar ← la lasca de sílex o el hacha",
@@ -2368,7 +2418,9 @@
     },
     {
      "nombre": "El hierro de pantano: en las vegas llanas junto a los arroyos y en las turberas salen manchas de tierra encharcada con agua rojiza (la señal del GDD; lógica pura por celdas, de la semilla del mundo, las mismas para todos); con la pala de madera y la criba, cada pasada en una mancha da 1 mineral de hierro (lo decide el servidor, con su autor); cada mancha da unos pocos y vuelve a salir en unos meses reales. La criba (2 mimbres y 1 vara, en el banco de tronco). Capturas de la mancha al lado de la referencia. Cadena: pala de madera ← banco de tronco con 1 tronco corto; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-14T00:24:09+00:00",
+     "rama": "trabajo/20261114-0024"
     },
     {
      "nombre": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
@@ -4391,6 +4443,41 @@
      "archivo": "jugar/demo/v199.html",
      "capturas": "capturas/demo-v199",
      "notas": "Juncos más grandes: los que se recogen, de unos 1,7 m, y los de adorno, de unos 1,1 m; más juncos en la marisma."
+    },
+    {
+     "v": "v200",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v200.html",
+     "capturas": "capturas/demo-v200",
+     "notas": "Limpiar el campo: dentro de un campo lo talado no vuelve a crecer; el tocón se arranca con la azada o el palo cavador (deja leña y ya no vuelve), y el campo dice lo que queda por limpiar."
+    },
+    {
+     "v": "v201",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v201.html",
+     "capturas": "capturas/demo-v201",
+     "notas": "Labrar con la azada (P11): con la azada en la mano, dentro de tu campo limpio, Usar voltea un círculo de tierra delante de ti; la tierra labrada se ve con sus surcos y sin hierba, y la ven todos."
+    },
+    {
+     "v": "v202",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v202.html",
+     "capturas": "capturas/demo-v202",
+     "notas": "Sembrar y crecer (P11): con las semillas en la mano, sobre lo labrado, la cebada se siembra a voleo y las habas, la col y el nabo planta a planta; crecen en una semana por fases que se ven (brote, verde, espiga, vaina o cabeza, maduro), con la hora del servidor, y las ven todos."
+    },
+    {
+     "v": "v203",
+     "fecha": "2026-11-13",
+     "archivo": "jugar/demo/v203.html",
+     "capturas": "capturas/demo-v203",
+     "notas": "Cosechar (P11): con la hoz de sílex, la cebada madura se siega a pasadas y deja gavillas en el suelo; las habas, la col y el nabo maduros se cogen a mano; la col y el nabo se comen crudos o asados."
+    },
+    {
+     "v": "v204",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v204.html",
+     "capturas": "capturas/demo-v204",
+     "notas": "El raspador de pieles (un bastidor de 4 varas y 1 cuerda), la piel limpia y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco)"
     }
    ]
   },

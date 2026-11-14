@@ -1,15 +1,16 @@
 {
- "A": {
-  "inicio": "2026-11-13T15:12:52+00:00",
-  "tarea": "Limpiar el campo: dentro de un campo los árboles no vuelven a crecer; arrancar el tocón a golpes con la azada o el palo cavador (deja leña); las matas se desbrozan y las piedras sueltas se recogen; el campo dice lo que queda por limpiar. Cadena: azada ← rama, piedra y cuerda en el banco de tronco; palo cavador ← 1 rama",
-  "hito": "granja",
-  "rama": "trabajo/20261113-1512"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261113-1710-aspecto-rocas": {
   "inicio": "2026-11-13T17:08:43+01:00",
   "tarea": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
   "hito": "aspecto",
   "rama": "trabajo/20261113-1710-aspecto-rocas"
+ },
+ "chat:trabajo/20261114-0706-escardar": {
+  "inicio": "2026-11-14T07:06:08+01:00",
+  "tarea": "Escardar: a mitad del crecimiento salen malas hierbas entre lo sembrado (se ven); quitarlas con las manos o la azada, a pasadas, da más cosecha (opcional: sin escardar se cosecha igual, algo menos); como en la época (la escarda de junio). Cadena: manos o azada ← el banco de tronco",
+  "hito": "granja",
+  "rama": "trabajo/20261114-0706-escardar"
  }
 }
