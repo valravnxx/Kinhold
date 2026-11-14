@@ -2335,9 +2335,9 @@
    "id": "lluvia",
    "num": "P11b",
    "nombre": "La lluvia y el riego",
-   "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o el pozo; el cereal y las habas, de secano, como en la época.",
+   "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o en un pozo, que cavar y revestir cuesta (para vivir lejos del río); el cereal y las habas, de secano, como en la época.",
    "estado": "en_curso",
-   "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones).",
+   "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones). valravnx, 14 nov, por el chat: «el pozo es algo que define muchísimo el sobrevivir sin río… debe ser laborioso al trivializar el agua de ríos»; el pozo, en este hito, como obra por etapas (cavar y revestir por tramos), sin descongelar la excavación.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD (clima por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo), con la cadena de cada cosa hasta el mundo (el cubo ← tronco corto en el banco; el agua ← el río, el mar no)",
@@ -2366,7 +2366,7 @@
      "estado": "pendiente"
     },
     {
-     "nombre": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río o lago; el pozo llega con los pozos y las acequias de la granja (GDD), no en este hito",
+     "nombre": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río, lago o pozo",
      "estado": "pendiente"
     },
     {
@@ -2374,6 +2374,18 @@
      "estado": "hecho",
      "inicio": "2026-11-14T14:03:44+01:00",
      "fin": "2026-11-14T20:32:07+01:00"
+    },
+    {
+     "nombre": "El pozo (1), la lógica: el agua bajo tierra sale del terreno (cerca del río o en el fondo de un valle, poco hondo; lejos y en alto, hondo, con un tope); el pozo es una obra por tramos de 1 m: cavar cada tramo con la pala de madera (sus golpes, y la tierra que sale) y revestirlo de piedra seca antes de bajar más; con su autor, por el servidor, y su prueba. Cadena: pala de madera ← banco; piedra ← el suelo",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El pozo (2), en el juego: marcar el sitio (dice a qué hondura está el agua), y cada tramo cavado y revestido se ve (el hoyo, su piedra y la tierra sacada al lado), con el estilo v5; lo ven todos; en PC y en móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El pozo (3), sacar agua: brocal de piedra, travesaño de varas y cuerda; con el cubo se saca agua dulce (para regar y para beber), lejos de cualquier río; el recorrido de jugador hace un pozo de principio a fin. Cadena: varas ← árbol joven; cuerda ← fibra",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",

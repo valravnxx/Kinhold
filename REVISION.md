@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 21:02 UTC — por el chat, el pozo
+
+valravnx: «el pozo es algo que define muchísimo el "sobrevivir sin río", con lo que entiendo que debe ser laborioso al trivializar el agua de ríos y tal». Elige, de las opciones: el pozo como **obra por etapas en P11b** (no descongelar la excavación). → Tres tareas en el hito de la lluvia: El pozo (1), la lógica (el agua bajo tierra según el terreno; cavar por tramos de 1 m con la pala de madera y revestir de piedra seca cada tramo antes de bajar); El pozo (2), en el juego; El pozo (3), sacar agua (brocal, travesaño de varas, cuerda y cubo; recorrido de jugador lejos del río). `est_pozo` en lo esencial del hito y en PENDIENTES de `pruebas/prueba_origenes.mjs`.
+
 ### 14 nov 2026, 17:47 UTC — por el chat, dónde va la chimenea
 
 valravnx: «la chimenea es más para las casas que ya eran de paredes de leño y cal con tejado de teja, ¿no?» y «apunta como está todo hablado» → al GDD (la casa humilde): hogar abierto en la casa humilde; la chimenea, de obra (piedra o ladrillo con mortero de cal), solo con cimiento de piedra y tejado de teja (nunca con paja o juncos), cuando lleguen la teja y la cal (tier 2 alto o tier 3). Para la revisión de rumbo, con lo demás de la casa rica.

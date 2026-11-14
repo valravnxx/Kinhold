@@ -69,6 +69,8 @@ const PENDIENTES = {
   arcilla: ['aún no se cava', 'La arcilla y el horno cerámico'],
   est_horno_ceramico: ['aún no hay horno cerámico', 'La arcilla y el horno cerámico'],
   teja: ['sale del horno cerámico', 'Las tejas: en el horno cerámico'],
+  // P11b, el pozo (valravnx, 14 nov: «debe ser laborioso»): obra por tramos, cavar y revestir de piedra
+  est_pozo: ['aún no se cava ni se reviste', 'El pozo (1), la lógica'],
 };
 // Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede
 // tener partiendo de nada, o espera en PENDIENTES con su tarea viva. Antes de pasar el hito a revisión (paso 9), nada
@@ -77,7 +79,7 @@ const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
-  lluvia: ['cubo', 'cubo_agua', 'col', 'nabo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
+  lluvia: ['cubo', 'cubo_agua', 'col', 'nabo', 'est_pozo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
