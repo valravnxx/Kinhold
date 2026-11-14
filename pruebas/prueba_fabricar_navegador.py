@@ -33,6 +33,8 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_fabricar'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
+# ROMPER=era deja la era sin despejar la hierba y sin tenderse sobre el terreno (las dos comprobaciones de la era fallan)
+ROMPER = os.environ.get('ROMPER', '')
 
 sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
 web = servir(sitio)
@@ -84,6 +86,7 @@ def crear_cuenta(pg, ms=10000):
     return crear_y_confirmar(pg, codigos, f'artesano{_n[0]}', 'clave-de-prueba-123')
 def entrar(nav, nombre, vista, movil):
     ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+    if ROMPER == 'era': ctx.add_init_script("window.__sinDespejarEras = true; window.__sinAsentar = true;")
     if MUTAR:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
           WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"objeto"')) return; return s.call(this, d); }; })()""")
