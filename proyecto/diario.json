@@ -6843,5 +6843,37 @@
   ],
   "pruebas": "Comprobador de código correcto. Lógica nueva prueba_hierro_pantano.mjs 24/24 (rota a propósito con MUTAR=1, falla); prueba_origenes 80/0 (la criba y el mineral de hierro ya salen del mundo); prueba_recogida_mundo, al día con las zonas nuevas. En la nube: recorrido correcto (el hierro de pantano, en su TODAVIA_NO hasta la tarea «Recorrido de jugador del hierro»), navegador «el hierro de pantano» correcto en PC y móvil, y los demás grupos que pidió el revisor, correctos, salvo prueba_nube.mjs (systemd-analyze de la máquina de GitHub, como en main) y «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, que este cambio no toca; no comprobado en main).",
   "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-14T02:25:34+00:00",
+  "fin": "2026-11-14T03:41:57+00:00",
+  "titulo": "P11: la era y trillar, sigue a medias (falta mirarla en el móvil y la segunda mirada)",
+  "hito": "granja",
+  "hecho": [
+   "En la rama trabajo/20261113-2224, la era hecha de nuevo: un suelo de tierra apisonada con su textura (el corro más pisado, chinas, grietas finas y granzas de paja) que se funde con la hierba por un canto irregular, en vez de un disco liso recortado.",
+   "Las 8 piedras, hincadas de canto en el borde y medio enterradas; alguna losa plana asomando en lo apisonado.",
+   "La era se tiende sobre el terreno: su suelo, sus piedras y las gavillas siguen la cuesta, así que en ladera la hierba ya no tapa media era ni quedan piedras fuera. La hierba densa, las flores y las matas ya no salen encima.",
+   "Unida con main (el raspador de pieles de v204): los dos puestos, sus usos y sus pestañas; las notas de la era pasan a v205 y las imágenes del panel se rehacen en iconos-v24 con los dos.",
+   "El muestrario de piezas saca también fotos de los puestos de trabajo (estaciones=era).",
+   "No se publica: la prueba del panel no llega al móvil en la nube (se queda al crear la cuenta del segundo jugador, dos veces de tres), así que la era no se ha visto en el móvil con estos cambios, y falta la segunda mirada de un agente aparte."
+  ],
+  "pruebas": "Comprobador de código correcto. Aquí: fabricación 197/0, trillar 18/0, orígenes 75/0, iconos 667/0. En la nube: la hierba densa, bien; en la lógica solo falla systemd-analyze, como en main. El panel de fabricar, bien en PC (con los siete puestos, la era sin hierba encima y tendida sobre el terreno); en el móvil se cuelga al crear la cuenta (en una de las tres vueltas sí llegó, con la era de antes de tenderla). No comprobado: la era en el móvil con lo último, y romper a propósito las dos comprobaciones nuevas (__sinDespejarEras, __sinAsentar).",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-14T04:24:04+00:00",
+  "fin": "2026-11-14T05:13:12+00:00",
+  "titulo": "Oficios: la correa cruzada pegada al cuerpo, a medias (de lado ya no hace arco por delante; falta que no se hunda en la espalda bajo el hombro)",
+  "hito": "oficios",
+  "hecho": [
+   "En la rama trabajo/20261114-0424, la correa del zurrón, el carcaj y el escudo se traza por unos puntos de guía (de la espalda al hombro derecho, en diagonal por el pecho a la cadera izquierda y por el costado a la espalda) y cada punto se pega a la superficie medida del tronco.",
+   "La correa va tensa, como una de verdad: pasa recta por encima de la abertura de la camisa, sin el escalón de antes, y por delante casi toca el pecho; de lado ya no se ve aire entre ella y el cuerpo, ni el arco sobre el hombro.",
+   "Va tendida sobre el cuerpo (lo ancho, de plano) y ya no se retuerce donde baja casi vertical. El carcaj y el escudo llevan ahora un tahalí entero, también por la espalda.",
+   "La prueba de lo que llevas mide lo que se separa del cuerpo cada punto de la correa (falla si se deja sin pegar) y saca capturas de cerca de lado, de frente y de espaldas.",
+   "No se publica: la segunda mirada dice que no. En el PC, el tahalí del carcaj se hunde en la espalda entre el hombro y el omóplato (el cuerpo se mide en una postura y la respiración sube el omóplato), y la del zurrón aún hace un gancho corto al llegar a la bolsa. Separarla más por detrás la saca del cuerpo, pero de lado vuelve el arco en el aire: hay que atar el tramo del hombro a su hueso."
+  ],
+  "pruebas": "Comprobador de código correcto. En la nube, lo que llevas: las correas pegadas (zurrón, carcaj y escudo), bien; fallan la mano sobre el tronco al hombro (hombre y mujer), y fallan igual en main (pasada aquí). Segunda mirada de un agente aparte: no (ver arriba). Capturas en PC y en móvil, del hombre y de la mujer, solo para revisar.",
+  "estado": "fallo"
  }
 ]
