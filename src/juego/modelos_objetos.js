@@ -661,12 +661,18 @@ export function cribaEn(L, x, y, z, giro = null, id = 'criba') {
   const fp = fondo.attributes.position; for (let i = 0; i < fp.count; i++) { const d = Math.hypot(fp.getX(i), fp.getZ(i)) / r; fp.setY(i, -0.006 * (1 - d * d)); }
   fondo.computeVertexNormals();
   pon(fondo, PIEL_LIMPIA, 0, 0.012, 0, { tex: 'liso', rayas: moteadoPiel(id, 1.2) });
+  // y por debajo (la cara de fuera de la piel), para que se vea también de canto y desde abajo, con sus agujeros
+  const debajo = fondo.clone(); debajo.translate(0, -0.0012, 0);
+  { const ix = debajo.index; if (ix) for (let i = 0; i < ix.count; i += 3) { const t = ix.getX(i); ix.setX(i, ix.getX(i + 2)); ix.setX(i + 2, t); } }
+  debajo.computeVertexNormals();
+  pon(debajo, PIEL_LIMPIA, 0, 0.012, 0, { tex: 'liso', rayas: moteadoPiel(id, 1.2) });
   // los agujeros a punzón, en anillos (de dentro afuera) hasta cerca del aro: del tamaño de un grano
   for (let a = 1; a <= 7; a++) {
     const ra = a * (r - 0.03) / 7, n = Math.round(6 * a);
     for (let k = 0; k < n; k++) {
       const t = (k + (a % 2) * 0.5) / n * Math.PI * 2, d = Math.hypot(Math.cos(t) * ra, Math.sin(t) * ra) / r;
       pon(new THREE.CircleGeometry(0.0048, 5), 0x2e241b, Math.cos(t) * ra, 0.0145 - 0.006 * (1 - d * d), Math.sin(t) * ra, { tex: 'liso' }, new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+      pon(new THREE.CircleGeometry(0.0048, 5), 0x2e241b, Math.cos(t) * ra, 0.0095 - 0.006 * (1 - d * d), Math.sin(t) * ra, { tex: 'liso' }, new THREE.Matrix4().makeRotationX(Math.PI / 2));
     }
   }
 }

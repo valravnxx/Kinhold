@@ -427,9 +427,13 @@ try:
         captura(A, f'{SALIDA}/PC_criba_mano_frente.png')
         A.evaluate(f"(() => {{ for (const m of ['mano:der', 'mano:izq']) if ({K}.inventario.lugares[m]) {K}.accionInventario({{ tipo: 'soltar', de: m, cantidad: {K}.inventario.lugares[m].n }}); }})()")
         comprobar('la criba y el grano, en el suelo', esperar(A, f"!{K}.inventario.lugares['mano:der'] && !{K}.inventario.lugares['mano:izq']", 8000))
-        A.evaluate(f"(() => {{ {K}.cam.yaw = 0.9; {K}.cam.dist = 1.6; {K}.cam.pitch = 0.75; }})()")
+        # (se aparta un paso para ver lo soltado a sus pies)
+        A.evaluate(f"(() => {{ {K}.pj.x += 1.2; {K}.cam.yaw = 0.9; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.95; }})()")
         A.wait_for_timeout(2500)
         captura(A, f'{SALIDA}/PC_criba_suelo.png')
+        A.evaluate(f"(() => {{ {K}.cam.yaw = 2.6; }})()")
+        A.wait_for_timeout(2000)
+        captura(A, f'{SALIDA}/PC_criba_suelo_2.png')
 
         # una cosa cada vez (valravnx, 14 nov): el PC termina y se cierra antes de que entre el móvil; en la nube, sin
         # tarjeta, con los dos abiertos el móvil se colgaba al crear la cuenta. Lo del PC sigue en el servidor.

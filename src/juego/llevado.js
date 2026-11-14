@@ -405,8 +405,10 @@ function enMano(t) {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
   } else if (t === 'criba_grano') {
-    // la criba de grano, cogida por el aro: cuelga de la mano, de canto, con el fondo hacia el cuerpo
-    cribaEn(L, CRIBA.alto / 2, -(CRIBA.r + CRIBA.grosor), 0, { z: Math.PI / 2 }, 'mano');
+    // la criba de grano, cogida por el aro: cuelga de la mano, de canto y junto a la pierna. En la base de la mano (con
+    // el brazo caído, la palma hacia atrás): +Z hacia los dedos (abajo), +Y del meñique al índice (hacia el cuerpo); el
+    // eje del aro, a lo ancho (+Y), y el aro hacia fuera del cuerpo, para no meterse en el muslo
+    cribaEn(L, 0, -CRIBA.alto, CRIBA.r + CRIBA.grosor * 0.5, null, 'mano');
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
     for (const p of H.piezas) { p.m.premultiply(new THREE.Matrix4().makeTranslation(0, -0.25, 0)); L.piezas.push(p); }
