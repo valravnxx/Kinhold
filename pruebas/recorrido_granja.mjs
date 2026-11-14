@@ -17,6 +17,7 @@ import { vegetacionEn } from '../src/logica/vegetacion.js';
 import { idArbol } from '../src/logica/tala.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
+import { hayAguaCerca } from '../src/logica/necesidades.js';
 import { CRECER, PENDIENTE_MAX, campoEn, labradoEn, casillasVoleo, rejilla, dentroPoligono } from '../src/logica/campos.js';
 
 const MANOS = ['mano:der', 'mano:izq'];
@@ -114,6 +115,37 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     return enEstacion(banco, 'cuerda');
   };
 
+  // (la granja es larga: como haría un jugador, cuando tiene sed va a beber al agua más cercana, y con hambre come
+  // bayas y setas de por aquí; y vuelve donde estaba. Si se muere por el camino, la prueba lo dice)
+  let muertes = [];
+  J.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'muerte') muertes.push(m.motivo); });
+  const cuidarse = async () => {
+    const nec = () => s.necesidades.get(yo) || { sed: 0, hambre: 0 };
+    const desde = { ...J.pos };
+    if (nec().sed > 45) {
+      let agua = null;
+      for (let d = 5; d <= 1500 && !agua; d += 5) for (let k = 0; k < 48 && !agua; k++) {
+        const x = desde.x + Math.cos(k / 48 * 2 * Math.PI) * d, z = desde.z + Math.sin(k / 48 * 2 * Math.PI) * d;
+        if (!T.aguaEn(x, z) && hayAguaCerca(T.aguaEn, x, z)) agua = { x: r2(x), z: r2(z) };
+      }
+      if (agua) { await J.andar(agua.x, agua.z); for (let i = 0; i < 10 && nec().sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); } }
+      console.log(`     (tiene sed: va a beber ${agua ? `a ${Math.round(dist(agua, desde))} m` : '(no hay agua cerca)'}; sed ${Math.round(nec().sed)})`);
+    }
+    if (nec().hambre > 60) {
+      const h0 = nec().hambre;
+      const matas = cerca(alrededor(J.pos, 200).filter(p => (p.tipo === 'bayas' || p.tipo === 'setas') && !probados.has(p.id)), J.pos);
+      for (const m of matas.slice(0, 16)) {
+        if (nec().hambre <= 40) break;
+        if (MANOS.every(l => J.inv.lugares[l])) await soltarManos();
+        const rb = await recoger(m);
+        if (!rb.ok) continue;
+        for (const t of ['bayas', 'setas']) for (let i = 0; i < 6 && J.cuantos(t) > 0 && nec().hambre > 40; i++) { await J.objeto({ tipo: 'comer', objeto: t }); await pausa(300); }
+      }
+      console.log(`     (tiene hambre: come bayas y setas de por aquí; hambre ${Math.round(h0)} → ${Math.round(nec().hambre)})`);
+    }
+    await J.andar(desde.x, desde.z);
+  };
+
   console.log('22. La granja: semillas silvestres, estacas, el campo, limpiarlo, labrarlo, sembrar, escardar, cosechar, la era, trillar, cribar y el tejado de paja');
   // 22a. En la ribera (está junto a la hoguera de la orilla): col y nabo silvestres, uno en cada mano
   console.log('22a. Recoge col y nabo silvestres en la ribera');
@@ -192,6 +224,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   let q = null;
 
   // 22e. La azada: rama, piedra y una cuerda en el banco
+  await cuidarse();
   console.log('22d. Se hace una azada en su banco: una rama, una piedra y una cuerda (3 cordeles de fibra)');
   q = await cuerda();
   comprobar('trenza una cuerda en el banco con 3 cordeles de 9 de fibra', q.ok && J.cuantos('cuerda') >= 1, `${q.motivo || ''} · ${enMano()}`);
@@ -307,6 +340,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   adelantarCampo(CRECER * 0.75);
 
   // 22j. La hoz: 3 lascas en su piedra de tallar (un sílex y una piedra cada una) y una rama en el banco
+  await cuidarse();
   console.log('22i. Se hace una hoz de sílex: 3 lascas en su piedra de tallar y una rama, en el banco');
   let lascas = 0;
   for (let k = 0; k < 3; k++) {
@@ -371,6 +405,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   await J.andar(deposito.x, deposito.z); await soltarManos();
 
   // 22l. La era: 8 piedras, fuera, junto al campo
+  await cuidarse();
   console.log('22k. Levanta una era junto al campo con 8 piedras');
   const sitioEra = { x: r2(arbol.x - L - 4), z: r2(arbol.z) };
   let pied = sueloCosecha('piedra');
@@ -445,12 +480,10 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   comprobar('trillar da grano sin limpiar (con granzas y briznas): hay que cribarlo', granoSucio >= trilladas, `${granoSucio}`);
   await soltarManos();
   const sitioPaja = { x: J.pos.x, z: J.pos.z };
-  const pajaLog = (d) => console.log(`     [paja ${d}: ${J.cuantos('paja')} encima · espalda ${J.inv.lugares.espalda?.tipo || '–'}]`);
-  const pajaAqui = () => s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'paja' && dist(o, sitioPaja) < 6).reduce((t, o) => t + o.cosa.n, 0);
-  console.log(`     (la paja trillada: ${pajaAqui()} a sus pies, ${J.cuantos('paja')} encima: ${J.inv.rutasCon('paja').join(',')})`);
 
   // 22o. La criba de grano: una piel limpia (la de la liebre que cazó, raspada en un raspador que levanta en su tierra)
   // y una vara, en el banco, con su lasca de sílex
+  await cuidarse();
   console.log('22n. Levanta un raspador (4 varas y una cuerda), raspa la piel de la liebre y se hace una criba de grano en el banco');
   // su lasca: otra, en su piedra de tallar (las de antes se fueron en la hoz)
   // la que dejó por su tierra (la de los pasos de antes), si la hay; si no, otra en su piedra de tallar
@@ -463,8 +496,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     await juntar(['silex'], 'silex', 1, 300); await juntar(['piedra'], 'piedra', 1, 300);
     await J.andar(tallar.x + 1, tallar.z);
     await depositar(tallar, 'silex'); await depositar(tallar, 'piedra');
-    const rl = await enEstacion(tallar, 'lasca_silex');
-    console.log(`     (tallar la lasca: ${rl.ok ? 'bien' : rl.motivo} · ${enMano()})`);
+    await enEstacion(tallar, 'lasca_silex');
     await soltarManos(['lasca_silex']);
     if (!J.cuantos('lasca_silex')) await cogerSuelo('lasca_silex', tallar, 4);
   }
@@ -508,7 +540,6 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   // la cuerda y 3 varas a las manos (lo demás, a sus pies), y lo levanta
   await cogerSuelo('cuerda', sitioRasp, 2); await cogerSuelo('vara', sitioRasp, 2, 2);
   const rasp = await ponerPuesto('raspador', r2(sitioRasp.x + 1.2), sitioRasp.z);
-  pajaLog('raspador');
   comprobar('levanta un raspador de pieles en su tierra con 4 varas y una cuerda', rasp.ok && rasp.datos.terminada, `${rasp.motivo || ''} · cuerda ${cuerdaR}, ${conVaras} varas a sus pies · ${enMano()}`);
   if (!rasp.ok) return;
   const R = s.objetos.fab.estaciones[rasp.id];
@@ -519,7 +550,6 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const dp = await depositar(R, 'piel');
   const rr = await enEstacion(R, 'raspar_piel');
   if (!J.cuantos('piel_limpia')) await cogerSuelo('piel_limpia', R, 3);
-  pajaLog('raspar');
   comprobar('deja la piel en el raspador y la raspa con la lasca: una piel limpia', dp.ok && rr.ok && J.cuantos('piel_limpia') === 1, `${dp.motivo || ''} ${rr.motivo || ''} · ${enMano()}`);
   // la criba: la piel limpia y una vara (la que sobró), en el banco, con la lasca
   // la piel limpia, al banco; la lasca, a sus pies junto a él (las manos libres para ir por la vara)
@@ -536,7 +566,6 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   await J.andar(banco.x + 1, banco.z);
   const rcr = await enEstacion(banco, 'criba_grano');
   if (!J.cuantos('criba_grano')) await cogerSuelo('criba_grano', banco, 3);
-  pajaLog('criba');
   comprobar('deja la piel limpia y una vara en el banco y, con la lasca, hace la criba de grano', dpl.ok && dva.ok && rcr.ok && J.cuantos('criba_grano') === 1, `${dpl.motivo || ''} ${dva.motivo || ''} ${rcr.motivo || ''} · ${enMano()}`);
 
   // 22p. Cribar: en la era, con la criba en la mano, cada puñado de grano sin limpiar da grano de cebada
@@ -554,10 +583,10 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   await soltarManos();
   const grano = J.cuantos('semilla_cebada') + cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'semilla_cebada' && dist(o, E) < 5), E).reduce((t, o) => t + o.cosa.n, 0);
-  pajaLog('cribar');
   comprobar('criba todo el grano sin limpiar: grano de cebada, que es también su semilla (tiene para sembrar otra vez)', cribados >= granoSucio && sucio() === 0 && grano >= cribados, `${cribados} cribados de ${granoSucio}, ${sucio()} sin cribar, ${grano} de cebada · ${mc}`);
 
   // 22o. El tejado de paja: un tramo junto al tejado de juncos de su casa (se apoya en él), puesto desde un andamio
+  await cuidarse();
   console.log('22p. Pone un tejado de paja junto al de su casa, desde un andamio, con la paja que ha trillado');
   const casa = s.mundo.construcciones.find(c => [...c.piezas.values()].some(p => p.tipo === 'tejado_juncos') && s.mundo.dentroDeTierra(C.x, C.z, yo));
   comprobar('su casa tiene su tejado de juncos', !!casa);
@@ -597,7 +626,6 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     return falta(pz, 'vara') === 0;
   };
   // el andamio, al este de la casa (como el del tejado de juncos)
-  pajaLog('antes andamio');
   const andamio = pieza('andamio', 2, 0);
   q = await marco(andamio);
   comprobar('pone el marco de un andamio junto a la casa', q.ok && !!obra(andamio), q.motivo);
@@ -614,7 +642,6 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   const va = await varasA(andamio);
   if (va) { await J.andar(andamio.x + 1, andamio.z); await trabajar(andamio); }
-  pajaLog('andamio');
   comprobar('le lleva 2 cuerdas y 8 varas y lo levanta', terminada(andamio), terminada(andamio) ? '' : `faltan ${falta(andamio, 'cuerda')} cuerdas y ${falta(andamio, 'vara')} varas · ${motivos.slice(0, 3).join(' | ')} · ${varasSuelo().length} montones de varas cerca`);
   // el tramo de paja: junto al tejado de juncos, en la casilla del andamio o al lado
   let tejado = null;
@@ -633,7 +660,6 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   await soltarManos();
   await varasA(tejado, enAlto);
   // la paja: 4 haces de lo trillado, de 2 en 2 (lo que quepa en las manos)
-  console.log(`     (la paja que queda donde la dejó: ${pajaAqui()}; junto a la era: ${enSuelo('paja', E, 4).reduce((t, o) => t + o.cosa.n, 0)})`);
   for (let v = 0; v < 6 && falta(tejado, 'paja') > 0; v++) {
     await soltarManos(['paja']);
     // la paja, en la mano: la que lleva a la espalda (en el fardo), o la del suelo donde la dejó
@@ -654,6 +680,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   await soltarManos();
   q = await J.accion({ tipo: 'desmontar', construccion: casa.id, clave: andamio.clave });
   comprobar('desmonta el andamio', q.ok, q.motivo);
+  comprobar('en toda la granja no se ha muerto (bebe y come cuando le hace falta)', muertes.length === 0, muertes.join(', '));
 }
 
 // Seguir desde lo guardado (ver arriba): KINHOLD_RECORRIDO_DESDE=<carpeta> node pruebas/recorrido_granja.mjs
