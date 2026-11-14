@@ -2963,5 +2963,15 @@
  "Necesitas una pala de madera y una criba para sacar el mineral.": "Чтобы добыть руду, нужны деревянная лопата и решето.",
  "Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.": "С деревянной лопатой добывает железную руду из заболоченной земли с рыжей водой.",
  "Sacas {n} × {c}: lo dejas junto a la mancha.": "Добыто {n} × {c}: кладёшь рядом с пятном.",
- "Aquí no se puede cribar.": "Здесь нельзя просеивать."
+ "Aquí no se puede cribar.": "Здесь нельзя просеивать.",
+ "Grano sin limpiar": "Неочищенное зерно",
+ "Criba de grano": "Решето для зерна",
+ "Cribar el grano": "Просеять зерно",
+ "Cribar el grano sin limpiar: grano de cebada limpio, el que se siembra.": "Просеять неочищенное зерно: чистое ячменное зерно, то, что сеют.",
+ "Grano de cebada limpio, el que se siembra.": "Чистое ячменное зерно, то, что сеют.",
+ "Grano sin limpiar, que se criba, y paja: el tejado de paja, la cama de paja, el almiar.": "Неочищенное зерно, которое просеивают, и солома: соломенная крыша, соломенная постель, стог.",
+ "Trillar las gavillas con el mayal: grano sin limpiar y paja": "Молотить снопы цепом: неочищенное зерно и солома",
+ "Demo única · v208 (Cribar el grano)": "Единое демо · v208 (Просеивание зерна)",
+ "v208: cribar el grano (P11, la granja básica; valravnx: «quiero criba de grano si es realista»). Trillar una gavilla en la era da ahora grano sin limpiar (revuelto con granzas, tierra y chinas) y paja. La criba de grano es su propia herramienta, distinta de la del mineral: un aro de vara curvada con el fondo de piel limpia agujereada a punzón (1 piel limpia y 1 vara en el banco de tronco, llevando la lasca). Con la criba en lo que llevas, «Cribar el grano» (con las manos, en cualquier sitio) da 1 puñado de grano de cebada limpio, el que se siembra, por cada puñado de grano sin limpiar; la criba no se gasta. La criba se ve en la mano, cogida por el aro. El grano sin limpiar va al cesto; la paja, al almiar.": "v208: просеивание зерна (P11, простая ферма; valravnx: «хочу решето для зерна, если это реалистично»). Обмолот снопа на току теперь даёт неочищенное зерно (вперемешку с мякиной, землёй и камешками) и солому. Решето для зерна — отдельный инструмент, не то, что для руды: обод из гнутой жерди с дном из очищенной шкуры, проколотой шилом (1 очищенная шкура и 1 жердь на верстаке из бревна, имея при себе отщеп). С решетом среди того, что несёшь, «Просеять зерно» (руками, где угодно) даёт 1 горсть чистого ячменного зерна — того, что сеют, — за каждую горсть неочищенного; решето не тратится. Решето видно в руке: его держат за обод. Неочищенное зерно идёт в корзину, солома — в стог.",
+ "v208, provisional: 15 s por puñado cribado y 1 min para hacer la criba; la criba se lleva en la mano (no va en el cinto ni en el colgadero de herramientas).": "v208, предварительно: 15 с на горсть просеивания и 1 мин на изготовление решета; решето носят в руке (оно не вешается на пояс и на вешалку для инструментов)."
 }

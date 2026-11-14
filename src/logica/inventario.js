@@ -94,7 +94,7 @@ export const CATALOGO = {
   // (P11, 13 nov) las semillas silvestres (src/logica/recoleccion.js): la cebada silvestre (sus espigas, que se siembran),
   // las habas (se siembran, o se comen asadas al fuego) y las semillas de la col silvestre y del nabo silvestre
   estaca: R('Estaca', 'M'),   // la de marcar el campo (P11)
-  semilla_cebada: R('Grano de cebada', 'P'), habas: R('Habas', 'P'), habas_asadas: R('Habas asadas', 'P'),
+  semilla_cebada: R('Grano de cebada', 'P'), grano_sucio: R('Grano sin limpiar', 'P'), habas: R('Habas', 'P'), habas_asadas: R('Habas asadas', 'P'),
   semilla_col: R('Semillas de col', 'P'), semilla_nabo: R('Semillas de nabo', 'P'),
   // (P11, cosechar) lo que da el campo: la gavilla de cebada segada (con su grano, para trillar en la era), la col y el
   // nabo (se comen crudos o asados al fuego y se estropean pronto: src/logica/comida.js)
@@ -126,6 +126,10 @@ export const CATALOGO = {
   azada: { nombre: 'Azada de madera y piedra', tam: 'M', herramienta: true },
   hoz_silex: { nombre: 'Hoz de sílex', tam: 'M', herramienta: true },
   mayal: { nombre: 'Mayal', tam: 'M', herramienta: true },
+  // la criba de grano (P11, «Cribar el grano», 14 nov; valravnx: «haremos cribas de grano separadas»): su propia herramienta,
+  // distinta de la del mineral: un aro de madera curvada con el fondo de piel limpia agujereada a punzón. Se lleva en la
+  // mano (no va en el cinto ni en el colgadero de herramientas: no tiene mango)
+  criba_grano: { nombre: 'Criba de grano', tam: 'M' },
   cubo: { nombre: 'Cubo de madera', tam: 'M' },
   espada: { nombre: 'Espada', tam: 'M' },
   escudo: { nombre: 'Escudo', tam: 'M' },

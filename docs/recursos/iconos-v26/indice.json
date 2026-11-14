@@ -112,6 +112,9 @@
   "semilla_cebada": {
    "propio": true
   },
+  "grano_sucio": {
+   "propio": true
+  },
   "habas": {
    "propio": true
   },
@@ -232,6 +235,9 @@
   "mayal": {
    "propio": true
   },
+  "criba_grano": {
+   "propio": true
+  },
   "cubo": {
    "propio": true
   },
@@ -347,9 +353,6 @@
    "propio": true
   },
   "est_era": {
-   "propio": true
-  },
-  "criba": {
    "propio": true
   }
  }

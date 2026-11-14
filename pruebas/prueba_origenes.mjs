@@ -76,7 +76,7 @@ const PENDIENTES = {
 const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
-  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja'],   // (el grano de cebada es su semilla: semilla_cebada)
+  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };

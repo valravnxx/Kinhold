@@ -2304,9 +2304,10 @@
     },
     {
      "nombre": "Cribar el grano (valravnx, 14 nov: «quiero criba de grano si es realista»; ha visto cribas medievales en museos; «haremos cribas de grano separadas»): trillar en la era da grano sin limpiar (mezclado con granzas, tierra y chinas) y paja; con la criba de grano en lo que llevas (no se gasta), «Cribar el grano» (con las manos, en cualquier sitio) da grano de cebada limpio, que es lo que se siembra, y deja las granzas. La criba de grano es su propia herramienta, distinta de la del mineral: un aro de madera curvada con el fondo de piel limpia agujereada (1 piel limpia y 1 vara en el banco de tronco). Cada cosa a su sitio: la paja al almiar y el grano al cesto (no al almiar). Capturas de la criba de cerca al lado de la referencia. Cadena: criba de grano ← banco de tronco; piel limpia ← el raspador de pieles con la lasca; vara ← talar un árbol joven; grano sin limpiar ← trillar en la era",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T09:44:17+00:00",
-     "rama": "trabajo/20261114-0944-criba"
+     "rama": "trabajo/20261114-0944-criba",
+     "fin": "2026-11-14T12:09:21+00:00"
     },
     {
      "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era, criba el grano y pone un tejado de paja",
@@ -4508,6 +4509,13 @@
      "archivo": "jugar/demo/v207.html",
      "capturas": "capturas/demo-v207",
      "notas": "Escardar: malas hierbas en lo verde y en espiga; quitarlas con las manos o la azada da más al cosechar. Y las escaleras se suben con pocos fotogramas."
+    },
+    {
+     "v": "v208",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v208.html",
+     "capturas": "capturas/demo-v208",
+     "notas": "v208: cribar el grano (P11, la granja básica; valravnx: «quiero criba de grano si es realista»). Trillar una gavilla en la era da ahora grano sin limpiar (revuelto con granzas, tierra y chinas) y paja. La criba de grano es su propia herramienta, distinta de la del mineral: un aro de vara curvada con el fondo de piel limpia agujereada a punzón (1 piel limpia y 1 vara en el banco de tronco, llevando la lasca). Con la criba en lo que llevas, «Cribar el grano» (con las manos, en cualquier sitio) da 1 puñado de grano de cebada limpio, el que se siembra, por cada puñado de grano sin limpiar; la criba no se gasta. La criba se ve en la mano, cogida por el aro. El grano sin limpiar va al cesto; la paja, al almiar."
     }
    ]
   },
