@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2873 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3217 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4674 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3283 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2867 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3248 KB
+dist/kinhold_trozos.html 2889 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: panel de fabricación
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+
+!! FALLA: python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/fabricar
+
+HAY FALLOS
+tardó 1072 s
