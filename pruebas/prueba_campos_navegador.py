@@ -8,7 +8,8 @@
 # tierra no se clava. Con la azada, Usar labra un círculo de tierra delante de él (P11), lo guarda el servidor con su hora y
 # se ve la tierra labrada; labrado, las estacas ya no se quitan. Con las semillas en la mano, se siembra la cebada a voleo y
 # se plantan las habas, la col y el nabo (P11), y se ven sus fases; lo maduro se siega con la hoz (gavillas al suelo) o se
-# coge a mano. En el móvil (390×844), el otro jugador lo ve igual.
+# coge a mano. Entre la cebada verde salen malas hierbas: con las manos vacías, Usar escarda y se quitan (14 nov). En el
+# móvil (390×844), el otro jugador lo ve igual.
 # Las ramas y las estacas de más salen del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba los campos en el
 # juego; la lógica y el servidor, en pruebas/prueba_campos.mjs.
 # MUTAR=1 tira los mensajes de acciones que manda la página (como si el campo fuera solo del navegador): falla.
@@ -307,6 +308,40 @@ try:
         A.evaluate(f"{K}.camposV.poner({K}.mundo.campos)")   # (lo adelantado se queda en este navegador: no se manda)
         ir(A, x0 + 6, z0 + 3.4, 0)
 
+        print('Escardar (P11, 14 nov): la cebada «de hace dos días y medio», verde y con malas hierbas')
+        A.evaluate(f"{K}.camposV.poner({K}.mundo.campos)")
+        manos_vacias()
+        coger(A, 'azada', 1, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'azada'", 5000)
+        lab_antes = sum(1 for e in lineas_mundo() if e.get('tipo') == 'labrar' and e.get('ok'))
+        for dx in (-1.6, 0, 1.6):
+            ir(A, x0 + 6 + dx, z0 + 8.6 - 1.6, 0); A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(450)
+        servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'labrar' and e.get('ok')) >= lab_antes + 3)
+        manos_vacias()
+        coger(A, 'semilla_cebada', 2, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'semilla_cebada'", 5000)
+        sem_antes = sum(1 for e in lineas_mundo() if e.get('tipo') == 'sembrar' and e.get('ok'))
+        ir(A, x0 + 6, z0 + 7.6, 0)
+        r = A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0]; const r = {K}.accion({{ tipo: 'sembrar', campo: c.id, cultivo: 'cebada', x: {x0 + 6}, z: {z0 + 8.6}, t: Date.now() - 2.5 * 86400000 }}); return r.ok ? '' : r.motivo; }})()")
+        comprobar('la cebada de hace dos días y medio, sembrada', not r and servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'sembrar' and e.get('ok')) >= sem_antes + 1) is not None, r)
+        HIERBAS = f"(() => {{ let n = 0; {K}.escena.traverse(o => {{ if (o.isInstancedMesh && /^planta_hierbas_/.test(o.name)) n += o.count; }}); return n; }})()"
+        comprobar('se ven las malas hierbas entre la cebada verde', esperar(A, f"!!{K}.escena.getObjectByName('planta_hierbas_1')", 8000))
+        hierbas_antes = A.evaluate(HIERBAS)
+        manos_vacias()
+        ir(A, x0 + 6, z0 + 8.6 - 1.2, 0)
+        comprobar('con las manos vacías, delante, Usar dice «Escardar»', texto_usar(A) == 'Escardar', texto_usar(A))
+        ir(A, x0 + 4.2, z0 + 10.6, 0.35); A.evaluate(f"{K}.cam.yaw = Math.PI + 0.35; {K}.cam.dist = 2.3; {K}.cam.pitch = 0.55"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_malas_hierbas_de_cerca.png')
+        ir(A, x0 + 6, z0 + 8.6 - 1.2, 0)
+        A.evaluate(f"{K}.usar()")
+        comprobar('Usar empieza a escardar (unos 2 s)', A.evaluate(f"!!({K}.estado.talando && {K}.estado.talando.escarda)"))
+        A.evaluate(f"{K}.estado.golpeEn = 0")
+        l = servidorMundo(lambda l: any(e.get('tipo') == 'escardar' and e.get('ok') for e in l))
+        comprobar('se escarda en el servidor, con su hora', l is not None and any(e.get('tipo') == 'escardar' and e.get('ok') and (e.get('datos') or {}).get('t', 0) > 1e12 for e in l), A.evaluate(AVISO))
+        comprobar('el aviso lo dice', esperar(A, f"/Escardado/.test({AVISO})", 5000), A.evaluate(AVISO))
+        comprobar('y donde se escarda, ya no hay malas hierbas', esperar(A, f"{HIERBAS} < {hierbas_antes}", 8000), f"{hierbas_antes} → {A.evaluate(HIERBAS)}")
+        comprobar('ya escardado, Usar ya no dice «Escardar»', texto_usar(A) != 'Escardar', texto_usar(A))
+        ir(A, x0 + 6, z0 + 6.6, 0); A.evaluate(f"{K}.cam.yaw = Math.PI; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.6"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_escardado.png')
+
         print('Cosecha (P11): lo sembrado «hace ocho días» (la hora la pone aquí el navegador: KINHOLD_PRUEBAS_HORA=campos)')
         manos_vacias()
         coger(A, 'azada', 1, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'azada'", 5000)
@@ -377,6 +412,9 @@ try:
         comprobar('y ve las gavillas en el suelo', esperar(B, f"!!{K}.escena.getObjectByName('suelo_gavilla')", 20000))
         ir(B, x0 + 5, z0 - 0.6, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.6"); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_cosecha_de_cerca.png')
+        comprobar('y ve las malas hierbas (y lo escardado, sin ellas)', esperar(B, f"!!{K}.escena.getObjectByName('planta_hierbas_1')", 20000))
+        ir(B, x0 + 6, z0 + 7.0, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3.0; {K}.cam.pitch = 0.6"); B.wait_for_timeout(2000)
+        captura(B, f'{SALIDA}/movil_escardado.png')
         comprobar('a Bruno no le deja quitar las estacas de otro (lo dice)', (B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'Fuera de tu tierra.'))
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
