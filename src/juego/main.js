@@ -59,7 +59,7 @@ import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } f
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
-import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
+import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
 import { crearMovimiento } from './movimiento.js';
@@ -1759,6 +1759,17 @@ function accionPrincipal() {
   if (!it && pj.k === 0 && arrancaEnMano(inventario()) && toconCercano()) { const tc = toconCercano(); return A(tr('Arrancar el tocón'), arrancaEnMano(inventario()).tipo, tc, () => empezarArranque(tc), { alto: 0.4, prog: estado.talando && estado.talando.arranque === tc.o ? progresoGolpes(estado.talando) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
   if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
+  // el tronco largo a cuerda (P11c): tirando de él, Usar junto a una rastra parada lo sube a ella y, si no, suelta la
+  // cuerda; con una cuerda en la mano, junto a un tronco largo, Usar lo ata (o ayuda al que ya tira de él)
+  if (!it && pj.k === 0 && miTronco()) {
+    const t = miTronco(), ra = t.arrastra === yoSuelo() ? rastras.cercanas(pj.x, pj.z, Date.now()).find(o => o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0) : null;
+    if (ra) return A(tr('Subir el tronco largo a la rastra'), 'tronco_largo', ra, () => cargarRastra(ra, { suelo: t.id }), { alto: 0.4 });
+    return A(tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
+  }
+  if (!it && pj.k === 0 && !miRastra() && ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda')) {
+    const t = rastras.troncosCercanos(pj.x, pj.z, Date.now()).find(o => !o.arrastra);
+    if (t) return A(tr('Atar el tronco largo con la cuerda'), 'cuerda', t, () => atarTronco(t), { alto: 0.3 });
+  }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
   if (!it && hachaEnMano(inventario()) && troncoCercano()) { const t0 = troncoCercano(); return A(tr('Trocear: {c}', { c: tr(CATALOGO[t0.cosa.tipo].nombre) }), t0.cosa.tipo, t0, () => empezarTroceo(t0), { alto: 0.4 }); }
   // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
@@ -2152,7 +2163,12 @@ function paraCargar(veh = 'rastra') {
   return ['mano:der', 'mano:izq', 'hombro'].find(l => inv.lugares[l] && Object.hasOwn(cabe, inv.lugares[l].tipo)) || null;
 }
 // Arrastrándola o empujándola, vas despacio: lo que frene más, el vehículo o lo que llevas encima.
-function velocidadCarga() { const r = miRastra(); return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga, r.cosa.tipo)) : inventario().velocidad(); }
+function velocidadCarga() {
+  const r = miRastra(), t = miTronco();
+  if (t) return Math.min(inventario().velocidad(), factorTronco(t, nado.e.aguante));   // tirando a cuerda del tronco largo: muy despacio
+  return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga, r.cosa.tipo)) : inventario().velocidad();
+}
+const miTronco = () => rastras.troncoDe(yoSuelo(), Date.now());
 let sitiosRastra = {};   // id → { x, z }: dónde se ve cada rastra o carretilla que se lleva (para dejarla ahí)
 function pasoRastras() {
   const quien = (autor) => {
@@ -2161,9 +2177,9 @@ function pasoRastras() {
     return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y } : null;
   };
   sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura);
-  const mia = miRastra();
-  jugador.arrastra = !!mia && !esCarr(mia); jugador.empuja = esCarr(mia);
-  if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, Date.now()); r.j.arrastra = !!o && !esCarr(o); r.j.empuja = esCarr(o); }
+  const mia = miRastra(), ahora = Date.now();
+  jugador.arrastra = (!!mia && !esCarr(mia)) || !!miTronco(); jugador.empuja = esCarr(mia);   // tirando del tronco, la misma postura
+  if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, ahora); r.j.arrastra = (!!o && !esCarr(o)) || !!rastras.troncoDe(autor, ahora); r.j.empuja = esCarr(o); }
   // las agarraderas de la carretilla que empuja cada uno, para sus manos (src/juego/personaje.js)
   const agarraderas = (autor) => { const c = sueloObjetos.grupo.children.find(o => o.name === 'suelo_carretilla' && o.userData.arrastra === autor); return c ? c.userData.agarraderas || null : null; };
   jugador.agarraderas = jugador.empuja ? agarraderas(yoSuelo()) : null;
@@ -2211,6 +2227,28 @@ function descargarRastra(o) {
 // lo que se puede hacer con la rastra o la carretilla desde el menú del clic derecho (o el dedo quieto)
 function opcionesRastra() {
   const ops = [], mia = miRastra(), ahora = Date.now();
+  // el tronco largo a cuerda (P11c): atarlo con la cuerda en la mano, ayudar a otro, soltarlo o subirlo a la rastra
+  const tronco = miTronco();
+  if (tronco) {
+    ops.push({ texto: tr('Soltar la cuerda del tronco'), pos: sitiosRastra[tronco.id] || pj, hacer: soltarTronco });
+    if (tronco.arrastra === yoSuelo()) for (const o of rastras.cercanas(pj.x, pj.z, ahora)) if (o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0)
+      ops.push({ texto: tr('Subir el tronco largo a la rastra'), pos: o, alto: 0.4, hacer: () => cargarRastra(o, { suelo: tronco.id }) });
+    return ops;
+  }
+  if (!mia) {
+    const cuerda = ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda');
+    for (const o of rastras.troncosCercanos(pj.x, pj.z, ahora, 3)) {
+      const s = sitiosRastra[o.id] || o;
+      if (Math.hypot(s.x - pj.x, s.z - pj.z) > 3) continue;
+      ops.push({ texto: tr(o.arrastra ? 'Ayudar a tirar del tronco largo' : cuerda ? 'Atar el tronco largo con la cuerda' : 'Atar el tronco largo (hace falta una cuerda en la mano)'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
+    }
+    // y los que arrastra otro, donde se ven (su sitio en el servidor es el de antes)
+    for (const [id, s] of Object.entries(sitiosRastra)) {
+      const o = sueloObjetos.suelo.porId(id, ahora);
+      if (!o || o.cosa.tipo !== 'tronco_largo' || !o.arrastra || o.ayuda || Math.hypot(s.x - pj.x, s.z - pj.z) > 3 || ops.some(q => q.pos === s)) continue;
+      ops.push({ texto: tr('Ayudar a tirar del tronco largo'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
+    }
+  }
   const cargables = (o) => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_RASTRA).filter(s => s !== o && !esVehiculo(s.cosa.tipo) && sitioRastra(o.cosa.carga, s.cosa.tipo, o.cosa.tipo) > 0);
   const tCargar = o => segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), tCargarN = o => segun(o, 'Cargar en la rastra: {n} × {c}', 'Cargar en la carretilla: {n} × {c}');
   if (mia) {
@@ -2228,6 +2266,16 @@ function opcionesRastra() {
     if (o.cosa.carga) ops.push({ texto: tr(segun(o, 'Descargar la rastra ({c})', 'Descargar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => descargarRastra(o) });
   }
   return ops;
+}
+function atarTronco(o) {
+  if (!o.arrastra) { const s = sitiosRastra[o.id] || o; pj.rot = Math.atan2(pj.x - s.x, pj.z - s.z); }   // de espaldas a él: va detrás
+  accionRastra({ tipo: 'atar_tronco', objeto: o.id, x: pj.x, z: pj.z }, (r) => mostrarAviso(r.ayuda ? tr('Ayudas a tirar del tronco largo: entre dos va más deprisa.')
+    : tr('Atas el tronco largo y tiras de él: muy despacio, y cansa. Usar suelta la cuerda.')));
+}
+function soltarTronco() {
+  const o = miTronco(); if (!o) return;
+  const s = sitiosRastra[o.id] || {};
+  accionRastra({ tipo: 'soltar_tronco', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, () => mostrarAviso(tr('Sueltas la cuerda: el tronco se queda aquí.')));
 }
 // del arcón de pruebas al suelo, delante de ti (la rastra y la carretilla no caben en el inventario)
 function arconAlSuelo(tipo) {
@@ -2770,13 +2818,14 @@ function paso() {
   // rendido (el cansancio al máximo), no se corre; helado, más lento (P4; src/logica/necesidades.js; el servidor tampoco
   // deja ir más deprisa, src/logica/presencia.js)
   const efNec = necesidades ? efectosNecesidades(necesidades) : null;
-  const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e) && !(efNec && efNec.sinCorrer);
+  const tronco = miTronco();   // tirando del tronco largo no se corre, y cansa (P11c)
+  const correr = rapido && !tronco && modo !== 'nadar' && puedeCorrer(nado.e) && !(efNec && efNec.sinCorrer);
   let vel = (correr ? 6 : 3.6) * mag * velocidadCarga() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
   if (efNec && efNec.torpe) vel *= 0.8;
   if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
   vel *= velocidadAdmin();   // la cuenta de admin con su velocidad multiplicada (src/logica/admin.js; el servidor la deja)
-  nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
+  nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos(), tira: tronco ? (tronco.ayuda ? 0.5 : 1) : 0 });
   if (modo === 'nadar' && ag) { pj.x += ag.dx * NADO.arrastre * dt; pj.z += ag.dz * NADO.arrastre * dt; }   // la corriente te lleva
   if (nado.e.muerto) ahogado();
   pintarAguante();
@@ -3036,6 +3085,7 @@ function pintarLlevas() {
   const ra = miRastra();
   if (ra && esCarr(ra)) partes.push(`<span class="llevo"><span>${tr('Empujas:')}</span><b>${tr('Carretilla')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Aparcar')}</button></span>`);
   else if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
+  if (miTronco()) partes.push(`<span class="llevo"><span>${tr('Tiras de:')}</span><b>${tr('Tronco largo')}</b><button data-soltartronco="1">${tr('Soltar')}</button></span>`);
   const f = Math.min(1, inv.lleno().fraccion);
   partes.push(`<span class="carga" title="${tr('Carga: {c}%', { c: Math.round(f * 100) })}"><i style="width:${Math.round(f * 100)}%"></i></span>`);
   $('llevas').hidden = false;
@@ -3045,6 +3095,7 @@ $('llevas').onclick = (e) => {
   const h = e.target.closest('[data-alhombro]'), m = e.target.closest('[data-amanos]');
   if (h || m) { cambiarHombro(h ? h.dataset.alhombro : null); return; }
   if (e.target.closest('[data-soltarrastra]')) { soltarRastra(); return; }
+  if (e.target.closest('[data-soltartronco]')) { soltarTronco(); return; }
   const ci = e.target.closest('[data-cinto]');
   if (ci) { cogerDelCinto(ci.dataset.cinto); return; }
   const b = e.target.closest('[data-soltar]'); if (!b) return;
@@ -3507,7 +3558,7 @@ window.__kinhold = {
   inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
-  rastras, miRastra, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
+  rastras, miRastra, miTronco, atarTronco, soltarTronco, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },
   render() { graficos.dibujar(); },
