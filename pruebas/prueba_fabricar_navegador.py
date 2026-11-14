@@ -382,12 +382,34 @@ try:
         comprobar('la ficha pide el mayal y dice lo que da (grano y paja)', 'mayal' in t.lower() and 'paja' in t.lower(), t[:400])
         captura(A, f'{SALIDA}/PC_panel_era.png')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
+        print('Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
+        A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
+          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [], deposito: {{ rama: 3, fibra: 2 }} }};
+          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [], deposito: {{ mimbre: 2, tronco_corto: 1 }} }};
+          {K}.estacionesV.refrescar(); Object.assign({K}.pj, {{ x: e.x + 0.2, z: e.z + 3.2, rot: 0 }}); {K}.cam.yaw = 0; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.62; }})()""")
+        comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_tres_estaciones.png')
+
+        print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")
+        comprobar('el servidor le da 9 fibras', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 9) is not None)
+        A.evaluate(f"{K}.panelFabricar.cerrar()"); A.keyboard.press('h'); A.wait_for_timeout(600)
+        t = elegir(A, 'cordel')
+        comprobar('la carta dice para cuántas hay', A.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"cordel\"] .fab-estado').textContent") == 'ya · para 3')
+        comprobar('y no ofrece «×3»', A.evaluate("!document.querySelector('#panelFabricar .fab-ficha .fab-hacer3')"))
+        captura(A, f'{SALIDA}/PC_hacer_tres.png')
+        A.evaluate("document.querySelector('#panelFabricar .fab-ficha .fab-hacer').click()")
+        comprobar('«Hacer» gasta 3 fibras en el servidor', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 6) is not None)
+        comprobar('y sale en «En marcha», con su barra', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 8000))
+        captura(A, f'{SALIDA}/PC_en_marcha_tres.png')
+
+        # una cosa cada vez (valravnx, 14 nov): el PC termina y se cierra antes de que entre el móvil; en la nube, sin
+        # tarjeta, con los dos abiertos el móvil se colgaba al crear la cuenta. Lo del PC sigue en el servidor.
+        ctxA.close()
+
         print('En el móvil, otro jugador')
-        # (mientras entra el móvil, el PC dibuja un fotograma por segundo: en la nube, sin tarjeta, los dos a la vez
-        # dejaban la pantalla de la cuenta del móvil sin salir dos veces de tres; la red del PC sigue igual)
-        A.evaluate("(() => { window.__raf = window.requestAnimationFrame; window.requestAnimationFrame = f => setTimeout(() => window.__raf(f), 1000); })()")
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
-        A.evaluate("(() => { window.requestAnimationFrame = window.__raf; })()")
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
         B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} - 0.6, z: {pos['z']} + 1.7, rot: 2.8 }}); {K}.cam.yaw = 0.35; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.75; }})()")
         comprobar('ve la piedra de tallar del otro', esperar(B, f"!!{K}.escena.getObjectByName('estacion_piedra_tallar')", 20000))
@@ -438,15 +460,6 @@ try:
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 
-        print('Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
-        A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
-          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [], deposito: {{ rama: 3, fibra: 2 }} }};
-          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [], deposito: {{ mimbre: 2, tronco_corto: 1 }} }};
-          {K}.estacionesV.refrescar(); Object.assign({K}.pj, {{ x: e.x + 0.2, z: e.z + 3.2, rot: 0 }}); {K}.cam.yaw = 0; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.62; }})()""")
-        comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
-        A.wait_for_timeout(2500)
-        captura(A, f'{SALIDA}/PC_tres_estaciones.png')
-
         print('El secadero, en el móvil')
         B.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
         B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['secadero:vista']; Object.assign({K}.pj, {{ x: e.x + 1.6, z: e.z + 1.8, rot: 2.3 }}); {K}.cam.yaw = 0.3; {K}.cam.dist = 3.8; {K}.cam.pitch = 0.3; }})()""")
@@ -472,19 +485,6 @@ try:
         comprobar('en el móvil, la ficha de la piel limpia dice que hace falta la lasca', re.search('lasca', t, re.I) is not None, t[:200])
         captura(B, f'{SALIDA}/movil_panel_raspador.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()")
-
-        print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
-        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")
-        comprobar('el servidor le da 9 fibras', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 9) is not None)
-        A.evaluate(f"{K}.panelFabricar.cerrar()"); A.keyboard.press('h'); A.wait_for_timeout(600)
-        t = elegir(A, 'cordel')
-        comprobar('la carta dice para cuántas hay', A.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"cordel\"] .fab-estado').textContent") == 'ya · para 3')
-        comprobar('y no ofrece «×3»', A.evaluate("!document.querySelector('#panelFabricar .fab-ficha .fab-hacer3')"))
-        captura(A, f'{SALIDA}/PC_hacer_tres.png')
-        A.evaluate("document.querySelector('#panelFabricar .fab-ficha .fab-hacer').click()")
-        comprobar('«Hacer» gasta 3 fibras en el servidor', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 6) is not None)
-        comprobar('y sale en «En marcha», con su barra', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 8000))
-        captura(A, f'{SALIDA}/PC_en_marcha_tres.png')
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
