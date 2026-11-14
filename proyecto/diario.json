@@ -6828,5 +6828,20 @@
   "pruebas": "Lógica de la vegetación correcta, con la prueba nueva de la roca de los cortados (falla al romperla a propósito). Capturas en una pared ancha de la sierra desde seis ángulos. No comprobado: el móvil ni los fotogramas; la cámara aún se mete dentro de un risco si se acerca. valravnx lo prueba a mano.",
   "capturas": "capturas/demo-v205",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T22:23:55+00:00",
+  "fin": "2026-11-14T07:08:36+00:00",
+  "titulo": "P11: la era y trillar (demo v206)",
+  "hito": "granja",
+  "hecho": [
+   "La era, un puesto nuevo en Construir («Puestos de trabajo»): 8 piedras y 30 s de trabajo, fuera y en tu tierra. Un suelo de tierra parda apisonada, con el corro más pisado, chinas, grietas y granzas de paja, que se funde con la hierba por un borde irregular; las 8 piedras, medio enterradas en el borde. En ladera, el suelo y las piedras siguen la cuesta, y la hierba densa no sale encima.",
+   "Se le dejan las gavillas (se ven tumbadas encima) y, con el mayal en lo que llevas (no se gasta), «Trillar una gavilla» da 1 puñado de grano de cebada, que se siembra, y 1 haz de paja.",
+   "La cebada silvestre pasa a llamarse grano de cebada (es lo mismo). La paja deja de estar escondida: el tejado y el remate de paja, la cama de paja, la antorcha de pie y la alfombra salen en Construir, y la paja va al almiar.",
+   "La prueba del panel de fabricar, una cosa cada vez (valravnx): el PC termina y se cierra, y luego entra el móvil solo; con los dos abiertos, en la nube el móvil se colgaba al crear la cuenta."
+  ],
+  "pruebas": "Comprobador de código correcto. Trillar 18/0 y orígenes sin la era ni la paja en PENDIENTES. En la nube, el panel de fabricar en PC y en el móvil: todo bien salvo la cuenta de los puestos del menú de construir en el móvil, que esperaba 6 y ya son 7 (corregida, no repetida). Las dos comprobaciones de la era fallan al romperlas a propósito. Segunda mirada de un agente aparte: sí.",
+  "capturas": "capturas/demo-v206",
+  "estado": "ok"
  }
 ]
