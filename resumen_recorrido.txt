@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2895 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3242 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4718 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3305 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2889 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3273 KB
+dist/kinhold_trozos.html 2911 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Recorrido de jugador: uno nuevo, sin arcón y con lo que recoge, de principio a fin
+
+Todavía no se puede (sin el arcón): el secadero — pide 4 troncos delgados al hombro y carne de una liebre más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_comida.mjs; el raspador de pieles y el zurrón — piden 4 varas, una cuerda y las pieles de dos liebres más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_pieles.mjs; la resina — los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs
+
+249 bien, 0 mal
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 1102 s
