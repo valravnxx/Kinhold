@@ -3,7 +3,8 @@
 // tierra), hace estacas y marca un campo en su tierra alrededor de un árbol joven, lo limpia (lo tala, arranca el tocón
 // con la azada que se hace en su banco y recoge las piedras), lo labra, siembra cebada a voleo y habas, col y nabo planta
 // a planta, escarda a mitad del crecimiento, cosecha con el reloj acelerado (siega la cebada con la hoz de sílex y coge
-// lo demás a mano), levanta una era, trilla las gavillas con el mayal y pone un tejado de paja.
+// lo demás a mano), levanta una era, trilla las gavillas con el mayal (grano sin limpiar y paja), levanta un raspador,
+// raspa la piel de la liebre que cazó, se hace una criba de grano en el banco, criba el grano y pone un tejado de paja.
 // Con MUTAR=2 (en pruebas/prueba_recorrido.mjs o aquí) lo sembrado no madura: tiene que FALLAR.
 // El reloj acelerado: lo sembrado tarda una semana real (src/logica/campos.js, CRECER); la prueba adelanta la hora a la
 // que se sembró, como adelanta la de lo que se fabrica. No le da nada: solo ahorra la espera.
@@ -113,7 +114,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     return enEstacion(banco, 'cuerda');
   };
 
-  console.log('22. La granja: semillas silvestres, estacas, el campo, limpiarlo, labrarlo, sembrar, escardar, cosechar, la era, trillar y el tejado de paja');
+  console.log('22. La granja: semillas silvestres, estacas, el campo, limpiarlo, labrarlo, sembrar, escardar, cosechar, la era, trillar, cribar y el tejado de paja');
   // 22a. En la ribera (está junto a la hoguera de la orilla): col y nabo silvestres, uno en cada mano
   console.log('22a. Recoge col y nabo silvestres en la ribera');
   await soltarManos();
@@ -421,30 +422,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   const paja = J.cuantos('paja') + enSuelo('paja', E, 3).reduce((t, o) => t + o.cosa.n, 0);
   comprobar('trilla las gavillas con el mayal: grano de cebada y paja', trilladas >= 4 && paja >= 4, `${dejadas} dejadas, ${trilladas} trilladas, ${paja} de paja · ${enMano()}`);
-  // (cuando llegue la criba, «Cribar el grano», trillar dará grano sin limpiar: aquí lo cribará antes de tenerlo como semilla)
-  const grano = J.cuantos('semilla_cebada') + enSuelo('semilla_cebada', E, 3).reduce((t, o) => t + o.cosa.n, 0);
-  comprobar('y el grano de cebada es también su semilla: tiene para sembrar otra vez', grano >= trilladas, `${grano}`);
-  await soltarManos();
-  const sitioPaja = { x: J.pos.x, z: J.pos.z };
-
-  // 22o. El tejado de paja: un tramo junto al tejado de juncos de su casa (se apoya en él), puesto desde un andamio
-  console.log('22n. Pone un tejado de paja junto al de su casa, desde un andamio, con la paja que ha trillado');
   const C = { x: r2(M.x + 10), z: r2(M.z - 10) };
-  const casa = s.mundo.construcciones.find(c => [...c.piezas.values()].some(p => p.tipo === 'tejado_juncos') && s.mundo.dentroDeTierra(C.x, C.z, yo));
-  comprobar('su casa tiene su tejado de juncos', !!casa);
-  if (!casa) return;
-  const pieza = (tipo, dx, dz, k = 0) => ({ tipo, x: r2(C.x + dx), z: r2(C.z + dz), k });
-  const marco = async (pz) => {
-    await J.andar(C.x + (pz.x - C.x) * 0.5, C.z + (pz.z - C.z) * 0.5);
-    const rr = await J.accion({ tipo: 'colocar', pieza: pz.tipo, x: pz.x, z: pz.z, k: pz.k, rot: 0, dir: 0, y: T.suelo(C.x, C.z) });
-    const cand = s.mundo.candidata(pz.tipo, pz.x, pz.z, pz.k, 0, 0, T.suelo(C.x, C.z)).pieza;
-    pz.clave = claveDe(cand.hueco, cand.i, cand.j, cand.k, cand.d);
-    return rr;
-  };
-  const obra = pz => casa.piezas.get(pz.clave)?.obra;
-  const falta = (pz, m) => (PIEZAS[pz.tipo].coste[m] || 0) - ((obra(pz)?.entregado?.[m]) || 0);
-  const terminada = pz => !!casa.piezas.get(pz.clave) && !obra(pz);
-  const trabajar = async (pz, enAlto) => { let t = { ok: true }, n = 0; for (; n < 400 && t.ok && obra(pz); n++) t = await J.accion({ tipo: 'trabajar', construccion: casa.id, clave: pz.clave, segundos: 5 }); if (!enAlto) await pausa(10); return t; };
   // varas: las del suelo de por aquí (las del árbol del campo, las que quedaron del andamio de la casa), y si no hay,
   // tala otro árbol joven de su tierra con el hacha
   const varasSuelo = () => cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'vara' && !o.arrastra && dist(o, C) < 90), J.pos);
@@ -461,6 +439,120 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     await soltarManos();
     return !!(t.ok && t.datos.limpio);
   };
+  const sucio = () => J.cuantos('grano_sucio') + enSuelo('grano_sucio', E, 3).reduce((t, o) => t + o.cosa.n, 0);
+  const granoSucio = sucio();
+  comprobar('trillar da grano sin limpiar (con granzas y briznas): hay que cribarlo', granoSucio >= trilladas, `${granoSucio}`);
+  await soltarManos();
+  const sitioPaja = { x: J.pos.x, z: J.pos.z };
+
+  // 22o. La criba de grano: una piel limpia (la de la liebre que cazó, raspada en un raspador que levanta en su tierra)
+  // y una vara, en el banco, con su lasca de sílex
+  console.log('22n. Levanta un raspador (4 varas y una cuerda), raspa la piel de la liebre y se hace una criba de grano en el banco');
+  // su lasca: otra, en su piedra de tallar (las de antes se fueron en la hoz)
+  if (!J.cuantos('lasca_silex')) {
+    await J.andar(tallar.x + 1, tallar.z); await soltarManos();
+    await juntar(['silex'], 'silex', 1, 300); await juntar(['piedra'], 'piedra', 1, 300);
+    await J.andar(tallar.x + 1, tallar.z);
+    await depositar(tallar, 'silex'); await depositar(tallar, 'piedra');
+    await enEstacion(tallar, 'lasca_silex');
+    await soltarManos(['lasca_silex']);
+    if (!J.cuantos('lasca_silex')) await cogerSuelo('lasca_silex', tallar, 4);
+  }
+  comprobar('lleva una lasca de sílex (la talla en su piedra de tallar)', J.cuantos('lasca_silex') >= 1, enMano());
+  const conLasca = async () => { if (!J.cuantos('lasca_silex')) await cogerSuelo('lasca_silex', J.pos, 4); return J.cuantos('lasca_silex') >= 1; };
+  // la piel de la liebre (paso 21): la lleva o la dejó en el suelo; la busca
+  let tienePiel = J.cuantos('piel') >= 1;
+  if (!tienePiel) {
+    const pl = cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'piel' && !o.arrastra), J.pos)[0];
+    if (pl) { await soltarManos(['lasca_silex']); const lasca = { ...J.pos }; await J.andar(pl.x + 0.3, pl.z); const libre = MANOS.find(l => !J.inv.lugares[l]); await J.objeto({ tipo: 'coger_suelo', objeto: pl.id, cantidad: 1, a: libre, x: J.pos.x, z: J.pos.z }); if (!J.cuantos('lasca_silex')) { await J.andar(lasca.x, lasca.z); await cogerSuelo('lasca_silex', lasca, 3); } }
+    tienePiel = J.cuantos('piel') >= 1;
+  }
+  comprobar('tiene la piel de la liebre que cazó', tienePiel, `${enMano()} · ${s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'piel').length} pieles en el suelo`);
+  // el sitio del raspador: fuera, en su tierra, junto al banco
+  const sitioRasp = [[-3, 0], [0, -3], [-3, -3], [3, -3], [-4, 2]].map(([dx, dz]) => ({ x: r2(banco.x + dx), z: r2(banco.z + dz) }))
+    .find(p => s.mundo.dentroDeTierra(p.x, p.z, yo) && !Object.values(s.objetos.fab.estaciones).some(e => dist(e, p) < 2));
+  // 4 varas y una cuerda, a sus pies en el sitio (la piel y la lasca, también: luego las coge)
+  await J.andar(sitioRasp.x, sitioRasp.z); await soltarManos();
+  const rqR = await cuerda();
+  await J.andar(sitioRasp.x, sitioRasp.z);
+  let cuerdaR = rqR.ok;
+  if (rqR.ok && !J.cuantos('cuerda')) cuerdaR = await cogerSuelo('cuerda', banco, 3);
+  await soltarManos();
+  const varasPies = () => enSuelo('vara', sitioRasp, 2).reduce((t, o) => t + o.cosa.n, 0);
+  for (let v = 0; v < 6 && varasPies() + J.cuantos('vara') < 5; v++) {
+    if (!varasSuelo().length && !(await talarJoven())) break;
+    for (const o of varasSuelo()) {
+      if (dist(o, sitioRasp) < 2) continue;
+      for (const l of MANOS) {
+        const quiere = 5 - varasPies() - J.cuantos('vara'), ya = J.inv.lugares[l]?.n || 0;
+        const hay = s.objetos.sueloVisible(Date.now()).find(x => x.id === o.id)?.cosa.n || 0;
+        if (quiere <= 0 || hay <= 0 || (J.inv.lugares[l] && J.inv.lugares[l].tipo !== 'vara') || 3 - ya <= 0) continue;
+        await J.andar(o.x + 0.5, o.z);
+        await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(quiere, 3 - ya, hay), a: l, x: J.pos.x, z: J.pos.z });
+      }
+      if (5 - varasPies() - J.cuantos('vara') <= 0) break;
+    }
+    await J.andar(sitioRasp.x, sitioRasp.z); await soltarManos();
+  }
+  const conVaras = varasPies();
+  // la cuerda y 3 varas a las manos (lo demás, a sus pies), y lo levanta
+  await cogerSuelo('cuerda', sitioRasp, 2); await cogerSuelo('vara', sitioRasp, 2, 2);
+  const rasp = await ponerPuesto('raspador', r2(sitioRasp.x + 1.2), sitioRasp.z);
+  comprobar('levanta un raspador de pieles en su tierra con 4 varas y una cuerda', rasp.ok && rasp.datos.terminada, `${rasp.motivo || ''} · cuerda ${cuerdaR}, ${conVaras} varas a sus pies · ${enMano()}`);
+  if (!rasp.ok) return;
+  const R = s.objetos.fab.estaciones[rasp.id];
+  // la piel, al raspador, y la raspa con la lasca
+  await soltarManos();
+  await cogerSuelo('piel', sitioRasp, 3); await cogerSuelo('lasca_silex', sitioRasp, 3);
+  await J.andar(R.x + 1, R.z);
+  const dp = await depositar(R, 'piel');
+  const rr = await enEstacion(R, 'raspar_piel');
+  if (!J.cuantos('piel_limpia')) await cogerSuelo('piel_limpia', R, 3);
+  comprobar('deja la piel en el raspador y la raspa con la lasca: una piel limpia', dp.ok && rr.ok && J.cuantos('piel_limpia') === 1, `${dp.motivo || ''} ${rr.motivo || ''} · ${enMano()}`);
+  // la criba: la piel limpia y una vara (la que sobró), en el banco, con la lasca
+  if (!J.cuantos('vara')) { await cogerSuelo('vara', sitioRasp, 3, 1); }
+  if (!J.cuantos('vara')) { const vs = varasSuelo()[0] || ((await talarJoven()) && varasSuelo()[0]); if (vs) await cogerSuelo('vara', vs, 0.6, 1); }
+  await J.andar(banco.x + 1, banco.z);
+  const dpl = await depositar(banco, 'piel_limpia'), dva = await depositar(banco, 'vara');
+  await conLasca();
+  const rcr = await enEstacion(banco, 'criba_grano');
+  if (!J.cuantos('criba_grano')) await cogerSuelo('criba_grano', banco, 3);
+  comprobar('deja la piel limpia y una vara en el banco y, con la lasca, hace la criba de grano', dpl.ok && dva.ok && rcr.ok && J.cuantos('criba_grano') === 1, `${dpl.motivo || ''} ${dva.motivo || ''} ${rcr.motivo || ''} · ${enMano()}`);
+
+  // 22p. Cribar: en la era, con la criba en la mano, cada puñado de grano sin limpiar da grano de cebada
+  console.log('22o. Criba en la era el grano sin limpiar: grano de cebada limpio');
+  await soltarManos(['criba_grano']);
+  await J.andar(E.x + 1, E.z);
+  // (el grano sin limpiar está a sus pies, junto a la era: cribar con las manos coge de lo del suelo de al lado)
+  let cribados = 0, mc = '';
+  for (let k = 0; k < granoSucio + 2 && sucio() > 0; k++) {
+    const g0 = enSuelo('grano_sucio', E, 3)[0];
+    if (g0 && dist(g0, J.pos) > 1) await J.andar(g0.x + 0.3, g0.z);
+    const q2 = await deMano('cribar');
+    if (q2.ok) cribados++; else { mc = q2.motivo; break; }
+    if (MANOS.every(l => J.inv.lugares[l])) await soltarManos(['criba_grano']);
+  }
+  await soltarManos();
+  const grano = J.cuantos('semilla_cebada') + cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'semilla_cebada' && dist(o, E) < 5), E).reduce((t, o) => t + o.cosa.n, 0);
+  comprobar('criba todo el grano sin limpiar: grano de cebada, que es también su semilla (tiene para sembrar otra vez)', cribados >= granoSucio && sucio() === 0 && grano >= cribados, `${cribados} cribados de ${granoSucio}, ${sucio()} sin cribar, ${grano} de cebada · ${mc}`);
+
+  // 22o. El tejado de paja: un tramo junto al tejado de juncos de su casa (se apoya en él), puesto desde un andamio
+  console.log('22p. Pone un tejado de paja junto al de su casa, desde un andamio, con la paja que ha trillado');
+  const casa = s.mundo.construcciones.find(c => [...c.piezas.values()].some(p => p.tipo === 'tejado_juncos') && s.mundo.dentroDeTierra(C.x, C.z, yo));
+  comprobar('su casa tiene su tejado de juncos', !!casa);
+  if (!casa) return;
+  const pieza = (tipo, dx, dz, k = 0) => ({ tipo, x: r2(C.x + dx), z: r2(C.z + dz), k });
+  const marco = async (pz) => {
+    await J.andar(C.x + (pz.x - C.x) * 0.5, C.z + (pz.z - C.z) * 0.5);
+    const rr = await J.accion({ tipo: 'colocar', pieza: pz.tipo, x: pz.x, z: pz.z, k: pz.k, rot: 0, dir: 0, y: T.suelo(C.x, C.z) });
+    const cand = s.mundo.candidata(pz.tipo, pz.x, pz.z, pz.k, 0, 0, T.suelo(C.x, C.z)).pieza;
+    pz.clave = claveDe(cand.hueco, cand.i, cand.j, cand.k, cand.d);
+    return rr;
+  };
+  const obra = pz => casa.piezas.get(pz.clave)?.obra;
+  const falta = (pz, m) => (PIEZAS[pz.tipo].coste[m] || 0) - ((obra(pz)?.entregado?.[m]) || 0);
+  const terminada = pz => !!casa.piezas.get(pz.clave) && !obra(pz);
+  const trabajar = async (pz, enAlto) => { let t = { ok: true }, n = 0; for (; n < 400 && t.ok && obra(pz); n++) t = await J.accion({ tipo: 'trabajar', construccion: casa.id, clave: pz.clave, segundos: 5 }); if (!enAlto) await pausa(10); return t; };
   const motivos = [];
   const varasA = async (pz, enAlto = null) => {
     for (let v = 0; v < 12 && falta(pz, 'vara') > 0; v++) {
