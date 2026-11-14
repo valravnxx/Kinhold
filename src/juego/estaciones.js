@@ -404,13 +404,13 @@ function hoyoBarro(id) {
   }
   return mallas(L);
 }
-// La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, al ras del prado y más claro que él,
+// La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, al ras del prado, de tierra parda algo más clara que él,
 // que se funde con la hierba por un canto irregular (no un disco recortado), con el corro más pisado donde se trilla,
 // alguna losa plana asomando, grietas y granzas de paja; lo cierran sus 8 piedras hincadas de canto en el borde, medio
 // enterradas. En ladera es una explanada: cuesta abajo deja ver su talud de tierra. Las gavillas que se le dejan,
 // tumbadas encima (DEPOSITO_SITIOS.era).
 export const ERA = 1.45;
-const BORDE_ERA = 0.4;   // m más allá de las piedras en que lo pisado se funde con la hierba
+const BORDE_ERA = 0.6;   // m más allá de las piedras en que lo pisado se funde con la hierba
 let texEra = null;
 // la tierra apisonada, en un lienzo (2 m): pardo claro y gris, manchas de lo más y lo menos pisado, el grano, chinas,
 // grietas finas de la tierra seca y briznas y granzas de paja
@@ -420,7 +420,7 @@ function texturaEra() {
   const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
   const g = cv.getContext('2d');
   let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
-  g.fillStyle = 'rgb(138,124,104)'; g.fillRect(0, 0, N, N);
+  g.fillStyle = 'rgb(122,106,84)'; g.fillRect(0, 0, N, N);   // (pardo ocre: más claro salía casi crema con la luz del juego)
   const mancha = (n, rMin, rMax, col, a0, a1) => { for (let k = 0; k < n; k++) {
     const x = r() * N, y = r() * N, rr = rMin + r() * (rMax - rMin);
     for (const dx of [-N, 0, N]) for (const dy of [-N, 0, N]) {   // (repetida en los bordes: la textura se repite sin costura)
@@ -429,11 +429,11 @@ function texturaEra() {
       g.fillStyle = gr; g.fillRect(x + dx - rr, y + dy - rr, rr * 2, rr * 2);
     }
   } };
-  mancha(26, 40, 110, '120,104,84', 0.25, 0.45);    // lo menos pisado, más oscuro
-  mancha(22, 30, 90, '186,170,142', 0.25, 0.45);    // lo más pisado y seco, más claro
+  mancha(26, 40, 110, '88,72,54', 0.25, 0.45);    // lo menos pisado, más oscuro
+  mancha(22, 30, 90, '146,126,98', 0.2, 0.38);    // lo más pisado y seco, más claro
   for (let k = 0; k < 9000; k++) {   // el grano de la tierra
     const v = 0.72 + r() * 0.5;
-    g.fillStyle = `rgba(${Math.round(150 * v)},${Math.round(132 * v)},${Math.round(108 * v)},${0.25 + r() * 0.35})`;
+    g.fillStyle = `rgba(${Math.round(124 * v)},${Math.round(104 * v)},${Math.round(78 * v)},${0.25 + r() * 0.35})`;
     g.fillRect(r() * N, r() * N, 1 + r() * 2, 1 + r() * 2);
   }
   for (let k = 0; k < 260; k++) {    // chinas: piedrecitas grises con su luz arriba y su sombra abajo
@@ -464,17 +464,18 @@ function sueloEra(id) {
   const ANILLOS = 14, LADOS = 48, R = ERA + BORDE_ERA, pos = [], col = [], uv = [], idx = [];
   // el canto, irregular: cada lado se mete o se sale un poco (de la semilla de la era)
   const canto = [];
-  for (let j = 0; j < LADOS; j++) canto.push((az(id, 'c' + j) - 0.5) * 0.24 + Math.sin(j / LADOS * Math.PI * 2 * 3 + az(id, 'f') * 6) * 0.07);
-  pos.push(0, 0, 0); uv.push(0, 0); col.push(1, 0.97, 0.94, 1);
+  for (let j = 0; j < LADOS; j++) canto.push((az(id, 'c' + j) - 0.5) * 0.3 + Math.sin(j / LADOS * Math.PI * 2 * 3 + az(id, 'f') * 6) * 0.18 + Math.sin(j / LADOS * Math.PI * 2 * 7 + az(id, 'g') * 6) * 0.08);   // (lóbulos: la hierba entra y sale, no un círculo)
+  pos.push(0, 0, 0); uv.push(0, 0); col.push(0.8, 0.77, 0.72, 1);
   for (let i = 1; i <= ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
     const t = i / ANILLOS, a = j / LADOS * Math.PI * 2, rr = t * (R + (t > 0.7 ? canto[j] * (t - 0.7) / 0.3 : 0));
     const x = Math.cos(a) * rr, z = Math.sin(a) * rr;
     pos.push(x, 0, z); uv.push(x / 2, z / 2);
     // el corro de trillar (de 0,55 a 1,1 m), más claro y liso; el centro y el borde, algo más oscuros; y unas manchas
     const corro = Math.exp(-(((rr - 0.85) / 0.28) ** 2)), mancha = (az(id, `m${i},${j}`) - 0.5) * 0.08;
-    const k = 0.9 + 0.12 * corro - 0.1 * Math.max(0, (rr - ERA + 0.25) / 0.6) + mancha;
+    // y junto a las piedras, la tierra más oscura y removida (donde se hincaron): su sombra de contacto
+    const k = (0.74 + 0.1 * corro - 0.1 * Math.max(0, (rr - ERA + 0.25) / 0.6) + mancha) * (1 - 0.16 * Math.exp(-(((rr - ERA) / 0.1) ** 2)));
     const alfa = rr <= ERA + 0.02 ? 1 : Math.max(0, 1 - (rr - ERA - 0.02) / (R + canto[j] - ERA - 0.02)) ** 1.4;
-    col.push(k, k * 0.98, k * 0.95, alfa);
+    col.push(k, k * 0.96, k * 0.9, alfa);
   }
   for (let j = 0; j < LADOS; j++) idx.push(0, 1 + (j + 1) % LADOS, 1 + j);
   for (let i = 1; i < ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
@@ -494,7 +495,7 @@ function era(id) {
   // las 8 piedras, hincadas de canto en el borde y medio enterradas, a lo largo del borde (con su cara larga hacia fuera)
   for (let i = 0; i < 8; i++) {
     const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.22, r = ERA + 0.02, alto = 0.6 + az(id, i + 20) * 0.3;
-    L.add(piedraIrregular(0.2, 1, id + 'e' + i, 0.2), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, 0.02, Math.sin(a) * r,
+    L.add(piedraIrregular(0.2, 1, id + 'e' + i, 0.2), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, -0.045, Math.sin(a) * r,   // (hundidas: un tercio bajo tierra)
       { y: -a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.3, z: (az(id, i + 30) - 0.5) * 0.25 }, { escala: new THREE.Vector3(1.55, alto, 0.6), plano: true });
   }
   // alguna losa plana asomando en lo apisonado, gastada
