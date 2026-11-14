@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-14T14:24:10+00:00",
+  "tarea": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era, criba el grano y pone un tejado de paja",
+  "hito": "granja",
+  "rama": "trabajo/20261114-0823"
+ },
  "B": null,
  "chat:trabajo/20261114-1404-regar": {
   "inicio": "2026-11-14T14:03:44+01:00",
