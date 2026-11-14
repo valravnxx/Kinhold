@@ -10,6 +10,9 @@
 // MUTAR=4 → el sotobosque se mide contra los árboles movidos 20 m: tiene que fallar.
 // MUTAR=5 → los juncos del agua se miran 3 m más allá (en seco): tiene que fallar.
 // MUTAR=6 → con la orilla de antes (nada a menos de 4 m del cauce): tiene que fallar.
+// MUTAR=7 → las rocas de pared se miran 60 m más allá (en el llano): tiene que fallar.
+//   - la roca de los cortados (13 nov): piezas en las paredes empinadas, ninguna en el llano ni en el agua, las mismas
+//     por trozos que en su cuadro
 //   - riberas y costas (13 nov): los juncos del agua, dentro del agua somera; la marisma, solo en las desembocaduras;
 //     la hierba de duna, solo junto al mar
 //   - el sotobosque (13 nov): siempre igual por trozos, nada en el agua ni sobre la tierra desnuda (tampoco las flores),
@@ -169,6 +172,20 @@ comprobar('más jóvenes en lindes y claros que dentro del bosque cerrado', nLin
     let cerca = 0, mojados = 0; for (const a of v.arboles) { const c = pai.rioCerca(a.x, a.z, tr), n = pai.agua(a.x, a.z, tr); if (c.dm - c.ancho / 2 < 4) cerca++; if (n !== null && alt(a.x, a.z) < n + 0.3) mojados++; }
     comprobar('el bosque llega hasta la orilla del río (árboles a menos de 4 m del cauce), sin ninguno en el agua', (globalThis.__orillaVieja ? 0 : cerca) > 0 && mojados === 0, `${cerca} a menos de 4 m, ${mojados} en el agua`); }
   comprobar('lejos del mar no hay marisma', marismaEn(1, 0, { dm: 30, ancho: 8, costa: Infinity }, 0, 0) === 0 && marismaEn(1, 0, { dm: 30, ancho: 8, costa: 200 }, 0, 0) > 0.3);
+}
+
+// la roca de los cortados, en una sierra a unos 8 km de la salida de la demo
+{
+  const X = 208400, Z = 33400, i0 = Math.floor(X / LADO_VEG), j0 = Math.floor(Z / LADO_VEG), L = LADO_VEG;
+  const c = { x0: i0 * L, z0: j0 * L, x1: (i0 + 2) * L, z1: (j0 + 2) * L };
+  const g = vegetacionEn(pai, alt, sem, c).paredes, t = [];
+  for (const [di, dj] of [[0, 0], [1, 0], [0, 1], [1, 1]]) t.push(...vegetacionTrozo(pai, alt, sem, i0 + di, j0 + dj).paredes);
+  const pend = (x, z) => Math.hypot(alt(x + 1, z) - alt(x - 1, z), alt(x, z + 1) - alt(x, z - 1)) / 2;
+  const d = MUTAR === '7' ? 60 : 0;
+  // (la pieza se pone algo fuera de la pared y apilada hacia arriba; se mira la pendiente a su lado, en un círculo de 3 m)
+  const llano = t.filter(e => Math.max(...[0, 1, 2, 3, 4, 5, 6, 7].map(k => pend(e.x + d + Math.cos(k) * 3, e.z + Math.sin(k) * 3))) < 0.8).length;
+  comprobar('la roca de los cortados: piezas en las paredes empinadas (solo las anchas y altas), ninguna en el llano, y las mismas por trozos que en su cuadro',
+    t.length > 5 && llano === 0 && g.length === t.length, `${t.length} piezas (${g.length} en el cuadro), ${llano} en el llano`);
 }
 
 console.log(fallos ? `\n${fallos} fallos` : '\nTodo bien');

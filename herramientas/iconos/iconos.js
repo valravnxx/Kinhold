@@ -80,8 +80,10 @@ const LLENOS = { acopio_troncos: { tronco_delgado: 7 }, pila_piedras: { piedra: 
 LLENOS.secadero = { carne_cruda: 2 };
 // el raspador de pieles (P9): con una piel tensada, por raspar
 LLENOS.raspador = { piel: 1 };
+LLENOS.era = { gavilla: 2 };   // la era (P11): con gavillas por trillar
 const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }] };
-const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
+const conLleno = (t, o) => { o.traverse(m => { if (m.name === 'bajo_tierra') m.visible = false; });   // (lo que en el mundo queda enterrado, como la explanada de la era)
+  if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
 for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };
 
 // Con ?conjunto=piezas (sacar.py … conjunto=piezas), solo las piezas de construir del tramo (pz_<pieza>), los muebles

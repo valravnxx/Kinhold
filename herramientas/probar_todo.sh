@@ -97,7 +97,7 @@ paso "Bots: jugadores simulados contra el servidor" node pruebas/prueba_bots.mjs
 paso "Terreno por trozos: anillos, bordes y faldones" node pruebas/prueba_trozos.mjs
 paso "Los materiales del suelo: hierba, tierra, roca y hojarasca" node pruebas/prueba_suelo_materiales.mjs
 paso "Whitholm: cuadro de la isla y sitio de salida" node pruebas/prueba_whitholm.mjs
-paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, el sotobosque, las riberas y las costas" node pruebas/prueba_vegetacion.mjs
+paso "Lo que crece en el mundo: siempre en el mismo sitio, nada en el agua, especies de su bioma, el sotobosque, las riberas, las costas y la roca de los cortados" node pruebas/prueba_vegetacion.mjs
 paso "Lo que se recoge en el mundo: del sitio (bosque, caliza, laderas, ríos, claros y riberas), siempre igual" node pruebas/prueba_recogida_mundo.mjs
 paso "Marcar el campo con estacas: clavar, cerrar con su superficie, quitar y mover; tierra, agua, pendiente, obras y otros campos; el servidor" node pruebas/prueba_campos.mjs
 paso "Limpiar el campo: arrancar el tocón con la azada o el palo cavador, deja leña y no vuelve a crecer; dentro de un campo no rebrota; lo que queda por limpiar" node pruebas/prueba_limpiar_campo.mjs
@@ -105,6 +105,7 @@ paso "Labrar con la azada: pasadas de 1,2 m dentro del linde y donde está limpi
 paso "Sembrar y crecer: la cebada a voleo (círculo de 2 m, 1 puñado cada 10 m²) y las habas, la col y el nabo a su distancia, sobre lo labrado; fases en una semana con la hora del servidor" node pruebas/prueba_sembrar.mjs
 paso "Cosechar: la cebada madura se siega con la hoz (gavillas al suelo, 4 cada 10 m²) y las habas, la col y el nabo maduros se cogen a mano (4 veces lo sembrado); el servidor" node pruebas/prueba_cosechar.mjs
 paso "Escardar: malas hierbas en lo verde y en espiga, con las manos o la azada a pasadas; lo escardado da más al cosechar (5 por cada 4, una planta más); el servidor" node pruebas/prueba_escardar.mjs
+paso "La era y trillar: la era (8 piedras, fuera, en tu tierra); cada gavilla dejada en ella, con el mayal, da 1 grano de cebada y 1 paja; la paja ya a la vista; por el servidor" node pruebas/prueba_trillar.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
 paso "Qué grupos de pruebas pasa cada cambio (lo esencial y lo tocado)" node herramientas/grupos_pruebas.mjs

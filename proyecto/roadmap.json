@@ -1524,9 +1524,9 @@
     },
     {
      "nombre": "Las rocas de los acantilados y los cortados, de vuelta en el juego (valravnx, 5 nov: «habíamos hecho unas rocas muy bonitas para los acantilados… las habéis quitado»): las piezas de roca 3D del visor del mapa (src/mundo/rocas.js), encajadas en las paredes del mundo del juego alrededor del jugador",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T17:08:43+01:00",
-     "rama": "trabajo/20261113-1710-aspecto-rocas"
+     "fin": "2026-11-14T07:44:34+01:00"
     },
     {
      "nombre": "Bruma cálida de distancia y horizonte: el bosque lejano como masa y el final del mundo contra el cielo",
@@ -2291,9 +2291,10 @@
     },
     {
      "nombre": "La era y trillar: la era (8 piedras y un suelo apisonado, fuera, en tu tierra) como estación; en ella, las gavillas con el mayal dan grano de cebada (que es también su semilla) y paja. La paja deja de estar escondida: el tejado de paja y el almiar lleno se pueden hacer. Cadena: piedra ← se recoge; mayal ← 2 ramas y cuerda en el banco de tronco; gavillas ← la siega",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-13T22:24:59+00:00",
-     "rama": "trabajo/20261113-2224"
+     "rama": "trabajo/20261113-2224",
+     "fin": "2026-11-14T07:08:36+00:00"
     },
     {
      "nombre": "Escardar: a mitad del crecimiento salen malas hierbas entre lo sembrado (se ven); quitarlas con las manos o la azada, a pasadas, da más cosecha (opcional: sin escardar se cosecha igual, algo menos); como en la época (la escarda de junio). Cadena: manos o azada ← el banco de tronco",
@@ -4478,6 +4479,20 @@
      "archivo": "jugar/demo/v204.html",
      "capturas": "capturas/demo-v204",
      "notas": "El raspador de pieles (un bastidor de 4 varas y 1 cuerda), la piel limpia y el zurrón de piel (2 pieles limpias y 1 cordel, en el banco de tronco)"
+    },
+    {
+     "v": "v205",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v205.html",
+     "capturas": "capturas/demo-v205",
+     "notas": "La roca de los acantilados: riscos de Meshy acabados por todos los lados en las paredes anchas y altas de las sierras."
+    },
+    {
+     "v": "v206",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v206.html",
+     "capturas": "capturas/demo-v206",
+     "notas": "v206: la era y trillar (P11, la granja básica). Un puesto nuevo en Construir, «Puestos de trabajo»: la era, un suelo redondo de tierra apisonada bordeado de 8 piedras, fuera y en tu tierra. Se le dejan las gavillas (Usar: dejar en ella) y, con el mayal en lo que llevas, en su pestaña del panel de fabricar, «Trillar una gavilla» da 1 puñado de grano de cebada, que se siembra, y 1 haz de paja. La cebada silvestre que se recoge pasa a llamarse grano de cebada: es lo mismo. La paja deja de estar escondida: el tejado y el remate de paja, la cama de paja, la antorcha de pie y la alfombra ya salen en Construir, y la paja va al almiar."
     }
    ]
   },

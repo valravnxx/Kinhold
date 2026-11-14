@@ -33,6 +33,8 @@ RUTA = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(RAIZ, 
 SALIDA = sys.argv[2] if len(sys.argv) > 2 else 'capturas_fabricar'
 os.makedirs(SALIDA, exist_ok=True)
 MUTAR = bool(os.environ.get('MUTAR'))
+# ROMPER=era deja la era sin despejar la hierba y sin tenderse sobre el terreno (las dos comprobaciones de la era fallan)
+ROMPER = os.environ.get('ROMPER', '')
 
 sitio = montar_sitio({'demo': RUTA})   # la página y los recursos enlazados, como en la web (pruebas/sitio_prueba.py)
 web = servir(sitio)
@@ -84,6 +86,7 @@ def crear_cuenta(pg, ms=10000):
     return crear_y_confirmar(pg, codigos, f'artesano{_n[0]}', 'clave-de-prueba-123')
 def entrar(nav, nombre, vista, movil):
     ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
+    if ROMPER == 'era': ctx.add_init_script("window.__sinDespejarEras = true; window.__sinAsentar = true;")
     if MUTAR:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
           WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"objeto"')) return; return s.call(this, d); }; })()""")
@@ -174,8 +177,8 @@ try:
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
         nombres = [m.split('\n')[0] for m in menu]
-        comprobar('la pestaña «Puestos de trabajo», con los seis puestos (el hogar, 8 nov; el secadero y el raspador de pieles, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Raspador de pieles'] and menu[5].split('\n')[1:] == ['4', '/0', '1', '/0'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'], str(menu))
+        comprobar('la pestaña «Puestos de trabajo», con los siete puestos (el hogar, 8 nov; el secadero, el raspador de pieles y la era, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Raspador de pieles', 'Era'] and menu[5].split('\n')[1:] == ['4', '/0', '1', '/0'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'] and menu[6].split('\n')[1:3] == ['8', '/1'], str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
@@ -310,7 +313,7 @@ try:
           // que se quede aunque el servidor vuelva a mandar las estaciones (las de verdad, más este)
           K.__vista = f.estaciones['secadero:vista'];
           if (!K.estacionesV.__poner) {{ K.estacionesV.__poner = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner(l); if (K.__vista) {{ K.fabCliente.estaciones[K.__vista.id] = K.__vista; K.estacionesV.refrescar(); }} }}; }}
-          K.estacionesV.refrescar(); }})"""
+          K.estacionesV.refrescar(); K.mirarEras(); }})"""
         A.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
         n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_secadero'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
         comprobar('el secadero se dibuja, con lo colgado', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_secadero')") and n > 0, str(n))
@@ -355,6 +358,56 @@ try:
         comprobar('la ficha dice para qué sirve y que hace falta la lasca de sílex', 'zurrón' in t and re.search('lasca', t, re.I) is not None, t[:300])
         captura(A, f'{SALIDA}/PC_panel_raspador.png')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
+
+        print('La era (P11, 13 nov), con dos gavillas por trillar (solo para mirarla: se dibuja aquí), y su pestaña')
+        ERA = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar');
+          f.estaciones['era:vista'] = {{ id: 'era:vista', tipo: 'era', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ gavilla: 2 }} }};
+          K.__vistas = K.__vistas || {{}}; K.__vistas['era:vista'] = f.estaciones['era:vista'];
+          if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); Object.assign(K.fabCliente.estaciones, K.__vistas); K.estacionesV.refrescar(); }}; }}
+          K.estacionesV.refrescar(); K.mirarEras(); }})"""
+        A.evaluate(f"{ERA}({K}, -3.5, 1)")
+        comprobar('y sin hierba encima: el suelo de la era despeja la hierba densa, las flores y las matas', A.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; return {K}.erasDespejadas().some(c => Math.hypot(c[0] - e.x, c[1] - e.z) < 0.01 && c[2] > 1.45); }})()"))
+        comprobar('y tendida sobre el terreno: su suelo y sus piedras siguen la cuesta (sin la explanada enterrada)', A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_era'), m = o && o.getObjectByName('modelo'); return !!m && m.userData.asentado === 'era' && !m.getObjectByName('bajo_tierra').visible; }})()"))
+        comprobar('la era se dibuja, con las gavillas encima', A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_era'); return !!o && !!o.getObjectByName('deposito_gavilla'); }})()"))
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 2.2, z: e.z + 2.0, rot: 2.3 }}); {K}.cam.yaw = 0.7; {K}.cam.dist = 4.6; {K}.cam.pitch = 0.45; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_era.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 1.9, z: e.z + 0.4, rot: 1.8 }}); {K}.cam.yaw = 1.2; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.3; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_era_cerca.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 0.8 }}); }})()""")
+        A.evaluate(f"{K}.panelFabricar.abrirEstacion('era:vista')"); A.wait_for_timeout(800)
+        comprobar('su pestaña «Era», con trillar una gavilla', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"trillar\"]') && /Trillar una gavilla/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
+        t = elegir(A, 'trillar')
+        comprobar('la ficha pide el mayal y dice lo que da (grano y paja)', 'mayal' in t.lower() and 'paja' in t.lower(), t[:400])
+        captura(A, f'{SALIDA}/PC_panel_era.png')
+        A.evaluate(f"{K}.panelFabricar.cerrar()")
+        print('Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
+        A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
+          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [], deposito: {{ rama: 3, fibra: 2 }} }};
+          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [], deposito: {{ mimbre: 2, tronco_corto: 1 }} }};
+          {K}.estacionesV.refrescar(); Object.assign({K}.pj, {{ x: e.x + 0.2, z: e.z + 3.2, rot: 0 }}); {K}.cam.yaw = 0; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.62; }})()""")
+        comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_tres_estaciones.png')
+
+        print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
+        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")
+        comprobar('el servidor le da 9 fibras', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 9) is not None)
+        A.evaluate(f"{K}.panelFabricar.cerrar()"); A.keyboard.press('h'); A.wait_for_timeout(600)
+        t = elegir(A, 'cordel')
+        comprobar('la carta dice para cuántas hay', A.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"cordel\"] .fab-estado').textContent") == 'ya · para 3')
+        comprobar('y no ofrece «×3»', A.evaluate("!document.querySelector('#panelFabricar .fab-ficha .fab-hacer3')"))
+        captura(A, f'{SALIDA}/PC_hacer_tres.png')
+        A.evaluate("document.querySelector('#panelFabricar .fab-ficha .fab-hacer').click()")
+        comprobar('«Hacer» gasta 3 fibras en el servidor', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 6) is not None)
+        comprobar('y sale en «En marcha», con su barra', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 8000))
+        captura(A, f'{SALIDA}/PC_en_marcha_tres.png')
+
+        # una cosa cada vez (valravnx, 14 nov): el PC termina y se cierra antes de que entre el móvil; en la nube, sin
+        # tarjeta, con los dos abiertos el móvil se colgaba al crear la cuenta. Lo del PC sigue en el servidor.
+        ctxA.close()
+
         print('En el móvil, otro jugador')
         ctxB, B, errB = entrar(nav, 'móvil', {'width': 390, 'height': 844}, True)
         comprobar('el móvil es otro jugador', B.evaluate(f"{K}.enLinea.red.yo") != yo)
@@ -363,6 +416,19 @@ try:
         comprobar('y lo depositado en ella, puesto encima', esperar(B, f"(() => {{ const o = {K}.escena.getObjectByName('estacion_piedra_tallar'); return !!o && !!o.getObjectByName('deposito_silex'); }})()", 10000))
         B.wait_for_timeout(2500)
         captura(B, f'{SALIDA}/movil_piedra_tallar.png')
+        print('La era, en el móvil')
+        B.evaluate(f"{ERA}({K}, -3.5, 1)")
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 2.0, z: e.z + 2.2, rot: 2.3 }}); {K}.cam.yaw = 0.6; {K}.cam.dist = 4.2; {K}.cam.pitch = 0.42; }})()""")
+        comprobar('en el móvil, también la era', esperar(B, f"!!{K}.escena.getObjectByName('estacion_era')", 8000))
+        B.wait_for_timeout(2500)
+        captura(B, f'{SALIDA}/movil_era.png')
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 0.8 }}); }})()""")
+        B.evaluate(f"{K}.panelFabricar.abrirEstacion('era:vista')"); B.wait_for_timeout(1000)
+        comprobar('y su panel, sin salirse de lado', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"trillar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        captura(B, f'{SALIDA}/movil_panel_era.png')
+        B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
+        B.evaluate(f"(() => {{ Object.assign({K}.pj, {{ x: {pos['x']} - 0.6, z: {pos['z']} + 1.7, rot: 2.8 }}); {K}.cam.yaw = 0.35; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.75; }})()"); B.wait_for_timeout(1500)
+
         B.tap('#btnFabricar'); B.wait_for_timeout(600)
         r = B.evaluate("(() => { const r = document.getElementById('panelFabricar').getBoundingClientRect(); return [r.width, r.height]; })()")
         comprobar('su panel ocupa casi la pantalla (el tablero del menú, con su margen)', r[0] >= 360 and r[1] >= 650, str(r))
@@ -390,18 +456,9 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 6 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 7 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
-
-        print('Las tres estaciones de cerca, con algo depositado (solo para mirarlas: la hoguera y el banco se dibujan aquí, no se ponen)')
-        A.evaluate(f"""(() => {{ const f = {K}.fabCliente, e = Object.values(f.estaciones)[0];
-          f.estaciones['hoguera:vista'] = {{ id: 'hoguera:vista', tipo: 'hoguera', x: e.x - 1.6, z: e.z + 0.2, autor: 'vista', cola: [], deposito: {{ rama: 3, fibra: 2 }} }};
-          f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: e.x + 1.7, z: e.z - 0.3, autor: 'vista', cola: [], deposito: {{ mimbre: 2, tronco_corto: 1 }} }};
-          {K}.estacionesV.refrescar(); Object.assign({K}.pj, {{ x: e.x + 0.2, z: e.z + 3.2, rot: 0 }}); {K}.cam.yaw = 0; {K}.cam.dist = 3.4; {K}.cam.pitch = 0.62; }})()""")
-        comprobar('la hoguera y el banco de tronco se dibujan', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_hoguera') && !!{K}.escena.getObjectByName('estacion_banco_tronco')"))
-        A.wait_for_timeout(2500)
-        captura(A, f'{SALIDA}/PC_tres_estaciones.png')
 
         print('El secadero, en el móvil')
         B.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
@@ -428,19 +485,6 @@ try:
         comprobar('en el móvil, la ficha de la piel limpia dice que hace falta la lasca', re.search('lasca', t, re.I) is not None, t[:200])
         captura(B, f'{SALIDA}/movil_panel_raspador.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()")
-
-        print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')
-        A.evaluate(f"{K}.accionInventario({{ tipo: 'coger', objeto: 'fibra', cantidad: 9, a: 'mano:izq' }})")
-        comprobar('el servidor le da 9 fibras', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 9) is not None)
-        A.evaluate(f"{K}.panelFabricar.cerrar()"); A.keyboard.press('h'); A.wait_for_timeout(600)
-        t = elegir(A, 'cordel')
-        comprobar('la carta dice para cuántas hay', A.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"cordel\"] .fab-estado').textContent") == 'ya · para 3')
-        comprobar('y no ofrece «×3»', A.evaluate("!document.querySelector('#panelFabricar .fab-ficha .fab-hacer3')"))
-        captura(A, f'{SALIDA}/PC_hacer_tres.png')
-        A.evaluate("document.querySelector('#panelFabricar .fab-ficha .fab-hacer').click()")
-        comprobar('«Hacer» gasta 3 fibras en el servidor', servidorDice(lambda d: cuantos(d, yo, 'fibra') == 6) is not None)
-        comprobar('y sale en «En marcha», con su barra', esperar(A, "!!document.querySelector('#panelFabricar .fab-sec-marcha .fab-barra i')", 8000))
-        captura(A, f'{SALIDA}/PC_en_marcha_tres.png')
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:
             malos = [e for e in err if 'WebSocket' not in e and 'ERR_CONNECTION_REFUSED' not in e]
