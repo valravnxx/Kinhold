@@ -456,7 +456,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 6 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 7 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 
