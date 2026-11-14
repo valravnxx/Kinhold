@@ -306,7 +306,7 @@ function espalda(t, dentro) {
     const yb = abajo + 0.004, zb = delante(0, yb) + 0.012;
     L.add(cil(0.009, 0.008, 0.08, 6), 0xb59a72, 0, yb - 0.016, zb + 0.004, { z: Math.PI / 2 + 0.12 }, { tex: 'veta' });   // el palito, de madera pelada
     L.add(new THREE.TorusGeometry(0.012, 0.003, 4, 8), FIBRA, 0, yb, zb - 0.002, { x: 0.2 }, { tex: 'liso' });   // su lazo, de la solapa
-    return { L, alto: 0.2, cruzada: true };   // (una sola correa, cruzada del hombro a la cadera, como se lleva un morral; más arriba en la espalda: entre los omóplatos y los riñones)
+    return { L, alto: 0.2, cruzada: true, morral: 0.07 };   // (una sola correa, cruzada del hombro a la cadera, como se lleva un morral; más arriba en la espalda: entre los omóplatos y los riñones)
   }
   if (t === 'fardo') {
     const n = Object.values(dentro).reduce((a, b) => a + b, 0), rollos = n > 6 ? 2 : 1;
@@ -563,7 +563,7 @@ export function crearLlevado(j) {
       return v3(x, (y ?? yHombro) + 0.006, cH ? cH.cz : 0);
     };
     if (l.espalda && cE && cH) {
-      const { L, alto, cruzada, bastidor: esBastidor } = espalda(l.espalda, l.dentro || {});
+      const { L, alto, cruzada, morral, bastidor: esBastidor } = espalda(l.espalda, l.dentro || {});
       // el bastidor sube hasta los hombros; las bolsas y los cestos, algo más abajo
       const yCentro = esBastidor ? yHombro + 0.03 - alto / 2 : yHombro - 0.08 - alto / 2;
       const cC = contorno(medida, Math.max(yCentro, yPelvis + 0.12), 0.03) || cE;
@@ -573,8 +573,12 @@ export function crearLlevado(j) {
       const zDel = cH.cz + cH.en(0);
       if (cruzada) {
         const h = hombroDe(-1), cin = contorno(medida, yPelvis + 0.12, 0.03) || cC;
-        correa(L, [v3(h.x - 0.02, h.y - 0.1, zAtras), v3(h.x, h.y, h.z), v3(h.x + 0.06, h.y - 0.08, zDel + 0.01),
-          puntoEn(cE, 0.2, 0.01), puntoEn(cin, 0.9, 0.01), puntoEn(cin, 1.6, 0.012), v3(cE.cx + 0.15, cin.y + 0.02, zAtras)].map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.03);
+        // el morral (el zurrón): la correa sale de lo alto de la bolsa, sube en diagonal por la espalda hasta el hombro,
+        // cruza el pecho y, por el costado, vuelve a la bolsa (morral: lo que sube la bolsa sobre su centro)
+        const ini = morral != null ? [v3(cE.cx + 0.07, yCentro + morral + 0.19, zAtras - 0.01), v3((cE.cx + 0.07 + h.x) / 2, (yCentro + morral + h.y) / 2, zAtras - 0.005)] : [];
+        const fin = morral != null ? v3(cE.cx + 0.12, yCentro + morral + 0.02, zAtras - 0.03) : v3(cE.cx + 0.15, cin.y + 0.02, zAtras);
+        correa(L, [...ini, v3(h.x - 0.02, h.y - 0.1, zAtras), v3(h.x, h.y, h.z), v3(h.x + 0.06, h.y - 0.08, zDel + 0.01),
+          puntoEn(cE, 0.2, 0.01), puntoEn(cin, 0.9, 0.01), puntoEn(cin, 1.6, 0.012), fin].map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.03);
       } else for (const s of [1, -1]) {
         const h = hombroDe(s), yA = yHombro - 0.16;
         const pts = [v3(cE.cx + s * 0.07, yHombro - 0.1, zAtras + 0.01), v3(h.x - s * 0.01, h.y, h.z - 0.03), v3(h.x + s * 0.005, h.y - 0.02, h.z + 0.04),
