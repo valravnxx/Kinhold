@@ -338,6 +338,9 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   comprobar('a mitad del crecimiento escarda con las manos vacías', escardadas >= 2, `${escardadas} pasadas`);
   adelantarCampo(CRECER * 0.75);
+  // (regar el huerto, P11b: sin regar ni llover, la col y el nabo crecen a medias y tardan hasta 12 días; aquí no se
+  // riegan, así que su reloj se adelanta lo que tardarían sin agua. Regarlos con el cubo, en el recorrido de P11b)
+  if (process.env.MUTAR !== '2') for (const p of campo.plantas || []) if (p.c === 'col' || p.c === 'nabo') p.t -= CRECER * 0.75;
 
   // 22j. La hoz: 3 lascas en su piedra de tallar (un sílex y una piedra cada una) y una rama en el banco
   await cuidarse();
