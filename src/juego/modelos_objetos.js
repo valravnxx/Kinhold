@@ -513,6 +513,23 @@ function criba(n, id) {
   return mallas(L);
 }
 
+// El mineral de hierro de pantano (P10, 14 nov): un montoncito de terrones pardo rojizos, nudosos y porosos (el
+// mineral de las vegas: costras de óxido con la tierra pegada), alguno con manchas de ocre; más terrones con más.
+const OXIDO = 0x5e3420, OXIDO_OSC = 0x45261a, OXIDO_ROJO = 0x74402a, OCRE_COSTRA = 0x8e6034;
+function mineralHierro(n, id) {
+  const L = lote(0.04), k = Math.min(14, 3 + (n || 1) * 2);
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399 + az(id, i), capa = i < 7 ? 0 : i < 11 ? 1 : 2, d = capa === 2 ? 0.02 : capa ? 0.05 : 0.04 + Math.sqrt(i / 7) * 0.06;
+    const r = 0.026 + az(id, i + 30) * 0.018, g = new THREE.IcosahedronGeometry(r, 1);
+    const p = g.attributes.position;   // nudoso: cada vértice, hacia fuera o hacia dentro
+    for (let j = 0; j < p.count; j++) { const f = 0.78 + 0.4 * az(id + ':' + i, Math.round(p.getX(j) * 900) + ':' + Math.round(p.getY(j) * 900) + ':' + Math.round(p.getZ(j) * 900)); p.setXYZ(j, p.getX(j) * f, p.getY(j) * f * 0.75, p.getZ(j) * f); }
+    g.computeVertexNormals();
+    L.add(g, [OXIDO, OXIDO_OSC, OXIDO_ROJO][i % 3], Math.cos(a) * d * 1.2, r * 0.6 + capa * 0.035, Math.sin(a) * d, { y: az(id, i + 60) * 6, x: az(id, i + 70) }, { plano: true, tex: 'piedra' });
+    if (i % 3 === 1) L.add(new THREE.IcosahedronGeometry(r * 0.45, 0), OCRE_COSTRA, Math.cos(a) * d * 1.2 + r * 0.3, r * 1.0 + capa * 0.035, Math.sin(a) * d, null, { escala: v3(1.2, 0.4, 1), plano: true, tex: 'piedra', sinSuelo: true });
+  }
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -664,6 +681,6 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

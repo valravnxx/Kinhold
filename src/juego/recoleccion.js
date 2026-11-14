@@ -40,8 +40,65 @@ const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_
 // pardo y pie crema.
 const CEPA = 0x5e5040, CEPA_OSC = 0x4a3f33, VARA_MIMBRE = 0x7a4a32, VARA_MIMBRE_ARR = 0x8a7a3e, HOJA_SAUCE = 0x7d8f5a, HOJA_SAUCE_OSC = 0x627548;
 // (P10) la mancha de hierro de pantano: la turba empapada, la juncia, la costra ocre, el agua color óxido y la tela irisada
-const LODO = 0x5b5338, TURBA = 0x4a3d2c, TURBA_OSC = 0x3a3024, JUNCIA = 0x66733f, JUNCIA_SECA = 0x857a4a, OCRE = 0x86552e, AGUA_OXIDO = 0x5e3822, TELA_IRISADA = 0x6f6c63;
+const JUNCIA = 0x66733f, JUNCIA_SECA = 0x857a4a;
 const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0xa2643a, SETA_OSC = 0x7e4c2a, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
+
+// (P10) la mancha de hierro de pantano, pintada por código en dos calcos que se ponen sobre el suelo, del mismo tamaño:
+//  - 'suelo' (se queda): la turba negra empapada, moteada, con un cerco de lodo verdoso que se deshace en la hierba;
+//  - 'agua' (se va al agotarla): los charcos de agua parada color óxido, con la costra ocre de su orilla, la tela
+//    irisada que flota (la señal del GDD: «tierra encharcada, agua rojiza») y algún brillo.
+// El borde es transparente y difuso (nada de corte de polígono); el agua, con brillo de agua (Phong).
+function ruidoValor(sem) {   // ruido suave de valor, 0..1, de una semilla
+  const h = (i, j) => { const x = Math.sin(i * 127.1 + j * 311.7 + sem * 74.7) * 43758.5453; return x - Math.floor(x); };
+  const s = t => t * t * (3 - 2 * t);
+  const r = (x, y) => { const i = Math.floor(x), j = Math.floor(y), fx = s(x - i), fy = s(y - j); return (h(i, j) * (1 - fx) + h(i + 1, j) * fx) * (1 - fy) + (h(i, j + 1) * (1 - fx) + h(i + 1, j + 1) * fx) * fy; };
+  return (x, y) => (r(x, y) * 0.55 + r(x * 2.1, y * 2.1) * 0.3 + r(x * 4.3, y * 4.3) * 0.15);
+}
+const calcos = {};
+function manchaCalco(capa) {
+  if (calcos[capa]) return calcos[capa];
+  const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const cx = cv.getContext('2d'), img = cx.createImageData(N, N), d = img.data;
+  const n1 = ruidoValor(1.7), n2 = ruidoValor(5.3), n3 = ruidoValor(9.1);
+  const mezcla = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+  const paso = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  // los charcos (en coordenadas de -1 a 1): centro, radio
+  const charcos = [[0.04, 0.02, 0.42], [-0.5, 0.3, 0.22], [0.46, -0.36, 0.2], [0.28, 0.42, 0.12]];
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const u = i / (N - 1) * 2 - 1, v = j / (N - 1) * 2 - 1, k = (j * N + i) * 4;
+    const rr = Math.hypot(u, v) + (n1(u * 3 + 4, v * 3 + 4) - 0.5) * 0.5;   // el borde, irregular
+    let R, G, B, A;
+    if (capa === 'suelo') {
+      const mot = n2(u * 9, v * 9), grumo = n3(u * 22, v * 22);
+      // de dentro afuera: turba muy oscura y mojada, turba parda, lodo verdoso del cerco
+      const turba = paso(0.78, 0.35, rr), dentro = paso(0.55, 0.15, rr);
+      R = mezcla(mezcla(0x5a, 0x45, turba), 0x2c, dentro * 0.8) + (mot - 0.5) * 34 + (grumo > 0.72 ? -10 : 0);
+      G = mezcla(mezcla(0x58, 0x3b, turba), 0x25, dentro * 0.8) + (mot - 0.5) * 30 + (grumo > 0.72 ? -8 : 0);
+      B = mezcla(mezcla(0x36, 0x2a, turba), 0x1c, dentro * 0.8) + (mot - 0.5) * 20;
+      A = paso(0.98, 0.7, rr) * (0.75 + 0.25 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
+    } else {
+      // el charco más fuerte de los que tocan este sitio
+      let w = 0;
+      for (const [x0, y0, r0] of charcos) {
+        const q = Math.hypot(u - x0, (v - y0) * 1.15) / r0 + (n1(u * 6 + x0 * 9, v * 6) - 0.5) * 0.55;
+        w = Math.max(w, 1 - q);
+      }
+      const agua = paso(0.12, 0.3, w), orilla = paso(-0.05, 0.12, w);
+      const tela = paso(0.62, 0.78, n3(u * 5 + 1, v * 7 + 3)) * agua;   // la tela irisada, en vetas
+      const brillo = paso(0.7, 0.9, n2(u * 4 - 3, v * 2 + 1)) * agua * 0.35;
+      R = mezcla(mezcla(0x8a, 0x6a, agua), 0x7e, tela) + brillo * 90 + (n2(u * 14, v * 14) - 0.5) * 22;
+      G = mezcla(mezcla(0x58, 0x36, agua), 0x78, tela) + brillo * 70 + (n2(u * 14, v * 14) - 0.5) * 14;
+      B = mezcla(mezcla(0x2a, 0x1e, agua), 0x6c, tela) + brillo * 60;
+      A = orilla * (agua > 0 ? 0.92 : 0.7);
+    }
+    d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
+  }
+  cx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const comun = { map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: capa === 'agua' ? -4 : -2, polygonOffsetUnits: capa === 'agua' ? -4 : -2 };
+  return (calcos[capa] = capa === 'agua' ? new THREE.MeshPhongMaterial({ ...comun, shininess: 60, specular: 0x4a4038 }) : new THREE.MeshLambertMaterial(comun));
+}
+function calcoGeo(ancho, fondo, y) { const g = new THREE.PlaneGeometry(ancho, fondo, 1, 1); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g; }
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
   const L = new Lote({ rangoSuelo: opc.rangoSuelo ?? 0.25, variacion: 0.08 }); fn(L);
@@ -333,18 +390,10 @@ export function modelosRecoleccion() {
   // (P10, 14 nov) la mancha de hierro de pantano (GDD: «tierra encharcada, agua rojiza»): un trozo de unos 2 m de tierra
   // negra empapada y hundida, con matas de juncia alrededor, que se queda (siempre); y encima, lo que se va al agotarla:
   // charcos de agua color óxido, con el borde ocre de la costra de hierro y la tela irisada que flota en el agua parada
-  const bordeM = (r, y, n, sem, ex = 1.3) => {
-    const sh = new THREE.Shape();
-    for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, q = r * (0.8 + 0.2 * Math.sin(a * 3 + sem) + 0.09 * Math.sin(a * 7 + sem * 2)); i ? sh.lineTo(Math.cos(a) * q * ex, Math.sin(a) * q) : sh.moveTo(Math.cos(a) * q * ex, Math.sin(a) * q); }
-    const g = new THREE.ShapeGeometry(sh, 2); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g;
-  };
-  const manchaSuelo = geoLote(L => {
-    // (el borde, de lodo verdoso: pasa de la hierba a la turba sin corte)
-    L.add(bordeM(1.3, 0.005, 36, 0.3), LODO, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
-    L.add(bordeM(1.05, 0.008, 32, 0.7), TURBA, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
-    L.add(bordeM(0.85, 0.013, 30, 2.1), TURBA_OSC, 0.06, 0, 0.02, null, { tex: 'piedra', sinSuelo: true, brillo: 0.9 });
-    for (let k = 0; k < 5; k++) { const a = k * 1.4 + 2.2, r = 0.9; L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), TURBA_OSC, Math.cos(a) * r * 1.3, 0.015, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.5, 1), plano: true, tex: 'piedra' }); }
-  }, { rangoSuelo: 0.05 });
+  // (14 nov, segunda vuelta: los anillos de polígonos de colores planos parecían un recorte pegado a la hierba) la tierra y el
+  // agua son dos calcos pintados por código (manchaCalco, abajo), con el borde que se deshace en la hierba sin corte y
+  // la mancha moteada; el calco va inclinado como el suelo (poner(), más abajo)
+  const manchaSuelo = [{ geo: calcoGeo(2.9, 2.3, 0.03), mat: manchaCalco('suelo') }];
   const manchaJuncia = geoLote(L => {
     // matas de juncia (hojas finas y dobladas) por el borde
     for (let k = 0; k < 9; k++) {
@@ -357,14 +406,7 @@ export function modelosRecoleccion() {
       }
     }
   }, { doble: true, rangoSuelo: 0.05 });
-  const manchaAgua = geoLote(L => {
-    // tres charcos: la costra ocre del borde, el agua óxido encima y, en dos, la tela irisada
-    for (const [x, z, r, sem, tela] of [[0.05, 0.0, 0.5, 1, true], [-0.62, 0.32, 0.26, 3, false], [0.55, -0.42, 0.22, 5, true]]) {
-      L.add(bordeM(r, 0.017, 24, sem), OCRE, x, 0, z, null, { tex: 'piedra', sinSuelo: true });
-      L.add(bordeM(r * 0.8, 0.021, 22, sem + 1), AGUA_OXIDO, x + 0.02, 0, z, null, { tex: 'piedra', sinSuelo: true, brillo: 0.9 });
-      if (tela) L.add(bordeM(r * 0.3, 0.023, 14, sem + 2, 1.6), TELA_IRISADA, x - r * 0.15, 0, z + r * 0.12, null, { tex: 'piedra', sinSuelo: true, brillo: 0.85 });
-    }
-  }, { rangoSuelo: 0.05 });
+  const manchaAgua = [{ geo: calcoGeo(2.9, 2.3, 0.045), mat: manchaCalco('agua') }];
 
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
@@ -519,6 +561,12 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
       if (Math.max(Math.abs((i + 0.5) * L - X), Math.abs((j + 0.5) * L - Z)) > radio + 2 * L) { trozos.delete(k); rec.quitar(ids); cambio = true; }
     }
   }
+  // (P10) la mancha de hierro de pantano, inclinada como el suelo (los calcos, pegados a él aunque la vega no sea llana del todo)
+  function inclinar(o, p) {
+    const e = 0.8, dx = (altura(p.x + e, p.z) - altura(p.x - e, p.z)) / (2 * e), dz = (altura(p.x, p.z + e) - altura(p.x, p.z - e)) / (2 * e);
+    const nor = new THREE.Vector3(-dx, 1, -dz).normalize();
+    o.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), nor).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), p.giro));
+  }
   // las mallas, de nuevo: una instanciada por tipo y textura; cada punto, su ejemplar
   function poner() {
     for (const { im } of mallas) { grupo.remove(im); im.dispose(); }
@@ -530,7 +578,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         // (13 nov, valravnx: los juncos, más grandes: de 1,3 a unos 1,7 m)
         const esc = tipo === 'juncos' ? 1.3 : 1;
-        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
+        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); if (tipo === 'hierro_pantano') inclinar(o, p); o.scale.setScalar(esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
         im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'hierro_pantano'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices, siempre, cortado });
       }
