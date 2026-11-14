@@ -154,7 +154,9 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
     let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
     if (lejos <= 0) lejos = base[i];
     // (y, donde salva un hueco del cuerpo, como mucho a 1,5 cm de él: la tela de la camisa y su peso la llevan hacia dentro; con 3, de lado se veía la hierba entre ella y el pecho)
-    const f = fueraDe(d), q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : lejos > 0 && r > lejos + f + 0.015 ? o.addScaledVector(d, lejos + f + 0.015) : p.clone(); q.nor = d; return q;
+    // (por delante, 6 mm: de lado, en el móvil, aún se veía la hierba entre el pecho y la correa)
+    const f = fueraDe(d), puente = 0.015 - 0.009 * Math.min(1, Math.max(0, d.z * 1.5));
+    const q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : lejos > 0 && r > lejos + f + puente ? o.addScaledVector(d, lejos + f + puente) : p.clone(); q.nor = d; return q;
   };
   for (let vuelta = 0; vuelta < 24; vuelta++)
     pts = pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : fuera_(p.clone().multiplyScalar(2).add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 4), i));
@@ -759,7 +761,8 @@ export function crearLlevado(j) {
           // (sale de lo alto de la bolsa algo a la derecha, por donde sube al hombro: sin dar la vuelta en gancho)
           // (los dos cabos, pegados a la espalda por detrás de la bolsa, que va contra ella: vista de espaldas, la correa
           // asoma de lo alto de la bolsa sin dar la vuelta en gancho por el aire, y por el costado no va tiesa como una vara)
-          guia = [v3(x0 - 0.03, yB + 0.1, zA), v3(x0 - 0.04, yB + 0.25, zA), v3(x0 - 0.07, (yB + 0.25 + h.y) / 2, zA), ...hombro, ...delante, v3(x0 + 0.12, yB + 0.02, zA)];
+          // (y el cabo del costado acaba bien dentro de la bolsa, por detrás de ella: en el borde asomaba como un taco tras el brazo)
+          guia = [v3(x0 - 0.03, yB + 0.1, zA), v3(x0 - 0.04, yB + 0.25, zA), v3(x0 - 0.07, (yB + 0.25 + h.y) / 2, zA), ...hombro, ...delante, v3(x0 + 0.04, yB + 0.04, zA)];
         } else {
           // el carcaj y el escudo: un tahalí entero, de la cadera izquierda por la espalda al hombro derecho y por el pecho a la cadera
           guia = [v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12), v3(x0 + 0.1, cin.y + 0.08, zA), v3(x0 - 0.02, yM + 0.05, zA), ...hombro, ...delante];
@@ -769,6 +772,13 @@ export function crearLlevado(j) {
         // la correa, con piel (enPiel): se dobla con el cuerpo como la camisa, al respirar, al mover los brazos y al andar
         // (atada al pecho, el omóplato y la camisa se movían por encima y la tapaban)
         const Lc = nuevoLote(); correa(Lc, pts, 0.03, 0.006, CUERO, nor);
+        // el tahalí se cierra en la cadera con un nudo de la misma correa, que tapa los dos cabos (sin él, acababa en una
+        // pestaña recortada)
+        if (morral == null) {
+          const P = pegada[0], n = P.nor.clone().normalize(), t = pegada[2].clone().sub(P); t.addScaledVector(n, -t.dot(n)).normalize();
+          const b2 = new THREE.Vector3().crossVectors(n, t), giro = new THREE.Matrix4().makeBasis(t, b2, n);
+          Lc.add(new THREE.SphereGeometry(1, 8, 6), CUERO, P.x + n.x * 0.006, P.y + n.y * 0.006, P.z + n.z * 0.006, giro, { escala: v3(0.03, 0.024, 0.011), tex: 'liso' });
+        }
         const piel = enPiel(deMano(Lc), mh, j.raiz);
         if (piel) { piel.userData.correa = true; grupo.add(piel); }
         else { const mi = new THREE.Matrix4().copy(m).invert(); correa(L, pts.map(p => p.clone().applyMatrix4(mi)), 0.03, 0.006, CUERO, nor.map(d => d.clone().transformDirection(mi))); }
