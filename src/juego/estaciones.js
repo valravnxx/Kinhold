@@ -404,6 +404,136 @@ function hoyoBarro(id) {
   }
   return mallas(L);
 }
+// La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, al ras del prado, de tierra parda algo más clara que él,
+// que se funde con la hierba por un canto irregular (no un disco recortado), con el corro más pisado donde se trilla,
+// alguna losa plana asomando, grietas y granzas de paja; lo cierran sus 8 piedras hincadas de canto en el borde, medio
+// enterradas. En ladera es una explanada: cuesta abajo deja ver su talud de tierra. Las gavillas que se le dejan,
+// tumbadas encima (DEPOSITO_SITIOS.era).
+export const ERA = 1.45;
+const BORDE_ERA = 0.6;   // m más allá de las piedras en que lo pisado se funde con la hierba
+let texEra = null;
+// la tierra apisonada, en un lienzo (2 m): pardo claro y gris, manchas de lo más y lo menos pisado, el grano, chinas,
+// grietas finas de la tierra seca y briznas y granzas de paja
+function texturaEra() {
+  if (texEra) return texEra;
+  if (typeof document === 'undefined') return null;
+  const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const g = cv.getContext('2d');
+  let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  g.fillStyle = 'rgb(122,106,84)'; g.fillRect(0, 0, N, N);   // (pardo ocre: más claro salía casi crema con la luz del juego)
+  const mancha = (n, rMin, rMax, col, a0, a1) => { for (let k = 0; k < n; k++) {
+    const x = r() * N, y = r() * N, rr = rMin + r() * (rMax - rMin);
+    for (const dx of [-N, 0, N]) for (const dy of [-N, 0, N]) {   // (repetida en los bordes: la textura se repite sin costura)
+      const gr = g.createRadialGradient(x + dx, y + dy, 0, x + dx, y + dy, rr);
+      gr.addColorStop(0, `rgba(${col},${a0 + r() * (a1 - a0)})`); gr.addColorStop(1, `rgba(${col},0)`);
+      g.fillStyle = gr; g.fillRect(x + dx - rr, y + dy - rr, rr * 2, rr * 2);
+    }
+  } };
+  mancha(26, 40, 110, '88,72,54', 0.25, 0.45);    // lo menos pisado, más oscuro
+  mancha(22, 30, 90, '146,126,98', 0.2, 0.38);    // lo más pisado y seco, más claro
+  for (let k = 0; k < 9000; k++) {   // el grano de la tierra
+    const v = 0.72 + r() * 0.5;
+    g.fillStyle = `rgba(${Math.round(124 * v)},${Math.round(104 * v)},${Math.round(78 * v)},${0.25 + r() * 0.35})`;
+    g.fillRect(r() * N, r() * N, 1 + r() * 2, 1 + r() * 2);
+  }
+  for (let k = 0; k < 260; k++) {    // chinas: piedrecitas grises con su luz arriba y su sombra abajo
+    const x = r() * N, y = r() * N, rr = 1.2 + r() * r() * 4, v = 0.75 + r() * 0.35;
+    g.fillStyle = 'rgba(70,60,48,0.45)'; g.beginPath(); g.ellipse(x + 0.8, y + 1, rr * 1.2, rr, 0, 0, 6.283); g.fill();
+    g.fillStyle = `rgb(${Math.round(150 * v)},${Math.round(146 * v)},${Math.round(136 * v)})`; g.beginPath(); g.ellipse(x, y, rr * 1.2, rr, r() * 3, 0, 6.283); g.fill();
+  }
+  g.lineCap = 'round';
+  for (let k = 0; k < 40; k++) {     // grietas finas de la tierra seca, quebradas
+    let x = r() * N, y = r() * N, a = r() * 6.283;
+    g.strokeStyle = `rgba(88,74,58,${0.35 + r() * 0.3})`; g.lineWidth = 0.7 + r() * 0.8; g.beginPath(); g.moveTo(x, y);
+    for (let p = 0; p < 4 + r() * 5; p++) { a += (r() - 0.5) * 1.4; x += Math.cos(a) * 9; y += Math.sin(a) * 9; g.lineTo(x, y); }
+    g.stroke();
+  }
+  for (let k = 0; k < 520; k++) {    // briznas y granzas de paja de lo trillado
+    const x = r() * N, y = r() * N, a = r() * 6.283, l = 4 + r() * 16, v = 0.85 + r() * 0.3;
+    g.strokeStyle = `rgba(${Math.round(196 * v)},${Math.round(170 * v)},${Math.round(112 * v)},${0.55 + r() * 0.4})`; g.lineWidth = 0.8 + r() * 1.1;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  texEra = new THREE.CanvasTexture(cv);
+  texEra.wrapS = texEra.wrapT = THREE.RepeatWrapping; texEra.colorSpace = THREE.SRGBColorSpace; texEra.anisotropy = 4;
+  return texEra;
+}
+let matEra = null;
+// el suelo de la era: un disco en anillos (para que el color varíe por dentro y el canto sea irregular), opaco hasta las
+// piedras y cada vez más transparente hasta fundirse con la hierba
+function sueloEra(id) {
+  const ANILLOS = 14, LADOS = 48, R = ERA + BORDE_ERA, pos = [], col = [], uv = [], idx = [];
+  // el canto, irregular: cada lado se mete o se sale un poco (de la semilla de la era)
+  const canto = [];
+  for (let j = 0; j < LADOS; j++) canto.push((az(id, 'c' + j) - 0.5) * 0.3 + Math.sin(j / LADOS * Math.PI * 2 * 3 + az(id, 'f') * 6) * 0.18 + Math.sin(j / LADOS * Math.PI * 2 * 7 + az(id, 'g') * 6) * 0.08);   // (lóbulos: la hierba entra y sale, no un círculo)
+  pos.push(0, 0, 0); uv.push(0, 0); col.push(0.8, 0.77, 0.72, 1);
+  for (let i = 1; i <= ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
+    const t = i / ANILLOS, a = j / LADOS * Math.PI * 2, rr = t * (R + (t > 0.7 ? canto[j] * (t - 0.7) / 0.3 : 0));
+    const x = Math.cos(a) * rr, z = Math.sin(a) * rr;
+    pos.push(x, 0, z); uv.push(x / 2, z / 2);
+    // el corro de trillar (de 0,55 a 1,1 m), más claro y liso; el centro y el borde, algo más oscuros; y unas manchas
+    const corro = Math.exp(-(((rr - 0.85) / 0.28) ** 2)), mancha = (az(id, `m${i},${j}`) - 0.5) * 0.08;
+    // y junto a las piedras, la tierra más oscura y removida (donde se hincaron): su sombra de contacto
+    const k = (0.74 + 0.1 * corro - 0.1 * Math.max(0, (rr - ERA + 0.25) / 0.6) + mancha) * (1 - 0.28 * Math.exp(-(((rr - ERA) / 0.16) ** 2)));
+    // (lo opaco también se mete y se sale con el canto: la hierba se come la tierra a trozos, sin círculo limpio)
+    const lleno = ERA - 0.05 + canto[j] * 0.8, alfa = rr <= lleno ? 1 : Math.max(0, 1 - (rr - lleno) / (R + canto[j] - lleno)) ** 1.4;
+    col.push(k, k * 0.96, k * 0.9, alfa);
+  }
+  for (let j = 0; j < LADOS; j++) idx.push(0, 1 + (j + 1) % LADOS, 1 + j);
+  for (let i = 1; i < ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
+    const a = 1 + (i - 1) * LADOS + j, b = 1 + (i - 1) * LADOS + (j + 1) % LADOS, c = a + LADOS, d = b + LADOS;
+    idx.push(a, b, d, a, d, c);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 4)); g.setIndex(idx); g.computeVertexNormals();
+  if (!matEra) { const t = texturaEra(); matEra = new THREE.MeshLambertMaterial({ map: t, color: t ? 0xffffff : 0x9a8a70, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); }
+  const m = new THREE.Mesh(g, matEra); m.position.y = 0.014; m.receiveShadow = true; m.name = 'suelo_era'; m.renderOrder = 1;
+  return m;
+}
+const TIERRA_ERA_OSC = 0x5e5244;
+function era(id) {
+  const L = new Lote({ rangoSuelo: 0.25, variacion: 0.05 });
+  // las 8 piedras, hincadas de canto en el borde y medio enterradas, a lo largo del borde (con su cara larga hacia fuera)
+  for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.22, r = ERA + 0.02, alto = 0.6 + az(id, i + 20) * 0.3;
+    L.add(piedraIrregular(0.2, 1, id + 'e' + i, 0.2), 'piedraOsc', Math.cos(a) * r, -0.075, Math.sin(a) * r,   // (hundidas: un tercio bajo tierra)
+      { y: -a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.3, z: (az(id, i + 30) - 0.5) * 0.25 }, { escala: new THREE.Vector3(1.55, alto, 0.6), plano: true });
+  }
+  // alguna losa plana asomando en lo apisonado, gastada
+  for (let i = 0; i < 4; i++) {
+    const a = az(id, i + 50) * Math.PI * 2, r = 0.3 + az(id, i + 60) * (ERA - 0.6);
+    L.add(piedraIrregular(0.13 + az(id, i + 70) * 0.08, 1, id + 'l' + i, 0.12), 'piedraOsc', Math.cos(a) * r, 0.022, Math.sin(a) * r, { y: az(id, i + 80) * 6 }, { escala: new THREE.Vector3(1.3, 0.12, 1), plano: true, sinSuelo: true });
+  }
+  for (let i = 0; i < 30; i++) { // briznas de paja sueltas, tumbadas
+    const a = az(id, i + 40) * Math.PI * 2, r = Math.sqrt(az(id, i + 70)) * (ERA - 0.15), largo = 0.14 + az(id, i + 100) * 0.18;
+    L.add(cil(0.006, 0.006, largo, 3), i % 3 ? 'paja' : 'pajaOsc', Math.cos(a) * r, 0.042, Math.sin(a) * r, { z: Math.PI / 2, y: az(id, i + 130) * 6 }, { tex: 'paja', sinSuelo: true });
+  }
+  // la explanada, debajo: en llano queda enterrada; cuesta abajo deja ver su talud de tierra y cuesta arriba se mete en
+  // la ladera
+  const B = new Lote({ rangoSuelo: 0.25, variacion: 0.05 });
+  B.add(new THREE.CylinderGeometry(ERA + 0.05, ERA + 0.4, 0.6, 30), TIERRA_ERA_OSC, 0, -0.305, 0, null, { tex: 'piedra', sinSuelo: true });
+  const bajo = mallas(B); bajo.name = 'bajo_tierra';   // (en llano, enterrada: en las imágenes del panel no se pone)
+  const g = mallas(L); g.add(bajo, sueloEra(id));
+  return g;
+}
+// Lo dejado en la era: cada gavilla, tumbada en lo apisonado, en abanico (hasta 8; más, una encima de otra), y lo demás
+// al pie, como en los demás puestos.
+const SITIOS_ERA = [[-0.5, 0.25, 0.4], [0.45, -0.35, 2.1], [0.1, 0.6, 1.2], [-0.25, -0.55, 2.8], [0.75, 0.3, 0.9], [-0.8, -0.1, 1.7], [0.3, 0.05, 2.5], [-0.15, 0.95, 0.2]];
+function llenoEra(dep, id) {
+  const g = new THREE.Group(), n = Math.min(16, dep.gavilla || 0);
+  for (let i = 0; i < n; i++) {
+    const [x, z, a] = SITIOS_ERA[i % 8], m = modeloDe({ id: `${id}:gavilla:${i}`, cosa: { tipo: 'gavilla', n: 1 } });
+    m.position.set(x, 0.02 + Math.floor(i / 8) * 0.12, z); m.rotation.y = a + (az(id, i) - 0.5) * 0.4; m.name = i ? 'gavilla_' + i : 'deposito_gavilla';
+    g.add(m);
+  }
+  let pie = 0;
+  for (const [t, k] of Object.entries(dep)) {
+    if (t === 'gavilla' || !(k > 0)) continue;
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n: k } }), a = 0.8 + pie++ * 0.9;
+    m.position.set(Math.cos(a) * (ERA + 0.45), 0, Math.sin(a) * (ERA + 0.45)); m.scale.setScalar(0.85); m.name = 'deposito_' + t; g.add(m);
+  }
+  return g;
+}
 // El cesto: de juncos trenzados, redondo y algo más ancho de boca, con su borde enrollado.
 const CESTO = { r0: 0.22, r1: 0.27, alto: 0.3 };
 // en espiral, como se cosen los cestos de juncos: rollos de juncos uno encima de otro (y las puntadas, más claras)
@@ -553,9 +683,10 @@ function camaJuncos(id) {
 // Dónde se tumba quien duerme en cada cama (en sus ejes: a lo largo de X, con la cabeza hacia -X) y a qué altura del
 // suelo queda el cuerpo: en el refugio, sobre el lecho de ramaje (al fondo); en la cama de juncos, encima del colchón.
 export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_juncos: { x: 0, z: 0, y: 0.1 } };
+const ASENTAR = { era: true };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
-  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador };
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador, era };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -754,7 +885,7 @@ function varaCorrea(L, a, b) {
   const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), c = a.clone().addScaledVector(d, 0.5);
   L.add(new THREE.BoxGeometry(0.02, d.length(), 0.004), CUERO_COLG, c.x, c.y, c.z, m, { tex: 'liso', sinSuelo: true });
 }
-const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador };
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador, era: llenoEra };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -805,7 +936,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95, era: 1.3 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -862,6 +993,23 @@ export function crearEstaciones({ raiz, altura, fab }) {
     }
     return arden;
   }
+  // Lo que se tiende por el suelo (la era): cada punto, a la altura del terreno que tiene debajo (en ladera, su suelo y
+  // sus piedras siguen la cuesta, sin que la hierba tape la mitad ni queden piedras en el aire). Lo enterrado, fuera.
+  const sobreSuelo = (o, x, z) => {   // (lo que sube o baja el terreno en ese punto del puesto, respecto a su pie)
+    const c = Math.cos(o.rotation.y), s = Math.sin(o.rotation.y), h = altura(o.position.x + x * c + z * s, o.position.z - x * s + z * c);
+    return Number.isFinite(h) ? h - 0.01 - o.position.y : 0;
+  };
+  function asentar(modelo, o, tipo) {
+    if (window.__sinAsentar) return;   // (solo para ver que la prueba falla)
+    modelo.traverse(m => {
+      if (m.name === 'bajo_tierra') m.visible = false;
+      if (!m.isMesh || !m.visible) return;
+      const p = m.geometry.attributes.position;
+      for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + sobreSuelo(o, p.getX(i) + m.position.x, p.getZ(i) + m.position.z));
+      p.needsUpdate = true; m.geometry.computeBoundingSphere(); m.geometry.computeBoundingBox();
+    });
+    modelo.userData.asentado = tipo;
+  }
   function refrescar() {
     const hay = fab.estaciones;
     for (const [id, o] of vistas) if (!Object.hasOwn(hay, id)) { grupo.remove(o); vistas.delete(id); }
@@ -874,6 +1022,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
         o.position.set(e.x, (Number.isFinite(e.y) ? e.y : altura(e.x, e.z)) - 0.01, e.z); o.rotation.y = Number.isFinite(e.giro) ? e.giro : az(e.id, 7) * Math.PI * 2;   // el giro con que se puso (7 nov); las de antes, al azar
         o.name = 'estacion_' + e.tipo; o.userData.id = e.id; o.userData.tipo = e.tipo;
         grupo.add(o); vistas.set(e.id, o);
+        if (ASENTAR[e.tipo]) asentar(modelo, o, e.tipo);
       }
       // en obra: tenue, con su armazón, y lo entregado al pie; levantada: con sus materiales y lo depositado
       const nivel = e.obra ? Math.min(4, Math.floor(4 * (e.obra.trabajo || 0) / ESTACIONES[e.tipo].trabajo)) : null;
@@ -883,7 +1032,9 @@ export function crearEstaciones({ raiz, altura, fab }) {
       const montones = e.obra ? e.obra.entregado : e.deposito, firma = firmaDe(e);
       if (o.userData.firma !== firma) {
         const viejo = o.getObjectByName('deposito'); if (viejo) o.remove(viejo);
-        o.add(modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id, e.obra ? [] : colgadoAhora(e))); o.userData.firma = firma;
+        const dep = modeloDeposito(e.obra ? 'obra' : e.tipo, montones, e.id, e.obra ? [] : colgadoAhora(e));
+        if (ASENTAR[e.tipo]) for (const c of dep.children) c.position.y += sobreSuelo(o, c.position.x, c.position.z);
+        o.add(dep); o.userData.firma = firma;
       }
     }
   }

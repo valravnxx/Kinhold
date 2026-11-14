@@ -94,7 +94,7 @@ export const CATALOGO = {
   // (P11, 13 nov) las semillas silvestres (src/logica/recoleccion.js): la cebada silvestre (sus espigas, que se siembran),
   // las habas (se siembran, o se comen asadas al fuego) y las semillas de la col silvestre y del nabo silvestre
   estaca: R('Estaca', 'M'),   // la de marcar el campo (P11)
-  semilla_cebada: R('Cebada silvestre', 'P'), habas: R('Habas', 'P'), habas_asadas: R('Habas asadas', 'P'),
+  semilla_cebada: R('Grano de cebada', 'P'), habas: R('Habas', 'P'), habas_asadas: R('Habas asadas', 'P'),
   semilla_col: R('Semillas de col', 'P'), semilla_nabo: R('Semillas de nabo', 'P'),
   // (P11, cosechar) lo que da el campo: la gavilla de cebada segada (con su grano, para trillar en la era), la col y el
   // nabo (se comen crudos o asados al fuego y se estropean pronto: src/logica/comida.js)

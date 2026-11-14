@@ -150,10 +150,10 @@ export const DECORACION = {
 // de después (tablas, clavos, hierro, tejas), y los muebles igual. Así quedan guardados la teja, la chimenea, el
 // adarve, la empalizada, la polea, el polipasto, la escalera de tablas y los muebles de tablas o hierro. Solo se
 // esconden: la lógica y el servidor las siguen sabiendo construir (las pruebas y lo ya construido). Provisional.
-// La paja, igual (7 nov): sale del cereal (GDD), que aún no hay; lo que la pide (el tejado y el remate de paja, la cama
-// de paja, la antorcha de pie y la alfombra) no se puede hacer sin el arcón de pruebas y no se enseña. El tejado de la
-// casa humilde es el de juncos (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
-export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja', 'paja'];
+// La paja estuvo igual del 7 al 13 nov (salía del cereal, que no había); desde «La era y trillar» (P11) sale de trillar
+// las gavillas en la era, y lo que la pide (el tejado y el remate de paja, la cama de paja, la antorcha de pie y la
+// alfombra) se enseña (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
+export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja'];   // (13 nov: la paja ya sale de trillar en la era, P11)
 export const NIVEL_TRAMO = 1;
 export function enEsteTramo(def) {
   return (def.nivel ?? 0) <= NIVEL_TRAMO && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));

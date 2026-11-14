@@ -1,0 +1,89 @@
+{
+ "lado": 192,
+ "iconos": {
+  "pz_cim_piedra": {
+   "propio": true
+  },
+  "pz_cim_tronco": {
+   "propio": true
+  },
+  "pz_suelo_tronco": {
+   "propio": true
+  },
+  "pz_poste": {
+   "propio": true
+  },
+  "pz_viga": {
+   "propio": true
+  },
+  "pz_muro_zarzo": {
+   "propio": true
+  },
+  "pz_muro_zarzo_puerta": {
+   "propio": true
+  },
+  "pz_muro_zarzo_ventana": {
+   "propio": true
+  },
+  "pz_muro_tronco": {
+   "propio": true
+  },
+  "pz_muro_tronco_puerta": {
+   "propio": true
+  },
+  "pz_muro_tronco_ventana": {
+   "propio": true
+  },
+  "pz_medio_muro": {
+   "propio": true
+  },
+  "pz_tejado_paja": {
+   "propio": true
+  },
+  "pz_tejado_juncos": {
+   "propio": true
+  },
+  "pz_remate_paja": {
+   "propio": true
+  },
+  "pz_remate_juncos": {
+   "propio": true
+  },
+  "pz_hastial": {
+   "propio": true
+  },
+  "pz_escalera_mano": {
+   "propio": true
+  },
+  "pz_andamio": {
+   "propio": true
+  },
+  "pz_puerta_varas": {
+   "propio": true
+  },
+  "pz_cerca": {
+   "propio": true
+  },
+  "pz_cerca_portillo": {
+   "propio": true
+  },
+  "deco_cama_paja": {
+   "propio": true
+  },
+  "deco_taburete": {
+   "propio": true
+  },
+  "deco_candil": {
+   "propio": true
+  },
+  "deco_alfombra": {
+   "propio": true
+  },
+  "deco_estandarte": {
+   "propio": true
+  },
+  "mojon": {
+   "propio": true
+  }
+ }
+}

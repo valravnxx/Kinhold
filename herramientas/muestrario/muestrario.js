@@ -7,6 +7,7 @@ import { suelo } from '../../src/mundo/decorado.js';
 import { modeloPieza, decoracion, mojon } from '../../src/mundo/modelos.js';
 import { modeloArma, modeloEscudo, modeloFlecha, modeloPoste, modeloDiana } from '../../src/combate/modelos.js';
 import { modeloHacha, modeloPico } from '../../src/juego/personaje.js';
+import { MODELO_ESTACION, modeloDeposito } from '../../src/juego/estaciones.js';
 // ?armas=espada_larga,espada_escudo,palo,arco,escudo,flecha,poste,diana,hacha,pico: lo que se lleva en la mano, de pie sobre el suelo
 const ARMAS = { escudo: () => modeloEscudo(), flecha: () => { const g = new THREE.Group(), f = modeloFlecha(); f.rotation.x = -Math.PI / 2; g.add(f); return g; },
   poste: modeloPoste, diana: () => modeloDiana(), hacha: modeloHacha, pico: modeloPico };
@@ -18,14 +19,15 @@ const amb = crearAmbiente(escena, { alcance: 14, mapa: 2048 });
 escena.add(suelo({ llano: 30, cerca: 20, lejos: 80 }));
 const q = new URLSearchParams(location.search);
 const lista = [...(q.get('piezas') || '').split(',').filter(Boolean).map(t => ['pieza', t]), ...(q.get('deco') || '').split(',').filter(Boolean).map(t => ['deco', t]),
-  ...(q.get('armas') || '').split(',').filter(Boolean).map(t => ['arma', t])];
+  ...(q.get('armas') || '').split(',').filter(Boolean).map(t => ['arma', t]), ...(q.get('estaciones') || '').split(',').filter(Boolean).map(t => ['estacion', t])];
 const SEP = 3.2, objetos = [];
 lista.forEach(([clase, t], i) => {
   // «tipo@abierta»: con la hoja abierta (puertas y portillos); «mojon»: el mojón
   const [tipo, extra] = t.split('@');
-  const o = clase === 'arma' ? (ARMAS[tipo] || (() => modeloArma(tipo)))() : clase !== 'pieza' ? decoracion(tipo) : tipo === 'mojon' ? mojon() : modeloPieza(tipo);
+  // ?estaciones=era,era@gavilla:3: un puesto de trabajo (src/juego/estaciones.js), con lo que se le deja
+  const o = clase === 'estacion' ? (() => { const g = new THREE.Group(); g.add(MODELO_ESTACION[tipo]('muestra:' + tipo)); if (extra) { const [m, n] = extra.split(':'); g.add(modeloDeposito(tipo, { [m]: Number(n) || 1 }, 'muestra:' + tipo)); } return g; })() : clase === 'arma' ? (ARMAS[tipo] || (() => modeloArma(tipo)))() : clase !== 'pieza' ? decoracion(tipo) : tipo === 'mojon' ? mojon() : modeloPieza(tipo);
   if (clase === 'arma') { const g = new THREE.Group(); g.add(o); o.updateMatrixWorld(true); o.position.y = -new THREE.Box3().setFromObject(o).min.y; o.userData.pie = true; lista[i].obj = g; }
-  if (extra === 'abierta' && o.getObjectByName('hoja')) o.getObjectByName('hoja').rotation.y = -Math.PI / 2;
+  if (clase !== 'estacion' && extra === 'abierta' && o.getObjectByName('hoja')) o.getObjectByName('hoja').rotation.y = -Math.PI / 2;
   const raiz = lista[i].obj || o, sep = clase === 'arma' ? 1.2 : SEP;
   raiz.position.set((i - (lista.length - 1) / 2) * sep, 0, 0);
   raiz.traverse(m => { if (m.isMesh) m.castShadow = m.receiveShadow = true; });

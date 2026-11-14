@@ -88,6 +88,7 @@ export const USOS = {
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
   secar:  { nombre: 'En el secadero', estaciones: ['secadero'] },
   raspar: { nombre: 'En el raspador de pieles', estaciones: ['raspador'] },
+  trillar: { nombre: 'En la era', estaciones: ['era'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -129,6 +130,10 @@ export const ESTACIONES = {
   // cuerda para rasparle la carne y la grasa con la lasca de sílex (que hay que llevar: no se gasta). Provisional
   // (diario y registro): fuera, en cualquier sitio (no pide tu tierra), y 20 s de trabajo para levantarlo.
   raspador:       { nombre: 'Raspador de pieles', un: 'un raspador de pieles', uso: 'raspar', coste: { vara: 4, cuerda: 1 }, donde: 'fuera', trabajo: 20, hace: 'Un bastidor de varas donde se tensa la piel para rasparla con la lasca de sílex: da la piel limpia' },
+  // la era (P11, «La era y trillar», 13 nov; estudio diseno/estudios/granja.html: «las gavillas, en la era (un suelo
+  // apisonado, nueva estación), con el mayal: dan el grano y la paja»): un suelo redondo apisonado y bordeado de piedras,
+  // fuera y en tu tierra. Provisional (diario y registro): 8 piedras y 30 s de trabajo (apisonar es lo que más cuesta).
+  era:            { nombre: 'Era', un: 'una era', uso: 'trillar', coste: { piedra: 8 }, donde: 'fuera', trabajo: 30, tierra: true, hace: 'Trillar las gavillas con el mayal: grano de cebada y paja' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -141,6 +146,14 @@ export const cabeEn = tipo => (Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tip
 // Si en una estación se puede dejar ese tipo (los almacenajes, solo lo suyo).
 export const guardaTipo = (tipo, t) => !Object.hasOwn(ESTACIONES, tipo) || !ESTACIONES[tipo].guarda || ESTACIONES[tipo].guarda.includes(t);
 export const MOTIVO_MURO = n => `${n}: va colgado en un muro lleno (sin puerta ni ventana) de la planta baja; pégalo a uno, por dentro.`;
+// Por qué no se puede levantar fuera de tu tierra (las que van en ella: tierra: true).
+export const motivoTierra = tipo => {
+  const e = Object.hasOwn(ESTACIONES, tipo) ? ESTACIONES[tipo] : null;
+  return !e || e.uso === 'almacen' ? 'Los almacenajes van en tu tierra (o en la de quien te invita).'
+    : e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).'
+    : tipo === 'era' ? 'La era va en tu tierra (o en la de quien te invita).'
+    : 'El secadero va en tu tierra (o en la de quien te invita).';
+};
 export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
 // Las estaciones que existen de un uso, y cómo se nombran juntas («una hoguera o un hogar»).
 export const estacionesDeUso = uso => (USOS[uso] ? USOS[uso].estaciones : []).filter(t => Object.hasOwn(ESTACIONES, t));
@@ -198,6 +211,11 @@ export const RECETAS = {
   // la col y el nabo del campo (P11, cosechar): se comen crudos, o asados al fuego, que sacian más. Tiempo, provisional
   asar_col:          r('Col asada', 'fuego', 'col_asada', { col: 1 }, 40),
   asar_nabo:         r('Nabo asado', 'fuego', 'nabo_asado', { nabo: 1 }, 30),
+  // en la era (P11, «La era y trillar»): cada gavilla, apaleada con el mayal (hay que llevarlo; no se gasta), da 1
+  // puñado de grano de cebada (que es también su semilla) y, además, 1 haz de paja. Con la siega (4 gavillas por cada
+  // 10 m², que se siembran con 1 puñado), la cosecha da unas 4 veces lo sembrado (la proporción de la época). Tiempo,
+  // provisional (diario y registro)
+  trillar:           { ...r('Trillar una gavilla', 'trillar', 'semilla_cebada', { gavilla: 1 }, 20), requiere: ['mayal'], tambien: { paja: 1 } },
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -256,6 +274,7 @@ export const PARA = {
   azada: 'Preparar casillas de cultivo.',
   hoz_silex: 'Cosechar cereal.',
   mayal: 'Trillar.',
+  trillar: 'Grano de cebada, que se siembra, y paja: el tejado de paja, la cama de paja, el almiar.',
   cubo: 'Agua, leche.',
 };
 
@@ -426,7 +445,7 @@ export class Fabricacion {
     const e = ESTACIONES[tipo];
     if (e.donde === 'fuera' && dentro) return { ok: false, motivo: `${e.nombre}: solo fuera, no bajo techo.` };
     if (e.donde === 'dentro' && !dentro) return { ok: false, motivo: `${e.nombre}: solo dentro de la casa.` };
-    if (e.tierra && enTierra === false) return { ok: false, motivo: e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).' : e.uso === 'secar' ? 'El secadero va en tu tierra (o en la de quien te invita).' : 'Los almacenajes van en tu tierra (o en la de quien te invita).' };
+    if (e.tierra && enTierra === false) return { ok: false, motivo: motivoTierra(tipo) };
     return { ok: true };
   }
   // Poner el marco de un puesto en (x, z) (y: la altura del suelo en el que se apoya, si se da): no gasta nada; su
