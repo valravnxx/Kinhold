@@ -6924,5 +6924,17 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 75 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T16:31:51+00:00",
+  "fin": "2026-11-14T16:31:51+00:00",
+  "titulo": "P11 aprobado: el año y los campos",
+  "hito": "granja",
+  "hecho": [
+   "valravnx aprueba por el chat el hito P11, El año y los campos: pasa a hecho.",
+   "Con una condición para el futuro: la granja de hoy es la primera fase; tiene que ser bastante más compleja y tener más cosas. Anotado en el GDD (sección 15, Agricultura) para una fase 2."
+  ],
+  "pruebas": "Sin pruebas: aprobado por valravnx.",
+  "estado": "ok"
  }
 ]
