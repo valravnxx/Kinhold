@@ -6875,5 +6875,22 @@
   "pruebas": "Comprobador de código correcto. Trillar y cribar 35/0 (rota a propósito con MUTAR=1, falla), orígenes 77/0, iconos 684/0. En la nube: el panel de fabricar en PC y en el móvil, el recorrido de jugador, la cama, el mazo, el inventario y despiezar, bien. En la lógica falla solo prueba_nube (systemd-analyze de la máquina de GitHub), como en main. «Lo que llevas se ve puesto» falla en la correa y el cinturón con tronco y armas, que este cambio no toca (no comprobado si falla igual en main; la rama de la correa está a medias). Segunda mirada de un agente aparte: sí, tras dos vueltas (la veta del aro, la piel y el grano).",
   "capturas": "capturas/demo-v208",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T10:22:01+00:00",
+  "fin": "2026-11-14T13:28:46+00:00",
+  "titulo": "P10: el hierro de pantano (demo v209)",
+  "hito": "hierro",
+  "hecho": [
+   "En las vegas llanas junto a los ríos y en las turberas salen manchas de tierra encharcada: la turba negra con matas de juncia alrededor y charcos de agua parda rojiza (la señal del GDD). Salen de la semilla del mundo, las mismas para todos; la más cercana a la salida, en la vega del río del norte, a unos 800 m.",
+   "Con la pala de madera en una mano y la criba en la otra, junto a la mancha Usar dice Cribar: cada pasada saca 1 mineral de hierro, por el servidor y con su autor, que se deja en el suelo junto a la mancha (con las dos manos ocupadas no hay dónde guardarlo). Cada mancha da de 3 a 5 pasadas; agotada, se van los charcos, queda la turba y vuelve a salir a los 90 días.",
+   "La criba (2 mimbres y 1 vara, en el banco de tronco): un aro de vara con el fondo de mimbre tejido, que cuelga de la mano cogida por el aro; y su imagen en el panel.",
+   "La mancha, pintada por código en dos calcos con el borde difuso que se deshace en la hierba e inclinados como el suelo (antes, anillos de polígonos de colores planos que parecían un recorte); el agua, pardo de té con la orilla de barro oscuro y un reflejo gris azulado.",
+   "El mineral en el suelo, un montoncito de terrones pardos de óxido con costras ocres (antes salía un hatillo blanquecino); la pala, con el mango en el puño e inclinada hacia abajo (antes salía cruzada, de lado).",
+   "Pendiente, del sistema general del personaje y no de esta tarea: los dedos no se cierran sobre lo que se lleva en la mano (se ve igual en la prueba de «Lo que llevas se ve puesto» con otras cosas); la criba y la pala quedan junto a la mano abierta."
+  ],
+  "pruebas": "El hierro de pantano en la lógica y en el servidor, 24 de 24; en el navegador, en PC y en móvil, bien (rota a propósito con MUTAR=1, falla). El revisor en la nube: el recorrido, las bayas, lo que se recoge en el mundo, recoger del suelo, el mazo, la cama, el inventario, la velocidad con pocos fotogramas, despiezar y el panel de fabricar, bien. En la lógica fallan solo prueba_nube (avisos del sistema de la máquina de GitHub) y las imágenes de cinco piezas de piezas-v1 que no están en el repositorio, igual que en main. «Lo que llevas se ve puesto» falla en la mano sobre el tronco y en el cinturón, igual que en main. Segunda mirada aparte, tres vueltas: la primera dijo que no (los charcos con ribete naranja, el agua roja, la hoja de la pala sin ver, la mancha fuera del encuadre en el móvil), la segunda también (el agua granate, las manos); en la tercera, sí a la mancha, el agua, los colores, la mancha agotada, el móvil y el mineral, y no a las manos, que no se cierran sobre la pala y la criba (sistema general del personaje, pendiente). Tras unir main (la criba de grano) se volvieron a pasar el hierro y lo que llevas.",
+  "capturas": "capturas/demo-v209",
+  "estado": "ok"
  }
 ]

@@ -2430,9 +2430,10 @@
     },
     {
      "nombre": "El hierro de pantano: en las vegas llanas junto a los arroyos y en las turberas salen manchas de tierra encharcada con agua rojiza (la señal del GDD; lógica pura por celdas, de la semilla del mundo, las mismas para todos); con la pala de madera y la criba, cada pasada en una mancha da 1 mineral de hierro (lo decide el servidor, con su autor); cada mancha da unos pocos y vuelve a salir en unos meses reales. La criba (2 mimbres y 1 vara, en el banco de tronco). Capturas de la mancha al lado de la referencia. Cadena: pala de madera ← banco de tronco con 1 tronco corto; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T00:24:09+00:00",
-     "rama": "trabajo/20261114-0024"
+     "rama": "trabajo/20261114-0024",
+     "fin": "2026-11-14T13:28:46+00:00"
     },
     {
      "nombre": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
@@ -4518,6 +4519,13 @@
      "archivo": "jugar/demo/v208.html",
      "capturas": "capturas/demo-v208",
      "notas": "v208: cribar el grano (P11, la granja básica; valravnx: «quiero criba de grano si es realista»). Trillar una gavilla en la era da ahora grano sin limpiar (revuelto con granzas, tierra y chinas) y paja. La criba de grano es su propia herramienta, distinta de la del mineral: un aro de vara curvada con el fondo de piel limpia agujereada a punzón (1 piel limpia y 1 vara en el banco de tronco, llevando la lasca). Con la criba en lo que llevas, «Cribar el grano» (con las manos, en cualquier sitio) da 1 puñado de grano de cebada limpio, el que se siembra, por cada puñado de grano sin limpiar; la criba no se gasta. La criba se ve en la mano, cogida por el aro. El grano sin limpiar va al cesto; la paja, al almiar."
+    },
+    {
+     "v": "v209",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v209.html",
+     "capturas": "capturas/demo-v209",
+     "notas": "v209: el hierro de pantano (P10). En las vegas junto a los ríos y en las turberas salen manchas de tierra encharcada con agua parda rojiza; con la pala de madera y la criba, cada pasada saca 1 mineral de hierro, que queda junto a la mancha. La criba nueva: 2 mimbres y 1 vara, en el banco de tronco."
     }
    ]
   },
