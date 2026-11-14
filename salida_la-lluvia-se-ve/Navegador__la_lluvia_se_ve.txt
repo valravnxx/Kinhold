@@ -1,0 +1,34 @@
+/home/runner/work/Kinhold/Kinhold/pruebas/prueba_lluvia_navegador.py:60: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  return sum(1 for v in d.getdata() if v > 10)
+  OK   PC: sin ?tiempo, las pruebas lo ven despejado, quieto
+  OK   PC: despejado, el cielo azul — [142, 171, 191]
+  OK   PC: despejado, sin gotas
+  OK   PC: nublado, el cielo gris (casi nada de azul) — [176, 177, 175] (despejado [142, 171, 191])
+  OK   PC: nublado, la luz del sol mucho más débil — 0.6 (despejado 3)
+  OK   PC: nublado, sin gotas
+  OK   PC: nublado, el suelo más apagado — [67, 76, 39] (despejado [118, 122, 64])
+  OK   PC: lloviendo, las gotas en una sola malla de trazos — {"visible": true, "cuantas": 4500, "cantidad": 1, "tipo": "LineSegments"}
+  OK   PC: en el PC, más gotas — 4500
+  OK   PC: lloviendo, las gotas se ven (trazos claros sobre lo de detrás) — 13228 píxeles de 460800
+  OK   PC: y también contra el cielo — 849 píxeles
+  OK   PC: un segundo después de empezar a llover, solo un poco (el paso es suave) — {"nubes": 0.05823546641575137, "lluvia": 0.17097088181959957, "tiempo": "lluvia"}
+  OK   PC: al minuto y medio, lloviendo del todo y el cielo cubierto — {"nubes": 0.9732173235073615, "lluvia": 0.9999877807746718, "tiempo": "lluvia"}
+  (dato) PC: ms por fotograma, sin lluvia 1291.8 y con lluvia 1295.4 (sin tarjeta gráfica; perfil movil-1)
+  OK   PC: sin errores en la página
+  OK   móvil: sin ?tiempo, las pruebas lo ven despejado, quieto
+  OK   móvil: despejado, el cielo azul — [151, 185, 212]
+  OK   móvil: despejado, sin gotas
+  OK   móvil: nublado, el cielo gris (casi nada de azul) — [197, 197, 197] (despejado [151, 185, 212])
+  OK   móvil: nublado, la luz del sol mucho más débil — 0.6 (despejado 3)
+  OK   móvil: nublado, sin gotas
+  OK   móvil: nublado, el suelo más apagado — [68, 76, 39] (despejado [120, 122, 66])
+  OK   móvil: lloviendo, las gotas en una sola malla de trazos — {"visible": true, "cuantas": 1600, "cantidad": 1, "tipo": "LineSegments"}
+  OK   móvil: en el móvil, menos gotas — 1600
+  OK   móvil: lloviendo, las gotas se ven (trazos claros sobre lo de detrás) — 1752 píxeles de 147700
+  OK   móvil: y también contra el cielo — 34 píxeles
+  OK   móvil: un segundo después de empezar a llover, solo un poco (el paso es suave) — {"nubes": 0.055681711835718434, "lluvia": 0.16392545398631708, "tiempo": "lluvia"}
+  OK   móvil: al minuto y medio, lloviendo del todo y el cielo cubierto — {"nubes": 0.9731446977284974, "lluvia": 0.9999876769307074, "tiempo": "lluvia"}
+  (dato) móvil: ms por fotograma, sin lluvia 427.2 y con lluvia 428.7 (sin tarjeta gráfica; perfil movil-1)
+  OK   móvil: sin errores en la página
+
+Todo correcto
