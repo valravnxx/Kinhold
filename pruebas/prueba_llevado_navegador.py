@@ -5,7 +5,7 @@
 # hueso. Capturas de cerca, de frente, de lado y de espalda, en PC y en móvil.
 # Uso: python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html <carpeta>
 # La correa cruzada (zurrón, carcaj, escudo; 14 nov): pegada al cuerpo, sin arcos en el aire (MUTAR_CORREA=1 la deja
-# sin pegar: tiene que fallar).
+# sin pegar: tiene que fallar; MUTAR_REAJUSTE=1 no la vuelve a ajustar al cambiar de postura: también).
 # MUTAR=1 hace que las piezas no sigan a los huesos: tiene que fallar. MUTAR_MANOS=1 dibuja lo hecho a mano con la
 # bolsa o el hatillo y el hacha de piedra como la de hierro: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, json
@@ -93,9 +93,9 @@ SEPARA_CORREA = '''() => { const K = window.__kinhold, j = K.jugador; K.escena.u
     const va = d3 * d6 - d5 * d4; if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) return b.clone().addScaledVector(c.clone().sub(b), (d4 - d3) / (d4 - d3 + d5 - d6));
     const den = 1 / (va + vb + vc); return a.clone().addScaledVector(ab, vb * den).addScaledVector(ac, vc * den); };
   let peor = 0, dondePeor = null;
-  for (const q of g.userData.correa) { const p = V().fromArray(q); let d = 1e9;
+  for (const q of g.userData.correa) { const p = V().fromArray(q).applyMatrix4(g.matrix);   /* (lo de la pieza, donde va ahora) */ let d = 1e9;
     for (const [a, b, c] of tris) { if (Math.abs(a.y - p.y) > 0.15) continue; d = Math.min(d, cerca(p, a, b, c).distanceTo(p)); }
-    if (d > peor) { peor = d; dondePeor = q.map(v => +v.toFixed(3)); } }
+    if (d > peor) { peor = d; dondePeor = p.toArray().map(v => +v.toFixed(3)); } }
   return { peor: +peor.toFixed(3), donde: dondePeor, n: g.userData.correa.length }; }'''
 
 def equipar(pg, lugares):
@@ -174,6 +174,7 @@ with sync_playwright() as pw:
         if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
         if os.environ.get('MUTAR_MANOS'): pg.evaluate('globalThis.__sinModelosManos = true')
         if os.environ.get('MUTAR_CORREA'): pg.evaluate('globalThis.__correaSinPegar = true')
+        if os.environ.get('MUTAR_REAJUSTE'): pg.evaluate('globalThis.__correaSinReajuste = true')
         pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
         for nombre, lugares in EQUIPOS.items():
             equipar(pg, lugares)
@@ -195,7 +196,11 @@ with sync_playwright() as pw:
         # la correa cruzada, pegada al cuerpo (14 nov: de lado hacía un arco en el aire sobre el hombro); de cerca, de lado,
         # de frente y de espaldas
         for nombre, esp in (('zurron', C('zurron', 1, [None] * 4)), ('carcaj', C('carcaj', 1, [C('flecha', 10)])), ('escudo', C('correa_escudo', 1, [C('escudo')]))):
+            # (justo después de llevar algo en brazos: al ponérsela aún está soltando esa postura; medio segundo después de
+            # quedarse quieto, la correa se vuelve a ajustar)
+            equipar(pg, EQUIPOS['lenero_en_manos'])
             equipar(pg, {'espalda': esp})
+            pg.wait_for_timeout(1500)
             if disp == 'pc':
                 r = pg.evaluate(SEPARA_CORREA)
                 comprobar(f'correa de {nombre}: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4)', r is not None and r['peor'] < 0.05, str(r))

@@ -556,11 +556,14 @@ export function crearLlevado(j) {
   const grupo = new THREE.Group(); grupo.name = 'llevado';
   j.raiz.add(grupo);
   let huella = '', ultimo = null, medida = null, claveMedida = '';
+  // la correa cruzada se ajusta al cuerpo en la postura de ese momento: si se la pone en mitad de un fundido (al soltar lo
+  // que llevaba en brazos) o cambia de postura, se vuelve a ajustar una vez, medio segundo después (paso)
+  let ajusteCruzada = null;
   const vaciar = () => {
     for (const o of [...grupo.children]) { grupo.remove(o); o.traverse(m => { if (m.isMesh) m.geometry.dispose(); }); }
   };
-  function montar(l) {
-    vaciar();
+  function montar(l, reajuste = false) {
+    vaciar(); ajusteCruzada = null;
     const mh = j.mh; if (!mh || !l) return;
     if (!l.cintura && !l.espalda && !l.hombro && !l.der && !l.izq) return; // nada encima: ni se mide el cuerpo
     // el cuerpo, medido solo si ha cambiado lo que lleva puesto (cuesta unos milisegundos)
@@ -568,6 +571,7 @@ export function crearLlevado(j) {
     // (con correa cruzada, siempre: va pegada al pecho en la postura de ahora, y la de la última medida puede ser otra)
     const cruza = l.espalda && ['zurron', 'carcaj', 'correa_escudo'].includes(l.espalda);
     if (!medida || clave !== claveMedida || cruza) { medida = medir(mh, j.raiz); claveMedida = clave; }
+    if (cruza) ajusteCruzada = { t: performance.now(), modo: j.modo, pendiente: !reajuste };
     j.raiz.updateMatrixWorld(true);
     const invRaiz = new THREE.Matrix4().copy(j.raiz.matrixWorld).invert();
     const H = mh.hueso, pelvis = H.pelvis, pecho = H.spine_03 || H.spine_02 || pelvis;
@@ -680,9 +684,9 @@ export function crearLlevado(j) {
           guia = [v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12), v3(x0 + 0.1, cin.y + 0.08, zA), v3(x0 - 0.02, yM + 0.05, zA), ...hombro, ...delante];
         }
         const pegada = pegarAlCuerpo(medida, guia, cE, cH, 0.014), pts = [...ini, ...pegada, ...fin];
-        correaCruzada = pegada.map(p => p.toArray());
         const nor = [...ini.map(() => pegada[0].nor), ...pegada.map(p => p.nor), ...fin.map(() => pegada[pegada.length - 1].nor)];
         const mi = new THREE.Matrix4().copy(m).invert();
+        correaCruzada = pegada.map(p => p.clone().applyMatrix4(mi).toArray());   // (en la pieza: se mueve con ella)
         correa(L, pts.map(p => p.clone().applyMatrix4(mi)), 0.03, 0.006, CUERO, nor.map(d => d.clone().transformDirection(mi)));
       } else for (const s of [1, -1]) {
         const h = hombroDe(s), yA = yHombro - 0.16;
@@ -796,6 +800,12 @@ export function crearLlevado(j) {
       if (!j.mh) return;
       grupo.visible = j.mh.nivel < OCULTO && j.mh.raiz.visible !== false;
       if (grupo.visible && grupo.children.length) seguir(grupo, j.raiz);
+      const a = ajusteCruzada;
+      if (a) {
+        if (j.modo !== a.modo) { a.modo = j.modo; a.t = performance.now(); a.pendiente = true; }
+        if (globalThis.__correaSinReajuste) return;   // (solo para comprobar que la prueba falla)
+        if (a.pendiente && performance.now() - a.t > 500) montar(ultimo, true);
+      }
     },
   };
 }
