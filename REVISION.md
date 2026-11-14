@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 14 nov 2026, 17:39 UTC — por el chat: la casa más fuerte, la canoa y el foso de aserrar
+
+- Las piezas que solo estaban escondidas por ser de nivel 2 y ya salen de lo que hay (la empalizada, el muro de entramado y la chimenea), y el tronco grande, que hoy solo se tronza. valravnx: «la rastra sí está… con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra, pero necesitamos uso para esos troncos grandes» → hito nuevo P11c «La casa más fuerte» (en curso, delante de los oficios): el tronco largo con cuerda y en la rastra, la rodaja de tronco y la carretilla, la empalizada, su portón sin hierro, el muro de entramado, la chimenea, el recorrido y la revisión.
+- «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva» → hito nuevo P11d «La canoa» (en curso, detrás de P11c): la canoa de un tronco vaciada con hacha y brasas, el remo, echarla al agua y remar (sin remar, a la deriva con la corriente), dónde se queda, el recorrido y la revisión. La animación de remar, de valravnx; hasta entonces, una pose provisional.
+- «el foso de aserrar me encantaría que requiriera hacer el agujero en el suelo antes con lo de cavar» → anotado en la nota de P10: el foso de aserrar llega con cavar (congelado); hasta entonces, las tablas en el banco con el tronco corto. Para la revisión de rumbo.
+
 ### 14 nov 2026, 16:32 UTC — por el chat, aprobación de P11
 
 valravnx: «aprueba el hito actual, pero ten en cuenta de que eso es un sistema que debe ser ampliado en un futuro… tiene que ser bastante más complejo y tener bastante más cositas… anotan el GDD actual y que se tenga presente… cuando se tenga que hacer una fase 2… por ahora los sistemas están bien, así que aprueba» → P11, El año y los campos, pasa a `hecho`. En el GDD (sección 15, Agricultura, y en inglés y ruso): la granja de hoy es la primera fase; habrá una fase 2 más compleja, como hito propio cuando toque.
