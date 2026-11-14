@@ -108,6 +108,7 @@ paso "Sembrar y crecer: la cebada a voleo (círculo de 2 m, 1 puñado cada 10 m�
 paso "Cosechar: la cebada madura se siega con la hoz (gavillas al suelo, 4 cada 10 m²) y las habas, la col y el nabo maduros se cogen a mano (4 veces lo sembrado); el servidor" node pruebas/prueba_cosechar.mjs
 paso "Escardar: malas hierbas en lo verde y en espiga, con las manos o la azada a pasadas; lo escardado da más al cosechar (5 por cada 4, una planta más); el servidor" node pruebas/prueba_escardar.mjs
 paso "Regar el huerto: el tiempo del mundo (lluvia por zonas y días, igual para todos); la col y el nabo, mustios tras 2 días sin agua y a medio crecer; el cubo se llena en el río y riega 1,2 m; el cereal y las habas no; el servidor" node pruebas/prueba_regar.mjs
+paso "El tiempo del mundo: despejado, nublado, lluvia y niebla por zonas y por la hora del servidor, igual para todos; nublado antes y después de la lluvia; niebla algunas mañanas; la lluvia del riego, la de siempre" node pruebas/prueba_tiempo.mjs
 paso "La era y trillar: la era (8 piedras, fuera, en tu tierra); cada gavilla dejada en ella, con el mayal, da 1 grano de cebada y 1 paja; la paja ya a la vista; por el servidor" node pruebas/prueba_trillar.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs

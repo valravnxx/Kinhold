@@ -295,8 +295,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // KINHOLD_PRUEBAS_HORA=campos: en sembrar, el servidor se queda la hora que manda el navegador si es pasada (lo sembrado
   // «hace una semana», ya maduro), solo para la prueba de navegador de cosechar (P11). Nunca en el servidor de verdad.
   const horaCampos = process.env.KINHOLD_PRUEBAS_HORA === 'campos';
-  // KINHOLD_PRUEBAS_TIEMPO=seco|lluvia: el tiempo del mundo fijo (src/logica/tiempo.js), para probar el riego (P11b)
-  if (process.env.KINHOLD_PRUEBAS_TIEMPO === 'seco' || process.env.KINHOLD_PRUEBAS_TIEMPO === 'lluvia') globalThis.__tiempo = process.env.KINHOLD_PRUEBAS_TIEMPO;
+  // KINHOLD_PRUEBAS_TIEMPO=seco|lluvia|nublado|niebla: el tiempo del mundo fijo (src/logica/tiempo.js), para probar el riego (P11b)
+  if (['seco', 'lluvia', 'nublado', 'niebla'].includes(process.env.KINHOLD_PRUEBAS_TIEMPO)) globalThis.__tiempo = process.env.KINHOLD_PRUEBAS_TIEMPO;
   // KINHOLD_GUARDAR_CADA: cada cuánto, como mucho, se reescribe objetos.json (ms; por defecto 1000)
   const g = process.env.KINHOLD_GUARDAR_CADA, guardarCada = g && Number(g) >= 0 ? Number(g) : GUARDAR_CADA;
   const s = crearServidor({ puerto, archivo, terreno, guardarCada, registrar: t => console.log(new Date().toISOString(), t), altas: altasLibres ? { origen: 1e6, total: 1e6, espera: 0 } : {}, limiteMovimiento: !movimientoLibre, arconPruebas, horaCampos, salidaComun, ...(muerteRapida ? { sedInicial: 100, tiemposMuerte: { sed: 3, hambre: 6 }, duraCuerpo: 45000 } : {}) });
