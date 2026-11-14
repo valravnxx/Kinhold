@@ -2303,7 +2303,11 @@
      "fin": "2026-11-14T09:02:13+01:00"
     },
     {
-     "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era y pone un tejado de paja",
+     "nombre": "Cribar el grano (valravnx, 14 nov: «quiero criba de grano si es realista»; ha visto cribas medievales en museos): trillar en la era da grano sin limpiar (mezclado con granzas, tierra y chinas) y paja; con la criba en lo que llevas (no se gasta), «Cribar el grano» (con las manos, en cualquier sitio) da grano de cebada limpio, que es lo que se siembra, y deja las granzas. La criba, la misma del hierro de pantano (2 mimbres y 1 vara en el banco de tronco): si aún no está en main, se hace en esta tarea. Capturas de la criba de cerca al lado de la referencia. Cadena: criba ← banco de tronco; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven; grano sin limpiar ← trillar en la era",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era, criba el grano y pone un tejado de paja",
      "estado": "en_curso",
      "inicio": "2026-11-14T08:23:07+00:00",
      "rama": "trabajo/20261114-0823"
