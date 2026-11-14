@@ -6,6 +6,7 @@
 #   - lloviendo: las gotas se ven (trazos claros finos, distintos de la misma vista sin lluvia), en una sola malla de
 #     trazos (menos en el móvil), también contra el cielo;
 #   - el paso de un tiempo a otro, suave: un segundo después de empezar a llover, solo un poco; al minuto, del todo;
+#   - bajo techo, sin gotas (el tejado se quita para ver dentro);
 #   - lo que cuesta dibujarla: ms por fotograma con lluvia y sin ella (aquí, sin tarjeta gráfica: solo como dato; los
 #     fotogramas de verdad los mide valravnx en su PC y su móvil);
 #   - sin errores en la página.
@@ -103,6 +104,8 @@ def recorrido(pg, nombre, pref, movil):
     uno, fin = pasos
     comprobar(f'{nombre}: un segundo después de empezar a llover, solo un poco (el paso es suave)', 0.01 < uno['lluvia'] < 0.3 and 0.01 < uno['nubes'] < 0.3, json.dumps(uno))
     comprobar(f'{nombre}: al minuto y medio, lloviendo del todo y el cielo cubierto', fin['lluvia'] > 0.95 and fin['nubes'] > 0.95, json.dumps(fin))
+    techo = pg.evaluate(f'(() => {{ const t = {K}.tiempoV; t.paso(3, true); const dentro = t.lluvia.cantidad; t.paso(3, false); return [dentro, t.lluvia.cantidad]; }})()')
+    comprobar(f'{nombre}: bajo techo no caen gotas (y al salir, sí)', techo[0] < 0.01 and techo[1] > 0.99, str(techo))
     # lo que cuesta (como dato)
     poner(pg, 'nublado'); sin = pg.evaluate('window.__graficos.medir(10)')
     poner(pg, 'lluvia'); con = pg.evaluate('window.__graficos.medir(10)')

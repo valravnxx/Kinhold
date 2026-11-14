@@ -2949,7 +2949,7 @@ function paso() {
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
-  tiempoV.paso(dt);
+  tiempoV.paso(dt, bajoTecho);   // (bajo techo, sin gotas: el tejado se quita para ver dentro)
   cielo.paso();
   graficos.dibujar(dt);
   requestAnimationFrame(paso);

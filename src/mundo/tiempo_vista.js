@@ -4,7 +4,8 @@
 //   - la lluvia: gotas alrededor de la cámara (src/mundo/lluvia.js), menos en el móvil;
 //   - sin saltos: lo que se ve va hacia lo que toca poco a poco (las nubes en unos SUAVE_NUBES s, la lluvia en
 //     SUAVE_LLUVIA s), así que el cielo se cierra antes de llover (la lógica lo pone nublado antes) y la lluvia empieza
-//     y para de a poco.
+//     y para de a poco;
+//   - bajo techo, sin gotas (el tejado se quita para ver dentro; que suene más bajo es la tarea siguiente).
 // Para las pruebas y las capturas: ?tiempo=despejado|nublado|lluvia lo deja quieto (y llega enseguida); las pruebas
 // automáticas (navigator.webdriver) sin ?tiempo lo ven despejado, quieto (ninguna otra prueba depende del tiempo que
 // haga). La niebla se ve en su tarea (aquí, aún no).
@@ -24,7 +25,9 @@ export function crearTiempoVista({ escena, camara, cielo, reloj, donde, movil = 
   let objetivo = { nubes: 0, lluvia: 0, tiempo: 'despejado' };
   let primero = true;
 
-  function paso(dt = 1 / 60) {
+  let fuera = 1;   // 1 al raso, 0 bajo techo (sin gotas dentro de casa: el tejado se quita para ver dentro)
+  // techo: si el jugador está bajo techo
+  function paso(dt = 1 / 60, techo = false) {
     if (fijo) objetivo = { ...FIJOS[fijo], tiempo: fijo };
     else { const p = donde(); objetivo = tiempoEn(p.x, p.z, reloj()); }
     if (primero) { ahora.nubes = objetivo.nubes; ahora.lluvia = objetivo.lluvia; primero = false; }   // al entrar, ya como está
@@ -33,7 +36,8 @@ export function crearTiempoVista({ escena, camara, cielo, reloj, donde, movil = 
       ahora.lluvia += (objetivo.lluvia - ahora.lluvia) * (1 - Math.exp(-dt / SUAVE_LLUVIA));
     }
     // (la lluvia, solo con el cielo ya cerrado: no llueve con el cielo azul aunque se cruce el paso)
-    const llueve = Math.min(ahora.lluvia, ahora.nubes);
+    fuera += ((techo ? 0 : 1) - fuera) * (1 - Math.exp(-dt / 0.4));
+    const llueve = Math.min(ahora.lluvia, ahora.nubes) * fuera;
     cielo.nublar(ahora.nubes);
     const c = cielo.actual, luz = c ? Math.min(1, Math.max(0.08, c.hemi.intensidad / 1.6)) : 1;
     lluvia.paso(camara, llueve, luz, dt);
