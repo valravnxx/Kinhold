@@ -51,7 +51,7 @@ import { crearSuelo } from './suelo.js';
 import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, tieneCon } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -1784,6 +1784,10 @@ function accionPrincipal() {
   if (est && panelFabricar) return A(tr(esAlmacen(est.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => panelFabricar.abrirEstacion(est.id), { alto: 0.6 });
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
+    // (P10) con la pala y la criba encima, junto a una mancha de hierro de pantano, se criba antes que coger del suelo el
+    // mineral que ya ha salido (cae a tus pies: se coge al terminar)
+    const rcs = recoleccion.cercano(pj.x, pj.z);
+    if (rcs && RECOLECTABLES[rcs.tipo].alSuelo && tieneCon(inventario(), rcs.tipo)) return A(verboRecoger(rcs), ICONO_RECOGER(rcs), rcs, () => recoger(rcs), { alto: 0.6 });
     const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
     if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);

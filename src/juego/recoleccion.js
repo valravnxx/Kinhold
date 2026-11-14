@@ -40,7 +40,7 @@ const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_
 // pardo y pie crema.
 const CEPA = 0x5e5040, CEPA_OSC = 0x4a3f33, VARA_MIMBRE = 0x7a4a32, VARA_MIMBRE_ARR = 0x8a7a3e, HOJA_SAUCE = 0x7d8f5a, HOJA_SAUCE_OSC = 0x627548;
 // (P10) la mancha de hierro de pantano: la turba empapada, la juncia, la costra ocre, el agua color óxido y la tela irisada
-const TURBA = 0x3f3427, TURBA_OSC = 0x2e261d, JUNCIA = 0x6c7a45, JUNCIA_SECA = 0x8a8150, OCRE = 0xa0602a, AGUA_OXIDO = 0x6e3518, TELA_IRISADA = 0x8f949a;
+const LODO = 0x5b5338, TURBA = 0x4a3d2c, TURBA_OSC = 0x3a3024, JUNCIA = 0x66733f, JUNCIA_SECA = 0x857a4a, OCRE = 0x86552e, AGUA_OXIDO = 0x5e3822, TELA_IRISADA = 0x6f6c63;
 const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0xa2643a, SETA_OSC = 0x7e4c2a, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
@@ -339,18 +339,20 @@ export function modelosRecoleccion() {
     const g = new THREE.ShapeGeometry(sh, 2); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g;
   };
   const manchaSuelo = geoLote(L => {
+    // (el borde, de lodo verdoso: pasa de la hierba a la turba sin corte)
+    L.add(bordeM(1.3, 0.005, 36, 0.3), LODO, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
     L.add(bordeM(1.05, 0.008, 32, 0.7), TURBA, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
     L.add(bordeM(0.85, 0.013, 30, 2.1), TURBA_OSC, 0.06, 0, 0.02, null, { tex: 'piedra', sinSuelo: true, brillo: 0.9 });
     for (let k = 0; k < 5; k++) { const a = k * 1.4 + 2.2, r = 0.9; L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), TURBA_OSC, Math.cos(a) * r * 1.3, 0.015, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.5, 1), plano: true, tex: 'piedra' }); }
   }, { rangoSuelo: 0.05 });
   const manchaJuncia = geoLote(L => {
     // matas de juncia (hojas finas y dobladas) por el borde
-    for (let k = 0; k < 6; k++) {
-      const a = k * 1.13 + 0.4, r = 1.0 + (k % 2) * 0.18, cx = Math.cos(a) * r * 1.25, cz = Math.sin(a) * r;
-      for (let h = 0; h < 9; h++) {
-        const b = h / 9 * Math.PI * 2 + k, alto = 0.22 + ((h * 7 + k) % 5) * 0.05;
-        const g = new THREE.ConeGeometry(0.008, alto, 3); g.translate(0, alto / 2, 0);
-        const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) + (y / alto) ** 2 * 0.09); }
+    for (let k = 0; k < 9; k++) {
+      const a = k * 0.71 + 0.4, r = 0.95 + (k % 3) * 0.14, cx = Math.cos(a) * r * 1.25, cz = Math.sin(a) * r;
+      for (let h = 0; h < 14; h++) {
+        const b = h / 14 * Math.PI * 2 + k, alto = 0.3 + ((h * 7 + k) % 6) * 0.06;
+        const g = new THREE.ConeGeometry(0.009, alto, 3); g.translate(0, alto / 2, 0);
+        const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) + (y / alto) ** 2 * 0.12); }
         L.add(g, h % 3 ? JUNCIA : JUNCIA_SECA, cx + Math.cos(b) * 0.03, 0, cz + Math.sin(b) * 0.03, { y: -b }, { brillo: 0.95 });
       }
     }
@@ -359,8 +361,8 @@ export function modelosRecoleccion() {
     // tres charcos: la costra ocre del borde, el agua óxido encima y, en dos, la tela irisada
     for (const [x, z, r, sem, tela] of [[0.05, 0.0, 0.5, 1, true], [-0.62, 0.32, 0.26, 3, false], [0.55, -0.42, 0.22, 5, true]]) {
       L.add(bordeM(r, 0.017, 24, sem), OCRE, x, 0, z, null, { tex: 'piedra', sinSuelo: true });
-      L.add(bordeM(r * 0.8, 0.021, 22, sem + 1), AGUA_OXIDO, x + 0.02, 0, z, null, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
-      if (tela) L.add(bordeM(r * 0.38, 0.023, 14, sem + 2, 1.6), TELA_IRISADA, x - r * 0.15, 0, z + r * 0.12, null, { tex: 'liso', sinSuelo: true, brillo: 1.2 });
+      L.add(bordeM(r * 0.8, 0.021, 22, sem + 1), AGUA_OXIDO, x + 0.02, 0, z, null, { tex: 'piedra', sinSuelo: true, brillo: 0.9 });
+      if (tela) L.add(bordeM(r * 0.3, 0.023, 14, sem + 2, 1.6), TELA_IRISADA, x - r * 0.15, 0, z + r * 0.12, null, { tex: 'piedra', sinSuelo: true, brillo: 0.85 });
     }
   }, { rangoSuelo: 0.05 });
 
