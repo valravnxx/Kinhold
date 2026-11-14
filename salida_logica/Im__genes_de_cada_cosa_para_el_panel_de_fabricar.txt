@@ -1,0 +1,6 @@
+FALLO: existe docs/recursos/piezas-v1/pz_tejado_paja.webp
+FALLO: existe docs/recursos/piezas-v1/pz_remate_paja.webp
+FALLO: existe docs/recursos/piezas-v1/deco_cama_paja.webp
+FALLO: existe docs/recursos/piezas-v1/deco_candil.webp
+FALLO: existe docs/recursos/piezas-v1/deco_alfombra.webp
+666 bien, 5 fallos · 117 imágenes que enseña el panel, 22 aún sin su modelo

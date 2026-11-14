@@ -1,0 +1,24 @@
+La era
+  OK   la era: 8 piedras, fuera y en tu tierra; trilla — {"nombre":"Era","un":"una era","uso":"trillar","coste":{"piedra":8},"donde":"fuera","trabajo":30,"tierra":true,"hace":"Trillar las gavillas con el mayal: grano de cebada y paja"}
+  OK   trillar: 1 gavilla, con el mayal (no se gasta), da 1 grano de cebada y 1 paja — {"nombre":"Trillar una gavilla","uso":"trillar","da":"semilla_cebada","n":1,"gasta":{"gavilla":1},"s":20,"requiere":["mayal"],"tambien":{"paja":1}}
+  OK   bajo techo no
+  OK   fuera de tu tierra no, y lo dice — La era va en tu tierra (o en la de quien te invita).
+Trillar en la era
+  OK   se levanta con las 8 piedras del suelo
+  OK   las gavillas se dejan en la era (sus recetas gastan de ahí)
+  OK   sin el mayal no se trilla, y lo dice — Para eso hace falta llevar mayal.
+  OK   con el mayal, se trilla una de las gavillas dejadas
+  OK   da 1 grano de cebada y 1 haz de paja — {"ok":true,"dados":[{"objeto":"semilla_cebada","cantidad":1,"donde":[["mano:izq",1]]},{"objeto":"paja","cantidad":1,"donde":[["espalda/0",1]]}],"quedan":false} grano 1, paja 1
+  OK   el mayal no se gasta
+  OK   sin era no se trilla — Hace falta una era a tu lado.
+La paja, ya a la vista
+  OK   el tejado de paja se enseña (en este tramo)
+  OK   la cama de paja también
+  OK   la paja va al almiar
+  OK   lo de después sigue escondido (la teja, lo de tablas)
+Por el servidor, con su autor
+  OK   lejos de la era, no — Estás demasiado lejos de la estación.
+  OK   cerca, se encarga
+  OK   y se recoge: grano y paja — {"ok":true,"dados":[{"objeto":"semilla_cebada","cantidad":1,"donde":[["mano:izq",1]]},{"objeto":"paja","cantidad":1,"alSuelo":"s1"}],"quedan":false,"entrada":{"n":3,"autor":"ana","tipo":"recoger_fabricado","datos":{"estacion":"era:1","x":1,"z":0},"ok":true,"ahora":1794653764379,"resultado":{"dados":[["semilla_cebada",1],["paja",1,"s1"]]}},"suelo":true,"estaciones":false} 1 0
+
+18 bien, 0 mal

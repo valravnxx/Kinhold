@@ -1,0 +1,82 @@
+Se puede tener, sin arcón: antorcha, arpon, azada, barro, bayas, carne_asada, carne_cruda, carne_seca, cesta_recoleccion, cesto_pescador, col, col_asada, cordel, corteza, criba, cubo, cuerda, cuerda_trenzada, estaca, fardo, fibra, gavilla, habas, habas_asadas, hacha_piedra, honda, hoz_silex, junco, lanza_endurecida, lasca_silex, lena, lenero, liebre, mayal, mazo_piedra, mimbre, mineral_hierro, nabo, nabo_asado, nasa, odre, paja, pala_madera, palo_cavador, piedra, piel, piel_limpia, rama, rastra, resina, semilla_cebada, semilla_col, semilla_nabo, setas, silex, taladro_fuego, trampa_lazo, tronco_corto, tronco_delgado, tronco_largo, vara, yesca, zurron
+
+La casa humilde
+  OK    cimiento: alguna pieza se hace solo con lo que se consigue — cim_piedra
+  OK    postes: alguna pieza se hace solo con lo que se consigue — poste
+  OK    muros: alguna pieza se hace solo con lo que se consigue — muro_tronco, muro_zarzo
+  OK    muro con puerta: alguna pieza se hace solo con lo que se consigue — muro_tronco_puerta, muro_zarzo_puerta
+  OK    tejado: alguna pieza se hace solo con lo que se consigue — tejado_juncos, tejado_paja
+  OK    puerta: alguna pieza se hace solo con lo que se consigue — puerta_varas
+
+Lo que el juego enseña ya
+
+Lo que cada hito vivo deja hecho
+  OK    oficios: «est_secadero» se puede tener o espera su tarea viva — se levanta
+  OK    oficios: «carne_seca» se puede tener o espera su tarea viva — se fabrica (secar_carne)
+  OK    oficios: «est_raspador» se puede tener o espera su tarea viva — se levanta
+  OK    oficios: «piel_limpia» se puede tener o espera su tarea viva — se fabrica (raspar_piel)
+  OK    oficios: «zurron» se puede tener o espera su tarea viva — se fabrica (zurron)
+  OK    oficios: «agua» se puede tener o espera su tarea viva — pendiente: el cubo aún no se llena en el río (tarea «El cubo lleno de agua y la corteza de roble»)
+  OK    oficios: «corteza_roble» se puede tener o espera su tarea viva — pendiente: descortezar aún da la misma corteza en todos los árboles (tarea «El cubo lleno de agua y la corteza de roble»)
+  OK    oficios: «est_cubas_curtido» se puede tener o espera su tarea viva — pendiente: aún no hay cubas de curtido (tarea «Las cubas de curtido y el cuero»)
+  OK    oficios: «cuero» se puede tener o espera su tarea viva — pendiente: sale de las cubas (tarea «Las cubas de curtido y el cuero»)
+  OK    oficios: «huso» se puede tener o espera su tarea viva — pendiente: aún no se hace (tarea «El huso y el hilo»)
+  OK    oficios: «hilo» se puede tener o espera su tarea viva — pendiente: sale del huso (tarea «El huso y el hilo»)
+  OK    oficios: «zapatos_cuero» se puede tener o espera su tarea viva — pendiente: piden cuero e hilo (tarea «Los zapatos y el cinto de cuero»)
+  OK    oficios: «cinto_cuero» se puede tener o espera su tarea viva — pendiente: pide cuero (tarea «Los zapatos y el cinto de cuero»)
+  OK    oficios: «est_carbonera» se puede tener o espera su tarea viva — pendiente: aún no hay carbonera (tarea «La carbonera y el carbón»)
+  OK    oficios: «carbon» se puede tener o espera su tarea viva — pendiente: sale de la carbonera (tarea «La carbonera y el carbón»)
+  OK    granja: «semilla_cebada» se puede tener o espera su tarea viva — se recoge (cebada_silvestre)
+  OK    granja: «habas» se puede tener o espera su tarea viva — se recoge (habas_silvestres)
+  OK    granja: «semilla_col» se puede tener o espera su tarea viva — se recoge (col_silvestre)
+  OK    granja: «semilla_nabo» se puede tener o espera su tarea viva — se recoge (nabo_silvestre)
+  OK    granja: «estaca» se puede tener o espera su tarea viva — se fabrica (estaca)
+  OK    granja: «gavilla» se puede tener o espera su tarea viva — segar la cebada sembrada
+  OK    granja: «col» se puede tener o espera su tarea viva — coger la col sembrada
+  OK    granja: «nabo» se puede tener o espera su tarea viva — coger el nabo sembrado
+  OK    granja: «est_era» se puede tener o espera su tarea viva — se levanta
+  OK    granja: «paja» se puede tener o espera su tarea viva — se fabrica (trillar, además)
+  OK    hierro: «criba» se puede tener o espera su tarea viva — se fabrica (criba)
+  OK    hierro: «mineral_hierro» se puede tener o espera su tarea viva — se recoge (hierro_pantano)
+  OK    hierro: «est_horno_reduccion» se puede tener o espera su tarea viva — pendiente: aún no hay horno de reducción (tarea «El horno de reducción y la lupia»)
+  OK    hierro: «lupia» se puede tener o espera su tarea viva — pendiente: sale del horno de reducción (tarea «El horno de reducción y la lupia»)
+  OK    hierro: «fuelle» se puede tener o espera su tarea viva — pendiente: aún no se hace (tarea «La fragua y la barra de hierro»)
+  OK    hierro: «est_fragua» se puede tener o espera su tarea viva — pendiente: aún no hay fragua (tarea «La fragua y la barra de hierro»)
+  OK    hierro: «barra_hierro» se puede tener o espera su tarea viva — pendiente: sale de la fragua (tarea «La fragua y la barra de hierro»)
+  OK    hierro: «mango» se puede tener o espera su tarea viva — pendiente: aún no se hace (tarea «Las primeras herramientas de hierro»)
+  OK    hierro: «hacha_hierro» se puede tener o espera su tarea viva — pendiente: sale de la fragua (tarea «Las primeras herramientas de hierro»)
+  OK    hierro: «pico» se puede tener o espera su tarea viva — pendiente: sale de la fragua (tarea «Las primeras herramientas de hierro»)
+  OK    hierro: «clavo» se puede tener o espera su tarea viva — pendiente: sale de la fragua (tarea «Las primeras herramientas de hierro»)
+  OK    hierro: «sierra» se puede tener o espera su tarea viva — pendiente: sale de la fragua (tarea «La sierra y las tablas»)
+  OK    hierro: «tabla» se puede tener o espera su tarea viva — pendiente: sale de serrar con la sierra (tarea «La sierra y las tablas»)
+  OK    hierro: «bloque_piedra» se puede tener o espera su tarea viva — pendiente: sale de romper rocas grandes con el pico (tarea «Las rocas grandes y la cantera»)
+  OK    hierro: «arcilla» se puede tener o espera su tarea viva — pendiente: aún no se cava (tarea «La arcilla y el horno cerámico»)
+  OK    hierro: «est_horno_ceramico» se puede tener o espera su tarea viva — pendiente: aún no hay horno cerámico (tarea «La arcilla y el horno cerámico»)
+  OK    hierro: «teja» se puede tener o espera su tarea viva — pendiente: sale del horno cerámico (tarea «Las tejas: en el horno cerámico»)
+  OK    «agua», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «corteza_roble», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «est_cubas_curtido», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «cuero», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «huso», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «hilo», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «zapatos_cuero», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «cinto_cuero», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «est_carbonera», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «carbon», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «est_horno_reduccion», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «lupia», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «fuelle», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «est_fragua», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «barra_hierro», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «mango», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «hacha_hierro», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «pico», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «clavo», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «sierra», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «tabla», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «bloque_piedra», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «arcilla», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «est_horno_ceramico», en PENDIENTES, de verdad aún no sale de ningún sitio
+  OK    «teja», en PENDIENTES, de verdad aún no sale de ningún sitio
+
+73 bien, 0 mal
