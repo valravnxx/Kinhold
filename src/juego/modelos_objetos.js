@@ -8,6 +8,8 @@
 //  - haz de juncos: tallos verdes y finos, largos (1,3 m), atados en dos sitios.
 //  - haz de mimbre: varas de sauce peladas, finas y rectas (1,5 m), atadas en dos sitios.
 //  - piel: una piel curtida estirada, de contorno irregular con las patas, el pelo hacia arriba.
+//  - piel limpia (P9, 13 nov, la del raspador): la misma piel, raspada de carne y grasa: la cara de dentro hacia arriba,
+//    pálida y algo traslúcida, más tiesa (apenas ondula) y con el borde recortado de los agujeros del bastidor.
 //  - resina: unos grumos de color ámbar sobre un trozo de corteza.
 //  - cordel: una madeja de cordel fino enrollada, con una vuelta que la ata.
 //  - cuerda: una adujada de cuerda más gruesa, en espiras.
@@ -91,18 +93,53 @@ function fibra(n, id) {
 const juncos = (n, id) => { const L = lote(0.06); haz(L, { n: 22, largo: 1.3, r: 0.006, color: JUNCO, punta: JUNCO_PUNTA, id, tex: 'paja', abre: 0.05 }); return mallas(L); };
 const mimbre = (n, id) => { const L = lote(0.06); haz(L, { n: 24, largo: 1.5, r: 0.005, color: MIMBRE, id, abre: 0.015 }); return mallas(L); };
 
-function piel(n, id) {
-  const L = lote(0.02);
-  // el contorno de una piel de ciervo o de cabra estirada: cuerpo ovalado, las cuatro patas y el cuello
+export const PIEL_LIMPIA = 0xb8a07c;
+// contorno: la forma de la piel estirada (cuerpo ovalado, las patas y el cuello), en el plano XY
+export function contornoPiel(id, escala = 1) {
   const P = [[0, 0.36], [0.07, 0.3], [0.16, 0.31], [0.27, 0.38], [0.24, 0.24], [0.21, 0.08], [0.22, -0.12], [0.26, -0.3], [0.3, -0.42], [0.15, -0.33], [0.06, -0.38], [0, -0.42]];
-  const pts = [...P, ...P.slice(1, -1).reverse().map(([x, y]) => [-x, y])].map(([x, y], i) => new THREE.Vector2(x * (1 + (az(id, i) - 0.5) * 0.12), y));
-  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.01, bevelSegments: 2, curveSegments: 4 });
-  g.rotateX(-Math.PI / 2);
-  // un poco ondulada, como se queda una piel en el suelo
-  const p = g.attributes.position;
-  for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + 0.02 * Math.sin(p.getX(i) * 9 + 1) * Math.cos(p.getZ(i) * 6));
+  return [...P, ...P.slice(1, -1).reverse().map(([x, y]) => [-x, y])].map(([x, y], i) => new THREE.Vector2(x * (1 + (az(id, i) - 0.5) * 0.12) * escala, y * escala));
+}
+// Una piel estirada como malla (con vértices dentro, para que el color varíe por ella): un óvalo de semiejes a × b con
+// el contorno irregular y nada simétrico (las patas y el cuello, bultos desiguales), en el plano XY. Devuelve la
+// geometría, el contorno (f(θ): cuánto llega en cada dirección, 1 = el óvalo) y los agujeros del borde.
+export function mallaPiel(id, a, b, { pasos = 18, agujeros = 16, abomba = 0 } = {}) {
+  const f1 = az(id, 71) * 6, f2 = az(id, 72) * 6, f3 = az(id, 73) * 6;
+  // las cuatro patas en las diagonales (puntiagudas, de largo desigual), el cuello arriba y la cola abajo
+  const pata = t => { const c = -Math.cos(4 * t + 0.2 * Math.sin(t + f1)); return c > 0 ? c ** 3 : 0; };
+  const borde = t => 0.78 + (0.4 + 0.1 * Math.sin(t * 2 + f1)) * pata(t) + 0.17 * Math.max(0, Math.sin(t)) ** 12 + 0.07 * Math.max(0, -Math.sin(t)) ** 16 + 0.05 * Math.sin(3 * t + f2) + 0.03 * Math.sin(7 * t + f3);
+  const g = new THREE.PlaneGeometry(2 * a * 1.25, 2 * b * 1.25, pasos, pasos), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    let x = p.getX(i), y = p.getY(i);
+    const t = Math.atan2(y / b, x / a), r = Math.hypot(x / a, y / b), lim = borde(t);
+    if (r > lim) { x *= lim / r; y *= lim / r; }
+    const rr = Math.min(1, Math.hypot(x / a, y / b) / lim);
+    p.setXYZ(i, x, y, abomba * (1 - rr * rr) + 0.004 * Math.sin(x * 23 + f1) * Math.sin(y * 19 + f2));
+  }
   g.computeVertexNormals();
-  L.add(g, PIEL_PELO, 0, 0.01, 0, { y: az(id, 40) }, { tex: 'liso', rayas: (v) => 0.88 + 0.12 * Math.cos(v.x * 7) * Math.cos(v.z * 5) }); // el pelo, más oscuro en el lomo
+  const ag = [];
+  for (let k = 0; k < agujeros; k++) { const t = (k + 0.5) / agujeros * Math.PI * 2 + (az(id, 80 + k) - 0.5) * 0.15, l = borde(t) * 0.8; ag.push(new THREE.Vector2(Math.cos(t) * a * l, Math.sin(t) * b * l)); }
+  return { geo: g, agujeros: ag, borde };
+}
+// el pelaje: manchas más fuertes y sin dirección (el lomo más oscuro), para el lado del pelo
+export const moteadoPelo = id => { const f = az(id, 91) * 6; return v => 0.76 + 0.17 * Math.sin(v.x * 29 + f) * Math.sin(v.y * 31 + v.z * 31 + f) + 0.1 * Math.cos(v.x * 7 - f) * Math.cos((v.y + v.z) * 9); };
+// moteado de la piel: manchas suaves y algo de veta (sobre los vértices de la malla)
+export const moteadoPiel = (id, fuerte = 1) => { const f = az(id, 90) * 6; return v => 1 - fuerte * (0.08 + 0.07 * Math.sin(v.x * 17 + f) * Math.cos(v.y * 13 + v.z * 13 - f) + 0.04 * Math.sin(v.x * 41 + v.z * 37)); };
+function pielLimpia(n, id) {
+  const L = lote(0.02), { geo, agujeros } = mallaPiel(id, 0.27, 0.38, { pasos: 14, agujeros: 12 });
+  geo.rotateX(-Math.PI / 2);
+  const t = az(id, 40), y = 0.008;
+  L.add(geo, PIEL_LIMPIA, 0, y, 0, { y: t }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id, 1.2) });
+  for (const q of agujeros) {   // los agujeros del bastidor, junto al borde
+    const x = q.x, z = -q.y;
+    L.add(new THREE.CircleGeometry(0.009, 6), 0x3a2c20, x * Math.cos(t) + z * Math.sin(t), y + 0.006, -x * Math.sin(t) + z * Math.cos(t), { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+  }
+  return mallas(L);
+}
+function piel(n, id) {
+  // (13 nov) con la misma malla que la piel limpia del raspador: el pelo hacia arriba, moteado
+  const L = lote(0.02), { geo } = mallaPiel(id, 0.27, 0.38, { pasos: 14, agujeros: 0 }), t = az(id, 40);
+  geo.rotateX(-Math.PI / 2);
+  L.add(geo, PIEL_PELO, 0, 0.012, 0, { y: t }, { tex: 'liso', sinSuelo: true, rayas: moteadoPelo(id) });
   return mallas(L);
 }
 
@@ -598,7 +635,7 @@ export const MODELO_OBJETO = {
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
   semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
-  fibra, junco: juncos, mimbre, piel, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
+  fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

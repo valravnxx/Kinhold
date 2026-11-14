@@ -38,12 +38,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 export const DELANTE = 1.2; // m: dónde se pone una estación, delante de ti
 // las pestañas: todo, con las manos y una por cada uso con estación
 const PESTANAS = ['todo', 'manos', ...Object.keys(USOS).filter(u => u !== 'manos')];
-const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco'), secar: () => tr('Secadero'), trillar: () => tr('Era') };
+const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco'), secar: () => tr('Secadero'), raspar: () => tr('Raspador de pieles'), trillar: () => tr('Era') };
 // cómo se nombra cada estación en una frase («encima de la piedra de tallar»)
 const LA_ESTACION = { piedra_tallar: () => tr('la piedra de tallar'), hoguera: () => tr('la hoguera'), banco_tronco: () => tr('el banco de trabajo de tronco'),
   acopio_troncos: () => tr('el acopio de troncos'), pila_piedras: () => tr('la pila de piedras'), lenera: () => tr('la leñera'),
   soporte_varas: () => tr('el soporte de varas'), almiar: () => tr('el almiar'), hoyo_barro: () => tr('el hoyo de barro'), cesto: () => tr('el cesto'),
-  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas'), secadero: () => tr('el secadero'), era: () => tr('la era') };
+  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas'), secadero: () => tr('el secadero'), raspador: () => tr('el raspador de pieles'), era: () => tr('la era') };
 const laEstacion = t => LA_ESTACION[t] ? LA_ESTACION[t]() : tr(ESTACIONES[t].nombre).toLowerCase();
 const MANO_SVG = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17V8.5a1.8 1.8 0 0 1 3.6 0V15M13.6 15V6.3a1.8 1.8 0 0 1 3.6 0V15M17.2 15V7.5a1.8 1.8 0 0 1 3.6 0V16M20.8 16v-4a1.8 1.8 0 0 1 3.6 0v7c0 5-3.4 9-8.4 9-3.4 0-5.4-1.6-7-4.2l-3-5a1.9 1.9 0 0 1 3.1-2.1L10 19"/></svg>';
 const TODO_SVG = '<svg viewBox="0 0 32 32" fill="currentColor"><rect x="5" y="5" width="9" height="9" rx="2"/><rect x="18" y="5" width="9" height="9" rx="2"/><rect x="5" y="18" width="9" height="9" rx="2"/><rect x="18" y="18" width="9" height="9" rx="2"/></svg>';
@@ -235,7 +235,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const lleva = hay >= max ? `<p class="fab-gris">${esc(tr('No cabe nada más.'))}</p>`
       : [...dejables(inv), ...deLaEspalda(inv, e.tipo)].filter(x => guardaTipo(e.tipo, x.tipo)).map(x => `<button class="fab-hueco fab-dejar" data-estacion="${esc(e.id)}" data-de="${esc(x.ruta)}" title="${esc(tr(alm ? 'Guardar aquí' : 'Dejar') + ': ' + nombre(x.tipo))}">${icono(x.tipo)}<b class="fab-num">${x.n}</b><i class="fab-de">${esc(SITIO_CORTO(x.ruta))}</i><span class="fab-hueco-nom">${esc(nombre(x.tipo))}</span></button>`).join('')
       || `<p class="fab-gris">${esc(alm ? tr('No llevas nada que se guarde aquí ({c}).', { c: guarda }) : tr('No llevas nada que dejar.'))}</p>`;
-    const titulo = alm ? tr('Guardado en {e}', { e: laEstacion(e.tipo) }) : ESTACIONES[e.tipo].cuelga ? tr('Colgado en {e}', { e: laEstacion(e.tipo) }) : tr('Encima de {e}', { e: laEstacion(e.tipo) });   // (el secadero: lo colgado)
+    const titulo = alm ? tr('Guardado en {e}', { e: laEstacion(e.tipo) }) : ESTACIONES[e.tipo].cuelga ? tr('Colgado en {e}', { e: laEstacion(e.tipo) }) : tr('Encima de {e}', { e: laEstacion(e.tipo) }).replace(/\bde el\b/, 'del');   // («encima del banco», no «de el»)   // (el secadero: lo colgado)
     const cuenta = alm ? tr('{n} de {m} · toca para sacar', { n: hay, m: max }) : tr('{n} de {m} · toca para coger', { n: hay, m: max });
     const nada = alm ? tr('Vacío: aquí se guarda {c}.', { c: guarda }) : tr('No hay nada: deja aquí lo que piden sus recetas.');
     const q = cuanto && cuanto.estacion === e.id && dep[cuanto.objeto] ? cuanto : null;
@@ -271,7 +271,7 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const almacen = pestana === 'almacen';
     const cab = almacen ? (est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) }
         : { ic: '', h: tr('Almacenaje'), s: tr('Acércate al almacenaje para guardar o sacar.') })
-      : est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) + ' · ' + tr('sus recetas gastan lo que está en ella') }
+      : est ? { ic: `<span class="fab-ic">${img('est_' + est.tipo)}</span>`, h: tr(ESTACIONES[est.tipo].nombre), s: tr(ESTACIONES[est.tipo].hace) + ' · ' + tr('sus recetas gastan lo que se le deja') }
       : pestana === 'manos' ? { ic: '', h: tr('Fabricar'), s: tr('Con las manos, en cualquier sitio: lo que llevas y lo que hay en el suelo a tu lado') }
       : pestana === 'todo' ? { ic: '', h: tr('Fabricar'), s: tr('Todo lo que se puede hacer') }
       : { ic: '', h: tr('Fabricar'), s: tr('Hace falta {e} a tu lado.', { e: tr(conQue(pestana)) }) + ' ' + tr('Los puestos de trabajo se levantan desde Construir, en «Puestos de trabajo».') };

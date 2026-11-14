@@ -42,9 +42,6 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  est_raspador: ['aún no hay raspador', 'El raspador de pieles, la piel limpia y el zurrón'],
-  piel_limpia: ['sale del raspador', 'El raspador de pieles, la piel limpia y el zurrón'],
-  zurron: ['pide piel limpia', 'El raspador de pieles, la piel limpia y el zurrón'],
   agua: ['el cubo aún no se llena en el río', 'El cubo lleno de agua y la corteza de roble'],
   corteza_roble: ['descortezar aún da la misma corteza en todos los árboles', 'El cubo lleno de agua y la corteza de roble'],
   est_cubas_curtido: ['aún no hay cubas de curtido', 'Las cubas de curtido y el cuero'],

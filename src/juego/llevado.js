@@ -26,7 +26,7 @@ import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
 import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn } from './modelos_objetos.js';
 
-const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
+const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
 const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);   // (el mazo, por el cinto como el hacha)
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -271,10 +271,42 @@ function espalda(t, dentro) {
     return { L, alto: 0.64, bastidor: true };
   }
   if (t === 'zurron') {
-    L.add(cajaR(0.3, 0.34, 0.13, 0.05), CUERO, 0, -0.02, 0.07, null, { tex: 'liso' });
-    L.add(cajaR(0.31, 0.16, 0.025, 0.012), CUERO_OSC, 0, 0.09, 0.14, { x: -0.12 }, { tex: 'liso' });
-    L.add(cajaR(0.04, 0.035, 0.01, 0.003), 'hierro', 0, 0.02, 0.152);
-    return { L, alto: 0.36 };
+    // (P9, 13 nov: ya se hace, de 2 pieles limpias y 1 cordel) un morral de piel sin curtir, panzudo y blando: el cuerpo
+    // redondeado, plano contra la espalda; la solapa de borde redondo que cae por delante, cerrada con un palito
+    // atravesado en un lazo de cordel
+    // el cuerpo y la solapa, del mismo óvalo deformado (casi cuadrado, plano detrás, más lleno abajo); la solapa, la parte
+    // de arriba y de delante, algo mayor, como una concha que cae por encima
+    const forma = (g, k) => {
+      const p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) {
+        let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+        x = Math.sign(x) * Math.abs(x) ** 0.65; y = Math.sign(y) * Math.abs(y) ** 0.75;   // más cuadrado
+        p.setXYZ(i, x * (1 - 0.1 * Math.max(0, y)) * k, (y < 0 ? y * 0.92 : y) * k, (z < 0 ? z * 0.3 : z * (1 - 0.3 * Math.max(0, y))) * k);
+      }
+      g.computeVertexNormals();
+      return g;
+    };
+    const E = v3(0.14, 0.17, 0.085), Y0 = 0.07, Z0 = -0.04;   // (pegado a la espalda: plano detrás)
+    L.add(forma(new THREE.SphereGeometry(1, 16, 12), 1), PIEL_CRUDA, 0, Y0, Z0, null, { escala: E, tex: 'liso', rayas: v => 0.92 + 0.08 * Math.cos(v.x * 30 + v.y * 12) });
+    // la superficie de delante del cuerpo en (x, y): la deformación de forma(), al revés
+    const delante = (x, y) => {
+      let yn = (y - Y0) / E.y; yn = yn < 0 ? yn / 0.92 : yn;
+      const xn = x / (E.x * (1 - 0.1 * Math.max(0, yn))), x0 = Math.min(1, Math.abs(xn)) ** (1 / 0.65), y0 = Math.min(1, Math.abs(yn)) ** (1 / 0.75);
+      return Z0 + E.z * Math.sqrt(Math.max(0, 1 - x0 * x0 - y0 * y0)) * (1 - 0.3 * Math.max(0, yn));
+    };
+    // la solapa: una hoja de arriba abajo, de borde redondo, pegada a la panza (y por arriba, doblada hacia atrás)
+    const arriba = Y0 + E.y, abajo = Y0 - 0.025, ancho = 0.118, sol = new THREE.PlaneGeometry(2 * ancho, arriba - abajo, 10, 12), q = sol.attributes.position;
+    for (let i = 0; i < q.count; i++) {
+      const x = q.getX(i), y = q.getY(i) + (arriba + abajo) / 2, u = x / ancho;
+      const yy = Math.max(y, abajo + 0.07 * (1 - Math.sqrt(Math.max(0, 1 - u * u))));   // el borde de abajo, redondo
+      q.setXYZ(i, x * (1 - 0.1 * Math.max(0, (yy - Y0) / E.y)), yy, delante(x, Math.min(yy, arriba - 0.004)) + 0.007 + 0.014 * u * u + 0.01 * Math.max(0, (yy - Y0) / E.y) ** 3);
+    }
+    sol.computeVertexNormals();
+    L.add(sol, PIEL_CRUDA_OSC, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+    const yb = abajo + 0.004, zb = delante(0, yb) + 0.012;
+    L.add(cil(0.009, 0.008, 0.08, 6), 0xb59a72, 0, yb - 0.016, zb + 0.004, { z: Math.PI / 2 + 0.12 }, { tex: 'veta' });   // el palito, de madera pelada
+    L.add(new THREE.TorusGeometry(0.012, 0.003, 4, 8), FIBRA, 0, yb, zb - 0.002, { x: 0.2 }, { tex: 'liso' });   // su lazo, de la solapa
+    return { L, alto: 0.2, cruzada: true, morral: 0.07 };   // (una sola correa, cruzada del hombro a la cadera, como se lleva un morral; más arriba en la espalda: entre los omóplatos y los riñones)
   }
   if (t === 'fardo') {
     const n = Object.values(dentro).reduce((a, b) => a + b, 0), rollos = n > 6 ? 2 : 1;
@@ -531,7 +563,7 @@ export function crearLlevado(j) {
       return v3(x, (y ?? yHombro) + 0.006, cH ? cH.cz : 0);
     };
     if (l.espalda && cE && cH) {
-      const { L, alto, cruzada, bastidor: esBastidor } = espalda(l.espalda, l.dentro || {});
+      const { L, alto, cruzada, morral, bastidor: esBastidor } = espalda(l.espalda, l.dentro || {});
       // el bastidor sube hasta los hombros; las bolsas y los cestos, algo más abajo
       const yCentro = esBastidor ? yHombro + 0.03 - alto / 2 : yHombro - 0.08 - alto / 2;
       const cC = contorno(medida, Math.max(yCentro, yPelvis + 0.12), 0.03) || cE;
@@ -541,8 +573,12 @@ export function crearLlevado(j) {
       const zDel = cH.cz + cH.en(0);
       if (cruzada) {
         const h = hombroDe(-1), cin = contorno(medida, yPelvis + 0.12, 0.03) || cC;
-        correa(L, [v3(h.x - 0.02, h.y - 0.1, zAtras), v3(h.x, h.y, h.z), v3(h.x + 0.06, h.y - 0.08, zDel + 0.01),
-          puntoEn(cE, 0.2, 0.01), puntoEn(cin, 0.9, 0.01), puntoEn(cin, 1.6, 0.012), v3(cE.cx + 0.15, cin.y + 0.02, zAtras)].map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.03);
+        // el morral (el zurrón): la correa sale de lo alto de la bolsa, sube en diagonal por la espalda hasta el hombro,
+        // cruza el pecho y, por el costado, vuelve a la bolsa (morral: lo que sube la bolsa sobre su centro)
+        const ini = morral != null ? [v3(cE.cx + 0.07, yCentro + morral + 0.19, zAtras - 0.01), v3((cE.cx + 0.07 + h.x) / 2, (yCentro + morral + h.y) / 2, zAtras - 0.005)] : [];
+        const fin = morral != null ? v3(cE.cx + 0.12, yCentro + morral + 0.02, zAtras - 0.03) : v3(cE.cx + 0.15, cin.y + 0.02, zAtras);
+        correa(L, [...ini, v3(h.x - 0.02, h.y - 0.1, zAtras), v3(h.x, h.y, h.z), v3(h.x + 0.06, h.y - 0.08, zDel + 0.01),
+          puntoEn(cE, 0.2, 0.01), puntoEn(cin, 0.9, 0.01), puntoEn(cin, 1.6, 0.012), fin].map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.03);
       } else for (const s of [1, -1]) {
         const h = hombroDe(s), yA = yHombro - 0.16;
         const pts = [v3(cE.cx + s * 0.07, yHombro - 0.1, zAtras + 0.01), v3(h.x - s * 0.01, h.y, h.z - 0.03), v3(h.x + s * 0.005, h.y - 0.02, h.z + 0.04),

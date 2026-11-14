@@ -50,7 +50,7 @@ const DENTRO = { lenero: { lena: 9, tronco_corto: 1 }, cesta_recoleccion: { baya
   correa_escudo: { escudo: 1 }, fardo: { piel: 8 }, caja_herramientas: { cuchillo: 1, azada: 1 } };
 const deEspalda = t => { const g = new THREE.Group(); g.add(mallas(loteEspalda(t, DENTRO[t] || {}).L)); g.rotation.y = 0.5; return g; };
 // lo largo y plano tumbado en el suelo (haces, troncos, la piel, la honda): en diagonal y visto casi desde arriba
-const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca']);
+const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'piel_limpia', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca']);
 const desdeArriba = o => { const g = new THREE.Group(); o.updateMatrixWorld(true); const s = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()); o.rotation.y += s.x >= s.z ? Math.PI / 4 : -Math.PI / 4; g.add(o); g.userData.arriba = true; return g; };
 const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
 
@@ -78,9 +78,12 @@ const LLENOS = { acopio_troncos: { tronco_delgado: 7 }, pila_piedras: { piedra: 
   colgadero_mochilas: { lenero: 1, cesta_recoleccion: 1, porta_piedras: 1 }, colgadero_herramientas: { hacha_piedra: 1, palo_cavador: 1, azada: 1, pala_madera: 1, hoz_silex: 1 } };
 // el secadero (P9): con carne colgada, seca y por secar
 LLENOS.secadero = { carne_cruda: 2 };
+// el raspador de pieles (P9): con una piel tensada, por raspar
+LLENOS.raspador = { piel: 1 };
 LLENOS.era = { gavilla: 2 };   // la era (P11): con gavillas por trillar
 const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }] };
-const conLleno = (t, o) => { if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
+const conLleno = (t, o) => { o.traverse(m => { if (m.name === 'bajo_tierra') m.visible = false; });   // (lo que en el mundo queda enterrado, como la explanada de la era)
+  if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
 for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };
 
 // Con ?conjunto=piezas (sacar.py … conjunto=piezas), solo las piezas de construir del tramo (pz_<pieza>), los muebles

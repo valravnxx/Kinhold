@@ -23,7 +23,7 @@
 # Acabado nuevo (11 nov): cada sitio dice si está a tu lado o «no hay cerca»; «×3» solo con material para tres, y encarga
 # tres seguidas en el servidor.
 # MUTAR=1 tira los mensajes de objetos que manda la página (como si el panel fabricara solo en el navegador): falla.
-import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
+import re, sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
 from sitio_prueba import montar_sitio, servir
@@ -174,8 +174,8 @@ try:
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
         nombres = [m.split('\n')[0] for m in menu]
-        comprobar('la pestaña «Puestos de trabajo», con los seis puestos (el hogar, 8 nov; el secadero y la era, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Era'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'] and menu[5].split('\n')[1:3] == ['8', '/1'], str(menu))
+        comprobar('la pestaña «Puestos de trabajo», con los siete puestos (el hogar, 8 nov; el secadero, el raspador de pieles y la era, 13 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Raspador de pieles', 'Era'] and menu[5].split('\n')[1:] == ['4', '/0', '1', '/0'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'] and menu[6].split('\n')[1:3] == ['8', '/1'], str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
@@ -327,11 +327,39 @@ try:
         comprobar('la ficha dice lo que tarda (6 h) y para qué sirve', '6 h' in t and 'no se estropea' in t, t[:300])
         captura(A, f'{SALIDA}/PC_panel_secadero.png')
         A.evaluate(f"{K}.panelFabricar.cerrar()")
+
+        print('El raspador de pieles (P9, 13 nov): uno con una piel por raspar tensada (y otra al pie) y otro con una limpia; y su pestaña (el zurrón puesto, en prueba_llevado_navegador.py)')
+        RASPADOR = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar');
+          K.__vistas = K.__vistas || {{}};
+          K.__vistas['raspador:vista'] = {{ id: 'raspador:vista', tipo: 'raspador', x: e.x + dx, z: e.z + dz, giro: 0, autor: K.enLinea.red.yo, cola: [], deposito: {{ piel: 2 }} }};
+          K.__vistas['raspador:vista2'] = {{ id: 'raspador:vista2', tipo: 'raspador', x: e.x + dx + 1.9, z: e.z + dz - 0.2, giro: -0.3, autor: 'vista', cola: [], deposito: {{ piel_limpia: 1 }} }};
+          Object.assign(f.estaciones, K.__vistas);
+          if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); Object.assign(K.fabCliente.estaciones, K.__vistas); K.estacionesV.refrescar(); }}; }}
+          K.estacionesV.refrescar(); }})"""
+        A.evaluate(f"{RASPADOR}({K}, -3.5, -5.5)")
+        n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_raspador'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
+        comprobar('el raspador se dibuja, con la piel tensada y la otra al pie', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_raspador')") and n >= 2, str(n))
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 1.0, z: e.z + 2.6, rot: 2.8 }}); {K}.cam.yaw = 0.1; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.25; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_raspador.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 0.5, z: e.z + 1.5, rot: 2.9 }}); {K}.cam.yaw = -0.15; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.12; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_raspador_cerca.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x - 0.6, z: e.z - 1.6, rot: 0.2 }}); {K}.cam.yaw = Math.PI - 0.3; {K}.cam.dist = 2.4; {K}.cam.pitch = 0.15; }})()""")
+        A.wait_for_timeout(2500)
+        captura(A, f'{SALIDA}/PC_raspador_detras.png')
+        A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 0.3, z: e.z + 1.1 }}); }})()""")
+        A.evaluate(f"{K}.panelFabricar.abrirEstacion('raspador:vista')"); A.wait_for_timeout(800)
+        comprobar('su pestaña «Raspador de pieles», con la piel limpia: 1 piel, y pide llevar la lasca', esperar(A, "!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"raspar\"]') && /Piel limpia/.test(document.getElementById('panelFabricar').innerText)", 6000), A.evaluate("document.getElementById('panelFabricar').innerText")[:300])
+        t = elegir(A, 'raspar_piel')
+        comprobar('la ficha dice para qué sirve y que hace falta la lasca de sílex', 'zurrón' in t and re.search('lasca', t, re.I) is not None, t[:300])
+        captura(A, f'{SALIDA}/PC_panel_raspador.png')
+
         print('La era (P11, 13 nov), con dos gavillas por trillar (solo para mirarla: se dibuja aquí), y su pestaña')
         ERA = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar');
           f.estaciones['era:vista'] = {{ id: 'era:vista', tipo: 'era', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ gavilla: 2 }} }};
-          K.__vista2 = f.estaciones['era:vista'];
-          if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); if (K.__vista2) {{ K.fabCliente.estaciones[K.__vista2.id] = K.__vista2; K.estacionesV.refrescar(); }} }}; }}
+          K.__vistas = K.__vistas || {{}}; K.__vistas['era:vista'] = f.estaciones['era:vista'];
+          if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); Object.assign(K.fabCliente.estaciones, K.__vistas); K.estacionesV.refrescar(); }}; }}
           K.estacionesV.refrescar(); K.mirarEras(); }})"""
         A.evaluate(f"{ERA}({K}, -3.5, 1)")
         comprobar('y sin hierba encima: el suelo de la era despeja la hierba densa, las flores y las matas', A.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; return {K}.erasDespejadas().some(c => Math.hypot(c[0] - e.x, c[1] - e.z) < 0.01 && c[2] > 1.45); }})()"))
@@ -420,6 +448,20 @@ try:
         B.evaluate(f"{K}.panelFabricar.abrirEstacion('secadero:vista')"); B.wait_for_timeout(1000)
         comprobar('y su panel, sin salirse de lado (con una pestaña más)', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"secar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_panel_secadero.png')
+        B.evaluate(f"{K}.panelFabricar.cerrar()")
+
+        print('El raspador de pieles, en el móvil')
+        B.evaluate(f"{RASPADOR}({K}, -3.5, -5.5)")
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 1.2, z: e.z + 2.8, rot: 2.8 }}); {K}.cam.yaw = 0.15; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.3; }})()""")
+        comprobar('en el móvil, también', esperar(B, f"!!{K}.escena.getObjectByName('estacion_raspador')", 8000))
+        B.wait_for_timeout(2500)
+        captura(B, f'{SALIDA}/movil_raspador.png')
+        B.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['raspador:vista']; Object.assign({K}.pj, {{ x: e.x + 0.3, z: e.z + 1.1 }}); }})()""")
+        B.evaluate(f"{K}.panelFabricar.abrirEstacion('raspador:vista')"); B.wait_for_timeout(1000)
+        comprobar('y su panel, sin salirse de lado', B.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"raspar\"]') && document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        t = elegir(B, 'raspar_piel'); B.wait_for_timeout(600)   # la ficha de la receta, entera
+        comprobar('en el móvil, la ficha de la piel limpia dice que hace falta la lasca', re.search('lasca', t, re.I) is not None, t[:200])
+        captura(B, f'{SALIDA}/movil_panel_raspador.png')
         B.evaluate(f"{K}.panelFabricar.cerrar()")
 
         print('Con fibra para tres, la carta lo dice; con las manos se hace de una en una (no hay «×3»), en el servidor')

@@ -43,8 +43,8 @@
 //    Provisional (diario y registro): 8 piedras y 2 cestas de barro, 20 s de trabajo. Lo suyo del fuego (más duradero,
 //    se deja en brasas), en src/logica/fuego.js.
 //  - Quedan para cuando existan sus materiales u objetos: envueltas de piel (no hay prenda de pies de piel), anzuelo
-//    (no hay hueso), refugio de ramas (es una obra), carretilla (no hay rodaja de tronco), zurrón y chaleco (no hay
-//    piel limpia), vendas, y lo de cocinar y calentarse al fuego.
+//    (no hay hueso), refugio de ramas (es una obra), carretilla (no hay rodaja de tronco), chaleco (P9: el zurrón ya
+//    está, con la piel limpia del raspador), vendas, y lo de cocinar y calentarse al fuego.
 //  - Lo terminado va donde quepa en lo que llevas (como lo recogido del suelo); si no cabe, sigue esperando.
 //  - Lo depositado en una estación (6 nov): hasta DEPOSITO_MAX unidades en total; solo materiales sueltos (no lo que
 //    llevas puesto, ni un contenedor con algo dentro, ni una prenda cosida). Dejar y coger, a ALCANCE_ESTACION; en
@@ -87,6 +87,7 @@ export const USOS = {
   tallar: { nombre: 'En la piedra de tallar', estaciones: ['piedra_tallar'] },
   banco:  { nombre: 'En el banco de tronco', estaciones: ['banco_tronco'] },
   secar:  { nombre: 'En el secadero', estaciones: ['secadero'] },
+  raspar: { nombre: 'En el raspador de pieles', estaciones: ['raspador'] },
   trillar: { nombre: 'En la era', estaciones: ['era'] },
 };
 
@@ -124,6 +125,11 @@ export const ESTACIONES = {
   // cuelga (lo depositado) no se estropea mientras está colgado, y la carne puesta a secar (su cola) se ve colgada para
   // todos (cuelga: true). Provisional (diario y registro): 30 s de trabajo para levantarlo.
   secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
+  // el raspador de pieles (P9, 13 nov; documento de sistemas: «Raspador de pieles (bastidor) — 4 varas + cuerda — limpiar pieles»):
+  // un bastidor de cuatro varas atadas en cuadro, con dos de ellas hincadas de pies, donde la piel se tensa con la
+  // cuerda para rasparle la carne y la grasa con la lasca de sílex (que hay que llevar: no se gasta). Provisional
+  // (diario y registro): fuera, en cualquier sitio (no pide tu tierra), y 20 s de trabajo para levantarlo.
+  raspador:       { nombre: 'Raspador de pieles', un: 'un raspador de pieles', uso: 'raspar', coste: { vara: 4, cuerda: 1 }, donde: 'fuera', trabajo: 20, hace: 'Un bastidor de varas donde se tensa la piel para rasparla con la lasca de sílex: da la piel limpia' },
   // la era (P11, «La era y trillar», 13 nov; estudio diseno/estudios/granja.html: «las gavillas, en la era (un suelo
   // apisonado, nueva estación), con el mayal: dan el grano y la paja»): un suelo redondo apisonado y bordeado de piedras,
   // fuera y en tu tierra. Provisional (diario y registro): 8 piedras y 30 s de trabajo (apisonar es lo que más cuesta).
@@ -196,6 +202,10 @@ export const RECETAS = {
   // transcurrido (la cola de la estación guarda cuándo termina), así que el servidor no tiene que simular nada. Sin sal
   // (aún no hay). Provisional (diario y registro): 6 h reales, dos días de juego.
   secar_carne:       r('Carne seca', 'secar', 'carne_seca', { carne_cruda: 1 }, SECAR_CARNE),
+  // en el raspador de pieles (P9, 13 nov; documento de sistemas: «piel limpia — 1 piel — raspador — paso previo al cuero»): una piel
+  // tensada en el bastidor, raspada con la lasca de sílex (que se lleva y no se gasta). Tiempo, provisional (como lo
+  // del banco, algo más: es raspar la piel entera)
+  raspar_piel:       { ...r('Piel limpia', 'raspar', 'piel_limpia', { piel: 1 }, 60), requiere: ['lasca_silex'] },
   // asar las habas (P11, 13 nov): crudas no se comen (son las silvestres: amargas); un puñado de 3 al fuego. Tiempo, provisional
   asar_habas:        r('Habas asadas', 'fuego', 'habas_asadas', { habas: 3 }, 30, 3),
   // la col y el nabo del campo (P11, cosechar): se comen crudos, o asados al fuego, que sacian más. Tiempo, provisional
@@ -219,6 +229,9 @@ export const RECETAS = {
   hoz_silex:         r('Hoz de sílex', 'banco', 'hoz_silex', { rama: 1, lasca_silex: 3 }, 45),
   mayal:             r('Mayal', 'banco', 'mayal', { rama: 2, cuerda: 1 }, 45),
   cubo:              r('Cubo de madera', 'banco', 'cubo', { tronco_corto: 1 }, 60),
+  // el zurrón de piel (P9, 13 nov; documento de sistemas: «zurrón de piel — 2 piel limpia + cordel — banco — mochila mixta pequeña»): la
+  // mochila mixta pequeña (src/logica/inventario.js: 2 huecos medianos y 2 pequeños). Tiempo, provisional
+  zurron:            r('Zurrón de piel', 'banco', 'zurron', { piel_limpia: 2, cordel: 1 }, 60),
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -235,6 +248,8 @@ export const PARA = {
   arpon: 'Pesca.',
   odre: 'Agua; va al hombro.',
   secar_carne: 'Comida que no se estropea y sacia como la asada.',
+  raspar_piel: 'La piel sin carne ni grasa: para el zurrón; luego, paso previo al cuero.',
+  zurron: 'A la espalda: 2 huecos medianos y 2 pequeños, de lo que sea.',
   yesca: 'Prende la chispa para encender la hoguera o el hogar.',
   yesca_corteza: 'Prende la chispa para encender la hoguera o el hogar.',
   lasca_silex: 'Corta fibra y juncos, despieza.',

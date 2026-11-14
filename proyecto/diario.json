@@ -6794,5 +6794,54 @@
   "pruebas": "Comprobador de código correcto. prueba_cosechar.mjs 28/0 (rota a propósito con MUTAR, falla); orígenes 82/82 (la gavilla, la col y el nabo ya salen de algún sitio); iconos 632/0; fabricación 197/0. En la nube: el recorrido, la demo única, marcar el campo (con sembrar y cosechar, PC y móvil), el inventario, despiezar y asar, el mazo, la cama, los avisos y la velocidad con pocos fotogramas, bien. El panel de fabricar se corta dos veces en la parte del móvil (crear la cuenta y tocar el botón: la máquina sin GPU; ya pasaba antes en el diario); todo lo de PC, bien. En la lógica falla «internet con Caddy», como en main. Fuera, la construcción (una línea de obras_red; sus escaleras fallan igual en main). No comprobado: fotogramas en un móvil de verdad.",
   "capturas": "capturas/demo-v203",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T22:23:55+00:00",
+  "fin": "2026-11-14T00:11:00+00:00",
+  "titulo": "P11: la era y trillar, a medias (el aspecto de la era no pasa la revisión)",
+  "hito": "granja",
+  "hecho": [
+   "En la rama trabajo/20261113-2224: la era (8 piedras, fuera y en tu tierra, 30 s de trabajo) como estación nueva, con su uso «En la era»; «Trillar una gavilla» (con el mayal en lo que llevas, que no se gasta) da 1 grano de cebada y 1 haz de paja.",
+   "La cebada silvestre pasa a llamarse grano de cebada (es su semilla). La paja deja de estar escondida: el tejado y el remate de paja, la cama de paja, la antorcha de pie y la alfombra salen en Construir; imágenes nuevas en iconos-v24 y piezas-v2.",
+   "pruebas/prueba_trillar.mjs (18/0; rota a propósito con MUTAR=1, falla) y orígenes sin la era ni la paja en PENDIENTES; la prueba del panel de fabricar mira la era y su pestaña; las del tramo y del menú de construir, con la paja a la vista.",
+   "La segunda mirada dijo que no al modelo de la era: un disco liso que no parece tierra apisonada, piedras que en ladera quedan sueltas fuera del borde, y la hierba densa atraviesa el suelo. No se publica: la tarea queda a medias en su rama para arreglar el aspecto."
+  ],
+  "pruebas": "Comprobador de código correcto. Aquí: trillar 18/0, orígenes 78/0, fabricación 197/0, comida 44/0, cosechar 28/0, iconos 651/0, idiomas, tramo 50/0. En la nube: bien el recorrido, la cama, el hogar, los colgaderos, el acabado de construir, la velocidad y el inventario; el panel de fabricar, lo de PC bien (con la era y su pestaña), el móvil se cuelga al crear la cuenta (como antes). Fallan igual que en main: systemd-analyze (lógica), los almacenajes y las escaleras de la construcción. No comprobado: la era en el móvil.",
+  "capturas": "",
+  "estado": "fallo"
+ },
+ {
+  "inicio": "2026-11-13T20:11:47+00:00",
+  "fin": "2026-11-14T01:29:16+00:00",
+  "titulo": "P9: el raspador de pieles, la piel limpia y el zurrón (demo v204)",
+  "hito": "oficios",
+  "hecho": [
+   "valravnx pidió por el chat seguir con los oficios: lo hizo una sesión de chat, para no pisar al carril A, que seguía vivo con la granja.",
+   "El raspador de pieles, un puesto nuevo: un bastidor de 4 varas atadas en cuadro con 1 cuerda, fuera. La piel que se le deja se ve tensada dentro, con unas 20 lazadas de cuerda hasta las cuatro varas, y el pelo por detrás.",
+   "En el raspador, 1 piel da 1 piel limpia en 1 min, llevando la lasca de sílex (no se gasta). Lo decide el servidor, con su autor.",
+   "El zurrón de piel ya se hace: 2 pieles limpias y 1 cordel, en el banco de tronco. Es la mochila mixta pequeña (2 huecos medianos y 2 pequeños). Su modelo es nuevo: un morral de piel panzudo con solapa y un palito de cierre, con una sola correa cruzada.",
+   "La piel suelta (la de la liebre) y la piel limpia tienen forma de piel de animal, con patas y cuello, y el color moteado. La piel limpia cabe en el fardo.",
+   "Iconos v23, con lo de la granja de v22. El panel dice «Encima del raspador» (antes, «de el»), y la descripción de los puestos, «sus recetas gastan lo que se le deja».",
+   "Segunda mirada aparte, en cinco vueltas. Al principio la piel parecía de cartón y no se veía tensada, y el zurrón iba bajo y separado de la espalda. Se arregló, y dijo que sí al raspador, a las pieles, a los paneles, al menú y al zurrón visto de espaldas (PC y móvil).",
+   "Lo que aún falla, según la segunda mirada: la correa cruzada, vista de lado y de frente. Hace un arco en el aire sobre el hombro, no se ve cruzar el pecho y la vuelta por el costado entra en el antebrazo. Ese trazado es el común de lo que se lleva en bandolera a la espalda (también el carcaj y la correa del escudo), así que queda como tarea aparte en este hito."
+  ],
+  "pruebas": "Comprobador de código correcto. prueba_pieles.mjs 24/0, rota a propósito con MUTAR=1: falla. Fabricación 197/0, orígenes 79/0 (el raspador, la piel limpia y el zurrón ya salen de algún sitio), iconos 648/0, idiomas correcto, comida 44/0, inventario 137/0. En la nube: el recorrido de jugador, despiezar y asar, el inventario, el hogar, la cama, los colgaderos, el mazo y construir con el acabado nuevo, bien. El panel de fabricar: la parte de PC, entera y bien (con el raspador y su pestaña). La parte del móvil falló algunas veces al crear la cuenta del segundo jugador, cosa de la máquina sin GPU que el diario ya recogía en main; una vez pasó entera. Por eso las capturas del móvil del raspador y de su panel se sacaron aquí, con un guion solo del móvil, que pasó. «Lo que llevas se ve puesto» falla solo en la mano sobre el tronco y el cinturón, igual que en main; el zurrón sale bien. En la lógica falla prueba_nube (systemd-analyze de la máquina de GitHub), como en main. La primera vez el revisor pasó grupos que no hacían falta (los almacenajes, que fallan igual en main, entre ellos); después solo los que pedía el cambio. No comprobado en captura: el último aclarado del pelo de detrás de la piel (las capturas de PC son de justo antes).",
+  "capturas": "capturas/demo-v204",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T00:24:09+00:00",
+  "fin": "2026-11-14T01:41:00+00:00",
+  "titulo": "P10: el hierro de pantano, a medias (el aspecto de la mancha no pasa la revisión)",
+  "hito": "hierro",
+  "hecho": [
+   "En la rama trabajo/20261114-0024: las manchas de hierro de pantano salen en la vega (la ribera llana, pendiente de menos de 0,1) y en las turberas, de la semilla del mundo; la más cercana a la salida, en la vega del río del norte, a unos 800 m.",
+   "Con la pala de madera y la criba encima (las dos), cada pasada da 1 mineral de hierro, por el servidor y con su autor; se deja en el suelo junto a la mancha (con las dos manos ocupadas no hay dónde guardarlo) y el montoncito crece. Cada mancha da de 3 a 5 pasadas y vuelve a salir a los 90 días; lo que llevan sacado se guarda.",
+   "La criba (2 mimbres y 1 vara, en el banco de tronco): un aro de vara con el fondo de mimbre tejido, en el suelo y en la mano, y su imagen en el panel (iconos-v25).",
+   "Junto a la mancha, con la pala y la criba, Usar criba antes que coger del suelo el mineral que ya ha salido.",
+   "Lo que falta, por eso no se publica: la mancha aún parece un recorte plano pegado a la hierba (colores planos, bordes de polígono, la juncia casi no se ve), el mineral en el suelo sale blanquecino en vez de pardo rojizo y la pala se ve cruzada en la mano. Falta también la segunda mirada de un agente aparte."
+  ],
+  "pruebas": "Comprobador de código correcto. Lógica nueva prueba_hierro_pantano.mjs 24/24 (rota a propósito con MUTAR=1, falla); prueba_origenes 80/0 (la criba y el mineral de hierro ya salen del mundo); prueba_recogida_mundo, al día con las zonas nuevas. En la nube: recorrido correcto (el hierro de pantano, en su TODAVIA_NO hasta la tarea «Recorrido de jugador del hierro»), navegador «el hierro de pantano» correcto en PC y móvil, y los demás grupos que pidió el revisor, correctos, salvo prueba_nube.mjs (systemd-analyze de la máquina de GitHub, como en main) y «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, que este cambio no toca; no comprobado en main).",
+  "estado": "fallo"
  }
 ]
