@@ -122,6 +122,7 @@ export const CATALOGO = {
   nasa: { nombre: 'Nasa', tam: 'M' },
   trampa_lazo: { nombre: 'Trampa de lazo', tam: 'P' },
   pala_madera: { nombre: 'Pala de madera', tam: 'M', herramienta: true },
+  criba: { nombre: 'Criba', tam: 'M', herramienta: true },   // (P10) de mimbre: con la pala, saca el hierro de pantano
   azada: { nombre: 'Azada de madera y piedra', tam: 'M', herramienta: true },
   hoz_silex: { nombre: 'Hoz de sílex', tam: 'M', herramienta: true },
   mayal: { nombre: 'Mayal', tam: 'M', herramienta: true },

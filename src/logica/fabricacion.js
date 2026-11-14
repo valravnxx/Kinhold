@@ -201,6 +201,8 @@ export const RECETAS = {
   hoz_silex:         r('Hoz de sílex', 'banco', 'hoz_silex', { rama: 1, lasca_silex: 3 }, 45),
   mayal:             r('Mayal', 'banco', 'mayal', { rama: 2, cuerda: 1 }, 45),
   cubo:              r('Cubo de madera', 'banco', 'cubo', { tronco_corto: 1 }, 60),
+  // (P10, 14 nov) la criba: un aro de vara con el fondo de mimbre tejido. Tiempo, provisional (como la nasa)
+  criba:             r('Criba', 'banco', 'criba', { mimbre: 2, vara: 1 }, 45),
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -242,6 +244,7 @@ export const PARA = {
   hoz_silex: 'Cosechar cereal.',
   mayal: 'Trillar.',
   cubo: 'Agua, leche.',
+  criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 
 const tiene = (o, k) => typeof k === 'string' && Object.hasOwn(o, k);

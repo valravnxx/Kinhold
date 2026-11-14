@@ -2918,5 +2918,14 @@
  "Aún no está madura.": "It isn't ripe yet.",
  "Aquí no hay nada que coger.": "There's nothing to pick here.",
  "v203: cosechar (P11, la granja básica). Con la hoz de sílex en la mano, la cebada madura se siega a pasadas (Usar, unos 2 s, un círculo de 1,2 m delante de ti) y las gavillas quedan en el suelo; lo verde no se siega. Delante de unas habas, una col o un nabo maduros, Usar los coge a mano. Lo segado y lo cogido deja la tierra labrada. La gavilla va al almiar o al fardo; el nabo, que es pequeño, al cesto o a la cesta de recolección. La col y el nabo se comen crudos, o asados al fuego, que sacian más, y se estropean en un día.": "v203: harvesting (P11, the basic farm). With the flint sickle in your hand, ripe barley is reaped in passes (Use, about 2 s, a 1.2 m circle in front of you) and the sheaves stay on the ground; green barley isn't reaped. In front of ripe broad beans, a cabbage or a turnip, Use picks them by hand. Reaped and picked soil stays tilled. Sheaves go to the haystack or the bundle; the turnip, being small, to the basket or the gathering basket. Cabbage and turnip are eaten raw, or roasted on the fire, which fills more, and they spoil in a day.",
- "Segados {n} m²: una gavilla al suelo.": "Reaped {n} m²: one sheaf on the ground."
+ "Segados {n} m²: una gavilla al suelo.": "Reaped {n} m²: one sheaf on the ground.",
+ "Criba": "Sieve",
+ "Cribar: {c}": "Sieve: {c}",
+ "A la mancha le quedan {n} pasadas.": "The patch has {n} passes left.",
+ "La mancha se ha agotado: volverá a salir en unos meses.": "The patch is worked out: it will come back in a few months.",
+ "Tierra encharcada de agua rojiza": "Waterlogged ground with reddish water",
+ "Necesitas una pala de madera y una criba para sacar el mineral.": "You need a wooden shovel and a sieve to get the ore out.",
+ "Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.": "With the wooden shovel, gets iron ore out of waterlogged ground with reddish water.",
+ "Sacas {n} × {c}: lo dejas junto a la mancha.": "You get {n} × {c}: you leave it next to the patch.",
+ "Aquí no se puede cribar.": "You can't sieve here."
 }

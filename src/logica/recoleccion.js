@@ -38,6 +38,14 @@
 //  - Lo recogido va a la mano o a los huecos donde quepa (junto a lo mismo primero); si no cabe entero, no se
 //    recoge y el punto sigue ahí.
 //
+// Y el hierro de pantano (P10, 14 nov; GDD: «tierra encharcada, agua rojiza»; documento de sistemas: «hierro de pantano
+// — turberas, vegas — pala y criba»): manchas de tierra encharcada con agua rojiza en las vegas llanas junto a los ríos
+// y en las turberas (src/logica/recogida_mundo.js). Con la pala de madera y la criba encima, cada pasada da 1 mineral
+// de hierro, que se deja en el suelo junto a la mancha (con las dos manos en la pala y la criba, no hay dónde
+// guardarlo: un montoncito que crece con cada pasada y se coge del suelo; decisión provisional); la mancha da unas pocas pasadas (PASADAS, de 3 a 5, fijas por mancha y por vez) y se agota hasta que
+// vuelve a salir pasados unos meses reales (90 días, como las rocas). Decisiones provisionales (14 nov): las cantidades,
+// que la pasada sea una acción suelta (como cortar o cavar) y que lo que llevan sacado las pasadas se guarde.
+//
 // Y romper rocas con el mazo de piedra (valravnx, 8 nov: «imagínate construir un castillo corriendo por ahí, rebuscando
 // entre piedrecitas del suelo»): las rocas medianas del mundo (las piedras de la vegetación, src/logica/vegetacion.js,
 // sin los cantos del río; cada una es un punto «roca:…» por su sitio, idRoca) se rompen a golpes de mazo, por el
@@ -60,10 +68,11 @@ export const HERRAMIENTAS_RECOGER = {
   cuchillo: ['lasca_silex', 'cuchillo'],
   cavar: ['palo_cavador', 'pala_madera'],
   desbrozar: ['hacha_piedra', 'hacha_hierro', 'hacha_mano', 'lasca_silex', 'cuchillo'],
+  cribar: ['criba'],   // (y además la pala: «tambien» del hierro de pantano)
 };
 // Con qué se desbroza más deprisa: los golpes que da el navegador antes de mandar la acción (decisión provisional).
 export const GOLPES_DESBROCE = { hacha_hierro: 2, hacha_mano: 2, hacha_piedra: 3, lasca_silex: 6, cuchillo: 5 };
-export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.' };
+export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.' };
 
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
@@ -92,6 +101,9 @@ export const RECOLECTABLES = {
   habas_silvestres: { nombre: 'Habas silvestres', donde: ['claro'], con: 'manos', accion: 'recoger', da: 'habas', min: 3, max: 6, vuelve: TIEMPOS.estacion },
   col_silvestre:    { nombre: 'Col silvestre', donde: ['ribera'], con: 'manos', accion: 'recoger', da: 'semilla_col', min: 2, max: 4, vuelve: TIEMPOS.estacion },
   nabo_silvestre:   { nombre: 'Nabo silvestre', donde: ['ribera'], con: 'manos', accion: 'recoger', da: 'semilla_nabo', min: 2, max: 4, vuelve: TIEMPOS.estacion },
+  // (P10, 14 nov) el hierro de pantano: la mancha de tierra encharcada con agua rojiza; con la pala de madera y la criba
+  // (las dos encima), cada pasada da 1 mineral de hierro; de 3 a 5 pasadas y se agota unos meses reales
+  hierro_pantano: { nombre: 'Tierra encharcada de agua rojiza', donde: ['vega', 'turbera'], con: 'cribar', tambien: ['pala_madera'], accion: 'cribar', da: 'mineral_hierro', min: 1, max: 1, pasadas: [3, 5], vuelve: 90 * DIA, alSuelo: true },
   // los matorrales de la vegetación: no se recogen, se desbrozan (no salen en recogida_mundo: donde vacío)
   matorral:     { nombre: 'Matorral', donde: [], con: 'desbrozar', accion: 'desbrozar', da: 'rama', min: 2, max: 4, vuelve: TIEMPOS.estacion, soloDesbroce: true },
   // las rocas medianas de la vegetación: no se recogen, se rompen con el mazo (ROMPER; no salen en recogida_mundo)
@@ -126,8 +138,8 @@ export function conQueDesbroza(inv) {
 }
 // Si inv lleva encima lo que pide un punto de tipo «tipo» (true si no pide nada).
 export function tieneCon(inv, tipo) {
-  const l = HERRAMIENTAS_RECOGER[RECOLECTABLES[tipo].con];
-  return !l || l.some(t => inv.cuantos(t) > 0);
+  const d = RECOLECTABLES[tipo], l = HERRAMIENTAS_RECOGER[d.con];
+  return (!l || l.some(t => inv.cuantos(t) > 0)) && (d.tambien || []).every(t => inv.cuantos(t) > 0);
 }
 
 // azar fijo a partir de números (el mismo en el navegador y en el servidor)
@@ -138,6 +150,11 @@ function hash(...ns) {
 }
 const numTexto = t => { let h = 0; for (const ch of t) h = (Math.imul(h, 31) + ch.codePointAt(0)) >>> 0; return h; };
 
+// Cuántas pasadas da una mancha (lo que tiene «pasadas») la vez «vez» que sale (0, 1, 2…); 1 lo demás.
+export function pasadasDe(punto, vez) {
+  const P = RECOLECTABLES[punto.tipo].pasadas;
+  return P ? P[0] + Math.floor(hash(numTexto(punto.id), vez, 17) * (P[1] - P[0] + 1)) : 1;
+}
 // Cuánto da un punto la vez «vez» (0, 1, 2…).
 export function cantidadDe(punto, vez) {
   const d = RECOLECTABLES[punto.tipo];
@@ -212,10 +229,17 @@ export class Recoleccion {
     if (d.soloRomper) return { ok: false, motivo: 'Eso no se recoge: se rompe con un mazo.' };
     if (!tieneCon(inv, p.tipo)) return { ok: false, motivo: QUE_PIDE[d.con] };
     const n = cantidadDe(p, veces);
-    const r = inv.meterDonde(d.da, n, a);
+    // (lo que se deja en el suelo, junto al punto: lo pone allí ejecutarRecoleccion)
+    const r = d.alSuelo ? { ok: true, donde: 'suelo', deja: [{ tipo: d.da, n, x: Math.round((p.x + 0.9) * 100) / 100, z: Math.round((p.z + 0.35) * 100) / 100 }] } : inv.meterDonde(d.da, n, a);
     if (!r.ok) return r;
+    // (lo que da varias pasadas, como la mancha de hierro de pantano, no se agota hasta la última)
+    const sacadas = ((this.estado[id] && this.estado[id].sacadas) || 0) + 1, total = pasadasDe(p, veces);
+    if (sacadas < total) {
+      this.estado[id] = { vuelve: 0, veces, sacadas };
+      return { ok: true, objeto: d.da, cantidad: n, donde: r.donde, vuelve: 0, quedan: total - sacadas, ...(r.deja ? { deja: r.deja } : {}) };
+    }
     this.estado[id] = { vuelve: ahora + d.vuelve, veces: veces + 1 };
-    return { ok: true, objeto: d.da, cantidad: n, donde: r.donde, vuelve: this.estado[id].vuelve };
+    return { ok: true, objeto: d.da, cantidad: n, donde: r.donde, vuelve: this.estado[id].vuelve, ...(d.pasadas ? { quedan: 0 } : {}), ...(r.deja ? { deja: r.deja } : {}) };
   }
   // Desbrozar lo que hay en id (un matorral o un arbusto de bayas) estando en (x, z). Devuelve lo que deja en el suelo
   // (deja: [{ tipo, n, x, z }]: las ramas y la vara, si sale); el sitio queda quitado hasta que rebrota.
@@ -272,7 +296,9 @@ export class Recoleccion {
       if ((!todo && !this.porId.has(id)) || !e || !Number.isFinite(e.vuelve)) continue;
       // (una roca a medias: vuelve 0, sin veces si es la primera, y los golpes que lleva)
       const medias = Number.isInteger(e.golpes) && e.golpes > 0 && e.quitado !== true;
-      this.estado[id] = { vuelve: e.vuelve, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : (medias ? 0 : 1), ...(e.quitado === true ? { quitado: true } : {}), ...(medias ? { golpes: e.golpes } : {}) };
+      // (una mancha de hierro de pantano a medias: vuelve 0 y las pasadas que lleva sacadas)
+      const sacadas = Number.isInteger(e.sacadas) && e.sacadas > 0 && e.quitado !== true ? e.sacadas : 0;
+      this.estado[id] = { vuelve: e.vuelve, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : (medias || sacadas ? 0 : 1), ...(e.quitado === true ? { quitado: true } : {}), ...(medias ? { golpes: e.golpes } : {}), ...(sacadas ? { sacadas } : {}) };
     }
     return this;
   }
@@ -313,6 +339,7 @@ export function ejecutarRecoleccion(rec, invs, registro, accion, ahora, suelo = 
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
   else if (a.tipo === 'desbrozar' && !suelo) r = { ok: false, motivo: 'Aquí no se puede desbrozar.' };
   else if (a.tipo === 'romper' && !suelo) r = { ok: false, motivo: 'Aquí no se pueden romper rocas.' };
+  else if (a.tipo === 'recoger' && !suelo && rec.porId.has(a.punto) && RECOLECTABLES[rec.porId.get(a.punto).tipo].alSuelo) r = { ok: false, motivo: 'Aquí no se puede cribar.' };
   else if (a.tipo === 'romper') {
     r = rec.romper(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.autor);
     if (r.ok && r.rota) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false).id);
@@ -320,11 +347,19 @@ export function ejecutarRecoleccion(rec, invs, registro, accion, ahora, suelo = 
   else if (a.tipo === 'desbrozar') {
     r = rec.desbrozar(invs.de(a.autor), a.punto, a.x, a.z, ahora);
     if (r.ok) r.objetos = r.deja.map((o, i) => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false, i * 1.3).id);
-  } else r = rec.recoger(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.a);
+  } else {
+    r = rec.recoger(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.a);
+    // (el mineral de la mancha, junto a ella: al montoncito que ya haya allí, o uno nuevo)
+    if (r.ok && r.deja) r.objetos = r.deja.map(o => {
+      const m = suelo.visibles(ahora).find(q => q.cosa.tipo === o.tipo && Math.hypot(q.x - o.x, q.z - o.z) < 0.5);
+      if (m) { m.cosa.n += o.n; return m.id; }
+      return suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false).id;
+    });
+  }
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
   if (r.ok) e.resultado = a.tipo === 'romper' ? (r.rota ? { rota: true, objeto: r.objeto, cantidad: r.cantidad } : { golpes: r.golpes })
-    : { objeto: r.objeto, cantidad: r.cantidad, ...(r.extra ? { extra: r.extra } : {}) };
+    : { objeto: r.objeto, cantidad: r.cantidad, ...(r.extra ? { extra: r.extra } : {}), ...(r.quedan !== undefined ? { quedan: r.quedan } : {}) };
   return r;
 }
 

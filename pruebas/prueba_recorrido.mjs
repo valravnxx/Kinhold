@@ -76,6 +76,7 @@ function comprobar(nombre, cond, detalle = '') {
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
 const TODAVIA_NO = {   // (8 nov) lo que el recorrido no hace, con el porqué
   'el secadero': 'pide 4 troncos delgados al hombro y carne de una liebre más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_comida.mjs',
+  'el hierro de pantano': 'la mancha más cercana está en la vega del río del norte, a unos 800 m, y pide la pala de madera (otro tronco corto en el banco) y la criba (otro haz de mimbre y una vara): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); cribar, por el servidor y con su autor, lo prueba pruebas/prueba_hierro_pantano.mjs',
   'la resina': 'los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs',
 };   // (antes, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
 
