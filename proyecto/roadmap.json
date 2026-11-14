@@ -2341,12 +2341,32 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD (clima por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo), con la cadena de cada cosa hasta el mundo (el cubo ← tronco corto en el banco; el agua ← el río, el mar no)",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T20:23:09+00:00",
-     "rama": "trabajo/20261114-2023"
+     "fin": "2026-11-14T20:24:29+00:00"
     },
     {
-     "nombre": "Llueve: el tiempo del mundo (despejado, nublado, lluvia, niebla) por zonas grandes y por el reloj del servidor, igual para todos; la lluvia se ve (gotas, cielo gris, suelo mojado) y se oye, en PC y en móvil sin perder fotogramas",
+     "nombre": "El tiempo del mundo entero en la lógica (src/logica/tiempo.js, sin three.js): despejado, nublado, lluvia y niebla por zonas grandes y por el reloj del servidor, igual para todos y sin guardar nada; nublado antes y después de cada rato de lluvia y niebla algunas mañanas; la lluvia que riega el huerto no cambia",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La lluvia se ve: gotas alrededor de la cámara (una sola malla, barata), cielo gris y luz más apagada al nublarse, con paso suave de un tiempo a otro; en PC y en móvil midiendo los fotogramas",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La lluvia se oye y moja: el sonido de la lluvia (más bajo bajo techo) y el suelo y las piezas más oscuros mientras llueve y un rato después",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La niebla se ve: niebla espesa algunas mañanas que se levanta a media mañana, sin tapar el juego en el móvil",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "La lluvia enfría: bajo la lluvia y sin techo, el frío que pide el sitio sube (GDD: el frío, según la lluvia y la ropa); con techo, nada; la capa y la capucha, cuando lleguen, lo quitan",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río o lago; el pozo llega con los pozos y las acequias de la granja (GDD), no en este hito",
      "estado": "pendiente"
     },
     {

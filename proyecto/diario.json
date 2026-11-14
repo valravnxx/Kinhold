@@ -6986,5 +6986,20 @@
   "capturas": "capturas/demo-v212",
   "estado": "ok",
   "pruebas": "Regar en la lógica y en el servidor, 43 de 43 (rota a propósito, falla); orígenes, iconos e idiomas, bien. En la nube: los campos en el navegador con regar en línea (llenar el cubo en el río, regar y que el cubo se vacíe), el recorrido de jugador, construir, los avisos de las necesidades, la velocidad con pocos fotogramas, el panel de inventario, la demo única, el mazo, despiezar y el panel de fabricar, bien (este último falló una vez soltando la criba y pasó al repetirlo). En la lógica falla solo prueba_nube (systemd-analyze de la máquina de GitHub), como en main. «Lo que llevas se ve puesto» no se pasó: falla igual en main (la mano sobre el tronco y el cinturón), según el diario. Las pruebas de sembrar, cosechar y escardar, con lluvia fija (la sed es de regar); el recorrido de la granja, con la col y el nabo esperando lo que tardan sin agua. Segunda mirada de un agente aparte: tres vueltas (el asa en la mano, el cubo más pequeño y de madera por dentro, lo mustio caído y de color apagado); a la tercera, todo sí salvo que la mano no cierra los dedos: el personaje del taller no tiene dedos que se doblen (otra tarea). Las capturas de cerca del huerto y del cubo en PC, en una página del juego con el campo puesto solo en ella para encuadrar."
+ },
+ {
+  "inicio": "2026-11-14T20:23:09+00:00",
+  "fin": "2026-11-14T20:24:29+00:00",
+  "titulo": "P11b, La lluvia y el riego: planificado",
+  "hito": "lluvia",
+  "hecho": [
+   "Seis tareas de una sesión sacadas del GDD (el clima: despejado, nublado, lluvia y niebla, por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo): el tiempo del mundo entero en la lógica; la lluvia se ve; la lluvia se oye y moja; la niebla se ve; la lluvia enfría; el agua del cubo, dulce.",
+   "La lluvia que riega ya estaba en la lógica (src/logica/tiempo.js, con regar el huerto); el resto del tiempo se suma ahí sin cambiarla.",
+   "La cadena del riego: el cubo sale del tronco corto en el banco, y el agua del río o del lago. Hoy el cubo también se llena en el mar: una tarea lo quita (el agua salada no riega). El pozo llega con los pozos y las acequias de la granja, no en este hito.",
+   "El frío con la lluvia ya lo pide el GDD («según bioma, estación, noche, lluvia y ropa») y la lógica del frío ya sabe de techo y abrigo: la lluvia entra ahí. Mojado como estado aparte sigue siendo de más adelante (GDD).",
+   "La nieve y las estaciones, cuando lleguen las estaciones (fuera de este hito)."
+  ],
+  "pruebas": "Sin código cambiado: nada en la nube; la web, con construir_web.mjs",
+  "estado": "ok"
  }
 ]
