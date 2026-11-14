@@ -144,7 +144,7 @@ export function inclinarRastra(raiz, arrastrando) {
   if (c) c.rotation.x = arrastrando ? -Math.asin(Math.min(0.9, (ALTO_MANOS - R_VARA) / A_MANOS)) : 0;
   // el tronco largo, menos inclinado que la rastra (apoyado en el travesaño de delante): la punta de atrás roza el suelo
   const l = c && c.getObjectByName('largo');
-  if (l) l.rotation.x = arrastrando ? 0.155 : 0;
+  if (l) l.rotation.x = arrastrando ? 0.155 : -0.035;   // parada, la punta de atrás baja hasta el suelo (el peso va detrás)
 }
 
 // Cada fotograma: las rastras que alguien arrastra van detrás de él, como de una cuerda (el centro, a DETRAS m de él;
