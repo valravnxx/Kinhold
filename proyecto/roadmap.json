@@ -2317,9 +2317,9 @@
     },
     {
      "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era, criba el grano y pone un tejado de paja",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T08:23:07+00:00",
-     "rama": "trabajo/20261114-0823"
+     "fin": "2026-11-14T16:01:24+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
