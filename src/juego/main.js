@@ -2776,6 +2776,9 @@ function paso() {
       else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
       else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
       else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
+      // y los pies siguen el suelo en cada trozo (14 nov): con un paso entero de golpe, en una escalera subías más de lo
+      // que deja (src/juego/movimiento.js: más de 0,8 m de golpe es estar debajo) y no se subía con pocos fotogramas
+      if (trozos > 1 && modo !== 'nadar' && !window.__mutarVelocidad) pj.y += (alturaSuelo() - pj.y) * Math.min(1, h * 14);
     }
     const objetivoRot = Math.atan2(dx, dz);
     let dr = objetivoRot - pj.rot;
