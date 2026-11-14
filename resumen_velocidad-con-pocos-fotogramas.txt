@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2893 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3237 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4713 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3303 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2887 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3268 KB
+dist/kinhold_trozos.html 2909 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: velocidad con pocos fotogramas
+  OK   se anda a la velocidad de siempre (3,6 m/s) con pocos fotogramas — 3.65 m/s
+  OK   con pocos fotogramas, andando por la escalera de tablas se llega arriba (planta 1) — planta=1 y=2.62 z=-10.46
+  OK   sin errores en la página
+TODO BIEN
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 33 s
