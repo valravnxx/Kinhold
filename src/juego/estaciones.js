@@ -351,7 +351,7 @@ function llenoRaspador(dep, id) {
     // la otra cara (se ve desde atrás): el pelo, si está por raspar; si no, la flor de la piel, algo más oscura
     const atras = geo.clone(); atras.scale(cual === 'piel' ? -1.035 : -1, cual === 'piel' ? 1.035 : 1, 1); atras.computeVertexNormals();   // (el pelo, algo mayor: asoma por el canto)
     const d = enBastidor(0, h0, 0.014);
-    L.add(atras, cual === 'piel' ? 0x7d6346 : 0xa48a66, d.x, d.y, d.z, giro, { tex: 'liso', sinSuelo: true, rayas: cual === 'piel' ? moteadoPelo(id) : moteadoPiel(id + 'p') });
+    L.add(atras, cual === 'piel' ? 0x93774f : 0xa48a66, d.x, d.y, d.z, giro, { tex: 'liso', sinSuelo: true, rayas: cual === 'piel' ? moteadoPelo(id) : moteadoPiel(id + 'p') });
     // las lazadas: de cada agujero del borde a la vara más cercana (a los lados, arriba o abajo)
     for (const q of agujeros) {
       const h = h0 + q.y, aLado = U - Math.abs(q.x), aBarra = q.y < 0 ? h - abajo : arriba - h;
