@@ -406,9 +406,11 @@ function enMano(t) {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
   } else if (t === 'criba') {
-    // (P10) cogida por el aro, de canto, el fondo hacia fuera
+    // (P10) cogida por el aro dentro del puño: el aro, a lo largo del puño (+Y) en el punto que se coge, y la criba
+    // colgando de canto hacia los dedos (+Z), el fondo hacia fuera del cuerpo (segunda mirada, 14 nov: antes flotaba
+    // junto a la mano abierta)
     const C = nuevoLote(); loteCriba(C);
-    const m = new THREE.Matrix4().makeTranslation(0, 0.22, 0.04).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+    const m = new THREE.Matrix4().makeTranslation(0.035, 0, 0.228).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
     for (const p of C.piezas) { p.m.premultiply(m); L.piezas.push(p); }
   } else if (t === 'criba_grano') {
     // la criba de grano, cogida por el aro: cuelga de la mano, de canto y junto a la pierna. En la base de la mano (con
@@ -417,9 +419,9 @@ function enMano(t) {
     cribaEn(L, 0, -CRIBA.alto, CRIBA.r + CRIBA.grosor * 0.5, null, 'mano');
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
-    // (P10, 14 nov) la pala de madera, cogida cerca del extremo del mango y caída junto a la pierna, la hoja abajo (antes
-    // salía de lado, cruzada, como el hacha: el puño la ponía atravesada)
-    const m = t === 'pala_madera' ? new THREE.Matrix4().makeRotationX(1.25).multiply(new THREE.Matrix4().makeTranslation(0, -0.12, 0)) : new THREE.Matrix4().makeTranslation(0, -0.25, 0);
+    // (P10, 14 nov) la pala de madera, el mango dentro del puño e inclinado hacia abajo, la hoja hacia el suelo (antes
+    // salía de lado, cruzada; del todo hacia los dedos, el mango pasaba por la palma sin que la mano lo cerrara)
+    const m = t === 'pala_madera' ? new THREE.Matrix4().makeRotationX(0.62).multiply(new THREE.Matrix4().makeTranslation(0, -0.2, 0)) : new THREE.Matrix4().makeTranslation(0, -0.25, 0);
     for (const p of H.piezas) { p.m.premultiply(m); L.piezas.push(p); }
   } else if (t === 'espada') {
     L.add(cil(0.014, 0.016, 0.1, 7), CUERO_OSC, 0, 0, 0, null, { tex: 'liso' });

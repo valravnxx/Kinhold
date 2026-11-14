@@ -515,7 +515,7 @@ function criba(n, id) {
 
 // El mineral de hierro de pantano (P10, 14 nov): un montoncito de terrones pardo rojizos, nudosos y porosos (el
 // mineral de las vegas: costras de óxido con la tierra pegada), alguno con manchas de ocre; más terrones con más.
-const OXIDO = 0x7a5636, OXIDO_OSC = 0x5e4229, OXIDO_ROJO = 0x84583a, OCRE_COSTRA = 0xa47c46;   // (pardos de óxido; más rojo parecían bayas)
+const OXIDO = 0x76583a, OXIDO_OSC = 0x4e3a28, OXIDO_ROJO = 0x7e5636, OCRE_COSTRA = 0xa47c46;   // (pardos de óxido; más rojo parecían bayas)
 function mineralHierro(n, id) {
   const L = lote(0.04), k = Math.min(14, 3 + (n || 1) * 2);
   for (let i = 0; i < k; i++) {
@@ -525,7 +525,7 @@ function mineralHierro(n, id) {
     for (let j = 0; j < p.count; j++) { const f = 0.78 + 0.4 * az(id + ':' + i, Math.round(p.getX(j) * 900) + ':' + Math.round(p.getY(j) * 900) + ':' + Math.round(p.getZ(j) * 900)); p.setXYZ(j, p.getX(j) * f, p.getY(j) * f * 0.75, p.getZ(j) * f); }
     g.computeVertexNormals();
     L.add(g, [OXIDO, OXIDO_OSC, OXIDO_ROJO][i % 3], Math.cos(a) * d * 1.2, r * 0.6 + capa * 0.05, Math.sin(a) * d, { y: az(id, i + 60) * 6, x: az(id, i + 70) }, { plano: true, tex: 'piedra' });
-    if (i % 3 === 1) L.add(new THREE.IcosahedronGeometry(r * 0.45, 0), OCRE_COSTRA, Math.cos(a) * d * 1.2 + r * 0.3, r * 1.0 + capa * 0.05, Math.sin(a) * d, null, { escala: v3(1.2, 0.4, 1), plano: true, tex: 'piedra', sinSuelo: true });
+    if (i % 3 !== 2) L.add(new THREE.IcosahedronGeometry(r * (i % 3 ? 0.45 : 0.32), 0), i % 2 ? OCRE_COSTRA : 0x8a6a3a, Math.cos(a) * d * 1.2 + r * 0.3, r * 1.0 + capa * 0.05, Math.sin(a) * d, null, { escala: v3(1.2, 0.4, 1), plano: true, tex: 'piedra', sinSuelo: true });
   }
   return mallas(L);
 }

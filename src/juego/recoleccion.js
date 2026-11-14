@@ -57,7 +57,7 @@ function ruidoValor(sem) {   // ruido suave de valor, 0..1, de una semilla
 const calcos = {};
 function manchaCalco(capa) {
   if (calcos[capa]) return calcos[capa];
-  const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
   const cx = cv.getContext('2d'), img = cx.createImageData(N, N), d = img.data;
   const n1 = ruidoValor(1.7), n2 = ruidoValor(5.3), n3 = ruidoValor(9.1);
   const mezcla = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
@@ -87,19 +87,20 @@ function manchaCalco(capa) {
       const tela = paso(0.66, 0.8, n3(u * 5 + 1, v * 7 + 3)) * agua * 0.45;   // la tela irisada, en vetas, apenas
       const brillo = paso(0.72, 0.92, n2(u * 4 - 3, v * 2 + 1)) * agua * 0.18;
       // (segunda mirada, 14 nov) la orilla, barro mojado más oscuro que el agua, mezclado con la turba (nada de ribete
-      // claro); el agua, pardo de té con un punto de óxido, más oscura en lo hondo, y el reflejo apagado del cielo
+      // claro); el agua, pardo de té (más amarillo que rojo), algo transparente sobre la turba, y el reflejo gris azulado
+      // del cielo
       const hondo = paso(0.3, 0.7, w), cielo = brillo * 1.6;
-      R = mezcla(mezcla(0x30, 0x52, agua), 0x40, hondo) * (1 - tela) + 0x5e * tela + cielo * 70 + (n2(u * 14, v * 14) - 0.5) * 12;
-      G = mezcla(mezcla(0x26, 0x34, agua), 0x29, hondo) * (1 - tela) + 0x5c * tela + cielo * 78 + (n2(u * 14, v * 14) - 0.5) * 8;
-      B = mezcla(mezcla(0x1c, 0x22, agua), 0x1c, hondo) * (1 - tela) + 0x58 * tela + cielo * 88;
-      A = orilla * (0.6 + 0.35 * agua);
+      R = mezcla(mezcla(0x30, 0x5a, agua), 0x48, hondo) * (1 - tela) + 0x5e * tela + cielo * 60 + (n2(u * 14, v * 14) - 0.5) * 10;
+      G = mezcla(mezcla(0x27, 0x3f, agua), 0x31, hondo) * (1 - tela) + 0x5f * tela + cielo * 72 + (n2(u * 14, v * 14) - 0.5) * 8;
+      B = mezcla(mezcla(0x1c, 0x24, agua), 0x1f, hondo) * (1 - tela) + 0x5e * tela + cielo * 86;
+      A = orilla * (0.65 + 0.2 * agua);
     }
     d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
   }
   cx.putImageData(img, 0, 0);
   const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   const comun = { map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: capa === 'agua' ? -4 : -2, polygonOffsetUnits: capa === 'agua' ? -4 : -2 };
-  return (calcos[capa] = capa === 'agua' ? new THREE.MeshPhongMaterial({ ...comun, shininess: 90, specular: 0x8c8a84 }) : new THREE.MeshLambertMaterial(comun));
+  return (calcos[capa] = capa === 'agua' ? new THREE.MeshPhongMaterial({ ...comun, shininess: 90, specular: 0x7c8a96 }) : new THREE.MeshLambertMaterial(comun));
 }
 function calcoGeo(ancho, fondo, y) { const g = new THREE.PlaneGeometry(ancho, fondo, 1, 1); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g; }
 

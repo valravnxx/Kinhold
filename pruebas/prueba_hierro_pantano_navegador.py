@@ -71,7 +71,7 @@ def recorrido(pg, nombre, pref):
     v = pg.evaluate(VIS, m['id'])
     comprobar(f'{nombre}: se ven la turba, la juncia y los charcos de agua rojiza', v['planta'] and v['agua'], str(v))
     pg.screenshot(path=f'{SALIDA}/{pref}_1_mancha.png', timeout=180000)
-    mirar(pg, m['x'], m['z'], d=6.5, pitch=0.62, yaw=2.4, lejos=2.6, detras=MOV)
+    mirar(pg, m['x'], m['z'], d=9.0 if MOV else 6.5, pitch=0.62, yaw=2.4, lejos=2.6, detras=MOV)
     pg.screenshot(path=f'{SALIDA}/{pref}_2_mancha_lejos.png', timeout=180000)
     # sin pala ni criba
     pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 0.9; k.pj.z = z + 0.3; k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z); }}', [m['x'], m['z']]); pg.wait_for_timeout(600)
@@ -106,7 +106,7 @@ def recorrido(pg, nombre, pref):
     # el mineral sacado, de cerca (14 nov: terrones pardo rojizos, no un hatillo)
     mo = pg.evaluate(f"(([x, z]) => {{ const o = {K}.sueloObjetos.suelo.visibles(Date.now()).find(o => o.cosa.tipo === 'mineral_hierro' && Math.hypot(o.x - x, o.z - z) < 2); return o ? {{ x: o.x, z: o.z }} : null; }})", [m['x'], m['z']])
     if mo:
-        mirar(pg, mo['x'], mo['z'], d=1.7, pitch=0.7, lejos=1.1, lado=True)
+        mirar(pg, mo['x'], mo['z'], d=2.6, pitch=1.15, lejos=1.5, detras=True)
         pg.screenshot(path=f'{SALIDA}/{pref}_5_mineral.png', timeout=180000)
     comprobar(f'{nombre}: sin errores en la página', not errores, '; '.join(errores[:3]))
 
