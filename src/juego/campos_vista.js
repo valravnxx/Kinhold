@@ -9,7 +9,8 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { estacaEn } from './modelos_objetos.js';
-import { ladosDe, casillasLabradas, dentroPoligono, casillasVoleo, voleoEn, fase, siguienteCambio, conHierbas, escardadoEn } from '../logica/campos.js';
+import { ladosDe, casillasLabradas, dentroPoligono, casillasVoleo, voleoEn, fase, siguienteCambio, conHierbas, escardadoEn, riegoPlanta, DE_RIEGO, SECO } from '../logica/campos.js';
+import { BLOQUE_TIEMPO } from '../logica/tiempo.js';
 
 const ALTO_ESTACA = 1.15;      // m sobre el suelo: recias y altas, para que se vean entre la hierba
 const GROSOR_ESTACA = 1.7;     // más gruesas que la de la mano (para leerlas de lejos como mojones de campo)
@@ -174,7 +175,20 @@ function formaPlanta(cultivo, f) {
   return k.cerrar();
 }
 const FORMAS = {};
-const forma = (cultivo, f) => (FORMAS[cultivo + f] ||= formaPlanta(cultivo, f));
+const forma = (cultivo, f, mustia = false) => (FORMAS[cultivo + f + (mustia ? 'm' : '')] ||= mustia ? mustiar(forma(cultivo, f)) : formaPlanta(cultivo, f));
+// La planta mustia (regar el huerto, P11b): sin agua desde hace días, las hojas caen y se abren (más baja y más ancha) y
+// pierden el verde hacia un pardo amarillento
+const MUSTIO = C(0x9a8a52);
+function mustiar(g0) {
+  const g = g0.clone(), p = g.attributes.position, c = g.attributes.color;
+  for (let i = 0; i < p.count; i++) {
+    const y = p.getY(i), caida = Math.min(1, y / 0.25);
+    p.setXYZ(i, p.getX(i) * (1 + 0.18 * caida), y * 0.6, p.getZ(i) * (1 + 0.18 * caida));
+    c.setXYZ(i, c.getX(i) + (MUSTIO.r - c.getX(i)) * 0.5, c.getY(i) + (MUSTIO.g - c.getY(i)) * 0.5, c.getZ(i) + (MUSTIO.b - c.getZ(i)) * 0.5);
+  }
+  g.computeVertexNormals();
+  return g;
+}
 let matPlantas = null;
 // un número fijo (0–1) para un punto, para que cada planta salga siempre igual
 const fijo = (x, z, s = 0) => { const h = Math.sin(x * 127.1 + z * 311.7 + s * 74.7) * 43758.5453; return h - Math.floor(h); };
@@ -299,10 +313,12 @@ export function crearCamposVista({ escena, sueloEn }) {
       x0 = Math.min(x0, k.x); z0 = Math.min(z0, k.z); x1 = Math.max(x1, k.x + 1); z1 = Math.max(z1, k.z + 1);
     }
     for (const p of c.plantas || []) {
-      const f = fase(p.t, ahora);
-      proximoCambio = Math.min(proximoCambio, siguienteCambio(p.t, ahora));
-      poner(p.c, f, p.x, p.z, 0.85 + 0.3 * fijo(p.x, p.z, 5));
-      if (conHierbas(p.t, ahora, p.e)) { const a = fijo(p.x, p.z, 17) * 6.283; poner('hierbas', f, p.x + Math.cos(a) * 0.22, p.z + Math.sin(a) * 0.22, 0.9 + 0.3 * fijo(p.x, p.z, 19)); }
+      const rg = riegoPlanta(p, ahora), f = fase(rg.t, ahora);
+      proximoCambio = Math.min(proximoCambio, siguienteCambio(rg.t, ahora));
+      // (la col y el nabo, regar el huerto: mustios tras días sin agua; se mira otra vez en cada rato del tiempo)
+      if (DE_RIEGO.has(p.c) && f < 3) proximoCambio = Math.min(proximoCambio, (Math.floor(ahora / BLOQUE_TIEMPO) + 1) * BLOQUE_TIEMPO, rg.mustia ? Infinity : rg.mojada + SECO);
+      poner(p.c + (rg.mustia ? '_mustia' : ''), f, p.x, p.z, 0.85 + 0.3 * fijo(p.x, p.z, 5));
+      if (conHierbas(rg.t, ahora, p.e)) { const a = fijo(p.x, p.z, 17) * 6.283; poner('hierbas', f, p.x + Math.cos(a) * 0.22, p.z + Math.sin(a) * 0.22, 0.9 + 0.3 * fijo(p.x, p.z, 19)); }
       x0 = Math.min(x0, p.x); z0 = Math.min(z0, p.z); x1 = Math.max(x1, p.x); z1 = Math.max(z1, p.z);
     }
     if (!porForma.size) return;
@@ -310,7 +326,8 @@ export function crearCamposVista({ escena, sueloEn }) {
     const g = new THREE.Group(); g.name = 'sembrado';
     const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), P = new THREE.Vector3(), S = new THREE.Vector3();
     for (const { cultivo, f, l } of porForma.values()) {
-      const im = new THREE.InstancedMesh(forma(cultivo, f), matPlantas, l.length);
+      const mustia = cultivo.endsWith('_mustia'), cu = mustia ? cultivo.slice(0, -7) : cultivo;
+      const im = new THREE.InstancedMesh(forma(cu, f, mustia), matPlantas, l.length);
       im.userData.compartida = true; im.name = `planta_${cultivo}_${f}`;
       l.forEach(([x, z, s], i) => {
         E.set((fijo(x, z, 7) - 0.5) * 0.12, fijo(x, z, 1) * 6.283, (fijo(x, z, 8) - 0.5) * 0.12);

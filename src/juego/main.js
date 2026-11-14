@@ -67,7 +67,7 @@ import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
-import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR } from '../logica/campos.js';
+import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -1729,6 +1729,9 @@ function accionPrincipal() {
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
   if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
+  // el cubo (P11b, regar el huerto): vacío en la mano y con agua al lado, se llena; lleno, delante de la col o el nabo, se riega
+  if (!it && pj.k === 0 && cuboEnMano('cubo') && aguaAlLado()) return A(tr('Llenar el cubo'), 'cubo', yo, llenarElCubo, { alto: 0.2 });
+  if (!it && pj.k === 0 && cuboEnMano('cubo_agua')) { const rg = sitioRegar(); if (rg) return A(tr('Regar'), 'cubo_agua', rg, () => empezarRiego(rg), { alto: 0.2, prog: estado.talando && estado.talando.riego ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_REGAR : 0 }); }
   // con las manos vacías o la azada, delante de lo sembrado con malas hierbas de tu campo: escardar (P11, 14 nov)
   if (!it && pj.k === 0 && manosParaEscardar()) { const es = sitioEscardar(); if (es) return A(tr('Escardar'), azadaEnMano() ? 'azada' : es.icono, es, () => empezarEscarda(es), { alto: 0.2, prog: estado.talando && estado.talando.escarda ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_ESCARDAR : 0 }); }
   // con la azada en la mano, dentro de tu campo: una pasada de azada delante de ti (P11, labrar)
@@ -2295,6 +2298,7 @@ function golpeTala() {
   if (a.siembra) { golpeSiembra(a); return; }
   if (a.siega) { golpeSiega(a); return; }
   if (a.escarda) { golpeEscarda(a); return; }
+  if (a.riego) { golpeRiego(a); return; }
   if (a.cosecha) { golpeCosecha(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
@@ -2493,6 +2497,39 @@ function golpeEscarda(a) {
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); reconstruir(); actualizarUI();
   mostrarAviso(tr('Escardado: dará más al cosecharlo.'));
+}
+// Regar el huerto (P11b, 14 nov; src/logica/campos.js): el cubo vacío en la mano, junto al río (o un lago, o el mar), se
+// llena; lleno, delante de la col o el nabo de tu campo, una pasada de unos 2 s riega las de un círculo de 1,2 m y el
+// cubo se vacía. En línea, el cubo lo llena el servidor (mira dónde te tiene y si hay agua); sin servidor, aquí.
+const ADELANTE_REGAR = 0.9;
+function cuboEnMano(tipo) { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === tipo); }
+function llenarElCubo() {
+  if (objetosRed) {
+    objetosRed.mandar({ tipo: 'llenar_cubo' }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr('Llenas el cubo de agua.'));
+    });
+    return;
+  }
+  const r = llenarCubo(inventario().lugares, aguaAlLado());
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); actualizarUI(); mostrarAviso(tr('Llenas el cubo de agua.'));
+}
+function sitioRegar() {
+  const x = pj.x + Math.sin(pj.rot) * ADELANTE_REGAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_REGAR, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  return plantasParaRegar(c, x, z, Date.now()).length ? { x, z, campo: c } : null;
+}
+function empezarRiego(rg) {
+  estado.talando = { riego: rg, x: rg.x, z: rg.z }; estado.golpeEn = SEGUNDOS_REGAR;
+  mostrarAviso(tr('Riegas el huerto.'));
+}
+function golpeRiego(a) {
+  estado.talando = null;
+  const rg = a.riego, r = accion({ tipo: 'regar', campo: rg.campo.id, x: redondoMm(rg.x), z: redondoMm(rg.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.mustias ? tr('Regado: {n} plantas (estaban mustias). El cubo, vacío.', { n: r.regadas }) : tr('Regado: {n} plantas. El cubo, vacío.', { n: r.regadas }));
 }
 // Cosechar (P11, src/logica/campos.js): con la hoz en la mano, la cebada madura se siega a pasadas (unos 2 s; las
 // gavillas quedan en el suelo); las habas, la col y el nabo maduros se cogen a mano (1 s), a lo que llevas.

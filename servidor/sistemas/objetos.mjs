@@ -5,8 +5,8 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { ObjetosServidor } from '../../src/logica/objetos_red.js';
 import { trozoDe } from '../../src/logica/trozos_red.js';
-import { campoEn } from '../../src/logica/campos.js';
-import { saciar as saciarNecesidad, redondear as redondearNecesidades, NUTRE, comestible } from '../../src/logica/necesidades.js';
+import { campoEn, llenarCubo } from '../../src/logica/campos.js';
+import { saciar as saciarNecesidad, redondear as redondearNecesidades, NUTRE, comestible, hayAguaCerca } from '../../src/logica/necesidades.js';
 import { reemplazar, reemplazarSinEsperar } from '../guardado.mjs';
 
 export function instalarObjetos(S) {
@@ -78,6 +78,17 @@ export function atenderObjeto(S, c, msg) {
     const r = beber(autor, ahora);
     enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: { sed: r.sed } } : { motivo: r.motivo }) });
     if (r.ok) enviar(ws, { tipo: 'necesidades', necesidades: redondearNecesidades(necesidadesDe(autor)) });
+    return;
+  }
+  // llenar el cubo en el río (P11b, regar el huerto): con agua al lado de donde el servidor te tiene
+  if (msg.accion.tipo === 'llenar_cubo') {
+    const p = S.presencia && S.presencia.ultimo.get(autor);
+    const r = llenarCubo(objetos.invs.de(autor).lugares, !!(S.terreno && p && hayAguaCerca(S.terreno.aguaEn, p.x, p.z)));
+    appendFileSync(archivoObjetosReg, JSON.stringify({ t: ahora, autor, accion: { tipo: 'llenar_cubo' }, ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
+    if (r.ok) { guardarObjetos(); cansar(autor, 'llenar_cubo'); }
+    enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: {} } : { motivo: r.motivo }) });
+    enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+    if (r.ok) repartirLlevado(autor);
     return;
   }
   const r = objetos.ejecutar(Object.assign({}, msg.accion, { autor }), ahora);

@@ -58,7 +58,7 @@ export const PILA_POR_TAMANO = { P: 10, M: 3, G: 1, E: 1 };
 
 // Peso aproximado (kg) de lo que no es ropa: lo que lo tiene propio; el resto, por su tamaño (ver kilos()).
 export const KILOS = { tronco_delgado: 15, tronco_corto: 25, tronco_largo: 60, bloque_piedra: 80, piedra: 3, lena: 2,
-  hacha_mano: 1.2, hacha_piedra: 1.5, mazo_piedra: 2.5, hacha_hierro: 1.8, espada: 1.3, escudo: 4, cuchillo: 0.2, agua: 0.5,
+  hacha_mano: 1.2, hacha_piedra: 1.5, mazo_piedra: 2.5, hacha_hierro: 1.8, espada: 1.3, escudo: 4, cuchillo: 0.2, agua: 0.5, cubo: 2, cubo_agua: 12,
   saco: 0.5, bandolera: 0.3, odre: 0.4, cordel: 0.05 };
 export const KILOS_TAMANO = { P: 0.3, M: 2, G: 12, E: 50 };
 export const MANOS = ['mano:der', 'mano:izq'];
@@ -130,6 +130,7 @@ export const CATALOGO = {
   // mano (no va en el cinto ni en el colgadero de herramientas: no tiene mango)
   criba_grano: { nombre: 'Criba de grano', tam: 'M' },
   cubo: { nombre: 'Cubo de madera', tam: 'M' },
+  cubo_agua: { nombre: 'Cubo de agua', tam: 'M' },   // el cubo lleno en el río (P11b, regar el huerto, 14 nov): unos 10 litros
   espada: { nombre: 'Espada', tam: 'M' },
   escudo: { nombre: 'Escudo', tam: 'M' },
   // cinturones (GDD: sus huecos). El cordel de fibra es el de inicio.

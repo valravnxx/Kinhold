@@ -20,7 +20,7 @@ export const ESENCIALES = [];   // (8 nov: ninguna de siempre; cada una, solo si
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
 export const TOCA = {
   'logica': [/^src\/logica\//, /^src\/combate\/logica\.js$/, /^servidor\//, /^pruebas\/prueba_(?!recorrido)[^/]*\.mjs$/],
-  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/],
+  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos|tiempo)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/],
   'demo-unica': [/^src\/demo\//, /^src\/plantilla\.html$/, /^construir_demo\.mjs$/, /^src\/mundo\/(cliente|conexion|mundo_juego)\.js$/],
   'la-accion-a-la-vista': [/^src\/juego\/accion_vista\.js$/],
   'construccion': [/^src\/logica\/(construccion|piezas|obras_red)\.js$/, /^src\/mundo\/modelos\.js$/, /^src\/juego\/(movimiento|barra_construir)\.js$/],
@@ -55,7 +55,7 @@ export const TOCA = {
   'personaje': [/^src\/personaje\//, /^src\/personajes\//, /^src\/logica\/(aspecto|hechura|tintes)\.js$/, /^herramientas\/taller\//, /^construir_personaje\.mjs$/],
   'la-demo-en-el-mundo': [/^src\/mundo\/(mundo_juego|terreno_trozos|trozo_suelo|color_suelo|rendimiento)\.js$/, /^src\/demo\/rendimiento\.js$/, /^src\/mapa\/suelo\.js$/],
   'lo-que-se-recoge-en-el-mundo': [/^src\/logica\/recogida_mundo\.js$/, /^src\/mundo\/rocas\.js$/],
-  'marcar-el-campo-con-estacas': [/^src\/logica\/campos\.js$/, /^src\/juego\/campos_vista\.js$/, /^pruebas\/prueba_campos_navegador\.py$/],
+  'marcar-el-campo-con-estacas': [/^src\/logica\/(campos|tiempo)\.js$/, /^src\/juego\/campos_vista\.js$/, /^pruebas\/prueba_campos_navegador\.py$/],
   'construir-a-la-altura-del-suelo': [/^src\/logica\/nivelado\.js$/, /^src\/juego\/movimiento\.js$/],
   'recursos-de-personaje-v2': [/^docs\/recursos\/personajes\//],
   'juego-en-ingles': [],   // los textos los mira la web y cada grupo con su idioma; este, en la batería entera

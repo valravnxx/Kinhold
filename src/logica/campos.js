@@ -11,6 +11,7 @@
 // mira).
 // Un campo: { id, dueno, autor, puntos: [{ x, z }], cerrado, area }. dueno: de quién es la tierra; autor: quién lo
 // está marcando (cada uno, como mucho uno abierto a la vez).
+import { lloviendo, BLOQUE_TIEMPO } from './tiempo.js';
 
 export const MIN_ESTACAS = 3, MAX_ESTACAS = 16;
 export const CIERRE = 1.5;          // m: a menos de esto de la primera estaca, la última cierra el campo
@@ -399,7 +400,7 @@ export function plantaMadura(c, x, z, ahora, r = 0.6, todas = false) {
   let mejor = null;
   ((c && c.plantas) || []).forEach((p, i) => {
     const d = Math.hypot(p.x - x, p.z - z);
-    if (d <= r && (todas || fase(p.t, ahora) === MADURO) && (!mejor || d < mejor.d)) mejor = { p, i, d };
+    if (d <= r && (todas || fase(tPlanta(p, ahora), ahora) === MADURO) && (!mejor || d < mejor.d)) mejor = { p, i, d };
   });
   return mejor;
 }
@@ -504,7 +505,7 @@ export function hierbasCerca(c, x, z, ahora) {
         if (conHierbas(c.voleo.t[u[k] - 1], ahora, escardadaK(c, k))) out.casillas.push(k);
       }
   }
-  ((c.plantas) || []).forEach((p, i) => { if ((p.x - x) ** 2 + (p.z - z) ** 2 <= RADIO_ESCARDAR * RADIO_ESCARDAR && conHierbas(p.t, ahora, p.e)) out.plantas.push(i); });
+  ((c.plantas) || []).forEach((p, i) => { if ((p.x - x) ** 2 + (p.z - z) ** 2 <= RADIO_ESCARDAR * RADIO_ESCARDAR && conHierbas(tPlanta(p, ahora), ahora, p.e)) out.plantas.push(i); });
   return out;
 }
 // Escardar en (x, z) del campo de id campo, a la hora t. Devuelve { ok, campo, casillas, plantas } o { ok: false, motivo }.
@@ -518,6 +519,78 @@ export function escardar(m, campo, x, z, t, autor) {
   if (h.casillas.length) { const b = bitsEscarda(c).slice(); for (const k of h.casillas) b[k >> 3] |= 1 << (k & 7); guardarEscarda(c, b); }
   if (h.plantas.length) c.plantas = c.plantas.map((p, i) => (h.plantas.includes(i) ? { ...p, e: 1 } : p));
   return { ok: true, campo: c.id, casillas: h.casillas.length, plantas: h.plantas.length };
+}
+
+// ---------- Regar el huerto (P11b, «Regar el huerto», 14 nov) ----------
+// valravnx, 14 nov: «meteremos regar en las que sí lo requieran, lo de huerto». Como en la época: el cereal y las habas
+// son de secano (les basta la lluvia); la col y el nabo, del huerto, se riegan a mano. Cada planta de huerto guarda
+// cuándo se regó por última vez (p.ag; si nunca, la hora de sembrarla) y lo que ha pasado mustia hasta entonces (p.rt,
+// ms). La lluvia la riega sola (src/logica/tiempo.js, en su sitio y a su hora). Pasados SECO ms sin agua se ve mustia y
+// crece a medias (cada ms mustia, PIERDE_SECO ms de crecer menos); no se muere. Con el cubo lleno de agua (del río),
+// cada pasada riega las plantas de huerto de un círculo de RADIO_REGAR m donde apuntas, y el cubo se vacía. Decisiones
+// provisionales (registro de la demo y diario): los números.
+export const DE_RIEGO = new Set(['col', 'nabo']);
+export const SECO = 2 * 24 * 3600 * 1000;      // ms: dos días reales sin agua y se ve mustia
+export const PIERDE_SECO = 0.5;                // mustia, crece a la mitad
+export const RADIO_REGAR = 1.2, ALCANCE_REGAR = 3, SEGUNDOS_REGAR = 2;
+const MAX_SEQUIA = 60 * 24 * 3600 * 1000;      // (lo que se mira hacia atrás, como mucho)
+// De la hora a (con agua) a la hora b, en (x, z): { seco: ms pasados mustia, mojada: la última hora con agua }
+export function sequia(x, z, a, b) {
+  let seco = 0, w = a;
+  if (!(b > a)) return { seco, mojada: a };
+  const a0 = Math.max(a, b - MAX_SEQUIA);
+  for (let k = Math.floor(a0 / BLOQUE_TIEMPO); k * BLOQUE_TIEMPO < b; k++) {
+    const s = Math.max(a0, k * BLOQUE_TIEMPO), e = Math.min(b, (k + 1) * BLOQUE_TIEMPO);
+    if (lloviendo(x, z, k * BLOQUE_TIEMPO)) { w = e; continue; }
+    const d0 = Math.max(s, w + SECO);
+    if (e > d0) seco += e - d0;
+  }
+  return { seco, mojada: w };
+}
+// El riego de una planta a la hora ahora: { t: la hora de siembra que cuenta para crecer (la de verdad más lo que ha
+// perdido por la sed), mustia, mojada }. Lo que no es de huerto: su hora de siembra y nunca mustio.
+export function riegoPlanta(p, ahora) {
+  if (!p || !DE_RIEGO.has(p.c)) return { t: p ? p.t : 0, mustia: false, mojada: ahora };
+  const s = sequia(p.x, p.z, num(p.ag) ? p.ag : p.t, ahora);
+  const t = p.t + ((num(p.rt) ? p.rt : 0) + s.seco) * (globalThis.__mutarRegar ? 0 : PIERDE_SECO);
+  return { t, mustia: ahora - s.mojada > SECO && fase(t, ahora) < MADURO, mojada: s.mojada };
+}
+export const tPlanta = (p, ahora) => riegoPlanta(p, ahora).t;
+// Las plantas de huerto sin madurar a menos de RADIO_REGAR de (x, z): [i]
+export function plantasParaRegar(c, x, z, ahora) {
+  const out = [];
+  ((c && c.plantas) || []).forEach((p, i) => { if (DE_RIEGO.has(p.c) && (p.x - x) ** 2 + (p.z - z) ** 2 <= RADIO_REGAR * RADIO_REGAR && fase(tPlanta(p, ahora), ahora) < MADURO) out.push(i); });
+  return out;
+}
+// Llenar el cubo (vacío, en una mano) de agua; hayAgua: si hay río, lago o mar al lado de quien lo llena (lo mira quien
+// tiene el terreno). lugares: los del inventario de quien lo llena. Devuelve { ok, mano } o { ok: false, motivo }.
+export function llenarCubo(lugares, hayAgua) {
+  const mano = ['mano:der', 'mano:izq'].find(r => lugares[r] && lugares[r].tipo === 'cubo');
+  if (!mano) return { ok: false, motivo: ['mano:der', 'mano:izq'].some(r => lugares[r] && lugares[r].tipo === 'cubo_agua') ? 'El cubo ya está lleno.' : 'Necesitas el cubo vacío en la mano.' };
+  if (!hayAgua) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
+  lugares[mano] = { ...lugares[mano], tipo: 'cubo_agua' };
+  return { ok: true, mano };
+}
+// Regar en (x, z) del campo de id campo, a la hora t. Devuelve { ok, campo, regadas, mustias } o { ok: false, motivo }.
+export function regar(m, campo, x, z, t, autor) {
+  if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
+  const c = (m.campos || []).find(k => k.id === campo);
+  if (!c || !c.cerrado) return { ok: false, motivo: 'Aquí no hay ningún campo cerrado.' };
+  if (!m.dentroDeTierra(x, z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  const l = plantasParaRegar(c, x, z, t);
+  if (!l.length) {
+    const ceb = cebadaCerca(c, x, z, t);
+    const otra = ceb.verdes + ceb.maduras > 0 || (c.plantas || []).some(p => !DE_RIEGO.has(p.c) && (p.x - x) ** 2 + (p.z - z) ** 2 <= RADIO_REGAR * RADIO_REGAR);
+    return { ok: false, motivo: otra ? 'La cebada y las habas no se riegan: les basta la lluvia.' : 'Aquí no hay col ni nabo que regar.' };
+  }
+  let mustias = 0;
+  c.plantas = c.plantas.map((p, i) => {
+    if (!l.includes(i)) return p;
+    const s = sequia(p.x, p.z, num(p.ag) ? p.ag : p.t, t);
+    if (t - s.mojada > SECO) mustias++;
+    return { ...p, ag: t, rt: Math.round((num(p.rt) ? p.rt : 0) + s.seco) };
+  });
+  return { ok: true, campo: c.id, regadas: l.length, mustias };
 }
 
 // Para guardar y leer el mundo (Mundo.exportar / importar).
@@ -538,5 +611,5 @@ export function importarCampos(l) {
       ...(num(c.segado) && c.segado > 0 && c.segado < 100 ? { segado: c.segado } : {}),
       // (14 nov) lo escardado: 1 bit por casilla, como lo labrado; en cada planta, e
       ...(typeof c.escarda === 'string' && c.escarda.length < 200000 ? { escarda: c.escarda } : {}),
-      ...(Array.isArray(c.plantas) ? { plantas: c.plantas.filter(p => p && CULTIVOS[p.c] && num(p.x) && num(p.z) && num(p.t)).map(p => ({ c: p.c, x: p.x, z: p.z, t: p.t, ...(p.e ? { e: 1 } : {}) })) } : {}) }));
+      ...(Array.isArray(c.plantas) ? { plantas: c.plantas.filter(p => p && CULTIVOS[p.c] && num(p.x) && num(p.z) && num(p.t)).map(p => ({ c: p.c, x: p.x, z: p.z, t: p.t, ...(p.e ? { e: 1 } : {}), ...(num(p.ag) ? { ag: p.ag } : {}), ...(num(p.rt) && p.rt > 0 ? { rt: p.rt } : {}) })) } : {}) }));
 }

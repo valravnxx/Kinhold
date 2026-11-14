@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, cuboEn, CUBO } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -409,6 +409,10 @@ function enMano(t) {
     // el brazo caído, la palma hacia atrás): +Z hacia los dedos (abajo), +Y del meñique al índice (hacia el cuerpo); el
     // eje del aro, a lo ancho (+Y), y el aro hacia fuera del cuerpo, para no meterse en el muslo
     cribaEn(L, 0, -CRIBA.alto, CRIBA.r + CRIBA.grosor * 0.5, null, 'mano');
+  } else if (t === 'cubo' || t === 'cubo_agua') {
+    // el cubo (P11b), colgado del asa: el asa en la mano y el cubo derecho debajo (en la base de la mano, +Z es abajo
+    // con el brazo caído: el cubo, girado para que su arriba mire a -Z), algo apartado del muslo
+    cuboEn(L, 0, -0.03, CUBO.alto + CUBO.asa - 0.025, { lleno: t === 'cubo_agua', giro: new THREE.Matrix4().makeRotationX(-Math.PI / 2), asa: 0 });
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
     for (const p of H.piezas) { p.m.premultiply(new THREE.Matrix4().makeTranslation(0, -0.25, 0)); L.piezas.push(p); }

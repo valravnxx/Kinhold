@@ -42,7 +42,7 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  agua: ['el cubo aún no se llena en el río', 'El cubo lleno de agua y la corteza de roble'],
+  agua: ['el cubo ya se llena en el río (P11b), pero su agua aún no se echa en las cubas', 'El cubo lleno de agua y la corteza de roble'],
   corteza_roble: ['descortezar aún da la misma corteza en todos los árboles', 'El cubo lleno de agua y la corteza de roble'],
   est_cubas_curtido: ['aún no hay cubas de curtido', 'Las cubas de curtido y el cuero'],
   cuero: ['sale de las cubas', 'Las cubas de curtido y el cuero'],
@@ -79,6 +79,7 @@ const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
+  lluvia: ['cubo', 'cubo_agua', 'col', 'nabo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
@@ -98,6 +99,8 @@ for (let nuevo = true; nuevo;) {
     if (tieneAlguna(Object.keys(HACHAS))) { if (poner(d.tronco, `talar un árbol ${edad}`)) nuevo = true; if (poner(d.menudo, `talar un árbol ${edad}`)) nuevo = true; }
   // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto
   if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
+  // el cubo lleno (P11b, regar el huerto): el cubo vacío en la mano, junto al río (src/logica/campos.js, llenarCubo)
+  if (hay.has('cubo') && poner('cubo_agua', 'llenar el cubo en el río')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
   if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;

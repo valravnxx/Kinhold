@@ -42,7 +42,7 @@ export const RITMOS = {
   sentado: 1,                   // sentado a descansar, por segundo: rendido del todo, unos 100 s (provisional)
 };
 export const COMBATE = { paso: 0.1, suelo: 0.8 };
-export const ESFUERZOS = { labrar: 2, segar: 1.5, escardar: 1.5, arrancar: 1.5, talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
+export const ESFUERZOS = { labrar: 2, segar: 1.5, escardar: 1.5, regar: 1, llenar_cubo: 0.3, arrancar: 1.5, talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
 
 const recorta = (v) => Math.min(MAXIMO, Math.max(0, v));
 export const nuevas = () => ({ hambre: 0, sed: 0, frio: 0, cansancio: 0 });
