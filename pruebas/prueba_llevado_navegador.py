@@ -76,9 +76,13 @@ SEPARA_CORREA = '''() => { const K = window.__kinhold, j = K.jugador; K.escena.u
   const g = j.llevado.grupo.children.find(o => o.userData.correa); if (!g) return null;
   const inv = j.raiz.matrixWorld.clone().invert(), V = () => j.raiz.position.clone(), tris = [];
   j.mh.modelo.traverse(o => { if (!o.isSkinnedMesh || !o.visible || o.userData.herramienta || /(pelo|barba|ojo|iris|cejas|orejas|vello|cofia|dientes|lengua)/.test(o.name)) return;
-    const pos = o.geometry.attributes.position, idx = o.geometry.index, n = idx ? idx.count : pos.count, P = [];
-    for (let i = 0; i < pos.count; i++) P.push(o.getVertexPosition(i, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv));
-    for (let t = 0; t + 2 < n; t += 3) tris.push([P[idx ? idx.getX(t) : t], P[idx ? idx.getX(t + 1) : t + 1], P[idx ? idx.getX(t + 2) : t + 2]]); });
+    const pos = o.geometry.attributes.position, idx = o.geometry.index, n = idx ? idx.count : pos.count, P = [], si = o.geometry.attributes.skinIndex, sw = o.geometry.attributes.skinWeight;
+    // los brazos, solo por encima de las axilas (lo de abajo cuelga al lado: estar cerca de él no es ir pegada al cuerpo)
+    const brazo = o.skeleton.bones.map(b => /upperarm|lowerarm|hand|thumb|index|middle|ring|pinky|metacarpal|Arm$|Hand$/.test(b.name)), yAx = j.mh.hueso.neck_01.getWorldPosition(V()).applyMatrix4(inv).y - 0.14;
+    for (let i = 0; i < pos.count; i++) { const q = o.getVertexPosition(i, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv);
+      let mejor = 0, w = -1; for (let k = 0; k < 4; k++) { const wk = sw.getComponent(i, k); if (wk > w) { w = wk; mejor = si.getComponent(i, k); } }
+      P.push(brazo[mejor] && q.y < yAx ? null : q); }
+    for (let t = 0; t + 2 < n; t += 3) { const tr = [P[idx ? idx.getX(t) : t], P[idx ? idx.getX(t + 1) : t + 1], P[idx ? idx.getX(t + 2) : t + 2]]; if (tr.every(Boolean)) tris.push(tr); } });
   // (Ericson, el punto más cercano de un triángulo)
   const cerca = (p, a, b, c) => { const ab = b.clone().sub(a), ac = c.clone().sub(a), ap = p.clone().sub(a);
     const d1 = ab.dot(ap), d2 = ac.dot(ap); if (d1 <= 0 && d2 <= 0) return a;

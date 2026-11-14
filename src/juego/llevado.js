@@ -42,6 +42,7 @@ function medir(mh, raiz) {
   raiz.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(raiz.matrixWorld).invert();
   const pts = [], cint = [], tris = [], p = new THREE.Vector3(), m = new THREE.Matrix4();
+  const cuello = mh.hueso && (mh.hueso.neck_01 || mh.hueso.spine_03), yAxila = cuello ? cuello.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv).y - 0.14 : 1.25;
   mh.modelo.traverse(o => {
     if (!o.isSkinnedMesh || !o.visible || o.userData.herramienta || CABEZA.test(o.name)) return;
     const g = o.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
@@ -58,13 +59,16 @@ function medir(mh, raiz) {
       (esCinturon ? cint : pts).push(p.x, p.y, p.z);
     }
     // y la superficie del tronco (los triángulos sin brazos ni cabeza): a ella se pegan las correas (pegarAlCuerpo)
+    // (de los brazos, solo lo de encima de las axilas: lo alto y lo de delante del hombro, por donde pasa la correa; lo de
+    // más abajo cuelga junto al cuerpo y no es donde se apoya)
+    const cuelloDe = o.skeleton.bones.map(b => /neck/i.test(b.name) ? 1 : 0);
     const idx = g.index, n = idx ? idx.count : pos.count, vale = new Int8Array(pos.count), xyz = new Float32Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
       let mejor = 0, w = -1;
       for (let k = 0; k < 4; k++) { const wk = sw.getComponent(i, k); if (wk > w) { w = wk; mejor = si.getComponent(i, k); } }
-      if (huesos[mejor]) continue;
+      if (huesos[mejor] === 1 && cuelloDe[mejor] === 0) continue;   // (del cuello, solo lo de más abajo: el pecho que asoma por la camisa)
       o.getVertexPosition(i, p); p.applyMatrix4(m);
-      if (p.y < 0.8 || p.y > 1.8) continue;
+      if (p.y < 0.8 || p.y > 1.8 || (huesos[mejor] === 2 && p.y < yAxila) || (huesos[mejor] === 1 && p.y > yAxila + 0.04)) continue;
       vale[i] = 1; xyz[i * 3] = p.x; xyz[i * 3 + 1] = p.y; xyz[i * 3 + 2] = p.z;
     }
     for (let t = 0; t + 2 < n; t += 3) {
@@ -113,6 +117,9 @@ function altoEn(med, x, z, ancho = 0.025) {
 const _rayo = new THREE.Raycaster();
 function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
   const sup = med.superficie; sup.geometry.computeBoundingSphere();
+  // por delante, casi tocando (de lado se veía el aire entre la correa y el pecho); por detrás y por encima del hombro,
+  // algo más, que al respirar suben los omóplatos y la tapaban
+  const fueraDe = (d) => fuera - (fuera - 0.007) * Math.min(1, Math.max(0, d.z * 1.5));
   // cada punto, por su rayo desde dentro: lo más de fuera que cruza; donde no cruza nada (la abertura del cuello de la
   // camisa, algún hueco de la malla), lo que sale de sus vecinos
   const pegar = (lista) => {
@@ -129,14 +136,23 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
         const a = ok.filter(k => k < i).pop(), b = ok.find(k => k > i);
         l = a == null && b == null ? 0.15 : a == null ? r[b].lejos : b == null ? r[a].lejos : r[a].lejos + (r[b].lejos - r[a].lejos) * (i - a) / (b - a);
       }
-      const q = x.o.clone().addScaledVector(x.d, l + fuera); q.nor = x.d; return q;
+      const q = x.o.clone().addScaledVector(x.d, l + fueraDe(x.d)); q.nor = x.d; return q;
     });
   };
   const curva = new THREE.CatmullRomCurve3(guia, false, 'centripetal');
   if (globalThis.__correaSinPegar) return curva.getSpacedPoints(n).map(p => Object.assign(p, { nor: v3(0, 0, 1) })); // solo para comprobar que la prueba falla
   let pts = pegar(curva.getSpacedPoints(n));
-  for (let vuelta = 0; vuelta < 8; vuelta++)   // suavizado (los pliegues de la ropa no se marcan) y otra vez a la superficie
-    pts = pegar(pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : p.clone().add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 3)));
+  // y tensa, como va una correa de verdad: cada vuelta tira de cada punto hacia sus vecinos y, si así se mete en el
+  // cuerpo, se queda en su superficie; donde el cuerpo se hunde (la abertura de la camisa, entre el pecho y el hombro)
+  // pasa por encima, recta, sin escalones
+  const fuera_ = (p) => {
+    const o = p.y >= cH.y ? v3(p.x, cH.y, cH.cz) : v3(cE.cx, p.y, (cE.cz + cH.cz) / 2), d = p.clone().sub(o), r = d.length(); d.normalize();
+    _rayo.set(o, d); _rayo.far = 0.6;
+    let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
+    const f = fueraDe(d), q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : p.clone(); q.nor = d; return q;
+  };
+  for (let vuelta = 0; vuelta < 24; vuelta++)
+    pts = pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : fuera_(p.clone().multiplyScalar(2).add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 4)));
   // las normales, suavizadas (la malla es de pocas caras: de una a otra, la correa daba saltos de luz)
   for (let vuelta = 0; vuelta < 4; vuelta++) {
     const N = pts.map(p => p.nor.clone());
@@ -545,7 +561,9 @@ export function crearLlevado(j) {
     if (!l.cintura && !l.espalda && !l.hombro && !l.der && !l.izq) return; // nada encima: ni se mide el cuerpo
     // el cuerpo, medido solo si ha cambiado lo que lleva puesto (cuesta unos milisegundos)
     const clave = JSON.stringify([mh.capas, mh.hechuras, mh.nivel]);
-    if (!medida || clave !== claveMedida) { medida = medir(mh, j.raiz); claveMedida = clave; }
+    // (con correa cruzada, siempre: va pegada al pecho en la postura de ahora, y la de la última medida puede ser otra)
+    const cruza = l.espalda && ['zurron', 'carcaj', 'correa_escudo'].includes(l.espalda);
+    if (!medida || clave !== claveMedida || cruza) { medida = medir(mh, j.raiz); claveMedida = clave; }
     j.raiz.updateMatrixWorld(true);
     const invRaiz = new THREE.Matrix4().copy(j.raiz.matrixWorld).invert();
     const H = mh.hueso, pelvis = H.pelvis, pecho = H.spine_03 || H.spine_02 || pelvis;
