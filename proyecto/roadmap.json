@@ -2353,9 +2353,9 @@
     },
     {
      "nombre": "La lluvia se ve: gotas alrededor de la cámara (una sola malla, barata), cielo gris y luz más apagada al nublarse, con paso suave de un tiempo a otro; en PC y en móvil midiendo los fotogramas",
-     "estado": "en_curso",
-     "inicio": "2026-11-14T22:23:31+00:00",
-     "rama": "trabajo/20261114-2222"
+     "estado": "hecho",
+     "inicio": "2026-11-14T22:22:34+00:00",
+     "fin": "2026-11-14T23:31:12+00:00"
     },
     {
      "nombre": "La lluvia se oye y moja: el sonido de la lluvia (más bajo bajo techo) y el suelo y las piezas más oscuros mientras llueve y un rato después",
@@ -4668,6 +4668,13 @@
      "archivo": "jugar/demo/v212.html",
      "capturas": "capturas/demo-v212",
      "notas": "Regar el huerto: el tiempo del mundo (llueve unos días, por zonas); la col y el nabo, mustios tras dos días sin agua y a medio crecer; el cubo se llena en el río y riega; la cebada y las habas, de secano."
+    },
+    {
+     "v": "v213",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v213.html",
+     "capturas": "capturas/demo-v213",
+     "notas": "La lluvia se ve (P11b): el tiempo del mundo, igual para todos, ya se ve. Al nublarse, el cielo se cubre de gris, el sol y la luna se tapan y la luz se apaga, casi sin sombras; al llover, caen gotas alrededor de la cámara, también contra el cielo. Nada salta: el cielo se cierra y se abre poco a poco y la lluvia empieza y para de a poco. Bajo techo no caen gotas. Aún no se oye ni moja."
     }
    ]
   },
