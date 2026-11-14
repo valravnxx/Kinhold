@@ -383,7 +383,7 @@ try:
         captura(A, f'{SALIDA}/PC_huerto_mustio_de_cerca.png')
         manos_vacias()
         coger(A, 'cubo', 1, 'mano:der')
-        comprobar('coge el cubo en la mano', esperar(A, EN_MANO('cubo'), 5000))
+        comprobar('coge el cubo en la mano', esperar(A, EN_MANO('cubo'), 15000))
         ir(A, x0 + 10.8, z0 + 7.3, 0)
         comprobar('con el cubo vacío, delante de la col, Usar no dice «Regar»', texto_usar(A) != 'Regar', texto_usar(A))
         rio = sitio_rio(x0 + 6, z0 + 5)

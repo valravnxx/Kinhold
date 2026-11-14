@@ -493,8 +493,8 @@ export function cuboEn(L, x, y, z, { lleno = false, giro = null, asa = 0.4 } = {
   // el agua: un disco algo por debajo del borde, oscuro y con brillo (refleja el cielo), y su orilla más clara
   if (lleno) {
     const h = alto * 0.84, rh = r0 + (r1 - r0) * 0.84;
-    pon(new THREE.CircleGeometry(rh * 0.95, D * 2), 0x3e5458, 0, h, 0, { x: -Math.PI / 2 }, { sinSuelo: true, plano: true, brillo: 1.25 });
-    pon(new THREE.RingGeometry(rh * 0.88, rh * 0.955, D * 2), 0x7d9494, 0, h + 0.001, 0, { x: -Math.PI / 2 }, { sinSuelo: true, plano: true });
+    pon(new THREE.CircleGeometry(rh * 0.95, D * 2), 0x2f3b38, 0, h, 0, { x: -Math.PI / 2 }, { sinSuelo: true, plano: true, brillo: 1.05 });
+    pon(new THREE.RingGeometry(rh * 0.88, rh * 0.955, D * 2), 0x5f6b62, 0, h + 0.001, 0, { x: -Math.PI / 2 }, { sinSuelo: true, plano: true });
   }
 }
 function cubo(n, id) {

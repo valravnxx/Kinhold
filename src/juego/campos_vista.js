@@ -178,16 +178,15 @@ const FORMAS = {};
 const forma = (cultivo, f, mustia = false) => (FORMAS[cultivo + f + (mustia ? 'm' : '')] ||= mustia ? mustiar(forma(cultivo, f)) : formaPlanta(cultivo, f));
 // La planta mustia (regar el huerto, P11b): sin agua desde hace días, las hojas caen y se abren (más baja y más ancha) y
 // pierden el verde hacia un pardo amarillento
-const MUSTIO = C(0x9a8a52);
+const MUSTIO = C(0xa89a5c);
 function mustiar(g0) {
   const g = g0.clone(), p = g.attributes.position, c = g.attributes.color;
   for (let i = 0; i < p.count; i++) {
     const y = p.getY(i), caida = Math.min(1, y / 0.25);
     p.setXYZ(i, p.getX(i) * (1 + 0.18 * caida), y * 0.6, p.getZ(i) * (1 + 0.18 * caida));
-    c.setXYZ(i, c.getX(i) + (MUSTIO.r - c.getX(i)) * 0.5, c.getY(i) + (MUSTIO.g - c.getY(i)) * 0.5, c.getZ(i) + (MUSTIO.b - c.getZ(i)) * 0.5);
+    c.setXYZ(i, c.getX(i) + (MUSTIO.r - c.getX(i)) * 0.55, c.getY(i) + (MUSTIO.g - c.getY(i)) * 0.55, c.getZ(i) + (MUSTIO.b - c.getZ(i)) * 0.55);
   }
-  g.computeVertexNormals();
-  return g;
+  return g;   // (sin rehacer las normales: las hojas van por las dos caras con la normal hacia arriba)
 }
 let matPlantas = null;
 // un número fijo (0–1) para un punto, para que cada planta salga siempre igual
