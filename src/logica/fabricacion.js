@@ -232,6 +232,8 @@ export const RECETAS = {
   // el zurrón de piel (P9, 13 nov; documento de sistemas: «zurrón de piel — 2 piel limpia + cordel — banco — mochila mixta pequeña»): la
   // mochila mixta pequeña (src/logica/inventario.js: 2 huecos medianos y 2 pequeños). Tiempo, provisional
   zurron:            r('Zurrón de piel', 'banco', 'zurron', { piel_limpia: 2, cordel: 1 }, 60),
+  // (P10, 14 nov) la criba: un aro de vara con el fondo de mimbre tejido. Tiempo, provisional (como la nasa)
+  criba:             r('Criba', 'banco', 'criba', { mimbre: 2, vara: 1 }, 45),
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -276,6 +278,7 @@ export const PARA = {
   mayal: 'Trillar.',
   trillar: 'Grano de cebada, que se siembra, y paja: el tejado de paja, la cama de paja, el almiar.',
   cubo: 'Agua, leche.',
+  criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 
 const tiene = (o, k) => typeof k === 'string' && Object.hasOwn(o, k);

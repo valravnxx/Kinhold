@@ -2954,5 +2954,14 @@
  "Aquí no hay malas hierbas que quitar.": "Здесь нет сорняков.",
  "Demo única · v207 (escardar)": "Единое демо · v207 (прополка)",
  "v207: escardar (P11; valravnx, 14 nov: «meteremos… escardar»). Mientras la cebada, las habas, la col y el nabo están verdes o echando espiga, salen malas hierbas entre ellos (se ven: rosetas de hojas anchas y, en espiga, alguna amapola y algún aciano). Con las manos vacías o con la azada, delante de ellas, Usar dice Escardar y en unos 2 s quita las de un círculo de 1,2 m. Es optativo y da más al cosechar, como la escarda de junio en la época.": "v207: прополка (P11; valravnx, 14 нояб.: «добавим… прополку»). Пока ячмень, бобы, капуста и репа зелёные или колосятся, среди них появляются сорняки (их видно: розетки широких листьев, а при колошении — редкий мак и василёк). С пустыми руками или мотыгой перед ними «Использовать» говорит «Полоть» и примерно за 2 с убирает их в круге 1,2 м. Это по желанию и даёт больше урожая, как июньская прополка той эпохи.",
- "v207, provisional: cuánto da escardar (la cebada escardada cuenta 1,25 m² por cada m² al hacer gavillas: 5 por cada 4; cada planta escardada da 1 más, una haba o una semilla), cuándo salen las malas hierbas (de la fase verde a la espiga) y cuántas se ven (2 matas por m²).": "v207, предварительно: сколько даёт прополка (прополотый ячмень считается как 1,25 м² за каждый м² при вязке снопов: 5 вместо 4; каждое прополотое растение даёт на 1 больше — боб или семя), когда появляются сорняки (от зелёной фазы до колошения) и сколько их видно (2 куста на м²)."
+ "v207, provisional: cuánto da escardar (la cebada escardada cuenta 1,25 m² por cada m² al hacer gavillas: 5 por cada 4; cada planta escardada da 1 más, una haba o una semilla), cuándo salen las malas hierbas (de la fase verde a la espiga) y cuántas se ven (2 matas por m²).": "v207, предварительно: сколько даёт прополка (прополотый ячмень считается как 1,25 м² за каждый м² при вязке снопов: 5 вместо 4; каждое прополотое растение даёт на 1 больше — боб или семя), когда появляются сорняки (от зелёной фазы до колошения) и сколько их видно (2 куста на м²).",
+ "Criba": "Решето",
+ "Cribar: {c}": "Просеять: {c}",
+ "A la mancha le quedan {n} pasadas.": "В пятне осталось проходов: {n}.",
+ "La mancha se ha agotado: volverá a salir en unos meses.": "Пятно истощено: оно появится снова через несколько месяцев.",
+ "Tierra encharcada de agua rojiza": "Заболоченная земля с рыжей водой",
+ "Necesitas una pala de madera y una criba para sacar el mineral.": "Чтобы добыть руду, нужны деревянная лопата и решето.",
+ "Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.": "С деревянной лопатой добывает железную руду из заболоченной земли с рыжей водой.",
+ "Sacas {n} × {c}: lo dejas junto a la mancha.": "Добыто {n} × {c}: кладёшь рядом с пятном.",
+ "Aquí no se puede cribar.": "Здесь нельзя просеивать."
 }

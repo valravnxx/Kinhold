@@ -14,6 +14,8 @@
 //   caliza — la roca madre del sitio es caliza.
 //   rio    — en seco junto al agua de un río (la grava de la orilla, hasta 4 m del agua).
 //   ribera — cerca de un río (hasta 16 m de la orilla), en seco.
+//   vega   — (P10) la ribera llana (pendiente de menos de 0,1): donde se encharca y sale el hierro de pantano.
+//   turbera — (P10) el bioma de las turberas, en llano (pendiente de menos de 0,1).
 // Decisiones provisionales (el documento solo dice «M» y «P»; anotadas en el registro de decisiones y en el diario):
 //  - Una celda de 8 m da como mucho un punto. Lo «medio» (ramas, piedra) sale en una de cada 3 o 4 celdas de su zona;
 //    lo «poco» (sílex, fibra), en una de cada 10 o 20; en los ríos, más (la orilla es estrecha). En el claro, algo de
@@ -55,8 +57,11 @@ export const DENSIDAD_RECOGIDA = {
   habas_silvestres: { claro: 0.035 },
   col_silvestre:    { ribera: 0.05 },
   nabo_silvestre:   { ribera: 0.05 },
+  // (P10, 14 nov) las manchas de hierro de pantano: pocas (decisión provisional: una de cada 16 o 17 celdas de la vega llana
+  // y una de cada 25 de la turbera); también después, al final (lo de antes, en su sitio)
+  hierro_pantano:   { vega: 0.06, turbera: 0.04 },
 };
-const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre', 'cebada_silvestre', 'habas_silvestres', 'col_silvestre', 'nabo_silvestre'];
+const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre', 'cebada_silvestre', 'habas_silvestres', 'col_silvestre', 'nabo_silvestre', 'hierro_pantano'];
 // Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
 // al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
 // la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo
@@ -85,6 +90,8 @@ export function zonasRecogida(paisaje, alt, semilla, x, z, tramos) {
   const { dm, ancho } = paisaje.rioCerca(x, z, tramos), orilla = dm - ancho / 2;
   if (orilla < 4) zonas.push('rio');
   if (orilla < 16) zonas.push('ribera');
+  if (orilla < 16 && s < 0.1) zonas.push('vega');
+  if (st.bioma === 'turbera' && s < 0.1) zonas.push('turbera');
   // la marisma de las desembocaduras (src/logica/vegetacion.js, marismaEn)
   if (y < 1.8 && marismaEn(y, s, paisaje.rioCerca(x, z, tramos), x, z) > 0.3) zonas.push('marisma');
   return { zonas, d, y, s };

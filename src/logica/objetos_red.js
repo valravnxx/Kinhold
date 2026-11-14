@@ -138,7 +138,7 @@ export class ObjetosServidor {
       } else if (a.tipo === 'recoger' || a.tipo === 'desbrozar' || a.tipo === 'romper') {
         const fallo = this.conocerPunto(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora, this.suelo);
-        suelo = !!(r.ok && (a.tipo === 'desbrozar' || r.rota));
+        suelo = !!(r.ok && (a.tipo === 'desbrozar' || r.rota || r.deja));   // (y el mineral de la mancha de hierro de pantano)
       } else if (DE_FABRICAR.has(a.tipo)) {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él

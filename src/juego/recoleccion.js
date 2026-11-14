@@ -39,6 +39,8 @@ const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
 // pardo y pie crema.
 const CEPA = 0x5e5040, CEPA_OSC = 0x4a3f33, VARA_MIMBRE = 0x7a4a32, VARA_MIMBRE_ARR = 0x8a7a3e, HOJA_SAUCE = 0x7d8f5a, HOJA_SAUCE_OSC = 0x627548;
+// (P10) la mancha de hierro de pantano: la turba empapada, la juncia, la costra ocre, el agua color óxido y la tela irisada
+const TURBA = 0x3f3427, TURBA_OSC = 0x2e261d, JUNCIA = 0x6c7a45, JUNCIA_SECA = 0x8a8150, OCRE = 0xa0602a, AGUA_OXIDO = 0x6e3518, TELA_IRISADA = 0x8f949a;
 const BAYA_ROJA = 0xb0222e, BAYA_NEGRA = 0x3b1630, BAYA_VERDE = 0xb46a3c, CANA = 0x6e3a2c, SETA = 0xa2643a, SETA_OSC = 0x7e4c2a, SETA_PIE = 0xe2d6bc, SETA_LAMINAS = 0xcbb894;
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
@@ -328,6 +330,39 @@ export function modelosRecoleccion() {
   // el nabo silvestre: hojas de verde vivo en corro bajo; los tallos en flor, más y de amarillo más vivo (0,5–0,7 m)
   const naboPlanta = geoLote(L => { roseta(L, 13, 0.3, 0.085, NABO_HOJA, NABO_HOJA_OSC, 0.55, 0.9); }, { doble: true, rangoSuelo: 0.15 });
   const naboFlor = geoLote(L => flores(L, 6, 0.6, FLOR_AMARILLA, 0xa9bf6c, SILICUA, 1.1), { rangoSuelo: 0.3 });
+  // (P10, 14 nov) la mancha de hierro de pantano (GDD: «tierra encharcada, agua rojiza»): un trozo de unos 2 m de tierra
+  // negra empapada y hundida, con matas de juncia alrededor, que se queda (siempre); y encima, lo que se va al agotarla:
+  // charcos de agua color óxido, con el borde ocre de la costra de hierro y la tela irisada que flota en el agua parada
+  const bordeM = (r, y, n, sem, ex = 1.3) => {
+    const sh = new THREE.Shape();
+    for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, q = r * (0.8 + 0.2 * Math.sin(a * 3 + sem) + 0.09 * Math.sin(a * 7 + sem * 2)); i ? sh.lineTo(Math.cos(a) * q * ex, Math.sin(a) * q) : sh.moveTo(Math.cos(a) * q * ex, Math.sin(a) * q); }
+    const g = new THREE.ShapeGeometry(sh, 2); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g;
+  };
+  const manchaSuelo = geoLote(L => {
+    L.add(bordeM(1.05, 0.008, 32, 0.7), TURBA, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
+    L.add(bordeM(0.85, 0.013, 30, 2.1), TURBA_OSC, 0.06, 0, 0.02, null, { tex: 'piedra', sinSuelo: true, brillo: 0.9 });
+    for (let k = 0; k < 5; k++) { const a = k * 1.4 + 2.2, r = 0.9; L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), TURBA_OSC, Math.cos(a) * r * 1.3, 0.015, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.5, 1), plano: true, tex: 'piedra' }); }
+  }, { rangoSuelo: 0.05 });
+  const manchaJuncia = geoLote(L => {
+    // matas de juncia (hojas finas y dobladas) por el borde
+    for (let k = 0; k < 6; k++) {
+      const a = k * 1.13 + 0.4, r = 1.0 + (k % 2) * 0.18, cx = Math.cos(a) * r * 1.25, cz = Math.sin(a) * r;
+      for (let h = 0; h < 9; h++) {
+        const b = h / 9 * Math.PI * 2 + k, alto = 0.22 + ((h * 7 + k) % 5) * 0.05;
+        const g = new THREE.ConeGeometry(0.008, alto, 3); g.translate(0, alto / 2, 0);
+        const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) + (y / alto) ** 2 * 0.09); }
+        L.add(g, h % 3 ? JUNCIA : JUNCIA_SECA, cx + Math.cos(b) * 0.03, 0, cz + Math.sin(b) * 0.03, { y: -b }, { brillo: 0.95 });
+      }
+    }
+  }, { doble: true, rangoSuelo: 0.05 });
+  const manchaAgua = geoLote(L => {
+    // tres charcos: la costra ocre del borde, el agua óxido encima y, en dos, la tela irisada
+    for (const [x, z, r, sem, tela] of [[0.05, 0.0, 0.5, 1, true], [-0.62, 0.32, 0.26, 3, false], [0.55, -0.42, 0.22, 5, true]]) {
+      L.add(bordeM(r, 0.017, 24, sem), OCRE, x, 0, z, null, { tex: 'piedra', sinSuelo: true });
+      L.add(bordeM(r * 0.8, 0.021, 22, sem + 1), AGUA_OXIDO, x + 0.02, 0, z, null, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
+      if (tela) L.add(bordeM(r * 0.38, 0.023, 14, sem + 2, 1.6), TELA_IRISADA, x - r * 0.15, 0, z + r * 0.12, null, { tex: 'liso', sinSuelo: true, brillo: 1.2 });
+    }
+  }, { rangoSuelo: 0.05 });
 
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
@@ -340,7 +375,8 @@ export function modelosRecoleccion() {
   return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('junco_recoger') ? [...M('junco_recoger'), ...M('junco_cortado').map(m => ({ ...m, cortado: true }))] : (M('juncos') || juncos), barro, yesquero, pena,
     bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas],
     cebada_silvestre: [...cebadaPlanta.map(m => ({ ...m, siempre: true })), ...cebadaEspigas], habas_silvestres: [...habasPlanta.map(m => ({ ...m, siempre: true })), ...habasVainas],
-    col_silvestre: [...colPlanta.map(m => ({ ...m, siempre: true })), ...colFlor], nabo_silvestre: [...naboPlanta.map(m => ({ ...m, siempre: true })), ...naboFlor] });
+    col_silvestre: [...colPlanta.map(m => ({ ...m, siempre: true })), ...colFlor], nabo_silvestre: [...naboPlanta.map(m => ({ ...m, siempre: true })), ...naboFlor],
+    hierro_pantano: [...manchaSuelo, ...manchaJuncia].map(m => ({ ...m, siempre: true })).concat(manchaAgua) });
 }
 
 // Las bayas sobre el arbusto de Meshy: racimos de tres en la cara de fuera de la mata (lo que mira hacia fuera y no
@@ -428,8 +464,8 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
     // todos los disponibles a menos de dist m, del más cercano al más lejano (para el menú de Usar)
     cercanos(x, z, dist = 1.6, ahora = Date.now()) { return rec.cercanos(x, z, ahora, dist).filter(p => !ocupado(p.x, p.z)); },
     // recoger con autor; lo guarda en el navegador y esconde el punto
-    recoger(invs, registro, autor, punto, x, z, ahora = Date.now()) {
-      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora);
+    recoger(invs, registro, autor, punto, x, z, ahora = Date.now(), suelo = null) {   // (suelo: donde cae lo cribado)
+      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora, suelo);
       if (r.ok) { if (almacen) guardarRecoleccion(almacen, rec); refrescar(ahora); }
       return r;
     },
@@ -493,7 +529,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
         // (13 nov, valravnx: los juncos, más grandes: de 1,3 a unos 1,7 m)
         const esc = tipo === 'juncos' ? 1.3 : 1;
         lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
+        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'hierro_pantano'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices, siempre, cortado });
       }
     }
@@ -561,8 +597,8 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
       if (r.ok) { if (almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO); refrescar(ahora); }
       return r;
     },
-    recoger(invs, registro, autor, punto, x, z, ahora = Date.now()) {
-      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora);
+    recoger(invs, registro, autor, punto, x, z, ahora = Date.now(), suelo = null) {   // (suelo: donde cae lo cribado)
+      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'recoger', punto, x, z }, ahora, suelo);
       if (r.ok) { if (almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO); refrescar(ahora); }
       return r;
     },

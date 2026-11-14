@@ -2954,5 +2954,14 @@
  "Aquí no hay malas hierbas que quitar.": "There are no weeds to pull out here.",
  "Demo única · v207 (escardar)": "Single demo · v207 (weeding)",
  "v207: escardar (P11; valravnx, 14 nov: «meteremos… escardar»). Mientras la cebada, las habas, la col y el nabo están verdes o echando espiga, salen malas hierbas entre ellos (se ven: rosetas de hojas anchas y, en espiga, alguna amapola y algún aciano). Con las manos vacías o con la azada, delante de ellas, Usar dice Escardar y en unos 2 s quita las de un círculo de 1,2 m. Es optativo y da más al cosechar, como la escarda de junio en la época.": "v207: weeding (P11; valravnx, 14 Nov: «we will add… weeding»). While barley, beans, cabbage and turnip are green or heading, weeds come up among them (you can see them: rosettes of broad leaves and, at heading, the odd poppy and cornflower). With empty hands or the hoe, in front of them, Use says Weed and in about 2 s pulls those in a 1.2 m circle. It is optional and gives more at harvest, like the June weeding of the period.",
- "v207, provisional: cuánto da escardar (la cebada escardada cuenta 1,25 m² por cada m² al hacer gavillas: 5 por cada 4; cada planta escardada da 1 más, una haba o una semilla), cuándo salen las malas hierbas (de la fase verde a la espiga) y cuántas se ven (2 matas por m²).": "v207, provisional: how much weeding gives (weeded barley counts 1.25 m² for each m² when making sheaves: 5 for every 4; each weeded plant gives 1 more, a bean or a seed), when weeds come up (from the green stage to heading) and how many are shown (2 clumps per m²)."
+ "v207, provisional: cuánto da escardar (la cebada escardada cuenta 1,25 m² por cada m² al hacer gavillas: 5 por cada 4; cada planta escardada da 1 más, una haba o una semilla), cuándo salen las malas hierbas (de la fase verde a la espiga) y cuántas se ven (2 matas por m²).": "v207, provisional: how much weeding gives (weeded barley counts 1.25 m² for each m² when making sheaves: 5 for every 4; each weeded plant gives 1 more, a bean or a seed), when weeds come up (from the green stage to heading) and how many are shown (2 clumps per m²).",
+ "Criba": "Sieve",
+ "Cribar: {c}": "Sieve: {c}",
+ "A la mancha le quedan {n} pasadas.": "The patch has {n} passes left.",
+ "La mancha se ha agotado: volverá a salir en unos meses.": "The patch is worked out: it will come back in a few months.",
+ "Tierra encharcada de agua rojiza": "Waterlogged ground with reddish water",
+ "Necesitas una pala de madera y una criba para sacar el mineral.": "You need a wooden shovel and a sieve to get the ore out.",
+ "Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.": "With the wooden shovel, gets iron ore out of waterlogged ground with reddish water.",
+ "Sacas {n} × {c}: lo dejas junto a la mancha.": "You get {n} × {c}: you leave it next to the patch.",
+ "Aquí no se puede cribar.": "You can't sieve here."
 }

@@ -19,6 +19,7 @@
 //  - nasa: un cono de mimbre con aros, la boca abierta y la punta atada.
 //  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
+//  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
 //  - cintos de cuero (7 nov, para el panel de equipo): la correa enrollada de canto, con la hebilla de hierro en la punta
@@ -485,6 +486,24 @@ function cubo(n, id) {
   return mallas(L);
 }
 
+// La criba (P10): un aro de vara doblada (45 cm) con la pared baja de tiras de mimbre y el fondo tejido en cuadros,
+// para lavar la tierra del pantano. loteCriba(L) la pone en el lote L, el fondo en y = 0 y la boca hacia +Y.
+export function loteCriba(L, opc = {}) {
+  const r = 0.22, alto = 0.07;
+  L.add(cil(r, r * 0.97, alto, 22, true), MIMBRE, 0, alto / 2, 0, null, { tex: 'paja', rayas: (v) => 0.88 + 0.12 * Math.sin(v.y * 260), ...opc });
+  L.add(cil(r * 0.97, r * 0.95, alto, 22, true), 0x8f7a52, 0, alto / 2 + 0.002, 0, null, { escala: v3(-0.96, 1, 0.96), tex: 'paja', ...opc });   // por dentro
+  // el fondo: un disco con el tejido de cuadros (las tiras cruzadas, más claras, y los huecos oscuros)
+  L.add(new THREE.CircleGeometry(r * 0.95, 22), 0x9a845a, 0, 0.012, 0, { x: -Math.PI / 2 }, { tex: 'paja', rayas: (v) => ((Math.abs(Math.sin(v.x * 75)) > 0.82 || Math.abs(Math.sin(v.z * 75)) > 0.82) ? 0.55 : 1), ...opc });
+  // los dos aros de vara (arriba y abajo) y una atadura de cordel
+  for (const y of [0.004, alto]) L.add(new THREE.TorusGeometry(r + 0.004, 0.009, 5, 26), 'madera', 0, y, 0, { x: Math.PI / 2 }, { tex: 'veta', ...opc });
+  L.add(new THREE.TorusGeometry(0.014, 0.004, 4, 8), CORDEL, r + 0.006, alto * 0.6, 0, { y: Math.PI / 2 }, { tex: 'liso', ...opc });
+}
+function criba(n, id) {
+  const L = lote(0.05);
+  loteCriba(L, { sinSuelo: true });
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -636,6 +655,6 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
