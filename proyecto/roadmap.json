@@ -2341,7 +2341,9 @@
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD (clima por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo), con la cadena de cada cosa hasta el mundo (el cubo ← tronco corto en el banco; el agua ← el río, el mar no)",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-14T20:23:09+00:00",
+     "rama": "trabajo/20261114-2023"
     },
     {
      "nombre": "Llueve: el tiempo del mundo (despejado, nublado, lluvia, niebla) por zonas grandes y por el reloj del servidor, igual para todos; la lluvia se ve (gotas, cielo gris, suelo mojado) y se oye, en PC y en móvil sin perder fotogramas",
