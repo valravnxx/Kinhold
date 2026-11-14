@@ -354,6 +354,7 @@ try:
         t = elegir(A, 'raspar_piel')
         comprobar('la ficha dice para qué sirve y que hace falta la lasca de sílex', 'zurrón' in t and re.search('lasca', t, re.I) is not None, t[:300])
         captura(A, f'{SALIDA}/PC_panel_raspador.png')
+        A.evaluate(f"{K}.panelFabricar.cerrar()")
 
         print('La era (P11, 13 nov), con dos gavillas por trillar (solo para mirarla: se dibuja aquí), y su pestaña')
         ERA = f"""((K, dx, dz) => {{ const f = K.fabCliente, e = Object.values(f.estaciones).find(x => x.tipo === 'piedra_tallar');
