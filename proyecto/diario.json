@@ -6794,5 +6794,20 @@
   "pruebas": "Comprobador de código correcto. prueba_cosechar.mjs 28/0 (rota a propósito con MUTAR, falla); orígenes 82/82 (la gavilla, la col y el nabo ya salen de algún sitio); iconos 632/0; fabricación 197/0. En la nube: el recorrido, la demo única, marcar el campo (con sembrar y cosechar, PC y móvil), el inventario, despiezar y asar, el mazo, la cama, los avisos y la velocidad con pocos fotogramas, bien. El panel de fabricar se corta dos veces en la parte del móvil (crear la cuenta y tocar el botón: la máquina sin GPU; ya pasaba antes en el diario); todo lo de PC, bien. En la lógica falla «internet con Caddy», como en main. Fuera, la construcción (una línea de obras_red; sus escaleras fallan igual en main). No comprobado: fotogramas en un móvil de verdad.",
   "capturas": "capturas/demo-v203",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-13T22:23:55+00:00",
+  "fin": "2026-11-14T00:11:00+00:00",
+  "titulo": "P11: la era y trillar, a medias (el aspecto de la era no pasa la revisión)",
+  "hito": "granja",
+  "hecho": [
+   "En la rama trabajo/20261113-2224: la era (8 piedras, fuera y en tu tierra, 30 s de trabajo) como estación nueva, con su uso «En la era»; «Trillar una gavilla» (con el mayal en lo que llevas, que no se gasta) da 1 grano de cebada y 1 haz de paja.",
+   "La cebada silvestre pasa a llamarse grano de cebada (es su semilla). La paja deja de estar escondida: el tejado y el remate de paja, la cama de paja, la antorcha de pie y la alfombra salen en Construir; imágenes nuevas en iconos-v24 y piezas-v2.",
+   "pruebas/prueba_trillar.mjs (18/0; rota a propósito con MUTAR=1, falla) y orígenes sin la era ni la paja en PENDIENTES; la prueba del panel de fabricar mira la era y su pestaña; las del tramo y del menú de construir, con la paja a la vista.",
+   "La segunda mirada dijo que no al modelo de la era: un disco liso que no parece tierra apisonada, piedras que en ladera quedan sueltas fuera del borde, y la hierba densa atraviesa el suelo. No se publica: la tarea queda a medias en su rama para arreglar el aspecto."
+  ],
+  "pruebas": "Comprobador de código correcto. Aquí: trillar 18/0, orígenes 78/0, fabricación 197/0, comida 44/0, cosechar 28/0, iconos 651/0, idiomas, tramo 50/0. En la nube: bien el recorrido, la cama, el hogar, los colgaderos, el acabado de construir, la velocidad y el inventario; el panel de fabricar, lo de PC bien (con la era y su pestaña), el móvil se cuelga al crear la cuenta (como antes). Fallan igual que en main: systemd-analyze (lógica), los almacenajes y las escaleras de la construcción. No comprobado: la era en el móvil.",
+  "capturas": "",
+  "estado": "fallo"
  }
 ]
