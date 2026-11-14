@@ -477,7 +477,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   };
   const sucio = () => J.cuantos('grano_sucio') + enSuelo('grano_sucio', E, 3).reduce((t, o) => t + o.cosa.n, 0);
   const granoSucio = sucio();
-  comprobar('trillar da grano sin limpiar (con granzas y briznas): hay que cribarlo', granoSucio >= trilladas, `${granoSucio}`);
+  comprobar('trillar da grano sin limpiar (con granzas y briznas): hay que cribarlo', granoSucio > 0 && granoSucio >= trilladas, `${granoSucio}`);
   await soltarManos();
   const sitioPaja = { x: J.pos.x, z: J.pos.z };
 
@@ -583,7 +583,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   await soltarManos();
   const grano = J.cuantos('semilla_cebada') + cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'semilla_cebada' && dist(o, E) < 5), E).reduce((t, o) => t + o.cosa.n, 0);
-  comprobar('criba todo el grano sin limpiar: grano de cebada, que es también su semilla (tiene para sembrar otra vez)', cribados >= granoSucio && sucio() === 0 && grano >= cribados, `${cribados} cribados de ${granoSucio}, ${sucio()} sin cribar, ${grano} de cebada · ${mc}`);
+  comprobar('criba todo el grano sin limpiar: grano de cebada, que es también su semilla (tiene para sembrar otra vez)', granoSucio > 0 && cribados >= granoSucio && sucio() === 0 && grano >= cribados, `${cribados} cribados de ${granoSucio}, ${sucio()} sin cribar, ${grano} de cebada · ${mc}`);
 
   // 22o. El tejado de paja: un tramo junto al tejado de juncos de su casa (se apoya en él), puesto desde un andamio
   await cuidarse();
