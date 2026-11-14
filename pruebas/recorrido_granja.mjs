@@ -55,6 +55,17 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     }
     return cantidad ? J.cuantos(tipo) >= cantidad : J.cuantos(tipo) > 0;
   };
+  // tener algo en una mano (lo coge del suelo de al lado de donde, o lo pasa de donde lo lleve)
+  const aLaMano = async (tipo, donde) => {
+    if (enLaMano(tipo)) return true;
+    if (!J.cuantos(tipo) && donde) { await cogerSuelo(tipo, donde, 3); if (enLaMano(tipo)) return true; }
+    const ruta = J.inv.rutasCon(tipo)[0];
+    if (!ruta) return false;
+    let libre = MANOS.find(l => !J.inv.lugares[l]);
+    if (!libre) { await soltar('mano:izq'); libre = 'mano:izq'; }
+    const q = await J.objeto({ tipo: 'mover', de: ruta, a: libre });
+    return q.ok && !!enLaMano(tipo);
+  };
   const deMano = async (receta) => {
     const f = await J.objeto({ tipo: 'fabricar', receta, x: J.pos.x, z: J.pos.z });
     adelantar();
@@ -126,21 +137,28 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const pend = (x, z) => Math.hypot(T.suelo(x + 1.5, z) - T.suelo(x - 1.5, z), T.suelo(x, z + 1.5) - T.suelo(x, z - 1.5)) / 3;
   const veg = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + M.x - 120, z0: O.z + M.z - 120, x1: O.x + M.x + 120, z1: O.z + M.z + 120 }).arboles
     .map(e => ({ x: e.x - O.x, z: e.z - O.z, edad: e.edad })).map(e => ({ ...e, id: idArbol(e.x, e.z) }));
+  // (el servidor conoce los árboles de los trozos que tiene cargados: uno que no conoce está en pie)
+  const enPie = (a) => !s.objetos.tala.porId.has(a.id) || s.objetos.tala.enPie(a.id, Date.now());
+  const porque = {};
+  const no = (k) => { porque[k] = (porque[k] || 0) + 1; return false; };
   const vale = (a) => {
-    if (a.edad !== 'joven' || !s.objetos.tala.enPie(a.id, Date.now())) return false;
-    if (dist(a, M) < 15 || est.some(e => dist(e, a) < 12) || obras.some(o => dist(o, a) < 12)) return false;
+    if (a.edad !== 'joven' || !enPie(a)) return no('no es joven o no está en pie');
+    if (dist(a, M) < 15 || est.some(e => dist(e, a) < 12) || obras.some(o => dist(o, a) < 12)) return no('cerca de sus obras');
     for (let i = -L - 1; i <= L + 1; i++) for (let j = -L - 1; j <= L + 1; j++) {
       const x = a.x + i, z = a.z + j;
-      if (!s.mundo.dentroDeTierra(x, z, yo) || T.aguaEn(x, z) !== null || pend(x, z) > PENDIENTE_MAX * 0.8 || campoEn(s.mundo, x, z)) return false;
+      if (!s.mundo.dentroDeTierra(x, z, yo)) return no('fuera de su tierra');
+      if (T.aguaEn(x, z) !== null) return no('agua');
+      if (pend(x, z) > PENDIENTE_MAX * 0.8) return no('pendiente');
+      if (campoEn(s.mundo, x, z)) return no('otro campo');
     }
     const c = T.cercaDe(a.x, a.z, L * 1.5 + 2);
     const dentro = (p, m) => Math.abs(p.x - a.x) <= L + m && Math.abs(p.z - a.z) <= L + m;
-    if (c.arboles.some(b => b.id !== a.id && dentro(b, 1.9))) return false;
-    if (c.matas.some(p => dentro(p, 1.3))) return false;
+    if (c.arboles.some(b => b.id !== a.id && dentro(b, 1.9))) return no('otro árbol');
+    if (c.matas.some(p => dentro(p, 1.3))) return no('matas');
     return true;
   };
   const arbol = cerca(veg.filter(vale), M)[0];
-  comprobar('hay en su tierra un sitio llano para un campo de 6 × 6 m alrededor de un árbol joven', !!arbol, arbol ? `a ${Math.round(dist(arbol, M))} m del mojón` : `${veg.length} árboles mirados`);
+  comprobar('hay en su tierra un sitio llano para un campo de 6 × 6 m alrededor de un árbol joven', !!arbol, arbol ? `a ${Math.round(dist(arbol, M))} m del mojón` : `${veg.length} árboles mirados: ${JSON.stringify(porque)}`);
   if (!arbol) return;
   const esquinas = [[-L, -L], [L, -L], [L, L], [-L, L]].map(([i, j]) => ({ x: r2(arbol.x + i), z: r2(arbol.z + j) }));
 
@@ -148,10 +166,15 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   console.log('22c. Hace 4 estacas (1 rama cada una) y marca con ellas el campo alrededor del árbol joven');
   await juntar(['ramas'], 'rama', 4, 200);
   let hechas = 0;
+  const tallerEstacas = { ...J.pos };
   for (let k = 0; k < 4; k++) { const q = await deMano('estaca'); if (q.ok) hechas++; }
-  comprobar('hace 4 estacas con las manos, de 1 rama cada una', hechas === 4 && J.cuantos('estaca') === 4, `${hechas} · ${enMano()}`);
+  const estacasAqui = () => J.cuantos('estaca') + enSuelo('estaca', tallerEstacas, 2).reduce((t, o) => t + o.cosa.n, 0);
+  comprobar('hace 4 estacas con las manos, de 1 rama cada una (las que no le caben, a sus pies)', hechas === 4 && estacasAqui() === 4, `${hechas} · ${enMano()}`);
+  const lr = enLaMano('rama'); if (lr) await soltar(lr);
+  await cogerSuelo('estaca', tallerEstacas, 2);
   let rc = null, clavadas = 0, mal = [];
   for (const p of [...esquinas, esquinas[0]]) {
+    if (!J.cuantos('estaca') && clavadas < 4) await cogerSuelo('estaca', tallerEstacas, 2);
     await J.andar(p.x, p.z);
     rc = await J.accion({ tipo: 'estaca', x: p.x, z: p.z });
     if (rc.ok) clavadas++; else mal.push(rc.motivo);
@@ -163,8 +186,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const dentroCampo = (x, z) => dentroPoligono(campo.puntos, x, z);
   const puntosLabrar = [];
   for (let i = -L + 0.9; i <= L - 0.9 + 1e-6; i += 1.4) for (let j = -L + 0.9; j <= L - 0.9 + 1e-6; j += 1.4) puntosLabrar.push({ x: r2(arbol.x + i), z: r2(arbol.z + j) });
-  let q = await J.accion({ tipo: 'labrar', campo: cid, x: arbol.x + 1, z: arbol.z, t: 0 });
-  comprobar('con el árbol dentro, no se labra (y sin azada, tampoco)', !q.ok, q.motivo);
+  let q = null;
 
   // 22e. La azada: rama, piedra y una cuerda en el banco
   console.log('22d. Se hace una azada en su banco: una rama, una piedra y una cuerda (3 cordeles de fibra)');
@@ -179,6 +201,10 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   await soltarManos();
   q = await enEstacion(banco, 'azada');
   comprobar('deja en el banco la cuerda, una rama y una piedra, y hace la azada', q.ok && J.cuantos('azada') === 1, `${q.motivo || ''} ${d1.motivo || ''} ${d2.motivo || ''} · ${enMano()}`);
+  await J.andar(arbol.x + 1.5, arbol.z);
+  q = await J.accion({ tipo: 'labrar', campo: cid, x: arbol.x + 0.8, z: arbol.z, t: 0 });
+  comprobar('con el árbol en pie dentro, no se labra a su lado: antes hay que limpiar', !q.ok && /limpia/.test(q.motivo || ''), q.motivo);
+  await J.andar(banco.x + 1, banco.z);
   await soltarManos(['azada']);
 
   // 22f. Limpiar: tala el árbol joven con su hacha (la dejó junto al banco), lo limpia, arranca el tocón con la azada y
@@ -199,13 +225,13 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   let limpia = 0;
   do { q = await J.objeto({ tipo: 'talar', arbol: arbol.id, x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad }); limpia++; if (q.ok && !q.datos.limpio) await pausa(550); } while (q.ok && !q.datos.limpio && limpia < 10);
   comprobar('tala el árbol joven del campo y lo limpia con el hacha', q.ok && q.datos.limpio, `${golpes} + ${limpia} golpes · ${q.motivo || ''}`);
-  q = await J.accion({ tipo: 'labrar', campo: cid, x: arbol.x, z: arbol.z, t: 0 });
-  comprobar('con el tocón, aún no se labra ahí', !q.ok, q.motivo);
   // el tronco y las varas del árbol, fuera del campo (las varas, para el tejado)
   await soltarManos();
   const azadaS = enSuelo('azada', banco, 6)[0];
   if (azadaS) { await J.andar(azadaS.x + 0.3, azadaS.z); await J.objeto({ tipo: 'coger_suelo', objeto: azadaS.id, a: 'mano:der', x: J.pos.x, z: J.pos.z }); }
   await J.andar(arbol.x + 1, arbol.z);
+  q = await J.accion({ tipo: 'labrar', campo: cid, x: arbol.x + 0.5, z: arbol.z, t: 0 });
+  comprobar('con el tocón, aún no se labra ahí', !q.ok && /limpia/.test(q.motivo || ''), q.motivo);
   let ga = 0;
   do { q = await J.objeto({ tipo: 'arrancar', arbol: arbol.id, x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad }); ga++; if (q.ok && !q.datos.arrancado) await pausa(550); } while (q.ok && !q.datos.arrancado && ga < 40);
   comprobar('arranca el tocón a golpes de azada (deja leña)', q.ok && q.datos.arrancado && s.objetos.tala.arrancado(arbol.id), `${ga} golpes · ${q.motivo || ''}`);
@@ -238,7 +264,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   console.log('22g. Siembra: habas, col y nabo planta a planta, y cebada a voleo');
   await J.andar(deposito.x, deposito.z); await soltarManos();
   const sembrarPlanta = async (semilla, cultivo, p) => {
-    if (!J.cuantos(semilla)) await cogerSuelo(semilla, deposito, 3);
+    await aLaMano(semilla, deposito);
     await J.andar(p.x, p.z - 1);
     return J.accion({ tipo: 'sembrar', campo: cid, cultivo, x: p.x, z: p.z, t: 0 });
   };
@@ -251,7 +277,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
     await J.andar(deposito.x, deposito.z); await soltarManos();
   }
   comprobar('siembra 2 habas, una col y un nabo, planta a planta (con la semilla en la mano)', sembradas === 4 && (campo.plantas || []).length === 4, mal.join(' | '));
-  await cogerSuelo('semilla_cebada', deposito, 3);
+  await aLaMano('semilla_cebada', deposito);
   let voleo = 0; mal = [];
   for (const p of [{ x: arbol.x + 1.6, z: arbol.z - 1.6 }, { x: arbol.x + 1.6, z: arbol.z + 1.6 }]) {
     await J.andar(p.x, p.z - 1);
@@ -280,17 +306,22 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   console.log('22i. Se hace una hoz de sílex: 3 lascas en su piedra de tallar y una rama, en el banco');
   let lascas = 0;
   for (let k = 0; k < 3; k++) {
+    await J.andar(tallar.x + 1, tallar.z); await soltarManos();   // (las lascas, a sus pies junto a la piedra de tallar)
     await juntar(['silex'], 'silex', 1, 300); await juntar(['piedra'], 'piedra', 1, 300);
     await J.andar(tallar.x + 1, tallar.z);
     await depositar(tallar, 'silex'); await depositar(tallar, 'piedra');
     const rl = await enEstacion(tallar, 'lasca_silex');
     if (rl.ok) lascas++;
-    if (J.cuantos('lasca_silex') >= 1 && MANOS.every(l => J.inv.lugares[l])) { const o = MANOS.find(l => J.inv.lugares[l].tipo !== 'lasca_silex'); if (o) await soltar(o); }
   }
-  comprobar('talla 3 lascas', lascas === 3 && J.cuantos('lasca_silex') >= 3, `${lascas} · lleva ${J.cuantos('lasca_silex')} · ${enMano()}`);
+  await soltarManos();
+  for (let k = 0; k < 3 && J.cuantos('lasca_silex') < 3; k++) await cogerSuelo('lasca_silex', tallar, 4, 3);
+  comprobar('talla 3 lascas (un sílex y una piedra cada una)', lascas === 3 && J.cuantos('lasca_silex') >= 3, `${lascas} · lleva ${J.cuantos('lasca_silex')} · ${enMano()}`);
+  await J.andar(banco.x + 1, banco.z);
+  for (let k = 0; k < 3; k++) await depositar(banco, 'lasca_silex');
+  await soltarManos();
   await juntar(['ramas'], 'rama', 1, 200);
   await J.andar(banco.x + 1, banco.z);
-  await depositar(banco, 'lasca_silex', 3); await depositar(banco, 'rama');
+  await depositar(banco, 'rama');
   await soltarManos();
   q = await enEstacion(banco, 'hoz_silex');
   comprobar('hace la hoz de sílex en el banco', q.ok && J.cuantos('hoz_silex') === 1, `${q.motivo || ''} · ${enMano()}`);
@@ -403,7 +434,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const talarJoven = async () => {
     await soltarManos();
     if (!J.cuantos('hacha_piedra')) await cogerSuelo('hacha_piedra', banco, 8) || await cogerSuelo('hacha_piedra', arbol, 8);
-    const a = cerca(veg.filter(e => e.edad === 'joven' && s.objetos.tala.enPie(e.id, Date.now()) && s.mundo.dentroDeTierra(e.x, e.z, yo) && !campoEn(s.mundo, e.x, e.z) && dist(e, C) > 6 && !est.some(x => dist(x, e) < 4)), J.pos)[0];
+    const a = cerca(veg.filter(e => e.edad === 'joven' && enPie(e) && s.mundo.dentroDeTierra(e.x, e.z, yo) && !campoEn(s.mundo, e.x, e.z) && dist(e, C) > 6 && !est.some(x => dist(x, e) < 4)), J.pos)[0];
     if (!a) return false;
     await J.andar(a.x + 1, a.z);
     let g = 0, t;
