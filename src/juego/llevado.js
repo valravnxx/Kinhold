@@ -120,7 +120,7 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
   const sup = med.superficie; sup.geometry.computeBoundingSphere();
   // por delante, casi tocando (de lado se veía el aire entre la correa y el pecho); por detrás y por encima del hombro,
   // algo más, que al respirar suben los omóplatos y la tapaban
-  const fueraDe = (d) => fuera - (fuera - 0.007) * Math.min(1, Math.max(0, d.z * 1.5));
+  const fueraDe = (d) => fuera - (fuera - 0.005) * Math.min(1, Math.max(0, d.z * 1.5));
   // cada punto, por su rayo desde dentro: lo más de fuera que cruza; donde no cruza nada (la abertura del cuello de la
   // camisa, algún hueco de la malla), lo que sale de sus vecinos
   const pegar = (lista) => {
@@ -154,8 +154,8 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
     let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
     if (lejos <= 0) lejos = base[i];
     // (y, donde salva un hueco del cuerpo, como mucho a 1,5 cm de él: la tela de la camisa y su peso la llevan hacia dentro; con 3, de lado se veía la hierba entre ella y el pecho)
-    // (por delante, 6 mm: de lado, en el móvil, aún se veía la hierba entre el pecho y la correa)
-    const f = fueraDe(d), puente = 0.015 - 0.009 * Math.min(1, Math.max(0, d.z * 1.5));
+    // (por delante, nada: sigue el pecho; con 6 mm y con 15, de lado aún se veía la hierba entre el pecho y la correa)
+    const f = fueraDe(d), puente = 0.015 * (1 - Math.min(1, Math.max(0, d.z * 1.5)));
     const q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : lejos > 0 && r > lejos + f + puente ? o.addScaledVector(d, lejos + f + puente) : p.clone(); q.nor = d; return q;
   };
   for (let vuelta = 0; vuelta < 24; vuelta++)
