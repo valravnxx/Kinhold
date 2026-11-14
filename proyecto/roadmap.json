@@ -2347,7 +2347,9 @@
     },
     {
      "nombre": "El tiempo del mundo entero en la lógica (src/logica/tiempo.js, sin three.js): despejado, nublado, lluvia y niebla por zonas grandes y por el reloj del servidor, igual para todos y sin guardar nada; nublado antes y después de cada rato de lluvia y niebla algunas mañanas; la lluvia que riega el huerto no cambia",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-14T21:23:06+00:00",
+     "rama": "trabajo/20261114-2122"
     },
     {
      "nombre": "La lluvia se ve: gotas alrededor de la cámara (una sola malla, barata), cielo gris y luz más apagada al nublarse, con paso suave de un tiempo a otro; en PC y en móvil midiendo los fotogramas",
