@@ -20,7 +20,7 @@ export const ESENCIALES = [];   // (8 nov: ninguna de siempre; cada una, solo si
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
 export const TOCA = {
   'logica': [/^src\/logica\//, /^src\/combate\/logica\.js$/, /^servidor\//, /^pruebas\/prueba_(?!recorrido)[^/]*\.mjs$/],
-  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/],
+  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/, /^pruebas\/recorrido_granja\.mjs$/],
   'demo-unica': [/^src\/demo\//, /^src\/plantilla\.html$/, /^construir_demo\.mjs$/, /^src\/mundo\/(cliente|conexion|mundo_juego)\.js$/],
   'la-accion-a-la-vista': [/^src\/juego\/accion_vista\.js$/],
   'construccion': [/^src\/logica\/(construccion|piezas|obras_red)\.js$/, /^src\/mundo\/modelos\.js$/, /^src\/juego\/(movimiento|barra_construir)\.js$/],

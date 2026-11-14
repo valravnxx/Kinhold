@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y la granja (P11, 14 nov), en pruebas/recorrido_granja.mjs: el paso 22. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -52,6 +52,8 @@ import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.j
 import { crearServidor } from '../servidor/servidor.mjs';
 import { despojar, MOTIVOS } from '../src/logica/muerte.js';
 import { msDeHora } from '../src/logica/cielo.js';
+import { granja } from './recorrido_granja.mjs';
+import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
 
@@ -77,6 +79,7 @@ function comprobar(nombre, cond, detalle = '') {
 const TODAVIA_NO = {   // (8 nov) lo que el recorrido no hace, con el porqué
   'el secadero': 'pide 4 troncos delgados al hombro y carne de una liebre más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_comida.mjs',
   'el raspador de pieles y el zurrón': 'piden 4 varas, una cuerda y las pieles de dos liebres más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_pieles.mjs',
+  'el hierro de pantano': 'la mancha más cercana está en la vega del río del norte, a unos 800 m, y pide la pala de madera (otro tronco corto en el banco) y la criba (otro haz de mimbre y una vara): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); cribar, por el servidor y con su autor, lo prueba pruebas/prueba_hierro_pantano.mjs',
   'la resina': 'los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs',
 };   // (antes, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
 
@@ -1777,6 +1780,19 @@ try {
         }
       } else comprobar('la liebre cazada está a sus pies, junto a la hoguera', false);
     }
+    // (para trabajar en la granja sin repetir todo lo de antes: KINHOLD_RECORRIDO_GUARDAR=<carpeta> guarda aquí el mundo
+    // y la ficha del jugador y sale; pruebas/recorrido_granja.mjs, ejecutado solo con KINHOLD_RECORRIDO_DESDE=<carpeta>,
+    // sigue desde ahí. No cambia nada del recorrido normal.)
+    if (process.env.KINHOLD_RECORRIDO_GUARDAR) {
+      const destino = process.env.KINHOLD_RECORRIDO_GUARDAR, ahora = Date.now();
+      J2.ws.close(); await pausa(300); await s.cerrar(); s = null;
+      cpSync(dir, destino, { recursive: true });
+      writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ficha: J2.bienvenida.ficha || J.bienvenida.ficha, yo: J2.bienvenida.autor, pos: J2.pos, ahora, base, sitioCaza }));
+      console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes de la granja)`);
+      J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
+    }
+    // P11, la granja básica (14 nov): pruebas/recorrido_granja.mjs
+    await granja({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, base });
     J2.ws.close();
   }
 

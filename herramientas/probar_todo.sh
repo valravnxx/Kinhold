@@ -38,6 +38,7 @@ paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
 paso "Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar" node pruebas/prueba_quitar_mojon.mjs
+paso "Mojones de más del admin: otra zona para construir de prueba" node pruebas/prueba_mojon_extra.mjs
 paso "Alcance de las obras: el servidor solo deja entregar, subir, trabajar y desmontar junto a la obra y en su planta" node pruebas/prueba_alcance_obras.mjs
 paso "Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba" node pruebas/prueba_lo_tuyo.mjs
 paso "La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus invitados (15 sin obra terminada), avisos por correo y ruinas" node pruebas/prueba_tierra_al_rey.mjs
@@ -54,6 +55,7 @@ paso "Herramientas y armas que se gastan: el hacha de piedra tala 3 adultos y se
 paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node pruebas/prueba_desbroce.mjs
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
+paso "El hierro de pantano: las manchas, la pala y la criba, en la lógica y en el servidor" node pruebas/prueba_hierro_pantano.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
 paso "Sin llanos pelados a ras del mar tierra adentro" node pruebas/prueba_llanos.mjs
@@ -104,6 +106,7 @@ paso "Limpiar el campo: arrancar el tocón con la azada o el palo cavador, deja 
 paso "Labrar con la azada: pasadas de 1,2 m dentro del linde y donde está limpio, 1 bit por m², la hora del servidor y el barbecho" node pruebas/prueba_labrar.mjs
 paso "Sembrar y crecer: la cebada a voleo (círculo de 2 m, 1 puñado cada 10 m²) y las habas, la col y el nabo a su distancia, sobre lo labrado; fases en una semana con la hora del servidor" node pruebas/prueba_sembrar.mjs
 paso "Cosechar: la cebada madura se siega con la hoz (gavillas al suelo, 4 cada 10 m²) y las habas, la col y el nabo maduros se cogen a mano (4 veces lo sembrado); el servidor" node pruebas/prueba_cosechar.mjs
+paso "Escardar: malas hierbas en lo verde y en espiga, con las manos o la azada a pasadas; lo escardado da más al cosechar (5 por cada 4, una planta más); el servidor" node pruebas/prueba_escardar.mjs
 paso "La era y trillar: la era (8 piedras, fuera, en tu tierra); cada gavilla dejada en ella, con el mayal, da 1 grano de cebada y 1 paja; la paja ya a la vista; por el servidor" node pruebas/prueba_trillar.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
@@ -158,6 +161,7 @@ paso "Navegador: desbrozar matorrales y arbustos" python3 pruebas/prueba_desbroc
 paso "Navegador: la acción a la vista (etiqueta, aro, lista y botón de acción)" python3 pruebas/prueba_accion_navegador.py dist/kinhold_demo.html "$C/accion"
 paso "Navegador: el mazo de piedra y romper rocas" python3 pruebas/prueba_rocas_navegador.py dist/kinhold_demo.html "$C/rocas"
 paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_materiales_navegador.py dist/kinhold_demo.html "$C/materiales"
+paso "Navegador: el hierro de pantano" python3 pruebas/prueba_hierro_pantano_navegador.py dist/kinhold_demo.html "$C/hierro_pantano"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"

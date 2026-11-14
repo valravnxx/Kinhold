@@ -1,6 +1,6 @@
 // Kinhold — hito 1: construcción
 import * as THREE from 'three';
-import { Mundo, alAlcance, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas } from '../logica/construccion.js';
+import { Mundo, alAlcance, clave, centroLocal, localAMundo, mundoALocal, RADIO_MOJON, geometriaTejados, escaleraAndando, trampillaCerrada, progresoEscalera, centroMundo, tiempoObra, MAX_RATO, plantaObra, clasePeso, andamioEn, poleaPara, polipastoPara, altoCanon, huellaHogar, adarveEn, adarveDeEscalera, altoTejadoEn, empalizadasDe, ALTO_ADARVE, VARAS_PARA_RODAR, ponerZonas, hayZonas, duenoBase } from '../logica/construccion.js';
 import { RegistroAcciones, ejecutar, seAbre, seEnciende, AUTOR_LOCAL, acabarObra, USAN_INVENTARIO, reservaDe } from '../logica/acciones.js';
 import { NOMBRE_ZONA } from '../combate/logica.js';
 import { PIEZAS, DECORACION, MATERIALES, MODULO, ALTURA, enEsteTramo } from '../logica/piezas.js';
@@ -51,7 +51,7 @@ import { crearSuelo } from './suelo.js';
 import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, tieneCon } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -67,7 +67,7 @@ import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
-import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER } from '../logica/campos.js';
+import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -850,10 +850,13 @@ function evaluarColocacion() {
   fantasma.visible = true;
   if (sel.clase === 'mojon') {
     fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
-    const pm = mundo.puedeMojon(x, z, yoAutor());
-    const v = miMojon() ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : (autoconstruirAdmin() || mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario()))) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
+    // con el modo autoconstruir, el admin puede poner mojones de más (valravnx, 14 nov: para construcciones de prueba)
+    const extra = !!miMojon() && autoconstruirAdmin();
+    const pm = mundo.puedeMojon(x, z, yoAutor(), extra);
+    const v = miMojon() && !extra ? { ok: false, motivo: t('yaMojon') } : !pm.ok ? pm : (autoconstruirAdmin() || mundo.puedePagar(PIEZAS.mojon.coste, reservaDe(inventario()))) ? { ok: true } : { ok: false, motivo: t('llevaMateriales') };
     pintarFantasma(v.ok); mostrarAviso(v.ok ? '' : tr(v.motivo), !v.ok);
-    estado.candidato = { tipo: 'mojon', x, z, v };
+    estado.candidato = { tipo: 'mojon', x, z, v, extra };
+    if (v.ok && extra) mostrarAviso(tr('Admin: otro mojón (otra zona tuya, para construir de prueba).'));
     return;
   }
   if (sel.clase === 'nivelar') {
@@ -948,7 +951,7 @@ function colocar() {
     return;
   }
   let r;
-  if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z });
+  if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z, ...(ca.extra ? { extra: true } : {}) });
   else if (ca.tipo === 'nivelar') r = accion({ tipo: 'nivelar', x: redondoMm(ca.x), z: redondoMm(ca.z), y: ca.y, radio: estado.radioBrocha });
   else if (ca.tipo === 'deco') r = accion({ tipo: 'decorar', pieza: estado.sel.tipo, x: ca.x, y: ca.y, z: ca.z, rot: estado.rotDeco || 0 });
   else r = accion({ tipo: 'colocar', ...ca.datos });
@@ -972,13 +975,14 @@ function evaluarDesmontaje(hit) {
   if (!obj) { mostrarAviso(''); return; }
   if (obj.userData.mojon) {
     // tu mojón: quitarlo deja tu tierra y se pierde todo lo construido en ella (valravnx, 4 nov: que avise)
-    if (obj.userData.mojon !== yoAutor()) { mostrarAviso(t('mojonAjeno'), true); return; }
-    const p = mundo.perderiaSinMojon(yoAutor());
+    // (también uno de los de más del admin, «autor~N»: se quita solo ese, con lo de su zona)
+    if (duenoBase(obj.userData.mojon) !== yoAutor()) { mostrarAviso(t('mojonAjeno'), true); return; }
+    const p = mundo.perderiaSinMojon(yoAutor(), obj.userData.mojon);
     if (!p) { mostrarAviso(''); return; }
     resaltar(obj, 'naranja');
     for (const c of p.construcciones) for (const k of c.piezas.keys()) { const o = objDe(c, k); if (o) resaltar(o, 'rojo'); }
     for (const d of p.muebles) { const r = registroMallas.find(m => m.deco === d); if (r) resaltar(r.obj, 'rojo'); }
-    estado.pendienteDesmontar = { mojon: true };
+    estado.pendienteDesmontar = { mojon: obj.userData.mojon };
     $('btnConfirmar').textContent = tr('Quitar el mojón');
     const n = p.piezas + p.muebles.length;
     mostrarAviso(n ? tr('Quitar tu mojón: dejas tu tierra y PIERDES lo construido en ella ({n} piezas y muebles, sin recuperar nada). Desmonta antes lo que quieras recuperar.', { n }) : t('quitarMojonVacio'), true);
@@ -1032,7 +1036,7 @@ function confirmarDesmontaje() {
     return;
   }
   let r;
-  if (pd.mojon) r = accion({ tipo: 'quitar_mojon' });
+  if (pd.mojon) r = accion({ tipo: 'quitar_mojon', ...(pd.mojon !== yoAutor() ? { mojon: pd.mojon } : {}) });
   else if (pd.deco) r = accion({ tipo: 'quitar', id: pd.deco.id });
   else r = accion({ tipo: 'desmontar', construccion: pd.c.id, clave: pd.key });
   estado.pendienteDesmontar = null;
@@ -1040,7 +1044,8 @@ function confirmarDesmontaje() {
     cambiarModo('mover'); guardar(); reconstruir();
     const n = r.perdidas ? r.perdidas.piezas + r.perdidas.muebles : 0;
     // el último: lo que diga la interfaz al cambiar de modo (el consejo del mojón) no lo tapa
-    mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
+    if (pd.mojon !== yoAutor()) mostrarAviso(tr('Mojón de pruebas quitado: su zona queda libre ({n} piezas y muebles perdidos).', { n }));
+    else mostrarAviso(n ? tr('Mojón quitado: tu tierra queda libre y se han perdido {n} piezas y muebles. Pon el mojón donde quieras.', { n }) : t('mojonQuitado'));
     limpiarResaltado(); $('confirmar').hidden = true;
     return;
   } else if (r.ok) {
@@ -1729,6 +1734,8 @@ function accionPrincipal() {
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
   if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
+  // con las manos vacías o la azada, delante de lo sembrado con malas hierbas de tu campo: escardar (P11, 14 nov)
+  if (!it && pj.k === 0 && manosParaEscardar()) { const es = sitioEscardar(); if (es) return A(tr('Escardar'), azadaEnMano() ? 'azada' : es.icono, es, () => empezarEscarda(es), { alto: 0.2, prog: estado.talando && estado.talando.escarda ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_ESCARDAR : 0 }); }
   // con la azada en la mano, dentro de tu campo: una pasada de azada delante de ti (P11, labrar)
   if (!it && pj.k === 0 && azadaEnMano() && !toconCercano()) { const lb = sitioLabrar(); if (lb) return A(lb.hecho ? tr('Ya está labrado aquí') : tr('Labrar'), 'azada', lb, () => empezarLabranza(lb), { alto: 0.1, prog: estado.talando && estado.talando.labranza ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_LABRAR : 0 }); }
   // cosechar (P11): delante de una planta madura de tu campo, Usar la coge a mano; con la hoz en la mano, junto a la
@@ -1782,6 +1789,10 @@ function accionPrincipal() {
   if (est && panelFabricar) return A(tr(esAlmacen(est.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => panelFabricar.abrirEstacion(est.id), { alto: 0.6 });
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
+    // (P10) con la pala y la criba encima, junto a una mancha de hierro de pantano, se criba antes que coger del suelo el
+    // mineral que ya ha salido (cae a tus pies: se coge al terminar)
+    const rcs = recoleccion.cercano(pj.x, pj.z);
+    if (rcs && RECOLECTABLES[rcs.tipo].alSuelo && tieneCon(inventario(), rcs.tipo)) return A(verboRecoger(rcs), ICONO_RECOGER(rcs), rcs, () => recoger(rcs), { alto: 0.6 });
     const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
     if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);
@@ -1818,7 +1829,7 @@ function usar() {
   a.hacer();
 }
 // los juncos se cortan y el barro se cava (con su herramienta: src/logica/recoleccion.js); lo demás, se recoge
-const verboRecoger = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
+const verboRecoger = rc => ({ cortar: tr('Cortar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cavar: tr('Cavar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre) }), cribar: tr('Cribar: {c}', { c: tr(RECOLECTABLES[rc.tipo].nombre).toLowerCase() }) })[RECOLECTABLES[rc.tipo].accion] || tr('Recoger: {c}', { c: tr(nombreDe(rc.tipo)) });
 function textoInteractivo(it) {
   const p = it.p, n = tr(PIEZAS[p.tipo].nombre);
   return it.tipo === 'fuego' ? (p.apagado ? tr('Encender: {p}', { p: n }) : tr('Apagar: {p}', { p: n }))
@@ -2058,16 +2069,23 @@ function recoger(punto) {
     pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
     objetosRed.mandar({ tipo: 'recoger', punto: punto.id, x: pj.x, z: pj.z, px: punto.x, pz: punto.z, clase: punto.tipo }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
-      mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+      mostrarAviso(avisoRecoger(punto, r));
     });
     return;
   }
-  const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z);
+  const r = recoleccion.recoger(inventarios, registroAcciones, AUTOR_LOCAL, punto.id, pj.x, pj.z, Date.now(), sueloObjetos.suelo);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  if (r.deja) { sueloObjetos.guardar(); sueloObjetos.refrescar(); }   // (el mineral cribado, junto a la mancha)
   if (almacen) guardarInventarios(almacen, inventarios);
   panelInventario.pintar(); pintarLlevas(); vestir(); // lo recogido sale en el panel o en la línea de lo que llevas
   pj.rot = Math.atan2(punto.x - pj.x, punto.z - pj.z);
-  mostrarAviso(tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }));
+  mostrarAviso(avisoRecoger(punto, r));
+}
+// (P10) lo que da varias pasadas (la mancha de hierro de pantano) dice también cuántas le quedan
+function avisoRecoger(punto, r) {
+  const t = r.donde === 'suelo' ? tr('Sacas {n} × {c}: lo dejas junto a la mancha.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) }) : tr('Recoges: {n} × {c}.', { n: r.cantidad, c: tr(nombreDe(punto.tipo)) });
+  if (r.quedan === undefined) return t;
+  return t + ' ' + (r.quedan ? tr('A la mancha le quedan {n} pasadas.', { n: r.quedan }) : tr('La mancha se ha agotado: volverá a salir en unos meses.'));
 }
 
 // Descortezar un árbol en pie o sangrarlo (y coger su resina cuando sale): src/logica/tala.js, por el servidor.
@@ -2292,6 +2310,7 @@ function golpeTala() {
   if (a.labranza) { golpeLabranza(a); return; }
   if (a.siembra) { golpeSiembra(a); return; }
   if (a.siega) { golpeSiega(a); return; }
+  if (a.escarda) { golpeEscarda(a); return; }
   if (a.cosecha) { golpeCosecha(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
@@ -2466,6 +2485,30 @@ function golpeSiembra(a) {
   const c = mundo.campos.find(k => k.id === r.campo);
   if (r.nuevas) mostrarAviso(tr('Cebada sembrada: {n} de {a} m² del campo (gastas {p}).', { n: c ? casillasVoleo(c).length : r.nuevas, a: c ? c.area : '?', p: r.punados }));
   else mostrarAviso(tr('Plantado: {c} ({n} en el campo).', { c: tr(CULTIVOS[r.cultivo].nombre), n: c ? c.plantas.filter(p => p.c === r.cultivo).length : 1 }));
+}
+// Escardar (P11, 14 nov; src/logica/campos.js): con las manos vacías o con la azada, delante de lo sembrado verde o en
+// espiga que tiene malas hierbas, una pasada de unos 2 s las quita en un círculo de 1,2 m donde apuntas. Lo escardado
+// da más al cosecharlo.
+const ADELANTE_ESCARDAR = 1.2;
+function manosParaEscardar() { const l = inventario().lugares; return azadaEnMano() || !['mano:der', 'mano:izq'].some(r => l[r]); }
+function sitioEscardar() {
+  const x = pj.x + Math.sin(pj.rot) * ADELANTE_ESCARDAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_ESCARDAR, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  const h = hierbasCerca(c, x, z, Date.now());
+  if (!h.casillas.length && !h.plantas.length) return null;
+  // (el icono, el del cultivo que se escarda: la cebada, por la gavilla)
+  return { x, z, campo: c, icono: h.casillas.length ? 'gavilla' : c.plantas[h.plantas[0]].c };
+}
+function empezarEscarda(es) {
+  estado.talando = { escarda: es, x: es.x, z: es.z }; estado.golpeEn = SEGUNDOS_ESCARDAR;
+  mostrarAviso(tr('Arrancas las malas hierbas.'));
+}
+function golpeEscarda(a) {
+  estado.talando = null;
+  const es = a.escarda, r = accion({ tipo: 'escardar', campo: es.campo.id, x: redondoMm(es.x), z: redondoMm(es.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(tr('Escardado: dará más al cosecharlo.'));
 }
 // Cosechar (P11, src/logica/campos.js): con la hoz en la mano, la cebada madura se siega a pasadas (unos 2 s; las
 // gavillas quedan en el suelo); las habas, la col y el nabo maduros se cogen a mano (1 s), a lo que llevas.
@@ -2701,7 +2744,7 @@ function paso() {
   // «hiperlenta»: antes se recortaba a 0,05 s por fotograma, así que por debajo de 20 fps todo iba a cámara lenta). Solo
   // se recorta un fotograma larguísimo (la pestaña de vuelta, un tirón de segundos), y el paso de andar se parte en
   // trozos de PASO_ANDAR para no atravesar paredes ni saltarse una orilla.
-  const dt = Math.min(reloj.getDelta(), window.__mutarVelocidad ? 0.05 : DT_MAX);   // (__mutarVelocidad: el recorte de antes, para romper a propósito pruebas/prueba_velocidad_navegador.py)
+  const dt = Math.min(reloj.getDelta(), window.__mutarVelocidad ? 0.05 : (window.__dtMax || DT_MAX));   // (__dtMax: solo la prueba de construir, que mide las escaleras paso a paso)   // (__mutarVelocidad: el recorte de antes, para romper a propósito pruebas/prueba_velocidad_navegador.py)
   if (mundoJ) pasoMundo();
   // el contador de arriba sigue a donde estás (entras o sales de tu tierra) y a lo que cambia en el suelo
   if (enLinea && performance.now() - ultimoMateriales > 500) { ultimoMateriales = performance.now(); pintarMateriales(); if (!$('panelTierra').hidden) pintarTierra(); }
@@ -2755,6 +2798,9 @@ function paso() {
       else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
       else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
       else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
+      // y los pies siguen el suelo en cada trozo (14 nov): con un paso entero de golpe, en una escalera subías más de lo
+      // que deja (src/juego/movimiento.js: más de 0,8 m de golpe es estar debajo) y no se subía con pocos fotogramas
+      if (trozos > 1 && modo !== 'nadar' && !window.__mutarEscalera) pj.y += (alturaSuelo() - pj.y) * Math.min(1, h * 14);
     }
     const objetivoRot = Math.atan2(dx, dz);
     let dr = objetivoRot - pj.rot;
@@ -2900,7 +2946,7 @@ const mapaRey = mundoJ ? montarMapaRey({ paisaje: mundoJ.paisaje, comarcas: coma
   // las tierras de los demás (valravnx, 8 nov): cada mojón del mundo (los mojones y los invitados son de todos: los
   // manda el servidor a cada uno), y si su dueño te ha invitado a construir
   tomadas: () => { const yo = yoAutor(); return Object.entries(mundo.mojones)
-    .map(([a, m]) => ({ x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z, dueno: a, tuya: a === yo, invita: a !== yo && mundo.invitadosDe(a).includes(yo) })); },
+    .map(([a, m]) => ({ x: m.x + mundoJ.salida.x, z: m.z + mundoJ.salida.z, dueno: a, tuya: duenoBase(a) === yo, invita: duenoBase(a) !== yo && mundo.invitadosDe(duenoBase(a)).includes(yo) })); },
   zonasRey: zonasRey ? zonasRey.lista : [],   // las zonas del rey, de oro viejo
   alAbrir: () => { if (document.pointerLockElement) document.exitPointerLock(); teclas.clear(); cerrarMenuUsar(); } }) : null;
 if ($('btnMapa')) $('btnMapa').hidden = !mapaRey;   // (la pestaña del menú; la abre src/juego/menu_juego.js)

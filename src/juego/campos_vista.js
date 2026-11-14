@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { estacaEn } from './modelos_objetos.js';
-import { ladosDe, casillasLabradas, dentroPoligono, casillasVoleo, voleoEn, fase, siguienteCambio } from '../logica/campos.js';
+import { ladosDe, casillasLabradas, dentroPoligono, casillasVoleo, voleoEn, fase, siguienteCambio, conHierbas, escardadoEn } from '../logica/campos.js';
 
 const ALTO_ESTACA = 1.15;      // m sobre el suelo: recias y altas, para que se vean entre la hierba
 const GROSOR_ESTACA = 1.7;     // más gruesas que la de la mano (para leerlas de lejos como mojones de campo)
@@ -17,6 +17,7 @@ const HUNDIDA = 0.28;          // lo que va bajo tierra
 const ALTO_CUERDA = 0.82;      // m: la cuerda de esparto atada de estaca en estaca marca el linde por encima de la hierba
 const MAT_CUERDA = new THREE.MeshLambertMaterial({ color: 0xc9b483 });
 const ANCHO_LINDE = 0.34;      // m: una banda de tierra pisada, bien visible (como los caminos de la referencia)
+const HIERBAS_M2 = 2;          // matas de malas hierbas por m² de lo sembrado sin escardar (escardar, 14 nov)
 const SOBRE = 0.03;            // m sobre el suelo (para que no parpadee con él)
 const COLOR_LINDE = new THREE.Color(0x9a8566);   // el pardo cálido del camino (src/mundo/estilos.js)
 const MAT_LINDE = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
@@ -147,6 +148,23 @@ function formaPlanta(cultivo, f) {
     const n = [3, 7, 9, 10][f], largo = [0.08, 0.22, 0.26, 0.3][f];
     for (let i = 0; i < n; i++) { const a = i * 2.4; { const fuera = i < n / 2 ? 1 : 0.6; k.hoja(0, 0, a, largo * (f ? (fuera < 1 ? 1.1 : 0.75) : 1), largo * fuera, largo * 0.45, hoja, borde, { ancha: true, cae: f ? largo * 0.12 : 0, y0: f ? 0.02 : 0 }); } }
     if (f >= 2) k.bola(0, f === 2 ? 0.1 : 0.13, 0, f === 2 ? 0.1 : 0.14, C(0xa6be8a), 0.8);
+  } else if (cultivo === 'hierbas') {   // las malas hierbas (escardar, 14 nov): una roseta de hojas anchas de verde
+    // grisáceo (como el cenizo, otro tono que la cebada), más baja y más ancha que lo sembrado; en espiga, más alta y con
+    // tallos con la flor roja de la amapola y la azul del aciano (las de los campos de cereal), planas y de colores apagados
+    const hoja = C(0x5f6e42), borde = C(0x84906a), tallo = C(0x4e5e34);
+    const n = f === 1 ? 7 : 9, largo = f === 1 ? 0.15 : 0.2;
+    for (let i = 0; i < n; i++) { const a = i * 2.4 + r(i) * 0.5, dentro = i % 2; k.hoja(0, 0, a, largo * (dentro ? 1.05 : 0.6) * (0.85 + 0.3 * r(i + 2)), largo * (dentro ? 0.55 : 0.95) * (0.85 + 0.3 * r(i + 4)), largo * 0.42, hoja, borde, { ancha: true, cae: largo * 0.08 }); }   // (unas levantadas en el centro y otras abiertas: con volumen)
+    if (f >= 2) {
+      const flores = [[0.4, 0.36, C(0x9e3a2c)], [2.6, 0.31, C(0x9e3a2c)], [4.6, 0.33, C(0x56689e)]];
+      flores.forEach(([a, h, fl], n) => {
+        const sx = Math.cos(a) * 0.04, sz = Math.sin(a) * 0.04, cx = sx + Math.cos(a) * 0.02, cz = sz + Math.sin(a) * 0.02;
+        k.hoja(sx, sz, a, h, 0.02, 0.011, tallo, tallo); k.hoja(sx, sz, a + 1.57, h, 0.02, 0.011, tallo, tallo);   // (el tallo, en cruz: se ve desde cualquier lado)
+        const amapola = n < 2, p = amapola ? 5 : 8;
+        // la amapola: cinco pétalos anchos en copa y el centro oscuro; el aciano: una corona de pétalos estrechos
+        for (let i = 0; i < p; i++) k.hoja(cx, cz, i * 6.283 / p + a, amapola ? 0.018 : 0.01, amapola ? 0.032 : 0.036, amapola ? 0.03 : 0.016, fl, fl, { ancha: amapola, y0: h - 0.005 });
+        k.bola(cx, h + 0.004, cz, amapola ? 0.009 : 0.009, amapola ? C(0x2a2622) : C(0x3a4870), 0.7);
+      });
+    }
   } else {   // el nabo: hojas rectas y algo rizadas y, al engordar, la raíz blanca y morada que asoma
     const hoja = [C(0x7aac58), C(0x5e9444), C(0x5a8e42), C(0x6a8a44)][f], punta = [C(0x92c06c), C(0x7aac58), C(0x76a656), C(0x8a9a52)][f];
     const n = [3, 6, 7, 7][f], alto = [0.08, 0.2, 0.28, 0.3][f];
@@ -272,12 +290,19 @@ export function crearCamposVista({ escena, sueloEn }) {
         if (!dentroPoligono(c.puntos, x, z)) continue;
         poner('cebada', f, x, z, 0.8 + 0.4 * fijo(x, z, 3));
       }
+      // las malas hierbas, entre la cebada verde o en espiga que no se ha escardado (escardar, 14 nov): dos por m²
+      if (conHierbas(k.t, ahora, escardadoEn(c, k.x + 0.5, k.z + 0.5)))
+        for (let i = 0; i < HIERBAS_M2; i++) {
+          const x = k.x + 0.1 + 0.8 * fijo(k.x, k.z, i + 21), z = k.z + 0.1 + 0.8 * fijo(k.z, k.x, i + 33);
+          if (dentroPoligono(c.puntos, x, z)) poner('hierbas', f, x, z, 1.05 + 0.4 * fijo(x, z, 13));
+        }
       x0 = Math.min(x0, k.x); z0 = Math.min(z0, k.z); x1 = Math.max(x1, k.x + 1); z1 = Math.max(z1, k.z + 1);
     }
     for (const p of c.plantas || []) {
       const f = fase(p.t, ahora);
       proximoCambio = Math.min(proximoCambio, siguienteCambio(p.t, ahora));
       poner(p.c, f, p.x, p.z, 0.85 + 0.3 * fijo(p.x, p.z, 5));
+      if (conHierbas(p.t, ahora, p.e)) { const a = fijo(p.x, p.z, 17) * 6.283; poner('hierbas', f, p.x + Math.cos(a) * 0.22, p.z + Math.sin(a) * 0.22, 0.9 + 0.3 * fijo(p.x, p.z, 19)); }
       x0 = Math.min(x0, p.x); z0 = Math.min(z0, p.z); x1 = Math.max(x1, p.x); z1 = Math.max(z1, p.z);
     }
     if (!porForma.size) return;

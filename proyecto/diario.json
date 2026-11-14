@@ -6843,5 +6843,114 @@
   "pruebas": "Comprobador de código correcto. Trillar 18/0 y orígenes sin la era ni la paja en PENDIENTES. En la nube, el panel de fabricar en PC y en el móvil: todo bien salvo la cuenta de los puestos del menú de construir en el móvil, que esperaba 6 y ya son 7 (corregida, no repetida). Las dos comprobaciones de la era fallan al romperlas a propósito. Segunda mirada de un agente aparte: sí.",
   "capturas": "capturas/demo-v206",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T07:06:08+01:00",
+  "fin": "2026-11-14T09:02:13+01:00",
+  "hito": "granja",
+  "titulo": "Escardar (demo v207)",
+  "hecho": [
+   "Mientras lo sembrado está verde o en espiga salen malas hierbas entre ello: rosetas de hojas anchas de verde grisáceo y, en espiga, amapolas y acianos (valravnx, 14 nov: «meteremos… escardar»).",
+   "Con las manos vacías o con la azada, delante de ellas, Usar dice Escardar y en unos 2 s las quita de un círculo de 1,2 m; lo hace el servidor con su hora y lo ven todos.",
+   "Es optativo y da más al cosechar: la cebada escardada da 5 gavillas por cada 4, y cada planta escardada da una más (provisional).",
+   "Con pocos fotogramas no se subían las escaleras (desde la v191): ahora los pies siguen el suelo en cada trozo del paso.",
+   "El hito nuevo P11b «La lluvia y el riego», justo después de P11, con regar el huerto (la col y el nabo; el cereal y las habas no se riegan, como en la época)."
+  ],
+  "pruebas": "Escardar en la lógica y en el servidor, 27 de 27 (rota a propósito, falla); los campos en el navegador, con escardar en línea, bien; el recorrido y los avisos de las necesidades, bien. La velocidad con pocos fotogramas, con la escalera nueva (rota a propósito, falla). La de construir mide sus escaleras paso a paso (la máquina de la nube va a muy pocos fotogramas). En la lógica falla el servidor de prueba en internet por avisos del sistema de la máquina de la nube, que este cambio no toca. Segunda mirada aparte de las malas hierbas: primero dijo que no (planas, flores como pastillas, acianos diminutos), arreglado; después, sí.",
+  "capturas": "capturas/demo-v207",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T09:44:17+00:00",
+  "fin": "2026-11-14T12:09:21+00:00",
+  "titulo": "P11: cribar el grano (demo v208)",
+  "hito": "granja",
+  "hecho": [
+   "valravnx pidió por el chat una criba de grano realista, como las medievales que ha visto en museos, y separada de la del mineral.",
+   "Trillar una gavilla en la era da ahora grano sin limpiar (revuelto con granzas, tierra y chinas) y paja.",
+   "La criba de grano, su propia herramienta: un aro de vara curvada, con la veta a lo largo y el solape cosido, y el fondo de piel limpia agujereada a punzón. Se hace en el banco de tronco con 1 piel limpia y 1 vara, llevando la lasca.",
+   "Con la criba en lo que llevas, «Cribar el grano» (con las manos, en cualquier sitio) da 1 puñado de grano de cebada limpio, el que se siembra, por cada puñado de grano sin limpiar, por el servidor y con su autor; la criba no se gasta.",
+   "La criba se ve en la mano, cogida por el aro y colgando junto a la pierna, y en el suelo; el grano sin limpiar, como un montón con granzas, briznas y chinas. El grano sin limpiar va al cesto; la paja, al almiar."
+  ],
+  "pruebas": "Comprobador de código correcto. Trillar y cribar 35/0 (rota a propósito con MUTAR=1, falla), orígenes 77/0, iconos 684/0. En la nube: el panel de fabricar en PC y en el móvil, el recorrido de jugador, la cama, el mazo, el inventario y despiezar, bien. En la lógica falla solo prueba_nube (systemd-analyze de la máquina de GitHub), como en main. «Lo que llevas se ve puesto» falla en la correa y el cinturón con tronco y armas, que este cambio no toca (no comprobado si falla igual en main; la rama de la correa está a medias). Segunda mirada de un agente aparte: sí, tras dos vueltas (la veta del aro, la piel y el grano).",
+  "capturas": "capturas/demo-v208",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T10:22:01+00:00",
+  "fin": "2026-11-14T13:28:46+00:00",
+  "titulo": "P10: el hierro de pantano (demo v209)",
+  "hito": "hierro",
+  "hecho": [
+   "En las vegas llanas junto a los ríos y en las turberas salen manchas de tierra encharcada: la turba negra con matas de juncia alrededor y charcos de agua parda rojiza (la señal del GDD). Salen de la semilla del mundo, las mismas para todos; la más cercana a la salida, en la vega del río del norte, a unos 800 m.",
+   "Con la pala de madera en una mano y la criba en la otra, junto a la mancha Usar dice Cribar: cada pasada saca 1 mineral de hierro, por el servidor y con su autor, que se deja en el suelo junto a la mancha (con las dos manos ocupadas no hay dónde guardarlo). Cada mancha da de 3 a 5 pasadas; agotada, se van los charcos, queda la turba y vuelve a salir a los 90 días.",
+   "La criba (2 mimbres y 1 vara, en el banco de tronco): un aro de vara con el fondo de mimbre tejido, que cuelga de la mano cogida por el aro; y su imagen en el panel.",
+   "La mancha, pintada por código en dos calcos con el borde difuso que se deshace en la hierba e inclinados como el suelo (antes, anillos de polígonos de colores planos que parecían un recorte); el agua, pardo de té con la orilla de barro oscuro y un reflejo gris azulado.",
+   "El mineral en el suelo, un montoncito de terrones pardos de óxido con costras ocres (antes salía un hatillo blanquecino); la pala, con el mango en el puño e inclinada hacia abajo (antes salía cruzada, de lado).",
+   "Pendiente, del sistema general del personaje y no de esta tarea: los dedos no se cierran sobre lo que se lleva en la mano (se ve igual en la prueba de «Lo que llevas se ve puesto» con otras cosas); la criba y la pala quedan junto a la mano abierta."
+  ],
+  "pruebas": "El hierro de pantano en la lógica y en el servidor, 24 de 24; en el navegador, en PC y en móvil, bien (rota a propósito con MUTAR=1, falla). El revisor en la nube: el recorrido, las bayas, lo que se recoge en el mundo, recoger del suelo, el mazo, la cama, el inventario, la velocidad con pocos fotogramas, despiezar y el panel de fabricar, bien. En la lógica fallan solo prueba_nube (avisos del sistema de la máquina de GitHub) y las imágenes de cinco piezas de piezas-v1 que no están en el repositorio, igual que en main. «Lo que llevas se ve puesto» falla en la mano sobre el tronco y en el cinturón, igual que en main. Segunda mirada aparte, tres vueltas: la primera dijo que no (los charcos con ribete naranja, el agua roja, la hoja de la pala sin ver, la mancha fuera del encuadre en el móvil), la segunda también (el agua granate, las manos); en la tercera, sí a la mancha, el agua, los colores, la mancha agotada, el móvil y el mineral, y no a las manos, que no se cierran sobre la pala y la criba (sistema general del personaje, pendiente). Tras unir main (la criba de grano) se volvieron a pasar el hierro y lo que llevas.",
+  "capturas": "capturas/demo-v209",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T14:23:00+00:00",
+  "fin": "2026-11-14T16:01:24+00:00",
+  "titulo": "P11: el recorrido de jugador de la granja, entero y sin arcón",
+  "hito": "granja",
+  "hecho": [
+   "El recorrido de jugador (el paso 22, el mismo jugador del principio, sin arcón y con lo que recoge) hace ya la granja entera: semillas silvestres, estacas y el campo en su tierra, limpiarlo, labrarlo, sembrar, escardar, cosechar con el reloj acelerado, la era, trillar, cribar y el tejado de paja.",
+   "Cribar, de verdad: trillar da grano sin limpiar; levanta un raspador de pieles en su tierra (4 varas de un árbol joven que tala y una cuerda de fibra), raspa con la lasca la piel de la liebre que cazó, se hace la criba de grano en el banco (la piel limpia y una vara) y criba en la era todo el grano: 7 puñados de grano de cebada, que es también su semilla.",
+   "La granja es larga y a mitad se moría de sed (y se le quedaban en el cuerpo el fardo con la paja y la piel): ahora, como haría un jugador, va a beber al agua más cercana cuando tiene sed y come bayas y setas cuando tiene hambre, y la prueba comprueba que no se muere.",
+   "La paja trillada va al fardo de la espalda: para el tejado la pasa a la mano antes de subir al andamio.",
+   "Con nada maduro (MUTAR=2), trillar y cribar no dan nada y la prueba falla, como debe."
+  ],
+  "pruebas": "El recorrido de jugador entero en la nube, 288 de 288 (la granja, 40 de 40). Con MUTAR=2 (nada madura), falla. Comprobador de código correcto; orígenes 75 de 75. Después del paso por la nube solo se endurecieron dos comprobaciones (trillar y cribar tienen que dar algo): la granja desde lo guardado, aquí, 40 de 40.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T16:25:45+00:00",
+  "fin": "2026-11-14T16:26:18+00:00",
+  "titulo": "El año y los campos: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "granja",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: las semillas silvestres; el campo marcado con estacas, limpiado y labrado a mano con la azada; sembrar cebada a voleo y habas, col y nabo planta a planta; crecer en una semana real; escardar; segar con la hoz; trillar en la era (grano sin limpiar y paja); cribar el grano con la criba de grano; y el tejado de paja. Todo publicado y unido a main (la última, la demo v208).",
+   "El recorrido de jugador, sin arcón, lo hace entero: de las semillas silvestres al tejado de paja (288 de 288 en la nube; la granja, 40 de 40).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: cada material de la granja sale del mundo.",
+   "Lo que quedó provisional, para la revisión: cuánto da cada planta silvestre, 1 puñado de cebada cada 10 m², las distancias de siembra, las 4 veces lo sembrado al cosechar, la gavilla cada 2,5 m², lo que da escardar y lo que duran y sacian la col y el nabo. No comprobado: los fotogramas de los campos en un móvil de verdad.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 75 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T16:31:51+00:00",
+  "fin": "2026-11-14T16:31:51+00:00",
+  "titulo": "P11 aprobado: el año y los campos",
+  "hito": "granja",
+  "hecho": [
+   "valravnx aprueba por el chat el hito P11, El año y los campos: pasa a hecho.",
+   "Con una condición para el futuro: la granja de hoy es la primera fase; tiene que ser bastante más compleja y tener más cosas. Anotado en el GDD (sección 15, Agricultura) para una fase 2."
+  ],
+  "pruebas": "Sin pruebas: aprobado por valravnx.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T16:49:45+01:00",
+  "fin": "2026-11-14T18:08:00+01:00",
+  "titulo": "Mojones de más del admin, para construcciones de prueba",
+  "hito": "aspecto",
+  "hecho": [
+   "Con el modo autoconstruir, el admin pone otro mojón aunque ya tenga uno, en otra zona libre: esa zona es suya como su tierra, y sus invitados también construyen en ella (lo pidió valravnx para hacer construcciones bonitas para la promo).",
+   "Cada mojón de más se quita aparte en Desmontar y solo se pierde lo de su zona; el suyo sigue.",
+   "El servidor solo deja el mojón de más a la cuenta de admin con autoconstruir; a los demás les quita la marca.",
+   "La tierra de un mojón de más vuelve al rey con el mismo plazo que la suya, sin correos aparte.",
+   "Prueba nueva: prueba_mojon_extra.mjs (23 comprobaciones; con MUTAR=1 falla)."
+  ],
+  "pruebas": "Lógica de los mojones 23/23, quitar el mojón 30/30, tierra al rey 41/41; en la nube, recorrido, construcción y quitar el mojón, bien. En el grupo de lógica fallaron recogida, servidor en internet y una traducción vieja, que aquí pasan y no tocan este cambio. No comprobado: el mojón de más en el juego en línea con la cuenta de admin (lo prueba valravnx).",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

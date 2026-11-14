@@ -54,8 +54,6 @@ const PENDIENTES = {
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
-  criba: ['aún no se hace', 'El hierro de pantano'],
-  mineral_hierro: ['aún no hay manchas de hierro de pantano', 'El hierro de pantano'],
   est_horno_reduccion: ['aún no hay horno de reducción', 'El horno de reducción y la lupia'],
   lupia: ['sale del horno de reducción', 'El horno de reducción y la lupia'],
   fuelle: ['aún no se hace', 'La fragua y la barra de hierro'],
@@ -78,7 +76,7 @@ const PENDIENTES = {
 const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
-  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja'],   // (el grano de cebada es su semilla: semilla_cebada)
+  granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
@@ -93,7 +91,7 @@ const estacionHecha = e => Object.keys(ESTACIONES[e].coste).every(t => hay.has(t
 for (let nuevo = true; nuevo;) {
   nuevo = false;
   for (const [k, r] of Object.entries(recolectables))
-    if ((r.con === 'manos' || tieneAlguna(HERRAMIENTAS_RECOGER[r.con] || [])) && poner(r.da, `se recoge (${k})`)) nuevo = true;
+    if ((r.con === 'manos' || tieneAlguna(HERRAMIENTAS_RECOGER[r.con] || [])) && (r.tambien || []).every(t => hay.has(t)) && poner(r.da, `se recoge (${k})`)) nuevo = true;
   for (const [edad, d] of Object.entries(DA))
     if (tieneAlguna(Object.keys(HACHAS))) { if (poner(d.tronco, `talar un árbol ${edad}`)) nuevo = true; if (poner(d.menudo, `talar un árbol ${edad}`)) nuevo = true; }
   // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto

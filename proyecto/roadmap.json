@@ -1555,6 +1555,12 @@
      "estado": "hecho",
      "inicio": "2026-11-13T15:59:13+01:00",
      "fin": "2026-11-13T16:04:40+01:00"
+    },
+    {
+     "nombre": "Admin: mojones de más para construcciones de prueba",
+     "estado": "hecho",
+     "inicio": "2026-11-14T16:49:45+01:00",
+     "fin": "2026-11-14T18:08:00+01:00"
     }
    ]
   },
@@ -2242,7 +2248,7 @@
    "num": "P11",
    "nombre": "El año y los campos",
    "jugable": "La granja básica: semillas silvestres; el campo con la forma que marcas con estacas, que se limpia y se labra a mano; sembrar, crecer en una semana real, segar y trillar: grano, paja (el tejado de paja), habas, coles y nabos. Las estaciones del año, el lino y el pan, más adelante.",
-   "estado": "en_curso",
+   "estado": "hecho",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (el calendario, las estaciones en el mundo, semillas, parcelas, siembra, cosecha, trilla, paja, lino, legumbres, pan), con la cadena de cada material hasta el mundo",
@@ -2298,27 +2304,39 @@
     },
     {
      "nombre": "Escardar: a mitad del crecimiento salen malas hierbas entre lo sembrado (se ven); quitarlas con las manos o la azada, a pasadas, da más cosecha (opcional: sin escardar se cosecha igual, algo menos); como en la época (la escarda de junio). Cadena: manos o azada ← el banco de tronco",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T07:06:08+01:00",
-     "rama": "trabajo/20261114-0706-escardar"
+     "fin": "2026-11-14T09:02:13+01:00"
     },
     {
-     "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era y pone un tejado de paja",
-     "estado": "pendiente"
+     "nombre": "Cribar el grano (valravnx, 14 nov: «quiero criba de grano si es realista»; ha visto cribas medievales en museos; «haremos cribas de grano separadas»): trillar en la era da grano sin limpiar (mezclado con granzas, tierra y chinas) y paja; con la criba de grano en lo que llevas (no se gasta), «Cribar el grano» (con las manos, en cualquier sitio) da grano de cebada limpio, que es lo que se siembra, y deja las granzas. La criba de grano es su propia herramienta, distinta de la del mineral: un aro de madera curvada con el fondo de piel limpia agujereada (1 piel limpia y 1 vara en el banco de tronco). Cada cosa a su sitio: la paja al almiar y el grano al cesto (no al almiar). Capturas de la criba de cerca al lado de la referencia. Cadena: criba de grano ← banco de tronco; piel limpia ← el raspador de pieles con la lasca; vara ← talar un árbol joven; grano sin limpiar ← trillar en la era",
+     "estado": "hecho",
+     "inicio": "2026-11-14T09:44:17+00:00",
+     "rama": "trabajo/20261114-0944-criba",
+     "fin": "2026-11-14T12:09:21+00:00"
+    },
+    {
+     "nombre": "Recorrido de jugador de la granja, sin arcón: recoge semillas silvestres, hace estacas y marca un campo en su tierra, lo limpia (tala, arranca el tocón), lo labra con la azada, siembra cebada y habas y un huerto de col y nabo, cosecha con el reloj acelerado, trilla en la era, criba el grano y pone un tejado de paja",
+     "estado": "hecho",
+     "inicio": "2026-11-14T08:23:07+00:00",
+     "fin": "2026-11-14T16:01:24+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-14T16:25:45+00:00",
+     "rama": "trabajo/20261114-1625",
+     "fin": "2026-11-14T16:26:18+00:00"
     }
    ],
-   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco."
+   "nota": "valravnx, 13 nov (estudio diseno/estudios/granja.html y sus respuestas): va antes que P9; el campo se marca con estacas de 1 rama, con la forma que quieras y a escala real, y se labra a pasadas redondas con la azada (sustituye las casillas de 2 × 2 m del documento de sistemas); los cultivos tardan una semana real; los primeros, los que entran de manera normal en el juego; lo cosechado se guarda en los acopios de plantas. La granja se irá ampliando poco a poco. Aprobado por valravnx el 14 nov: los sistemas están bien por ahora, pero es la primera fase; la granja tiene que ser bastante más compleja y tener más cosas (fase 2, anotada en el GDD, sección 15)."
   },
   {
    "id": "lluvia",
    "num": "P11b",
    "nombre": "La lluvia y el riego",
    "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o el pozo; el cereal y las habas, de secano, como en la época.",
-   "estado": "pendiente",
+   "estado": "en_curso",
    "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones).",
    "tareas": [
     {
@@ -2331,7 +2349,9 @@
     },
     {
      "nombre": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-14T14:03:44+01:00",
+     "rama": "trabajo/20261114-1404-regar"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2419,9 +2439,10 @@
     },
     {
      "nombre": "El hierro de pantano: en las vegas llanas junto a los arroyos y en las turberas salen manchas de tierra encharcada con agua rojiza (la señal del GDD; lógica pura por celdas, de la semilla del mundo, las mismas para todos); con la pala de madera y la criba, cada pasada en una mancha da 1 mineral de hierro (lo decide el servidor, con su autor); cada mancha da unos pocos y vuelve a salir en unos meses reales. La criba (2 mimbres y 1 vara, en el banco de tronco). Capturas de la mancha al lado de la referencia. Cadena: pala de madera ← banco de tronco con 1 tronco corto; mimbre ← la mimbrera de la ribera con la lasca; vara ← talar un árbol joven",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T00:24:09+00:00",
-     "rama": "trabajo/20261114-0024"
+     "rama": "trabajo/20261114-0024",
+     "fin": "2026-11-14T13:28:46+00:00"
     },
     {
      "nombre": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
@@ -4493,6 +4514,34 @@
      "archivo": "jugar/demo/v206.html",
      "capturas": "capturas/demo-v206",
      "notas": "v206: la era y trillar (P11, la granja básica). Un puesto nuevo en Construir, «Puestos de trabajo»: la era, un suelo redondo de tierra apisonada bordeado de 8 piedras, fuera y en tu tierra. Se le dejan las gavillas (Usar: dejar en ella) y, con el mayal en lo que llevas, en su pestaña del panel de fabricar, «Trillar una gavilla» da 1 puñado de grano de cebada, que se siembra, y 1 haz de paja. La cebada silvestre que se recoge pasa a llamarse grano de cebada: es lo mismo. La paja deja de estar escondida: el tejado y el remate de paja, la cama de paja, la antorcha de pie y la alfombra ya salen en Construir, y la paja va al almiar."
+    },
+    {
+     "v": "v207",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v207.html",
+     "capturas": "capturas/demo-v207",
+     "notas": "Escardar: malas hierbas en lo verde y en espiga; quitarlas con las manos o la azada da más al cosechar. Y las escaleras se suben con pocos fotogramas."
+    },
+    {
+     "v": "v208",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v208.html",
+     "capturas": "capturas/demo-v208",
+     "notas": "v208: cribar el grano (P11, la granja básica; valravnx: «quiero criba de grano si es realista»). Trillar una gavilla en la era da ahora grano sin limpiar (revuelto con granzas, tierra y chinas) y paja. La criba de grano es su propia herramienta, distinta de la del mineral: un aro de vara curvada con el fondo de piel limpia agujereada a punzón (1 piel limpia y 1 vara en el banco de tronco, llevando la lasca). Con la criba en lo que llevas, «Cribar el grano» (con las manos, en cualquier sitio) da 1 puñado de grano de cebada limpio, el que se siembra, por cada puñado de grano sin limpiar; la criba no se gasta. La criba se ve en la mano, cogida por el aro. El grano sin limpiar va al cesto; la paja, al almiar."
+    },
+    {
+     "v": "v209",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v209.html",
+     "capturas": "capturas/demo-v209",
+     "notas": "v209: el hierro de pantano (P10). En las vegas junto a los ríos y en las turberas salen manchas de tierra encharcada con agua parda rojiza; con la pala de madera y la criba, cada pasada saca 1 mineral de hierro, que queda junto a la mancha. La criba nueva: 2 mimbres y 1 vara, en el banco de tronco."
+    },
+    {
+     "v": "v210",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v210.html",
+     "capturas": null,
+     "notas": "Mojones de más del admin: con autoconstruir, otro mojón en otra zona libre para construcciones de prueba; cada uno se quita aparte."
     }
    ]
   },

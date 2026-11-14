@@ -3,7 +3,10 @@
 # juego iba a cámara lenta). Se frena el juego a propósito (cada fotograma ocupa el navegador 150 ms más), se anda 3 s
 # hacia delante en llano y lo recorrido, por el tiempo real, tiene que ser la velocidad de andar (3,6 m/s).
 # Uso: python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html <carpeta>
-# MUTAR=1: vuelve el recorte de antes (window.__mutarVelocidad): tiene que fallar.
+# Y se sube andando una escalera de tablas, también con pocos fotogramas (14 nov: con el paso entero de golpe, los pies
+# no seguían la escalera y no se subía): se llega a la planta de arriba.
+# MUTAR=1: vuelve el recorte de antes (window.__mutarVelocidad): tiene que fallar. MUTAR=2: los pies no siguen el suelo
+# en cada trozo del paso (window.__mutarEscalera): la escalera tiene que fallar.
 import sys, os
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -16,6 +19,7 @@ srv = servir(sitio)
 URL = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&llano=1'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 MUTAR = os.environ.get('MUTAR') == '1'
+MUTAR2 = os.environ.get('MUTAR') == '2'
 K = 'window.__kinhold'
 ANDAR = 3.6   # m/s, a pie sin correr ni carga (src/juego/main.js)
 
@@ -33,6 +37,7 @@ with sync_playwright() as p:
     pg.wait_for_function('window.__kinhold !== undefined', timeout=60000)
     pg.evaluate(f'localStorage.clear(); {K}.reiniciar()')
     if MUTAR: pg.evaluate('window.__mutarVelocidad = true')
+    if MUTAR2: pg.evaluate('window.__mutarEscalera = true')
     # un sitio sin nada en 20 m, la cámara mirando al norte y el personaje quieto, sin carga
     pg.evaluate(f"""(() => {{ const k = {K};
       let x = 0, z = 0;
@@ -60,6 +65,25 @@ with sync_playwright() as p:
     comprobar('el juego va de verdad a pocos fotogramas', fps is None or fps < 12, f'{fps:.1f} fps' if fps else 'sin contar')
     # la tecla se pulsa y se suelta entre fotogramas: hasta un fotograma de más o de menos en cada punta
     comprobar('se anda a la velocidad de siempre (3,6 m/s) con pocos fotogramas', 0.75 * ANDAR <= v <= 1.2 * ANDAR, f'{v:.2f} m/s')
+    # la escalera de tablas, con el juego aún frenado: abajo, delante, y andando hacia donde sube
+    def poner(clase, tipo, x, z, planta=0):
+        if clase == 'mojon': pg.evaluate(f"{K}.llevarPara('mojon','mojon')")
+        pg.evaluate(f"{K}.cambiarModo('construir'); {K}.estado.planta={planta}; {K}.seleccionar('{clase}','{tipo}'); {K}.apuntar({x},{z})")
+        pg.evaluate(f"{K}.colocar(); {K}.terminarObras()")
+    poner('mojon', 'mojon', -3, -6)
+    for x, z in [(9, -13), (9, -11), (11, -13), (11, -11)]: poner('pieza', 'cim_piedra', x, z)
+    poner('pieza', 'muro_tronco', 9, -10); poner('pieza', 'muro_tronco', 11, -10); poner('pieza', 'muro_tronco', 12, -11)
+    poner('pieza', 'suelo_tronco', 9, -11, planta=1); poner('pieza', 'suelo_tronco', 11, -11, planta=1)
+    poner('pieza', 'muro_tronco', 9, -10, planta=1); poner('pieza', 'muro_tronco', 11, -10, planta=1)   # (arriba, al final: aunque se pase, no se cae)
+    poner('pieza', 'escalera_tabla', 9, -13)
+    pg.evaluate(f"{K}.cambiarModo('mover'); {K}.estado.planta = 0; Object.assign({K}.pj, {{ x: 9, z: -14.6, k: 0, y: 0 }}); {K}.cam.yaw = Math.PI")
+    pg.wait_for_timeout(1500)
+    # (la tecla, algo más de lo que se tarda en subir los 3,3 m de la escalera a 3,6 m/s; arriba, el muro la para)
+    pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w')
+    pg.wait_for_timeout(1500)
+    k, y, z = pg.evaluate(f"[{K}.pj.k, {K}.pj.y, {K}.pj.z]")
+    pg.screenshot(path=f'{SALIDA}/escalera_pocos_fps.png')
+    comprobar('con pocos fotogramas, andando por la escalera de tablas se llega arriba (planta 1)', k == 1 and 2.3 < y < 2.9, f'planta={k} y={y:.2f} z={z:.2f}')
     comprobar('sin errores en la página', not errores, '; '.join(errores[:3]))
     nav.close()
 srv.shutdown()
