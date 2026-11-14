@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-14T21:23:06+00:00",
-  "tarea": "El tiempo del mundo entero en la lógica (src/logica/tiempo.js, sin three.js): despejado, nublado, lluvia y niebla por zonas grandes y por el reloj del servidor, igual para todos y sin guardar nada; nublado antes y después de cada rato de lluvia y niebla algunas mañanas; la lluvia que riega el huerto no cambia",
-  "hito": "lluvia",
-  "rama": "trabajo/20261114-2122"
- },
+ "A": null,
  "B": null
 }
