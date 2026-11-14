@@ -6936,5 +6936,21 @@
   ],
   "pruebas": "Sin pruebas: aprobado por valravnx.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T16:49:45+01:00",
+  "fin": "2026-11-14T18:08:00+01:00",
+  "titulo": "Mojones de más del admin, para construcciones de prueba",
+  "hito": "aspecto",
+  "hecho": [
+   "Con el modo autoconstruir, el admin pone otro mojón aunque ya tenga uno, en otra zona libre: esa zona es suya como su tierra, y sus invitados también construyen en ella (lo pidió valravnx para hacer construcciones bonitas para la promo).",
+   "Cada mojón de más se quita aparte en Desmontar y solo se pierde lo de su zona; el suyo sigue.",
+   "El servidor solo deja el mojón de más a la cuenta de admin con autoconstruir; a los demás les quita la marca.",
+   "La tierra de un mojón de más vuelve al rey con el mismo plazo que la suya, sin correos aparte.",
+   "Prueba nueva: prueba_mojon_extra.mjs (23 comprobaciones; con MUTAR=1 falla)."
+  ],
+  "pruebas": "Lógica de los mojones 23/23, quitar el mojón 30/30, tierra al rey 41/41; en la nube, recorrido, construcción y quitar el mojón, bien. En el grupo de lógica fallaron recogida, servidor en internet y una traducción vieja, que aquí pasan y no tocan este cambio. No comprobado: el mojón de más en el juego en línea con la cuenta de admin (lo prueba valravnx).",
+  "capturas": null,
+  "estado": "ok"
  }
 ]

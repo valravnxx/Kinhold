@@ -1558,9 +1558,9 @@
     },
     {
      "nombre": "Admin: mojones de más para construcciones de prueba",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T16:49:45+01:00",
-     "rama": "trabajo/20261114-1700-mojon-admin"
+     "fin": "2026-11-14T18:08:00+01:00"
     }
    ]
   },
@@ -4535,6 +4535,13 @@
      "archivo": "jugar/demo/v209.html",
      "capturas": "capturas/demo-v209",
      "notas": "v209: el hierro de pantano (P10). En las vegas junto a los ríos y en las turberas salen manchas de tierra encharcada con agua parda rojiza; con la pala de madera y la criba, cada pasada saca 1 mineral de hierro, que queda junto a la mancha. La criba nueva: 2 mimbres y 1 vara, en el banco de tronco."
+    },
+    {
+     "v": "v210",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v210.html",
+     "capturas": null,
+     "notas": "Mojones de más del admin: con autoconstruir, otro mojón en otra zona libre para construcciones de prueba; cada uno se quita aparte."
     }
    ]
   },
