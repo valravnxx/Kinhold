@@ -6908,5 +6908,21 @@
   "pruebas": "El recorrido de jugador entero en la nube, 288 de 288 (la granja, 40 de 40). Con MUTAR=2 (nada madura), falla. Comprobador de código correcto; orígenes 75 de 75. Después del paso por la nube solo se endurecieron dos comprobaciones (trillar y cribar tienen que dar algo): la granja desde lo guardado, aquí, 40 de 40.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T16:25:45+00:00",
+  "fin": "2026-11-14T16:26:18+00:00",
+  "titulo": "El año y los campos: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "granja",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: las semillas silvestres; el campo marcado con estacas, limpiado y labrado a mano con la azada; sembrar cebada a voleo y habas, col y nabo planta a planta; crecer en una semana real; escardar; segar con la hoz; trillar en la era (grano sin limpiar y paja); cribar el grano con la criba de grano; y el tejado de paja. Todo publicado y unido a main (la última, la demo v208).",
+   "El recorrido de jugador, sin arcón, lo hace entero: de las semillas silvestres al tejado de paja (288 de 288 en la nube; la granja, 40 de 40).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: cada material de la granja sale del mundo.",
+   "Lo que quedó provisional, para la revisión: cuánto da cada planta silvestre, 1 puñado de cebada cada 10 m², las distancias de siembra, las 4 veces lo sembrado al cosechar, la gavilla cada 2,5 m², lo que da escardar y lo que duran y sacian la col y el nabo. No comprobado: los fotogramas de los campos en un móvil de verdad.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 75 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
