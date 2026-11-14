@@ -52,6 +52,8 @@ import { avisos, AVISO, hayAguaCerca, RITMOS } from '../src/logica/necesidades.j
 import { crearServidor } from '../servidor/servidor.mjs';
 import { despojar, MOTIVOS } from '../src/logica/muerte.js';
 import { msDeHora } from '../src/logica/cielo.js';
+import { granja } from './recorrido_granja.mjs';
+import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
 
@@ -1777,6 +1779,19 @@ try {
         }
       } else comprobar('la liebre cazada está a sus pies, junto a la hoguera', false);
     }
+    // (para trabajar en la granja sin repetir todo lo de antes: KINHOLD_RECORRIDO_GUARDAR=<carpeta> guarda aquí el mundo
+    // y la ficha del jugador y sale; pruebas/recorrido_granja.mjs, ejecutado solo con KINHOLD_RECORRIDO_DESDE=<carpeta>,
+    // sigue desde ahí. No cambia nada del recorrido normal.)
+    if (process.env.KINHOLD_RECORRIDO_GUARDAR) {
+      const destino = process.env.KINHOLD_RECORRIDO_GUARDAR, ahora = Date.now();
+      J2.ws.close(); await pausa(300); await s.cerrar(); s = null;
+      cpSync(dir, destino, { recursive: true });
+      writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ficha: J2.bienvenida.ficha || J.bienvenida.ficha, yo: J2.bienvenida.autor, pos: J2.pos, ahora, base, sitioCaza }));
+      console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes de la granja)`);
+      J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
+    }
+    // P11, la granja básica (14 nov): pruebas/recorrido_granja.mjs
+    await granja({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, base });
     J2.ws.close();
   }
 
