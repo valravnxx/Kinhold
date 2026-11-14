@@ -5,5 +5,11 @@
   "hito": "hierro",
   "rama": "trabajo/20261114-0024"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261114-1404-regar": {
+  "inicio": "2026-11-14T14:03:44+01:00",
+  "tarea": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
+  "hito": "lluvia",
+  "rama": "trabajo/20261114-1404-regar"
+ }
 }
