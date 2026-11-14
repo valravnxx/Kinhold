@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-14T02:25:34+00:00",
+  "tarea": "La era y trillar: la era (8 piedras y un suelo apisonado, fuera, en tu tierra) como estación; en ella, las gavillas con el mayal dan grano de cebada (que es también su semilla) y paja. La paja deja de estar escondida: el tejado de paja y el almiar lleno se pueden hacer. Cadena: piedra ← se recoge; mayal ← 2 ramas y cuerda en el banco de tronco; gavillas ← la siega",
+  "hito": "granja",
+  "rama": "trabajo/20261113-2224"
+ },
  "B": null,
  "chat:trabajo/20261113-1710-aspecto-rocas": {
   "inicio": "2026-11-13T17:08:43+01:00",
