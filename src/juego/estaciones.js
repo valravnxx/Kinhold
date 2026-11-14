@@ -336,26 +336,113 @@ function hoyoBarro(id) {
   }
   return mallas(L);
 }
-// La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, algo levantado y más claro que el
-// campo, bordeado por sus 8 piedras hincadas, con briznas de paja sueltas de lo ya trillado. Las gavillas que se le
-// dejan, tumbadas encima (DEPOSITO_SITIOS.era).
+// La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, al ras del prado y más claro que él,
+// que se funde con la hierba por un canto irregular (no un disco recortado), con el corro más pisado donde se trilla,
+// alguna losa plana asomando, grietas y granzas de paja; lo cierran sus 8 piedras hincadas de canto en el borde, medio
+// enterradas. En ladera es una explanada: cuesta abajo deja ver su talud de tierra. Las gavillas que se le dejan,
+// tumbadas encima (DEPOSITO_SITIOS.era).
 export const ERA = 1.45;
-const TIERRA_ERA = 0x847564, TIERRA_ERA_OSC = 0x5e5244, TIERRA_ERA_PISADA = 0x766856;
+const BORDE_ERA = 0.4;   // m más allá de las piedras en que lo pisado se funde con la hierba
+let texEra = null;
+// la tierra apisonada, en un lienzo (2 m): pardo claro y gris, manchas de lo más y lo menos pisado, el grano, chinas,
+// grietas finas de la tierra seca y briznas y granzas de paja
+function texturaEra() {
+  if (texEra) return texEra;
+  if (typeof document === 'undefined') return null;
+  const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const g = cv.getContext('2d');
+  let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  g.fillStyle = 'rgb(150,136,116)'; g.fillRect(0, 0, N, N);
+  const mancha = (n, rMin, rMax, col, a0, a1) => { for (let k = 0; k < n; k++) {
+    const x = r() * N, y = r() * N, rr = rMin + r() * (rMax - rMin);
+    for (const dx of [-N, 0, N]) for (const dy of [-N, 0, N]) {   // (repetida en los bordes: la textura se repite sin costura)
+      const gr = g.createRadialGradient(x + dx, y + dy, 0, x + dx, y + dy, rr);
+      gr.addColorStop(0, `rgba(${col},${a0 + r() * (a1 - a0)})`); gr.addColorStop(1, `rgba(${col},0)`);
+      g.fillStyle = gr; g.fillRect(x + dx - rr, y + dy - rr, rr * 2, rr * 2);
+    }
+  } };
+  mancha(26, 40, 110, '120,104,84', 0.25, 0.45);    // lo menos pisado, más oscuro
+  mancha(22, 30, 90, '186,170,142', 0.25, 0.45);    // lo más pisado y seco, más claro
+  for (let k = 0; k < 9000; k++) {   // el grano de la tierra
+    const v = 0.72 + r() * 0.5;
+    g.fillStyle = `rgba(${Math.round(150 * v)},${Math.round(132 * v)},${Math.round(108 * v)},${0.25 + r() * 0.35})`;
+    g.fillRect(r() * N, r() * N, 1 + r() * 2, 1 + r() * 2);
+  }
+  for (let k = 0; k < 260; k++) {    // chinas: piedrecitas grises con su luz arriba y su sombra abajo
+    const x = r() * N, y = r() * N, rr = 1.2 + r() * r() * 4, v = 0.75 + r() * 0.35;
+    g.fillStyle = 'rgba(70,60,48,0.45)'; g.beginPath(); g.ellipse(x + 0.8, y + 1, rr * 1.2, rr, 0, 0, 6.283); g.fill();
+    g.fillStyle = `rgb(${Math.round(150 * v)},${Math.round(146 * v)},${Math.round(136 * v)})`; g.beginPath(); g.ellipse(x, y, rr * 1.2, rr, r() * 3, 0, 6.283); g.fill();
+  }
+  g.lineCap = 'round';
+  for (let k = 0; k < 40; k++) {     // grietas finas de la tierra seca, quebradas
+    let x = r() * N, y = r() * N, a = r() * 6.283;
+    g.strokeStyle = `rgba(88,74,58,${0.35 + r() * 0.3})`; g.lineWidth = 0.7 + r() * 0.8; g.beginPath(); g.moveTo(x, y);
+    for (let p = 0; p < 4 + r() * 5; p++) { a += (r() - 0.5) * 1.4; x += Math.cos(a) * 9; y += Math.sin(a) * 9; g.lineTo(x, y); }
+    g.stroke();
+  }
+  for (let k = 0; k < 520; k++) {    // briznas y granzas de paja de lo trillado
+    const x = r() * N, y = r() * N, a = r() * 6.283, l = 4 + r() * 16, v = 0.85 + r() * 0.3;
+    g.strokeStyle = `rgba(${Math.round(196 * v)},${Math.round(170 * v)},${Math.round(112 * v)},${0.55 + r() * 0.4})`; g.lineWidth = 0.8 + r() * 1.1;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  texEra = new THREE.CanvasTexture(cv);
+  texEra.wrapS = texEra.wrapT = THREE.RepeatWrapping; texEra.colorSpace = THREE.SRGBColorSpace; texEra.anisotropy = 4;
+  return texEra;
+}
+let matEra = null;
+// el suelo de la era: un disco en anillos (para que el color varíe por dentro y el canto sea irregular), opaco hasta las
+// piedras y cada vez más transparente hasta fundirse con la hierba
+function sueloEra(id) {
+  const ANILLOS = 14, LADOS = 48, R = ERA + BORDE_ERA, pos = [], col = [], uv = [], idx = [];
+  // el canto, irregular: cada lado se mete o se sale un poco (de la semilla de la era)
+  const canto = [];
+  for (let j = 0; j < LADOS; j++) canto.push((az(id, 'c' + j) - 0.5) * 0.24 + Math.sin(j / LADOS * Math.PI * 2 * 3 + az(id, 'f') * 6) * 0.07);
+  pos.push(0, 0, 0); uv.push(0, 0); col.push(1, 0.97, 0.94, 1);
+  for (let i = 1; i <= ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
+    const t = i / ANILLOS, a = j / LADOS * Math.PI * 2, rr = t * (R + (t > 0.7 ? canto[j] * (t - 0.7) / 0.3 : 0));
+    const x = Math.cos(a) * rr, z = Math.sin(a) * rr;
+    pos.push(x, 0, z); uv.push(x / 2, z / 2);
+    // el corro de trillar (de 0,55 a 1,1 m), más claro y liso; el centro y el borde, algo más oscuros; y unas manchas
+    const corro = Math.exp(-(((rr - 0.85) / 0.28) ** 2)), mancha = (az(id, `m${i},${j}`) - 0.5) * 0.08;
+    const k = 0.9 + 0.12 * corro - 0.1 * Math.max(0, (rr - ERA + 0.25) / 0.6) + mancha;
+    const alfa = rr <= ERA + 0.02 ? 1 : Math.max(0, 1 - (rr - ERA - 0.02) / (R + canto[j] - ERA - 0.02)) ** 1.4;
+    col.push(k, k * 0.98, k * 0.95, alfa);
+  }
+  for (let j = 0; j < LADOS; j++) idx.push(0, 1 + (j + 1) % LADOS, 1 + j);
+  for (let i = 1; i < ANILLOS; i++) for (let j = 0; j < LADOS; j++) {
+    const a = 1 + (i - 1) * LADOS + j, b = 1 + (i - 1) * LADOS + (j + 1) % LADOS, c = a + LADOS, d = b + LADOS;
+    idx.push(a, b, d, a, d, c);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 4)); g.setIndex(idx); g.computeVertexNormals();
+  if (!matEra) { const t = texturaEra(); matEra = new THREE.MeshLambertMaterial({ map: t, color: t ? 0xffffff : 0x9a8a70, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); }
+  const m = new THREE.Mesh(g, matEra); m.position.y = 0.014; m.receiveShadow = true; m.name = 'suelo_era'; m.renderOrder = 1;
+  return m;
+}
+const TIERRA_ERA_OSC = 0x5e5244;
 function era(id) {
   const L = new Lote({ rangoSuelo: 0.25, variacion: 0.05 });
-  // el canto, hondo: en ladera, la era es una explanada; cuesta arriba se mete en la tierra y cuesta abajo deja ver su talud
-  L.add(new THREE.CylinderGeometry(ERA, ERA + 0.22, 0.5, 30), TIERRA_ERA_OSC, 0, -0.21, 0, null, { tex: 'piedra', sinSuelo: true });
-  L.add(new THREE.CircleGeometry(ERA - 0.01, 30), TIERRA_ERA, 0, 0.041, 0, { x: -Math.PI / 2 }, { tex: 'piedra', sinSuelo: true });  // lo apisonado
-  L.add(new THREE.RingGeometry(0.55, 1.05, 30), TIERRA_ERA_PISADA, 0, 0.043, 0, { x: -Math.PI / 2 }, { tex: 'piedra', sinSuelo: true }); // el corro pisado al trillar
+  // la explanada, debajo: en llano queda enterrada; cuesta abajo deja ver su talud de tierra y cuesta arriba se mete en
+  // la ladera
+  L.add(new THREE.CylinderGeometry(ERA + 0.05, ERA + 0.4, 0.6, 30), TIERRA_ERA_OSC, 0, -0.305, 0, null, { tex: 'piedra', sinSuelo: true });
+  // las 8 piedras, hincadas de canto en el borde y medio enterradas, a lo largo del borde (con su cara larga hacia fuera)
   for (let i = 0; i < 8; i++) {
-    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.25, r = ERA - 0.04;   // (hincadas en el borde)
-    L.add(piedraIrregular(0.24, 1, id + 'e' + i, 0.24), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, 0.05, Math.sin(a) * r, { y: a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.6 }, { escala: new THREE.Vector3(1.35, 0.55, 0.85), plano: true });
+    const a = i * Math.PI / 4 + (az(id, i) - 0.5) * 0.22, r = ERA + 0.02, alto = 0.6 + az(id, i + 20) * 0.3;
+    L.add(piedraIrregular(0.2, 1, id + 'e' + i, 0.2), i % 2 ? 'piedraOsc' : 'piedra', Math.cos(a) * r, 0.02, Math.sin(a) * r,
+      { y: -a + Math.PI / 2 + (az(id, i + 9) - 0.5) * 0.3, z: (az(id, i + 30) - 0.5) * 0.25 }, { escala: new THREE.Vector3(1.55, alto, 0.6), plano: true });
   }
-  for (let i = 0; i < 46; i++) { // briznas de paja sueltas
-    const a = az(id, i + 40) * Math.PI * 2, r = Math.sqrt(az(id, i + 70)) * (ERA - 0.15), largo = 0.16 + az(id, i + 100) * 0.2;
-    L.add(cil(0.008, 0.008, largo, 3), i % 3 ? 'paja' : 'pajaOsc', Math.cos(a) * r, 0.05, Math.sin(a) * r, { z: Math.PI / 2, y: az(id, i + 130) * 6 }, { tex: 'paja', sinSuelo: true });
+  // alguna losa plana asomando en lo apisonado, gastada
+  for (let i = 0; i < 4; i++) {
+    const a = az(id, i + 50) * Math.PI * 2, r = 0.3 + az(id, i + 60) * (ERA - 0.6);
+    L.add(piedraIrregular(0.13 + az(id, i + 70) * 0.08, 1, id + 'l' + i, 0.12), 'piedraOsc', Math.cos(a) * r, 0.022, Math.sin(a) * r, { y: az(id, i + 80) * 6 }, { escala: new THREE.Vector3(1.3, 0.12, 1), plano: true, sinSuelo: true });
   }
-  return mallas(L);
+  for (let i = 0; i < 30; i++) { // briznas de paja sueltas, tumbadas
+    const a = az(id, i + 40) * Math.PI * 2, r = Math.sqrt(az(id, i + 70)) * (ERA - 0.15), largo = 0.14 + az(id, i + 100) * 0.18;
+    L.add(cil(0.006, 0.006, largo, 3), i % 3 ? 'paja' : 'pajaOsc', Math.cos(a) * r, 0.042, Math.sin(a) * r, { z: Math.PI / 2, y: az(id, i + 130) * 6 }, { tex: 'paja', sinSuelo: true });
+  }
+  const g = mallas(L); g.add(sueloEra(id));
+  return g;
 }
 // Lo dejado en la era: cada gavilla, tumbada en lo apisonado, en abanico (hasta 8; más, una encima de otra), y lo demás
 // al pie, como en los demás puestos.
@@ -364,7 +451,7 @@ function llenoEra(dep, id) {
   const g = new THREE.Group(), n = Math.min(16, dep.gavilla || 0);
   for (let i = 0; i < n; i++) {
     const [x, z, a] = SITIOS_ERA[i % 8], m = modeloDe({ id: `${id}:gavilla:${i}`, cosa: { tipo: 'gavilla', n: 1 } });
-    m.position.set(x, 0.045 + Math.floor(i / 8) * 0.12, z); m.rotation.y = a + (az(id, i) - 0.5) * 0.4; m.name = i ? 'gavilla_' + i : 'deposito_gavilla';
+    m.position.set(x, 0.02 + Math.floor(i / 8) * 0.12, z); m.rotation.y = a + (az(id, i) - 0.5) * 0.4; m.name = i ? 'gavilla_' + i : 'deposito_gavilla';
     g.add(m);
   }
   let pie = 0;

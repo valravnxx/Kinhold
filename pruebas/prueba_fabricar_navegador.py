@@ -310,7 +310,7 @@ try:
           // que se quede aunque el servidor vuelva a mandar las estaciones (las de verdad, más este)
           K.__vista = f.estaciones['secadero:vista'];
           if (!K.estacionesV.__poner) {{ K.estacionesV.__poner = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner(l); if (K.__vista) {{ K.fabCliente.estaciones[K.__vista.id] = K.__vista; K.estacionesV.refrescar(); }} }}; }}
-          K.estacionesV.refrescar(); }})"""
+          K.estacionesV.refrescar(); K.mirarEras(); }})"""
         A.evaluate(f"{SECADERO}({K}, 0.5, -3.5)")
         n = A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_secadero'), d = o && o.getObjectByName('deposito'); let n = 0; if (d) d.traverse(m => {{ if (m.isMesh) n++; }}); return n; }})()")
         comprobar('el secadero se dibuja, con lo colgado', A.evaluate(f"!!{K}.escena.getObjectByName('estacion_secadero')") and n > 0, str(n))
@@ -332,8 +332,9 @@ try:
           f.estaciones['era:vista'] = {{ id: 'era:vista', tipo: 'era', x: e.x + dx, z: e.z + dz, autor: K.enLinea.red.yo, cola: [], deposito: {{ gavilla: 2 }} }};
           K.__vista2 = f.estaciones['era:vista'];
           if (!K.estacionesV.__poner2) {{ K.estacionesV.__poner2 = K.estacionesV.poner; K.estacionesV.poner = l => {{ K.estacionesV.__poner2(l); if (K.__vista2) {{ K.fabCliente.estaciones[K.__vista2.id] = K.__vista2; K.estacionesV.refrescar(); }} }}; }}
-          K.estacionesV.refrescar(); }})"""
+          K.estacionesV.refrescar(); K.mirarEras(); }})"""
         A.evaluate(f"{ERA}({K}, -3.5, 1)")
+        comprobar('y sin hierba encima: el suelo de la era despeja la hierba densa, las flores y las matas', A.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; return {K}.erasDespejadas().some(c => Math.hypot(c[0] - e.x, c[1] - e.z) < 0.01 && c[2] > 1.45); }})()"))
         comprobar('la era se dibuja, con las gavillas encima', A.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('estacion_era'); return !!o && !!o.getObjectByName('deposito_gavilla'); }})()"))
         A.evaluate(f"""(() => {{ const e = {K}.fabCliente.estaciones['era:vista']; Object.assign({K}.pj, {{ x: e.x + 2.2, z: e.z + 2.0, rot: 2.3 }}); {K}.cam.yaw = 0.7; {K}.cam.dist = 4.6; {K}.cam.pitch = 0.45; }})()""")
         A.wait_for_timeout(2500)
