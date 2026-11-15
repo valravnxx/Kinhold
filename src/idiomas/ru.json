@@ -3064,5 +3064,7 @@
  "Pozo": "Колодец",
  "se cava con pala": "копается лопатой",
  "Pozo: aquí el agua está a unos {h} m ({t} tramos de cavar y revestir).": "Колодец: здесь вода примерно на глубине {h} м ({t} участков копать и обкладывать).",
- "Cávalo con la pala de madera en la mano.": "Копайте его с деревянной лопатой в руке."
+ "Cávalo con la pala de madera en la mano.": "Копайте его с деревянной лопатой в руке.",
+ "Demo única · v217 (El pozo, desde construir)": "Единое демо · v217 (Колодец через строительство)",
+ "v217: el pozo se marca desde construir (pestaña Tierra, «Pozo»), como una obra más, y no con la pala en la mano (valravnx, 15 nov: la pala sirve para más cosas; con ella en la mano ya no sale «Marcar aquí un pozo» a cada paso). Al apuntar, el aviso dice a qué hondura está el agua ahí; al marcarlo, vuelves a moverte y lo cavas a su lado con la pala de madera, tramo a tramo, como antes.": "v217: колодец отмечается в строительстве (вкладка «Земля», «Колодец»), как любая другая постройка, а не лопатой в руке (valravnx, 15 нояб.: лопата нужна и для другого; с ней в руке больше не появляется «Отметить здесь колодец» на каждом шагу). При наведении подсказка говорит, на какой глубине там вода; после отметки вы снова двигаетесь и копаете его рядом деревянной лопатой, участок за участком, как раньше."
 }

@@ -3064,5 +3064,7 @@
  "Pozo": "Well",
  "se cava con pala": "dug with a spade",
  "Pozo: aquí el agua está a unos {h} m ({t} tramos de cavar y revestir).": "Well: here the water is about {h} m down ({t} sections to dig and line).",
- "Cávalo con la pala de madera en la mano.": "Dig it with the wooden spade in hand."
+ "Cávalo con la pala de madera en la mano.": "Dig it with the wooden spade in hand.",
+ "Demo única · v217 (El pozo, desde construir)": "Single demo · v217 (The well, from building)",
+ "v217: el pozo se marca desde construir (pestaña Tierra, «Pozo»), como una obra más, y no con la pala en la mano (valravnx, 15 nov: la pala sirve para más cosas; con ella en la mano ya no sale «Marcar aquí un pozo» a cada paso). Al apuntar, el aviso dice a qué hondura está el agua ahí; al marcarlo, vuelves a moverte y lo cavas a su lado con la pala de madera, tramo a tramo, como antes.": "v217: the well is marked from building (Land tab, «Well»), like any other work, not with the spade in hand (valravnx, 15 Nov: the spade is used for more things; holding it no longer shows «Mark a well here» at every step). When aiming, the notice says how deep the water is there; once marked, you go back to moving and dig it beside it with the wooden spade, section by section, as before."
 }

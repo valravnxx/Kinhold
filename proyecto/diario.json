@@ -7147,5 +7147,20 @@
   "pruebas": "Prueba nueva de navegador del pozo (en línea, dos jugadores, PC y móvil): marcar, cavar y revestir 8 tramos hasta el agua a 7,4 m, con los golpes y las piedras en el servidor; rota a propósito (sin mandar al servidor las acciones del pozo), falla. Demo única correcta. Fuera por la sesión: velocidad con pocos fotogramas y la demo en el mundo (main.js y mundo_juego.js solo añaden el pozo; la demo única carga el mundo y la prueba del pozo lo juega). Segunda mirada de un agente aparte: la primera vez dijo que no (hierba dentro de la boca, montones enormes y anaranjados, pared sin piedras, agua pequeña); arreglado y vuelto a mirar, sí.",
   "capturas": "capturas/demo-v216",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T07:40:43+00:00",
+  "fin": "2026-11-15T08:32:48+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo, desde construir",
+  "hito": "lluvia",
+  "hecho": [
+   "Lo pidió valravnx en la sesión: la pala de madera sirve para más cosas, así que el pozo ya no se marca con ella en la mano; con la pala en la mano, Usar no ofrece «Marcar aquí un pozo».",
+   "El pozo está en construir, pestaña Tierra, junto al mojón y la brocha de nivelar: al apuntar sale su fantasma (el círculo de la boca y la estaca) y el aviso dice a qué hondura está el agua ahí y cuántos tramos tiene; en rojo y con el motivo si no se puede (fuera de tu tierra, pegado a otro pozo, en un campo o con el agua a más de 12 m).",
+   "Al marcarlo (por el servidor, con su autor, como antes), vuelves a moverte y el aviso dice que se cava con la pala de madera; cavar y revestir cada tramo sigue igual.",
+   "Provisional: el botón del pozo lleva el icono de la pala (aún no hay icono del pozo). Publicado en la demo v217."
+  ],
+  "pruebas": "Prueba del pozo en navegador al día (en línea, dos jugadores, PC y móvil): con la pala en la mano no sale marcar el pozo, se marca desde construir con la hondura del terreno, no deja otro pegado, y luego se cava y reviste hasta el agua; construcción, lógica, recorrido y velocidad con pocos fotogramas, correctos en la nube. No se ha roto a propósito esta vez (la prueba ya falla sin las acciones del pozo en el servidor, MUTAR=1). Sin segunda mirada de otro agente: solo cambian un botón del menú y un fantasma translúcido; el pozo se ve igual que en la v216.",
+  "capturas": "capturas/demo-v217",
+  "estado": "ok"
  }
 ]
