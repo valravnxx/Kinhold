@@ -7208,5 +7208,21 @@
   "pruebas": "En la nube: lógica (con beber en la costa por el servidor: no baja la sed y dice que es salada), avisos de las necesidades (en PC y móvil, en la costa más cercana: Usar dice «Agua salada: no se bebe», la sed no baja y el aviso lo dice) y velocidad con pocos fotogramas, correctos. El recorrido no se ha pasado: bebe en un río a pocos metros, lejos del mar, y esto solo cambia el agua salada. Roto a propósito: si el servidor dejara beber el agua salada, la prueba de las necesidades falla.",
   "capturas": "capturas/demo-v219",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T16:24:06+00:00",
+  "fin": "2026-11-15T16:24:35+00:00",
+  "titulo": "La lluvia y el riego: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "lluvia",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el tiempo del mundo igual para todos y por zonas grandes (despejado, nublado, lluvia y niebla de mañana); la lluvia se ve, se oye (más bajo bajo techo), moja y enfría al raso; la col y el nabo piden agua tras días sin llover y se riegan con el cubo lleno de agua dulce del río, del lago o del pozo; el cereal y las habas no se riegan; el pozo se marca desde construir, se cava y se reviste por tramos de 1 m hasta el agua y se remata con brocal, travesaño y cuerda; el agua del mar no llena el cubo ni se bebe. Todo publicado y unido a main (la última, la demo v219).",
+   "El recorrido de jugador, sin arcón, lo hace entero: cava y remata un pozo y riega la col y el nabo con el cubo (306 de 306 en la nube).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: el cubo, el cubo lleno, la col, el nabo y el pozo salen del mundo.",
+   "Lo que queda para la revisión: según la segunda mirada, el brocal del pozo se lee más como un montón de piedras que como hiladas; la mano no cierra los dedos en el asa del cubo (el personaje del taller no los dobla). No comprobado: el sonido de la lluvia de oído, y los fotogramas con lluvia y niebla en un móvil de verdad.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 68 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
