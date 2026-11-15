@@ -6,6 +6,12 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 15 nov 2026 — por el chat, idea de futuro sobre el continente (no es tarea; nada se empieza hasta que valravnx diga)
+
+- «el continente tiene aun mucho trabajo y no es prioridad… pero tiene biomas que en la isla no existen y a futuro me encantaria ya introducirlo, aunque requiera de muchisimo».
+- Lo que se ha visto: en las uniones de ríos las láminas de agua, planas y a distinta altura, se cortan en escalones en vez de bajar o caer; los acantilados, con la textura estirada en vertical; fuera de la isla no hay fondo lejano (el horizonte es solo de Whitholm), así que el terreno se ve cargar a trozos; y en el panel de admin, «Traer» sigue activo fuera de la isla aunque no se puede.
+- Reglas: «me gustaria que funcionara con reglas diferentes que whitholm, como mas salvaje y menos organizado, mas como zona negra donde si te pueden asaltar y robar y todo eso».
+
 ### 15 nov 2026, 07:40 UTC — por una sesión del carril A, el pozo
 
 valravnx: «lo del pozo que acabas de publicar en vez de que sea con pala, al usarse la pala para más cosas, que sea desde construcción, y luego sí se use la pala, pero que no te esté saliendo todo el rato el "pulsa para hacer pozo" por tener la pala» → tarea nueva en el hito de la lluvia, delante de El pozo (3): el sitio del pozo se marca desde el menú de construir; la pala, solo para cavar cada tramo a su lado; con la pala en la mano ya no sale «Marcar aquí un pozo».
