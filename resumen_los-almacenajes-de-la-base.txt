@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3012 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3362 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4899 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3424 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3006 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3395 KB
+dist/kinhold_trozos.html 3028 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: los almacenajes de la base
+    - performing click action
+    - click action done
+    - waiting for scheduled navigations to finish
+
+!! FALLA: python3 pruebas/prueba_almacenajes_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/almacenajes
+
+HAY FALLOS
+tardó 1440 s
