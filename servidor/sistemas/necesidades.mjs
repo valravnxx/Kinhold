@@ -6,6 +6,7 @@ import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNece
 import { puestasDe, abrigo as abrigoDe } from '../../src/logica/prendas.js';
 import { horaDe } from '../../src/logica/cielo.js';
 import { calorEn } from '../../src/logica/fuego.js';
+import { lloviendo } from '../../src/logica/tiempo.js';
 import { sangrePerdida, motivoNecesidades } from '../../src/logica/muerte.js';
 import { RECUPERAR_SANGRE } from '../../src/combate/logica.js';
 import { reemplazar } from '../guardado.mjs';
@@ -54,7 +55,8 @@ export function instalarNecesidades(S) {
   const puestaDe = new Map();   // autor → ms que lleva la ropa puesta en el mundo desde el último uso contado
   // El frío que pide el sitio de cada uno (P4, 8 nov; src/logica/necesidades.js, frioDelSitio): la temperatura de su
   // bioma (la del paisaje, guardada mientras no se aleje 20 m), la noche (la hora del cielo: horaMundo, la real; las
-  // pruebas la cambian), lo que lleva puesto, si está bajo techo y el calor de los fuegos encendidos a su lado. Sin
+  // pruebas la cambian), lo que lleva puesto, si está bajo techo, el calor de los fuegos encendidos a su lado y si
+  // llueve donde está (P11b; src/logica/tiempo.js, a la hora de verdad, como el navegador la ve y la oye). Sin
   // terreno (las pruebas sin mundo) no hay clima: no pide frío.
   const tempDe = new Map();   // autor → { x, z, T }
   const frioPedido = (a, e, inv) => {
@@ -65,7 +67,7 @@ export function instalarNecesidades(S) {
       c = { x: e.x, z: e.z, T: st && Number.isFinite(st.T) ? st.T : 10 }; tempDe.set(a, c);
     }
     const ahora = Date.now(), cerca = Object.values(S.objetos.fab.estaciones).filter(s => s.fuego && Math.abs(s.x - e.x) < 5 && Math.abs(s.z - e.z) < 5);
-    return frioDelSitio({ T: c.T, noche: nocheDe(horaDe(S.horaMundo()).hora), abrigo: abrigoDe(puestasDe(inv.lugares)), techo: S.mundo.bajoTecho(e.x, e.z), calor: calorEn(cerca, e.x, e.z, ahora) });
+    return frioDelSitio({ T: c.T, noche: nocheDe(horaDe(S.horaMundo()).hora), abrigo: abrigoDe(puestasDe(inv.lugares)), techo: S.mundo.bajoTecho(e.x, e.z), calor: calorEn(cerca, e.x, e.z, ahora), lluvia: lloviendo(e.x, e.z, ahora) ? 1 : 0 });
   };
   Object.assign(S, { necesidades, necesidadesDe, guardarNecesidades, cansar, ultimoTrago, beber, antesNec, durmiendo, alientoAntes, puestaDe, tempDe, frioPedido });
 }

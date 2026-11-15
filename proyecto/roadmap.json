@@ -2371,9 +2371,9 @@
     },
     {
      "nombre": "La lluvia enfría: bajo la lluvia y sin techo, el frío que pide el sitio sube (GDD: el frío, según la lluvia y la ropa); con techo, nada; la capa y la capucha, cuando lleguen, lo quitan",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T02:24:34+00:00",
-     "rama": "trabajo/20261115-0224"
+     "fin": "2026-11-15T02:59:11+00:00"
     },
     {
      "nombre": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río, lago o pozo",

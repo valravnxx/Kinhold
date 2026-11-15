@@ -7079,5 +7079,21 @@
   "pruebas": "La prueba de navegador de la lluvia ampliada con la niebla (lo de lejos se pierde, el cielo tapado, lo de cerca se ve, el sol más débil, llega y se va de a poco), PC y móvil, correcta en la nube; rota a propósito con MUTAR=1: falla. El día y la noche, el posprocesado y los perfiles gráficos y el perfil gráfico en el juego, correctos. Una segunda mirada aparte dijo que sí.",
   "capturas": "capturas/demo-v215",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T02:24:34+00:00",
+  "fin": "2026-11-15T02:59:11+00:00",
+  "titulo": "P11b, La lluvia y el riego: la lluvia enfría",
+  "hito": "lluvia",
+  "hecho": [
+   "Bajo la lluvia y al raso, el frío que pide el sitio sube 30 encima de lo demás (la tierra, la noche y la ropa); el frío del personaje va hacia él poco a poco, como siempre.",
+   "Con lo del principio, de día bajo la lluvia el frío llega a 30 (sin aviso, pero sube); de noche, a 80 (aviso fuerte).",
+   "La ropa de hoy (lino, lana, cuero) no quita el frío de la lluvia: se empapa. La capa y la capucha, cuando lleguen, lo quitarán: la lógica ya lleva lo que cubren de la lluvia (hoy, nada).",
+   "Bajo techo la lluvia no cuenta nada, y junto al fuego tampoco hay frío.",
+   "Lo mira el servidor con el tiempo del mundo donde está cada uno, a la hora de verdad: el mismo que el navegador ve y oye.",
+   "Decisión provisional (los números, para ajustar probando): 30 de frío por la lluvia, fuera del abrigo de la ropa."
+  ],
+  "pruebas": "Lógica y recorrido correctos en la nube (los avisos de las necesidades, fuera: el cambio no toca lo que se ve). La prueba de las necesidades, con el servidor y el terreno de Whitholm: lloviendo y al raso, el frío sube más que en seco; rota a propósito (MUTAR=12 y la lluvia a 0), falla. El recorrido no se amplía: la lluvia no la decide el jugador.",
+  "estado": "ok"
  }
 ]
