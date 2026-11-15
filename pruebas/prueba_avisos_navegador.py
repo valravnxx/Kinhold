@@ -177,8 +177,18 @@ def recorrido(pg, nombre, pref, movil):
             pg.screenshot(path=f'{SALIDA}/{pref}_3_beber.png', timeout=180000)
     # el agua salada no se bebe (valravnx, 15 nov): en la costa (hacia el suroeste, unos 6,4 km), con sed, «Usar» dice que
     # es salada y no bebe; la sed no baja y el aviso lo dice
-    c = pg.evaluate(f"""(() => {{ const k = {K}, a = 41 / 64 * 2 * Math.PI;
-      for (let r = 6500; r > 5000; r -= 1) {{ const x = Math.cos(a) * r, z = Math.sin(a) * r; if (!k.mundoJ.aguaEn(x, z)) return {{ x, z }}; }} return null; }})()""")
+    # (el agua de tan lejos solo la sabe el navegador cuando ha cargado lo de allí: primero va cerca, y luego busca la orilla)
+    ang = 41 / 64 * 2 * 3.141592653589793
+    pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); }}', [6300 * __import__('math').cos(ang), 6300 * __import__('math').sin(ang)])
+    pg.wait_for_function(f'{K}.mundoListo', timeout=300000)
+    pg.wait_for_timeout(2000)
+    c = pg.evaluate(f"""(() => {{ const k = {K}, a = 41 / 64 * 2 * Math.PI, w = (x, z) => k.mundoJ.aguaEn(x, z);
+      for (let r = 6700; r > 5800; r -= 0.5) {{ const x = Math.cos(a) * r, z = Math.sin(a) * r;
+        if (w(x, z)) continue;
+        let mar = false, dulce = false;
+        for (const d of [0, 1.5, 2.5]) for (let j = 0; j < 8; j++) {{ const q = w(x + Math.cos(j * Math.PI / 4) * d, z + Math.sin(j * Math.PI / 4) * d); if (q) {{ if (q.mar) mar = true; else dulce = true; }} }}
+        if (mar && !dulce) return {{ x, z }};
+      }} return null; }})()""")
     comprobar(f'{nombre}: hay costa (mar) al suroeste', bool(c), str(c))
     if c:
         pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); k.pj.rot = Math.atan2(-x, -z) + Math.PI; }}', [c['x'], c['z']])
