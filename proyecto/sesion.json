@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-15T21:24:25+00:00",
+  "tarea": "El portón de empalizada sin hierro: con goznes de madera y cuerda (troncos delgados y cuerdas; provisional), se abre y se cierra, y solo lo abren el dueño de la tierra y sus invitados. El de herrajes, con P10. Cadena: tronco delgado ← el árbol joven; cuerda ← el banco de tronco",
+  "hito": "casa-fuerte",
+  "rama": "trabajo/20261115-2124"
+ },
  "B": null
 }
