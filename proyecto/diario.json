@@ -7235,5 +7235,22 @@
   ],
   "pruebas": "Sin pruebas: aprobado por valravnx.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T17:23:33+00:00",
+  "fin": "2026-11-15T18:48:03+00:00",
+  "titulo": "P11c: la rodaja de tronco y la carretilla",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "Con un hacha en la mano, junto a un tronco largo, el menú de Usar ofrece «Cortar una rodaja (la rueda de la carretilla)»: a golpes, como al tronzarlo, deja 1 rodaja de tronco a un lado y 2 o 3 troncos cortos al otro.",
+   "La rodaja se coge con las dos manos, de canto delante del cuerpo y cogida por el canto; en el suelo, tumbada, con la corteza en el canto y los anillos en la cara. Tiene su imagen en el panel (iconos v30).",
+   "En el banco de tronco, con 1 rodaja, 2 varas y 1 tronco corto depositados, se hace la carretilla de rueda maciza (90 s). Al recogerla cae a tus pies y, en tu tierra, queda a tu guarda.",
+   "La cadena hasta el mundo: rodaja ← cortarla del tronco largo ← talar un árbol adulto con el hacha de piedra; vara ← el árbol joven; tronco corto ← lo que queda al cortar la rodaja o tronzar el largo. En prueba_origenes.mjs, lo esencial de P11c (tronco largo, rodaja y carretilla) sale sin arcón.",
+   "Todo por el servidor con su autor. Provisional: los mismos golpes que tronzar (son los mismos cortes) y un tronco corto menos; la rodaja, 15 kg.",
+   "Pruebas nuevas: la rodaja en prueba_troceo.mjs (MUTAR=2 falla), la carretilla en prueba_fabricacion.mjs (MUTAR=5 falla), la rodaja en las pruebas de navegador de tronzar y de lo que llevas, en PC y en móvil."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido (a la segunda: la primera falló al azar en la caza de la liebre, como otras veces), tronzar y partir (con la rodaja), panel de fabricación e inventario, objetos en el suelo y los demás que pedía el cambio, bien. Fallan «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, en armas y mujer) y «los almacenajes de la base», igual que en main y sin tocar este cambio. No se quitó ningún grupo de la lista del revisor. Segunda mirada a las capturas: la rodaja en las manos se corrigió tres veces (se metía en la tripa, luego se iba a un lado) hasta que dijo que sí.",
+  "capturas": "capturas/demo-v220",
+  "estado": "ok"
  }
 ]

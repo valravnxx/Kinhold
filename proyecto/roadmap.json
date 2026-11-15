@@ -2447,9 +2447,9 @@
     },
     {
      "nombre": "La rodaja de tronco y la carretilla: del tronco largo, con el hacha, se corta una rodaja (la rueda maciza: el árbol joven es demasiado fino) y la carretilla, que ya está programada pero no se podía fabricar, se hace con 1 rodaja, 2 varas y 1 tronco corto. Cadena: rodaja ← el tronco largo; vara ← el árbol joven; tronco corto ← tronzar el tronco largo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T17:23:33+00:00",
-     "rama": "trabajo/20261115-1723"
+     "fin": "2026-11-15T18:48:03+00:00"
     },
     {
      "nombre": "La empalizada: deja de estar escondida (6 troncos delgados, clavados en el suelo y afilados), con el estilo v5 y capturas de cerca al lado de la referencia. Cadena: tronco delgado ← talar un árbol joven",
@@ -4753,6 +4753,13 @@
      "archivo": "jugar/demo/v219.html",
      "capturas": "capturas/demo-v219",
      "notas": "El agua salada no se bebe: solo el agua dulce (río, lago o pozo) quita la sed; junto al mar, Usar dice «Agua salada: no se bebe» y lo decide el servidor"
+    },
+    {
+     "v": "v220",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v220.html",
+     "capturas": "capturas/demo-v220",
+     "notas": "La rodaja de tronco y la carretilla: del tronco largo se corta con el hacha la rodaja, la rueda maciza, y en el banco de tronco, con 2 varas y 1 tronco corto, se hace la carretilla"
     }
    ]
   },
