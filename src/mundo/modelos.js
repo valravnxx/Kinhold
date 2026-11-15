@@ -183,17 +183,69 @@ function muroZarzo(opc = {}) {
   L.add(cajaR(MODULO, 0.12, 0.2, 0.03), c, 0, H - 0.06, 0);   // carrera
   return deLote(L);
 }
-// Entramado: armazón de vigas con relleno de barro encalado
-function muroEntramado() {
+// Entramado (P11c, «La casa más fuerte»): armazón de madera oscura (durmiente, carrera, postes de esquina, pie derecho
+// central, riostras a media altura y tornapuntas en cruz de los paños bajos) y los paños rellenos de barro alisado claro,
+// como las casas de entramado de la referencia (diseno/referencia/aspecto_del_juego.jpg): paños pequeños y la madera
+// a la vista, asomando del relleno. Con puerta (jambas y dintel) y con ventana (pies, peana, dintel y alféizar).
+// Sin cal aún, el relleno es barro (el ocre claro de la referencia), no encalado.
+const BARRO_CLARO = 0xc4a77a;
+function muroEntramado(opc = {}) {
   const L = loteMuro();
-  L.add(cajaR(MODULO - 0.1, ALTURA - 0.1, 0.13, 0.02), 0xd3c6a6, 0, ALTURA / 2, 0, null, { tex: 'piedra', brillo: 1.02 });
-  const c = 'maderaOsc';
-  for (const s of [-1, 1]) L.add(cajaR(0.18, ALTURA, 0.2, 0.03), c, s * 0.91, ALTURA / 2, 0);
-  L.add(cajaR(MODULO, 0.18, 0.2, 0.03), c, 0, 0.09, 0);
-  L.add(cajaR(MODULO, 0.18, 0.2, 0.03), c, 0, ALTURA - 0.09, 0);
-  L.add(cajaR(MODULO - 0.3, 0.14, 0.19, 0.03), c, 0, 1.25, 0); // riostra a media altura
-  const largo = Math.hypot(1.64, ALTURA - 0.36);
-  L.add(cajaR(0.14, largo, 0.19, 0.03), c, 0, ALTURA / 2, 0, { z: Math.atan2(1.64, ALTURA - 0.36) });
+  const S = MODULO / 2, H = ALTURA, c = 'maderaOsc', F = 0.2;   // F: grueso de la madera (el relleno, 0,13)
+  const vigaV = (x, y0, y1, w = 0.16) => { if (y1 - y0 > 0.04) L.add(cajaR(w, y1 - y0, F, 0.025), c, x, (y0 + y1) / 2, 0); };
+  const vigaH = (x0, x1, y, h = 0.14) => { if (x1 - x0 > 0.04) L.add(cajaR(x1 - x0, h, F - 0.01, 0.025), c, (x0 + x1) / 2, y, 0); };
+  const tornapunta = (x0, y0, x1, y1) => {   // de esquina a esquina de un paño, metida en sus vigas
+    const dx = x1 - x0, dy = y1 - y0;
+    L.add(cajaR(0.13, Math.hypot(dx, dy), F - 0.02, 0.02), c, (x0 + x1) / 2, (y0 + y1) / 2, 0, { z: -Math.atan2(dx, dy) });
+  };
+  // el relleno de una pieza, con el hueco recortado (como el barro del zarzo)
+  const f = new THREE.Shape(), B = 0.012, m = 0.04;
+  f.moveTo(-S + m, m);
+  if (opc.puerta) { const a = P.anchoPuerta / 2; f.lineTo(-a, m); f.lineTo(-a, P.altoPuerta); f.lineTo(a, P.altoPuerta); f.lineTo(a, m); }
+  f.lineTo(S - m, m); f.lineTo(S - m, H - m); f.lineTo(-S + m, H - m); f.closePath();
+  if (opc.ventana) {
+    const a = P.anchoVentana / 2, h = new THREE.Path();
+    h.moveTo(-a, P.bajoVentana); h.lineTo(-a, P.altoVentana); h.lineTo(a, P.altoVentana); h.lineTo(a, P.bajoVentana); h.closePath();
+    f.holes.push(h);
+  }
+  const g = new THREE.ExtrudeGeometry(f, { depth: 0.13 - 2 * B, bevelEnabled: true, bevelThickness: B, bevelSize: B, bevelSegments: 1, curveSegments: 1 });
+  g.translate(0, 0, -(0.13 - 2 * B) / 2);
+  L.add(g, BARRO_CLARO, 0, 0, 0, null, { tex: 'piedra', rayas: RAYAS_BARRO });
+
+  const yD = 0.18, yC = H - 0.18, yR = 1.25, ip = S - 0.18;   // arriba del durmiente, debajo de la carrera, la riostra; cara de dentro de los postes
+  for (const s of [-1, 1]) vigaV(s * (S - 0.09), 0, H, 0.18);   // postes de esquina
+  vigaH(-S, S, H - 0.09, 0.18);                                   // carrera
+  if (opc.puerta) {
+    const a = P.anchoPuerta / 2, ap = P.altoPuerta, j = a + 0.08;
+    for (const s of [-1, 1]) {
+      vigaH(s < 0 ? -S : a, s < 0 ? -a : S, 0.09, 0.18);           // durmiente a los lados, nunca cruzando el hueco
+      vigaV(s * j, 0, ap + 0.16);                                  // jambas
+      vigaH(s < 0 ? -ip : j + 0.08, s < 0 ? -j - 0.08 : ip, yR);  // riostra del lado
+    }
+    vigaH(-j - 0.08, j + 0.08, ap + 0.08, 0.16);                   // dintel
+    vigaV(0, ap + 0.16, yC, 0.14);                                 // pie corto encima
+  } else if (opc.ventana) {
+    const a = P.anchoVentana / 2, bv = P.bajoVentana, av = P.altoVentana, j = a + 0.07;
+    vigaH(-S, S, 0.09, 0.18);
+    for (const s of [-1, 1]) {
+      vigaV(s * j, yD, yC, 0.14);                                  // pies de la ventana
+      vigaH(s < 0 ? -ip : j + 0.07, s < 0 ? -j - 0.07 : ip, yR);  // riostra del lado
+      const xi = s * ip, xo = s * (j + 0.07);
+      tornapunta(xi, yD, xo, yR - 0.07);                           // tornapunta del paño bajo del lado
+    }
+    vigaH(-j, j, bv - 0.07);                                       // peana
+    vigaH(-j, j, av + 0.07);                                       // dintel
+    vigaV(0, yD, bv - 0.14, 0.12);                                 // pie corto bajo la ventana
+    L.add(cajaR(P.anchoVentana + 0.3, 0.06, 0.28, 0.015), 'madera', 0, bv - 0.02, 0);   // alféizar
+  } else {
+    vigaH(-S, S, 0.09, 0.18);                                      // durmiente
+    vigaV(0, yD, yC, 0.16);                                        // pie derecho central
+    for (const s of [-1, 1]) {
+      vigaH(s < 0 ? -ip : 0.08, s < 0 ? -0.08 : ip, yR);           // riostras
+      vigaV(s * (ip + 0.08) / 2, yR + 0.07, yC, 0.12);             // pies cortos de los paños altos
+      tornapunta(s * ip, yD, s * 0.08, yR - 0.07);                 // tornapuntas de los paños bajos, en V
+    }
+  }
   return deLote(L);
 }
 // Tablas de pie, con durmiente abajo y carrera arriba
@@ -751,7 +803,7 @@ function tablasDePie(L, u0, u1, yBajo, arriba, plano, pos, grosor = 0.07) {
     L.add(g, ruido(t * 3.7 + u0 * 5) > 0.5 ? 'tabla' : 'madera', 0, 0, 0, null, { sinSuelo: true, brillo: 0.92 });
   }
 }
-// Relleno liso (barro del zarzo, encalado del entramado) con la misma forma
+// Relleno liso (barro del zarzo, barro claro del entramado) con la misma forma
 function rellenoLiso(L, u0, u1, yBajo, arriba, plano, pos, color) {
   const f = new THREE.Shape(); f.moveTo(u0, yBajo); f.lineTo(u1, yBajo); f.lineTo(u1, arriba(u1)); f.lineTo(u0, arriba(u0)); f.closePath();
   const g = new THREE.ExtrudeGeometry(f, { depth: 0.14, bevelEnabled: false }); g.translate(0, 0, -0.07);
@@ -1425,6 +1477,8 @@ export function modeloPieza(tipo, ctx) {
     case 'muro_tronco_puerta': return muroTroncos({ puerta: true });
     case 'muro_tronco_ventana': return muroTroncos({ ventana: true });
     case 'muro_entramado': return muroEntramado();
+    case 'muro_entramado_puerta': return muroEntramado({ puerta: true });
+    case 'muro_entramado_ventana': return muroEntramado({ ventana: true });
     case 'muro_tabla': return muroTablas();
     case 'muro_tabla_puerta': return muroTablas({ puerta: true });
     case 'muro_tabla_ventana': return muroTablasVentana();
@@ -1459,8 +1513,8 @@ export function modeloPieza(tipo, ctx) {
 // ---------- Rellenos de muro bajo el tejado, con el estilo v5 ----------
 // En el marco local del tramo de tejado (sube hacia +z; lados en x = ±1; borde alto en z = +1).
 // y = 0 es lo alto de la planta de los muros. 'arranque' en tramos. Como en la cabaña de la prueba v5, bajo el tejado
-// se cierra con tablas de pie (muros de troncos y de tablas); el zarzo con su barro y el entramado con su encalado.
-const RELLENO_LISO = { muro_zarzo: 0x8c7356, muro_zarzo_puerta: 0x8c7356, muro_zarzo_ventana: 0x8c7356, muro_entramado: 0xd3c6a6 };
+// se cierra con tablas de pie (muros de troncos y de tablas); el zarzo con su barro y el entramado con su barro claro.
+const RELLENO_LISO = { muro_zarzo: 0x8c7356, muro_zarzo_puerta: 0x8c7356, muro_zarzo_ventana: 0x8c7356, muro_entramado: BARRO_CLARO, muro_entramado_puerta: BARRO_CLARO, muro_entramado_ventana: BARRO_CLARO };
 export function rellenoTejado(rel, arranque) {
   const S = MODULO / 2, sub = P.subidaTejado, L = loteMuro(), yBajo = -arranque * sub;
   let u0, u1, arriba, plano, pos;
