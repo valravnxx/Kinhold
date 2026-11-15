@@ -236,8 +236,10 @@ try:
         comprobar('le llega el pozo, con agua', esperar(B, f"({K}.mundo.pozos || []).length === 1 && {K}.mundo.pozos[0].revestidos === {TR}", 45000), B.evaluate(f"JSON.stringify({K}.mundo.pozos || null)"))
         comprobar('y ve su boca', esperar(B, f"!!{K}.escena.getObjectByName('boca_pozo')", 20000))
         B.add_style_tag(content='#menuUsar { visibility: hidden !important; }')
-        # (al llegar el pozo se quita la hierba de su boca: la de alrededor se rehace poco a poco; se espera a que esté)
-        comprobar('la hierba de alrededor vuelve a estar (solo falta en la boca)', esperar(B, f"!{K}.hierbaDensa || ({K}.hierbaDensa.porRehacer === 0 && {K}.hierbaDensa.cuenta.matas > 0)", 90000), B.evaluate(f"{K}.hierbaDensa ? JSON.stringify([{K}.hierbaDensa.porRehacer, {K}.hierbaDensa.cuenta]) : 'sin hierba densa'"))
+        # (al llegar el pozo se quita la hierba de su boca: la de alrededor se rehace poco a poco; se espera a que esté; en el
+        # móvil de la nube, su perfil gráfico no lleva hierba densa: entonces se espera a que cargue lo de alrededor)
+        comprobar('la hierba de alrededor vuelve a estar (solo falta en la boca)', esperar(B, f"!{K}.hierbaDensa || !{K}.hierbaDensa.activa || ({K}.hierbaDensa.porRehacer === 0 && {K}.hierbaDensa.cuenta.matas > 0)", 90000), B.evaluate(f"{K}.hierbaDensa ? JSON.stringify([{K}.hierbaDensa.porRehacer, {K}.hierbaDensa.cuenta]) : 'sin hierba densa'"))
+        B.wait_for_timeout(15000)
         ver(B, x0, z0, -2.1 + 3.1416, 3.0, 0.9, f'{SALIDA}/movil_pozo_con_agua_de_cerca.png', 3000)
         ver(B, x0, z0, -2.1 + 3.1416, 9, 0.6, f'{SALIDA}/movil_pozo_con_agua.png')
         comprobar('a él no le deja cavar en el pozo de otro', B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'revestir_pozo', pozo: {K}.mundo.pozos[0].id }}); return r.ok ? 'sí' : r.motivo; }})()") != 'sí')
