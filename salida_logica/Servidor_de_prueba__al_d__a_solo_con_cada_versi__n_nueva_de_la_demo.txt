@@ -1,0 +1,8 @@
+  OK   la primera vez apunta la versión puesta y no reinicia nada — apuntada v9, 0 puestas al día
+  OK   con un cambio sin versión nueva de la demo, nada — 0 puestas al día
+  OK   con una versión nueva, se pone al día una vez (git pull en la copia corta) — 1 puestas al día; Versión nueva de la demo: v10 (puesta: v9). Poniendo el servidor al día…
+  OK   y apunta la nueva (v10, no v9) — apuntada v10
+  OK   la copia del servidor queda en la versión nueva
+  OK   después, sin nada nuevo, no se repite — 1 puestas al día
+
+6 correctas, 0 fallidas
