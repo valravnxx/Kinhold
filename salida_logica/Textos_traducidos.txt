@@ -1,0 +1,4 @@
+Textos del juego: 1889; sin traducir (en): 1; con variables distintas: 0
+  FALTA (en)  Demo única · v223 (El muro de entramado)
+Textos del juego: 1889; sin traducir (ru): 1; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  Demo única · v223 (El muro de entramado)
