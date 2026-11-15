@@ -3085,5 +3085,15 @@
  "El agua del mar es salada: no se bebe. Busca un río, un lago o un pozo.": "Морская вода солёная: её не пьют. Найди реку, озеро или колодец.",
  "Aquí no hay agua: busca un río, un lago o un pozo.": "Здесь нет воды: найди реку, озеро или колодец.",
  "Demo única · v219 (El agua salada no se bebe)": "Единое демо · v219 (Солёную воду не пьют)",
- "v219: el agua salada no se bebe (valravnx, 15 nov: «que el agua salada se diferencie de la dulce y no se pueda beber»). Solo el agua dulce (la de un río, un lago o un pozo) quita la sed. Junto al mar, «Usar» dice «Agua salada: no se bebe» y el aviso explica que hay que buscar un río, un lago o un pozo; lo decide el servidor (mira dónde estás y qué agua tienes al lado), así que no se puede beber del mar aunque lo pida el navegador. El cubo, como ya era, tampoco se llena en el mar.": "v219: солёную воду не пьют (valravnx, 15 нояб.: «чтобы солёная вода отличалась от пресной и её нельзя было пить»). Жажду утоляет только пресная вода (из реки, озера или колодца). У моря «Использовать» пишет «Солёная вода: пить нельзя», а сообщение объясняет, что нужно найти реку, озеро или колодец; решает сервер (он смотрит, где ты и какая вода рядом), так что из моря не попить, даже если попросит браузер. Ведро, как и раньше, в море тоже не наполнить."
+ "v219: el agua salada no se bebe (valravnx, 15 nov: «que el agua salada se diferencie de la dulce y no se pueda beber»). Solo el agua dulce (la de un río, un lago o un pozo) quita la sed. Junto al mar, «Usar» dice «Agua salada: no se bebe» y el aviso explica que hay que buscar un río, un lago o un pozo; lo decide el servidor (mira dónde estás y qué agua tienes al lado), así que no se puede beber del mar aunque lo pida el navegador. El cubo, como ya era, tampoco se llena en el mar.": "v219: солёную воду не пьют (valravnx, 15 нояб.: «чтобы солёная вода отличалась от пресной и её нельзя было пить»). Жажду утоляет только пресная вода (из реки, озера или колодца). У моря «Использовать» пишет «Солёная вода: пить нельзя», а сообщение объясняет, что нужно найти реку, озеро или колодец; решает сервер (он смотрит, где ты и какая вода рядом), так что из моря не попить, даже если попросит браузер. Ведро, как и раньше, в море тоже не наполнить.",
+ "Rodaja de tronco": "Спил бревна",
+ "Eso no se hace.": "Так нельзя.",
+ "Necesitas un hacha en la mano para cortar la rodaja.": "Чтобы отпилить спил, нужен топор в руке.",
+ "Cortar una rodaja (la rueda de la carretilla)": "Отрубить спил (колесо для тачки)",
+ "Cortas una rodaja del tronco largo.": "Вы отрубаете спил от длинного бревна.",
+ "Cortas la rodaja: falta 1 golpe.": "Рубите спил: остался 1 удар.",
+ "Cortas la rodaja: faltan {n} golpes.": "Рубите спил: осталось ударов: {n}.",
+ "Cortada: 1 rodaja de tronco y {n} troncos cortos.": "Готово: 1 спил бревна и коротких брёвен: {n}.",
+ "De eso no se saca una rodaja: hace falta un tronco largo.": "Из этого спил не получится: нужно длинное бревно.",
+ "Se empuja: 4 troncos cortos, 40 de leña, 36 piedras o un bloque de piedra, más deprisa que la rastra; aparcada en tus tierras, lo que lleva está protegido.": "Толкается руками: 4 коротких бревна, 40 дров, 36 камней или каменный блок, быстрее волокуши; на вашей земле её груз под защитой."
 }
