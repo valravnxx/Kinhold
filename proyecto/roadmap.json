@@ -2407,7 +2407,9 @@
     },
     {
      "nombre": "El pozo (3), sacar agua: brocal de piedra, travesaño de varas y cuerda; con el cubo se saca agua dulce (para regar y para beber), lejos de cualquier río; el recorrido de jugador hace un pozo de principio a fin. Cadena: varas ← árbol joven; cuerda ← fibra",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-15T09:23:12+00:00",
+     "rama": "trabajo/20261115-0923"
     },
     {
      "nombre": "Revisión completa y publicación",
