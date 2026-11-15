@@ -1,0 +1,193 @@
+// Kinhold — cómo se ven los pozos (P11b, «El pozo (2), en el juego»; la lógica, en src/logica/pozo.js).
+// El terreno es una malla de alturas y no se puede agujerear, así que la boca del pozo es un disco pegado al suelo con
+// lo de dentro pintado en un lienzo, mirado desde arriba como lo ve la cámara: cada tramo de 1 m cavado es un anillo
+// de pared, más estrecho y más oscuro cuanto más hondo (la luz no llega abajo); los tramos revestidos, de piedra seca a
+// hiladas, y el que aún no, de tierra parda; al fondo, tierra húmeda o, cuando llega al agua, el agua oscura con su
+// brillo. Encima:
+// - recién marcado (sin cavar): un círculo raspado en el suelo y una estaca clavada al lado (el sitio, con su hondura
+//   en el aviso al marcarlo);
+// - la boca: un reborde de tierra pisada y, desde que está revestido el primer tramo, un anillo de piedras a ras de
+//   suelo (la hilada de arriba);
+// - la tierra sacada: un montón al lado, del volumen que sale de lo cavado (lógica: tierraSacada, algo esponjada);
+// - las piedras ya puestas en el tramo que se está revistiendo, un montoncito junto a la boca.
+// Todo se rehace cuando cambia el mundo de construcción (main.js, reconstruir); lo ven todos.
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { Lote, materialTex } from '../mundo/estilos.js';
+import { estacaEn } from './modelos_objetos.js';
+import { RADIO_POZO, tramosDe, tierraSacada, conAgua } from '../logica/pozo.js';
+
+const SOBRE = 0.025;         // m sobre el suelo (para que no parpadee con él)
+const R_BOCA = RADIO_POZO;   // m: la boca
+const R_DISCO = RADIO_POZO + 0.22;   // m: el disco pintado (la boca y el reborde de tierra pisada)
+const ESPONJA = 1.25;        // la tierra sacada abulta más que en su sitio
+const az = (s, k) => { const v = Math.sin(s * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); };
+
+// ---------- La boca pintada ----------
+// El radio en el lienzo (0..1 de la boca) al que se ve la hondura d (m): las paredes se van cerrando hacia el centro
+// como en una vista desde arriba de un hoyo estrecho.
+const radioA = (d) => 1 - 0.78 * (1 - Math.exp(-d / 2.4));
+const luzA = (d) => 0.18 + 0.82 * Math.exp(-d / 1.6);
+const texturas = new Map();
+function texturaBoca(p) {
+  const T = tramosDe(p), cav = p.cavados + (p.golpes || 0) / 10, rev = p.revestidos, agua = conAgua(p);
+  const k = [T, p.cavados, p.golpes || 0, rev, agua ? 1 : 0].join(':');
+  if (texturas.has(k)) return texturas.get(k);
+  if (typeof document === 'undefined') return null;
+  const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const g = cv.getContext('2d'), c = N / 2, Rb = (R_BOCA / R_DISCO) * c;
+  let s = 11 + p.id * 7; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  const col = (r, gg, b, l, a = 1) => `rgba(${Math.round(r * l)},${Math.round(gg * l)},${Math.round(b * l)},${a})`;
+  g.clearRect(0, 0, N, N);
+  // el reborde de tierra pisada alrededor de la boca, que se pierde en la hierba
+  const rg = g.createRadialGradient(c, c, Rb * 0.9, c, c, c);
+  rg.addColorStop(0, col(132, 112, 86, 1, 0.95)); rg.addColorStop(0.55, col(140, 120, 92, 1, 0.75)); rg.addColorStop(1, col(140, 120, 92, 1, 0));
+  g.fillStyle = rg; g.beginPath(); g.arc(c, c, c, 0, 6.2832); g.fill();
+  for (let i = 0; i < 260; i++) {   // terrones y grano
+    const a = rnd() * 6.2832, r = Rb + rnd() * (c - Rb) * 0.8, l = 0.7 + rnd() * 0.5;
+    g.fillStyle = col(150, 128, 100, l, 0.5); g.beginPath(); g.ellipse(c + Math.cos(a) * r, c + Math.sin(a) * r, 1 + rnd() * 2.5, 1 + rnd() * 1.6, a, 0, 6.2832); g.fill();
+  }
+  if (cav <= 0) {
+    // solo marcado: un círculo raspado en la tierra
+    g.strokeStyle = col(92, 74, 54, 1, 0.9); g.lineWidth = 5;
+    g.beginPath(); for (let i = 0; i <= 48; i++) { const a = i / 48 * 6.2832, r = Rb * (0.97 + 0.04 * Math.sin(i * 1.7)); g[i ? 'lineTo' : 'moveTo'](c + Math.cos(a) * r, c + Math.sin(a) * r); } g.stroke();
+  } else {
+    // las paredes, de arriba abajo: cada tramo, su anillo
+    const capa = (d0, d1, piedra) => {
+      const r0 = radioA(d0) * Rb, r1 = radioA(d1) * Rb, n = Math.max(1, Math.round((r0 - r1) / 3));
+      for (let j = 0; j < n; j++) {
+        const ra = r0 - (r0 - r1) * j / n, d = d0 + (d1 - d0) * (j + 0.5) / n, l = luzA(d);
+        g.fillStyle = piedra ? col(150, 146, 136, l) : col(124, 98, 70, l);
+        g.beginPath(); g.arc(c, c, ra, 0, 6.2832); g.fill();
+      }
+      if (piedra) {
+        // las piedras a hiladas: dos o tres por tramo, de lajas desiguales con su junta oscura
+        const hil = 3;
+        for (let h = 0; h < hil; h++) {
+          const da = d0 + (d1 - d0) * h / hil, db = d0 + (d1 - d0) * (h + 1) / hil, ra = radioA(da) * Rb, rb = radioA(db) * Rb, l = luzA((da + db) / 2);
+          let a = rnd() * 0.5;
+          while (a < 6.2832) {
+            const w = (0.32 + rnd() * 0.3) * (Rb / Math.max(ra, 1)) * 0.9, b = Math.min(a + w, 6.2832 + 0.01);
+            const t = 0.82 + rnd() * 0.32;
+            g.fillStyle = col(158 * t, 152 * t, 140 * t, l);
+            g.beginPath(); g.arc(c, c, ra - 0.6, a + 0.03, b - 0.03); g.arc(c, c, rb + 0.6, b - 0.03, a + 0.03, true); g.closePath(); g.fill();
+            a = b;
+          }
+          g.strokeStyle = col(40, 36, 30, l, 0.8); g.lineWidth = 1.2; g.beginPath(); g.arc(c, c, rb, 0, 6.2832); g.stroke();
+        }
+      } else {
+        for (let i = 0; i < 70; i++) {   // la tierra de la pared, con sus vetas
+          const d = d0 + rnd() * (d1 - d0), r = radioA(d) * Rb, a = rnd() * 6.2832;
+          g.fillStyle = col(150, 120, 88, luzA(d) * (0.8 + rnd() * 0.4), 0.6); g.beginPath(); g.ellipse(c + Math.cos(a) * r, c + Math.sin(a) * r, 1.5 + rnd() * 2, 0.8, a + 1.57, 0, 6.2832); g.fill();
+        }
+      }
+    };
+    for (let i = 0; i < Math.ceil(cav); i++) capa(i, Math.min(cav, i + 1), i < rev);
+    // el fondo: tierra húmeda o, con agua, el agua oscura con su brillo
+    const rf = radioA(cav) * Rb, l = luzA(cav);
+    g.fillStyle = agua ? col(40, 52, 56, 1) : col(84, 66, 48, l); g.beginPath(); g.arc(c, c, rf, 0, 6.2832); g.fill();
+    if (agua) { g.fillStyle = 'rgba(190,205,210,0.35)'; g.beginPath(); g.ellipse(c - rf * 0.25, c - rf * 0.3, rf * 0.35, rf * 0.12, -0.5, 0, 6.2832); g.fill(); }
+    // la sombra de la boca sobre la pared de abajo (el sol, de arriba y de lado)
+    const sg = g.createRadialGradient(c - Rb * 0.25, c - Rb * 0.25, Rb * 0.2, c, c, Rb);
+    sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, 'rgba(0,0,0,0.25)');
+    g.fillStyle = sg; g.beginPath(); g.arc(c, c, Rb, 0, 6.2832); g.fill();
+  }
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  texturas.set(k, t);
+  if (texturas.size > 64) { const [k0, t0] = texturas.entries().next().value; t0.dispose(); texturas.delete(k0); }
+  return t;
+}
+const matsBoca = new Map();
+function matBoca(tex) {
+  if (!matsBoca.has(tex)) matsBoca.set(tex, new THREE.MeshLambertMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
+  return matsBoca.get(tex);
+}
+
+// El disco de la boca, pegado al suelo (anillos de vértices a la altura de cada punto)
+function discoBoca(x, z, sueloEn) {
+  const nr = 6, na = 32, pos = [], uv = [], idx = [];
+  pos.push(x, sueloEn(x, z) + SOBRE, z); uv.push(0.5, 0.5);
+  for (let i = 1; i <= nr; i++) for (let j = 0; j < na; j++) {
+    const r = R_DISCO * i / nr, a = j / na * Math.PI * 2, px = x + Math.cos(a) * r, pz = z + Math.sin(a) * r;
+    pos.push(px, sueloEn(px, pz) + SOBRE, pz); uv.push(0.5 + Math.cos(a) * 0.5 * i / nr, 0.5 - Math.sin(a) * 0.5 * i / nr);
+  }
+  for (let j = 0; j < na; j++) idx.push(0, 1 + (j + 1) % na, 1 + j);
+  for (let i = 1; i < nr; i++) for (let j = 0; j < na; j++) {
+    const a = 1 + (i - 1) * na + j, b = 1 + (i - 1) * na + (j + 1) % na, c = a + na, d = b + na;
+    idx.push(a, b, c, b, d, c);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+
+// Una piedra de laja, baja y desigual (un icosaedro aplastado y deformado según su semilla)
+function piedra(sd, ancho, alto) {
+  const g = new THREE.IcosahedronGeometry(0.5, 0).toNonIndexed(), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const k = 0.8 + 0.4 * az(sd + p.getX(i) * 3 + p.getZ(i) * 5, i % 3);
+    p.setXYZ(i, p.getX(i) * ancho * k, p.getY(i) * alto * k, p.getZ(i) * ancho * (0.7 + 0.3 * k));
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+// El montón de tierra sacada: un casquete de esfera algo irregular, del volumen v (m³), a la altura del suelo
+function monton(v, sd) {
+  // casquete de alto h = 0,45·a: V = π·h·(3a² + h²)/6
+  const a = Math.cbrt(v / (Math.PI * 0.45 * (3 + 0.2025) / 6)), h = 0.45 * a;
+  const g = new THREE.SphereGeometry(1, 14, 7, 0, Math.PI * 2, 0, Math.PI / 2), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i), k = 1 + 0.12 * Math.sin(x * 5 + sd) * Math.cos(z * 4 + sd * 2) + 0.06 * az(sd, i % 7);
+    p.setXYZ(i, x * a * k, y * h * k - 0.03, z * a * (0.8 + 0.2 * k));
+  }
+  g.computeVertexNormals();
+  return { geo: g, a };
+}
+
+export function crearPozosVista({ escena, sueloEn }) {
+  const raiz = new THREE.Group();
+  raiz.name = 'pozos';
+  escena.add(raiz);
+  const vaciar = () => { for (const o of raiz.children) if (o.isMesh) o.geometry.dispose(); raiz.clear(); };
+
+  function poner(pozos) {
+    vaciar();
+    if (!pozos || !pozos.length) return;
+    const L = new Lote({ rangoSuelo: 0.25, variacion: 0.08 });
+    for (const p of pozos) {
+      const y = sueloEn(p.x, p.z), giro = (p.id * 2.399) % 6.2832;
+      // la boca pintada
+      const tex = texturaBoca(p);
+      if (tex) { const m = new THREE.Mesh(discoBoca(p.x, p.z, sueloEn), matBoca(tex)); m.receiveShadow = true; m.renderOrder = 1; m.name = 'boca_pozo'; m.userData.pozo = p.id; raiz.add(m); }
+      // la estaca del sitio, clavada al lado de la boca hasta que se empieza a cavar
+      if (!p.cavados && !p.golpes) { const ex = p.x + Math.cos(giro) * (R_BOCA + 0.15), ez = p.z + Math.sin(giro) * (R_BOCA + 0.15); estacaEn(L, ex, sueloEn(ex, ez) - 0.25, ez, { y: giro, x: 0.06 }, 'pozo' + p.id, 1.7, 1.2, 1.4); }
+      // la hilada de arriba: un anillo de piedras a ras de suelo en cuanto está revestido el primer tramo
+      if (p.revestidos > 0) {
+        const n = 16;
+        for (let i = 0; i < n; i++) {
+          const a = i / n * Math.PI * 2 + az(p.id, i) * 0.1, r = R_BOCA + 0.09, px = p.x + Math.cos(a) * r, pz = p.z + Math.sin(a) * r;
+          L.add(piedra(p.id * 31 + i, 0.27, 0.13), az(p.id, i + 50) < 0.5 ? 'piedra' : 'piedraOsc', px, sueloEn(px, pz) + 0.02, pz, { y: -a + Math.PI / 2 }, { tex: 'piedra', plano: true, sinSuelo: true });
+        }
+      }
+      // el montón de tierra sacada, al lado (del lado de la estaca)
+      const v = tierraSacada(p) * ESPONJA + (p.golpes || 0) / 10 * 0.11;
+      if (v > 0.01) {
+        const { geo, a } = monton(v, p.id), d = R_DISCO + a * 0.75, mx = p.x + Math.cos(giro) * d, mz = p.z + Math.sin(giro) * d;
+        L.add(geo, 'tierra', mx, Math.min(sueloEn(mx, mz), y), mz, { y: giro }, { tex: 'piedra', sinSuelo: true, brillo: 1.05 });
+      }
+      // las piedras ya puestas del tramo que se está revistiendo, en un montoncito junto a la boca
+      for (let i = 0; i < (p.piedras || 0); i++) {
+        const a = giro + Math.PI + 0.6 + (i % 4) * 0.22, r = R_DISCO + 0.15 + Math.floor(i / 4) * 0.2, px = p.x + Math.cos(a) * r, pz = p.z + Math.sin(a) * r;
+        L.add(piedra(p.id * 17 + i, 0.24, 0.16), 'piedra', px, sueloEn(px, pz) + 0.05 + Math.floor(i / 4) * 0.06, pz, { y: i * 1.3 }, { tex: 'piedra', plano: true, sinSuelo: true });
+      }
+    }
+    for (const [tex, geos] of Object.entries(L.cerrar(null, true))) {
+      const m = new THREE.Mesh(mergeGeometries(geos), materialTex(tex)); m.castShadow = m.receiveShadow = true; raiz.add(m);
+    }
+  }
+  return { poner, raiz };
+}

@@ -3042,5 +3042,21 @@
  "Ya has llegado al agua: reviste de piedra el último tramo.": "Ты дошёл до воды: обложи камнем последний участок.",
  "Reviste antes de piedra este tramo: si bajas más, la tierra se viene abajo.": "Сначала обложи этот участок камнем: если копать глубже, земля обвалится.",
  "El pozo ya está revestido entero.": "Колодец уже полностью обложен.",
- "Antes cava el tramo: aún no hay pared que revestir.": "Сначала выкопай участок: ещё нечего обкладывать."
+ "Antes cava el tramo: aún no hay pared que revestir.": "Сначала выкопай участок: ещё нечего обкладывать.",
+ "Marcar aquí un pozo": "Отметить здесь колодец",
+ "Pozo marcado: el agua está a unos {h} m ({t} tramos de cavar y revestir).": "Колодец отмечен: вода примерно на глубине {h} м ({t} участков копать и обкладывать).",
+ "Pozo con agua, a {h} m": "Колодец с водой, глубина {h} м",
+ "Para sacar agua le faltan el brocal, el travesaño y la cuerda.": "Чтобы доставать воду, нужны сруб, перекладина и верёвка.",
+ "Revestir de piedra el tramo {n} de {t} ({p} de {m} piedras)": "Обложить камнем участок {n} из {t} ({p} из {m} камней)",
+ "Trae piedras para revestir el tramo: faltan {f}.": "Принеси камни для обкладки участка: не хватает {f}.",
+ "Pozo: {c} de {t} tramos cavados (agua a {h} m)": "Колодец: выкопано {c} из {t} участков (вода на {h} м)",
+ "Para cavar el pozo, la pala de madera en la mano.": "Чтобы копать колодец, возьми в руку деревянную лопату.",
+ "Cavar el pozo: tramo {n} de {t}": "Копать колодец: участок {n} из {t}",
+ "Cavas el pozo.": "Ты копаешь колодец.",
+ "Has llegado al agua: reviste de piedra este último tramo.": "Ты дошёл до воды: обложи камнем этот последний участок.",
+ "Tramo {n} cavado: revístelo de piedra antes de bajar más ({p} piedras).": "Участок {n} выкопан: обложи его камнем, прежде чем копать глубже ({p} камней).",
+ "Quedan {q} m.": "Осталось {q} м.",
+ "Pozo revestido hasta el agua: ya tiene agua.": "Колодец обложен до воды: в нём есть вода.",
+ "Tramo {n} revestido: ya puedes cavar el siguiente.": "Участок {n} обложен: можно копать следующий.",
+ "Pones {n} piedras: faltan {f} para este tramo.": "Ты кладёшь {n} камней: для этого участка не хватает ещё {f}."
 }

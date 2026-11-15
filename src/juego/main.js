@@ -68,6 +68,8 @@ import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
+import { crearPozosVista } from './pozos_vista.js';
+import { pozoCercano, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, ENTRE_POZOS, RADIO_POZO } from '../logica/pozo.js';
 import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -473,7 +475,7 @@ const raizConstr = new THREE.Group();
 escena.add(raizConstr);
 const raizDeco = new THREE.Group();
 escena.add(raizDeco);
-let mallasMojon = [], anilloTierra = null, camposV = null;
+let mallasMojon = [], anilloTierra = null, camposV = null, pozosV = null;
 // el material del anillo de la tierra es siempre el mismo: si se tirara al rehacer, se volvería a compilar su sombreador
 const MAT_ANILLO = new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false });
 const registroMallas = []; // {obj, c, key, deco}
@@ -676,6 +678,9 @@ function reconstruir() {
   // los campos marcados con estacas (P11), de todos
   if (!camposV) camposV = crearCamposVista({ escena, sueloEn });
   camposV.poner(mundo.campos);
+  // los pozos (P11b), de todos: la boca con sus tramos, la piedra y la tierra sacada
+  if (!pozosV) pozosV = crearPozosVista({ escena, sueloEn });
+  pozosV.poner(mundo.pozos);
   const mio = miMojon();
   if (mio && !hayZonas()) {
     const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), MAT_ANILLO);
@@ -1787,6 +1792,8 @@ function accionPrincipal() {
     if (de) return A(tr(segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), inventario().lugares[de].tipo, o, () => cargarRastra(o, { de }), { alto: 0.4 });
     return A(tr(segun(o, 'Arrastrar la rastra ({c})', 'Empujar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), o.cosa.tipo, o, () => engancharRastra(o), { alto: 0.4 });
   }
+  // el pozo (P11b): a su lado, cavar el tramo con la pala de madera en la mano o revestirlo con las piedras que llevas
+  if (!it && pj.k === 0) { const po = pozoCercano(mundo, pj.x, pj.z, RADIO_POZO + 1.4); if (po) return accionPozo(po, A); }
   // los campos (P11): con una estaca en la mano, Usar la clava donde estás (o, junto a la primera, cierra el campo); al
   // lado de una estaca clavada, Usar la quita (vuelve a lo que llevas) para moverla
   if (!it && pj.k === 0) {
@@ -1819,6 +1826,8 @@ function accionPrincipal() {
     const db = desbrozableCercano(), con = conQueDesbroza(inventario());
     if (db && con) return A(tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), con, db, () => empezarDesbroce(db), { alto: 0.8, prog: estado.talando && estado.talando.desbroce && estado.talando.desbroce.id === db.id ? estado.talando.dados / estado.talando.golpes : 0 });
   }
+  // con la pala de madera en la mano, en tu tierra, fuera de los campos y sin nada más que hacer ahí: marcar un pozo
+  if (!it && pj.k === 0 && palaEnMano() && !arbolCercano() && !campoEn(mundo, pj.x, pj.z) && mundo.dentroDeTierra(pj.x, pj.z, yoAutor()) && !pozoCercano(mundo, pj.x, pj.z, ENTRE_POZOS)) return A(tr('Marcar aquí un pozo'), 'pala_madera', yo, marcarElPozo, { alto: 0.2 });
   if (!it) {
     // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
     const a = arbolCercano();
@@ -2369,6 +2378,7 @@ function golpeTala() {
   if (a.siega) { golpeSiega(a); return; }
   if (a.escarda) { golpeEscarda(a); return; }
   if (a.riego) { golpeRiego(a); return; }
+  if (a.pozo) { golpePozo(a); return; }
   if (a.cosecha) { golpeCosecha(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
@@ -2600,6 +2610,55 @@ function golpeRiego(a) {
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); reconstruir(); actualizarUI();
   mostrarAviso(r.mustias ? tr('Regado: {n} plantas (estaban mustias). El cubo, vacío.', { n: r.regadas }) : tr('Regado: {n} plantas. El cubo, vacío.', { n: r.regadas }));
+}
+// El pozo (P11b, src/logica/pozo.js; valravnx, 14 nov: «debe ser laborioso»): con la pala de madera en la mano, en tu
+// tierra, Usar marca el sitio donde estás y el aviso dice a qué hondura está el agua (la que vale, la del servidor).
+// A su lado, cada tramo de 1 m se cava a golpes de pala (uno cada SEGUNDOS_CAVAR, seguidos hasta acabar el tramo) y
+// se reviste de piedra seca con las piedras que llevas antes de bajar más.
+function palaEnMano() { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'pala_madera'); }
+function marcarElPozo() {
+  // el pozo, un paso delante de ti (así no te quedas de pie en la boca)
+  const x = redondoMm(pj.x + Math.sin(pj.rot) * 0.9), z = redondoMm(pj.z + Math.cos(pj.rot) * 0.9), h = mundoJ ? mundoJ.honduraPozo(x, z) : 4;
+  const r = accion({ tipo: 'pozo', x, z, hondura: h });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(tr('Pozo marcado: el agua está a unos {h} m ({t} tramos de cavar y revestir).', { h: String(r.hondura).replace('.', ','), t: r.tramos }));
+}
+function accionPozo(po, A) {
+  const paso = siguientePaso(po), T = tramosDe(po), h = String(po.hondura).replace('.', ',');
+  if (paso === 'agua') return A(tr('Pozo con agua, a {h} m', { h }), 'piedra', po, () => mostrarAviso(tr('Para sacar agua le faltan el brocal, el travesaño y la cuerda.')), { alto: 0.3 });
+  if (paso === 'revestir') {
+    const n = inventario().cuantos('piedra'), falta = PIEDRAS_TRAMO - (po.piedras || 0);
+    return A(tr('Revestir de piedra el tramo {n} de {t} ({p} de {m} piedras)', { n: po.revestidos + 1, t: T, p: po.piedras || 0, m: PIEDRAS_TRAMO }), 'piedra', po,
+      n ? () => revestirElPozo(po) : () => mostrarAviso(tr('Trae piedras para revestir el tramo: faltan {f}.', { f: falta }), true), { alto: 0.3 });
+  }
+  const cavando = estado.talando && estado.talando.pozo === po.id;
+  if (!palaEnMano()) return A(tr('Pozo: {c} de {t} tramos cavados (agua a {h} m)', { c: po.cavados, t: T, h }), 'pala_madera', po, () => mostrarAviso(tr('Para cavar el pozo, la pala de madera en la mano.'), true), { alto: 0.3 });
+  return A(tr('Cavar el pozo: tramo {n} de {t}', { n: po.cavados + 1, t: T }), 'pala_madera', po, () => empezarCavaPozo(po),
+    { alto: 0.3, prog: ((po.golpes || 0) + (cavando ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_CAVAR : 0)) / GOLPES_TRAMO });
+}
+function empezarCavaPozo(po) {
+  if (estado.talando && estado.talando.pozo === po.id) return;
+  pj.rot = Math.atan2(po.x - pj.x, po.z - pj.z);
+  estado.talando = { pozo: po.id, x: po.x, z: po.z }; estado.golpeEn = SEGUNDOS_CAVAR;
+  mostrarAviso(tr('Cavas el pozo.'));
+}
+function golpePozo(a) {
+  const r = accion({ tipo: 'cavar_pozo', pozo: a.pozo });
+  if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  if (!r.tramo) { estado.golpeEn = SEGUNDOS_CAVAR; return; }   // sigue cavando hasta acabar el tramo
+  estado.talando = null;
+  const po = (mundo.pozos || []).find(p => p.id === a.pozo);
+  mostrarAviso(r.agua ? tr('Has llegado al agua: reviste de piedra este último tramo.')
+    : tr('Tramo {n} cavado: revístelo de piedra antes de bajar más ({p} piedras).', { n: r.cavados, p: PIEDRAS_TRAMO }) + (po ? ' ' + tr('Quedan {q} m.', { q: String(Math.max(0, Math.round((po.hondura - r.cavados) * 10) / 10)).replace('.', ',') }) : ''));
+}
+function revestirElPozo(po) {
+  const r = accion({ tipo: 'revestir_pozo', pozo: po.id });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.agua ? tr('Pozo revestido hasta el agua: ya tiene agua.') : r.tramo ? tr('Tramo {n} revestido: ya puedes cavar el siguiente.', { n: r.revestidos })
+    : tr('Pones {n} piedras: faltan {f} para este tramo.', { n: r.puestas, f: PIEDRAS_TRAMO - r.piedras }));
 }
 // Cosechar (P11, src/logica/campos.js): con la hoz en la mano, la cebada madura se siega a pasadas (unos 2 s; las
 // gavillas quedan en el suelo); las habas, la col y el nabo maduros se cogen a mano (1 s), a lo que llevas.
@@ -3485,7 +3544,8 @@ window.__kinhold = {
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },
-  get camposV() { return camposV; },   // los campos a la vista (P11: lo sembrado, para las pruebas)
+  get camposV() { return camposV; },
+  get pozosV() { return pozosV; },   // los pozos a la vista (P11b, para las pruebas)   // los campos a la vista (P11: lo sembrado, para las pruebas)
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
