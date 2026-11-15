@@ -322,13 +322,14 @@ function empalizada(opc = {}) {
   const L = loteMuro(), n = 6;
   for (let t = 0; t < n; t++) {
     const x = -MODULO / 2 + (t + 0.5) * (MODULO / n), alto = P.altoEmpalizada - 0.15 + ruido(t + 3) * 0.3;
-    const r = 0.152 + ruido(t * 5.1) * 0.018, inclina = (ruido(t * 1.9 + 2) - 0.5) * 0.04;
+    const r = 0.166 + ruido(t * 5.1) * 0.01, inclina = (ruido(t * 1.9 + 2) - 0.5) * 0.04;
     // clavado: el tronco sigue ENTERRADO bajo el suelo (así, en ladera, ningún pie queda en el aire)
-    L.add(cil(r * 0.94, r, alto + ENTERRADO, 9), ruido(t * 7.7 + 1) > 0.5 ? 'madera' : 'maderaOsc', x, (alto - ENTERRADO) / 2, 0, { z: inclina, y: ruido(t) * 3 });
+    L.add(cil(r * 0.94, r, alto + ENTERRADO, 9), ruido(t * 7.7 + 1) > 0.55 ? 'tabla' : 'madera', x, (alto - ENTERRADO) / 2, 0, { z: inclina, y: ruido(t) * 3 });
     const punta = new THREE.ConeGeometry(r * 0.94, 0.4, 9); // la punta tallada a hachazos: madera clara, caras planas
     L.add(punta, ruido(t * 3.3) > 0.5 ? 'tabla' : 'madera', x - Math.sin(inclina) * (alto + ENTERRADO) / 2, alto + 0.2, 0, { z: inclina }, { sinSuelo: true, plano: true });
   }
-  for (const y of [1.0, 2.2]) varaX(L, MODULO, 0.06, 'maderaOsc', 0, y, -0.2, y > 2 ? 0.006 : -0.006);
+  // (las traviesas, algo más cortas que el tramo: no asoman por los extremos)
+  for (const y of [1.0, 2.2]) varaX(L, MODULO - 0.24, 0.06, 'maderaOsc', 0, y, -0.2, y > 2 ? 0.004 : -0.004);
   // la zanja rellena y apisonada: un lomo bajo de tierra a lo largo (casi todo bajo el suelo), y piedras de calzo
   L.add(cil(0.34, 0.34, MODULO, 10), 0x4f3f2e, 0, -0.01, 0, { z: Math.PI / 2 }, { sinSuelo: true, tex: 'piedra', brillo: 0.9, escala: new THREE.Vector3(0.24, 1, 1) });
   for (let t = 0; t < 5; t++) {
