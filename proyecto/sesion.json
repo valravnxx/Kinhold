@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-15T05:23:16+00:00",
-  "tarea": "El pozo (2), en el juego: marcar el sitio (dice a qué hondura está el agua), y cada tramo cavado y revestido se ve (el hoyo, su piedra y la tierra sacada al lado), con el estilo v5; lo ven todos; en PC y en móvil",
-  "hito": "lluvia",
-  "rama": "trabajo/20261115-0523"
- },
+ "A": null,
  "B": null
 }
