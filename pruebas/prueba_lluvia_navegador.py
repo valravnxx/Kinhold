@@ -10,11 +10,14 @@
 #   - la lluvia se oye: el rumor suena con la lluvia y no sin ella; bajo techo, más bajo y apagado (menos agudos);
 #   - y moja: lloviendo, el suelo y las piezas más oscuros (la misma vista sin gotas, contra la de nublado seco); al
 #     parar sigue mojado un rato y se seca de a poco; bajo techo, lo de dentro menos mojado;
+#   - la niebla de la mañana (su tarea): espesa, lo lejos se pierde en un gris claro (menos contraste) y el cielo tapado,
+#     pero lo de cerca (el jugador y lo que tiene a mano) se sigue viendo, también en el móvil; el sol, más débil; sin
+#     gotas ni nada mojado; llega y se va de a poco (cuándo la hay, algunas mañanas, lo prueba pruebas/prueba_tiempo.mjs);
 #   - lo que cuesta dibujarla: ms por fotograma con lluvia y sin ella (aquí, sin tarjeta gráfica: solo como dato; los
 #     fotogramas de verdad los mide valravnx en su PC y su móvil);
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_lluvia_navegador.py <html> <carpeta_capturas>
-# MUTAR=1: sin nublar el cielo, sin gotas y sin mojar (como antes de estas tareas): tiene que fallar.
+# MUTAR=1: sin nublar el cielo, sin gotas, sin mojar y sin niebla (como antes de estas tareas): tiene que fallar.
 import sys, os, io, json
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageStat, ImageChops
@@ -42,7 +45,7 @@ def entrar(pg):
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
     except Exception: pass
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
-    if MUTAR: pg.evaluate(f'{K}.cielo.nublar = () => {{}}; {K}.tiempoV.lluvia.paso = () => {{}}; {K}.cielo.mojar = () => {{}}')
+    if MUTAR: pg.evaluate(f'{K}.cielo.nublar = () => {{}}; {K}.tiempoV.lluvia.paso = () => {{}}; {K}.cielo.mojar = () => {{}}; {K}.cielo.nieblar = () => {{}}')
     pg.wait_for_timeout(1500)
 
 def poner(pg, t, pitch=0.12):
@@ -57,6 +60,9 @@ def foto(pg, ruta=None):
 
 def media(im, caja):
     return [round(x) for x in ImageStat.Stat(im.crop(caja)).mean]
+
+def contraste(im, caja):
+    return sum(ImageStat.Stat(im.crop(caja).convert('L')).stddev)
 
 def trazos(a, b, caja, umbral=10):
     """píxeles que cambian en b respecto a a (las gotas: trazos sobre lo de detrás; contra el cielo gris claro, de poco
@@ -138,6 +144,31 @@ def recorrido(pg, nombre, pref, movil):
     pg.wait_for_timeout(1500)
     im5 = foto(pg, f'{SALIDA}/{pref}_5_mojado_tras_la_lluvia.png')
     comprobar(f'{nombre}: tras la lluvia, sin gotas y el suelo aún oscuro', not pg.evaluate(f'{K}.tiempoV.lluvia.malla.visible') and sum(media(im5, abajo)) < sum(seco) * 0.88, f'{media(im5, abajo)} (seco {seco})')
+    # la niebla de la mañana: con la cámara algo baja, lo de lejos (la franja media) y lo de cerca (el jugador, abajo en
+    # el centro), contra la misma vista despejada
+    poner(pg, 'despejado', pitch=0.05); imd = foto(pg)
+    sold = pg.evaluate(f'{K}.ambiente.sol.intensity')
+    poner(pg, 'niebla', pitch=0.05); imn = foto(pg, f'{SALIDA}/{pref}_6_niebla.png')
+    soln = pg.evaluate(f'{K}.ambiente.sol.intensity')
+    # (en el PC, sin los dos árboles de cerca de esta vista, a los lados)
+    lejos = (0, round(H * 0.22), W, round(H * 0.42)) if movil else (round(W * 0.45), round(H * 0.22), round(W * 0.85), round(H * 0.42))
+    cerca = (round(W * 0.38), round(H * 0.45), round(W * 0.62), round(H * 0.85))
+    cl0, cl1, cc0, cc1 = contraste(imd, lejos), contraste(imn, lejos), contraste(imd, cerca), contraste(imn, cerca)
+    est = pg.evaluate(f'(() => ({{ ahora: {K}.tiempoV.ahora, niebla: {K}.cielo.niebla, mojado: {K}.cielo.mojado, gotas: {K}.tiempoV.lluvia.malla.visible }}))()')
+    comprobar(f'{nombre}: niebla, lo de lejos se pierde (mucho menos contraste)', cl1 < cl0 * 0.45, f'{cl1:.1f} (despejado {cl0:.1f})')
+    ml = media(imn, lejos)
+    comprobar(f'{nombre}: niebla, de un gris claro', min(ml) > 150 and max(ml) - min(ml) < 30, str(ml))
+    comprobar(f'{nombre}: niebla, el cielo tapado (gris claro, casi sin azul)', (lambda c: c[2] - c[0] < 14 and min(c) > 160)(media(imn, cielo)), str(media(imn, cielo)))
+    comprobar(f'{nombre}: niebla, lo de cerca se sigue viendo (el jugador y lo que tiene a mano)', cc1 > cc0 * 0.6, f'{cc1:.1f} (despejado {cc0:.1f})')
+    comprobar(f'{nombre}: niebla, el sol más débil', soln < sold * 0.55, f'{round(soln, 2)} (despejado {round(sold, 2)})')
+    comprobar(f'{nombre}: niebla, sin gotas ni nada mojado', est['niebla'] == 1 and not est['gotas'] and est['mojado'] == 0, json.dumps(est))
+    poner(pg, 'niebla', pitch=0.12); foto(pg, f'{SALIDA}/{pref}_7_niebla_de_arriba.png')
+    # llega y se va de a poco
+    poner(pg, 'despejado')
+    pg.evaluate(f'{K}.tiempoV.poner("niebla", true)')
+    pn = pg.evaluate(f'(() => {{ const t = {K}.tiempoV, r = []; t.paso(1); r.push(t.ahora.niebla); for (let i = 0; i < 99; i++) t.paso(1); r.push(t.ahora.niebla); t.poner("despejado", true); t.paso(1); r.push(t.ahora.niebla); for (let i = 0; i < 99; i++) t.paso(1); r.push(t.ahora.niebla); return r; }})()')
+    comprobar(f'{nombre}: la niebla llega de a poco y se va de a poco', 0.01 < pn[0] < 0.2 and pn[1] > 0.95 and 0.8 < pn[2] < 0.99 and pn[3] < 0.05, str([round(x, 3) for x in pn]))
+    poner(pg, 'despejado')
     # lo que cuesta (como dato)
     poner(pg, 'nublado'); sin = pg.evaluate('window.__graficos.medir(10)')
     poner(pg, 'lluvia'); con = pg.evaluate('window.__graficos.medir(10)')
