@@ -69,7 +69,7 @@ import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
 import { crearPozosVista } from './pozos_vista.js';
-import { pozoCercano, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
+import { pozoCercano, pozoConAgua, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, PIEDRAS_BROCAL, TRAVESANO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
 import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -1757,7 +1757,7 @@ function accionPrincipal() {
   // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
   if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
   // el cubo (P11b, regar el huerto): vacío en la mano y con agua al lado, se llena; lleno, delante de la col o el nabo, se riega
-  if (!it && pj.k === 0 && cuboEnMano('cubo') && aguaAlLado()) return A(tr('Llenar el cubo'), 'cubo', yo, llenarElCubo, { alto: 0.2 });
+  if (!it && pj.k === 0 && cuboEnMano('cubo') && aguaAlLado()) return A(pozoAlLado() ? tr('Sacar agua del pozo') : tr('Llenar el cubo'), 'cubo', yo, llenarElCubo, { alto: 0.2 });
   if (!it && pj.k === 0 && cuboEnMano('cubo_agua')) { const rg = sitioRegar(); if (rg) return A(tr('Regar'), 'cubo_agua', rg, () => empezarRiego(rg), { alto: 0.2, prog: estado.talando && estado.talando.riego ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_REGAR : 0 }); }
   // con las manos vacías o la azada, delante de lo sembrado con malas hierbas de tu campo: escardar (P11, 14 nov)
   if (!it && pj.k === 0 && manosParaEscardar()) { const es = sitioEscardar(); if (es) return A(tr('Escardar'), azadaEnMano() ? 'azada' : es.icono, es, () => empezarEscarda(es), { alto: 0.2, prog: estado.talando && estado.talando.escarda ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_ESCARDAR : 0 }); }
@@ -2042,7 +2042,9 @@ function usarInteractivo(it) {
 
 // Beber del río con las manos (P4; src/logica/necesidades.js): con agua a tu lado (río, lago o mar) y en el suelo. En
 // línea, el trago lo da el servidor (mira dónde te tiene y si hay agua ahí); sin servidor (las pruebas), aquí.
-const aguaAlLado = () => !!mundoJ && pj.k === 0 && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z);
+const aguaAlLado = () => pj.k === 0 && ((!!mundoJ && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z)) || pozoAlLado());
+// junto a un pozo rematado (P11b, El pozo (3)): se bebe y se saca agua con el cubo como en el río, aunque no haya ninguno cerca
+const pozoAlLado = () => pj.k === 0 && pozoConAgua(mundo, pj.x, pj.z, RADIO_POZO + 1.4);
 function beber() {
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
@@ -2596,16 +2598,17 @@ function golpeEscarda(a) {
 const ADELANTE_REGAR = 0.9;
 function cuboEnMano(tipo) { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === tipo); }
 function llenarElCubo() {
+  const delPozo = pozoAlLado() && !(mundoJ && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z));
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'llenar_cubo' }, (r) => {
       if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
-      mostrarAviso(tr('Llenas el cubo de agua.'));
+      mostrarAviso(tr(delPozo ? 'Sacas del pozo un cubo de agua.' : 'Llenas el cubo de agua.'));
     });
     return;
   }
-  const r = llenarCubo(inventario().lugares, aguaAlLado() ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
+  const r = llenarCubo(inventario().lugares, delPozo ? 'dulce' : aguaAlLado() ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
-  guardar(); actualizarUI(); mostrarAviso(tr('Llenas el cubo de agua.'));
+  guardar(); actualizarUI(); mostrarAviso(tr(delPozo ? 'Sacas del pozo un cubo de agua.' : 'Llenas el cubo de agua.'));
 }
 function sitioRegar() {
   const x = pj.x + Math.sin(pj.rot) * ADELANTE_REGAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_REGAR, c = campoEn(mundo, x, z);
@@ -2656,7 +2659,17 @@ function marcarElPozo(x, z) {
 }
 function accionPozo(po, A) {
   const paso = siguientePaso(po), T = tramosDe(po), h = String(po.hondura).replace('.', ',');
-  if (paso === 'agua') return A(tr('Pozo con agua, a {h} m', { h }), 'piedra', po, () => mostrarAviso(tr('Para sacar agua le faltan el brocal, el travesaño y la cuerda.')), { alto: 0.3 });
+  if (paso === 'sacar') return A(tr('Pozo con agua, a {h} m', { h }), 'cubo', po, () => mostrarAviso(tr('Para sacar agua, el cubo vacío en la mano.')), { alto: 0.3 });
+  if (paso === 'brocal') {
+    const n = inventario().cuantos('piedra'), falta = PIEDRAS_BROCAL - (po.brocal || 0);
+    return A(tr('Levantar el brocal de piedra ({p} de {m} piedras)', { p: po.brocal || 0, m: PIEDRAS_BROCAL }), 'piedra', po,
+      n ? () => rematarElPozo(po) : () => mostrarAviso(tr('Trae piedras para el brocal: faltan {f}.', { f: falta }), true), { alto: 0.5 });
+  }
+  if (paso === 'travesano') {
+    const tiene = Object.entries(TRAVESANO).every(([t, n]) => inventario().cuantos(t) >= n);
+    return A(tr('Poner el travesaño (3 varas y una cuerda)'), 'vara', po,
+      tiene ? () => rematarElPozo(po) : () => mostrarAviso(tr('Para el travesaño hacen falta 3 varas y una cuerda.'), true), { alto: 1.2 });
+  }
   if (paso === 'revestir') {
     const n = inventario().cuantos('piedra'), falta = PIEDRAS_TRAMO - (po.piedras || 0);
     return A(tr('Revestir de piedra el tramo {n} de {t} ({p} de {m} piedras)', { n: po.revestidos + 1, t: T, p: po.piedras || 0, m: PIEDRAS_TRAMO }), 'piedra', po,
@@ -2683,11 +2696,20 @@ function golpePozo(a) {
   mostrarAviso(r.agua ? tr('Has llegado al agua: reviste de piedra este último tramo.')
     : tr('Tramo {n} cavado: revístelo de piedra antes de bajar más ({p} piedras).', { n: r.cavados, p: PIEDRAS_TRAMO }) + (po ? ' ' + tr('Quedan {q} m.', { q: String(Math.max(0, Math.round((po.hondura - r.cavados) * 10) / 10)).replace('.', ',') }) : ''));
 }
+// Rematar el pozo con agua (P11b, El pozo (3)): el brocal con las piedras que llevas y luego el travesaño de varas con su cuerda
+function rematarElPozo(po) {
+  const r = accion({ tipo: 'rematar_pozo', pozo: po.id });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.rematado ? tr('Travesaño puesto, con su cuerda: ya se saca agua del pozo con el cubo.')
+    : r.brocal >= PIEDRAS_BROCAL ? tr('Brocal terminado: falta el travesaño (3 varas y una cuerda).')
+    : tr('Pones {n} piedras en el brocal: faltan {f}.', { n: r.puestas, f: PIEDRAS_BROCAL - r.brocal }));
+}
 function revestirElPozo(po) {
   const r = accion({ tipo: 'revestir_pozo', pozo: po.id });
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); reconstruir(); actualizarUI();
-  mostrarAviso(r.agua ? tr('Pozo revestido hasta el agua: ya tiene agua.') : r.tramo ? tr('Tramo {n} revestido: ya puedes cavar el siguiente.', { n: r.revestidos })
+  mostrarAviso(r.agua ? tr('Pozo revestido hasta el agua: ya tiene agua. Para sacarla, el brocal de piedra y el travesaño.') : r.tramo ? tr('Tramo {n} revestido: ya puedes cavar el siguiente.', { n: r.revestidos })
     : tr('Pones {n} piedras: faltan {f} para este tramo.', { n: r.puestas, f: PIEDRAS_TRAMO - r.piedras }));
 }
 // Cosechar (P11, src/logica/campos.js): con la hoz en la mano, la cebada madura se siega a pasadas (unos 2 s; las

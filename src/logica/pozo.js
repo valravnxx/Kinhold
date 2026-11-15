@@ -3,7 +3,10 @@
 // laborioso». Una obra por tramos de 1 m: cada tramo se cava con la pala de madera (GOLPES_TRAMO golpes; la tierra
 // que sale queda en un montón al lado) y se reviste de piedra seca (PIEDRAS_TRAMO piedras, en uno o varios viajes) antes de bajar más, que si
 // no, la pared de tierra se viene abajo. Cuando el último tramo cavado llega al agua y está revestido, el pozo tiene
-// agua (sacarla, con el brocal, el travesaño, la cuerda y el cubo, es otra tarea: «El pozo (3)»).
+// agua. Para sacarla (P11b, «El pozo (3)»), se remata: un brocal de piedra seca alrededor de la boca (PIEDRAS_BROCAL
+// piedras, en uno o varios viajes), y encima un travesaño de varas (dos de pies y una atravesada) con una cuerda
+// (TRAVESANO, de una vez). Rematado, con el cubo vacío en la mano a su lado se saca agua dulce (para regar y para
+// beber), aunque no haya ningún río cerca; y a su lado se bebe como en el río.
 //
 // A qué hondura está el agua sale del terreno (lo mira quien lo tiene: el servidor, con honduraEn): cerca de un río,
 // poco más abajo que el agua del río; en el fondo de un valle, poco hondo; en un alto, lejos del río, hondo. Más hondo
@@ -11,9 +14,10 @@
 // Los pozos viven en el mundo de construcción (src/logica/construccion.js, Mundo.pozos) y van por las acciones con
 // autor (src/logica/acciones.js: «pozo», «cavar_pozo» y «revestir_pozo»): el servidor las valida, las guarda y las
 // reparte, y todos los ven. Solo en tu tierra o en la de quien te invita.
-// Un pozo: { id, dueno, autor, x, z, hondura, cavados, golpes, revestidos, piedras }. hondura: a cuántos m está el
+// Un pozo: { id, dueno, autor, x, z, hondura, cavados, golpes, revestidos, piedras, brocal, travesano }. hondura: a cuántos m está el
 // agua; cavados: los tramos ya cavados; golpes: los del tramo que se está cavando; revestidos: los tramos con su
-// piedra; piedras: las ya puestas en el tramo que se está revistiendo.
+// piedra; piedras: las ya puestas en el tramo que se está revistiendo; brocal: las piedras ya puestas en el brocal;
+// travesano: si ya tiene el travesaño con su cuerda.
 //
 // Decisiones provisionales (15 nov; anotadas en el diario): los números de abajo y el modelo del agua bajo tierra
 // (honduraAgua).
@@ -29,6 +33,8 @@ export const POR_M_RELIEVE = 0.5;    // m de más (o de menos) por cada m que el
 export const RADIO_POZO = 0.6;       // m: el hoyo
 export const ENTRE_POZOS = 4;        // m: como poco entre dos pozos
 export const ALCANCE_POZO = 2.5;     // m: de donde estás al pozo, para cavar o revestir
+export const PIEDRAS_BROCAL = 12;    // piedras del brocal (un murete de piedra seca de unos 60 cm alrededor de la boca)
+export const TRAVESANO = { vara: 3, cuerda: 1 };   // el travesaño: dos varas de pies, una atravesada, y la cuerda del cubo
 export const TIERRA_TRAMO = Math.round(Math.PI * RADIO_POZO * RADIO_POZO * TRAMO * 100) / 100;   // m³ de tierra que saca cada tramo
 
 const num = Number.isFinite;
@@ -66,15 +72,22 @@ export const honduraEn = (t, x, z) => honduraAgua(sitioDelAgua(t, x, z));
 export const tramosDe = (p) => Math.max(1, Math.ceil(p.hondura / TRAMO - 1e-9));
 // ¿Ya tiene agua? (cavado hasta el agua y revestido entero)
 export const conAgua = (p) => !!p && p.cavados >= tramosDe(p) && p.revestidos >= tramosDe(p);
+// ¿Ya está rematado? (con agua, el brocal entero y el travesaño con su cuerda): de él se saca agua
+export const rematado = (p) => conAgua(p) && (p.brocal || 0) >= PIEDRAS_BROCAL && !!p.travesano;
 // m³ de tierra sacada (el montón de al lado)
 export const tierraSacada = (p) => r2(p.cavados * TIERRA_TRAMO);
-// Lo que le toca: 'cavar', 'revestir' o 'agua' (terminado).
-export const siguientePaso = (p) => (conAgua(p) ? 'agua' : p.cavados > p.revestidos ? 'revestir' : 'cavar');
+// Lo que le toca: 'cavar', 'revestir', 'brocal', 'travesano' o 'sacar' (rematado: ya se saca agua).
+export const siguientePaso = (p) => (rematado(p) ? 'sacar' : conAgua(p) ? ((p.brocal || 0) < PIEDRAS_BROCAL ? 'brocal' : 'travesano') : p.cavados > p.revestidos ? 'revestir' : 'cavar');
 // El pozo más cercano a (x, z), a menos de r m, o null.
 export function pozoCercano(m, x, z, r = ALCANCE_POZO) {
   let mejor = null, dm = Infinity;
   for (const p of m.pozos || []) { const d = Math.hypot(p.x - x, p.z - z); if (d <= r && d < dm) { mejor = p; dm = d; } }
   return mejor;
+}
+
+// ¿Hay a menos de r m de (x, z) un pozo rematado, del que se saca agua? (cualquiera: el agua del pozo la saca quien llega)
+export function pozoConAgua(m, x, z, r = ALCANCE_POZO) {
+  return (m.pozos || []).some(p => rematado(p) && Math.hypot(p.x - x, p.z - z) <= r);
 }
 
 // Marcar un pozo en (x, z) (donde estás). hondura: la del agua ahí (la pone el servidor con honduraEn; null, más que
@@ -91,7 +104,7 @@ export function marcarPozo(m, x, z, hondura, autor) {
   if (!num(hondura) || hondura < HONDURA_MIN || hondura > TOPE) return { ok: false, motivo: 'Datos no válidos.' };
   if ((m.pozos || []).some(p => Math.hypot(p.x - x, p.z - z) < ENTRE_POZOS)) return { ok: false, motivo: 'Ahí al lado ya hay un pozo.' };
   if (e && e.ocupado && e.ocupado(x, z)) return { ok: false, motivo: 'Ahí hay algo: el pozo va en suelo libre.' };
-  const pozo = { id: m.siguienteId++, dueno: m.tierraDe(x, z) || autor, autor, x: r2(x), z: r2(z), hondura: r1(hondura), cavados: 0, golpes: 0, revestidos: 0, piedras: 0 };
+  const pozo = { id: m.siguienteId++, dueno: m.tierraDe(x, z) || autor, autor, x: r2(x), z: r2(z), hondura: r1(hondura), cavados: 0, golpes: 0, revestidos: 0, piedras: 0, brocal: 0, travesano: false };
   m.pozos.push(pozo);
   return { ok: true, pozo: pozo.id, hondura: pozo.hondura, tramos: tramosDe(pozo) };
 }
@@ -131,9 +144,35 @@ export function revestirPozo(m, id, autor, gastar = () => ({ ok: true })) {
   return { ok: true, pozo: p.id, piedras: PIEDRAS_TRAMO, puestas: n, revestidos: p.revestidos, tramo: true, agua: conAgua(p) };
 }
 
+// Rematar el pozo con agua: primero el brocal, con las piedras que lleva el autor (las que le falten, o las que lleve
+// si son menos); luego el travesaño, con sus varas y su cuerda, de una vez. gastar(coste, parcial): cobra lo de coste
+// ({ tipo: n }) de lo que lleva el autor; con parcial, hasta n piedras ({ ok, n: las cobradas }); sin él, todo o nada
+// ({ ok } o { ok: false, motivo }). Devuelve { ok, pozo, paso ('brocal' o 'travesano'), brocal (las piedras puestas),
+// puestas (las de esta vez), rematado (si con esto ya se saca agua) } o { ok: false, motivo }.
+export function rematarPozo(m, id, autor, gastar = () => ({ ok: true })) {
+  const p = pozoDe(m, id);
+  if (!p) return { ok: false, motivo: 'Aquí no hay pozo.' };
+  if (!m.dentroDeTierra(p.x, p.z, autor)) return { ok: false, motivo: 'Fuera de tu tierra.' };
+  if (!conAgua(p)) return { ok: false, motivo: 'Antes cava y reviste el pozo hasta el agua.' };
+  if (rematado(p)) return { ok: false, motivo: 'El pozo ya tiene su brocal y su travesaño.' };
+  if ((p.brocal || 0) < PIEDRAS_BROCAL) {
+    const falta = PIEDRAS_BROCAL - (p.brocal || 0), g = gastar({ piedra: falta }, true);
+    if (!g.ok) return g;
+    const n = Number.isInteger(g.n) ? Math.max(0, Math.min(falta, g.n)) : falta;
+    if (!n) return { ok: false, motivo: 'No llevas piedras.' };
+    p.brocal = (p.brocal || 0) + n;
+    return { ok: true, pozo: p.id, paso: 'brocal', brocal: p.brocal, puestas: n, rematado: false };
+  }
+  const g = gastar({ ...TRAVESANO }, false);
+  if (!g.ok) return g;
+  p.travesano = true;
+  return { ok: true, pozo: p.id, paso: 'travesano', brocal: p.brocal, puestas: 0, rematado: true };
+}
+
 export const exportarPozos = (l) => (l || []).map(p => ({ ...p }));
 export function importarPozos(l) {
   return (Array.isArray(l) ? l : []).filter(p => p && num(p.id) && num(p.x) && num(p.z) && num(p.hondura))
     .map(p => ({ id: p.id, dueno: p.dueno, autor: p.autor, x: p.x, z: p.z, hondura: p.hondura,
-      cavados: num(p.cavados) ? p.cavados : 0, golpes: num(p.golpes) ? p.golpes : 0, revestidos: num(p.revestidos) ? p.revestidos : 0, piedras: num(p.piedras) ? p.piedras : 0 }));
+      cavados: num(p.cavados) ? p.cavados : 0, golpes: num(p.golpes) ? p.golpes : 0, revestidos: num(p.revestidos) ? p.revestidos : 0, piedras: num(p.piedras) ? p.piedras : 0,
+      brocal: num(p.brocal) ? p.brocal : 0, travesano: !!p.travesano }));   // (los de antes del brocal, sin él)
 }

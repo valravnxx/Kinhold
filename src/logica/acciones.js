@@ -9,7 +9,7 @@ import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 import { AUTOR_REY } from './abandono.js';
-import { marcarPozo, cavarPozo, revestirPozo } from './pozo.js';
+import { marcarPozo, cavarPozo, revestirPozo, rematarPozo } from './pozo.js';
 import { clavarEstaca, quitarEstaca, labrar, sembrar, segar, cogerPlanta, escardar, regar, CULTIVOS } from './campos.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
@@ -77,6 +77,7 @@ const CAMPOS_CONSTRUCCION = {
   pozo: { x: 'n', z: 'n' },                  // marcar un pozo (desde construir, donde apuntas) (hondura: la del agua ahí, la pone el servidor; P11b, 15 nov)
   cavar_pozo: { pozo: 'n' },                 // un golpe de pala de madera en el pozo
   revestir_pozo: { pozo: 'n' },              // revestir de piedra seca el tramo cavado
+  rematar_pozo: { pozo: 'n' },               // el brocal de piedra y el travesaño de varas con su cuerda (P11b, El pozo (3))
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -102,7 +103,7 @@ const CAMPOS_CONSTRUCCION = {
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
 // Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta', 'escardar', 'regar', 'cavar_pozo', 'revestir_pozo']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta', 'escardar', 'regar', 'cavar_pozo', 'revestir_pozo', 'rematar_pozo']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -267,6 +268,20 @@ function aplicarConstruccion(m, a, invs) {
         : () => ({ ok: true, n: Number.isInteger(a.piedras) ? a.piedras : undefined });
       const r = revestirPozo(m, a.pozo, a.autor, gastar);
       if (r.ok && invs) a.piedras = r.puestas;
+      return pagada(r, a, invs);
+    }
+    case 'rematar_pozo': {   // (P11b, El pozo (3)) el brocal, con las piedras que llevas; luego el travesaño, con 3 varas y una cuerda
+      const inv = invs ? invs.de(a.autor) : null;
+      if (invs) { delete a.lleva; delete a.piedras; }
+      const gastar = inv ? (coste, parcial) => {
+        if (parcial) { const k = Math.min(coste.piedra, inv.cuantos('piedra')); if (!k) return { ok: false, motivo: 'No llevas piedras.' }; inv.gastar('piedra', k); return { ok: true, n: k }; }
+        const falta = Object.entries(coste).filter(([t, n]) => inv.cuantos(t) < n);
+        if (falta.length) return { ok: false, motivo: 'Para el travesaño hacen falta 3 varas y una cuerda.' };
+        for (const [t, n] of Object.entries(coste)) inv.gastar(t, n);
+        return { ok: true };
+      } : () => ({ ok: true, n: Number.isInteger(a.piedras) ? a.piedras : undefined });
+      const r = rematarPozo(m, a.pozo, a.autor, gastar);
+      if (r.ok && invs && r.paso === 'brocal') a.piedras = r.puestas;
       return pagada(r, a, invs);
     }
     case 'quitar_estaca': {

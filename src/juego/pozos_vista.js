@@ -9,19 +9,27 @@
 // - la boca: un reborde de tierra pisada y, desde que está revestido el primer tramo, un anillo de piedras a ras de
 //   suelo (la hilada de arriba);
 // - la tierra sacada: un montón al lado, del volumen que sale de lo cavado (lógica: tierraSacada, algo esponjada);
-// - las piedras ya puestas en el tramo que se está revistiendo, un montoncito junto a la boca.
+// - las piedras ya puestas en el tramo que se está revistiendo, un montoncito junto a la boca;
+// - rematado (P11b, «El pozo (3)»): el brocal, un murete de piedra seca a hiladas alrededor de la boca (crece con las
+//   piedras puestas), y el travesaño: dos varas de pies hincadas a los lados, una atravesada encima y la cuerda que
+//   baja al agua desde el medio.
 // Todo se rehace cuando cambia el mundo de construcción (main.js, reconstruir); lo ven todos.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { estacaEn } from './modelos_objetos.js';
-import { RADIO_POZO, tramosDe, tierraSacada, conAgua } from '../logica/pozo.js';
+import { RADIO_POZO, tramosDe, tierraSacada, conAgua, PIEDRAS_BROCAL } from '../logica/pozo.js';
 
 const SOBRE = 0.025;         // m sobre el suelo (para que no parpadee con él)
 const R_BOCA = RADIO_POZO;   // m: la boca
 const R_DISCO = RADIO_POZO + 0.22;   // m: el disco pintado (la boca y el reborde de tierra pisada)
 const ESPONJA = 1.25;        // la tierra sacada abulta más que en su sitio
 const MAX_TIERRA = 1.1;      // m³: lo más que se ve amontonado al lado
+const HILADAS_BROCAL = 3;    // el brocal: tres hiladas de piedra seca (unos 55 cm)
+const POR_HILADA = 13;       // piedras que se ven en cada hilada
+const ALTO_HILADA = 0.18;    // m
+const ALTO_TRAVESANO = 1.55; // m: la vara atravesada, sobre el suelo
+const cil = (r0, r1, h, n = 7) => new THREE.CylinderGeometry(r0, r1, h, n);
 const az = (s, k) => { const v = Math.sin(s * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); };
 
 // ---------- La boca pintada ----------
@@ -185,6 +193,32 @@ export function crearPozosVista({ escena, sueloEn }) {
           const a = i / n * Math.PI * 2 + az(p.id, i) * 0.1, r = R_BOCA + 0.09, px = p.x + Math.cos(a) * r, pz = p.z + Math.sin(a) * r;
           L.add(piedra(p.id * 31 + i, 0.27, 0.13), az(p.id, i + 50) < 0.5 ? 'piedra' : 'piedraOsc', px, sueloEn(px, pz) + 0.02, pz, { y: -a + Math.PI / 2 }, { tex: 'piedra', plano: true, sinSuelo: true });
         }
+      }
+      // el brocal (P11b, El pozo (3)): las hiladas de piedra seca, la de abajo primero, en proporción a lo puesto
+      const vistas = Math.round(Math.min(1, (p.brocal || 0) / PIEDRAS_BROCAL) * HILADAS_BROCAL * POR_HILADA);
+      for (let i = 0; i < vistas; i++) {
+        const h = Math.floor(i / POR_HILADA), j = i % POR_HILADA;
+        const a = (j + (h % 2) * 0.5) / POR_HILADA * Math.PI * 2 + az(p.id, i + 90) * 0.12, r = R_BOCA + 0.1 - h * 0.012, px = p.x + Math.cos(a) * r, pz = p.z + Math.sin(a) * r;
+        const lo = 0.29 + az(p.id, i + 120) * 0.06, al = ALTO_HILADA * (0.95 + az(p.id, i + 150) * 0.2);
+        L.add(piedra(p.id * 41 + i, lo, al), az(p.id, i + 70) < 0.55 ? 'piedra' : 'piedraOsc', px, y + 0.03 + h * ALTO_HILADA + al * 0.45, pz, { y: -a + Math.PI / 2 }, { tex: 'piedra', plano: true, sinSuelo: true });
+      }
+      // el travesaño: dos varas de pies hincadas fuera del brocal, una atravesada encima y la cuerda al agua
+      if (p.travesano) {
+        const ap = giro + Math.PI / 2, rp = R_BOCA + 0.36, alto = ALTO_TRAVESANO;
+        for (const sg of [-1, 1]) {
+          const px = p.x + Math.cos(ap) * rp * sg, pz = p.z + Math.sin(ap) * rp * sg, yp = sueloEn(px, pz);
+          L.add(cil(0.034, 0.04, alto + 0.25), 'corteza', px, yp - 0.25 + (alto + 0.25) / 2, pz, { z: sg * 0.03 }, { tex: 'corteza', sinSuelo: true });
+          L.add(new THREE.CircleGeometry(0.034, 7).rotateX(-Math.PI / 2), 'corte', px, yp + alto + 0.001, pz, null, { sinSuelo: true });
+        }
+        // la atravesada, apoyada sobre las cabezas de los pies y atada con la cuerda
+        const largo = rp * 2 + 0.3, yt = y + alto + 0.03;
+        L.add(cil(0.03, 0.03, largo), 'corteza', p.x, yt, p.z, { z: Math.PI / 2, y: -ap }, { tex: 'corteza', sinSuelo: true });
+        for (const sg of [-1, 1]) { const px = p.x + Math.cos(ap) * rp * sg, pz = p.z + Math.sin(ap) * rp * sg; L.add(new THREE.TorusGeometry(0.04, 0.009, 4, 10), 0x9b8460, px, yt - 0.02, pz, { y: -ap + Math.PI / 2 }, { tex: 'liso', sinSuelo: true }); }
+        // la cuerda: dos vueltas al travesaño en el medio y baja recta al agua
+        L.add(new THREE.TorusGeometry(0.036, 0.01, 4, 10), 0x9b8460, p.x, yt, p.z, { y: -ap + Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+        L.add(new THREE.TorusGeometry(0.036, 0.01, 4, 10), 0x9b8460, p.x + Math.cos(ap) * 0.03, yt, p.z + Math.sin(ap) * 0.03, { y: -ap + Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
+        const baja = alto + 0.2;
+        L.add(cil(0.008, 0.008, baja, 5), 0x9b8460, p.x, yt - baja / 2, p.z, null, { tex: 'liso', sinSuelo: true });
       }
       // el montón de tierra sacada, al lado (del lado de la estaca)
       // (echada a paladas a un lado y, con lo hondo, repartida en dos o tres montones alrededor de ese lado)

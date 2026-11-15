@@ -26,7 +26,7 @@ export function sitioAccion(mundo, a) {
       const c = mundo.construcciones.find(x => x.id === a.construccion);
       return c ? { x: c.ox, z: c.oz } : null;
     }
-    case 'cavar_pozo': case 'revestir_pozo': {
+    case 'cavar_pozo': case 'revestir_pozo': case 'rematar_pozo': {
       const p = (mundo.pozos || []).find(x => x.id === a.pozo);
       return p ? { x: p.x, z: p.z } : null;
     }
