@@ -201,11 +201,11 @@ function muroEntramado(opc = {}) {
   // el relleno de una pieza, con el hueco recortado (como el barro del zarzo)
   const f = new THREE.Shape(), B = 0.012, m = 0.04;
   f.moveTo(-S + m, m);
-  if (opc.puerta) { const a = P.anchoPuerta / 2; f.lineTo(-a, m); f.lineTo(-a, P.altoPuerta); f.lineTo(a, P.altoPuerta); f.lineTo(a, m); }
+  if (opc.puerta) { const a = P.anchoPuerta / 2 + B, t = P.altoPuerta + B; f.lineTo(-a, m); f.lineTo(-a, t); f.lineTo(a, t); f.lineTo(a, m); }   // (+B: el bisel no asoma al hueco)
   f.lineTo(S - m, m); f.lineTo(S - m, H - m); f.lineTo(-S + m, H - m); f.closePath();
   if (opc.ventana) {
-    const a = P.anchoVentana / 2, h = new THREE.Path();
-    h.moveTo(-a, P.bajoVentana); h.lineTo(-a, P.altoVentana); h.lineTo(a, P.altoVentana); h.lineTo(a, P.bajoVentana); h.closePath();
+    const a = P.anchoVentana / 2 + B, b = P.bajoVentana - B, t = P.altoVentana + B, h = new THREE.Path();
+    h.moveTo(-a, b); h.lineTo(-a, t); h.lineTo(a, t); h.lineTo(a, b); h.closePath();
     f.holes.push(h);
   }
   const g = new THREE.ExtrudeGeometry(f, { depth: 0.13 - 2 * B, bevelEnabled: true, bevelThickness: B, bevelSize: B, bevelSegments: 1, curveSegments: 1 });
