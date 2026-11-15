@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 15 nov 2026, 07:40 UTC — por una sesión del carril A, el pozo
+
+valravnx: «lo del pozo que acabas de publicar en vez de que sea con pala, al usarse la pala para más cosas, que sea desde construcción, y luego sí se use la pala, pero que no te esté saliendo todo el rato el "pulsa para hacer pozo" por tener la pala» → tarea nueva en el hito de la lluvia, delante de El pozo (3): el sitio del pozo se marca desde el menú de construir; la pala, solo para cavar cada tramo a su lado; con la pala en la mano ya no sale «Marcar aquí un pozo».
+
 ### 14 nov 2026, 21:02 UTC — por el chat, el pozo
 
 valravnx: «el pozo es algo que define muchísimo el "sobrevivir sin río", con lo que entiendo que debe ser laborioso al trivializar el agua de ríos y tal». Elige, de las opciones: el pozo como **obra por etapas en P11b** (no descongelar la excavación). → Tres tareas en el hito de la lluvia: El pozo (1), la lógica (el agua bajo tierra según el terreno; cavar por tramos de 1 m con la pala de madera y revestir de piedra seca cada tramo antes de bajar); El pozo (2), en el juego; El pozo (3), sacar agua (brocal, travesaño de varas, cuerda y cubo; recorrido de jugador lejos del río). `est_pozo` en lo esencial del hito y en PENDIENTES de `pruebas/prueba_origenes.mjs`.
