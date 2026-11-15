@@ -724,7 +724,11 @@ if (process.argv[1] && process.argv[1].endsWith('recorrido_granja.mjs') && proce
     ws.on('open', async () => { c.bienvenida = await b; c.pos = c.bienvenida.posicion ? { x: c.bienvenida.posicion.x, z: c.bienvenida.posicion.z } : meta.pos; listo(c); });
     ws.on('error', fallo);
   });
-  try { await granja({ J, s, T, O, comprobar, pausa, cerca, RELOJ, base: meta.base }); }
+  try {
+    await granja({ J, s, T, O, comprobar, pausa, cerca, RELOJ, base: meta.base });
+    // (y luego el pozo, como en el recorrido entero: pruebas/recorrido_pozo.mjs)
+    const { pozo } = await import('./recorrido_pozo.mjs'); await pozo({ J, s, T, O, comprobar, pausa, cerca });
+  }
   catch (e) { comprobar('la granja llega al final', false, e && e.stack); }
   J.ws.close(); await s.cerrar();
   console.log(`\n${ok} bien, ${mal} mal`);

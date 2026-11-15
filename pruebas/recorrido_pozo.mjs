@@ -106,21 +106,26 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
     if (dist(J.pos, desde) > 1) await J.andar(desde.x, desde.z);
   };
 
+  // ¿se llega de p a q sin pisar agua? (nadando, lo de las manos se cae)
+  const secoHasta = (p, q) => { const n = Math.ceil(dist(p, q)); for (let i = 0; i <= n; i++) if (T.aguaEn(p.x + (q.x - p.x) * i / n, p.z + (q.z - p.z) * i / n)) return false; return true; };
   // talar el árbol de edad más cercano a p que nadie ha tocado (con su hacha de piedra) y limpiarlo; lo que deja, al suelo
   const talar = async (edad, p) => {
-    await soltarManos();
+    await soltarManos(['hacha_piedra']);   // (el hacha, si la lleva en la mano, no la suelta)
     // (el hacha, a la mano: de lo que lleva o del suelo, donde la dejó)
-    let hacha = await aLaMano('hacha_piedra', banco);
-    if (!hacha) { if (!(await cogerSuelo('hacha_piedra', banco, 30))) await cogerSuelo('hacha_piedra', M, 300); hacha = await aLaMano('hacha_piedra'); }
-    if (!hacha) return { ok: false, motivo: 'no encuentra su hacha' };
+    await pausa(800);   // (que le llegue lo que lleva de verdad)
+    let hacha = await aLaMano('hacha_piedra');
+    if (!hacha) { if (!(await cogerSuelo('hacha_piedra', J.pos, 15)) && !(await cogerSuelo('hacha_piedra', banco, 30))) await cogerSuelo('hacha_piedra', M, 300); await pausa(800); hacha = await aLaMano('hacha_piedra'); }
+    console.log(`     (hacha: ${hacha}; manos ${enMano()}; servidor ${JSON.stringify(MANOS.map(l => s.objetos.invs.de(yo).lugares[l]?.tipo))}; lleva ${J.cuantos('hacha_piedra')}/${s.objetos.invs.de(yo).cuantos('hacha_piedra')}; suelo ${cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'hacha_piedra'), J.pos).map(o => Math.round(dist(o, J.pos))).join(',')})`);
+    if (!hacha) return { ok: false, motivo: `no encuentra su hacha (lleva ${J.cuantos('hacha_piedra')}: ${J.inv.rutasCon('hacha_piedra').join(',') || '–'}; en las manos ${enMano()}; en el suelo, a ${cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'hacha_piedra'), J.pos).map(o => Math.round(dist(o, J.pos)) + ' m').join(', ') || 'ninguna'})` };
     const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - 150, z0: O.z + p.z - 150, x1: O.x + p.x + 150, z1: O.z + p.z + 150 }).arboles
-      .map(a => ({ x: a.x - O.x, z: a.z - O.z, edad: a.edad })).map(a => ({ ...a, id: idArbol(a.x, a.z) })).filter(a => a.edad === edad && !s.objetos.tala.estado[a.id] && !campoEn(s.mundo, a.x, a.z));
+      .map(a => ({ x: a.x - O.x, z: a.z - O.z, edad: a.edad })).map(a => ({ ...a, id: idArbol(a.x, a.z) })).filter(a => a.edad === edad && !s.objetos.tala.estado[a.id] && !campoEn(s.mundo, a.x, a.z) && secoHasta(J.pos, a));
     const a = cerca(arboles, p)[0];
     if (!a) return { ok: false, motivo: `no hay árboles (${edad}) cerca` };
+    console.log(`     (tala un ${edad} a ${Math.round(dist(a, J.pos))} m)`);
     await J.andar(a.x + 1, a.z);
     let t, g = 0;
     do { t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++; if (t.ok && t.datos.boca !== undefined) { await J.andar(a.x, a.z + 1); await J.andar(a.x - 1, a.z); } if (t.ok && !t.datos.cae) await pausa(550); } while (t.ok && !t.datos.cae && g < 90);
-    if (!t.ok || !t.datos.cae) return { ok: false, motivo: `no lo tala: ${t.motivo || g + ' golpes'}` };
+    if (!t.ok || !t.datos.cae) return { ok: false, motivo: `no lo tala: ${t.motivo || g + ' golpes'} (hacha ${hacha}; en las manos ${enMano()}; el servidor: ${JSON.stringify(MANOS.map(l => s.objetos.invs.de(yo).lugares[l]))}; rutas ${J.inv.rutasCon('hacha_piedra')})` };
     await pausa(550);
     let l, gl = 0;
     do { l = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); gl++; if (l.ok && !l.datos.limpio) await pausa(550); } while (l.ok && !l.datos.limpio && gl < 60);
