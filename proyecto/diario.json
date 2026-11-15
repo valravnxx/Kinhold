@@ -7180,6 +7180,21 @@
   "estado": "ok"
  },
  {
+  "inicio": "2026-11-15T13:23:05+00:00",
+  "fin": "2026-11-15T15:39:56+00:00",
+  "titulo": "P11b, La lluvia y el riego: el recorrido de jugador riega el huerto",
+  "hito": "lluvia",
+  "hecho": [
+   "Al repasar lo esencial del hito para la revisión, el recorrido de jugador no regaba: a la col y al nabo se les adelantaba el reloj de lo que tardan sin agua. Tarea nueva delante de la revisión, hecha en esta sesión.",
+   "Ahora el jugador del recorrido riega la col y el nabo con el cubo lleno en su pozo (una pasada moja a los dos), al sembrar y cada 1,75 días del reloj acelerado, antes de que se pongan mustios; maduran a la semana y los cosecha.",
+   "El pozo va antes que la granja en el recorrido: el río más cercano al campo está a casi 1 km y el pozo, junto al banco. El cubo se queda junto al pozo entre un riego y otro.",
+   "Para que lo de después siga saliendo con el orden nuevo: el pozo se lleva la piel de la liebre a su tierra (lo soltado fuera de ella desaparece a la hora), repara el hacha antes de dejarla junto al banco, y la granja busca el hacha donde la dejó y no pone el campo junto al pozo."
+  ],
+  "pruebas": "En la nube, el recorrido de jugador entero: 306 bien y 0 mal (el pozo, y después la granja con el riego). Aquí, el pozo y la granja desde lo guardado antes de ellos: 57 bien y 0 mal; roto a propósito (MUTAR=3, como si regara sin regar), la col y el nabo no maduran y la cosecha falla. Solo cambian las pruebas: sin versión nueva.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
   "inicio": "2026-11-15T13:53:57+00:00",
   "fin": "2026-11-15T14:46:11+00:00",
   "titulo": "P11b, La lluvia y el riego: el agua salada no se bebe",

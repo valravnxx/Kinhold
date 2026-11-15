@@ -4,7 +4,8 @@
 // y un cubo con troncos cortos (los que le sobran de tronzar o, si no, de tronzar otro árbol adulto), marca el pozo,
 // cava cada tramo a golpes de pala y lo reviste con piedras que recoge, hasta el agua; levanta el brocal con más
 // piedras y pone el travesaño con 3 varas de un árbol joven y una cuerda que trenza; saca agua con el cubo y bebe del
-// pozo. Así, lejos del río, tiene agua dulce.
+// pozo. Así, lejos del río, tiene agua dulce. Deja el cubo junto al pozo: con él riega el huerto en la granja, que va
+// detrás (el paso 24, pruebas/recorrido_granja.mjs).
 // Cadena: pala y cubo ← tronco corto ← tronzar un tronco largo ← árbol adulto; piedras ← piedra suelta; varas ← árbol
 // joven; cuerda ← 3 cordeles ← fibra.
 // Para trabajar en esta parte sin repetir lo de antes: KINHOLD_RECORRIDO_GUARDAR=<carpeta> node pruebas/prueba_recorrido.mjs
@@ -22,6 +23,7 @@ const MANOS = ['mano:der', 'mano:izq'];
 
 export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   const yo = J.bienvenida.autor;
+  const inicio = { ...J.pos };   // (al acabar vuelve aquí: la granja, que va detrás, empieza en la ribera)
   const r2 = v => Math.round(v * 100) / 100;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
   const enMano = () => MANOS.map(l => J.inv && J.inv.lugares[l] ? `${J.inv.lugares[l].tipo}×${J.inv.lugares[l].n}` : '–').join(' ');
@@ -109,19 +111,13 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
 
   // ¿se llega de p a q sin pisar agua? (nadando, lo de las manos se cae)
   const secoHasta = (p, q) => { const n = Math.ceil(dist(p, q)); for (let i = 0; i <= n; i++) if (T.aguaEn(p.x + (q.x - p.x) * i / n, p.z + (q.z - p.z) * i / n)) return false; return true; };
-  // talar el árbol de edad más cercano a p que nadie ha tocado (con su hacha de piedra) y limpiarlo; lo que deja, al suelo
-  const talar = async (edad, p) => {
-    await soltarManos(['hacha_piedra']);   // (el hacha, si la lleva en la mano, no la suelta)
-    // (el hacha, a la mano: de lo que lleva o del suelo, donde la dejó)
-    await pausa(800);   // (que le llegue lo que lleva de verdad)
-    let hacha = await aLaMano('hacha_piedra');
-    if (!hacha) { if (!(await cogerSuelo('hacha_piedra', J.pos, 15)) && !(await cogerSuelo('hacha_piedra', banco, 30))) await cogerSuelo('hacha_piedra', M, 300); await pausa(800); hacha = await aLaMano('hacha_piedra'); }
-    if (!hacha) return { ok: false, motivo: `no encuentra su hacha (lleva ${J.cuantos('hacha_piedra')}: ${J.inv.rutasCon('hacha_piedra').join(',') || '–'}; en las manos ${enMano()}; en el suelo, a ${cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'hacha_piedra'), J.pos).map(o => Math.round(dist(o, J.pos)) + ' m').join(', ') || 'ninguna'})` };
-    // si al hacha no le quedan los golpes de este árbol y de limpiarlo, la repara en su piedra de tallar con un cordel
-    // (recupera la mitad); como haría un jugador antes de un árbol adulto
+  // (si al hacha no le quedan los golpes que necesita, la repara en su piedra de tallar con un cordel: recupera la mitad;
+  // como haría un jugador antes de un árbol adulto. Con el hacha en la mano)
+  const repararHacha = async (necesita) => {
+    const hacha = !!enLaMano('hacha_piedra');
     const resto = () => { const l = MANOS.find(x => s.objetos.invs.de(yo).lugares[x]?.tipo === 'hacha_piedra'); return l ? VIDA_DESGASTE.hacha_piedra - (s.objetos.invs.de(yo).lugares[l].usado || 0) : 0; };
     const tallar = cerca(suyas('piedra_tallar'), banco)[0];
-    for (let k = 0; k < 3 && hacha && tallar && resto() < (edad === 'adulto' ? 80 : 14); k++) {
+    for (let k = 0; k < 3 && hacha && tallar && resto() < necesita; k++) {
       const lh = enLaMano('hacha_piedra'), otra = MANOS.find(x => x !== lh);
       if (J.inv.lugares[otra]) await soltar(otra);
       if (!(await juntar(['ortiga', 'hierba_larga'], 'fibra', 3, 250))) break;
@@ -134,6 +130,18 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
       console.log(`     (repara el hacha en su piedra de tallar: le quedaban ${antes} golpes, ahora ${resto()}${rp.ok ? '' : ' · ' + rp.motivo})`);
       if (!rp.ok) break;
     }
+  };
+  // talar el árbol de edad más cercano a p que nadie ha tocado (con su hacha de piedra) y limpiarlo; lo que deja, al suelo
+  const talar = async (edad, p) => {
+    await soltarManos(['hacha_piedra']);   // (el hacha, si la lleva en la mano, no la suelta)
+    // (el hacha, a la mano: de lo que lleva o del suelo, donde la dejó)
+    await pausa(800);   // (que le llegue lo que lleva de verdad)
+    let hacha = await aLaMano('hacha_piedra');
+    if (!hacha) { if (!(await cogerSuelo('hacha_piedra', J.pos, 15)) && !(await cogerSuelo('hacha_piedra', banco, 30))) await cogerSuelo('hacha_piedra', M, 300); await pausa(800); hacha = await aLaMano('hacha_piedra'); }
+    if (!hacha) return { ok: false, motivo: `no encuentra su hacha (lleva ${J.cuantos('hacha_piedra')}: ${J.inv.rutasCon('hacha_piedra').join(',') || '–'}; en las manos ${enMano()}; en el suelo, a ${cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'hacha_piedra'), J.pos).map(o => Math.round(dist(o, J.pos)) + ' m').join(', ') || 'ninguna'})` };
+    // si al hacha no le quedan los golpes de este árbol y de limpiarlo, la repara en su piedra de tallar con un cordel
+    // (recupera la mitad); como haría un jugador antes de un árbol adulto
+    await repararHacha(edad === 'adulto' ? 80 : 14);
     const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - 150, z0: O.z + p.z - 150, x1: O.x + p.x + 150, z1: O.z + p.z + 150 }).arboles
       .map(a => ({ x: a.x - O.x, z: a.z - O.z, edad: a.edad })).map(a => ({ ...a, id: idArbol(a.x, a.z) })).filter(a => a.edad === edad && !s.objetos.tala.estado[a.id] && !campoEn(s.mundo, a.x, a.z) && secoHasta(J.pos, a));
     const a = cerca(arboles, p)[0];
@@ -166,6 +174,11 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   comprobar('busca en su tierra, lejos de cualquier río, el sitio de agua menos honda', !!sitio, sitio ? `a ${sitio.h} m (${tramosDe({ hondura: sitio.h })} tramos), a ${Math.round(dist(sitio, banco))} m del banco` : 'ninguno');
   if (!sitio) return;
   const TR = tramosDe({ hondura: sitio.h });
+  // (la piel de la liebre que cazó, a sus pies junto a la hoguera de la orilla, fuera de su tierra, donde lo soltado
+  // desaparece a la hora: se la lleva y la deja junto al banco con lo que lleve en las manos; luego la busca la granja)
+  const piel = enSuelo('piel', J.pos, 6)[0];
+  if (piel && MANOS.some(l => !J.inv.lugares[l] || J.inv.lugares[l].tipo === 'piel')) await cogerSuelo('piel', piel, 3);
+  await J.andar(banco.x - 1.5, banco.z - 1.5); await soltarManos();
 
   // 23b. La pala de madera y el cubo: un tronco corto cada uno, en el banco
   console.log('23b. Se hace en su banco una pala de madera y un cubo (un tronco corto cada uno)');
@@ -183,7 +196,10 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
     }
     const nuevos = largo ? enSuelo('tronco_corto', largo, 4) : [];
     comprobar('no le quedan dos troncos cortos: tala un árbol adulto y lo tronza (3 o 4 más)', nuevos.reduce((t, o) => t + o.cosa.n, 0) >= 3, `${ad.motivo || ''} ${golpes} golpes · ${tz.motivo || ''}`);
-    await soltarManos();
+    // (el hacha, reparada si le quedan pocos golpes, otra vez junto al banco: allí la busca la granja para talar el árbol
+    // joven de su campo)
+    if (enLaMano('hacha_piedra')) await repararHacha(30);
+    await J.andar(banco.x - 1, banco.z + 1); await soltarManos();
     // se los lleva al banco de uno en uno, al hombro (dos: la pala y el cubo)
     for (let k = 0; k < 2 && nCortos() < 2; k++) {
       const o = enSuelo('tronco_corto', largo, 4)[0];
@@ -311,6 +327,9 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   const sed0 = nec().sed;
   q = await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z });
   comprobar('y bebe del pozo', q.ok && (sed0 === 0 || nec().sed < sed0), `${q.motivo || ''} sed ${Math.round(sed0)} → ${Math.round(nec().sed)}`);
+  // (el cubo, lleno, lo deja junto al pozo: con él riega luego el huerto de la granja, pruebas/recorrido_granja.mjs)
+  await soltarManos();
+  await J.andar(inicio.x, inicio.z);
 }
 
 // Seguir desde lo guardado (ver arriba): KINHOLD_RECORRIDO_DESDE=<carpeta> node pruebas/recorrido_pozo.mjs
