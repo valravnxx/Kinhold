@@ -7130,5 +7130,22 @@
   ],
   "pruebas": "Lógica y recorrido correctos en la nube. Prueba nueva del pozo (49 comprobaciones, con el terreno de Whitholm y el servidor de verdad); rota a propósito (bajar sin revestir), falla. Fuera por la sesión: construcción, quitar el mojón y los avisos de las necesidades (de navegador; solo se añade el pozo al guardado del mundo y su cansancio). La primera pasada de lógica falló por dos avisos sin traducir y un nombre de paso demasiado largo para su archivo; arreglados y vuelta a pasar.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T05:23:16+00:00",
+  "fin": "2026-11-15T07:31:16+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo (2), en el juego",
+  "hito": "lluvia",
+  "hecho": [
+   "Con la pala de madera en la mano, en tu tierra y fuera de los campos, Usar marca un pozo un paso delante de ti; el aviso dice a qué hondura está el agua y cuántos tramos de 1 m hay que cavar y revestir (la hondura la pone el servidor; el navegador hace la misma cuenta con el mismo terreno para el aviso).",
+   "Junto al pozo, Usar cava el tramo a golpes de pala, uno cada 2 s y seguidos hasta acabarlo; cavado, para y pide revestirlo de piedra; Usar pone las piedras que llevas (en una mano caben 3: hacen falta viajes) y dice cuántas faltan.",
+   "La boca se ve: como el terreno no se puede agujerear, lo de dentro va pintado en un disco pegado al suelo, como se ve desde arriba: cada tramo, un anillo de pared más estrecho y oscuro cuanto más hondo, de tierra o de lajas de piedra con sus juntas; al fondo, tierra húmeda o el agua oscura con el cielo reflejado. En la boca no sale hierba.",
+   "Recién marcado, un círculo raspado y una estaca; revestido el primer tramo, una hilada de piedras alrededor de la boca; las piedras ya puestas del tramo a medias, en un montoncito al lado; la tierra sacada, en montones bajos y desiguales con terrones al pie, que crecen con lo cavado hasta un tope (lo demás se da por esparcido).",
+   "Lo ven todos: el otro jugador, en el móvil, ve el pozo con agua. Publicado en la demo v216.",
+   "Decisiones provisionales: el pozo, a 0,9 m delante de ti; la tierra a la vista, hasta 1,1 m³; la boca aún se puede pisar (el brocal, que la cierra, llega con la tarea siguiente)."
+  ],
+  "pruebas": "Prueba nueva de navegador del pozo (en línea, dos jugadores, PC y móvil): marcar, cavar y revestir 8 tramos hasta el agua a 7,4 m, con los golpes y las piedras en el servidor; rota a propósito (sin mandar al servidor las acciones del pozo), falla. Demo única correcta. Fuera por la sesión: velocidad con pocos fotogramas y la demo en el mundo (main.js y mundo_juego.js solo añaden el pozo; la demo única carga el mundo y la prueba del pozo lo juega). Segunda mirada de un agente aparte: la primera vez dijo que no (hierba dentro de la boca, montones enormes y anaranjados, pared sin piedras, agua pequeña); arreglado y vuelto a mirar, sí.",
+  "capturas": "capturas/demo-v216",
+  "estado": "ok"
  }
 ]

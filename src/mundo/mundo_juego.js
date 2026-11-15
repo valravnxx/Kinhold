@@ -15,6 +15,7 @@ import { materialSuelo } from '../mapa/suelo.js';
 import { crearAguaMundo, LADO_AGUA } from './agua_mundo.js';
 import { crearHorizonte } from './horizonte.js';
 import { nivelar as conMarcas } from '../logica/nivelado.js';
+import { honduraEn } from '../logica/pozo.js';
 
 const movil = typeof innerWidth !== 'undefined' && Math.min(innerWidth, innerHeight) < 700;
 // los anillos de detalle: en el PC, los del juego (src/logica/trozos.js); en el móvil, los de la vista de juego del mapa
@@ -174,7 +175,22 @@ export function crearMundoJuego({ escena, mapa, origen = SALIDA, camara = null }
     mar.scale.set((r.x1 - r.x0 + 6000) / ancho, 1, (r.z1 - r.z0 + 6000) / largo);
     mar.position.x = (r.x0 + r.x1) / 2 - O.x; mar.position.z = (r.z0 + r.z1) / 2 - O.z;
   }
+  // A qué hondura está el agua bajo tierra en (x, z) para el pozo (P11b; src/logica/pozo.js): la misma cuenta que el
+  // servidor, con el suelo exacto (nivelado) y los mismos ríos; la que vale es la del servidor (esta, para el aviso).
+  const terrenoPozo = {
+    y0, suelo: (x, z) => altW(x + O.x, z + O.z) - y0,
+    rioEn: (x, z) => {
+      const xm = x + O.x, zm = z + O.z; let mejor = null;
+      for (const t of riosCerca(x, z)) {
+        const vx = t.bx - t.ax, vz = t.by - t.ay, l2 = vx * vx + vz * vz || 1, u = Math.max(0, Math.min(1, ((xm - t.ax) * vx + (zm - t.ay) * vz) / l2));
+        const d = Math.hypot(xm - t.ax - vx * u, zm - t.ay - vz * u);
+        if (!mejor || d < mejor.d) mejor = { d, nivel: t.ha + (t.hb - t.ha) * u - y0 };
+      }
+      return mejor && mejor.d <= 900 ? { d: Math.round(mejor.d * 100) / 100, nivel: Math.round(mejor.nivel * 100) / 100 } : null;
+    },
+  };
+  const honduraPozo = (x, z) => honduraEn(terrenoPozo, x, z);
   const dentro = (x, z) => dentroDeIsla(x + O.x, z + O.z, rect);
-  return { altura, sobreMar, seco, andable, dentro, libre, aguaEn, agua, paso, nivelar, terreno, paisaje, grupo, mar, y0, horizonte,
+  return { altura, sobreMar, seco, andable, dentro, libre, aguaEn, agua, paso, nivelar, honduraPozo, terreno, paisaje, grupo, mar, y0, horizonte,
     get listo() { return listo; }, get esLibre() { return rect !== ISLA; }, salida: O, isla: ISLA };
 }

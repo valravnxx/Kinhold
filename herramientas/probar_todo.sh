@@ -193,6 +193,7 @@ paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinh
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: lo que se recoge en el mundo" python3 pruebas/prueba_recogida_mundo_navegador.py dist/kinhold_demo.html "$C/recogida_mundo"
 paso "Navegador: marcar el campo con estacas" python3 pruebas/prueba_campos_navegador.py dist/kinhold_demo.html "$C/campos"
+paso "Navegador: el pozo en el juego" python3 pruebas/prueba_pozo_navegador.py dist/kinhold_demo.html "$C/pozo"
 paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
 paso "Navegador: volver donde lo dejaste" python3 pruebas/prueba_volver_navegador.py dist/kinhold_demo.html "$C/volver"
 paso "Navegador: lo que llevas en línea (inventario, suelo, tala y recogida por el servidor)" python3 pruebas/prueba_objetos_en_linea_navegador.py dist/kinhold_demo.html "$C/objetos_en_linea"

@@ -2395,9 +2395,9 @@
     },
     {
      "nombre": "El pozo (2), en el juego: marcar el sitio (dice a qué hondura está el agua), y cada tramo cavado y revestido se ve (el hoyo, su piedra y la tierra sacada al lado), con el estilo v5; lo ven todos; en PC y en móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T05:23:16+00:00",
-     "rama": "trabajo/20261115-0523"
+     "fin": "2026-11-15T07:31:16+00:00"
     },
     {
      "nombre": "El pozo (3), sacar agua: brocal de piedra, travesaño de varas y cuerda; con el cubo se saca agua dulce (para regar y para beber), lejos de cualquier río; el recorrido de jugador hace un pozo de principio a fin. Cadena: varas ← árbol joven; cuerda ← fibra",
@@ -4701,6 +4701,13 @@
      "archivo": "jugar/demo/v215.html",
      "capturas": "capturas/demo-v215",
      "notas": "La niebla de la mañana: algunas mañanas, niebla espesa que se levanta a media mañana; lo de lejos se pierde en gris claro y lo de cerca se sigue viendo, también en el móvil"
+    },
+    {
+     "v": "v216",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v216.html",
+     "capturas": "capturas/demo-v216",
+     "notas": "El pozo, en el juego: con la pala de madera se marca (el aviso dice a qué hondura está el agua), se cava por tramos y se reviste de piedra hasta el agua; se ven la boca con sus tramos, la piedra y la tierra sacada, y lo ven todos (P11b)"
     }
    ]
   },

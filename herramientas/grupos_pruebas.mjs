@@ -56,6 +56,7 @@ export const TOCA = {
   'personaje': [/^src\/personaje\//, /^src\/personajes\//, /^src\/logica\/(aspecto|hechura|tintes)\.js$/, /^herramientas\/taller\//, /^construir_personaje\.mjs$/],
   'la-demo-en-el-mundo': [/^src\/mundo\/(mundo_juego|terreno_trozos|trozo_suelo|color_suelo|rendimiento)\.js$/, /^src\/demo\/rendimiento\.js$/, /^src\/mapa\/suelo\.js$/],
   'lo-que-se-recoge-en-el-mundo': [/^src\/logica\/recogida_mundo\.js$/, /^src\/mundo\/rocas\.js$/],
+  'el-pozo-en-el-juego': [/^src\/logica\/pozo\.js$/, /^src\/juego\/pozos_vista\.js$/, /^pruebas\/prueba_pozo_navegador\.py$/],
   'marcar-el-campo-con-estacas': [/^src\/logica\/(campos|tiempo)\.js$/, /^src\/juego\/campos_vista\.js$/, /^pruebas\/prueba_campos_navegador\.py$/],
   'construir-a-la-altura-del-suelo': [/^src\/logica\/nivelado\.js$/, /^src\/juego\/movimiento\.js$/],
   'recursos-de-personaje-v2': [/^docs\/recursos\/personajes\//],
