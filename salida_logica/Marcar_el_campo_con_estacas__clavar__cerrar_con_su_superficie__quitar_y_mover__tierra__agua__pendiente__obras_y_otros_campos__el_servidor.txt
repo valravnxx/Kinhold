@@ -1,0 +1,37 @@
+  OK   la estaca: 1 rama, con las manos
+  OK   sin mojón no se clava — Primero coloca tu mojón.
+  OK   en la tierra de otro, no — Fuera de tu tierra.
+  OK   la primera estaca empieza un campo y sale de lo que llevas —  quedan 2
+  OK   pegada a la anterior, no — Ahí ya hay una estaca.
+  OK   a través del agua, no (y no cambia nada ni cobra) — El linde cruza el agua.
+  OK   por una cuesta, no — Demasiada pendiente para un campo.
+  OK   a través de un puesto, no — El linde cruza un puesto.
+  OK   demasiado lejos de la anterior, no — Demasiado lejos de la estaca anterior.
+  OK   2.ª y 3.ª estacas
+  OK   el linde no se cruza consigo mismo — El linde se cruza consigo mismo.
+  OK   la que va junto a la primera cierra el campo, sin gastar otra
+  OK   con su superficie en m² (30 × 20 / 2 = 300) — 300
+  OK   y se sabe qué hay dentro
+  OK   sin invitación, Bruno no marca en la tierra de Ana — Fuera de tu tierra.
+  OK   invitado, sí
+  OK   el linde no entra en otro campo — Eso es otro campo.
+  OK   un extraño, nada — Primero coloca tu mojón.
+  OK   como mucho 16 estacas — Ya llevas 16 estacas: clava la última junto a la primera.
+  OK   quitar una estaca del campo cerrado: vuelve a lo que llevas y el campo queda abierto
+  OK   el campo, abierto, sigue desde la estaca de después — [{"x":530,"z":520},{"x":500,"z":500}]
+  OK   se vuelve a clavar en otro sitio y se cierra otra vez
+  OK   un extraño no quita estacas — Fuera de tu tierra.
+  OK   al quitar la única estaca, el campo deja de existir
+  OK   sin estacas encima, no — No llevas ninguna estaca.
+  OK   rehecho desde el registro da el mismo mundo
+  OK   se guarda y se lee (con los campos)
+  OK   los guardados de antes (sin campos) se leen sin campos
+  OK   al quitar el mojón se van los campos de su tierra
+El servidor de verdad: la estaca, donde estás y de lo que llevas; los demás la ven
+  OK   sin estacas encima, el servidor no la clava —  / No llevas ninguna estaca.
+  OK   lejos de donde el servidor tiene a Ana, no — Estás demasiado lejos.
+  OK   donde está y con estacas encima, sí
+  OK   Bruno la ve (le llega la acción con el autor de Ana)
+  OK   Bruno no quita la estaca de Ana — Fuera de tu tierra.
+
+34 bien, 0 mal
