@@ -2413,9 +2413,9 @@
     },
     {
      "nombre": "Recorrido de jugador del riego (repaso de lo esencial, 15 nov): en la granja, la col y el nabo se riegan con el cubo lleno de agua dulce (del río o del pozo) en vez de adelantarles el reloj de lo que tardan sin agua; el recorrido no lo hacía",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T13:23:05+00:00",
-     "rama": "trabajo/20261115-1325"
+     "fin": "2026-11-15T15:39:56+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
