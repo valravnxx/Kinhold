@@ -318,16 +318,24 @@ function empalizada(opc = {}) {
     H.add(new THREE.TorusGeometry(0.08, 0.016, 5, 10), 'hierro', ancho - 0.25, 1.15, 0.09); // argolla
     return conHoja(F, H, -MODULO / 2);
   }
-  const L = loteMuro(), n = 7;
+  // los 6 troncos delgados que cuesta (P11c), juntos, con la tierra apisonada y unas piedras de calzo al pie
+  const L = loteMuro(), n = 6;
   for (let t = 0; t < n; t++) {
     const x = -MODULO / 2 + (t + 0.5) * (MODULO / n), alto = P.altoEmpalizada - 0.15 + ruido(t + 3) * 0.3;
-    const r = 0.135 + ruido(t * 5.1) * 0.025, inclina = (ruido(t * 1.9 + 2) - 0.5) * 0.04;
+    const r = 0.152 + ruido(t * 5.1) * 0.018, inclina = (ruido(t * 1.9 + 2) - 0.5) * 0.04;
     // clavado: el tronco sigue ENTERRADO bajo el suelo (así, en ladera, ningún pie queda en el aire)
     L.add(cil(r * 0.94, r, alto + ENTERRADO, 9), ruido(t * 7.7 + 1) > 0.5 ? 'madera' : 'maderaOsc', x, (alto - ENTERRADO) / 2, 0, { z: inclina, y: ruido(t) * 3 });
     const punta = new THREE.ConeGeometry(r * 0.94, 0.4, 9); // la punta tallada a hachazos: madera clara, caras planas
     L.add(punta, ruido(t * 3.3) > 0.5 ? 'tabla' : 'madera', x - Math.sin(inclina) * (alto + ENTERRADO) / 2, alto + 0.2, 0, { z: inclina }, { sinSuelo: true, plano: true });
   }
   for (const y of [1.0, 2.2]) varaX(L, MODULO, 0.06, 'maderaOsc', 0, y, -0.2, y > 2 ? 0.006 : -0.006);
+  // la zanja rellena y apisonada: un lomo bajo de tierra a lo largo (casi todo bajo el suelo), y piedras de calzo
+  L.add(cil(0.34, 0.34, MODULO, 10), 0x4f3f2e, 0, -0.01, 0, { z: Math.PI / 2 }, { sinSuelo: true, tex: 'piedra', brillo: 0.9, escala: new THREE.Vector3(0.24, 1, 1) });
+  for (let t = 0; t < 5; t++) {
+    const lado = t % 2 ? 1 : -1, tam = 0.1 + ruido(t * 4.3 + 1) * 0.06;
+    L.add(new THREE.IcosahedronGeometry(1, 0), ruido(t * 3.1) > 0.5 ? 'piedra' : 'piedraOsc', -0.8 + t * 0.4 + ruido(t) * 0.12, tam * 0.3, lado * (0.22 + ruido(t + 8) * 0.06),
+      { x: ruido(t + 2) * 3, y: ruido(t + 5) * 3 }, { sinSuelo: true, plano: true, escala: new THREE.Vector3(tam * 1.3, tam * 0.7, tam) });
+  }
   return deLote(L);
 }
 

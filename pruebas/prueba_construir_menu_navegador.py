@@ -4,8 +4,9 @@
 #   - arriba, «Poner | Quitar», la planta, Deshacer y Terminar, en una barra que no se sale de la pantalla; X pasa de
 #     poner a quitar y vuelve; en el móvil, por encima de nada de lo de abajo;
 #   - cada pieza con su imagen (cargada de verdad) y el coste en iconos; lo que no tienes, en rojo;
-#   - deshacer lo último: el marco puesto se quita, y otra vez ya no hay nada que deshacer.
-# Rota a propósito con MUTAR=1 (el botón de deshacer no hace nada): falla.
+#   - deshacer lo último: el marco puesto se quita, y otra vez ya no hay nada que deshacer;
+#   - la empalizada (P11c), a la vista en «Exterior» con su imagen y sus 6 troncos, y de cerca, levantada.
+# Rota a propósito con MUTAR=1 (el botón de deshacer no hace nada) o MUTAR=2 (sin la empalizada en el menú): falla.
 # Uso: python3 pruebas/prueba_construir_menu_navegador.py <html> <carpeta_capturas>
 import sys, os, re, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -89,6 +90,29 @@ with sync_playwright() as p:
             comprobar('quitando, sin los huecos de las manos de abajo', not ev("!!document.getElementById('llevas').offsetParent"))
             pg.click('#modos [data-modo=construir]'); pg.wait_for_timeout(300)
             comprobar('Poner: vuelve a poner', ev(f"{K}.estado.modo") == 'construir')
+        # la empalizada (P11c): ya no se esconde; en «Exterior», con su imagen y sus 6 troncos (delgados); se levanta
+        # clavada en el suelo, con las puntas afiladas. MUTAR=2: escondida otra vez (tiene que fallar)
+        pg.click('#pestanas button[data-cat="exterior"]'); pg.wait_for_timeout(2000)
+        ext = ev("[...document.querySelectorAll('#piezas button.pieza')].map(b => { const i = b.querySelector('img.pz-img'); return [b.querySelector('b').textContent, !!i && i.complete && i.naturalWidth > 0, [...b.querySelectorAll('.cc')].map(c => c.title).join(' ')]; })")
+        emp = [e for e in ext if e[0] == 'Empalizada']
+        if os.environ.get('MUTAR') == '2': emp = []
+        comprobar('en «Exterior», la empalizada a la vista, con su imagen cargada', bool(emp) and emp[0][1], str([e[0] for e in ext]))
+        comprobar('y cuesta 6 troncos', bool(emp) and emp[0][2].startswith('6 tronco'), emp[0][2] if emp else '')
+        comprobar('la puerta de empalizada (con hierro) sigue escondida', not [e for e in ext if e[0] == 'Puerta de empalizada'])
+        antes = ev(f"{K}.mundo.construcciones.reduce((a, c) => a + c.piezas.size, 0)")
+        for x in [3, 5, 7]:
+            ev(f"{K}.seleccionar('pieza','empalizada'); {K}.apuntar({x},2); {K}.colocar()")
+        ev(f"{K}.seleccionar('pieza','cerca'); {K}.apuntar(9,2); {K}.colocar(); {K}.terminarObras()")   # (sin servidor, las obras se terminan al momento)
+        n3 = ev(f"{K}.mundo.construcciones.reduce((a, c) => a + c.piezas.size, 0)")
+        comprobar('tres tramos de empalizada y una cerca puestos', n3 == antes + 4, f'piezas={n3 - antes}')
+        hechas = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo === 'empalizada' && !p.obra).length")
+        comprobar('y la empalizada, levantada', hechas == 3, f'tramos={hechas}')
+        ev(f"{K}.cambiarModo('mover')"); pg.wait_for_timeout(800)
+        for i, (px, pz, giro, pitch, dist) in enumerate([(8.5, 3.6, 0.5, 0.28, 8), (4, 3.4, -0.4, 0.12, 5), (2.6, 3.0, -0.2, 0.05, 2.6)]):
+            ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {px}, z: {pz}, rot: 0 }}); k.cam.yaw = {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()")
+            pg.wait_for_timeout(2500)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_6_empalizada_{i + 1}.png'.replace('ó', 'o'))
+        ev(f"{K}.cambiarModo('construir')"); pg.wait_for_timeout(800)
         pg.click('#pestanas button[data-cat="almacenajes"]'); pg.wait_for_timeout(2500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_5_almacenajes.png'.replace('ó', 'o'))
         comprobar('sin errores en la página', not errores, '; '.join(errores[:3]))
