@@ -203,7 +203,7 @@ try:
             for _ in range(12):
                 if A.evaluate(f"{K}.mundo.pozos[0].revestidos >= {K}.mundo.pozos[0].cavados"): return True
                 if A.evaluate(f"{K}.inventario.cuantos('piedra')") == 0:
-                    coger(A, 'piedra', 8, 'mano:izq') or coger(A, 'piedra', 4, 'mano:izq')
+                    coger(A, 'piedra', 3, 'mano:izq')   # (en una mano caben 3)
                     esperar(A, f"{K}.inventario.cuantos('piedra') > 0", 8000)
                 n = A.evaluate(f"{K}.mundo.pozos[0].revestidos")
                 usar(A)
