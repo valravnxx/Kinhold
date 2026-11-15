@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-15T03:23:44+00:00",
-  "tarea": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río, lago o pozo",
-  "hito": "lluvia",
-  "rama": "trabajo/20261115-0323"
- },
+ "A": null,
  "B": null
 }
