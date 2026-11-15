@@ -174,8 +174,10 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   comprobar('busca en su tierra, lejos de cualquier río, el sitio de agua menos honda', !!sitio, sitio ? `a ${sitio.h} m (${tramosDe({ hondura: sitio.h })} tramos), a ${Math.round(dist(sitio, banco))} m del banco` : 'ninguno');
   if (!sitio) return;
   const TR = tramosDe({ hondura: sitio.h });
-  // (lo que lleva en las manos, como la piel de la liebre, lo deja junto al banco: en su tierra no desaparece, y fuera
-  // de ella, sí, a la hora; luego lo busca la granja)
+  // (la piel de la liebre que cazó, a sus pies junto a la hoguera de la orilla, fuera de su tierra, donde lo soltado
+  // desaparece a la hora: se la lleva y la deja junto al banco con lo que lleve en las manos; luego la busca la granja)
+  const piel = enSuelo('piel', J.pos, 6)[0];
+  if (piel && MANOS.some(l => !J.inv.lugares[l] || J.inv.lugares[l].tipo === 'piel')) await cogerSuelo('piel', piel, 3);
   await J.andar(banco.x - 1.5, banco.z - 1.5); await soltarManos();
 
   // 23b. La pala de madera y el cubo: un tronco corto cada uno, en el banco
