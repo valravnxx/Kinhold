@@ -130,14 +130,37 @@ r = H(A, { tipo: 'cavar_pozo', pozo: pozo.id });
 comprobar('ya en el agua, no se cava más', !r.ok && r.motivo === 'Ya has llegado al agua: reviste de piedra el último tramo.', r.motivo);
 piedras(6); H(A, { tipo: 'revestir_pozo', pozo: pozo.id }); piedras(6);
 r = H(A, { tipo: 'revestir_pozo', pozo: pozo.id }); gastadas += 8;
-comprobar('revestido el último, el pozo tiene agua', r.ok && r.agua && P.conAgua(pozo) && P.siguientePaso(pozo) === 'agua', JSON.stringify(r));
+comprobar('revestido el último, el pozo tiene agua', r.ok && r.agua && P.conAgua(pozo) && P.siguientePaso(pozo) === 'brocal', JSON.stringify(r));
 comprobar('ha gastado 8 piedras por tramo (24) y sacado la tierra de 3 tramos', gastadas === 3 * P.PIEDRAS_TRAMO && P.tierraSacada(pozo) === Math.round(3 * P.TIERRA_TRAMO * 100) / 100 && cuantas() === 4, `${cuantas()} piedras sobran en la mano`);
 comprobar('ya con agua, ni se cava ni se reviste', !H(A, { tipo: 'cavar_pozo', pozo: pozo.id }).ok && !H(A, { tipo: 'revestir_pozo', pozo: pozo.id }).ok);
 comprobar('cavar y revestir cansan, como una obra', ESFUERZOS.cavar_pozo >= 1 && ESFUERZOS.revestir_pozo >= 1);
 comprobar('cada acción, con su autor', reg.entradas.filter(e => e.tipo === 'cavar_pozo' && e.ok).every(e => e.autor === A));
 
+console.log('Rematarlo y sacar agua (El pozo (3))');
+const lleva = (l) => { const L = invs.de(A).lugares; L['mano:der'] = l.der || null; L['mano:izq'] = l.izq || null; };
+comprobar('con agua, aún no se saca: le faltan el brocal y el travesaño', !P.rematado(pozo) && !P.pozoConAgua(m, pozo.x + 1, pozo.z));
+lleva({ izq: { tipo: 'piedra', n: 5 } });
+r = H(A, { tipo: 'rematar_pozo', pozo: pozo.id });
+comprobar(`el brocal, con las piedras que lleva: 5 de ${P.PIEDRAS_BROCAL}`, r.ok && r.paso === 'brocal' && pozo.brocal === 5 && cuantas() === 0 && !r.rematado, JSON.stringify(r));
+r = H(A, { tipo: 'rematar_pozo', pozo: pozo.id });
+comprobar('sin piedras, no sigue', !r.ok && r.motivo === 'No llevas piedras.', r.motivo);
+r = H(B, { tipo: 'rematar_pozo', pozo: pozo.id });
+comprobar('otro, en tu tierra sin invitarlo, no', !r.ok && r.motivo === 'Fuera de tu tierra.', r.motivo);
+lleva({ izq: { tipo: 'piedra', n: 10 } });
+r = H(A, { tipo: 'rematar_pozo', pozo: pozo.id });
+comprobar('con 10 más, pone las 7 que faltan (sobran 3): el brocal, entero', r.ok && pozo.brocal === P.PIEDRAS_BROCAL && r.puestas === 7 && cuantas() === 3 && P.siguientePaso(pozo) === 'travesano', JSON.stringify(r));
+lleva({ der: { tipo: 'vara', n: 2 }, izq: { tipo: 'cuerda', n: 1 } });
+r = H(A, { tipo: 'rematar_pozo', pozo: pozo.id });
+comprobar('el travesaño con 2 varas, no (hacen falta 3 y la cuerda), y no gasta nada', !r.ok && r.motivo === 'Para el travesaño hacen falta 3 varas y una cuerda.' && invs.de(A).cuantos('vara') === 2 && invs.de(A).cuantos('cuerda') === 1, r.motivo);
+lleva({ der: { tipo: 'vara', n: 3 }, izq: { tipo: 'cuerda', n: 1 } });
+r = H(A, { tipo: 'rematar_pozo', pozo: pozo.id });
+comprobar('con 3 varas y la cuerda, el travesaño: rematado', r.ok && r.rematado && P.rematado(pozo) && P.siguientePaso(pozo) === 'sacar' && invs.de(A).cuantos('vara') === 0 && invs.de(A).cuantos('cuerda') === 0, JSON.stringify(r));
+comprobar('rematado, no se remata más', !H(A, { tipo: 'rematar_pozo', pozo: pozo.id }).ok);
+comprobar('a su lado hay agua del pozo (a 2 m, sí; a 4 m, no)', P.pozoConAgua(m, pozo.x + 2, pozo.z) && !P.pozoConAgua(m, pozo.x + 4, pozo.z));
+comprobar('rematar cansa', ESFUERZOS.rematar_pozo > 0 && ESFUERZOS.sacar_agua > 0);
+
 console.log('Rehecho y guardado');
-const otro2 = reproducir(reg.entradas.filter(e => e.tipo === 'mojon' || e.tipo === 'pozo' || e.tipo === 'cavar_pozo' || e.tipo === 'revestir_pozo'));
+const otro2 = reproducir(reg.entradas.filter(e => e.tipo === 'mojon' || e.tipo === 'pozo' || e.tipo === 'cavar_pozo' || e.tipo === 'revestir_pozo' || e.tipo === 'rematar_pozo'));
 comprobar('rehecho desde el registro (sin inventarios), el mismo pozo', JSON.stringify(otro2.pozos) === JSON.stringify(m.pozos), JSON.stringify(otro2.pozos));
 const leido = Mundo.importar(JSON.parse(foto(m)));
 comprobar('guardado y leído, igual', JSON.stringify(leido.pozos) === JSON.stringify(m.pozos));
@@ -158,6 +181,7 @@ console.log('El servidor de verdad: pone la hondura, mira que estés al lado y l
     });
     c.estar = (x, z) => ws.send(JSON.stringify({ tipo: 'estado', x, y: 0, z, giro: 0, anim: 'quieto' }));
     c.accion = (accion) => { const id = ++c.id; ws.send(JSON.stringify({ tipo: 'accion', id, accion })); return c.esperar(x => x.tipo === 'resultado' && x.id === id); };
+    c.objeto = (accion) => { const id = ++c.id; ws.send(JSON.stringify({ tipo: 'objeto', id, accion })); return c.esperar(x => x.tipo === 'resultado_objeto' && x.id === id); };
     ws.on('message', (d) => { const x = JSON.parse(d.toString()); c.recibidos.push(x); c.esperas = c.esperas.filter(e => { if (e.cond(x)) { e.r(x); return false; } return true; }); });
     ws.on('open', async () => { c.bienvenida = await c.esperar(x => x.tipo === 'bienvenida'); listo(c); });
     ws.on('error', fallo);
@@ -200,6 +224,31 @@ console.log('El servidor de verdad: pone la hondura, mira que estés al lado y l
     comprobar('y lo reviste en tres viajes con las piedras que lleva (3 + 3 + 2)', rv.ok && pz.revestidos === 1 && inv.cuantos('piedra') === 1, rv.motivo || `${inv.cuantos('piedra')} sobran`);
     const vr = await Bruno.esperar(x => x.tipo === 'accion' && x.entrada && x.entrada.tipo === 'revestir_pozo' && x.entrada.datos.piedras === 2).catch(() => null);
     comprobar('Bruno ve el tramo revestido (con las piedras puestas en cada viaje)', !!vr && vr.entrada.autor === yo);
+    // hasta el agua y rematado, lejos de cualquier río: se saca agua con el cubo y se bebe
+    for (let k = 0; k < 20 && !P.conAgua(pz); k++) {
+      if (pz.cavados > pz.revestidos) { inv.lugares['mano:izq'] = { tipo: 'piedra', n: 8 }; await Ana.accion({ tipo: 'revestir_pozo', pozo: pz.id }); }
+      else { inv.lugares['mano:der'] = { tipo: 'pala_madera', n: 1 }; for (let i = 0; i < P.GOLPES_TRAMO; i++) await Ana.accion({ tipo: 'cavar_pozo', pozo: pz.id }); }
+    }
+    inv.lugares['mano:der'] = { tipo: 'cubo', n: 1 }; inv.lugares['mano:izq'] = null;
+    let ro = await Ana.objeto({ tipo: 'llenar_cubo' });
+    comprobar('con agua pero sin rematar, lejos del río, el cubo no se llena', P.conAgua(pz) && !ro.ok && ro.motivo === 'Aquí no hay agua: busca un río.', ro.motivo);
+    inv.lugares['mano:izq'] = { tipo: 'piedra', n: 12 };
+    let rr = await Ana.accion({ tipo: 'rematar_pozo', pozo: pz.id });
+    inv.lugares['mano:der'] = { tipo: 'vara', n: 3 }; inv.lugares['mano:izq'] = { tipo: 'cuerda', n: 1 };
+    rr = rr.ok ? await Ana.accion({ tipo: 'rematar_pozo', pozo: pz.id }) : rr;
+    comprobar('le pone el brocal (12 piedras) y el travesaño (3 varas y la cuerda), por el servidor', rr.ok && P.rematado(pz) && inv.cuantos('vara') === 0 && inv.cuantos('cuerda') === 0, rr.motivo || '');
+    const vb = await Bruno.esperar(x => x.tipo === 'accion' && x.entrada && x.entrada.tipo === 'rematar_pozo').catch(() => null);
+    comprobar('Bruno lo ve rematar', !!vb && vb.entrada.autor === yo);
+    inv.lugares['mano:der'] = { tipo: 'cubo', n: 1 }; inv.lugares['mano:izq'] = null;
+    Ana.estar(-6, 8); await espera(150);
+    ro = await Ana.objeto({ tipo: 'llenar_cubo' });
+    comprobar('lejos del pozo (7 m), no se llena', !ro.ok, ro.motivo);
+    Ana.estar(-6, 2.5); await espera(150);
+    ro = await Ana.objeto({ tipo: 'llenar_cubo' });
+    comprobar('a su lado, saca agua del pozo: el cubo, lleno (agua dulce, sin río cerca)', ro.ok && inv.lugares['mano:der'].tipo === 'cubo_agua', ro.motivo || '');
+    s.necesidades.set(yo, { ...s.necesidades.get(yo), sed: 50 });
+    const rb = await Ana.objeto({ tipo: 'beber' });
+    comprobar('y bebe del pozo', rb.ok && rb.datos.sed < 50, rb.motivo || JSON.stringify(rb.datos));
     Ana.ws.close(); Bruno.ws.close();
   } catch (e) { mal++; console.log('  FALLA la prueba del servidor se cortó:', e.message, e.stack.split('\n').slice(0, 3).join(' | ')); }
   await s.cerrar();

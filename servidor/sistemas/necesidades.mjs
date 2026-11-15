@@ -7,6 +7,7 @@ import { puestasDe, abrigo as abrigoDe } from '../../src/logica/prendas.js';
 import { horaDe } from '../../src/logica/cielo.js';
 import { calorEn } from '../../src/logica/fuego.js';
 import { lloviendo } from '../../src/logica/tiempo.js';
+import { pozoConAgua, ALCANCE_POZO } from '../../src/logica/pozo.js';
 import { sangrePerdida, motivoNecesidades } from '../../src/logica/muerte.js';
 import { RECUPERAR_SANGRE } from '../../src/combate/logica.js';
 import { reemplazar } from '../guardado.mjs';
@@ -37,7 +38,8 @@ export function instalarNecesidades(S) {
   const ultimoTrago = new Map();
   const beber = (a, ahora) => {
     const p = S.presencia && S.presencia.ultimo.get(a);
-    if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z)) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
+    // (en la orilla, o junto a un pozo rematado: P11b)
+    if (!p || !((terreno && hayAguaCerca(terreno.aguaEn, p.x, p.z)) || (S.mundo && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5)))) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
     if (ahora - (ultimoTrago.get(a) || -Infinity) < ESPERA_TRAGO) return { ok: false, motivo: 'Despacio: trago a trago.' };
     ultimoTrago.set(a, ahora);
     const n = saciarNecesidad(necesidadesDe(a), 'sed', TRAGO);

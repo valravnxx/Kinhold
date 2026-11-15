@@ -6,6 +6,7 @@ import { writeFile } from 'fs/promises';
 import { ObjetosServidor } from '../../src/logica/objetos_red.js';
 import { trozoDe } from '../../src/logica/trozos_red.js';
 import { campoEn, llenarCubo } from '../../src/logica/campos.js';
+import { pozoConAgua, ALCANCE_POZO } from '../../src/logica/pozo.js';
 import { saciar as saciarNecesidad, redondear as redondearNecesidades, NUTRE, comestible, aguaCerca } from '../../src/logica/necesidades.js';
 import { reemplazar, reemplazarSinEsperar } from '../guardado.mjs';
 
@@ -83,9 +84,10 @@ export function atenderObjeto(S, c, msg) {
   // llenar el cubo en el río (P11b, regar el huerto): con agua dulce al lado de donde el servidor te tiene (la del mar, no)
   if (msg.accion.tipo === 'llenar_cubo') {
     const p = S.presencia && S.presencia.ultimo.get(autor);
-    const r = llenarCubo(objetos.invs.de(autor).lugares, S.terreno && p ? aguaCerca(S.terreno.aguaEn, p.x, p.z, S.terreno.marEn) : null);
+    // (o junto a un pozo rematado, P11b: agua dulce aunque no haya río)
+    const r = llenarCubo(objetos.invs.de(autor).lugares, p && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5) ? 'dulce' : S.terreno && p ? aguaCerca(S.terreno.aguaEn, p.x, p.z, S.terreno.marEn) : null);
     appendFileSync(archivoObjetosReg, JSON.stringify({ t: ahora, autor, accion: { tipo: 'llenar_cubo' }, ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
-    if (r.ok) { guardarObjetos(); cansar(autor, 'llenar_cubo'); }
+    if (r.ok) { guardarObjetos(); cansar(autor, p && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5) ? 'sacar_agua' : 'llenar_cubo'); }
     enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: {} } : { motivo: r.motivo }) });
     enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
     if (r.ok) repartirLlevado(autor);

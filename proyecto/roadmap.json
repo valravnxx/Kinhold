@@ -2407,9 +2407,9 @@
     },
     {
      "nombre": "El pozo (3), sacar agua: brocal de piedra, travesaño de varas y cuerda; con el cubo se saca agua dulce (para regar y para beber), lejos de cualquier río; el recorrido de jugador hace un pozo de principio a fin. Cadena: varas ← árbol joven; cuerda ← fibra",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T09:23:12+00:00",
-     "rama": "trabajo/20261115-0923"
+     "fin": "2026-11-15T13:09:35+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -4723,6 +4723,13 @@
      "archivo": "jugar/demo/v217.html",
      "capturas": "capturas/demo-v217",
      "notas": "El pozo se marca desde construir (pestaña Tierra); con la pala en la mano ya no sale «Marcar aquí un pozo»; luego se cava con la pala a su lado, como antes"
+    },
+    {
+     "v": "v218",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v218.html",
+     "capturas": "capturas/demo-v218",
+     "notas": "El pozo, sacar agua: revestido hasta el agua, se le pone el brocal de piedra (12 piedras) y el travesaño (3 varas y una cuerda); con el cubo vacío se saca agua dulce lejos de cualquier río, y a su lado se bebe (P11b)"
     }
    ]
   },

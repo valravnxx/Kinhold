@@ -69,8 +69,6 @@ const PENDIENTES = {
   arcilla: ['aún no se cava', 'La arcilla y el horno cerámico'],
   est_horno_ceramico: ['aún no hay horno cerámico', 'La arcilla y el horno cerámico'],
   teja: ['sale del horno cerámico', 'Las tejas: en el horno cerámico'],
-  // P11b, el pozo (valravnx, 14 nov: «debe ser laborioso»): obra por tramos, cavar y revestir de piedra
-  est_pozo: ['ya se cava y se reviste en la lógica (src/logica/pozo.js), pero aún no se ve en el juego ni se saca el agua', 'El pozo (3), sacar agua'],
 };
 // Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede
 // tener partiendo de nada, o espera en PENDIENTES con su tarea viva. Antes de pasar el hito a revisión (paso 9), nada
@@ -101,6 +99,9 @@ for (let nuevo = true; nuevo;) {
   if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
   // el cubo lleno (P11b, regar el huerto): el cubo vacío en la mano, junto al río (src/logica/campos.js, llenarCubo)
   if (hay.has('cubo') && poner('cubo_agua', 'llenar el cubo en el río')) nuevo = true;
+  // el pozo (P11b; src/logica/pozo.js): se cava con la pala de madera, se reviste de piedra y se remata con el brocal
+  // de piedra y el travesaño de varas con su cuerda; de él se saca agua con el cubo
+  if (['pala_madera', 'piedra', 'vara', 'cuerda'].every(t => hay.has(t)) && poner('est_pozo', 'cavar, revestir y rematar un pozo')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
   if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;

@@ -319,7 +319,7 @@ function atenderAccion(S, c, msg) {
   if (accion.tipo === 'estaca' || accion.tipo === 'labrar' || accion.tipo === 'pozo') mundo.entorno = entornoCampos(S);
   // el pozo (P11b): a qué hondura está el agua ahí lo dice el terreno del servidor (lo que diga el navegador no cuenta)
   if (accion.tipo === 'pozo') { delete accion.hondura; if (terreno && Number.isFinite(accion.x) && Number.isFinite(accion.z)) { const h = honduraEn(terreno, accion.x, accion.z); if (h !== null) accion.hondura = h; } }
-  const lejosPozo = accion.tipo === 'pozo' || accion.tipo === 'cavar_pozo' || accion.tipo === 'revestir_pozo' ? lejosDelPozo(mundo, accion, presencia.ultimo.get(autor)) : null;
+  const lejosPozo = accion.tipo === 'pozo' || accion.tipo === 'cavar_pozo' || accion.tipo === 'revestir_pozo' || accion.tipo === 'rematar_pozo' ? lejosDelPozo(mundo, accion, presencia.ultimo.get(autor)) : null;
   const r = lejosPozo ? lejosPozo : lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
   if (lejosPozo || lejosCampo || sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
   const entrada = registro.entradas[registro.entradas.length - 1];
@@ -341,6 +341,7 @@ function atenderAccion(S, c, msg) {
   if (r.ok && accion.tipo === 'regar') cansar(autor, 'regar');         // y de regar (P11b, 14 nov)
   if (r.ok && accion.tipo === 'cavar_pozo') cansar(autor, 'cavar_pozo');   // y cada golpe de pala en el pozo (P11b, 15 nov)
   if (r.ok && accion.tipo === 'revestir_pozo') cansar(autor, 'revestir_pozo');
+  if (r.ok && accion.tipo === 'rematar_pozo') cansar(autor, 'rematar_pozo');
   if (r.ok) {
     // solo a quien tiene su trozo alrededor (y al autor); lo que no tiene sitio, a todos
     const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
