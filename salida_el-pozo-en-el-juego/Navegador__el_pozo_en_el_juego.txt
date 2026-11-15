@@ -1,0 +1,60 @@
+  OK   hay un sitio llano y seco para el pozo en la zona de al lado — {'x': -770, 'z': 16, 'h': 7.4}
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Sitio del pozo: (-770, 16), agua a 7.4 m (8 tramos)
+Pone su mojón cerca
+  OK   pone su mojón (en el servidor) — Primera pieza: fija la rejilla de una construcción nueva. Gira con R o el botón Girar.
+Con la pala de madera en la mano, no sale «Marcar aquí un pozo» (valravnx, 15 nov)
+  OK   lleva la pala de madera en la mano
+  OK   con la pala en la mano, en su tierra, Usar no ofrece marcar un pozo
+  OK   y Usar con la pala no marca ninguno — null
+Marca el pozo desde construir (pestaña Tierra)
+  OK   en construir, pestaña Tierra, está el pozo — Mojóntu tierra | Brocha de nivelaralisa el suelo | Pozose cava con pala
+  OK   elegido el pozo — {"clase":"pozo","tipo":"pozo"}
+  OK   antes de marcarlo, el aviso dice a qué hondura está el agua ahí (7,4 m) — Pozo: aquí el agua está a unos 7,4 m (8 tramos de cavar y revestir).
+  OK   se ve el fantasma del pozo
+  OK   el pozo se marca en el servidor, con la hondura del terreno — {"n": 3, "autor": "jugador:63254b1e", "tipo": "pozo", "datos": {"x": -770, "z": 16, "hondura": 7.4}, "ok": true}
+  OK   el aviso dice a qué hondura está el agua (7,4 m, 8 tramos) y que se cava con la pala — Pozo marcado: el agua está a unos 7,4 m (8 tramos de cavar y revestir). Cávalo con la pala de madera en la mano.
+  OK   y vuelve a moverse (para ir a cavarlo)
+  OK   en el navegador, el pozo donde apuntó — {"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":0,"golpes":0,"revestidos":0,"piedras":0,"brocal":0,"travesano":false}
+  OK   se dibuja su boca
+  OK   pegado a otro pozo, construir no deja marcar otro — Ahí al lado ya hay un pozo.
+Cava el primer tramo con la pala
+  OK   junto al pozo, Usar dice «Cavar el pozo: tramo 1 de 8» — Cavar el pozo: tramo 1 de 8
+  OK   Usar empieza a cavar
+  OK   diez golpes de pala, seguidos, en el servidor — Tramo 1 cavado: revístelo de piedra antes de bajar más (8 piedras). Quedan 6,4 m.
+  OK   acaba el tramo y para de cavar — {"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":0,"brocal":0,"travesano":false}
+  OK   el aviso pide revestirlo de piedra antes de bajar — Tramo 1 cavado: revístelo de piedra antes de bajar más (8 piedras). Quedan 6,4 m.
+  OK   Usar dice «Revestir de piedra el tramo 1 de 8 (0 de 8 piedras)» — Revestir de piedra el tramo 1 de 8 (0 de 8 piedras)
+  OK   sin revestir, el servidor no deja bajar más
+Lo reviste de piedra (primero con pocas)
+  OK   pone las 3 piedras que lleva (faltan 5) — {"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":3,"brocal":0,"travesano":false} · Pones 3 piedras: faltan 5 para este tramo.
+Y así hasta el agua (8 tramos)
+  OK   tramo 1 revestido — {"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":1,"piedras":0,"brocal":0,"travesano":false} · Tramo 1 revestido: ya puedes cavar el siguiente.
+  OK   en el servidor: 80 golpes de pala y 64 piedras, hasta el agua — 80
+  OK   el aviso lo dice — Pozo revestido hasta el agua: ya tiene agua. Para sacarla, el brocal de piedra y el travesaño.
+  OK   Usar pide el brocal: «Levantar el brocal de piedra (0 de 12 piedras)» — Levantar el brocal de piedra (0 de 12 piedras)
+  OK   se dibujan la boca, la piedra y el montón de tierra — 2
+El pozo (3): el brocal, el travesaño y sacar agua
+  OK   el brocal, entero (12 piedras), y el aviso pide el travesaño — {"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":8,"golpes":0,"revestidos":8,"piedras":0,"brocal":12,"travesano":false} · Brocal terminado: falta el travesaño (3 varas y una cuerda).
+  OK   Usar dice «Poner el travesaño (3 varas y una cuerda)» — Poner el travesaño (3 varas y una cuerda)
+  OK   sin las varas y la cuerda, no se pone (y el aviso lo dice) — Para el travesaño hacen falta 3 varas y una cuerda.
+  OK   suelta lo que lleva en las manos (la pala, al suelo) — [null,null]
+  OK   con 3 varas y la cuerda, el travesaño puesto: ya se saca agua — {"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":8,"golpes":0,"revestidos":8,"piedras":0,"brocal":12,"travesano":true} · Travesaño puesto, con su cuerda: ya se saca agua del pozo con el cubo.
+  OK   en el servidor: el brocal y el travesaño, con su autor — [{'n': 115, 'autor': 'jugador:63254b1e', 'tipo': 'rematar_pozo', 'datos': {'pozo': 1, 'piedras': 1, 'lleva': True}, 'ok': True}, {'n': 116, 'autor': 'jugador:63254b1e', 'tipo': 'rematar_pozo', 'datos': {'pozo': 1, 'lleva': True}, 'ok': True}]
+  OK   suelta lo que lleva en las manos (la pala, al suelo) — [null,null]
+  OK   con el cubo vacío, Usar dice «Sacar agua del pozo» (sin río cerca) — Sacar agua del pozo
+  OK   saca del pozo un cubo de agua (lo llena el servidor) — Sacas del pozo un cubo de agua.
+El otro jugador, en el móvil, lo ve
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  OK   le llega el pozo, rematado — [{"id":1,"dueno":"jugador:63254b1e","autor":"jugador:63254b1e","x":-770,"z":16,"hondura":7.4,"cavados":8,"golpes":0,"revestidos":8,"piedras":0,"brocal":12,"travesano":true}]
+  OK   y ve su boca
+  OK   la hierba de alrededor vuelve a estar (solo falta en la boca) — [0,{"celdas":0,"matas":0,"triangulos":0}]
+En el móvil, el pozo está en construir, pestaña Tierra
+  OK   móvil: en construir, pestaña Tierra, se elige el pozo — {"clase":"pozo","tipo":"pozo"}
+  OK   a él no le deja cavar en el pozo de otro
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+TODO CORRECTO
