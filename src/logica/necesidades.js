@@ -137,6 +137,12 @@ export function aguaCerca(aguaEn, x, z, esMar) {
   }
   return salada ? 'salada' : null;
 }
+// Beber (valravnx, 15 nov: «que el agua salada se diferencie de la dulce y no se pueda beber»): solo el agua dulce
+// (río, lago o pozo) quita la sed; la del mar, no. Lo que dice el aviso en cada caso (lo mismo en el navegador y en el
+// servidor). agua: lo que dice aguaCerca ('dulce', 'salada' o null).
+export const NO_HAY_AGUA = 'Aquí no hay agua: busca un río, un lago o un pozo.';
+export const AGUA_SALADA = 'El agua del mar es salada: no se bebe. Busca un río, un lago o un pozo.';
+export const motivoSinBeber = (agua) => (agua === 'salada' ? AGUA_SALADA : NO_HAY_AGUA);
 
 // Comer (P4): lo que se come y cuánta hambre quita cada uno (decisión provisional; el documento solo dice que lo
 // cocinado sacia más). Una mata de bayas da de 3 a 6: entre 15 y 30 puntos. La carne de una liebre (9 nov; src/logica/

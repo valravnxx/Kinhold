@@ -16,7 +16,7 @@ import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
 import { crearTiempoVista } from '../mundo/tiempo_vista.js';
-import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, aguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
+import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, aguaCerca, motivoSinBeber, AGUA_SALADA, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearHierbaDensa } from '../mundo/hierba_densa.js';
@@ -1749,7 +1749,8 @@ function accionPrincipal() {
   const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
   if (ob && !subirAndamio) return accionObra(ob);
   // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
-  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
+  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaDulceAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
+  if (!it && necesidades && necesidades.sed >= AVISO_NEC && saladaAlLado() && !cuboEnMano('cubo')) return avisoSalada(A, yo);
   // con la lasca encima y una liebre cazada a tus pies, despiezarla (9 nov)
   if (!it && pj.k === 0 && inventario().cuantos('lasca_silex') > 0 && liebreAlLado()) { const l = liebreAlLado(); return A(tr('Despiezar la liebre'), 'liebre', l, despiezar, { alto: 0.2 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
@@ -1855,7 +1856,8 @@ function accionPrincipal() {
     }
     const caido = caidoCercano();
     if (caido) return A(tr('Limpiar el árbol caído'), 'hacha_piedra', caido, () => mostrarAviso(tr('Necesitas un hacha en la mano para limpiar el árbol caído.'), true), { alto: 0.9, apagada: true, sub: tr('Necesitas un hacha en la mano para limpiar el árbol caído.') });
-    if (aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });   // junto al agua, sin otra cosa que usar, se bebe
+    if (aguaDulceAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });   // junto al agua dulce, sin otra cosa que usar, se bebe
+    if (saladaAlLado()) return avisoSalada(A, yo);   // (junto al mar: es salada, no se bebe)
     // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
     if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { const c = comidaQueLlevas()[0]; return A(tr('Comer: {c}', { c: tr(CATALOGO[c].nombre).toLowerCase() }), c, yo, () => comer(c), { alto: 1.2 }); }
     return null;
@@ -1938,7 +1940,7 @@ function opcionesUsar() {
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
-  if (aguaAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
+  if (aguaDulceAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
   if (enLinea && miMojon()) for (const [autor, r] of enLinea.remotos) {
     if (Math.hypot(r.x - pj.x, r.z - pj.z) > 3) continue;
@@ -2045,6 +2047,12 @@ function usarInteractivo(it) {
 const aguaAlLado = () => pj.k === 0 && ((!!mundoJ && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z)) || pozoAlLado());
 // junto a un pozo rematado (P11b, El pozo (3)): se bebe y se saca agua con el cubo como en el río, aunque no haya ninguno cerca
 const pozoAlLado = () => pj.k === 0 && pozoConAgua(mundo, pj.x, pj.z, RADIO_POZO + 1.4);
+// el agua de al lado, dulce o salada (valravnx, 15 nov: «que el agua salada se diferencie de la dulce y no se pueda
+// beber»): solo la dulce (río, lago o pozo) se bebe; junto al mar, Usar dice que es salada
+const aguaQueHay = () => (pj.k === 0 && mundoJ ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
+const aguaDulceAlLado = () => pj.k === 0 && (aguaQueHay() === 'dulce' || pozoAlLado());
+const saladaAlLado = () => !aguaDulceAlLado() && aguaQueHay() === 'salada';
+const avisoSalada = (A, yo) => A(tr('Agua salada: no se bebe'), 'agua', yo, () => mostrarAviso(tr(AGUA_SALADA), true), { alto: 0.2, apagada: true, sub: tr(AGUA_SALADA) });
 function beber() {
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
@@ -2053,7 +2061,7 @@ function beber() {
     });
     return;
   }
-  if (!aguaAlLado()) { mostrarAviso(tr('Aquí no hay agua: busca un río, un lago o el mar.'), true); return; }
+  if (!aguaDulceAlLado()) { mostrarAviso(tr(motivoSinBeber(aguaQueHay())), true); return; }
   if (necesidades) { necesidades = saciarNecesidad(necesidades, 'sed', TRAGO); avisosNec.pintar(necesidades); }
   mostrarAviso(tr('Bebes agua con las manos.'));
 }
