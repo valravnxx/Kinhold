@@ -1,0 +1,25 @@
+  OK   el admin pone su mojón
+  OK   sin «extra», un segundo mojón no se puede — Ya tienes un mojón.
+  OK   con «extra», sí, en otra zona — jugador:admin~2
+  OK   y el suyo sigue donde estaba
+  OK   en una zona que ya es suya, no — Esta zona ya es tierra de otro.
+  OK   un tercero, en otra zona — jugador:admin~3
+  OK   la tierra de la zona de más es suya
+  OK   construye en ella
+  OK   y en la suya
+  OK   su invitada también construye en la zona de más
+  OK   otro no — Primero coloca tu mojón.
+  OK   otro no puede tocar lo de ahí
+  OK   ni poner su mojón en esa zona — Esta zona ya es tierra de otro.
+  OK   ni quitar el mojón de más del admin — No tienes mojón.
+  OK   lo que se perdería es solo lo de esa zona — 2
+  OK   quitar el de más: solo ese y lo de su zona
+  OK   la invitada lo sigue siendo
+  OK   se vuelve a poner (con el primer número libre) — jugador:admin~2
+  OK   el de más no vuelve al rey si el admin entra — {"liberar":[],"avisar":[]}
+  OK   ni manda correos aparte (avisa el suyo) — [{"dueno":"jugador:admin","que":"semana","quedan":432000000,"dias":15}]
+  OK   la tierra de un mojón de más vuelve al rey sin romper
+  OK   rehecho desde el registro da el mismo mundo
+  OK   el servidor solo deja «extra» con el modo autoconstruir
+
+23 bien, 0 mal
