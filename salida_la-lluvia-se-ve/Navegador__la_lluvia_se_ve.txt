@@ -1,0 +1,70 @@
+/home/runner/work/Kinhold/Kinhold/pruebas/prueba_lluvia_navegador.py:71: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  return sum(1 for v in d.getdata() if v > umbral)
+  OK   PC: sin ?tiempo, las pruebas lo ven despejado, quieto
+  OK   PC: despejado, el cielo azul — [142, 171, 191]
+  OK   PC: despejado, sin gotas
+  OK   PC: nublado, el cielo gris (casi nada de azul) — [176, 177, 175] (despejado [142, 171, 191])
+  OK   PC: nublado, la luz del sol mucho más débil — 0.6 (despejado 3)
+  OK   PC: nublado, sin gotas
+  OK   PC: nublado, la lluvia no suena — {"vol": 0, "filtro": 5500, "gotas": 0, "contexto": ""}
+  OK   PC: nublado y seco, nada mojado
+  OK   PC: nublado, el suelo más apagado — [67, 76, 39] (despejado [118, 122, 64])
+  OK   PC: lloviendo, las gotas en una sola malla de trazos — {"visible": true, "cuantas": 4500, "cantidad": 1, "tipo": "LineSegments"}
+  OK   PC: en el PC, más gotas — 4500
+  OK   PC: lloviendo, el suelo mojado (más oscuro que nublado y seco) — [42, 51, 21] (seco [67, 76, 39]); mojado 1
+  OK   PC: lloviendo al raso, la lluvia suena (con sus gotas sueltas) — {"vol": 1, "filtro": 5500, "gotas": 20, "contexto": "running"}
+  (dato) PC: el sonido, en un contexto «running»
+  OK   PC: lloviendo, las gotas se ven (trazos claros sobre lo de detrás) — 456386 píxeles de 460800
+  OK   PC: y también contra el cielo — 28041 píxeles
+  OK   PC: un segundo después de empezar a llover, solo un poco (el paso es suave) — {"nubes": 0.05823546641575137, "lluvia": 0.17097088181959957, "niebla": 0, "tiempo": "lluvia", "mojado": 0.00625}
+  OK   PC: al minuto y medio, lloviendo del todo y el cielo cubierto — {"nubes": 0.9732173235073615, "lluvia": 0.9999877807746718, "niebla": 0, "tiempo": "lluvia", "mojado": 0.37708333333333327}
+  OK   PC: bajo techo no caen gotas (y al salir, sí) — [0.0005530843701477828, 0.9994472215321727]
+  OK   PC: bajo techo, la lluvia suena más baja y apagada — {"oido": {"vol": 0.4, "filtro": 903, "gotas": 32, "contexto": "running"}, "mojado": 0.35, "fuera": {"oido": {"vol": 1, "filtro": 5497, "gotas": 33, "contexto": "running"}, "mojado": 1}}
+  OK   PC: bajo techo, lo de dentro menos mojado — {"oido": {"vol": 0.4, "filtro": 903, "gotas": 32, "contexto": "running"}, "mojado": 0.35, "fuera": {"oido": {"vol": 1, "filtro": 5497, "gotas": 33, "contexto": "running"}, "mojado": 1}}
+  OK   PC: un minuto después de parar, sigue mojado y ya no suena — [{"m": 0.966, "vol": 0.001}, {"m": 0.5}, {"m": 0}]
+  OK   PC: a los 15 min, a medio secar; a la media hora, seco — [{"m": 0.966, "vol": 0.001}, {"m": 0.5}, {"m": 0}]
+  OK   PC: tras la lluvia, sin gotas y el suelo aún oscuro — [43, 52, 22] (seco [67, 76, 39])
+  OK   PC: niebla, lo de lejos se pierde (mucho menos contraste) — 4.4 (despejado 54.6)
+  OK   PC: niebla, de un gris claro — [230, 228, 220]
+  OK   PC: niebla, el cielo tapado (gris claro, casi sin azul) — [214, 213, 203]
+  OK   PC: niebla, lo de cerca se sigue viendo (el jugador y lo que tiene a mano) — 29.5 (despejado 15.6)
+  OK   PC: niebla, el sol más débil — 1.2 (despejado 3)
+  OK   PC: niebla, sin gotas ni nada mojado — {"ahora": {"nubes": 0, "lluvia": 0, "niebla": 1, "tiempo": "niebla", "mojado": 0}, "niebla": 1, "mojado": 0, "gotas": false}
+  OK   PC: la niebla llega de a poco y se va de a poco — [0.072, 0.993, 0.945, 0.007]
+  (dato) PC: ms por fotograma, sin lluvia 1462.2 y con lluvia 1488.3 (sin tarjeta gráfica; perfil movil-1)
+  OK   PC: sin errores en la página
+  OK   móvil: sin ?tiempo, las pruebas lo ven despejado, quieto
+  OK   móvil: despejado, el cielo azul — [151, 185, 212]
+  OK   móvil: despejado, sin gotas
+  OK   móvil: nublado, el cielo gris (casi nada de azul) — [197, 197, 197] (despejado [151, 185, 212])
+  OK   móvil: nublado, la luz del sol mucho más débil — 0.6 (despejado 3)
+  OK   móvil: nublado, sin gotas
+  OK   móvil: nublado, la lluvia no suena — {"vol": 0, "filtro": 5500, "gotas": 0, "contexto": ""}
+  OK   móvil: nublado y seco, nada mojado
+  OK   móvil: nublado, el suelo más apagado — [68, 76, 39] (despejado [120, 122, 66])
+  OK   móvil: lloviendo, las gotas en una sola malla de trazos — {"visible": true, "cuantas": 2400, "cantidad": 1, "tipo": "LineSegments"}
+  OK   móvil: en el móvil, menos gotas — 2400
+  OK   móvil: lloviendo, el suelo mojado (más oscuro que nublado y seco) — [42, 50, 22] (seco [68, 76, 39]); mojado 1
+  OK   móvil: lloviendo al raso, la lluvia suena (con sus gotas sueltas) — {"vol": 1, "filtro": 5500, "gotas": 22, "contexto": "running"}
+  (dato) móvil: el sonido, en un contexto «running»
+  OK   móvil: lloviendo, las gotas se ven (trazos claros sobre lo de detrás) — 146430 píxeles de 147700
+  OK   móvil: y también contra el cielo — 129 píxeles
+  OK   móvil: un segundo después de empezar a llover, solo un poco (el paso es suave) — {"nubes": 0.05823546641575137, "lluvia": 0.17097088181959957, "niebla": 0, "tiempo": "lluvia", "mojado": 0.00625}
+  OK   móvil: al minuto y medio, lloviendo del todo y el cielo cubierto — {"nubes": 0.9732173235073615, "lluvia": 0.9999877807746718, "niebla": 0, "tiempo": "lluvia", "mojado": 0.37708333333333327}
+  OK   móvil: bajo techo no caen gotas (y al salir, sí) — [0.0005530843701477828, 0.9994472215321727]
+  OK   móvil: bajo techo, la lluvia suena más baja y apagada — {"oido": {"vol": 0.4, "filtro": 903, "gotas": 36, "contexto": "running"}, "mojado": 0.35, "fuera": {"oido": {"vol": 1, "filtro": 5497, "gotas": 36, "contexto": "running"}, "mojado": 1}}
+  OK   móvil: bajo techo, lo de dentro menos mojado — {"oido": {"vol": 0.4, "filtro": 903, "gotas": 36, "contexto": "running"}, "mojado": 0.35, "fuera": {"oido": {"vol": 1, "filtro": 5497, "gotas": 36, "contexto": "running"}, "mojado": 1}}
+  OK   móvil: un minuto después de parar, sigue mojado y ya no suena — [{"m": 0.966, "vol": 0.001}, {"m": 0.5}, {"m": 0}]
+  OK   móvil: a los 15 min, a medio secar; a la media hora, seco — [{"m": 0.966, "vol": 0.001}, {"m": 0.5}, {"m": 0}]
+  OK   móvil: tras la lluvia, sin gotas y el suelo aún oscuro — [43, 51, 22] (seco [68, 76, 39])
+  OK   móvil: niebla, lo de lejos se pierde (mucho menos contraste) — 13.8 (despejado 54.2)
+  OK   móvil: niebla, de un gris claro — [225, 224, 216]
+  OK   móvil: niebla, el cielo tapado (gris claro, casi sin azul) — [231, 229, 222]
+  OK   móvil: niebla, lo de cerca se sigue viendo (el jugador y lo que tiene a mano) — 20.2 (despejado 17.7)
+  OK   móvil: niebla, el sol más débil — 1.2 (despejado 3)
+  OK   móvil: niebla, sin gotas ni nada mojado — {"ahora": {"nubes": 0, "lluvia": 0, "niebla": 1, "tiempo": "niebla", "mojado": 0}, "niebla": 1, "mojado": 0, "gotas": false}
+  OK   móvil: la niebla llega de a poco y se va de a poco — [0.072, 0.993, 0.945, 0.007]
+  (dato) móvil: ms por fotograma, sin lluvia 486.1 y con lluvia 486.1 (sin tarjeta gráfica; perfil movil-1)
+  OK   móvil: sin errores en la página
+
+Todo correcto
