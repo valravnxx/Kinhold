@@ -188,15 +188,15 @@ function muroZarzo(opc = {}) {
 // como las casas de entramado de la referencia (diseno/referencia/aspecto_del_juego.jpg): paños pequeños y la madera
 // a la vista, asomando del relleno. Con puerta (jambas y dintel) y con ventana (pies, peana, dintel y alféizar).
 // Sin cal aún, el relleno es barro (el ocre claro de la referencia), no encalado.
-const BARRO_CLARO = 0xc4a77a;
+const BARRO_CLARO = 0xd4ba8c;
 function muroEntramado(opc = {}) {
   const L = loteMuro();
-  const S = MODULO / 2, H = ALTURA, c = 'maderaOsc', F = 0.2;   // F: grueso de la madera (el relleno, 0,13)
+  const S = MODULO / 2, H = ALTURA, c = 'madera', F = 0.2;   // F: grueso de la madera (el relleno, 0,13); madera parda, como en la referencia
   const vigaV = (x, y0, y1, w = 0.16) => { if (y1 - y0 > 0.04) L.add(cajaR(w, y1 - y0, F, 0.025), c, x, (y0 + y1) / 2, 0); };
   const vigaH = (x0, x1, y, h = 0.14) => { if (x1 - x0 > 0.04) L.add(cajaR(x1 - x0, h, F - 0.01, 0.025), c, (x0 + x1) / 2, y, 0); };
   const tornapunta = (x0, y0, x1, y1) => {   // de esquina a esquina de un paño, metida en sus vigas
     const dx = x1 - x0, dy = y1 - y0;
-    L.add(cajaR(0.13, Math.hypot(dx, dy), F - 0.02, 0.02), c, (x0 + x1) / 2, (y0 + y1) / 2, 0, { z: -Math.atan2(dx, dy) });
+    L.add(cajaR(0.09, Math.hypot(dx, dy), F - 0.02, 0.02), c, (x0 + x1) / 2, (y0 + y1) / 2, 0, { z: -Math.atan2(dx, dy) });
   };
   // el relleno de una pieza, con el hueco recortado (como el barro del zarzo)
   const f = new THREE.Shape(), B = 0.012, m = 0.04;
@@ -212,39 +212,37 @@ function muroEntramado(opc = {}) {
   g.translate(0, 0, -(0.13 - 2 * B) / 2);
   L.add(g, BARRO_CLARO, 0, 0, 0, null, { tex: 'piedra', rayas: RAYAS_BARRO });
 
-  const yD = 0.18, yC = H - 0.18, yR = 1.25, ip = S - 0.18;   // arriba del durmiente, debajo de la carrera, la riostra; cara de dentro de los postes
-  for (const s of [-1, 1]) vigaV(s * (S - 0.09), 0, H, 0.18);   // postes de esquina
-  vigaH(-S, S, H - 0.09, 0.18);                                   // carrera
+  // madera fina (como en la referencia): postes de 12 cm, durmiente y carrera de 14, riostras de 10; dos riostras (a 0,9 y
+  // 1,7 m) y pies cada medio metro, así que los paños quedan pequeños (unos 0,4 × 0,7 m)
+  const yD = 0.14, yC = H - 0.14, ip = S - 0.12, R = [0.9, 1.7];
+  for (const s of [-1, 1]) vigaV(s * (S - 0.06), 0, H, 0.12);   // postes de esquina
+  vigaH(-S, S, H - 0.07, 0.14);                                   // carrera
+  const riostras = (x0, x1) => { for (const y of R) vigaH(x0, x1, y, 0.1); };
   if (opc.puerta) {
-    const a = P.anchoPuerta / 2, ap = P.altoPuerta, j = a + 0.08;
+    const a = P.anchoPuerta / 2, ap = P.altoPuerta, j = a + 0.06;
     for (const s of [-1, 1]) {
-      vigaH(s < 0 ? -S : a, s < 0 ? -a : S, 0.09, 0.18);           // durmiente a los lados, nunca cruzando el hueco
-      vigaV(s * j, 0, ap + 0.16);                                  // jambas
-      vigaH(s < 0 ? -ip : j + 0.08, s < 0 ? -j - 0.08 : ip, yR);  // riostra del lado
+      vigaH(s < 0 ? -S : a, s < 0 ? -a : S, 0.07, 0.14);           // durmiente a los lados, nunca cruzando el hueco
+      vigaV(s * j, 0, ap + 0.12, 0.12);                            // jambas
+      if (s < 0) riostras(-ip, -j - 0.06); else riostras(j + 0.06, ip);
     }
-    vigaH(-j - 0.08, j + 0.08, ap + 0.08, 0.16);                   // dintel
-    vigaV(0, ap + 0.16, yC, 0.14);                                 // pie corto encima
+    vigaH(-j - 0.06, j + 0.06, ap + 0.06, 0.12);                   // dintel
+    vigaV(0, ap + 0.12, yC, 0.1);                                  // pie corto encima
   } else if (opc.ventana) {
-    const a = P.anchoVentana / 2, bv = P.bajoVentana, av = P.altoVentana, j = a + 0.07;
-    vigaH(-S, S, 0.09, 0.18);
+    const a = P.anchoVentana / 2, bv = P.bajoVentana, av = P.altoVentana, j = a + 0.06;
+    vigaH(-S, S, 0.07, 0.14);
     for (const s of [-1, 1]) {
-      vigaV(s * j, yD, yC, 0.14);                                  // pies de la ventana
-      vigaH(s < 0 ? -ip : j + 0.07, s < 0 ? -j - 0.07 : ip, yR);  // riostra del lado
-      const xi = s * ip, xo = s * (j + 0.07);
-      tornapunta(xi, yD, xo, yR - 0.07);                           // tornapunta del paño bajo del lado
+      vigaV(s * j, yD, yC, 0.12);                                  // pies de la ventana
+      if (s < 0) riostras(-ip, -j - 0.06); else riostras(j + 0.06, ip);
     }
-    vigaH(-j, j, bv - 0.07);                                       // peana
-    vigaH(-j, j, av + 0.07);                                       // dintel
-    vigaV(0, yD, bv - 0.14, 0.12);                                 // pie corto bajo la ventana
-    L.add(cajaR(P.anchoVentana + 0.3, 0.06, 0.28, 0.015), 'madera', 0, bv - 0.02, 0);   // alféizar
+    vigaH(-j, j, bv - 0.05, 0.1);                                  // peana
+    vigaH(-j, j, av + 0.05, 0.1);                                  // dintel
+    vigaV(0, yD, bv - 0.1, 0.1);                                   // pie corto bajo la ventana
+    L.add(cajaR(P.anchoVentana + 0.24, 0.05, 0.26, 0.015), 'madera', 0, bv - 0.02, 0);   // alféizar
   } else {
-    vigaH(-S, S, 0.09, 0.18);                                      // durmiente
-    vigaV(0, yD, yC, 0.16);                                        // pie derecho central
-    for (const s of [-1, 1]) {
-      vigaH(s < 0 ? -ip : 0.08, s < 0 ? -0.08 : ip, yR);           // riostras
-      vigaV(s * (ip + 0.08) / 2, yR + 0.07, yC, 0.12);             // pies cortos de los paños altos
-      tornapunta(s * ip, yD, s * 0.08, yR - 0.07);                 // tornapuntas de los paños bajos, en V
-    }
+    vigaH(-S, S, 0.07, 0.14);                                      // durmiente
+    for (const x of [-0.5, 0, 0.5]) vigaV(x, yD, yC, 0.1);          // pies cada medio metro
+    riostras(-ip, ip);
+    for (const s of [-1, 1]) tornapunta(s * ip, yD, s * 0.55, R[0] - 0.05);   // tornapuntas de los paños bajos de fuera
   }
   return deLote(L);
 }
