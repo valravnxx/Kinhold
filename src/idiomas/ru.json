@@ -3031,5 +3031,16 @@
  "v215: la niebla se ve (P11b, «La lluvia y el riego»). Algunas mañanas del mundo hay niebla espesa, igual para todos donde estás: se forma antes de amanecer, es espesa hasta las 8 y se levanta poco a poco hasta las 10. Lo de lejos se pierde en un gris claro (más oscuro y cálido al amanecer, casi blanco a media mañana) y el cielo queda tapado, pero lo de cerca, el jugador y lo que tiene a mano, se sigue viendo; el sol se apaga y casi no hay sombras. Llega y se va sin saltos.": "v215: туман виден (P11b, «Дождь и полив»). В некоторые утра в мире стоит густой туман, одинаковый для всех там, где ты находишься: он появляется до рассвета, густой до 8 часов и понемногу рассеивается к 10. Всё вдали тонет в светло-сером (на рассвете темнее и теплее, к середине утра почти белом), небо закрыто, но то, что рядом, — игрок и то, что у него под рукой, — по-прежнему видно; солнце тускнеет, и теней почти нет. Туман приходит и уходит без скачков.",
  "v215, provisional: con la niebla espesa no se nota nada hasta 9 m de la cámara y se tapa el 95 % desde los 60 m en el PC; en el móvil, desde 12 m y el 88 % desde los 75 m, para no tapar el juego en la pantalla pequeña; lo que está a más del triple, tapado del todo, como el cielo; el sol se queda en el 40 % de su fuerza; la niebla tarda unos 20 s en ir hacia lo que toca.": "v215, предварительно: при густом тумане до 9 м от камеры ничего не заметно, а с 60 м закрыто 95 % на ПК; на телефоне — с 12 м и 88 % с 75 м, чтобы не закрывать игру на маленьком экране; всё, что дальше втрое, закрыто полностью, как небо; солнце остаётся на 40 % своей силы; туман примерно за 20 с переходит к нужному состоянию.",
  "Aquí no hay agua: busca un río.": "Здесь нет воды: найди реку.",
- "El agua del mar es salada: no vale para regar. Llena el cubo en un río.": "Морская вода солёная: для полива она не годится. Набери ведро в реке."
+ "El agua del mar es salada: no vale para regar. Llena el cubo en un río.": "Морская вода солёная: для полива она не годится. Набери ведро в реке.",
+ "Necesitas la pala de madera en la mano para cavar el pozo.": "Чтобы копать колодец, нужна деревянная лопата в руке.",
+ "No llevas piedras.": "У тебя нет камней.",
+ "Aquí hay agua encima: el pozo se cava en seco.": "Здесь сверху вода: колодец копают на сухом месте.",
+ "Ahí al lado ya hay un pozo.": "Рядом уже есть колодец.",
+ "Ahí hay algo: el pozo va en suelo libre.": "Там что-то есть: колодец роют на свободной земле.",
+ "Aquí no hay pozo.": "Здесь нет колодца.",
+ "El pozo ya tiene agua.": "В колодце уже есть вода.",
+ "Ya has llegado al agua: reviste de piedra el último tramo.": "Ты дошёл до воды: обложи камнем последний участок.",
+ "Reviste antes de piedra este tramo: si bajas más, la tierra se viene abajo.": "Сначала обложи этот участок камнем: если копать глубже, земля обвалится.",
+ "El pozo ya está revestido entero.": "Колодец уже полностью обложен.",
+ "Antes cava el tramo: aún no hay pared que revestir.": "Сначала выкопай участок: ещё нечего обкладывать."
 }
