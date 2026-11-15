@@ -3031,5 +3031,16 @@
  "v215: la niebla se ve (P11b, «La lluvia y el riego»). Algunas mañanas del mundo hay niebla espesa, igual para todos donde estás: se forma antes de amanecer, es espesa hasta las 8 y se levanta poco a poco hasta las 10. Lo de lejos se pierde en un gris claro (más oscuro y cálido al amanecer, casi blanco a media mañana) y el cielo queda tapado, pero lo de cerca, el jugador y lo que tiene a mano, se sigue viendo; el sol se apaga y casi no hay sombras. Llega y se va sin saltos.": "v215: fog is visible (P11b, “Rain and watering”). Some mornings in the world there is thick fog, the same for everyone where you are: it forms before dawn, is thick until 8 and lifts little by little until 10. What is far away fades into a light grey (darker and warmer at dawn, almost white by mid-morning) and the sky is covered, but what is close, the player and what is at hand, can still be seen; the sun dims and there are hardly any shadows. It comes and goes without jumps.",
  "v215, provisional: con la niebla espesa no se nota nada hasta 9 m de la cámara y se tapa el 95 % desde los 60 m en el PC; en el móvil, desde 12 m y el 88 % desde los 75 m, para no tapar el juego en la pantalla pequeña; lo que está a más del triple, tapado del todo, como el cielo; el sol se queda en el 40 % de su fuerza; la niebla tarda unos 20 s en ir hacia lo que toca.": "v215, provisional: with thick fog nothing shows up to 9 m from the camera and 95 % is covered from 60 m on PC; on mobile, from 12 m and 88 % from 75 m, so as not to hide the game on the small screen; anything beyond three times that, fully covered, like the sky; the sun stays at 40 % of its strength; the fog takes about 20 s to move towards what it should be.",
  "Aquí no hay agua: busca un río.": "There is no water here: look for a river.",
- "El agua del mar es salada: no vale para regar. Llena el cubo en un río.": "Sea water is salty: it is no good for watering. Fill the bucket at a river."
+ "El agua del mar es salada: no vale para regar. Llena el cubo en un río.": "Sea water is salty: it is no good for watering. Fill the bucket at a river.",
+ "Necesitas la pala de madera en la mano para cavar el pozo.": "You need the wooden shovel in your hand to dig the well.",
+ "No llevas piedras.": "You're not carrying any stones.",
+ "Aquí hay agua encima: el pozo se cava en seco.": "There's water on top here: a well is dug on dry ground.",
+ "Ahí al lado ya hay un pozo.": "There's already a well right next to it.",
+ "Ahí hay algo: el pozo va en suelo libre.": "There's something there: a well goes on clear ground.",
+ "Aquí no hay pozo.": "There's no well here.",
+ "El pozo ya tiene agua.": "The well already has water.",
+ "Ya has llegado al agua: reviste de piedra el último tramo.": "You've reached the water: line the last stretch with stone.",
+ "Reviste antes de piedra este tramo: si bajas más, la tierra se viene abajo.": "Line this stretch with stone first: if you dig deeper, the earth will cave in.",
+ "El pozo ya está revestido entero.": "The well is already fully lined.",
+ "Antes cava el tramo: aún no hay pared que revestir.": "Dig the stretch first: there's no wall to line yet."
 }
