@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 2946 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3296 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4805 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3357 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 2941 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3329 KB
+dist/kinhold_trozos.html 2963 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v214 (La lluvia se oye y moja); v214: la lluvia se oye y moja (P11b, «La lluvia y el riego»). Al llover se oye un rumor de lluvia con gotas sueltas encima, más fuerte cuanto más llueve; bajo techo suena más bajo y apagado, como sobre el tejado. El suelo, las piezas y todo lo que está al raso se ven más oscuros y de color más hondo mientras llueve, y siguen mojados un rato después de parar: se secan poco a poco. Lo mojado sale del tiempo del mundo, igual para todos donde estás.; v214, provisional: se moja del todo en 4 min de lluvia y se seca del todo en 30 min después (sin sol ni viento que sequen antes); mojado del todo, un 28 % más oscuro y un 30 % más de color; bajo techo, lo de dentro se ve al 35 % de mojado; la lluvia bajo techo suena al 40 % y sin los agudos (el filtro baja de unos 5500 a 900 Hz), sin gotas sueltas. El sonido, hecho por código (sin archivos), y suena solo cuando el navegador lo deja (tras tocar la página).
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 356 s
