@@ -201,10 +201,10 @@ function muroEntramado(opc = {}) {
   // el relleno de una pieza, con el hueco recortado (como el barro del zarzo)
   const f = new THREE.Shape(), B = 0.012, m = 0.04;
   f.moveTo(-S + m, m);
-  if (opc.puerta) { const a = P.anchoPuerta / 2 + B, t = P.altoPuerta + B; f.lineTo(-a, m); f.lineTo(-a, t); f.lineTo(a, t); f.lineTo(a, m); }   // (+B: el bisel no asoma al hueco)
+  if (opc.puerta) { const a = P.anchoPuerta / 2 + 2 * B, t = P.altoPuerta + 2 * B; f.lineTo(-a, m); f.lineTo(-a, t); f.lineTo(a, t); f.lineTo(a, m); }   // (+2B: el bisel crece B; así el canto del relleno queda metido en la jamba, sin asomar ni pelear con ella)
   f.lineTo(S - m, m); f.lineTo(S - m, H - m); f.lineTo(-S + m, H - m); f.closePath();
   if (opc.ventana) {
-    const a = P.anchoVentana / 2 + B, b = P.bajoVentana - B, t = P.altoVentana + B, h = new THREE.Path();
+    const a = P.anchoVentana / 2 + 2 * B, b = P.bajoVentana - 2 * B, t = P.altoVentana + 2 * B, h = new THREE.Path();
     h.moveTo(-a, b); h.lineTo(-a, t); h.lineTo(a, t); h.lineTo(a, b); h.closePath();
     f.holes.push(h);
   }
@@ -214,8 +214,8 @@ function muroEntramado(opc = {}) {
 
   // madera fina (como en la referencia): postes de 12 cm, durmiente y carrera de 14, riostras de 10; dos riostras (a 0,9 y
   // 1,7 m) y pies cada medio metro, así que los paños quedan pequeños (unos 0,4 × 0,7 m)
-  const yD = 0.14, yC = H - 0.14, ip = S - 0.12, R = [0.9, 1.7];
-  for (const s of [-1, 1]) vigaV(s * (S - 0.06), 0, H, 0.12);   // postes de esquina
+  const yD = 0.14, yC = H - 0.14, ip = S - 0.09, R = [0.9, 1.7];
+  for (const s of [-1, 1]) vigaV(s * (S - 0.045), 0, H, 0.09);   // postes de esquina (medio poste: con el muro de al lado, uno de 18 cm)
   vigaH(-S, S, H - 0.07, 0.14);                                   // carrera
   const riostras = (x0, x1) => { for (const y of R) vigaH(x0, x1, y, 0.1); };
   if (opc.puerta) {
