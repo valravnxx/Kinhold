@@ -5,12 +5,19 @@
 //   - sin saltos: lo que se ve va hacia lo que toca poco a poco (las nubes en unos SUAVE_NUBES s, la lluvia en
 //     SUAVE_LLUVIA s), así que el cielo se cierra antes de llover (la lógica lo pone nublado antes) y la lluvia empieza
 //     y para de a poco;
-//   - bajo techo, sin gotas (el tejado se quita para ver dentro; que suene más bajo es la tarea siguiente).
+//   - bajo techo, sin gotas (el tejado se quita para ver dentro);
+//   - la lluvia se oye (src/juego/sonidos.js, sonarLluvia): más fuerte cuanto más llueve, y bajo techo más bajo y apagado;
+//   - y moja: el suelo y las piezas, más oscuros mientras llueve y un rato después (src/logica/mojado.js, igual para
+//     todos; lo pinta la niebla del posprocesado, src/posprocesado/niebla.js); bajo techo, lo de dentro, menos.
 // Para las pruebas y las capturas: ?tiempo=despejado|nublado|lluvia lo deja quieto (y llega enseguida); las pruebas
 // automáticas (navigator.webdriver) sin ?tiempo lo ven despejado, quieto (ninguna otra prueba depende del tiempo que
 // haga). La niebla se ve en su tarea (aquí, aún no).
 import { tiempoEn } from '../logica/tiempo.js';
 import { crearLluvia } from './lluvia.js';
+import { mojado as mojadoEn, pasoMojado } from '../logica/mojado.js';
+import { sonarLluvia, lluviaOida } from '../juego/sonidos.js';
+
+export const MOJADO_DENTRO = 0.35;   // bajo techo, lo mojado que se ve (lo de dentro está seco; por la puerta se ve fuera)
 
 export const SUAVE_NUBES = 25;    // s: lo que tarda en ir casi entero (63 %) hacia el cielo que toca
 export const SUAVE_LLUVIA = 8;    // s: lo mismo, la lluvia
@@ -24,12 +31,17 @@ export function crearTiempoVista({ escena, camara, cielo, reloj, donde, movil = 
   const ahora = { nubes: 0, lluvia: 0 };
   let objetivo = { nubes: 0, lluvia: 0, tiempo: 'despejado' };
   let primero = true;
+  let mojado = 0;   // lo mojado que está el suelo donde estás (0–1)
 
   let fuera = 1;   // 1 al raso, 0 bajo techo (sin gotas dentro de casa: el tejado se quita para ver dentro)
   // techo: si el jugador está bajo techo
   function paso(dt = 1 / 60, techo = false) {
     if (fijo) objetivo = { ...FIJOS[fijo], tiempo: fijo };
     else { const p = donde(); objetivo = tiempoEn(p.x, p.z, reloj()); }
+    // lo mojado: el del mundo (sale de la hora); con el tiempo fijo, de a poco desde lo que había
+    const pm = donde();
+    if (fijo) mojado = primero ? FIJOS[fijo].lluvia : pasoMojado(mojado, FIJOS[fijo].lluvia > 0, dt * 1000);
+    else mojado = mojadoEn(pm.x, pm.z, reloj());
     if (primero) { ahora.nubes = objetivo.nubes; ahora.lluvia = objetivo.lluvia; primero = false; }   // al entrar, ya como está
     else {
       ahora.nubes += (objetivo.nubes - ahora.nubes) * (1 - Math.exp(-dt / SUAVE_NUBES));
@@ -37,8 +49,10 @@ export function crearTiempoVista({ escena, camara, cielo, reloj, donde, movil = 
     }
     // (la lluvia, solo con el cielo ya cerrado: no llueve con el cielo azul aunque se cruce el paso)
     fuera += ((techo ? 0 : 1) - fuera) * (1 - Math.exp(-dt / 0.4));
-    const llueve = Math.min(ahora.lluvia, ahora.nubes) * fuera;
+    const cae = Math.min(ahora.lluvia, ahora.nubes), llueve = cae * fuera;
     cielo.nublar(ahora.nubes);
+    cielo.mojar(mojado * (MOJADO_DENTRO + (1 - MOJADO_DENTRO) * fuera));
+    sonarLluvia(cae, fuera);
     const c = cielo.actual, luz = c ? Math.min(1, Math.max(0.08, c.hemi.intensidad / 1.6)) : 1;
     const p = donde();
     lluvia.paso(camara, llueve, luz, dt, Number.isFinite(p.y) ? p.y : -1e4);
@@ -46,8 +60,9 @@ export function crearTiempoVista({ escena, camara, cielo, reloj, donde, movil = 
 
   return {
     paso, lluvia,
-    get ahora() { return { ...ahora, tiempo: objetivo.tiempo }; },
+    get ahora() { return { ...ahora, tiempo: objetivo.tiempo, mojado }; },
     get fijo() { return fijo; },
+    get oido() { return { ...lluviaOida }; },   // lo que suena de la lluvia (las pruebas)
     // para las pruebas y el admin: 'despejado', 'nublado' o 'lluvia' quieto (llega enseguida; con suave, poco a poco,
     // como en el juego), o null (el del mundo)
     poner(t, suave = false) { fijo = FIJOS[t] ? t : null; if (!suave) primero = true; paso(0); return this.ahora; },

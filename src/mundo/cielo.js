@@ -18,7 +18,7 @@ import { rellenoPlantas } from './naturaleza_meshy.js';
 function estadoVacio() {
   return {
     activo: true, sol: new THREE.Vector3(0, 1, 0), luna: new THREE.Vector3(0, -1, 0), colorSol: new THREE.Color(1, 1, 1),
-    arriba: new THREE.Color(), horizonte: new THREE.Color(), estrellas: 0, giro: new THREE.Matrix3(), tiempo: 0, cubierto: 0,
+    arriba: new THREE.Color(), horizonte: new THREE.Color(), estrellas: 0, giro: new THREE.Matrix3(), tiempo: 0, cubierto: 0, mojado: 0,
   };
 }
 
@@ -105,6 +105,9 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
     // lo cubierto que está el cielo (0–1; src/mundo/tiempo_vista.js): se ve en el siguiente paso
     nublar(n) { cub = Math.round(Math.min(1, Math.max(0, n)) * 1000) / 1000; },
     get cubierto() { return cub; },
+    // lo mojado que se ve el suelo (0–1; src/mundo/tiempo_vista.js y src/logica/mojado.js): lo pinta la niebla
+    mojar(m) { estado.mojado = Math.round(Math.min(1, Math.max(0, m)) * 1000) / 1000; },
+    get mojado() { return estado.mojado; },
     // para las pruebas: lo claro que es lo que refleja el agua (luz lineal, 0–1)
     get agua() { const c = cieloAgua.value; return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; },
     // cuándo (hora real) es la próxima vez que el mundo tiene esa hora
