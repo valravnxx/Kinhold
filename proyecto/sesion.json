@@ -5,5 +5,11 @@
   "hito": "lluvia",
   "rama": "trabajo/20261115-1325"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261115-1355-agua-salada": {
+  "inicio": "2026-11-15T13:53:57+00:00",
+  "tarea": "El agua salada no se bebe: del mar no se bebe, y el botón y el aviso lo dicen; solo el agua dulce (río, lago o pozo) quita la sed",
+  "hito": "lluvia",
+  "rama": "trabajo/20261115-1355-agua-salada"
+ }
 }

@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 15 nov 2026, 13:54 UTC — por el chat, el agua salada
+
+valravnx: «toca hacer que el agua salada se diferencie de la dulce y no se pueda beber» → tarea nueva en el hito de la lluvia (la lleva el chat): del mar no se bebe; el botón de beber solo sale con agua dulce al lado (río, lago o pozo) y, en la orilla del mar, el aviso dice que es salada.
+
 ### 15 nov 2026 — por el chat, idea de futuro sobre el continente (no es tarea; nada se empieza hasta que valravnx diga)
 
 - «el continente tiene aun mucho trabajo y no es prioridad… pero tiene biomas que en la isla no existen y a futuro me encantaria ya introducirlo, aunque requiera de muchisimo».
