@@ -1,0 +1,64 @@
+  OK   hay un sitio llano y seco para el pozo en la zona de al lado — {'x': -770, 'z': 16, 'h': 7.4}
+  OK   PC: entra y le llega lo que lleva en el servidor — []
+  OK   PC: sin la pantalla de la cuenta delante
+Sitio del pozo: (-770, 16), agua a 7.4 m (8 tramos)
+Pone su mojón cerca
+  OK   pone su mojón (en el servidor) — Primera pieza: fija la rejilla de una construcción nueva. Gira con R o el botón Girar.
+Con la pala de madera en la mano, marca el pozo
+  OK   lleva la pala de madera en la mano
+  OK   Usar dice «Marcar aquí un pozo» — Marcar aquí un pozo
+  OK   el pozo se marca en el servidor, con la hondura del terreno — {"n": 3, "autor": "jugador:64adb744", "tipo": "pozo", "datos": {"x": -770, "z": 16, "hondura": 7.4}, "ok": true}
+  OK   el aviso dice a qué hondura está el agua (7,4 m, 8 tramos) — Pozo marcado: el agua está a unos 7,4 m (8 tramos de cavar y revestir).
+  OK   en el navegador, el pozo un paso delante de él — {"id":1,"dueno":"jugador:64adb744","autor":"jugador:64adb744","x":-770,"z":16,"hondura":7.4,"cavados":0,"golpes":0,"revestidos":0,"piedras":0}
+  OK   se dibuja su boca
+Cava el primer tramo con la pala
+  OK   junto al pozo, Usar dice «Cavar el pozo: tramo 1 de 8» — Cavar el pozo: tramo 1 de 8
+  OK   Usar empieza a cavar
+  OK   diez golpes de pala, seguidos, en el servidor — Tramo 1 cavado: revístelo de piedra antes de bajar más (8 piedras). Quedan 6,4 m.
+  OK   acaba el tramo y para de cavar — {"id":1,"dueno":"jugador:64adb744","autor":"jugador:64adb744","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":0}
+  OK   el aviso pide revestirlo de piedra antes de bajar — Tramo 1 cavado: revístelo de piedra antes de bajar más (8 piedras). Quedan 6,4 m.
+  OK   Usar dice «Revestir de piedra el tramo 1 de 8 (0 de 8 piedras)» — Revestir de piedra el tramo 1 de 8 (0 de 8 piedras)
+  OK   sin revestir, el servidor no deja bajar más
+Lo reviste de piedra (primero con pocas)
+  OK   pone las 3 piedras que lleva (faltan 5) — {"id":1,"dueno":"jugador:64adb744","autor":"jugador:64adb744","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":3} · Pones 3 piedras: faltan 5 para este tramo.
+Y así hasta el agua (8 tramos)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 8 piedra a mano:izq: No cabe tanto: caben 3.)
+  (coger 4 piedra a mano:izq: No cabe tanto: caben 3.)
+  FALLA tramo 1 revestido — {"id":1,"dueno":"jugador:64adb744","autor":"jugador:64adb744","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":3} · Trae piedras para revestir el tramo: faltan 5.
+  FALLA tramo 2, cavado y revestido — {"id":1,"dueno":"jugador:64adb744","autor":"jugador:64adb744","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":3} · Trae piedras para revestir el tramo: faltan 5.
+  FALLA el servidor dice que ya tiene agua
+  FALLA el aviso lo dice — Trae piedras para revestir el tramo: faltan 5.
+  FALLA Usar dice «Pozo con agua, a 7,4 m» — Revestir de piedra el tramo 1 de 8 (3 de 8 piedras)
+  OK   se dibujan la boca, la piedra y el montón de tierra — 2
+El otro jugador, en el móvil, lo ve
+  OK   móvil: entra y le llega lo que lleva en el servidor — []
+  OK   móvil: sin la pantalla de la cuenta delante
+  FALLA le llega el pozo, con agua — [{"id":1,"dueno":"jugador:64adb744","autor":"jugador:64adb744","x":-770,"z":16,"hondura":7.4,"cavados":1,"golpes":0,"revestidos":0,"piedras":3}]
+  OK   y ve su boca
+  OK   a él no le deja cavar en el pozo de otro
+  OK   PC: sin errores en la consola — []
+  OK   móvil: sin errores en la consola — []
+
+6 FALLOS
