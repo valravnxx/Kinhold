@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-15T07:40:43+00:00",
+  "tarea": "El pozo, desde construir: el sitio del pozo se marca desde el menú de construir (como una obra más), no con la pala en la mano, que sirve para más cosas; con la pala en la mano ya no sale «Marcar aquí un pozo». Luego, a su lado, cada tramo se cava con la pala y se reviste de piedra como hasta ahora; en PC y en móvil",
+  "hito": "lluvia",
+  "rama": "trabajo/20261115-0740"
+ },
  "B": null
 }
