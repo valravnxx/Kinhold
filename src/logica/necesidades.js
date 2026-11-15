@@ -120,13 +120,22 @@ export function factorVelocidad(n) {
 // del navegador (src/mundo/mundo_juego.js) y el del servidor (src/logica/terreno_servidor.js). Cada trago baja la
 // sed TRAGO puntos; entre trago y trago, ESPERA_TRAGO ms (decisión provisional: tres o cuatro tragos quitan la sed).
 export const TRAGO = 30, ESPERA_TRAGO = 1500;
+const SITIOS_AGUA = [[0, 0]];
+for (const r of [1.5, 2.5]) for (let i = 0; i < 8; i++) SITIOS_AGUA.push([Math.cos(i * Math.PI / 4) * r, Math.sin(i * Math.PI / 4) * r]);
 export function hayAguaCerca(aguaEn, x, z) {
-  if (aguaEn(x, z)) return true;
-  for (const r of [1.5, 2.5]) for (let i = 0; i < 8; i++) {
-    const a = i * Math.PI / 4;
-    if (aguaEn(x + Math.cos(a) * r, z + Math.sin(a) * r)) return true;
+  return SITIOS_AGUA.some(([dx, dz]) => aguaEn(x + dx, z + dz));
+}
+// El agua de al lado, dulce o salada (P11b, 15 nov: el cubo se llena en el río, no en el mar): en los mismos sitios que
+// hayAguaCerca, 'dulce' si en alguno hay agua que no es del mar (el río; en la desembocadura, con río y mar a la vez,
+// vale el río), 'salada' si solo hay mar y null en seco. esMar(x, z): si el agua ahí es del mar (sin esMar, toda dulce).
+export function aguaCerca(aguaEn, x, z, esMar) {
+  let salada = false;
+  for (const [dx, dz] of SITIOS_AGUA) {
+    const px = x + dx, pz = z + dz;
+    if (!aguaEn(px, pz)) continue;
+    if (esMar && esMar(px, pz)) salada = true; else return 'dulce';
   }
-  return false;
+  return salada ? 'salada' : null;
 }
 
 // Comer (P4): lo que se come y cuánta hambre quita cada uno (decisión provisional; el documento solo dice que lo

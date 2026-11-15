@@ -562,12 +562,14 @@ export function plantasParaRegar(c, x, z, ahora) {
   ((c && c.plantas) || []).forEach((p, i) => { if (DE_RIEGO.has(p.c) && (p.x - x) ** 2 + (p.z - z) ** 2 <= RADIO_REGAR * RADIO_REGAR && fase(tPlanta(p, ahora), ahora) < MADURO) out.push(i); });
   return out;
 }
-// Llenar el cubo (vacío, en una mano) de agua; hayAgua: si hay río, lago o mar al lado de quien lo llena (lo mira quien
-// tiene el terreno). lugares: los del inventario de quien lo llena. Devuelve { ok, mano } o { ok: false, motivo }.
-export function llenarCubo(lugares, hayAgua) {
+// Llenar el cubo (vacío, en una mano) de agua dulce; agua: la que hay al lado de quien lo llena ('dulce', del río;
+// 'salada', del mar, que no vale para regar ni para beber; null, en seco: src/logica/necesidades.js, aguaCerca; lo mira
+// quien tiene el terreno). lugares: los del inventario de quien lo llena. Devuelve { ok, mano } o { ok: false, motivo }.
+export function llenarCubo(lugares, agua) {
   const mano = ['mano:der', 'mano:izq'].find(r => lugares[r] && lugares[r].tipo === 'cubo');
   if (!mano) return { ok: false, motivo: ['mano:der', 'mano:izq'].some(r => lugares[r] && lugares[r].tipo === 'cubo_agua') ? 'El cubo ya está lleno.' : 'Necesitas el cubo vacío en la mano.' };
-  if (!hayAgua) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
+  if (!agua) return { ok: false, motivo: 'Aquí no hay agua: busca un río.' };
+  if (agua === 'salada') return { ok: false, motivo: 'El agua del mar es salada: no vale para regar. Llena el cubo en un río.' };
   lugares[mano] = { ...lugares[mano], tipo: 'cubo_agua' };
   return { ok: true, mano };
 }

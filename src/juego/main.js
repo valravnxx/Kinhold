@@ -16,7 +16,7 @@ import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
 import { crearTiempoVista } from '../mundo/tiempo_vista.js';
-import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
+import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, aguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearHierbaDensa } from '../mundo/hierba_densa.js';
@@ -2568,8 +2568,8 @@ function golpeEscarda(a) {
   guardar(); reconstruir(); actualizarUI();
   mostrarAviso(tr('Escardado: dará más al cosecharlo.'));
 }
-// Regar el huerto (P11b, 14 nov; src/logica/campos.js): el cubo vacío en la mano, junto al río (o un lago, o el mar), se
-// llena; lleno, delante de la col o el nabo de tu campo, una pasada de unos 2 s riega las de un círculo de 1,2 m y el
+// Regar el huerto (P11b, 14 nov; src/logica/campos.js): el cubo vacío en la mano, junto al río, se llena (junto al mar
+// no: es salada, y el aviso lo dice); lleno, delante de la col o el nabo de tu campo, una pasada de unos 2 s riega las de un círculo de 1,2 m y el
 // cubo se vacía. En línea, el cubo lo llena el servidor (mira dónde te tiene y si hay agua); sin servidor, aquí.
 const ADELANTE_REGAR = 0.9;
 function cuboEnMano(tipo) { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === tipo); }
@@ -2581,7 +2581,7 @@ function llenarElCubo() {
     });
     return;
   }
-  const r = llenarCubo(inventario().lugares, aguaAlLado());
+  const r = llenarCubo(inventario().lugares, aguaAlLado() ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); actualizarUI(); mostrarAviso(tr('Llenas el cubo de agua.'));
 }
