@@ -896,7 +896,7 @@ const DEPOSITO_SITIOS = {
   hogar:         { encima: [], radio: 0.95, empieza: 0.3 },
   obra:          { encima: [], radio: 0.95, empieza: 1.9 },   // lo entregado a un marco, fuera del armazón
 };
-const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'lena']);
+const GRANDE = new Set(['tronco_corto', 'tronco_delgado', 'tronco_largo', 'rodaja', 'lena']);
 // El grupo con lo depositado: un montón por tipo, más pequeño encima que al pie.
 export function modeloDeposito(tipo, deposito, id, colgado = []) {
   if (LLENO[tipo]) { const g = LLENO[tipo](deposito || {}, id, colgado); g.name = 'deposito'; return g; }
