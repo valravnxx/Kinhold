@@ -7193,5 +7193,20 @@
   "pruebas": "En la nube, el recorrido de jugador entero: 306 bien y 0 mal (el pozo, y después la granja con el riego). Aquí, el pozo y la granja desde lo guardado antes de ellos: 57 bien y 0 mal; roto a propósito (MUTAR=3, como si regara sin regar), la col y el nabo no maduran y la cosecha falla. Solo cambian las pruebas: sin versión nueva.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T13:53:57+00:00",
+  "fin": "2026-11-15T14:46:11+00:00",
+  "titulo": "P11b, La lluvia y el riego: el agua salada no se bebe",
+  "hito": "lluvia",
+  "hecho": [
+   "Lo pidió valravnx en el chat: que el agua salada se diferencie de la dulce y no se pueda beber. Solo el agua dulce (río, lago o pozo) quita la sed.",
+   "Lo decide el servidor: mira dónde te tiene y qué agua hay a tu lado; junto al mar, beber no baja la sed y el aviso dice «El agua del mar es salada: no se bebe. Busca un río, un lago o un pozo.».",
+   "En el juego, junto al mar, Usar dice «Agua salada: no se bebe» (apagado, con el porqué debajo) en vez de «Beber agua», y el menú del clic derecho ya no ofrece beber allí. El cubo, como ya era, tampoco se llena en el mar.",
+   "Publicado en la demo v219."
+  ],
+  "pruebas": "En la nube: lógica (con beber en la costa por el servidor: no baja la sed y dice que es salada), avisos de las necesidades (en PC y móvil, en la costa más cercana: Usar dice «Agua salada: no se bebe», la sed no baja y el aviso lo dice) y velocidad con pocos fotogramas, correctos. El recorrido no se ha pasado: bebe en un río a pocos metros, lejos del mar, y esto solo cambia el agua salada. Roto a propósito: si el servidor dejara beber el agua salada, la prueba de las necesidades falla.",
+  "capturas": "capturas/demo-v219",
+  "estado": "ok"
  }
 ]

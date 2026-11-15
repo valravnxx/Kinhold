@@ -23,7 +23,7 @@ import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, aguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, aguaCerca, AGUA_SALADA, motivoSinBeber, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
 import { abrigo } from '../src/logica/prendas.js';
@@ -101,6 +101,7 @@ console.log('Beber del río (la lógica)');
   // dulce o salada (P11b, 15 nov: el cubo se llena en el río, no en el mar): mar de x = -10 hacia atrás
   const agua = (x) => (x > 10 || x < -10 ? 1 : null), mar = (x) => x < -10;
   comprobar('junto al río, dulce; junto al mar, salada; en seco, nada', aguaCerca(agua, 9, 0, mar) === 'dulce' && aguaCerca(agua, -9, 0, mar) === 'salada' && aguaCerca(agua, 0, 0, mar) === null);
+  comprobar('beber: junto al mar, el aviso dice que es salada; en seco, que no hay agua', motivoSinBeber('salada') === AGUA_SALADA && /salada: no se bebe/.test(AGUA_SALADA) && /no hay agua/.test(motivoSinBeber(null)));
   const boca = (x) => (x > 10 ? 1 : null), bocaMar = (x) => x > 11.5;   // (la desembocadura: río y mar a la vez)
   comprobar('en la desembocadura, con río al lado, dulce', aguaCerca(boca, 9, 0, bocaMar) === 'dulce');
   comprobar('sin saber dónde está el mar, toda el agua es dulce', aguaCerca(agua, -9, 0) === 'dulce');
@@ -130,7 +131,7 @@ if (['1', '2', '4', '5', '7', '8', '10', '11'].includes(MUTAR)) {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('necesidades.set(a, avanzarNecesidades(', 'necesidades.set(a, ((n) => n)(')
     : MUTAR === '2' ? fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;")
-    : MUTAR === '4' ? fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)')
+    : MUTAR === '4' ? fuente.replace("if (!p || (agua !== 'dulce' && ", "if (!p || (false && ")
     : MUTAR === '7' ? fuente.replace('calor: calorEn(cerca, e.x, e.z, ahora)', 'calor: 0')
     : MUTAR === '8' ? fuente.replace('noche: nocheDe(horaDe(horaMundo()).hora)', 'noche: 0')
     : MUTAR === '10' ? fuente.replace("const sentado = !!e && e.anim === 'sentado' && velocidad < 0.3;", 'const sentado = false;')
@@ -289,6 +290,13 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     await pausa(ESPERA_TRAGO);
     r = await beberAqui(orilla, 904);
     comprobar('pasado el rato, otro trago', r.ok && r.datos.sed < 70 - TRAGO, JSON.stringify(r.datos || r.motivo));
+    // el agua salada no se bebe (valravnx, 15 nov): en la costa, el servidor dice que es salada y la sed no baja
+    if (costa) {
+      await pausa(ESPERA_TRAGO);
+      const antes = srv2.necesidades.get(c.bienvenida.autor).sed;
+      r = await beberAqui(costa, 905);
+      comprobar('en la costa (agua salada), no se bebe: el aviso dice que es salada y la sed no baja', !r.ok && r.motivo === AGUA_SALADA && srv2.necesidades.get(c.bienvenida.autor).sed >= antes, r.motivo);
+    }
     c.ws.close();
   } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
   finally { await pausa(300); if (srv2) await srv2.cerrar(); }
