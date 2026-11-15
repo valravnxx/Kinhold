@@ -7111,5 +7111,24 @@
   ],
   "pruebas": "Lógica, recorrido, los avisos de las necesidades, la velocidad con pocos fotogramas y marcar el campo con estacas, correctos en la nube (los grupos de navegador los pidió el revisor por archivos tocados; no cambia nada que se vea). Las pruebas del riego y de las necesidades, ampliadas (dulce, salada y en seco; el servidor no llena el cubo junto al mar; el terreno de Whitholm, río dulce y costa salada); rotas a propósito (sin mirar la sal), fallan.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T04:24:29+00:00",
+  "fin": "2026-11-15T05:15:26+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo (1), la lógica",
+  "hito": "lluvia",
+  "hecho": [
+   "El agua bajo tierra sale del terreno: cuanto más alto queda el sitio sobre lo que lo drena (el fondo del valle de alrededor, hasta 300 m; el río o el mar), más honda, y en un alto de lo de alrededor algo más; en una hondonada, menos.",
+   "Junto al río o en el fondo de un valle, a 2 m; en una ladera 40 m por encima del fondo, a 6 m; más hondo que 12 m no se llega con pala: ahí no hay pozo y el aviso dice que se busque más abajo.",
+   "Medido en Whitholm de verdad: en 9 de cada 10 sitios de tierra el agua está al alcance; la mitad, a unos 6 m; en la salida, a 2 m.",
+   "El pozo se marca donde estás, en tu tierra (o en la de quien te invita), en seco y a más de 4 m de otro pozo; la hondura la pone el servidor con su terreno, no el navegador.",
+   "Cada tramo de 1 m se cava con la pala de madera en la mano, a 10 golpes; cada tramo saca algo más de 1 m³ de tierra, que quedará en un montón al lado.",
+   "No se baja más sin revestir de piedra seca el tramo cavado: 8 piedras por tramo, de lo que llevas, en uno o en varios viajes.",
+   "Al llegar al agua y revestir el último tramo, el pozo tiene agua; sacarla (brocal, travesaño, cuerda y cubo) y verlo en el juego son las dos tareas que siguen.",
+   "Cada golpe y cada revestido cansan como una obra, van con su autor por el servidor (a tu lado, como mucho a 3 m) y los demás los reciben.",
+   "Decisiones provisionales: 10 golpes y 8 piedras por tramo, el tope de 12 m y el modelo del agua bajo tierra (src/logica/pozo.js)."
+  ],
+  "pruebas": "Lógica y recorrido correctos en la nube. Prueba nueva del pozo (49 comprobaciones, con el terreno de Whitholm y el servidor de verdad); rota a propósito (bajar sin revestir), falla. Fuera por la sesión: construcción, quitar el mojón y los avisos de las necesidades (de navegador; solo se añade el pozo al guardado del mundo y su cansancio). La primera pasada de lógica falló por dos avisos sin traducir y un nombre de paso demasiado largo para su archivo; arreglados y vuelta a pasar.",
+  "estado": "ok"
  }
 ]
