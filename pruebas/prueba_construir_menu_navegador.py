@@ -56,8 +56,9 @@ with sync_playwright() as p:
         ev(f"{K}.llevarPara('mojon','mojon'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
         comprobar('mojón puesto', bool(ev(f"{K}.mundo.mojonDe({K}.yo)")) or bool(ev(f"{K}.mundo.mojones && {K}.mundo.mojones.length")))
         pg.click('#pestanas button[data-cat="muro"]'); pg.wait_for_timeout(1500)
-        ev("document.getElementById('piezas').scrollLeft = 1e5"); pg.wait_for_timeout(1500)   # (las de fuera se cargan al deslizar)
-        ev("document.getElementById('piezas').scrollLeft = 0")
+        for paso in range(1, 7):   # (las de fuera se cargan al deslizar: poco a poco, que cada una pase por la vista)
+            ev(f"(() => {{ const e = document.getElementById('piezas'); e.scrollLeft = e.scrollWidth * {paso} / 6; }})()"); pg.wait_for_timeout(700)
+        ev("document.getElementById('piezas').scrollLeft = 0"); pg.wait_for_timeout(800)
         imgs = ev("[...document.querySelectorAll('#piezas button.pieza')].map(b => { const i = b.querySelector('img.pz-img'); return [b.querySelector('b').textContent, !!i && i.complete && i.naturalWidth > 0, b.querySelectorAll('.cc img').length]; })")
         comprobar('cada muro con su imagen cargada', imgs and all(i[1] for i in imgs), str([i for i in imgs if not i[1]][:3]))
         comprobar('y su coste en iconos', imgs and all(i[2] >= 1 for i in imgs))
@@ -163,13 +164,14 @@ with sync_playwright() as p:
         ev("document.getElementById('piezas').scrollLeft = 0")
         ev(f"(() => {{ const m = {K}.mundo.materiales; for (const k of ['tronco', 'vara', 'barro', 'piedra']) m[k] = Math.max(m[k] || 0, 200); }})()")
         antes = ev(f"{K}.mundo.construcciones.reduce((a, c) => a + c.piezas.size, 0)")
-        for t, x, z in [('cim_piedra', -5, -1), ('muro_entramado_puerta', -5, 0), ('muro_entramado_ventana', -4, -1), ('muro_entramado', -6, -1), ('muro_entramado', -5, -2)]:
+        ev(f"{K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(-5,-1); {K}.colocar(); {K}.terminarObras()")   # (los muros, sobre el cimiento ya hecho)
+        for t, x, z in [('muro_entramado_puerta', -5, 0), ('muro_entramado_ventana', -4, -1), ('muro_entramado', -6, -1), ('muro_entramado', -5, -2)]:
             ev(f"{K}.seleccionar('pieza','{t}'); {K}.apuntar({x},{z}); {K}.colocar()")
         ev(f"{K}.terminarObras()")
         tipos = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo.startsWith('muro_entramado') && !p.obra).map(p => p.tipo).sort()")
         comprobar('los cuatro muros de entramado (liso, con puerta y con ventana), levantados', tipos == ['muro_entramado', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana'], str(tipos))
         ev(f"{K}.cambiarModo('mover')"); pg.wait_for_timeout(800)
-        vistas = [(-5.0, 2.4, 0.2, 0.12, 4.6), (-2.6, 1.4, 0.85, 0.15, 5.2), (-4.2, 1.0, -0.25, 0.05, 2.6), (-6.5, -4.6, 3.6, 0.15, 5.0)]
+        vistas = [(-3.3, 2.6, -0.35, 0.14, 5.0), (-2.2, 0.6, 0.95, 0.15, 5.2), (-3.9, 1.3, -0.55, 0.06, 2.8), (-7.6, -4.2, 3.7, 0.15, 5.0)]
         for i, (px, pz, giro, pitch, dist) in enumerate(vistas):
             ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {px}, z: {pz}, rot: 0 }}); k.cam.yaw = {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()")
             pg.wait_for_timeout(2500)
