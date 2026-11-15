@@ -2447,7 +2447,9 @@
     },
     {
      "nombre": "La rodaja de tronco y la carretilla: del tronco largo, con el hacha, se corta una rodaja (la rueda maciza: el árbol joven es demasiado fino) y la carretilla, que ya está programada pero no se podía fabricar, se hace con 1 rodaja, 2 varas y 1 tronco corto. Cadena: rodaja ← el tronco largo; vara ← el árbol joven; tronco corto ← tronzar el tronco largo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-15T17:23:33+00:00",
+     "rama": "trabajo/20261115-1723"
     },
     {
      "nombre": "La empalizada: deja de estar escondida (6 troncos delgados, clavados en el suelo y afilados), con el estilo v5 y capturas de cerca al lado de la referencia. Cadena: tronco delgado ← talar un árbol joven",
