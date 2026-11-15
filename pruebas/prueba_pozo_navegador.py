@@ -219,8 +219,9 @@ try:
                 ir(A, x0 - 2.2, z0 - 1.2, 1.1)
                 ver(A, x0, z0, 1.1 + 3.1416, 3.0, 0.85, f'{SALIDA}/PC_pozo_tres_tramos_de_cerca.png')
                 ir(A, x0 - 1.3, z0, 1.5708)
-        l = servidorMundo(lambda l: any(e.get('tipo') == 'revestir_pozo' and e.get('ok') and (e.get('resultado') or {}).get('agua') for e in l), 15000)
-        comprobar('el servidor dice que ya tiene agua', l is not None)
+        # en el servidor: 10 golpes por tramo y 8 piedras puestas por tramo, hasta el agua
+        l = servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'cavar_pozo' and e.get('ok')) >= 10 * TR and sum((e.get('datos') or {}).get('piedras') or 0 for e in l if e.get('tipo') == 'revestir_pozo' and e.get('ok')) >= 8 * TR, 15000)
+        comprobar(f'en el servidor: {10 * TR} golpes de pala y {8 * TR} piedras, hasta el agua', l is not None, str(sum(1 for e in lineas_mundo() if e.get('tipo') == 'cavar_pozo' and e.get('ok'))))
         comprobar('el aviso lo dice', esperar(A, f"/ya tiene agua/.test({AVISO})", 8000), A.evaluate(AVISO))
         comprobar(f'Usar dice «Pozo con agua, a {hs} m»', texto_usar(A) == f'Pozo con agua, a {hs} m', texto_usar(A))
         n_tierra = A.evaluate(f"(() => {{ const r = {K}.escena.getObjectByName('pozos'); let n = 0; if (r) r.traverse(o => {{ if (o.isMesh) n++; }}); return n; }})()")

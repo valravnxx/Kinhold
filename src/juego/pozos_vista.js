@@ -21,6 +21,7 @@ const SOBRE = 0.025;         // m sobre el suelo (para que no parpadee con él)
 const R_BOCA = RADIO_POZO;   // m: la boca
 const R_DISCO = RADIO_POZO + 0.22;   // m: el disco pintado (la boca y el reborde de tierra pisada)
 const ESPONJA = 1.25;        // la tierra sacada abulta más que en su sitio
+const MAX_TIERRA = 2.4;      // m³: lo más que se ve amontonado al lado
 const az = (s, k) => { const v = Math.sin(s * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); };
 
 // ---------- La boca pintada ----------
@@ -62,18 +63,18 @@ function texturaBoca(p) {
       }
       if (piedra) {
         // las piedras a hiladas: dos o tres por tramo, de lajas desiguales con su junta oscura
-        const hil = 3;
+        const hil = d0 < 3 ? 3 : 2;
         for (let h = 0; h < hil; h++) {
           const da = d0 + (d1 - d0) * h / hil, db = d0 + (d1 - d0) * (h + 1) / hil, ra = radioA(da) * Rb, rb = radioA(db) * Rb, l = luzA((da + db) / 2);
           let a = rnd() * 0.5;
           while (a < 6.2832) {
             const w = (0.32 + rnd() * 0.3) * (Rb / Math.max(ra, 1)) * 0.9, b = Math.min(a + w, 6.2832 + 0.01);
             const t = 0.82 + rnd() * 0.32;
-            g.fillStyle = col(158 * t, 152 * t, 140 * t, l);
+            g.fillStyle = col(150 * t, 140 * t, 124 * t, l);
             g.beginPath(); g.arc(c, c, ra - 0.6, a + 0.03, b - 0.03); g.arc(c, c, rb + 0.6, b - 0.03, a + 0.03, true); g.closePath(); g.fill();
             a = b;
           }
-          g.strokeStyle = col(40, 36, 30, l, 0.8); g.lineWidth = 1.2; g.beginPath(); g.arc(c, c, rb, 0, 6.2832); g.stroke();
+          g.strokeStyle = col(50, 44, 36, 1, 0.3 * l); g.lineWidth = 0.8; g.beginPath(); g.arc(c, c, rb, 0, 6.2832); g.stroke();
         }
       } else {
         for (let i = 0; i < 70; i++) {   // la tierra de la pared, con sus vetas
@@ -139,13 +140,13 @@ function piedra(sd, ancho, alto) {
 // volumen v (m³), a la altura del suelo. Tierra echada a paladas: alto h = 0,3·a, V ≈ π·h·(3a² + h²)/6.
 function monton(v, sd) {
   const a = Math.cbrt(v / (Math.PI * 0.3 * (3 + 0.09) / 6)), h = 0.3 * a;
-  const g = new THREE.SphereGeometry(1, 28, 9, 0, Math.PI * 2, 0, Math.PI / 2), p = g.attributes.position;
+  const g = new THREE.SphereGeometry(1, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i), z = p.getZ(i), an = Math.atan2(z, x);
     // el borde, desigual (lenguas de tierra); arriba, lomos y terrones de varias escalas
     const borde = 1 + 0.16 * Math.sin(an * 3 + sd) + 0.09 * Math.sin(an * 7 + sd * 3) + 0.05 * Math.sin(an * 13 + sd * 5);
-    const lomos = 1 + 0.18 * Math.sin(x * 4.1 + sd) * Math.cos(z * 3.7 + sd * 2) + 0.1 * Math.sin(x * 9.3 + z * 7.1 + sd) + 0.08 * (az(sd + i, 3) - 0.5);
-    p.setXYZ(i, x * a * borde, Math.pow(y, 0.8) * h * lomos - 0.04, z * a * borde * 0.85);
+    const lomos = 1 + 0.16 * Math.sin(x * 4.1 + sd) * Math.cos(z * 3.7 + sd * 2) + 0.08 * Math.sin(x * 9.3 + z * 7.1 + sd) + 0.05 * Math.sin(x * 17 + z * 13 + sd);
+    p.setXYZ(i, x * a * borde, y * h * lomos - 0.04, z * a * borde * 0.85);
   }
   g.computeVertexNormals();
   return { geo: g, a };
@@ -178,12 +179,13 @@ export function crearPozosVista({ escena, sueloEn }) {
       }
       // el montón de tierra sacada, al lado (del lado de la estaca)
       // (echada a paladas a un lado y, con lo hondo, repartida en dos o tres montones alrededor de ese lado)
-      const v = tierraSacada(p) * ESPONJA + (p.golpes || 0) / 10 * 0.11;
+      // (lo que pase de MAX_TIERRA se da por esparcido o llevado: un montón de 10 m³ taparía el pozo y medio prado)
+      const v = Math.min(MAX_TIERRA, tierraSacada(p) * ESPONJA + (p.golpes || 0) / 10 * 0.11);
       if (v > 0.01) {
-        const n = Math.min(3, 1 + Math.floor(v / 3));
+        const n = v < 1.4 ? 1 : 2;
         for (let k = 0; k < n; k++) {
-          const vk = v * (k ? 0.3 : 1 - 0.3 * (n - 1)), ak = giro + (k === 0 ? 0 : k === 1 ? 0.95 : -0.95);
-          const { geo, a } = monton(vk, p.id * 3 + k), d = R_DISCO + a * 0.85, mx = p.x + Math.cos(ak) * d, mz = p.z + Math.sin(ak) * d;
+          const vk = v * (k ? 0.35 : 1 - 0.35 * (n - 1)), ak = giro + (k === 0 ? 0 : 1.15);
+          const { geo, a } = monton(vk, p.id * 3 + k), d = R_DISCO + 0.25 + a, mx = p.x + Math.cos(ak) * d, mz = p.z + Math.sin(ak) * d;
           L.add(geo, 0x8a6c4c, mx, Math.min(sueloEn(mx, mz), y), mz, { y: -ak }, { tex: 'piedra', sinSuelo: true, brillo: 0.92 });
           // terrones sueltos rodados al pie
           for (let t = 0; t < 6; t++) {
