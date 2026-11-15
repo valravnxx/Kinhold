@@ -74,7 +74,7 @@ const CAMPOS_CONSTRUCCION = {
   coger_planta: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // coger a mano la planta madura (habas, col, nabo)
   regar: { campo: 'n', x: 'n', z: 'n', t: 'n' },          // regar la col y el nabo con el cubo de agua en la mano (P11b, 14 nov)
   escardar: { campo: 'n', x: 'n', z: 'n', t: 'n' },       // quitar las malas hierbas de lo sembrado (con las manos o la azada; 14 nov)   // sembrar en lo labrado (a voleo o una planta; t: del servidor)
-  pozo: { x: 'n', z: 'n' },                  // marcar un pozo donde estás (hondura: la del agua ahí, la pone el servidor; P11b, 15 nov)
+  pozo: { x: 'n', z: 'n' },                  // marcar un pozo (desde construir, donde apuntas) (hondura: la del agua ahí, la pone el servidor; P11b, 15 nov)
   cavar_pozo: { pozo: 'n' },                 // un golpe de pala de madera en el pozo
   revestir_pozo: { pozo: 'n' },              // revestir de piedra seca el tramo cavado
   desmontar: { construccion: 'n', clave: 't' },

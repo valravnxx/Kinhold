@@ -69,7 +69,7 @@ import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
 import { crearPozosVista } from './pozos_vista.js';
-import { pozoCercano, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, ENTRE_POZOS, RADIO_POZO } from '../logica/pozo.js';
+import { pozoCercano, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
 import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
@@ -801,6 +801,7 @@ function prepararFantasma() {
   else if (estado.sel.clase === 'deco') fantasma = modeloDeco(estado.sel.tipo);
   else if (estado.sel.clase === 'puesto') fantasma = MODELO_ESTACION[estado.sel.tipo]('fantasma');
   else if (estado.sel.clase === 'nivelar') fantasma = modeloBrocha();
+  else if (estado.sel.clase === 'pozo') fantasma = modeloPozo();
   else fantasma = modeloMojon();
   if (estado.sel.clase === 'pieza' && PIEZAS[estado.sel.tipo].esquina) fantasmaForma = 'tesa';
   velarFantasma();
@@ -882,6 +883,15 @@ function evaluarColocacion() {
     estado.candidato = { tipo: 'nivelar', x, y, z, v };
     return;
   }
+  if (sel.clase === 'pozo') {
+    // el pozo (P11b): se marca donde apuntas; el aviso dice a qué hondura está el agua ahí
+    fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
+    const h = honduraAqui(x, z), v = puedePozo(x, z, h);
+    pintarFantasma(v.ok);
+    mostrarAviso(v.ok ? tr('Pozo: aquí el agua está a unos {h} m ({t} tramos de cavar y revestir).', { h: String(h).replace('.', ','), t: tramosDe({ hondura: h }) }) : tr(v.motivo), !v.ok);
+    estado.candidato = { tipo: 'pozo', x, z, v };
+    return;
+  }
   if (sel.clase === 'puesto') {
     // un puesto de trabajo (P3): se pone el marco a tu lado; la hoguera, solo fuera (no bajo techo)
     const y = estado.puntero.ySuperficie || 0;
@@ -961,6 +971,7 @@ function colocar() {
     });
     return;
   }
+  if (ca.tipo === 'pozo') { marcarElPozo(ca.x, ca.z); return; }
   let r;
   if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z, ...(ca.extra ? { extra: true } : {}) });
   else if (ca.tipo === 'nivelar') r = accion({ tipo: 'nivelar', x: redondoMm(ca.x), z: redondoMm(ca.z), y: ca.y, radio: estado.radioBrocha });
@@ -1828,8 +1839,7 @@ function accionPrincipal() {
     const db = desbrozableCercano(), con = conQueDesbroza(inventario());
     if (db && con) return A(tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), con, db, () => empezarDesbroce(db), { alto: 0.8, prog: estado.talando && estado.talando.desbroce && estado.talando.desbroce.id === db.id ? estado.talando.dados / estado.talando.golpes : 0 });
   }
-  // con la pala de madera en la mano, en tu tierra, fuera de los campos y sin nada más que hacer ahí: marcar un pozo
-  if (!it && pj.k === 0 && palaEnMano() && !arbolCercano() && !campoEn(mundo, pj.x, pj.z) && mundo.dentroDeTierra(pj.x, pj.z, yoAutor()) && !pozoCercano(mundo, pj.x, pj.z, ENTRE_POZOS)) return A(tr('Marcar aquí un pozo'), 'pala_madera', yo, marcarElPozo, { alto: 0.2 });
+  // (el pozo se marca desde construir, pestaña Tierra; con la pala en la mano no sale nada: valravnx, 15 nov)
   if (!it) {
     // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
     const a = arbolCercano();
@@ -2613,18 +2623,36 @@ function golpeRiego(a) {
   guardar(); reconstruir(); actualizarUI();
   mostrarAviso(r.mustias ? tr('Regado: {n} plantas (estaban mustias). El cubo, vacío.', { n: r.regadas }) : tr('Regado: {n} plantas. El cubo, vacío.', { n: r.regadas }));
 }
-// El pozo (P11b, src/logica/pozo.js; valravnx, 14 nov: «debe ser laborioso»): con la pala de madera en la mano, en tu
-// tierra, Usar marca el sitio donde estás y el aviso dice a qué hondura está el agua (la que vale, la del servidor).
+// El pozo (P11b, src/logica/pozo.js; valravnx, 14 nov: «debe ser laborioso»): el sitio se marca desde construir
+// (pestaña Tierra, «Pozo»; valravnx, 15 nov: «la pala se usa para más cosas»: con ella en la mano no sale «marcar un
+// pozo» a cada paso) y el aviso dice a qué hondura está el agua (la que vale, la del servidor).
 // A su lado, cada tramo de 1 m se cava a golpes de pala (uno cada SEGUNDOS_CAVAR, seguidos hasta acabar el tramo) y
 // se reviste de piedra seca con las piedras que llevas antes de bajar más.
 function palaEnMano() { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'pala_madera'); }
-function marcarElPozo() {
-  // el pozo, un paso delante de ti (así no te quedas de pie en la boca)
-  const x = redondoMm(pj.x + Math.sin(pj.rot) * 0.9), z = redondoMm(pj.z + Math.cos(pj.rot) * 0.9), h = mundoJ ? mundoJ.honduraPozo(x, z) : 4;
-  const r = accion({ tipo: 'pozo', x, z, hondura: h });
+const honduraAqui = (x, z) => (mundoJ ? mundoJ.honduraPozo(x, z) : 4);
+// el fantasma del pozo en construir: el círculo de la boca y la estaca, como queda al marcarlo
+function modeloPozo() {
+  const g = new THREE.Group();
+  const disco = new THREE.Mesh(new THREE.CircleGeometry(RADIO_POZO + 0.22, 40), new THREE.MeshLambertMaterial({ color: 0x6f5c45 }));
+  disco.rotation.x = -Math.PI / 2; disco.position.y = 0.03; g.add(disco);
+  const estaca = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.022, 1.1, 7), new THREE.MeshLambertMaterial({ color: 0x8a6d4a }));
+  estaca.position.set(RADIO_POZO + 0.15, 0.5, 0); estaca.rotation.z = -0.06; g.add(estaca);
+  return g;
+}
+// ¿se puede marcar un pozo en (x, z)? (lo mismo que mira la lógica, src/logica/pozo.js marcarPozo; manda el servidor)
+function puedePozo(x, z, h) {
+  if (!mundo.dentroDeTierra(x, z, yoAutor())) return { ok: false, motivo: miMojon() ? t('fueraTierra') : t('primeroMojon') };
+  if (h === null || h === undefined) return { ok: false, motivo: `Aquí el agua está a más de ${TOPE_POZO} m: busca más abajo, cerca del río o en el fondo de un valle.` };
+  if (pozoCercano(mundo, x, z, ENTRE_POZOS)) return { ok: false, motivo: 'Ahí al lado ya hay un pozo.' };
+  if (campoEn(mundo, x, z)) return { ok: false, motivo: 'Ahí hay algo: el pozo va en suelo libre.' };
+  return { ok: true };
+}
+function marcarElPozo(x, z) {
+  x = redondoMm(x); z = redondoMm(z);
+  const r = accion({ tipo: 'pozo', x, z, hondura: honduraAqui(x, z) });
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
-  guardar(); reconstruir(); actualizarUI();
-  mostrarAviso(tr('Pozo marcado: el agua está a unos {h} m ({t} tramos de cavar y revestir).', { h: String(r.hondura).replace('.', ','), t: r.tramos }));
+  guardar(); reconstruir(); cambiarModo('mover');
+  mostrarAviso(tr('Pozo marcado: el agua está a unos {h} m ({t} tramos de cavar y revestir).', { h: String(r.hondura).replace('.', ','), t: r.tramos }) + ' ' + tr('Cávalo con la pala de madera en la mano.'));
 }
 function accionPozo(po, A) {
   const paso = siguientePaso(po), T = tramosDe(po), h = String(po.hondura).replace('.', ',');

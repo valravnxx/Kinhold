@@ -36,6 +36,7 @@ export function crearBarraConstruir({ estado, pj, fabCliente, inventario, miMojo
   function imagenEntrada(e) {
     if (e.clase === 'mojon') return '../../' + CARPETA_INTERFAZ + 'g_mojon.webp';
     if (e.clase === 'nivelar') return '../../' + CARPETA_INTERFAZ + 'g_construir.webp';
+    if (e.clase === 'pozo') return carpetaIconos() + 'pala_madera.webp';
     if (e.clase === 'puesto') return carpetaIconos() + 'est_' + e.tipo + '.webp';
     return RAIZ_PIEZAS + (e.clase === 'deco' ? 'deco_' : 'pz_') + e.tipo + '.webp';
   }
@@ -56,6 +57,8 @@ export function crearBarraConstruir({ estado, pj, fabCliente, inventario, miMojo
       ? Object.entries(DECORACION).filter(([, d]) => enEsteTramo(d)).map(([k, d]) => ({ clase: 'deco', tipo: k, def: d }))
       : Object.entries(PIEZAS).filter(([, d]) => d.cat === categoria && enEsteTramo(d)).map(([k, d]) => ({ clase: k === 'mojon' ? 'mojon' : 'pieza', tipo: k, def: d }));
     if (categoria === 'tierra') entradas.push({ clase: 'nivelar', tipo: 'brocha', def: { nombre: 'Brocha de nivelar', coste: {} }, nota: tr('alisa el suelo') });
+    // el pozo (P11b): se marca aquí y luego se cava con la pala (valravnx, 15 nov: no con la pala en la mano)
+    if (categoria === 'tierra') entradas.push({ clase: 'pozo', tipo: 'pozo', def: { nombre: 'Pozo', coste: {} }, nota: tr('se cava con pala') });
     const enTierra = enLinea() ? almacenadoEnTierra() : {};
     for (const e of entradas) {
       const b = document.createElement('button');
@@ -97,7 +100,7 @@ export function crearBarraConstruir({ estado, pj, fabCliente, inventario, miMojo
     construirBarra();
     $('piezas').scrollLeft = desplaza;
   }
-  function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? catPuesto(estado.sel.tipo) : (estado.sel.clase === 'mojon' || estado.sel.clase === 'nivelar' ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
+  function marcarSeleccion() { categoria = estado.sel.clase === 'deco' ? 'deco' : estado.sel.clase === 'puesto' ? catPuesto(estado.sel.tipo) : (['mojon', 'nivelar', 'pozo'].includes(estado.sel.clase) ? 'tierra' : PIEZAS[estado.sel.tipo].cat); construirBarra(); }
 
   // El contador de arriba (valravnx, 1 nov): en línea, solo dentro de tu tierra (la zona de tu mojón) y con lo que tienes
   // almacenado en ella; fuera, no sale. Lo almacenado es lo guardado en los almacenajes de la base de tu tierra (7 nov:
