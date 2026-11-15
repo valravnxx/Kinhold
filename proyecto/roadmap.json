@@ -2453,7 +2453,9 @@
     },
     {
      "nombre": "La empalizada: deja de estar escondida (6 troncos delgados, clavados en el suelo y afilados), con el estilo v5 y capturas de cerca al lado de la referencia. Cadena: tronco delgado ← talar un árbol joven",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-15T19:25:09+00:00",
+     "rama": "trabajo/20261115-1925"
     },
     {
      "nombre": "El portón de empalizada sin hierro: con goznes de madera y cuerda (troncos delgados y cuerdas; provisional), se abre y se cierra, y solo lo abren el dueño de la tierra y sus invitados. El de herrajes, con P10. Cadena: tronco delgado ← el árbol joven; cuerda ← el banco de tronco",
