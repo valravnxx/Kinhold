@@ -8,7 +8,7 @@
 # y, al final, el agua del fondo. En el móvil (390×844), el otro jugador lo ve igual.
 # La pala y las piedras salen del arcón de pruebas (KINHOLD_PRUEBAS_ARCON): esto prueba el pozo en el juego; la lógica
 # y el servidor, en pruebas/prueba_pozo.mjs.
-# MUTAR=1 tira los mensajes de acciones que manda la página (como si el pozo fuera solo del navegador): falla.
+# MUTAR=1 tira los mensajes de las acciones del pozo que manda la página (como si fuera solo del navegador): falla.
 import sys, os, json, shutil, tempfile, threading, http.server, functools, socketserver, subprocess, socket, time
 from playwright.sync_api import sync_playwright
 from correo_prueba import Codigos, crear_y_confirmar
@@ -72,7 +72,7 @@ def entrar(nav, nombre, vista, movil):
     ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
     if MUTAR:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
-          WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"accion"')) return; return s.call(this, d); }; })()""")
+          WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"accion"') && /"tipo":"(pozo|cavar_pozo|revestir_pozo)"/.test(String(d))) return; return s.call(this, d); }; })()""")
     # el tiempo, sin llover (como el servidor, KINHOLD_PRUEBAS_TIEMPO): lo regado y lo mustio, igual en todos (P11b)
     ctx.add_init_script("globalThis.__tiempo = 'seco';")
     pg = ctx.new_page(); err = []
