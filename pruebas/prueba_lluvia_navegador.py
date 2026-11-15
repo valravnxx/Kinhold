@@ -7,11 +7,14 @@
 #     trazos (menos en el móvil), también contra el cielo;
 #   - el paso de un tiempo a otro, suave: un segundo después de empezar a llover, solo un poco; al minuto, del todo;
 #   - bajo techo, sin gotas (el tejado se quita para ver dentro);
+#   - la lluvia se oye: el rumor suena con la lluvia y no sin ella; bajo techo, más bajo y apagado (menos agudos);
+#   - y moja: lloviendo, el suelo y las piezas más oscuros (la misma vista sin gotas, contra la de nublado seco); al
+#     parar sigue mojado un rato y se seca de a poco; bajo techo, lo de dentro menos mojado;
 #   - lo que cuesta dibujarla: ms por fotograma con lluvia y sin ella (aquí, sin tarjeta gráfica: solo como dato; los
 #     fotogramas de verdad los mide valravnx en su PC y su móvil);
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_lluvia_navegador.py <html> <carpeta_capturas>
-# MUTAR=1: sin nublar el cielo y sin gotas (como antes de esta tarea): tiene que fallar.
+# MUTAR=1: sin nublar el cielo, sin gotas y sin mojar (como antes de estas tareas): tiene que fallar.
 import sys, os, io, json
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageStat, ImageChops
@@ -24,7 +27,7 @@ os.makedirs(SALIDA, exist_ok=True)
 sitio = montar_sitio({'demo': RUTA})
 srv = servir(sitio)
 BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&salida=0&hora=11'
-ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist", "--autoplay-policy=no-user-gesture-required"]
 MUTAR = os.environ.get('MUTAR') == '1'
 K = 'window.__kinhold'
 fallos = []
@@ -39,7 +42,7 @@ def entrar(pg):
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
     except Exception: pass
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
-    if MUTAR: pg.evaluate(f'{K}.cielo.nublar = () => {{}}; {K}.tiempoV.lluvia.paso = () => {{}}')
+    if MUTAR: pg.evaluate(f'{K}.cielo.nublar = () => {{}}; {K}.tiempoV.lluvia.paso = () => {{}}; {K}.cielo.mojar = () => {{}}')
     pg.wait_for_timeout(1500)
 
 def poner(pg, t, pitch=0.12):
@@ -84,6 +87,9 @@ def recorrido(pg, nombre, pref, movil):
     comprobar(f'{nombre}: nublado, el cielo gris (casi nada de azul)', c1[2] - c1[0] < (c0[2] - c0[0]) * 0.5, f'{c1} (despejado {c0})')
     comprobar(f'{nombre}: nublado, la luz del sol mucho más débil', sol1 < sol0 * 0.4, f'{round(sol1, 2)} (despejado {round(sol0, 2)})')
     comprobar(f'{nombre}: nublado, sin gotas', not pg.evaluate(f'{K}.tiempoV.lluvia.malla.visible'))
+    oido1 = pg.evaluate(f'{K}.tiempoV.oido')
+    comprobar(f'{nombre}: nublado, la lluvia no suena', oido1['vol'] == 0, json.dumps(oido1))
+    comprobar(f'{nombre}: nublado y seco, nada mojado', pg.evaluate(f'{K}.cielo.mojado') == 0)
     comprobar(f'{nombre}: nublado, el suelo más apagado', sum(media(im1, abajo)) < sum(media(im0, abajo)) - 15, f'{media(im1, abajo)} (despejado {media(im0, abajo)})')
     # lloviendo
     poner(pg, 'lluvia')
@@ -96,6 +102,12 @@ def recorrido(pg, nombre, pref, movil):
     im2b = foto(pg)
     pg.evaluate(f'{K}.tiempoV.lluvia.malla.material.uniforms.uOpacidad.value = 0.24')
     n_abajo = trazos(im1, im2, abajo); n_cielo = trazos(im2b, im2, cielo, 3)
+    # moja: la misma vista sin gotas, más oscura que la de nublado seco
+    seco, moj = media(im1, abajo), media(im2b, abajo)
+    comprobar(f'{nombre}: lloviendo, el suelo mojado (más oscuro que nublado y seco)', pg.evaluate(f'{K}.cielo.mojado') > 0.99 and sum(moj) < sum(seco) * 0.85, f'{moj} (seco {seco}); mojado {pg.evaluate(f"{K}.cielo.mojado")}')
+    oido2 = pg.evaluate(f'{K}.tiempoV.oido')
+    comprobar(f'{nombre}: lloviendo al raso, la lluvia suena (con sus gotas sueltas)', oido2['vol'] > 0.95 and oido2['filtro'] > 5000, json.dumps(oido2))
+    print(f'  (dato) {nombre}: el sonido, en un contexto «{oido2["contexto"]}»')
     area = (abajo[2] - abajo[0]) * (abajo[3] - abajo[1])
     comprobar(f'{nombre}: lloviendo, las gotas se ven (trazos claros sobre lo de detrás)', n_abajo > area * 0.004, f'{n_abajo} píxeles de {area}')
     comprobar(f'{nombre}: y también contra el cielo', n_cielo > 30, f'{n_cielo} píxeles')
@@ -109,8 +121,23 @@ def recorrido(pg, nombre, pref, movil):
     uno, fin = pasos
     comprobar(f'{nombre}: un segundo después de empezar a llover, solo un poco (el paso es suave)', 0.01 < uno['lluvia'] < 0.3 and 0.01 < uno['nubes'] < 0.3, json.dumps(uno))
     comprobar(f'{nombre}: al minuto y medio, lloviendo del todo y el cielo cubierto', fin['lluvia'] > 0.95 and fin['nubes'] > 0.95, json.dumps(fin))
+    pg.evaluate(f'{K}.tiempoV.poner("lluvia")')   # (lloviendo ya un rato: empapado)
     techo = pg.evaluate(f'(() => {{ const t = {K}.tiempoV; t.paso(3, true); const dentro = t.lluvia.cantidad; t.paso(3, false); return [dentro, t.lluvia.cantidad]; }})()')
     comprobar(f'{nombre}: bajo techo no caen gotas (y al salir, sí)', techo[0] < 0.01 and techo[1] > 0.9, str(techo))
+    dentro = pg.evaluate(f'(() => {{ const t = {K}.tiempoV; t.paso(3, true); const r = {{ oido: t.oido, mojado: {K}.cielo.mojado }}; t.paso(3, false); r.fuera = {{ oido: t.oido, mojado: {K}.cielo.mojado }}; return r; }})()')
+    comprobar(f'{nombre}: bajo techo, la lluvia suena más baja y apagada', 0.3 < dentro['oido']['vol'] < 0.6 and dentro['oido']['filtro'] < 1500 and dentro['fuera']['oido']['vol'] > 0.9, json.dumps(dentro))
+    comprobar(f'{nombre}: bajo techo, lo de dentro menos mojado', dentro['mojado'] < 0.5 and dentro['fuera']['mojado'] > 0.9, json.dumps(dentro))
+    # para de llover: un rato después, sigue mojado y ya no suena; se seca de a poco
+    pg.evaluate(f'{K}.tiempoV.poner("nublado", true)')
+    sec = pg.evaluate(f'(() => {{ const t = {K}.tiempoV, r = []; for (let i = 0; i < 60; i++) t.paso(1); r.push({{ m: {K}.cielo.mojado, vol: t.oido.vol }}); for (let i = 0; i < 840; i++) t.paso(1); r.push({{ m: {K}.cielo.mojado }}); for (let i = 0; i < 1000; i++) t.paso(1); r.push({{ m: {K}.cielo.mojado }}); return r; }})()')
+    comprobar(f'{nombre}: un minuto después de parar, sigue mojado y ya no suena', sec[0]['m'] > 0.9 and sec[0]['vol'] < 0.01, json.dumps(sec))
+    comprobar(f'{nombre}: a los 15 min, a medio secar; a la media hora, seco', 0.3 < sec[1]['m'] < 0.7 and sec[2]['m'] == 0, json.dumps(sec))
+    # la captura de después de la lluvia: el cielo aún cubierto y el suelo mojado, sin gotas
+    poner(pg, 'lluvia'); pg.evaluate(f'{K}.tiempoV.poner("nublado", true)')
+    pg.evaluate(f'(() => {{ const t = {K}.tiempoV; for (let i = 0; i < 60; i++) t.paso(1); }})()')
+    pg.wait_for_timeout(1500)
+    im5 = foto(pg, f'{SALIDA}/{pref}_5_mojado_tras_la_lluvia.png')
+    comprobar(f'{nombre}: tras la lluvia, sin gotas y el suelo aún oscuro', not pg.evaluate(f'{K}.tiempoV.lluvia.malla.visible') and sum(media(im5, abajo)) < sum(seco) * 0.88, f'{media(im5, abajo)} (seco {seco})')
     # lo que cuesta (como dato)
     poner(pg, 'nublado'); sin = pg.evaluate('window.__graficos.medir(10)')
     poner(pg, 'lluvia'); con = pg.evaluate('window.__graficos.medir(10)')

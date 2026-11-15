@@ -7040,5 +7040,25 @@
   "pruebas": "Prueba nueva de navegador «la lluvia se ve», PC y móvil, correcta en la nube (rota a propósito con MUTAR=1: falla). En la nube también el día y la noche, el posprocesado y los perfiles gráficos, el perfil gráfico en el juego y la velocidad con pocos fotogramas, correctas. Una segunda mirada aparte dijo que las primeras gotas parecían estacas: se hicieron más tenues, inclinadas y desvanecidas, y a la segunda dijo que sí. Fuera la lógica y el recorrido: no cambia la lógica.",
   "capturas": "capturas/demo-v213",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T00:25:00+00:00",
+  "fin": "2026-11-15T01:10:28+00:00",
+  "titulo": "P11b, La lluvia y el riego: la lluvia se oye y moja (demo v214)",
+  "hito": "lluvia",
+  "hecho": [
+   "La lluvia se oye: un rumor continuo con gotas sueltas encima, más fuerte cuanto más llueve, hecho por código (sin archivos).",
+   "Bajo techo suena más bajo (al 40 %) y apagado, sin los agudos ni las gotas sueltas, como sobre el tejado.",
+   "La lluvia moja: el suelo, las piezas y lo que está al raso se ven más oscuros y de color más hondo mientras llueve.",
+   "Se moja del todo en 4 min de lluvia y, al parar, sigue mojado y se seca poco a poco en 30 min.",
+   "Lo mojado sale del tiempo del mundo (lógica pura, src/logica/mojado.js): igual para todos donde estás y sin guardar nada.",
+   "Bajo techo, lo de dentro se ve al 35 % de mojado.",
+   "Provisional, para ajustar probando: lo que tarda en mojarse y en secarse, lo oscuro que se ve y cómo suena.",
+   "Para más adelante (segunda mirada aparte): un poco de brillo en el suelo mojado para que se lea más como agua, y las matas de musgo se oscurecen menos que lo demás.",
+   "No comprobado: cómo suena de verdad (aquí no hay altavoces; la prueba mira el volumen y el filtro) y los fotogramas, que mide valravnx."
+  ],
+  "pruebas": "Prueba nueva de lógica «la lluvia moja» (rota a propósito con MUTAR=1: falla) y la de navegador de la lluvia ampliada (suena, más bajo bajo techo, moja y se seca), PC y móvil, correctas en la nube; la demo única, correcta. Una segunda mirada aparte dijo que sí. Fuera, por la sesión, el día y la noche y el posprocesado y los perfiles: el cambio solo actúa cuando llueve. En la lógica falló una vez «combate en el servidor con lag» (lo que no se puede se rechaza), que no toca este cambio y pasa aquí.",
+  "capturas": "capturas/demo-v214",
+  "estado": "ok"
  }
 ]
