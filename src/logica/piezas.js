@@ -129,7 +129,9 @@ export const PIEZAS = {
   // Coste provisional (sistemas no da cantidades): el del suelo de tablas (4 tablas y 4 clavos, también 100 kg) y dos
   // troncos para los postes. Sostiene 300 kg: a quien está encima (el peso de la gente aún no se cuenta).
   adarve:             { nombre: 'Adarve', hueco: 'a', nivel: 2, peso: 100, cap: 300, coste: { tabla: 4, clavo: 4, tronco: 2 }, soloPlanta0: true, adarve: true, cat: 'exterior' },
-  empalizada_puerta:  { nombre: 'Puerta de empalizada', hueco: 'e', nivel: 2, peso: 400, cap: 0, coste: { tronco: 4, hierro: 2 }, suelo: true, soloPlanta0: true, alto: true, portón: true, cat: 'exterior' },
+  // El portón sin hierro (P11c, valravnx, 14 nov; provisional): goznes de madera y cuerda, sale de lo que hay (4 troncos
+  // delgados del árbol joven y 2 cuerdas del banco de tronco), así que está destapado. El de herrajes, con P10.
+  empalizada_puerta:  { nombre: 'Puerta de empalizada', hueco: 'e', nivel: 2, peso: 400, cap: 0, coste: { tronco: 4, cuerda: 2 }, suelo: true, soloPlanta0: true, alto: true, portón: true, destapada: true, cat: 'exterior' },
 };
 
 // Decoración: colocación libre, no participa en la carga.
