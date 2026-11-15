@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3019 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3370 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4910 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3432 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3014 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3403 KB
+dist/kinhold_trozos.html 3036 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v222 (El portón de empalizada); v222: el portón de empalizada, sin hierro (P11c, «La casa más fuerte»). En construir, pestaña Exterior, sale con su imagen y cuesta 4 troncos delgados (del árbol joven) y 2 cuerdas (del banco de tronco). Dos postes clavados medio metro y afilados, como los de la empalizada; la hoja, siete rollizos de punta afilada con dos traviesas y una tornapunta por detrás, todo atado con cuerda. Los goznes son de madera y cuerda: el rollizo de la bisagra gira sobre una piedra de quicio, y dos gazas de cuerda gruesa lo abrazan al poste, con un taco de madera encima de cada una. Se abre y se cierra con Usar, y solo lo abren el dueño de la tierra y sus invitados (como las demás puertas).; v222, provisional: el coste (4 troncos delgados y 2 cuerdas) y los goznes de cuerda; el portón de herrajes llegará con el hierro (P10).
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 292 s
