@@ -121,6 +121,7 @@ def recorrido(pg, nombre, pref, movil):
     uno, fin = pasos
     comprobar(f'{nombre}: un segundo después de empezar a llover, solo un poco (el paso es suave)', 0.01 < uno['lluvia'] < 0.3 and 0.01 < uno['nubes'] < 0.3, json.dumps(uno))
     comprobar(f'{nombre}: al minuto y medio, lloviendo del todo y el cielo cubierto', fin['lluvia'] > 0.95 and fin['nubes'] > 0.95, json.dumps(fin))
+    pg.evaluate(f'{K}.tiempoV.poner("lluvia")')   # (lloviendo ya un rato: empapado)
     techo = pg.evaluate(f'(() => {{ const t = {K}.tiempoV; t.paso(3, true); const dentro = t.lluvia.cantidad; t.paso(3, false); return [dentro, t.lluvia.cantidad]; }})()')
     comprobar(f'{nombre}: bajo techo no caen gotas (y al salir, sí)', techo[0] < 0.01 and techo[1] > 0.9, str(techo))
     dentro = pg.evaluate(f'(() => {{ const t = {K}.tiempoV; t.paso(3, true); const r = {{ oido: t.oido, mojado: {K}.cielo.mojado }}; t.paso(3, false); r.fuera = {{ oido: t.oido, mojado: {K}.cielo.mojado }}; return r; }})()')
