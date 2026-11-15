@@ -142,7 +142,7 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
   vec3 s=aSRGB(clamp(inputColor.rgb,0.0,1.0));
   // mojado por la lluvia (P11b; src/logica/mojado.js): lo mojado se ve más oscuro y de color más hondo (el agua llena
   // los poros y quita el brillo seco de la superficie), antes de la niebla
-  if(uMojado>0.0){float lm=dot(s,vec3(0.2126,0.7152,0.0722));s=max(mix(vec3(lm),s,1.0+0.3*uMojado),0.0)*(1.0-0.28*uMojado);}
+  if(uMojado>0.0){float lm=dot(s,vec3(0.2126,0.7152,0.0722));s=max(mix(vec3(lm),s,1.0+0.15*uMojado),0.0)*(1.0-0.2*uMojado);}
   s=mix(s,hacia,f);
   // en los bordes contra el cielo (el lienzo es transparente ahí) el suavizado deja píxeles a medias, que la página
   // mezclaba con su fondo como si fueran más claros (una raya clara en las crestas): con el horizonte, el cielo de
