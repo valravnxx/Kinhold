@@ -2,7 +2,7 @@
 // personaje, beber del río, lo que cansa cada cosa y su tic (con el sueño, el combate, la sangre que se pierde con la sed
 // o el hambre al máximo y la ropa que se gasta con el uso). Todo lo comparte por S, el estado del servidor.
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, saciar as saciarNecesidad, delCombate, alientoMinimo, hayAguaCerca, TRAGO, ESPERA_TRAGO, frioDelSitio, nocheDe } from '../../src/logica/necesidades.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, saciar as saciarNecesidad, delCombate, alientoMinimo, aguaCerca, motivoSinBeber, TRAGO, ESPERA_TRAGO, frioDelSitio, nocheDe } from '../../src/logica/necesidades.js';
 import { puestasDe, abrigo as abrigoDe } from '../../src/logica/prendas.js';
 import { horaDe } from '../../src/logica/cielo.js';
 import { calorEn } from '../../src/logica/fuego.js';
@@ -38,8 +38,9 @@ export function instalarNecesidades(S) {
   const ultimoTrago = new Map();
   const beber = (a, ahora) => {
     const p = S.presencia && S.presencia.ultimo.get(a);
-    // (en la orilla, o junto a un pozo rematado: P11b)
-    if (!p || !((terreno && hayAguaCerca(terreno.aguaEn, p.x, p.z)) || (S.mundo && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5)))) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
+    // (en la orilla del agua dulce, o junto a un pozo rematado: P11b; la del mar es salada y no se bebe, 15 nov)
+    const agua = p && terreno ? aguaCerca(terreno.aguaEn, p.x, p.z, terreno.marEn) : null;
+    if (!p || (agua !== 'dulce' && !(S.mundo && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5)))) return { ok: false, motivo: motivoSinBeber(agua) };
     if (ahora - (ultimoTrago.get(a) || -Infinity) < ESPERA_TRAGO) return { ok: false, motivo: 'Despacio: trago a trago.' };
     ultimoTrago.set(a, ahora);
     const n = saciarNecesidad(necesidadesDe(a), 'sed', TRAGO);

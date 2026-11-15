@@ -2423,9 +2423,9 @@
     },
     {
      "nombre": "El agua salada no se bebe: del mar no se bebe, y el botón y el aviso lo dicen; solo el agua dulce (río, lago o pozo) quita la sed",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T13:53:57+00:00",
-     "rama": "trabajo/20261115-1355-agua-salada"
+     "fin": "2026-11-15T14:46:11+00:00"
     }
    ]
   },
@@ -4742,6 +4742,13 @@
      "archivo": "jugar/demo/v218.html",
      "capturas": "capturas/demo-v218",
      "notas": "El pozo, sacar agua: revestido hasta el agua, se le pone el brocal de piedra (12 piedras) y el travesaño (3 varas y una cuerda); con el cubo vacío se saca agua dulce lejos de cualquier río, y a su lado se bebe (P11b)"
+    },
+    {
+     "v": "v219",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v219.html",
+     "capturas": "capturas/demo-v219",
+     "notas": "El agua salada no se bebe: solo el agua dulce (río, lago o pozo) quita la sed; junto al mar, Usar dice «Agua salada: no se bebe» y lo decide el servidor"
     }
    ]
   },
