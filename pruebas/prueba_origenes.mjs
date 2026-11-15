@@ -17,7 +17,7 @@ import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 import { OBJETO_DE_MATERIAL } from '../src/logica/inventario.js';
 import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.js';
 import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON } from '../src/logica/tala.js';
-import { TROCEO } from '../src/logica/troceo.js';
+import { TROCEO, MODOS_TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
 import { REPARAR, reparacionDe } from '../src/logica/desgaste.js';
 import { PRENDAS } from '../src/logica/prendas.js';
@@ -78,6 +78,7 @@ const ESENCIAL = {
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
   lluvia: ['cubo', 'cubo_agua', 'col', 'nabo', 'est_pozo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
+  'casa-fuerte': ['tronco_largo', 'rodaja', 'carretilla'],   // (P11c: la empalizada y el entramado, al hacer sus tareas)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
@@ -112,6 +113,9 @@ for (let nuevo = true; nuevo;) {
   if (campo && hay.has('semilla_col') && poner('col', 'coger la col sembrada')) nuevo = true;
   if (campo && hay.has('semilla_nabo') && poner('nabo', 'coger el nabo sembrado')) nuevo = true;
   for (const [t, d] of Object.entries(TROCEO)) if (hay.has(t) && tieneAlguna(Object.keys(HACHAS)) && poner(d.da, `${d.accion} un ${t}`)) nuevo = true;
+  // los otros modos de trocear (P11c): la rodaja del tronco largo, con el resto en troncos cortos
+  for (const modo of Object.values(MODOS_TROCEO)) for (const [t, d] of Object.entries(modo))
+    if (hay.has(t) && tieneAlguna(Object.keys(HACHAS))) { if (poner(d.da, `cortar la ${d.da} de un ${t}`)) nuevo = true; if (d.resto && poner(d.resto, `cortar la ${d.da} de un ${t}`)) nuevo = true; }
   for (const [e, d] of Object.entries(ESTACIONES)) if (estacionHecha(e) && poner('est_' + e, 'se levanta')) nuevo = true;
   for (const [k, r] of Object.entries(RECETAS)) {
     if (r.fuera) continue;   // (fuera del tramo: no se enseña ni se hace)

@@ -3,6 +3,8 @@
 # un tronco corto, lo parte en 6 de leña. El tronco corto se coge con las dos manos y pasa al hombro y vuelve con los
 # botones de abajo. Lo que va a medias se guarda al recargar. Capturas de cerca en PC (1280×800) y móvil (390×844).
 # Uso: python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html <carpeta>
+# La rodaja (P11c): del tronco largo, «Cortar una rodaja» en el menú; deja 1 rodaja y 2 o 3 troncos cortos; la rodaja
+# se coge con las dos manos, y en el banco de tronco, con 2 varas y 1 tronco corto, es la carretilla.
 # MUTAR=1: los golpes no terminan nunca (el tronco no se trocea): tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, re
 from playwright.sync_api import sync_playwright
@@ -59,10 +61,23 @@ def foto(pg, nombre):
     pg.wait_for_timeout(300); pg.evaluate(f"{K}.render()"); pg.screenshot(path=f'{SALIDA}/{nombre}.png')
 
 # golpes seguidos sin esperar el gesto (se olvida el último golpe para que la lógica no los frene)
-def golpes(pg, id, n):
+def golpes(pg, id, n, modo=None):
+    m = f"'{modo}'" if modo else 'null'
     return pg.evaluate(f"""(() => {{ const k = {K}; let r;
-      for (let i = 0; i < {n}; i++) {{ k.troceo.ultimoGolpe = {{}}; r = k.golpeTroceo('{id}'); if (!r.ok || r.termina) break; }}
-      return {{ ok: r.ok, termina: !!r.termina, faltan: r.faltan, motivo: r.motivo || '', da: r.da || null }}; }})()""")
+      for (let i = 0; i < {n}; i++) {{ k.troceo.ultimoGolpe = {{}}; r = k.golpeTroceo('{id}', {m}); if (!r.ok || r.termina) break; }}
+      return {{ ok: r.ok, termina: !!r.termina, faltan: r.faltan, motivo: r.motivo || '', da: r.da || null, resto: r.resto || null }}; }})()""")
+
+# la rodaja (P11c): del tronco largo, con el menú; devuelve el resultado del último golpe
+def rodaja(pg, prefijo):
+    largo = tronco(pg, 'tronco_largo')
+    ops = pg.evaluate(f"{K}.opcionesUsar()")
+    comprobar(f'{prefijo}el menú ofrece «Cortar una rodaja» junto al tronco largo', any('rodaja' in o for o in ops), str(ops))
+    r = golpes(pg, largo, 60, 'rodaja')
+    cortos = en_suelo(pg, 'tronco_corto')
+    comprobar(f'{prefijo}cortada: 1 rodaja y 2 o 3 troncos cortos, y el largo ya no está', r['termina'] and en_suelo(pg, 'rodaja') == 1 and 2 <= cortos <= 3 and en_suelo(pg, 'tronco_largo') == 0, f'{r} {cortos}')
+    comprobar(f'{prefijo}el aviso lo dice', 'rodaja' in aviso(pg), aviso(pg))
+    comprobar(f'{prefijo}se ve la rodaja en el suelo', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_rodaja')"))
+    return r
 
 def en_suelo(pg, tipo):
     return pg.evaluate(f"{K}.sueloObjetos.suelo.objetos.filter(o => o.cosa.tipo === '{tipo}').reduce((s, o) => s + o.cosa.n, 0)")
@@ -117,10 +132,37 @@ with sync_playwright() as p:
     pg.locator('#llevas [data-amanos]').click()
     comprobar('«A las manos» lo devuelve', pg.evaluate(f"{K}.inventario.lugares['mano:der']?.tipo") == 'tronco_corto' and not pg.evaluate(f"{K}.inventario.lugares.hombro"))
 
+    print('PC: la rodaja de tronco y la carretilla (P11c)')
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
+    pg.evaluate(f"(() => {{ const k = {K}; k.sueloObjetos.suelo.objetos = []; k.sueloObjetos.refrescar(); }})()")
+    comprobar('con el hacha de hierro en la mano (rodaja)', en_mano(pg, 'hacha_hierro'))
+    rodaja(pg, '')
+    pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.find(x => x.cosa.tipo === 'rodaja'); k.pj.x = o.x - 1.1; k.pj.z = o.z + 0.4; }})()")
+    camara(pg, dist=3.2, pitch=0.5, giro=0.7)
+    foto(pg, 'troceo_08_rodaja')
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
+    pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.find(x => x.cosa.tipo === 'rodaja'); k.cogerDelSuelo(o); }})()")
+    comprobar('la rodaja se coge con las dos manos', pg.evaluate(f"{K}.inventario.lugares['mano:der']?.tipo") == 'rodaja' and pg.evaluate(f"!!{K}.escena.getObjectByName('llevado_manos')"))
+    pg.wait_for_timeout(600)
+    camara(pg, dist=2.6, pitch=0.25, giro=1.2)
+    foto(pg, 'troceo_09_rodaja_en_las_manos')
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
+    # el banco de tronco con lo de la carretilla depositado, y una carretilla hecha al lado (solo para mirarlos)
+    pg.evaluate(f"""(() => {{ const k = {K}, f = k.fabCliente;
+      f.estaciones['banco_tronco:vista'] = {{ id: 'banco_tronco:vista', tipo: 'banco_tronco', x: k.pj.x + 1.6, z: k.pj.z - 1.2, autor: 'vista', cola: [], deposito: {{ rodaja: 1, vara: 2, tronco_corto: 1 }} }};
+      k.estacionesV.refrescar();
+      k.sueloObjetos.suelo.dejar({{ tipo: 'carretilla', n: 1 }}, k.pj.x + 2.9, k.pj.z + 0.4, Date.now(), 'jugador:local', true, 2.2); k.sueloObjetos.refrescar(); }})()""")
+    comprobar('el banco con la rodaja depositada y la carretilla se dibujan', pg.evaluate(f"!!{K}.escena.getObjectByName('estacion_banco_tronco') && !!{K}.escena.getObjectByName('deposito_rodaja') && !!{K}.escena.getObjectByName('suelo_carretilla')"))
+    # el jugador al otro lado del banco (lo depositado va al pie, hacia él) para que no lo tape
+    pg.evaluate(f"(() => {{ const k = {K}, e = k.fabCliente.estaciones['banco_tronco:vista']; k.pj.x = e.x - 2.3; k.pj.z = e.z + 0.9; }})()")
+    camara(pg, dist=4.2, pitch=0.55, giro=0.5)
+    foto(pg, 'troceo_10_banco_y_carretilla')
+    pg.evaluate(f"(() => {{ const f = {K}.fabCliente; delete f.estaciones['banco_tronco:vista']; {K}.estacionesV.refrescar(); }})()")
+
     print('PC: lo que va a medias se guarda')
     pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
     en_mano(pg, 'hacha_hierro')
-    otro = tronco(pg, 'tronco_largo', dx=-2.5)
+    otro = tronco(pg, 'tronco_largo', dx=-1.8)   # (a 1,8 m: tras la rodaja el jugador queda junto al banco y la carretilla, que lo empujan)
     golpes(pg, otro, 3)
     pg = abrir(nav, 1280, 800, limpiar=False, pg=pg)
     prog = pg.evaluate(f"{K}.troceo.progreso('{otro}')")
@@ -146,6 +188,18 @@ with sync_playwright() as p:
     comprobar('móvil: «Al hombro» funciona', pg.evaluate(f"{K}.inventario.lugares.hombro?.tipo") == 'tronco_corto')
     camara(pg, dist=4)
     foto(pg, 'troceo_07_movil_al_hombro')
+    print('Móvil: la rodaja')
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'hombro' }})")
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
+    pg.evaluate(f"(() => {{ const k = {K}; k.sueloObjetos.suelo.objetos = []; k.sueloObjetos.refrescar(); }})()")
+    comprobar('móvil: con el hacha de piedra en la mano (rodaja)', en_mano(pg, 'hacha_piedra'))
+    rodaja(pg, 'móvil: ')
+    pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
+    pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.find(x => x.cosa.tipo === 'rodaja'); k.pj.x = o.x - 0.8; k.pj.z = o.z; k.cogerDelSuelo(o); }})()")
+    comprobar('móvil: la rodaja en las dos manos', pg.evaluate(f"{K}.inventario.lugares['mano:der']?.tipo") == 'rodaja')
+    pg.wait_for_timeout(600)
+    camara(pg, dist=2.8, pitch=0.3, giro=1.2)
+    foto(pg, 'troceo_11_movil_rodaja')
     comprobar('sin errores en la consola (móvil)', not pg.errores, '; '.join(pg.errores[:3]))
     nav.close()
 

@@ -2,12 +2,14 @@
 // Ejecutar: node pruebas/prueba_troceo.mjs
 // Con MUTAR=1 tronzar con piedra va tan rápido como con hierro y el tronco largo da un solo tronco corto: las pruebas
 // deben FALLAR.
-import { Troceo, TROCEO, ALCANCE_TROCEO, ENTRE_GOLPES, cuantoDa, seTrocea, ejecutarTroceo, guardarTroceo, cargarTroceo } from '../src/logica/troceo.js';
+import { Troceo, TROCEO, MODOS_TROCEO, sacaRodaja, ALCANCE_TROCEO, ENTRE_GOLPES, cuantoDa, seTrocea, ejecutarTroceo, guardarTroceo, cargarTroceo } from '../src/logica/troceo.js';
 import { Inventarios, Inventario, CATALOGO, capacidad } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 
 if (process.env.MUTAR === '1') { TROCEO.tronco_largo.golpes.piedra = TROCEO.tronco_largo.golpes.hierro; TROCEO.tronco_largo.n = [1, 1]; }
+// Con MUTAR=2 la rodaja no deja el resto del tronco en troncos cortos: las pruebas de la rodaja deben FALLAR.
+if (process.env.MUTAR === '2') delete MODOS_TROCEO.rodaja.tronco_largo.resto;
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
@@ -22,10 +24,10 @@ function nuevo() {
 }
 const conHacha = (invs, autor, tipo) => invs.de(autor).coger(tipo, 1, 'mano:der');
 // golpea hasta terminar (o hasta «max»); devuelve [golpes, último resultado, hora]
-function hasta(m, autor, objeto, x, z, t, max = 300) {
+function hasta(m, autor, objeto, x, z, t, max = 300, modo) {
   let r, n = 0;
   for (; n < max; n++) {
-    r = ejecutarTroceo(m.troceo, m.invs, m.reg, { autor, tipo: 'trocear', objeto, x, z }, t);
+    r = ejecutarTroceo(m.troceo, m.invs, m.reg, { autor, tipo: 'trocear', objeto, x, z, ...(modo ? { modo } : {}) }, t);
     t += ENTRE_GOLPES;
     if (!r.ok || r.termina) { n++; break; }
   }
@@ -129,6 +131,33 @@ console.log('Llevar el tronco corto: con las dos manos o al hombro');
   // al cargar un guardado con el tronco al hombro, sigue ahí
   const g = new Inventario(); g.coger('tronco_corto', 1, 'hombro');
   comprobar('se guarda y se carga al hombro', Inventario.importarJugador(g.exportarJugador()).lugares.hombro?.tipo === 'tronco_corto');
+}
+
+console.log('La rodaja de tronco (P11c): la rueda de la carretilla');
+{
+  const R = MODOS_TROCEO.rodaja.tronco_largo;
+  comprobar('sale del tronco largo, no del corto ni del delgado', sacaRodaja('tronco_largo') && !sacaRodaja('tronco_corto') && !sacaRodaja('tronco_delgado'));
+  comprobar('la rodaja es grande (dos manos) y no va al hombro', CATALOGO.rodaja.tam === 'G' && !CATALOGO.rodaja.hombro);
+  comprobar('los mismos golpes que tronzar', R.golpes.piedra === TROCEO.tronco_largo.golpes.piedra && R.golpes.hierro === TROCEO.tronco_largo.golpes.hierro);
+  const m = nuevo();
+  let r = ejecutarTroceo(m.troceo, m.invs, m.reg, { autor: 'ana', tipo: 'trocear', objeto: m.largo, x: 1, z: 0, modo: 'rodaja' }, T0);
+  comprobar('sin hacha no se corta', !r.ok && /hacha/.test(r.motivo), r.motivo);
+  conHacha(m.invs, 'ana', 'hacha_piedra');
+  r = ejecutarTroceo(m.troceo, m.invs, m.reg, { autor: 'ana', tipo: 'trocear', objeto: m.corto, x: 20, z: 0, modo: 'rodaja' }, T0 + 1000);
+  comprobar('del tronco corto, no', !r.ok && /tronco largo/.test(r.motivo), r.motivo);
+  r = ejecutarTroceo(m.troceo, m.invs, m.reg, { autor: 'ana', tipo: 'trocear', objeto: m.largo, x: 1, z: 0, modo: 'rueda' }, T0 + 2000);
+  comprobar('un modo que no existe no vale', !r.ok, r.motivo);
+  const [n, ult] = hasta(m, 'ana', m.largo, 1, 0, T0 + 3000, 300, 'rodaja');
+  comprobar('con hacha de piedra, los golpes de tronzar', ult.ok && ult.termina && n === R.golpes.piedra && ult.accion === 'rodaja', `${n} golpes`);
+  comprobar('el tronco largo ya no está', enSuelo(m, 'tronco_largo') === 0);
+  comprobar('en el suelo, 1 rodaja', enSuelo(m, 'rodaja') === 1 && ult.da.tipo === 'rodaja' && ult.da.n === 1);
+  const cortos = enSuelo(m, 'tronco_corto') - 2;
+  comprobar('y el resto, 2 o 3 troncos cortos', !!ult.resto && cortos >= 2 && cortos <= 3 && ult.resto.n === cortos, `${cortos}`);
+  const ro = m.suelo.porId(ult.objeto, T0), co = ult.objetoResto && m.suelo.porId(ult.objetoResto, T0);
+  comprobar('la rodaja a un lado y los cortos al otro', !!ro && !!co && Math.hypot(ro.x - co.x, ro.z - co.z) > 2, ro && co ? `${Math.hypot(ro.x - co.x, ro.z - co.z).toFixed(2)} m` : '');
+  const g = new Inventario();
+  comprobar('se coge con las dos manos', g.coger('rodaja', 1, 'mano:der').ok && !g.coger('rama', 1, 'mano:izq').ok);
+  comprobar('queda en el registro, con el resto', m.reg.entradas.at(-1).resultado?.resto?.tipo === 'tronco_corto');
 }
 
 console.log('Guardado');

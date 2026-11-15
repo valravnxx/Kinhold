@@ -19,6 +19,9 @@
 //  - nasa: un cono de mimbre con aros, la boca abierta y la punta atada.
 //  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
+//  - rodaja de tronco (P11c, 15 nov): un disco cortado del pie del tronco largo, tumbado, con la corteza en el canto,
+//    los anillos en las caras y una grieta de secado (es madera sin curar); las mismas medidas que la rueda de la
+//    carretilla (src/juego/carretilla.js), que es ella.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
@@ -509,6 +512,18 @@ function cubo(n, id) {
 }
 const cuboAgua = () => { const L = lote(0.1); cuboEn(L, 0, 0, 0, { lleno: true }); return mallas(L); };
 
+// La rodaja de tronco (P11c): la rueda de la carretilla antes de ponerle el eje, tumbada en el suelo.
+export const RODAJA = { r: 0.24, ancho: 0.11 };
+function rodaja(n, id) {
+  const L = lote(0.08), { r, ancho } = RODAJA;
+  L.add(cil(r, r * 0.98, ancho, 14), 'corteza', 0, ancho / 2, 0, null, { tex: 'corteza' });
+  L.add(new THREE.CircleGeometry(r * 0.94, 14), 'corte', 0, ancho + 0.002, 0, { x: -Math.PI / 2 }, { sinSuelo: true });
+  // la grieta de secado, del centro hacia el canto, y el corazón algo más oscuro
+  L.add(new THREE.BoxGeometry(0.006, 0.004, r * 0.6), 'maderaOsc', r * 0.26 * Math.sin(az(id, 1) * 6), ancho + 0.004, r * 0.26 * Math.cos(az(id, 1) * 6), { y: az(id, 1) * 6 }, { sinSuelo: true, tex: 'liso' });
+  L.add(new THREE.CircleGeometry(0.03, 8), 'maderaOsc', 0, ancho + 0.003, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });
+  return mallas(L);
+}
+
 // La criba (P10): un aro de vara doblada (45 cm) con la pared baja de tiras de mimbre y el fondo tejido en cuadros,
 // para lavar la tierra del pantano. loteCriba(L) la pone en el lote L, el fondo en y = 0 y la boca hacia +Y.
 export function loteCriba(L, opc = {}) {
@@ -793,6 +808,6 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

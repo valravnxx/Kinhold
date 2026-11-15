@@ -59,7 +59,7 @@ import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
-import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
+import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, ALCANCE_TROCEO } from '../logica/troceo.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
@@ -1929,6 +1929,8 @@ function opcionesUsar() {
     const rq = rocaCercana();
     if (rq) ops.push({ texto: tr('Romper la roca'), pos: rq, alto: 0.6, hacer: () => empezarRotura(rq) });
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
+    // la rodaja del tronco largo (P11c): la rueda de la carretilla, y el resto en troncos cortos
+    if (tronco && hachaEnMano(inventario()) && sacaRodaja(tronco.cosa.tipo)) ops.push({ texto: tr('Cortar una rodaja (la rueda de la carretilla)'), pos: tronco, hacer: () => empezarTroceo(tronco, 'rodaja') });
     for (const op of opcionesRastra()) ops.push(op);
     for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verboRecoger(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
@@ -2391,7 +2393,7 @@ function empezarLimpieza(c) { const a = c.o; a.prog = null; estado.talando = a; 
 const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
 function golpeTala() {
   const a = estado.talando;
-  if (a.troceo) { golpeTroceo(a.troceo); return; }
+  if (a.troceo) { golpeTroceo(a.troceo, a.modo || null); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
   if (a.rotura) { golpeRotura(a); return; }
   if (a.arranque) { golpeArranque(a); return; }
@@ -2838,22 +2840,23 @@ function troncoCercano() {
   if (pj.k !== 0) return null;
   return sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now(), ALCANCE_TROCEO - 0.3).find(o => seTrocea(o.cosa.tipo)) || null;
 }
-function empezarTroceo(o) {
-  estado.talando = { troceo: o.id, x: o.x, z: o.z }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
-  mostrarAviso(o.cosa.tipo === 'tronco_largo' ? tr('Tronzas el tronco largo.') : tr('Partes el tronco en leña.'));
+function empezarTroceo(o, modo = null) {
+  estado.talando = { troceo: o.id, x: o.x, z: o.z, ...(modo ? { modo } : {}) }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(modo === 'rodaja' ? tr('Cortas una rodaja del tronco largo.') : o.cosa.tipo === 'tronco_largo' ? tr('Tronzas el tronco largo.') : tr('Partes el tronco en leña.'));
 }
-function golpeTroceo(id) {
+function golpeTroceo(id, modo = null) {
   estado.golpeEn = RITMO_TALA;
+  const m = modo ? { modo } : {};
   if (objetosRed) { // en línea, el golpe lo da el servidor, en su suelo
     const yendo = estado.talando;
-    objetosRed.mandar({ tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, (r) => {
+    objetosRed.mandar({ tipo: 'trocear', objeto: id, x: pj.x, z: pj.z, ...m }, (r) => {
       if (estado.talando !== yendo) return;
       if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
       avisoTroceo(r);
     });
     return { ok: true, enviado: true };
   }
-  const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, Date.now(),
+  const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z, ...m }, Date.now(),
     (autor, x, z) => !!mundo.tierraDe(x, z));
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarTroceo(almacen, troceo);
@@ -2862,6 +2865,12 @@ function golpeTroceo(id) {
 }
 function avisoTroceo(r) {
   const tronzar = r.accion === 'tronzar';
+  if (r.accion === 'rodaja') {
+    if (!r.termina) { mostrarAviso(r.faltan === 1 ? tr('Cortas la rodaja: falta 1 golpe.') : tr('Cortas la rodaja: faltan {n} golpes.', { n: r.faltan })); return r; }
+    estado.talando = null;
+    mostrarAviso(tr('Cortada: 1 rodaja de tronco y {n} troncos cortos.', { n: r.resto ? r.resto.n : 0 }));
+    return r;
+  }
   if (!r.termina) {
     mostrarAviso(tronzar ? (r.faltan === 1 ? tr('Tronzas el tronco: falta 1 golpe.') : tr('Tronzas el tronco: faltan {n} golpes.', { n: r.faltan }))
       : (r.faltan === 1 ? tr('Partes el tronco: falta 1 golpe.') : tr('Partes el tronco: faltan {n} golpes.', { n: r.faltan })));
