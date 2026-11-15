@@ -7252,5 +7252,21 @@
   "pruebas": "Revisor en la nube: lógica, recorrido (a la segunda: la primera falló al azar en la caza de la liebre, como otras veces), tronzar y partir (con la rodaja), panel de fabricación e inventario, objetos en el suelo y los demás que pedía el cambio, bien. Fallan «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, en armas y mujer) y «los almacenajes de la base», igual que en main y sin tocar este cambio. No se quitó ningún grupo de la lista del revisor. Segunda mirada a las capturas: la rodaja en las manos se corrigió tres veces (se metía en la tripa, luego se iba a un lado) hasta que dijo que sí.",
   "capturas": "capturas/demo-v220",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T19:25:09+00:00",
+  "fin": "2026-11-15T20:28:57+00:00",
+  "titulo": "P11c: la empalizada, a la vista",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "La empalizada ya no se esconde: en construir, pestaña Exterior, sale con su imagen (piezas v3) y cuesta 6 troncos delgados. La puerta de empalizada sigue escondida (pide hierro).",
+   "Cada tramo son 6 troncos de pie, clavados medio metro en la tierra (en ladera ningún pie queda en el aire), con la punta afilada, dos traviesas por detrás que no asoman, la zanja apisonada al pie y piedras de calzo; madera más clara, como la de la cabaña de la v5.",
+   "La cadena hasta el mundo: tronco delgado ← talar un árbol joven con el hacha de piedra. En prueba_origenes.mjs, la empalizada entre las piezas que P11c deja a la vista (MUTAR=3 falla).",
+   "Provisional: se enseña aunque sea de nivel 2 porque todo lo que pide ya sale del mundo; lo demás de nivel 2 sigue escondido.",
+   "Segunda mirada de un agente aparte: a la primera dijo que no (madera casi negra, huecos entre troncos, traviesas que asomaban); arreglado, dijo que sí. Queda: los nudos de la textura de veta parecen agujeros en fila de cerca (es la textura de toda la madera del juego)."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido, construcción, construir con el acabado nuevo (con la empalizada, en PC y móvil) y panel de fabricación, bien; tras el último arreglo del modelo, otra vez construir con el acabado nuevo, bien.",
+  "capturas": "capturas/demo-v221",
+  "estado": "ok"
  }
 ]

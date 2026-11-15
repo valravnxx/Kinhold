@@ -2453,9 +2453,10 @@
     },
     {
      "nombre": "La empalizada: deja de estar escondida (6 troncos delgados, clavados en el suelo y afilados), con el estilo v5 y capturas de cerca al lado de la referencia. Cadena: tronco delgado ← talar un árbol joven",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T19:25:09+00:00",
-     "rama": "trabajo/20261115-1925"
+     "rama": "trabajo/20261115-1925",
+     "fin": "2026-11-15T20:28:57+00:00"
     },
     {
      "nombre": "El portón de empalizada sin hierro: con goznes de madera y cuerda (troncos delgados y cuerdas; provisional), se abre y se cierra, y solo lo abren el dueño de la tierra y sus invitados. El de herrajes, con P10. Cadena: tronco delgado ← el árbol joven; cuerda ← el banco de tronco",
@@ -4762,6 +4763,13 @@
      "archivo": "jugar/demo/v220.html",
      "capturas": "capturas/demo-v220",
      "notas": "La rodaja de tronco y la carretilla: del tronco largo se corta con el hacha la rodaja, la rueda maciza, y en el banco de tronco, con 2 varas y 1 tronco corto, se hace la carretilla"
+    },
+    {
+     "v": "v221",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v221.html",
+     "capturas": "capturas/demo-v221",
+     "notas": "La empalizada ya no se esconde: en construir, pestaña Exterior, cuesta 6 troncos delgados (los del árbol joven). Cada tramo, 6 troncos de pie clavados medio metro en la tierra, con la punta afilada, la zanja apisonada al pie y piedras de calzo."
     }
    ]
   },
