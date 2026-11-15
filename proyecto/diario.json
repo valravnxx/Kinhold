@@ -7162,5 +7162,21 @@
   "pruebas": "Prueba del pozo en navegador al día (en línea, dos jugadores, PC y móvil): con la pala en la mano no sale marcar el pozo, se marca desde construir con la hondura del terreno, no deja otro pegado, y luego se cava y reviste hasta el agua; construcción, lógica, recorrido y velocidad con pocos fotogramas, correctos en la nube. No se ha roto a propósito esta vez (la prueba ya falla sin las acciones del pozo en el servidor, MUTAR=1). Sin segunda mirada de otro agente: solo cambian un botón del menú y un fantasma translúcido; el pozo se ve igual que en la v216.",
   "capturas": "capturas/demo-v217",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T09:23:12+00:00",
+  "fin": "2026-11-15T13:09:35+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo (3), sacar agua",
+  "hito": "lluvia",
+  "hecho": [
+   "Revestido hasta el agua, el pozo se remata a su lado con Usar: primero el brocal, un murete de piedra seca alrededor de la boca (12 piedras, en uno o varios viajes, que se ve crecer hilada a hilada), y luego el travesaño, dos varas de pies y una atravesada con la cuerda que baja al agua (3 varas y una cuerda, de una vez).",
+   "Rematado, con el cubo vacío en la mano Usar dice «Sacar agua del pozo» y lo llena de agua dulce aunque no haya ningún río cerca (sirve para regar el huerto), y a su lado se bebe como en el río. Todo por el servidor con su autor (acción «rematar_pozo»; llenar el cubo y beber miran si estás junto a un pozo rematado); lo ven todos.",
+   "El recorrido de jugador hace un pozo de principio a fin (paso 23, pruebas/recorrido_pozo.mjs): busca en su tierra, a más de 60 m de cualquier río, el sitio de agua menos honda; repara el hacha en su piedra de tallar, tala un árbol adulto y lo tronza para tener troncos cortos; se hace en el banco la pala de madera y el cubo; marca el pozo, cava y reviste los 4 tramos, levanta el brocal, trenza una cuerda y pone el travesaño, saca agua y bebe.",
+   "El pozo sale ya de lo que se consigue en el mundo (pruebas/prueba_origenes.mjs): ya no espera en lo pendiente.",
+   "Provisional: 12 piedras para el brocal; 3 varas y una cuerda para el travesaño; sus varas, descortezadas (con corteza, a contraluz, se veían negras). Sacar agua es al momento, como llenar el cubo en el río. Publicado en la demo v218."
+  ],
+  "pruebas": "En la nube: lógica (con la del pozo: rematarlo y sacar agua, por el servidor), recorrido de jugador (303 bien, con el paso del pozo), el pozo en el juego (PC y móvil, dos jugadores en línea: brocal, travesaño, sacar agua con el cubo, el otro jugador lo ve rematado), construcción, avisos de las necesidades y velocidad con pocos fotogramas, correctos. Roto a propósito: si el pozo con agua sin rematar contara como agua, la prueba del pozo falla. Segunda mirada de otro agente a las capturas: sí, se puede enseñar; dice que el brocal se lee más como un montón de piedras que como hiladas y que la piedra es gris y facetada (la misma de la hilada de arriba, de la v216).",
+  "capturas": "capturas/demo-v218",
+  "estado": "ok"
  }
 ]
