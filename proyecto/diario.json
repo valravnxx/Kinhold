@@ -7095,5 +7095,21 @@
   ],
   "pruebas": "Lógica y recorrido correctos en la nube (los avisos de las necesidades, fuera: el cambio no toca lo que se ve). La prueba de las necesidades, con el servidor y el terreno de Whitholm: lloviendo y al raso, el frío sube más que en seco; rota a propósito (MUTAR=12 y la lluvia a 0), falla. El recorrido no se amplía: la lluvia no la decide el jugador.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T03:23:44+00:00",
+  "fin": "2026-11-15T03:54:35+00:00",
+  "titulo": "P11b, La lluvia y el riego: el agua del cubo, dulce",
+  "hito": "lluvia",
+  "hecho": [
+   "El cubo solo se llena con agua dulce: junto al río, sí; junto al mar, no, y el aviso lo dice: «El agua del mar es salada: no vale para regar. Llena el cubo en un río.»",
+   "Lejos de cualquier agua, el aviso pide un río (antes decía «un río, un lago o el mar»).",
+   "En la desembocadura, con el río y el mar a la vez al lado, vale el río.",
+   "Lo mira el servidor donde te tiene, con el terreno de verdad: la orilla de cerca de la salida es del río y la costa, a unos 6,4 km hacia el suroeste, del mar.",
+   "Hoy el terreno no tiene lagos: el agua dulce es la del río; el pozo, en las tareas que siguen.",
+   "Beber con las manos sigue como estaba (no entra en esta tarea)."
+  ],
+  "pruebas": "Lógica, recorrido, los avisos de las necesidades, la velocidad con pocos fotogramas y marcar el campo con estacas, correctos en la nube (los grupos de navegador los pidió el revisor por archivos tocados; no cambia nada que se vea). Las pruebas del riego y de las necesidades, ampliadas (dulce, salada y en seco; el servidor no llena el cubo junto al mar; el terreno de Whitholm, río dulce y costa salada); rotas a propósito (sin mirar la sal), fallan.",
+  "estado": "ok"
  }
 ]
