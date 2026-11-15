@@ -1,0 +1,6 @@
+Textos del juego: 1839; sin traducir (en): 2; con variables distintas: 0
+  FALTA (en)  Necesitas la pala de madera en la mano para cavar el pozo.
+  FALTA (en)  No llevas piedras.
+Textos del juego: 1839; sin traducir (ru): 2; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  Necesitas la pala de madera en la mano para cavar el pozo.
+  FALTA (ru)  No llevas piedras.
