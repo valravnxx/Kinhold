@@ -125,20 +125,27 @@ with sync_playwright() as p:
         for i, (px, pz, giro, pitch, dist) in enumerate(vistas):
             ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {px}, z: {pz}, rot: 0 }}); k.cam.yaw = {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()")
             pg.wait_for_timeout(2500)
-            pg.screenshot(path=f'{SALIDA}/{nombre}_7_porton_{i + 1}.png')
+            pg.screenshot(path=f'{SALIDA}/{nombre}_7_porton_{i + 1}.png'.replace('ó', 'o'))
         if pt:
-            # como el jugador: a su lado, Usar (la acción a la vista, con su autor) y solo se rehace esa hoja
+            # como el jugador: a su lado (donde la acción a la vista es abrir el portón), Usar, con su autor; solo se rehace esa hoja
             abierta = f"{K}.mundo.construcciones.find(c => c.id === {pt['c']!r}).piezas.get({pt['k']!r}).abierta === true"
-            ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: 1.0, z: 2.9, rot: Math.PI }}); }})()"); pg.wait_for_timeout(600)
-            vista = ev(f"{K}.accionVista && {K}.accionVista.texto")
+            sitio, vista = None, None
+            for zz in [2.9, 1.1, 3.4, 0.6]:
+                for xx in [1.0, 0.0, 2.0, -1.0, 3.0]:
+                    ev(f"Object.assign({K}.pj, {{ x: {xx}, z: {zz} }})"); pg.wait_for_timeout(500)
+                    vista = ev(f"{K}.accionVista && {K}.accionVista.texto")
+                    if vista and 'empalizada' in vista: sitio = (xx, zz); break
+                if sitio: break
+            comprobar('a su lado, la acción a la vista es abrir el portón', bool(sitio), str(vista))
+            if sitio: ev(f"Object.assign({K}.pj, {{ x: {sitio[0]}, z: {sitio[1]} }})"); pg.wait_for_timeout(300)
             ev(f"{K}.usar()"); pg.wait_for_timeout(500)
             comprobar('el portón se abre con Usar', ev(abierta), str(vista))
             ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: 3.4, z: 5.2, rot: 0 }}); k.cam.yaw = 0.5; k.cam.pitch = 0.2; k.cam.dist = 5.5; }})()")
             pg.wait_for_timeout(2500)
-            pg.screenshot(path=f'{SALIDA}/{nombre}_7_porton_abierto.png')
-            ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: 1.0, z: 2.9, rot: Math.PI }}); }})()"); pg.wait_for_timeout(600)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_7_porton_abierto.png'.replace('ó', 'o'))
+            if sitio: ev(f"Object.assign({K}.pj, {{ x: {sitio[0]}, z: {sitio[1]} }})"); pg.wait_for_timeout(600)
             ev(f"{K}.usar()"); pg.wait_for_timeout(500)
-            comprobar('y se vuelve a cerrar', not ev(abierta))
+            comprobar('y se vuelve a cerrar', bool(sitio) and not ev(abierta))
         ev(f"{K}.cambiarModo('construir')"); pg.wait_for_timeout(800)
         pg.click('#pestanas button[data-cat="almacenajes"]'); pg.wait_for_timeout(2500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_5_almacenajes.png'.replace('ó', 'o'))
