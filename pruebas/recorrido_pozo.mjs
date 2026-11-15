@@ -23,6 +23,7 @@ const MANOS = ['mano:der', 'mano:izq'];
 
 export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   const yo = J.bienvenida.autor;
+  const inicio = { ...J.pos };   // (al acabar vuelve aquí: la granja, que va detrás, empieza en la ribera)
   const r2 = v => Math.round(v * 100) / 100;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
   const enMano = () => MANOS.map(l => J.inv && J.inv.lugares[l] ? `${J.inv.lugares[l].tipo}×${J.inv.lugares[l].n}` : '–').join(' ');
@@ -184,7 +185,7 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
     }
     const nuevos = largo ? enSuelo('tronco_corto', largo, 4) : [];
     comprobar('no le quedan dos troncos cortos: tala un árbol adulto y lo tronza (3 o 4 más)', nuevos.reduce((t, o) => t + o.cosa.n, 0) >= 3, `${ad.motivo || ''} ${golpes} golpes · ${tz.motivo || ''}`);
-    await soltarManos();
+    await J.andar(banco.x - 1, banco.z + 1); await soltarManos();   // (el hacha, otra vez junto al banco: allí la busca la granja)
     // se los lleva al banco de uno en uno, al hombro (dos: la pala y el cubo)
     for (let k = 0; k < 2 && nCortos() < 2; k++) {
       const o = enSuelo('tronco_corto', largo, 4)[0];
@@ -314,6 +315,7 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   comprobar('y bebe del pozo', q.ok && (sed0 === 0 || nec().sed < sed0), `${q.motivo || ''} sed ${Math.round(sed0)} → ${Math.round(nec().sed)}`);
   // (el cubo, lleno, lo deja junto al pozo: con él riega luego el huerto de la granja, pruebas/recorrido_granja.mjs)
   await soltarManos();
+  await J.andar(inicio.x, inicio.z);
 }
 
 // Seguir desde lo guardado (ver arriba): KINHOLD_RECORRIDO_DESDE=<carpeta> node pruebas/recorrido_pozo.mjs
