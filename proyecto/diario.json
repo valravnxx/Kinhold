@@ -7060,5 +7060,24 @@
   "pruebas": "Prueba nueva de lógica «la lluvia moja» (rota a propósito con MUTAR=1: falla) y la de navegador de la lluvia ampliada (suena, más bajo bajo techo, moja y se seca), PC y móvil, correctas en la nube; la demo única, correcta. Una segunda mirada aparte dijo que sí. Fuera, por la sesión, el día y la noche y el posprocesado y los perfiles: el cambio solo actúa cuando llueve. En la lógica falló una vez «combate en el servidor con lag» (lo que no se puede se rechaza), que no toca este cambio y pasa aquí.",
   "capturas": "capturas/demo-v214",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T01:22:12+00:00",
+  "fin": "2026-11-15T02:19:04+00:00",
+  "titulo": "P11b, La lluvia y el riego: la niebla de la mañana (demo v215)",
+  "hito": "lluvia",
+  "hecho": [
+   "Algunas mañanas del mundo hay niebla espesa, igual para todos donde estás: se forma antes de amanecer, es espesa hasta las 8 y se levanta poco a poco hasta las 10 (lo dice la lógica del tiempo).",
+   "Lo de lejos se pierde en un gris claro, más oscuro y cálido al amanecer y casi blanco a media mañana, y el cielo queda tapado.",
+   "Lo de cerca, el jugador y lo que tiene a mano, se sigue viendo: en el PC no se nota nada hasta 9 m de la cámara; en el móvil, algo menos espesa, desde 12 m.",
+   "El sol se apaga (al 40 %) y casi no hay sombras; la niebla llega y se va sin saltos, en unos 20 s.",
+   "Lo muy lejano se funde del todo con el cielo: sin raya en el horizonte (lo vio la segunda mirada en el móvil y se arregló).",
+   "Provisional, para ajustar probando: lo espesa que es y hasta dónde se ve.",
+   "Para más adelante (segunda mirada aparte): quitar un poco de color a lo de cerca con niebla.",
+   "No comprobado: los fotogramas, que mide valravnx (el coste es un cálculo más por píxel en la niebla que ya había)."
+  ],
+  "pruebas": "La prueba de navegador de la lluvia ampliada con la niebla (lo de lejos se pierde, el cielo tapado, lo de cerca se ve, el sol más débil, llega y se va de a poco), PC y móvil, correcta en la nube; rota a propósito con MUTAR=1: falla. El día y la noche, el posprocesado y los perfiles gráficos y el perfil gráfico en el juego, correctos. Una segunda mirada aparte dijo que sí.",
+  "capturas": "capturas/demo-v215",
+  "estado": "ok"
  }
 ]

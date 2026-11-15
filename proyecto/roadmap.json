@@ -2365,9 +2365,9 @@
     },
     {
      "nombre": "La niebla se ve: niebla espesa algunas mañanas que se levanta a media mañana, sin tapar el juego en el móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T01:23:06+00:00",
-     "rama": "trabajo/20261115-0122"
+     "fin": "2026-11-15T02:19:04+00:00"
     },
     {
      "nombre": "La lluvia enfría: bajo la lluvia y sin techo, el frío que pide el sitio sube (GDD: el frío, según la lluvia y la ropa); con techo, nada; la capa y la capucha, cuando lleguen, lo quitan",
@@ -4686,6 +4686,13 @@
      "archivo": "jugar/demo/v214.html",
      "capturas": "capturas/demo-v214",
      "notas": "La lluvia se oye y moja: rumor de lluvia con gotas sueltas (bajo techo, más bajo y apagado) y el suelo y las piezas más oscuros mientras llueve y un rato después"
+    },
+    {
+     "v": "v215",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v215.html",
+     "capturas": "capturas/demo-v215",
+     "notas": "La niebla de la mañana: algunas mañanas, niebla espesa que se levanta a media mañana; lo de lejos se pierde en gris claro y lo de cerca se sigue viendo, también en el móvil"
     }
    ]
   },
