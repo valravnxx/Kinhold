@@ -110,10 +110,11 @@ uniform float uMojado;
 uniform float uNiebla;uniform vec3 uNieblaCol;uniform float uNCerca;uniform float uNLejos;uniform float uNMax;
 // la niebla de la mañana (P11b; src/mundo/cielo.js, nieblar): sobre lo que ya se ve, con la distancia por el rayo (rad, m;
 // infinita en el cielo), el color de la niebla; de nada en uNCerca a uNMax en uNLejos (así lo de cerca, el jugador y lo
-// que tiene a mano, se sigue viendo) y el cielo, tapado casi del todo
+// que tiene a mano, se sigue viendo) y el cielo, tapado del todo
 vec3 empanar(vec3 s,float rad){
   if(uNiebla<=0.0) return s;
-  float k=rad>1e8?uNMax:uNMax*smoothstep(uNCerca,uNLejos,rad);
+  // (y de uNLejos al triple, lo que falta hasta taparlo todo: el terreno muy lejano se funde con el cielo, sin raya)
+  float k=rad>1e8?1.0:uNMax*smoothstep(uNCerca,uNLejos,rad)+(1.0-uNMax)*smoothstep(uNLejos,uNLejos*3.0,rad);
   return mix(s,uNieblaCol,k*uNiebla);
 }
 uniform float tope;uniform float maxLejos;uniform float lejosH;uniform float r0;uniform float sComp;uniform float wComp;uniform vec2 tanMedio;
