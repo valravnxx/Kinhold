@@ -159,8 +159,13 @@ export function redondear(n) {
 //   - bajo techo (el de una construcción terminada), la mitad;
 //   - el fuego (la hoguera y el hogar: src/logica/fuego.js, calorEn, de 1 junto al fuego a 0 a 4 m): a 2 m o menos no
 //     hay frío, y de ahí a 4 m vuelve poco a poco;
-//   - la estación y la lluvia aún no cuentan (no hay estaciones ni tiempo en el mundo: llegan con P11).
-export const FRIO = { templado: 16, porGrado: 4, bioma: 60, noche: 50, abrigo: 4, techo: 0.5 };
+//   - la lluvia (P11b, 15 nov; el tiempo del mundo, src/logica/tiempo.js, lloviendo): al raso y lloviendo, suma 30
+//     encima de lo demás, y la ropa de hoy (lino, lana, cuero) no la quita porque se empapa: con lo del principio, de
+//     día bajo la lluvia, 30 (sin aviso, pero el frío sube); de noche, 80 (aviso fuerte). Bajo techo la lluvia no
+//     cuenta nada. La capa y la capucha, cuando lleguen (documento de sistemas: «frío y lluvia»), la quitan con
+//     `cubre` (de 0 a 1: lo que cubren de la lluvia; hoy ninguna prenda cubre, 0). El fuego la quita como lo demás;
+//   - la estación aún no cuenta (no hay estaciones en el mundo).
+export const FRIO = { templado: 16, porGrado: 4, bioma: 60, noche: 50, abrigo: 4, techo: 0.5, lluvia: 30 };
 export function nocheDe(hora) {
   const h = ((hora % 24) + 24) % 24;
   if (h >= 20 || h < 4) return 1;
@@ -168,10 +173,11 @@ export function nocheDe(hora) {
   if (h < 6) return (6 - h) / 2;
   return 0;
 }
-export function frioDelSitio({ T = FRIO.templado, noche = 0, abrigo = 0, techo = false, calor = 0 } = {}) {
+export function frioDelSitio({ T = FRIO.templado, noche = 0, abrigo = 0, techo = false, calor = 0, lluvia = 0, cubre = 0 } = {}) {
   let f = Math.min(FRIO.bioma, Math.max(0, (FRIO.templado - T) * FRIO.porGrado)) + FRIO.noche * Math.min(1, Math.max(0, noche));
-  f -= FRIO.abrigo * Math.max(0, abrigo);
+  f = Math.max(0, f - FRIO.abrigo * Math.max(0, abrigo));
   if (techo) f *= FRIO.techo;
+  else f += FRIO.lluvia * Math.min(1, Math.max(0, lluvia)) * (1 - Math.min(1, Math.max(0, cubre)));
   f *= 1 - Math.min(1, Math.max(0, 2 * calor));
   return recorta(f);
 }

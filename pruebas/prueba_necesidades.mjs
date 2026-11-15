@@ -108,6 +108,13 @@ console.log('Beber del río (la lógica)');
   comprobar('el bioma: en la taiga (1,5 °C) hace más frío, también de día', frioDelSitio({ T: 1.5, noche: 0, abrigo: lino }) > 0 && frioDelSitio({ T: 1.5, noche: 1, abrigo: lino }) > noche);
   comprobar('bajo techo, la mitad', frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true }) === noche / 2);
   comprobar('junto al fuego (a 2 m o menos) no hay frío, y a 3 m algo', frioDelSitio({ T: 9, noche: 1, abrigo: lino, calor: 0.5 }) === 0 && frioDelSitio({ T: 9, noche: 1, abrigo: lino, calor: 0.25 }) > 0);
+  // la lluvia (P11b, 15 nov): al raso suma, la ropa de hoy no la quita, bajo techo nada; la capa y la capucha (cubre), la quitan
+  const mojadoDia = frioDelSitio({ T: 9, noche: 0, abrigo: lino, lluvia: 1 }), mojadoNoche = frioDelSitio({ T: 9, noche: 1, abrigo: lino, lluvia: 1 });
+  comprobar('bajo la lluvia y al raso, más frío, de día y de noche', mojadoDia > dia && mojadoNoche > noche, `día ${dia} → ${mojadoDia}, noche ${noche} → ${mojadoNoche}`);
+  comprobar('la ropa de hoy no quita el frío de la lluvia (con lana, igual de mojado)', frioDelSitio({ T: 9, noche: 0, abrigo: lana, lluvia: 1 }) - frioDelSitio({ T: 9, noche: 0, abrigo: lana }) === mojadoDia - dia && mojadoDia - dia > 0);
+  comprobar('bajo techo, la lluvia no cuenta nada', frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true, lluvia: 1 }) === frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true }));
+  comprobar('lo que cubre de la lluvia (la capa y la capucha, cuando lleguen) la quita', frioDelSitio({ T: 9, noche: 0, abrigo: lino, lluvia: 1, cubre: 1 }) === dia && frioDelSitio({ T: 9, noche: 0, abrigo: lino, lluvia: 1, cubre: 0.5 }) < mojadoDia);
+  comprobar('junto al fuego, ni con lluvia hay frío', frioDelSitio({ T: 9, noche: 1, abrigo: lino, lluvia: 1, calor: 0.5 }) === 0);
   comprobar(`un trago baja la sed ${TRAGO} y van uno cada ${ESPERA_TRAGO / 1000} s`, saciar({ ...nuevas(), sed: 70 }, 'sed', TRAGO).sed === 40 && ESPERA_TRAGO >= 1000);
 }
 
@@ -294,6 +301,12 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     await estarAhi(p.x, p.z, 3000);
     const f2 = srv3.necesidades.get(yo).frio;
     comprobar('a 1 m de una hoguera encendida, baja', f2 < f1 - 0.3, `${f1.toFixed(2)} → ${f2.toFixed(2)}`);
+    // la lluvia (P11b): lejos del fuego, con el tiempo fijo; en seco y luego lloviendo, desde el mismo frío
+    delete srv3.objetos.fab.estaciones.prueba_hoguera;
+    const subeCon = async (tiempo) => { globalThis.__tiempo = tiempo; srv3.necesidades.set(yo, { ...nuevas(), frio: 40 }); await estarAhi(p.x, p.z, 3000); return srv3.necesidades.get(yo).frio - 40; };
+    const enSeco = await subeCon('seco'), conLluvia = await subeCon(MUTAR === '12' ? 'seco' : 'lluvia');
+    delete globalThis.__tiempo;
+    comprobar('lloviendo y al raso, el frío sube más que en seco', conLluvia > enSeco + 0.3, `seco ${enSeco.toFixed(2)}, lluvia ${conLluvia.toFixed(2)}`);
     c.ws.close();
   } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
   finally { await pausa(300); if (srv3) await srv3.cerrar(); await pausa(300); rmSync(dir2, { recursive: true, force: true }); rmSync(dir3, { recursive: true, force: true }); if (copia) rmSync(copia, { force: true }); }
