@@ -4551,5 +4551,7 @@
  "El recorrido de jugador, sin arcón, lo hace entero: cava y remata un pozo y riega la col y el nabo con el cubo (306 de 306 en la nube).": "Прохождение игрока, без сундука, делает всё целиком: выкапывает и завершает колодец и поливает капусту и репу из ведра (306 из 306 в облаке).",
  "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: el cubo, el cubo lleno, la col, el nabo y el pozo salen del mundo.": "В pruebas/prueba_origenes.mjs ничего из этого этапа не осталось в ожидании: ведро, полное ведро, капуста, репа и колодец берутся из мира.",
  "Lo que queda para la revisión: según la segunda mirada, el brocal del pozo se lee más como un montón de piedras que como hiladas; la mano no cierra los dedos en el asa del cubo (el personaje del taller no los dobla). No comprobado: el sonido de la lluvia de oído, y los fotogramas con lluvia y niebla en un móvil de verdad.": "Что остаётся на проверку: по второму взгляду, сруб колодца читается скорее как куча камней, чем как ряды кладки; рука не сжимает пальцы на дужке ведра (персонаж мастерской их не сгибает). Не проверено: звук дождя на слух и частота кадров с дождём и туманом на настоящем телефоне.",
- "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 68 bien y 0 mal.": "Код не менялся, в облаке ничего. Здесь: происхождение материалов, 68 верно и 0 ошибок."
+ "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 68 bien y 0 mal.": "Код не менялся, в облаке ничего. Здесь: происхождение материалов, 68 верно и 0 ошибок.",
+ "P11b aprobado: la lluvia y el riego": "P11b одобрен: дождь и полив",
+ "valravnx aprueba por el chat el hito P11b, La lluvia y el riego: pasa a hecho.": "valravnx одобряет в чате этап P11b «Дождь и полив»: он выполнен."
 }

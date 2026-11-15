@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 15 nov 2026, 16:54 UTC — por el chat, P11b
+
+valravnx: «aprueba» → el hito P11b, La lluvia y el riego, pasa a hecho.
+
 ### 15 nov 2026, 13:54 UTC — por el chat, el agua salada
 
 valravnx: «toca hacer que el agua salada se diferencie de la dulce y no se pueda beber» → tarea nueva en el hito de la lluvia (la lleva el chat): del mar no se bebe; el botón de beber solo sale con agua dulce al lado (río, lago o pozo) y, en la orilla del mar, el aviso dice que es salada.

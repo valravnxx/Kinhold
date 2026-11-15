@@ -2336,7 +2336,7 @@
    "num": "P11b",
    "nombre": "La lluvia y el riego",
    "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o en un pozo, que cavar y revestir cuesta (para vivir lejos del río); el cereal y las habas, de secano, como en la época.",
-   "estado": "revision",
+   "estado": "hecho",
    "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones). valravnx, 14 nov, por el chat: «el pozo es algo que define muchísimo el sobrevivir sin río… debe ser laborioso al trivializar el agua de ríos»; el pozo, en este hito, como obra por etapas (cavar y revestir por tramos), sin descongelar la excavación.",
    "tareas": [
     {
