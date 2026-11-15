@@ -162,7 +162,7 @@ with sync_playwright() as p:
     print('PC: lo que va a medias se guarda')
     pg.evaluate(f"{K}.accionInventario({{ tipo: 'soltar', de: 'mano:der' }})")
     en_mano(pg, 'hacha_hierro')
-    otro = tronco(pg, 'tronco_largo', dx=-2.5)
+    otro = tronco(pg, 'tronco_largo', dx=-1.8)   # (a 1,8 m: tras la rodaja el jugador queda junto al banco y la carretilla, que lo empujan)
     golpes(pg, otro, 3)
     pg = abrir(nav, 1280, 800, limpiar=False, pg=pg)
     prog = pg.evaluate(f"{K}.troceo.progreso('{otro}')")
