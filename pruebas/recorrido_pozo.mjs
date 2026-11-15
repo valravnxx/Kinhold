@@ -109,7 +109,9 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   // talar el árbol de edad más cercano a p que nadie ha tocado (con su hacha de piedra) y limpiarlo; lo que deja, al suelo
   const talar = async (edad, p) => {
     await soltarManos();
-    const hacha = J.cuantos('hacha_piedra') || (await cogerSuelo('hacha_piedra', banco, 30)) || (await cogerSuelo('hacha_piedra', M, 300));
+    // (el hacha, a la mano: de lo que lleva o del suelo, donde la dejó)
+    let hacha = await aLaMano('hacha_piedra', banco);
+    if (!hacha) { if (!(await cogerSuelo('hacha_piedra', banco, 30))) await cogerSuelo('hacha_piedra', M, 300); hacha = await aLaMano('hacha_piedra'); }
     if (!hacha) return { ok: false, motivo: 'no encuentra su hacha' };
     const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - 150, z0: O.z + p.z - 150, x1: O.x + p.x + 150, z1: O.z + p.z + 150 }).arboles
       .map(a => ({ x: a.x - O.x, z: a.z - O.z, edad: a.edad })).map(a => ({ ...a, id: idArbol(a.x, a.z) })).filter(a => a.edad === edad && !s.objetos.tala.estado[a.id] && !campoEn(s.mundo, a.x, a.z));
