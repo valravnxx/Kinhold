@@ -523,15 +523,18 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const varasSuelo = () => cerca(s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'vara' && !o.arrastra && dist(o, C) < 90), J.pos);
   const talarJoven = async () => {
     await soltarManos();
-    if (!J.cuantos('hacha_piedra')) await cogerSuelo('hacha_piedra', banco, 8) || await cogerSuelo('hacha_piedra', arbol, 8);
+    // (el hacha, donde la dejó: junto al banco, junto al campo o junto al último árbol que taló)
+    if (!J.cuantos('hacha_piedra')) await cogerSuelo('hacha_piedra', banco, 8) || await cogerSuelo('hacha_piedra', arbol, 8) || await cogerSuelo('hacha_piedra', J.pos, 150);
     const a = cerca(veg.filter(e => e.edad === 'joven' && enPie(e) && s.mundo.dentroDeTierra(e.x, e.z, yo) && !campoEn(s.mundo, e.x, e.z) && dist(e, C) > 6 && !est.some(x => dist(x, e) < 4)), J.pos)[0];
-    if (!a) return false;
+    if (!a) { console.log('     (no hay árbol joven que talar en su tierra)'); return false; }
+    if (!J.cuantos('hacha_piedra')) console.log(`     (no encuentra su hacha: ${s.objetos.sueloVisible(Date.now()).filter(o => o.cosa.tipo === 'hacha_piedra').map(o => Math.round(dist(o, J.pos)) + ' m').join(', ') || 'ninguna en el suelo'})`);
     await J.andar(a.x + 1, a.z);
     let g = 0, t;
     do { t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++; if (t.ok && t.datos.boca !== undefined) { await J.andar(a.x, a.z + 1); await J.andar(a.x - 1, a.z); } if (t.ok && !t.datos.cae) await pausa(550); } while (t.ok && !t.datos.cae && g < 30);
     await pausa(3500);
     g = 0; do { t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++; if (t.ok && !t.datos.limpio) await pausa(550); } while (t.ok && !t.datos.limpio && g < 10);
     await soltarManos();
+    if (!(t.ok && t.datos.limpio)) console.log(`     (no tala el joven: ${t.motivo || ''})`);
     return !!(t.ok && t.datos.limpio);
   };
   const sucio = () => J.cuantos('grano_sucio') + enSuelo('grano_sucio', E, 3).reduce((t, o) => t + o.cosa.n, 0);
