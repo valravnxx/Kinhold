@@ -2389,7 +2389,9 @@
     },
     {
      "nombre": "El pozo (1), la lógica: el agua bajo tierra sale del terreno (cerca del río o en el fondo de un valle, poco hondo; lejos y en alto, hondo, con un tope); el pozo es una obra por tramos de 1 m: cavar cada tramo con la pala de madera (sus golpes, y la tierra que sale) y revestirlo de piedra seca antes de bajar más; con su autor, por el servidor, y su prueba. Cadena: pala de madera ← banco; piedra ← el suelo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-15T04:24:29+00:00",
+     "rama": "trabajo/20261115-0424"
     },
     {
      "nombre": "El pozo (2), en el juego: marcar el sitio (dice a qué hondura está el agua), y cada tramo cavado y revestido se ve (el hoyo, su piedra y la tierra sacada al lado), con el estilo v5; lo ven todos; en PC y en móvil",

@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-15T04:24:29+00:00",
+  "tarea": "El pozo (1), la lógica: el agua bajo tierra sale del terreno (cerca del río o en el fondo de un valle, poco hondo; lejos y en alto, hondo, con un tope); el pozo es una obra por tramos de 1 m: cavar cada tramo con la pala de madera (sus golpes, y la tierra que sale) y revestirlo de piedra seca antes de bajar más; con su autor, por el servidor, y su prueba. Cadena: pala de madera ← banco; piedra ← el suelo",
+  "hito": "lluvia",
+  "rama": "trabajo/20261115-0424"
+ },
  "B": null
 }
