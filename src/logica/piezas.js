@@ -121,7 +121,9 @@ export const PIEZAS = {
   cerca:              { nombre: 'Cerca de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, cat: 'exterior' },
   // portón: se abre y se cierra con Usar (abierto no corta el paso)
   cerca_portillo:     { nombre: 'Portillo de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, portón: true, cat: 'exterior' },
-  empalizada:         { nombre: 'Empalizada', hueco: 'e', nivel: 2, peso: 500, cap: 0, coste: { tronco: 6 }, suelo: true, soloPlanta0: true, alto: true, cat: 'exterior' },
+  // destapada (P11c, valravnx, 14 nov): de nivel 2, pero sale de lo que ya hay (6 troncos delgados del árbol joven),
+  // así que ya se enseña en el menú de construir (enEsteTramo).
+  empalizada:         { nombre: 'Empalizada', hueco: 'e', nivel: 2, peso: 500, cap: 0, coste: { tronco: 6 }, suelo: true, soloPlanta0: true, alto: true, destapada: true, cat: 'exterior' },
   // Sistemas: «Adarve (pasarela) — N2, tablas + postes, 100 kg, sostiene 300; por detrás de la empalizada». Un piso de
   // tablas a 1,8 m sobre cuatro postes, en la casilla de detrás de una empalizada terminada (se arrima sola a ella).
   // Coste provisional (sistemas no da cantidades): el del suelo de tablas (4 tablas y 4 clavos, también 100 kg) y dos
@@ -155,8 +157,9 @@ export const DECORACION = {
 // alfombra) se enseña (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
 export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja'];   // (13 nov: la paja ya sale de trillar en la era, P11)
 export const NIVEL_TRAMO = 1;
+// Lo de nivel 2 que ya sale de lo que hay (P11c, «La casa más fuerte»: valravnx, 14 nov) lleva «destapada» y se enseña.
 export function enEsteTramo(def) {
-  return (def.nivel ?? 0) <= NIVEL_TRAMO && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));
+  return ((def.nivel ?? 0) <= NIVEL_TRAMO || !!def.destapada) && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));
 }
 
 export const MATERIALES_INICIALES = {

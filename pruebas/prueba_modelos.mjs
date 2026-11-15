@@ -205,7 +205,9 @@ console.log('Puertas, cercas, portillo, empalizada y mojón con el estilo v5');
   const bc = caja(modeloPieza('cerca'));
   comprobar('Cerca de varas: las varas llegan al borde de la casilla', bc.min.x > -MODULO / 2 - 0.05 && bc.min.x < -MODULO / 2 + 0.01 && bc.max.x < MODULO / 2 + 0.05, `x de ${r3(bc.min.x)} a ${r3(bc.max.x)}`);
   const be = caja(modeloPieza('empalizada'));
-  comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6 && Math.abs(be.min.y) < 0.02, `y de ${r3(be.min.y)} a ${r3(be.max.y)}`);
+  comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6, `y hasta ${r3(be.max.y)}`);
+  // clavada (P11c): los troncos siguen bajo tierra, para que en ladera ningún pie quede en el aire
+  comprobar('Empalizada: los troncos van clavados, medio metro bajo tierra', be.min.y < -0.4 && be.min.y > -0.7, `y desde ${r3(be.min.y)}`);
 }
 
 console.log('Contraventana y trampilla con el estilo v5');

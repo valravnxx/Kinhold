@@ -12,6 +12,7 @@
 // Uso: node pruebas/prueba_origenes.mjs
 //      MUTAR=1 → como si los juncos no se pudieran cortar (sin tejado de la casa humilde: tiene que fallar)
 //      MUTAR=2 → como si la tarea de lo pendiente ya estuviera hecha (tiene que fallar)
+//      MUTAR=3 → como si la empalizada siguiera escondida (tiene que fallar)
 import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 import { OBJETO_DE_MATERIAL } from '../src/logica/inventario.js';
@@ -78,10 +79,15 @@ const ESENCIAL = {
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
   lluvia: ['cubo', 'cubo_agua', 'col', 'nabo', 'est_pozo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
-  'casa-fuerte': ['tronco_largo', 'rodaja', 'carretilla'],   // (P11c: la empalizada y el entramado, al hacer sus tareas)
+  'casa-fuerte': ['tronco_largo', 'rodaja', 'carretilla'],   // (P11c; sus piezas, en PIEZAS_ESENCIALES)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
+// Las piezas de construir que cada hito vivo deja a la vista en el menú, con todo su coste saliendo del mundo.
+const PIEZAS_ESENCIALES = {
+  'casa-fuerte': ['empalizada'],   // (P11c: el portón sin hierro y el entramado, al hacer sus tareas)
+};
+if (MUTAR === '3') delete PIEZAS.empalizada.destapada;
 
 // ---- lo que se puede tener, partiendo de nada ----
 const hay = new Set(), como = {};   // tipo del catálogo → cómo se consigue (la primera vez)
@@ -169,6 +175,15 @@ for (const [id, lista] of Object.entries(ESENCIAL)) {
     const p = PENDIENTES[m];
     ok(`${id}: «${m}» se puede tener o espera su tarea viva`, hay.has(m) || (!!p && viva(p[1])),
       hay.has(m) ? como[m] : p ? `pendiente: ${p[0]} (tarea «${p[1]}»${viva(p[1]) ? '' : ': no existe o ya está hecha'})` : 'no está en PENDIENTES');
+  }
+}
+for (const [id, lista] of Object.entries(PIEZAS_ESENCIALES)) {
+  const hito = roadmap.hitos.find(x => x.id === id);
+  if (!hito || hito.estado === 'congelado' || hito.estado === 'hecho') continue;
+  for (const k of lista) {
+    const d = PIEZAS[k], sin = d ? sePuede(d.coste) : [];
+    ok(`${id}: la pieza «${k}» se enseña en el menú y se hace con lo que sale del mundo`, !!d && enEsteTramo(d) && !sin.length,
+      !d ? 'no existe' : !enEsteTramo(d) ? 'escondida' : sin.length ? `sin ${sin.join(', ')}` : Object.keys(d.coste).map(m => `${m}: ${como[OBJETO_DE_MATERIAL[m] || m]}`).join('; '));
   }
 }
 // ---- 4. nada sobra en PENDIENTES ----

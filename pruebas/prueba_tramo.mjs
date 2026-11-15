@@ -9,7 +9,7 @@ function comprobar(nombre, cond, detalle = '') {
   else { mal++; console.log(`  FALLA ${nombre}${detalle ? ' — ' + detalle : ''}`); }
 }
 
-const guardadas = ['tejado_teja', 'remate_teja', 'hogar', 'adarve', 'empalizada', 'empalizada_puerta', 'polea', 'polipasto', 'escalera_tabla'];
+const guardadas = ['tejado_teja', 'remate_teja', 'hogar', 'adarve', 'empalizada_puerta', 'polea', 'polipasto', 'escalera_tabla'];
 for (const k of guardadas) comprobar(`guardada para su nivel: ${PIEZAS[k].nombre}`, !enEsteTramo(PIEZAS[k]));
 const caros = ['cama_madera', 'mesa', 'banco', 'arcon', 'barril', 'estanteria'];
 for (const k of caros) comprobar(`mueble caro guardado: ${DECORACION[k].nombre}`, !enEsteTramo(DECORACION[k]));
@@ -23,6 +23,8 @@ for (const k of humildes) comprobar(`a la vista: ${PIEZAS[k].nombre}`, enTramo(P
 for (const k of ['taburete', 'estandarte']) comprobar(`mueble a la vista: ${DECORACION[k].nombre}`, enTramo(DECORACION[k]));
 for (const k of ['tejado_paja', 'remate_paja']) comprobar(`a la vista, con la paja de la era: ${PIEZAS[k].nombre}`, enTramo(PIEZAS[k]));
 for (const k of ['cama_paja', 'candil', 'alfombra']) comprobar(`mueble a la vista, con la paja de la era: ${DECORACION[k].nombre}`, enTramo(DECORACION[k]));
+// La empalizada (P11c, «La casa más fuerte»): de nivel 2, pero sale de 6 troncos delgados del árbol joven; se enseña.
+comprobar('a la vista, de nivel 2 pero destapada: Empalizada', enTramo(PIEZAS.empalizada));
 
 // Ninguna pestaña del menú se queda vacía.
 for (const cat of ['tierra', 'base', 'estructura', 'muro', 'tejado', 'acceso', 'exterior'])

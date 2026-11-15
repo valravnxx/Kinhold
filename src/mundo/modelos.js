@@ -295,6 +295,7 @@ function portillo() {
 }
 // Empalizada: troncos descortezados clavados de pie (como los de la cabaña de la prueba v5), cada uno de su alto y algo torcido, con la punta tallada (se ve la
 // madera clara) y dos traviesas detrás que los atan
+const ENTERRADO = 0.5; // m de cada tronco de la empalizada bajo tierra
 function empalizada(opc = {}) {
   if (opc.porton) {
     const F = loteMuro();
@@ -321,9 +322,10 @@ function empalizada(opc = {}) {
   for (let t = 0; t < n; t++) {
     const x = -MODULO / 2 + (t + 0.5) * (MODULO / n), alto = P.altoEmpalizada - 0.15 + ruido(t + 3) * 0.3;
     const r = 0.135 + ruido(t * 5.1) * 0.025, inclina = (ruido(t * 1.9 + 2) - 0.5) * 0.04;
-    L.add(cil(r * 0.94, r, alto, 9), ruido(t * 7.7 + 1) > 0.5 ? 'madera' : 'maderaOsc', x, alto / 2, 0, { z: inclina, y: ruido(t) * 3 });
+    // clavado: el tronco sigue ENTERRADO bajo el suelo (así, en ladera, ningún pie queda en el aire)
+    L.add(cil(r * 0.94, r, alto + ENTERRADO, 9), ruido(t * 7.7 + 1) > 0.5 ? 'madera' : 'maderaOsc', x, (alto - ENTERRADO) / 2, 0, { z: inclina, y: ruido(t) * 3 });
     const punta = new THREE.ConeGeometry(r * 0.94, 0.4, 9); // la punta tallada a hachazos: madera clara, caras planas
-    L.add(punta, ruido(t * 3.3) > 0.5 ? 'tabla' : 'madera', x - Math.sin(inclina) * alto / 2, alto + 0.2, 0, { z: inclina }, { sinSuelo: true, plano: true });
+    L.add(punta, ruido(t * 3.3) > 0.5 ? 'tabla' : 'madera', x - Math.sin(inclina) * (alto + ENTERRADO) / 2, alto + 0.2, 0, { z: inclina }, { sinSuelo: true, plano: true });
   }
   for (const y of [1.0, 2.2]) varaX(L, MODULO, 0.06, 'maderaOsc', 0, y, -0.2, y > 2 ? 0.006 : -0.006);
   return deLote(L);

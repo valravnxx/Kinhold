@@ -9,5 +9,5 @@ export const CARPETA_ICONOS = 'recursos/iconos-v30/';   // (v30, 15 nov: la roda
 export const CARPETA_INTERFAZ = 'recursos/interfaz-v1/';
 // Las imágenes de las piezas de construir (pz_<pieza>), los muebles (deco_<mueble>) y el mojón, para el menú de construir:
 // herramientas/iconos/sacar.py <carpeta> conjunto=piezas. Como las otras, publicadas no se cambian.
-export const CARPETA_PIEZAS = 'recursos/piezas-v2/';   // (v2, 13 nov: las de paja, que ya no se esconden)
+export const CARPETA_PIEZAS = 'recursos/piezas-v3/';   // (v3, 15 nov: la empalizada, que ya no se esconde (P11c); v2, 13 nov: las de paja, que ya no se esconden)
 export const CARPETA_FUENTES = 'recursos/fuentes/v1/';   // las letras del juego (EB Garamond, Alegreya SC): src/plantilla.html las carga
