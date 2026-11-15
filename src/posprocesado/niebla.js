@@ -107,6 +107,15 @@ vec3 cieloVivo(vec3 d){
 
 const frag = GLSL_COMPRESION + GLSL_CIELO + `uniform vec3 colorNiebla;uniform float nieblaCerca;uniform float nieblaLejos;
 uniform float uMojado;
+uniform float uNiebla;uniform vec3 uNieblaCol;uniform float uNCerca;uniform float uNLejos;uniform float uNMax;
+// la niebla de la mañana (P11b; src/mundo/cielo.js, nieblar): sobre lo que ya se ve, con la distancia por el rayo (rad, m;
+// infinita en el cielo), el color de la niebla; de nada en uNCerca a uNMax en uNLejos (así lo de cerca, el jugador y lo
+// que tiene a mano, se sigue viendo) y el cielo, tapado casi del todo
+vec3 empanar(vec3 s,float rad){
+  if(uNiebla<=0.0) return s;
+  float k=rad>1e8?uNMax:uNMax*smoothstep(uNCerca,uNLejos,rad);
+  return mix(s,uNieblaCol,k*uNiebla);
+}
 uniform float tope;uniform float maxLejos;uniform float lejosH;uniform float r0;uniform float sComp;uniform float wComp;uniform vec2 tanMedio;
 vec3 aSRGB(const in vec3 c){return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(vec3(0.0031308),c));}
 vec3 aLineal(const in vec3 c){return mix(c/12.92,pow((c+0.055)/1.055,vec3(2.4)),step(vec3(0.04045),c));}
@@ -117,8 +126,8 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
   vec3 rayo=vivo?rayoDe(uv):vec3(0.0,1.0,0.0);
   if(depth>=0.999999){
     // (las gotas de lluvia, que no escriben profundidad: lo dibujado aquí con transparencia, encima del cielo)
-    if(vivo) outputColor=vec4(aLineal(cieloVivo(rayo))*(1.0-inputColor.a)+inputColor.rgb,1.0);
-    else if(tope<1.0) outputColor=vec4(aLineal(mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0)))*(1.0-inputColor.a)+inputColor.rgb,1.0);
+    if(vivo) outputColor=vec4(aLineal(empanar(cieloVivo(rayo),1e9))*(1.0-inputColor.a)+inputColor.rgb,1.0);
+    else if(tope<1.0||uNiebla>0.0) outputColor=vec4(aLineal(empanar(mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0)),1e9))*(1.0-inputColor.a)+inputColor.rgb,1.0);
     else outputColor=inputColor;
     return;
   }
@@ -144,10 +153,11 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
   // los poros y quita el brillo seco de la superficie), antes de la niebla
   if(uMojado>0.0){float lm=dot(s,vec3(0.2126,0.7152,0.0722));s=max(mix(vec3(lm),s,1.0+0.15*uMojado),0.0)*(1.0-0.2*uMojado);}
   s=mix(s,hacia,f);
+  if(uNiebla>0.0){float radN=d*length(vec3((uv*2.0-1.0)*tanMedio,1.0));s=empanar(s,radN);hacia=empanar(hacia,1e9);}
   // en los bordes contra el cielo (el lienzo es transparente ahí) el suavizado deja píxeles a medias, que la página
   // mezclaba con su fondo como si fueran más claros (una raya clara en las crestas): con el horizonte, el cielo de
   // detrás se sabe, así que se mezcla aquí y el píxel queda opaco
-  if(vivo&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(tope<1.0?hacia:cieloBase(rayo),s,inputColor.a)),1.0);
+  if(vivo&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(tope<1.0?hacia:empanar(cieloBase(rayo),1e9),s,inputColor.a)),1.0);
   else if(tope<1.0&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(hacia,s,inputColor.a)),1.0);
   else outputColor=vec4(aLineal(s),inputColor.a);
 }`;
@@ -165,7 +175,8 @@ export class NieblaEffect extends Effect {
         ['tanMedio', new Uniform(new Vector2(1, 1))], ['cieloArriba', new Uniform(new Color(0xa9bfca))], ['cieloAbajo', new Uniform(new Color(0xd9e1e0))],
         ['uVivo', new Uniform(0)], ['uSol', new Uniform(new Vector3(0, 1, 0))], ['uLuna', new Uniform(new Vector3(0, -1, 0))], ['uColSol', new Uniform(new Color(1, 1, 1))],
         ['uEstrellas', new Uniform(0)], ['uGiro', new Uniform(new Matrix3())], ['uInvProy', new Uniform(new Matrix4())], ['uCamMundo', new Uniform(new Matrix4())],
-        ['uPx', new Uniform(0.001)], ['uTiempo', new Uniform(0)], ['uCubierto', new Uniform(0)], ['uMojado', new Uniform(0)]]),
+        ['uPx', new Uniform(0.001)], ['uTiempo', new Uniform(0)], ['uCubierto', new Uniform(0)], ['uMojado', new Uniform(0)],
+        ['uNiebla', new Uniform(0)], ['uNieblaCol', new Uniform(new Color(0.8, 0.8, 0.8))], ['uNCerca', new Uniform(8)], ['uNLejos', new Uniform(60)], ['uNMax', new Uniform(0.95)]]),
     });
     this.camara = camara;
     this.niebla = niebla;
@@ -192,6 +203,9 @@ export class NieblaEffect extends Effect {
     if (c && c.isPerspectiveCamera) { const t = Math.tan(c.fov * Math.PI / 360); U('tanMedio').value.set(t * c.aspect, t); }
     const v = this.vivo;
     U('uMojado').value = v ? v.mojado || 0 : 0;   // (también con el cielo de la v5 quieto)
+    // la niebla de la mañana (también con el cielo de la v5 quieto)
+    U('uNiebla').value = v ? v.niebla || 0 : 0;
+    if (v && v.niebla > 0) { U('uNieblaCol').value.copy(v.colorNiebla); U('uNCerca').value = v.nieblaCerca; U('uNLejos').value = v.nieblaLejos; U('uNMax').value = v.nieblaMax; }
     U('uVivo').value = v && v.activo && c ? 1 : 0;
     if (!U('uVivo').value) return;
     this.poner(this.niebla);   // (su color cambia con la hora)
