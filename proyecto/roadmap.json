@@ -2359,7 +2359,9 @@
     },
     {
      "nombre": "La lluvia se oye y moja: el sonido de la lluvia (más bajo bajo techo) y el suelo y las piezas más oscuros mientras llueve y un rato después",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-15T00:25:00+00:00",
+     "rama": "trabajo/20261115-0024"
     },
     {
      "nombre": "La niebla se ve: niebla espesa algunas mañanas que se levanta a media mañana, sin tapar el juego en el móvil",
