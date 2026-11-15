@@ -12,7 +12,7 @@
 #   - los efectos: con el cansancio al máximo no se corre (Mayúsculas + W: a paso de andar), sin él sí; con el frío al
 #     máximo se anda más despacio (torpe);
 #   - beber del río: en la salida no hay agua al lado; en una orilla, con sed, «Usar» bebe y la sed baja;
-#   - el agua salada (15 nov): en la costa, con sed, «Usar» dice «Agua salada: no se bebe», no bebe y el aviso lo dice;
+#   - el agua salada (15 nov): en la costa más cercana, con sed, «Usar» dice «Agua salada: no se bebe», no bebe y el aviso lo dice;
 #   - descansar sentado (8 nov): la ficha del cansancio lleva el botón «Sentarte a descansar»; al pulsarlo se sienta
 #     (con su animación, en el suelo) y su estado dice «sentado»; el botón pasa a «Levantarte»; al moverse se levanta.
 #     En el PC, también con Z. Capturas del personaje sentado, de cerca, en PC y móvil;
@@ -175,23 +175,22 @@ def recorrido(pg, nombre, pref, movil):
             sed = pg.evaluate(f'{K}.necesidades.sed')
             comprobar(f'{nombre}: junto al agua, con sed, «Usar» bebe: la sed baja', abs(sed - 40) < 0.5, f'{sed}')
             pg.screenshot(path=f'{SALIDA}/{pref}_3_beber.png', timeout=180000)
-    # el agua salada no se bebe (valravnx, 15 nov): en la costa (hacia el suroeste, unos 6,4 km), con sed, «Usar» dice que
+    # el agua salada no se bebe (valravnx, 15 nov): en la costa, con sed, «Usar» dice que
     # es salada y no bebe; la sed no baja y el aviso lo dice
-    # (el agua de tan lejos solo la sabe el navegador cuando ha cargado lo de allí: primero va cerca, y luego busca la orilla)
-    ang = 41 / 64 * 2 * 3.141592653589793
-    pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); }}', [6300 * __import__('math').cos(ang), 6300 * __import__('math').sin(ang)])
-    pg.wait_for_function(f'{K}.mundoListo', timeout=300000)
-    pg.wait_for_timeout(2000)
-    c = pg.evaluate(f"""(() => {{ const k = {K}, a = 41 / 64 * 2 * Math.PI, w = (x, z) => k.mundoJ.aguaEn(x, z);
-      for (let r = 6700; r > 5800; r -= 0.5) {{ const x = Math.cos(a) * r, z = Math.sin(a) * r;
-        if (w(x, z)) continue;
-        let mar = false, dulce = false;
-        for (const d of [0, 1.5, 2.5]) for (let j = 0; j < 8; j++) {{ const q = w(x + Math.cos(j * Math.PI / 4) * d, z + Math.sin(j * Math.PI / 4) * d); if (q) {{ if (q.mar) mar = true; else dulce = true; }} }}
-        if (mar && !dulce) return {{ x, z }};
-      }} return null; }})()""")
-    comprobar(f'{nombre}: hay costa (mar) al suroeste', bool(c), str(c))
+    # la costa más cercana a la salida de esta página: por 64 rayos, el primer sitio de mar; de ahí hacia atrás, el primer
+    # sitio seco con mar al lado y sin agua dulce
+    c = pg.evaluate(f"""(() => {{ const k = {K}, w = (x, z) => k.mundoJ.aguaEn(x, z);
+      const costa = (x, z) => {{ if (w(x, z)) return false; let mar = false;
+        for (const d of [0, 1.5, 2.5]) for (let j = 0; j < 8; j++) {{ const q = w(x + Math.cos(j * Math.PI / 4) * d, z + Math.sin(j * Math.PI / 4) * d); if (q) {{ if (!q.mar) return false; mar = true; }} }}
+        return mar; }};
+      const rayos = [];
+      for (let i = 0; i < 64; i++) {{ const a = i / 64 * 2 * Math.PI; for (let r = 100; r < 9000; r += 25) {{ const q = w(Math.cos(a) * r, Math.sin(a) * r); if (q && q.mar) {{ rayos.push({{ a, r }}); break; }} }} }}
+      rayos.sort((p, q) => p.r - q.r);
+      for (const {{ a, r }} of rayos) for (let t = r; t > r - 60; t -= 0.25) {{ const x = Math.cos(a) * t, z = Math.sin(a) * t; if (costa(x, z)) return {{ x, z, rot: Math.atan2(Math.cos(a), Math.sin(a)) }}; }}
+      return null; }})()""")
+    comprobar(f'{nombre}: hay costa (mar) cerca de la salida', bool(c), str(c))
     if c:
-        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); k.pj.rot = Math.atan2(-x, -z) + Math.PI; }}', [c['x'], c['z']])
+        pg.evaluate(f'([x, z, r]) => {{ const k = {K}; k.pj.x = x; k.pj.z = z; k.pj.y = k.alturaSuelo(x, z); k.pj.rot = r; }}', [c['x'], c['z'], c['rot']])
         pg.wait_for_function(f'{K}.mundoListo', timeout=300000)
         try: pg.wait_for_function(f'{K}.decorado.pendientes === 0', timeout=120000)
         except Exception: pass
