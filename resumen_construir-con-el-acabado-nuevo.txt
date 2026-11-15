@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3040 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3390 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4933 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3452 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3034 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3424 KB
+dist/kinhold_trozos.html 3056 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: construir con el acabado nuevo (Poner | Quitar, la planta arriba, las piezas con su imagen y su coste, deshacer)
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 2 vara · tienes 116 2 barro · tienes 80
+  FALLA los cuatro muros de entramado (liso, con puerta y con ventana), levantados — []
+  OK   sin errores en la página
+FALLAN 3: los cuatro muros de entramado (liso, con puerta y con ventana), levantados; cada muro con su imagen cargada; los cuatro muros de entramado (liso, con puerta y con ventana), levantados
+!! FALLA: python3 pruebas/prueba_construir_menu_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/construir_menu
+
+HAY FALLOS
+tardó 254 s
