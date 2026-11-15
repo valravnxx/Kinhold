@@ -23,7 +23,7 @@ import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, aguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
 import { abrigo } from '../src/logica/prendas.js';
@@ -98,6 +98,12 @@ console.log('Beber del río (la lógica)');
   const rio = (x, z) => (x > 10 ? 1 : null);   // agua de x = 10 en adelante
   comprobar('con el agua a 1 m, hay agua cerca; a 2,5 m, también; a 4 m, no', hayAguaCerca(rio, 9, 0) && hayAguaCerca(rio, 7.6, 0) && !hayAguaCerca(rio, 6, 0));
   comprobar('dentro del agua, también', hayAguaCerca(rio, 12, 0));
+  // dulce o salada (P11b, 15 nov: el cubo se llena en el río, no en el mar): mar de x = -10 hacia atrás
+  const agua = (x) => (x > 10 || x < -10 ? 1 : null), mar = (x) => x < -10;
+  comprobar('junto al río, dulce; junto al mar, salada; en seco, nada', aguaCerca(agua, 9, 0, mar) === 'dulce' && aguaCerca(agua, -9, 0, mar) === 'salada' && aguaCerca(agua, 0, 0, mar) === null);
+  const boca = (x) => (x > 10 ? 1 : null), bocaMar = (x) => x > 11.5;   // (la desembocadura: río y mar a la vez)
+  comprobar('en la desembocadura, con río al lado, dulce', aguaCerca(boca, 9, 0, bocaMar) === 'dulce');
+  comprobar('sin saber dónde está el mar, toda el agua es dulce', aguaCerca(agua, -9, 0) === 'dulce');
   // el frío que pide el sitio (frioDelSitio)
   const lino = abrigo(['camisa_lino', 'pantalon_lino']), lana = abrigo(['camisa_lino', 'pantalon_lino', 'tunica_lana']);
   comprobar('la noche: de 20 a 4 entera, de día nada y al anochecer a medias', nocheDe(23) === 1 && nocheDe(2) === 1 && nocheDe(12) === 0 && nocheDe(19) === 0.5 && nocheDe(5) === 0.5);
@@ -256,6 +262,12 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     if (cerca && !orilla) orilla = { x, z }; else if (!cerca && !seco) seco = { x, z };
   }
   comprobar('hay una orilla y un sitio seco cerca de la salida', !!orilla && !!seco, JSON.stringify({ orilla, seco }));
+  // dulce o salada en el terreno de verdad (P11b, 15 nov): la orilla de cerca es del río; la costa, hacia el suroeste
+  // (unos 6,4 km), del mar
+  comprobar('la orilla de cerca de la salida es de agua dulce (el río)', !!orilla && aguaCerca(T.aguaEn, orilla.x, orilla.z, T.marEn) === 'dulce');
+  let costa = null;
+  for (let r = 6500, a = 41 / 64 * 2 * Math.PI; r > 5000 && !costa; r -= 1) if (!T.aguaEn(Math.cos(a) * r, Math.sin(a) * r)) costa = { x: Math.cos(a) * r, z: Math.sin(a) * r };
+  comprobar('en la costa, el agua es salada', !!costa && aguaCerca(T.aguaEn, costa.x, costa.z, T.marEn) === 'salada', JSON.stringify(costa));
   const dir2 = mkdtempSync(join(tmpdir(), 'kinhold-beber-'));
   let srv2 = null;
   try {

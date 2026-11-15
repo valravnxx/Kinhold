@@ -77,14 +77,16 @@ globalThis.__tiempo = 'seco';
 
 console.log('El cubo');
 mano(A, 'cubo');
-let r = C.llenarCubo(invs.de(A).lugares, false);
-comprobar('sin agua al lado, el cubo no se llena', !r.ok && r.motivo === 'Aquí no hay agua: busca un río, un lago o el mar.', r.motivo);
-r = C.llenarCubo(invs.de(A).lugares, true);
-comprobar('con agua al lado, se llena', r.ok && enMano(A) === 'cubo_agua');
-r = C.llenarCubo(invs.de(A).lugares, true);
+let r = C.llenarCubo(invs.de(A).lugares, null);
+comprobar('sin agua al lado, el cubo no se llena', !r.ok && r.motivo === 'Aquí no hay agua: busca un río.', r.motivo);
+r = C.llenarCubo(invs.de(A).lugares, 'salada');
+comprobar('junto al mar, tampoco: es salada, y el aviso lo dice', !r.ok && r.motivo === 'El agua del mar es salada: no vale para regar. Llena el cubo en un río.' && enMano(A) === 'cubo', r.motivo);
+r = C.llenarCubo(invs.de(A).lugares, 'dulce');
+comprobar('con agua dulce al lado, se llena', r.ok && enMano(A) === 'cubo_agua');
+r = C.llenarCubo(invs.de(A).lugares, 'dulce');
 comprobar('lleno, no otra vez', !r.ok && r.motivo === 'El cubo ya está lleno.', r.motivo);
 mano(A, 'azada');
-comprobar('sin cubo en la mano, no', !C.llenarCubo(invs.de(A).lugares, true).ok);
+comprobar('sin cubo en la mano, no', !C.llenarCubo(invs.de(A).lugares, 'dulce').ok);
 
 console.log('Regar');
 mano(A, 'cubo');
@@ -140,8 +142,8 @@ console.log('El servidor de verdad: llena el cubo donde te tiene, pone la hora, 
   });
   const espera = (ms) => new Promise(r => setTimeout(r, ms));
   const dir = mkdtempSync(join(tmpdir(), 'kinhold-regar-'));
-  // un terreno de prueba: llano, con el río a partir de x = 100
-  const terreno = { origen: { x: 0, z: 0 }, suelo: () => 0, aguaEn: (x) => (x > 100 ? 1 : null), posicion: () => null, paisaje: { sitio: () => ({ T: 12 }) }, alt: () => 0, obra: () => null };
+  // un terreno de prueba: llano, con el río a partir de x = 100 y el mar antes de x = -100
+  const terreno = { origen: { x: 0, z: 0 }, suelo: () => 0, aguaEn: (x) => (x > 100 || x < -100 ? 1 : null), marEn: (x) => x < -100, posicion: () => null, paisaje: { sitio: () => ({ T: 12 }) }, alt: () => 0, obra: () => null };
   const s = crearServidor({ arconPruebas: true, puerto: 0, archivo: join(dir, 'mundo.jsonl'), terreno, limiteMovimiento: false, salidaComun: true });
   try {
     const puerto = await s.listo;
@@ -168,7 +170,10 @@ console.log('El servidor de verdad: llena el cubo donde te tiene, pone la hora, 
     comprobar('sin llover tres días, mustia', C.riegoPlanta(c.plantas[0], Date.now()).mustia);
     inv.lugares['mano:der'] = { tipo: 'cubo', n: 1 };
     let ro = await Ana.objeto({ tipo: 'llenar_cubo' });
-    comprobar('lejos del río, el cubo no se llena', !ro.ok && ro.motivo === 'Aquí no hay agua: busca un río, un lago o el mar.', ro.motivo);
+    comprobar('lejos del río, el cubo no se llena', !ro.ok && ro.motivo === 'Aquí no hay agua: busca un río.', ro.motivo);
+    Ana.estar(-99.5, 0); await espera(150);
+    ro = await Ana.objeto({ tipo: 'llenar_cubo' });
+    comprobar('junto al mar, el servidor no lo llena: salada', !ro.ok && ro.motivo === 'El agua del mar es salada: no vale para regar. Llena el cubo en un río.' && inv.lugares['mano:der'].tipo === 'cubo', ro.motivo);
     Ana.estar(99.5, 0); await espera(150);
     ro = await Ana.objeto({ tipo: 'llenar_cubo' });
     comprobar('junto al río, se llena', ro.ok && inv.lugares['mano:der'].tipo === 'cubo_agua', ro.motivo || '');

@@ -2377,9 +2377,9 @@
     },
     {
      "nombre": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río, lago o pozo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T03:23:44+00:00",
-     "rama": "trabajo/20261115-0323"
+     "fin": "2026-11-15T03:54:35+00:00"
     },
     {
      "nombre": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",

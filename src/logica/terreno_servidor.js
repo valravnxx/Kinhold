@@ -117,6 +117,13 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     if (w !== null && w > s) return w - s;
     return s < 0 ? -s : null;
   };
+  // si el agua en (x, z) es del mar (salada; P11b, 15 nov): hay agua y no es del río
+  const marEn = (x, z) => {
+    const xm = x + O.x, zm = z + O.z;
+    aguaEn(x, z);   // (para tener los ríos de alrededor)
+    const s = alt(xm, zm), w = paisaje.agua(xm, zm, rios.tramos);
+    return !(w !== null && w > s) && s < 0;
+  };
 
   // Por dónde andan las liebres (P4, 9 nov; src/logica/fauna.js), en celdas de 2 m guardadas (las más viejas se van):
   // pisable, en la isla, en seco y sin cortado (pendiente de menos de 0,7 m por metro); habitat, además un prado o la
@@ -140,7 +147,7 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
   const fauna = { pisable: (x, z) => celdaFauna(x, z) > 0, habitat: (x, z) => celdaFauna(x, z) === 2 };
 
   return {
-    origen: O, y0, suelo, enIsla, alturas, paisaje, alt, semilla, aguaEn, fauna,
+    origen: O, y0, suelo, enIsla, alturas, paisaje, alt, semilla, aguaEn, marEn, fauna,
     // El árbol de nombre id que el navegador dice tener en (x, z) de la escena: el del servidor ({ id, x, z, edad }) o null.
     arbol(id, x, z) {
       if (typeof id !== 'string' || !num(x) || !num(z) || !enIsla(x, z)) return null;
