@@ -153,7 +153,9 @@ with sync_playwright() as p:
       k.estacionesV.refrescar();
       k.sueloObjetos.suelo.dejar({{ tipo: 'carretilla', n: 1 }}, k.pj.x + 2.9, k.pj.z + 0.4, Date.now(), 'jugador:local', true, 2.2); k.sueloObjetos.refrescar(); }})()""")
     comprobar('el banco con la rodaja depositada y la carretilla se dibujan', pg.evaluate(f"!!{K}.escena.getObjectByName('estacion_banco_tronco') && !!{K}.escena.getObjectByName('deposito_rodaja') && !!{K}.escena.getObjectByName('suelo_carretilla')"))
-    camara(pg, dist=4.6, pitch=0.5, giro=0.3)
+    # el jugador al otro lado del banco (lo depositado va al pie, hacia él) para que no lo tape
+    pg.evaluate(f"(() => {{ const k = {K}, e = k.fabCliente.estaciones['banco_tronco:vista']; k.pj.x = e.x - 2.3; k.pj.z = e.z + 0.9; }})()")
+    camara(pg, dist=4.2, pitch=0.55, giro=0.5)
     foto(pg, 'troceo_10_banco_y_carretilla')
     pg.evaluate(f"(() => {{ const f = {K}.fabCliente; delete f.estaciones['banco_tronco:vista']; {K}.estacionesV.refrescar(); }})()")
 
