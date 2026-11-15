@@ -21,13 +21,13 @@ const SOBRE = 0.025;         // m sobre el suelo (para que no parpadee con él)
 const R_BOCA = RADIO_POZO;   // m: la boca
 const R_DISCO = RADIO_POZO + 0.22;   // m: el disco pintado (la boca y el reborde de tierra pisada)
 const ESPONJA = 1.25;        // la tierra sacada abulta más que en su sitio
-const MAX_TIERRA = 1.8;      // m³: lo más que se ve amontonado al lado
+const MAX_TIERRA = 1.1;      // m³: lo más que se ve amontonado al lado
 const az = (s, k) => { const v = Math.sin(s * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); };
 
 // ---------- La boca pintada ----------
 // El radio en el lienzo (0..1 de la boca) al que se ve la hondura d (m): las paredes se van cerrando hacia el centro
 // como en una vista desde arriba de un hoyo estrecho.
-const radioA = (d) => 1 - 0.78 * (1 - Math.exp(-d / 2.4));
+const radioA = (d) => 1 - 0.66 * (1 - Math.exp(-d / 2.4));
 const luzA = (d) => 0.18 + 0.82 * Math.exp(-d / 1.6);
 const texturas = new Map();
 function texturaBoca(p) {
@@ -69,12 +69,15 @@ function texturaBoca(p) {
           let a = rnd() * 0.5;
           while (a < 6.2832) {
             const w = (0.32 + rnd() * 0.3) * (Rb / Math.max(ra, 1)) * 0.9, b = Math.min(a + w, 6.2832 + 0.01);
-            const t = 0.82 + rnd() * 0.32;
+            const t = 0.68 + rnd() * 0.5;
             g.fillStyle = col(150 * t, 140 * t, 124 * t, l);
             g.beginPath(); g.arc(c, c, ra - 0.6, a + 0.03, b - 0.03); g.arc(c, c, rb + 0.6, b - 0.03, a + 0.03, true); g.closePath(); g.fill();
+            // la junta entre piedra y piedra, oscura, y la cara de arriba de la laja, algo más clara
+            g.strokeStyle = col(30, 26, 22, 1, 0.7 * l + 0.2); g.lineWidth = 1.4; g.beginPath(); g.moveTo(c + Math.cos(b) * rb, c + Math.sin(b) * rb); g.lineTo(c + Math.cos(b) * ra, c + Math.sin(b) * ra); g.stroke();
+            g.strokeStyle = col(200 * t, 192 * t, 176 * t, l, 0.5); g.lineWidth = 1; g.beginPath(); g.arc(c, c, ra - 1, a + 0.05, b - 0.05); g.stroke();
             a = b;
           }
-          g.strokeStyle = col(50, 44, 36, 1, 0.3 * l); g.lineWidth = 0.8; g.beginPath(); g.arc(c, c, rb, 0, 6.2832); g.stroke();
+          g.strokeStyle = col(30, 26, 22, 1, 0.6 * l + 0.15); g.lineWidth = 1.2; g.beginPath(); g.arc(c, c, rb, 0, 6.2832); g.stroke();
         }
       } else {
         for (let i = 0; i < 70; i++) {   // la tierra de la pared, con sus vetas
@@ -87,7 +90,11 @@ function texturaBoca(p) {
     // el fondo: tierra húmeda o, con agua, el agua oscura con su brillo
     const rf = radioA(cav) * Rb, l = luzA(cav);
     g.fillStyle = agua ? col(40, 52, 56, 1) : col(84, 66, 48, l); g.beginPath(); g.arc(c, c, rf, 0, 6.2832); g.fill();
-    if (agua) { g.fillStyle = 'rgba(190,205,210,0.35)'; g.beginPath(); g.ellipse(c - rf * 0.25, c - rf * 0.3, rf * 0.35, rf * 0.12, -0.5, 0, 6.2832); g.fill(); }
+    if (agua) {   // el agua: oscura, con el cielo reflejado suave hacia un lado (sin brillo de dibujo)
+      const ag = g.createRadialGradient(c - rf * 0.3, c - rf * 0.35, 0, c, c, rf);
+      ag.addColorStop(0, 'rgba(120,140,148,0.45)'); ag.addColorStop(0.6, 'rgba(60,76,82,0.2)'); ag.addColorStop(1, 'rgba(20,26,28,0)');
+      g.fillStyle = ag; g.beginPath(); g.arc(c, c, rf, 0, 6.2832); g.fill();
+    }
     // la sombra de la boca sobre la pared de abajo (el sol, de arriba y de lado)
     const sg = g.createRadialGradient(c - Rb * 0.25, c - Rb * 0.25, Rb * 0.2, c, c, Rb);
     sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, 'rgba(0,0,0,0.25)');
@@ -138,9 +145,9 @@ function piedra(sd, ancho, alto) {
 
 // Un montón de tierra suelta, del volumen v (m³), a la altura del suelo: perfil de tierra echada a paladas (alto en
 // medio y bajando suave hasta el pie, que se pierde en la hierba), el borde desigual y lomos y terrones encima.
-// Con alto h = 0,35·a y el perfil (1 − s²)², el volumen es π·a²·h/3.
+// Con alto h = 0,5·a y el perfil (1 − s²)², el volumen es π·a²·h/3.
 function monton(v, sd) {
-  const a = Math.cbrt(v / (Math.PI * 0.35 / 3)), h = 0.35 * a;
+  const a = Math.cbrt(v / (Math.PI * 0.5 / 3)), h = 0.5 * a;
   const g = new THREE.SphereGeometry(1, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2), p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i), z = p.getZ(i), an = Math.atan2(z, x);
@@ -184,15 +191,15 @@ export function crearPozosVista({ escena, sueloEn }) {
       // (lo que pase de MAX_TIERRA se da por esparcido o llevado: un montón de 10 m³ taparía el pozo y medio prado)
       const v = Math.min(MAX_TIERRA, tierraSacada(p) * ESPONJA + (p.golpes || 0) / 10 * 0.11);
       if (v > 0.01) {
-        const n = v < 1.4 ? 1 : 2;
+        const n = v < 0.9 ? 1 : 2;
         for (let k = 0; k < n; k++) {
           const vk = v * (k ? 0.35 : 1 - 0.35 * (n - 1)), ak = giro + (k === 0 ? 0 : 1.15);
           const { geo, a } = monton(vk, p.id * 3 + k), d = R_DISCO + 0.1 + a * 0.8, mx = p.x + Math.cos(ak) * d, mz = p.z + Math.sin(ak) * d;
-          L.add(geo, 0x8a6c4c, mx, Math.min(sueloEn(mx, mz), y), mz, { y: -ak }, { tex: 'piedra', sinSuelo: true, brillo: 0.92 });
+          L.add(geo, 0x75644f, mx, Math.min(sueloEn(mx, mz), y), mz, { y: -ak }, { tex: 'piedra', sinSuelo: true, brillo: 0.95 });
           // terrones sueltos rodados al pie
           for (let t = 0; t < 6; t++) {
             const at = ak + (az(p.id * 7 + k, t) - 0.5) * 2.2, rt = d + a * (0.85 + az(p.id + k, t + 9) * 0.35), tx = p.x + Math.cos(at) * rt, tz = p.z + Math.sin(at) * rt;
-            L.add(piedra(p.id * 53 + k * 7 + t, 0.07 + az(k, t) * 0.06, 0.05), 0x7e6346, tx, sueloEn(tx, tz) + 0.01, tz, { y: t }, { tex: 'piedra', sinSuelo: true });
+            L.add(piedra(p.id * 53 + k * 7 + t, 0.07 + az(k, t) * 0.06, 0.05), 0x6e5c48, tx, sueloEn(tx, tz) + 0.01, tz, { y: t }, { tex: 'piedra', sinSuelo: true });
           }
         }
       }

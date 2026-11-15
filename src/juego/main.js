@@ -530,6 +530,8 @@ function despejarDecorado() {
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
   for (const mj of Object.values(mundo.mojones)) circ.push([mj.x, mj.z, 0.9]);
+  // el pozo (P11b): ni hierba ni matas en su boca (es un hoyo) y su reborde de tierra pisada
+  for (const po of mundo.pozos || []) circ.push([po.x, po.z, RADIO_POZO + 0.3]);
   // la era (P11): su suelo apisonado, sin hierba ni matas encima (la hierba llega hasta su canto)
   if (!window.__sinDespejarEras) for (const e of erasHechas()) circ.push([e.x, e.z, ERA + 0.15]);   // (__sinDespejarEras: solo para ver que la prueba falla)
   // la tierra labrada (P11): ahí no sale hierba, ni flores, ni matas
