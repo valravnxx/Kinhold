@@ -1,0 +1,60 @@
+PC: tronzar un tronco largo
+  OK   sin hacha no se tronza — Eso es enorme: se arrastra, va en carro o entre varios.
+  OK   con el hacha de hierro en la mano
+  OK   Usar junto al tronco largo empieza a tronzarlo — Tronzas el tronco: faltan 17 golpes.
+  OK   cada golpe dice cuántos faltan — Tronzas el tronco: faltan 15 golpes.
+  OK   el golpe va al registro con su autor
+  OK   con los golpes que pide, queda tronzado — {'ok': True, 'termina': True, 'faltan': 0, 'motivo': '', 'da': {'tipo': 'tronco_corto', 'n': 4}, 'resto': None}
+  OK   el tronco largo ya no está y hay 3 o 4 troncos cortos — 4
+  OK   se ven los troncos cortos y no el largo
+  OK   el aviso dice cuántos — Tronzado: 4 troncos cortos.
+PC: partir un tronco corto
+  OK   Usar junto a los troncos cortos empieza a partir — Partes el tronco: faltan 2 golpes.
+  OK   partido: 6 de leña en el suelo y un tronco corto menos — {'ok': True, 'termina': True, 'faltan': 0, 'motivo': '', 'da': {'tipo': 'lena', 'n': 6}, 'resto': None} 6
+  OK   se ve la leña
+PC: el tronco corto, con las dos manos o al hombro
+  OK   el tronco corto se coge con las dos manos
+  OK   abajo sale «Al hombro»
+  OK   «Al hombro» lo pasa al hombro y deja las manos libres
+  OK   y sale «A las manos»
+  OK   «A las manos» lo devuelve
+PC: la rodaja de tronco y la carretilla (P11c)
+  FALLA el menú ofrece «Cortar una rodaja» junto al tronco largo — ['Atar el tronco largo (hace falta una cuerda en la mano)']
+  FALLA cortada: 1 rodaja y 2 o 3 troncos cortos, y el largo ya no está — {'ok': False, 'termina': False, 'faltan': None, 'motivo': 'Necesitas un hacha en la mano para cortar la rodaja.', 'da': None, 'resto': None} 0
+  OK   el aviso lo dice — Necesitas un hacha en la mano para cortar la rodaja.
+  FALLA se ve la rodaja en el suelo
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_troceo_navegador.py", line 139, in <module>
+    pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.find(x => x.cosa.tipo === 'rodaja'); k.pj.x = o.x - 1.1; k.pj.z = o.z + 0.4; }})()")
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: TypeError: Cannot read properties of undefined (reading 'x')
+    at eval (eval at evaluate (:311:30), <anonymous>:1:119)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:150)
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
