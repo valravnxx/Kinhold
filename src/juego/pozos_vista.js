@@ -207,13 +207,13 @@ export function crearPozosVista({ escena, sueloEn }) {
         const ap = giro + Math.PI / 2, rp = R_BOCA + 0.36, alto = ALTO_TRAVESANO;
         for (const sg of [-1, 1]) {
           const px = p.x + Math.cos(ap) * rp * sg, pz = p.z + Math.sin(ap) * rp * sg, yp = sueloEn(px, pz);
-          L.add(cil(0.034, 0.04, alto + 0.25), 'corteza', px, yp - 0.25 + (alto + 0.25) / 2, pz, { z: sg * 0.03 }, { tex: 'corteza', sinSuelo: true });
+          // (varas descortezadas, de madera clara: con corteza, a contraluz, se veían negras)
+          L.add(cil(0.034, 0.04, alto + 0.25), 'madera', px, yp - 0.25 + (alto + 0.25) / 2, pz, { z: sg * 0.03 }, { tex: 'veta', sinSuelo: true, brillo: 1.25 });
           L.add(new THREE.CircleGeometry(0.034, 7).rotateX(-Math.PI / 2), 'corte', px, yp + alto + 0.001, pz, null, { sinSuelo: true });
         }
-        // la atravesada, apoyada sobre las cabezas de los pies y atada con la cuerda
+        // la atravesada, apoyada sobre las cabezas de los pies
         const largo = rp * 2 + 0.3, yt = y + alto + 0.03;
-        L.add(cil(0.03, 0.03, largo), 'corteza', p.x, yt, p.z, { z: Math.PI / 2, y: -ap }, { tex: 'corteza', sinSuelo: true });
-        for (const sg of [-1, 1]) { const px = p.x + Math.cos(ap) * rp * sg, pz = p.z + Math.sin(ap) * rp * sg; L.add(new THREE.TorusGeometry(0.04, 0.009, 4, 10), 0x9b8460, px, yt - 0.02, pz, { y: -ap + Math.PI / 2 }, { tex: 'liso', sinSuelo: true }); }
+        L.add(cil(0.03, 0.03, largo), 'madera', p.x, yt, p.z, { z: Math.PI / 2, y: -ap }, { tex: 'veta', sinSuelo: true, brillo: 1.25 });
         // la cuerda: dos vueltas al travesaño en el medio y baja recta al agua
         L.add(new THREE.TorusGeometry(0.036, 0.01, 4, 10), 0x9b8460, p.x, yt, p.z, { y: -ap + Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
         L.add(new THREE.TorusGeometry(0.036, 0.01, 4, 10), 0x9b8460, p.x + Math.cos(ap) * 0.03, yt, p.z + Math.sin(ap) * 0.03, { y: -ap + Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
