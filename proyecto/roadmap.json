@@ -2466,7 +2466,9 @@
     },
     {
      "nombre": "El muro de entramado: deja de estar escondido (2 troncos delgados, 2 varas y 3 barros), con su puerta y su ventana, comparado de cerca con las casas de entramado de la referencia. Cadena: tronco delgado y vara ← el árbol joven; barro ← la ribera",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-15T22:24:07+00:00",
+     "rama": "trabajo/20261115-2224"
     },
     {
      "nombre": "Recorrido de jugador de la casa más fuerte, sin arcón: tala un árbol adulto, arrastra el tronco largo con cuerda, lo lleva en la rastra, saca la rodaja y hace la carretilla, levanta un tramo de empalizada con su portón y un muro de entramado",
