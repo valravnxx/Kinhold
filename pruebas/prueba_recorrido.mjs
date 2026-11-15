@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Y la granja (P11, 14 nov), en pruebas/recorrido_granja.mjs: el paso 22. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -1793,10 +1793,11 @@ try {
       console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes de la granja)`);
       J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
     }
-    // P11, la granja básica (14 nov): pruebas/recorrido_granja.mjs
-    await granja({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, base });
-    // P11b, el pozo (15 nov): pruebas/recorrido_pozo.mjs
+    // P11b, el pozo (15 nov): pruebas/recorrido_pozo.mjs. Antes que la granja (15 nov): el río más cercano queda a
+    // casi 1 km del campo, y la col y el nabo se riegan con el agua del pozo, que está junto al banco
     await pozo({ J: J2, s, T, O, comprobar, pausa, cerca });
+    // P11, la granja básica (14 nov): pruebas/recorrido_granja.mjs, con el riego del huerto (P11b)
+    await granja({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, base });
     J2.ws.close();
   }
 

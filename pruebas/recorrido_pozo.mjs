@@ -1,11 +1,11 @@
 // Recorrido de jugador del pozo (P11b, «El pozo (3), sacar agua»): el paso 23 de pruebas/prueba_recorrido.mjs, el mismo
 // jugador, sin arcón y con lo que recoge. Busca en su tierra, lejos de cualquier río, el sitio donde el agua está menos
 // honda (como lo ve el aviso de construir: la hondura del terreno del servidor), se hace en su banco una pala de madera
-// (y un cubo, si no tiene ya el de regar el huerto en la granja) con troncos cortos (los que le sobran de tronzar o,
-// si no, de tronzar otro árbol adulto), marca el pozo,
+// y un cubo con troncos cortos (los que le sobran de tronzar o, si no, de tronzar otro árbol adulto), marca el pozo,
 // cava cada tramo a golpes de pala y lo reviste con piedras que recoge, hasta el agua; levanta el brocal con más
 // piedras y pone el travesaño con 3 varas de un árbol joven y una cuerda que trenza; saca agua con el cubo y bebe del
-// pozo. Así, lejos del río, tiene agua dulce.
+// pozo. Así, lejos del río, tiene agua dulce. Deja el cubo junto al pozo: con él riega el huerto en la granja, que va
+// detrás (el paso 24, pruebas/recorrido_granja.mjs).
 // Cadena: pala y cubo ← tronco corto ← tronzar un tronco largo ← árbol adulto; piedras ← piedra suelta; varas ← árbol
 // joven; cuerda ← 3 cordeles ← fibra.
 // Para trabajar en esta parte sin repetir lo de antes: KINHOLD_RECORRIDO_GUARDAR=<carpeta> node pruebas/prueba_recorrido.mjs
@@ -168,16 +168,12 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   if (!sitio) return;
   const TR = tramosDe({ hondura: sitio.h });
 
-  // 23b. La pala de madera y el cubo: un tronco corto cada uno, en el banco (el cubo, si no tiene ya el que se hizo
-  // para regar el huerto en la granja: lo dejó junto al banco)
-  const cuboYa = J.cuantos('cubo') ? null : enSuelo('cubo', banco, 12)[0] || null;
-  const tieneCubo = !!cuboYa || J.cuantos('cubo') > 0;
-  console.log(tieneCubo ? '23b. Se hace en su banco una pala de madera con un tronco corto (el cubo ya lo tiene: el de regar el huerto)' : '23b. Se hace en su banco una pala de madera y un cubo (un tronco corto cada uno)');
-  const necesita = tieneCubo ? 1 : 2;
+  // 23b. La pala de madera y el cubo: un tronco corto cada uno, en el banco
+  console.log('23b. Se hace en su banco una pala de madera y un cubo (un tronco corto cada uno)');
   const cortos = () => enSuelo('tronco_corto', banco, 40);
   const nCortos = () => cortos().reduce((t, o) => t + o.cosa.n, 0);
   console.log(`     (le quedan ${nCortos()} troncos cortos junto al banco)`);
-  if (nCortos() < necesita) {
+  if (nCortos() < 2) {
     // tala un árbol adulto, lo limpia y lo tronza a hachazos: 3 o 4 troncos cortos más
     const ad = await talar('adulto', banco);
     const largo = ad.ok && enSuelo('tronco_largo', ad.a, 8)[0];
@@ -187,10 +183,10 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
       do { tz = await J.objeto({ tipo: 'trocear', objeto: largo.id, x: J.pos.x, z: J.pos.z }); golpes++; await pausa(850); } while (tz.ok && enSuelo('tronco_corto', largo, 4).length === 0 && golpes < 80);
     }
     const nuevos = largo ? enSuelo('tronco_corto', largo, 4) : [];
-    comprobar(`no le quedan ${necesita === 2 ? 'dos troncos cortos' : 'troncos cortos'}: tala un árbol adulto y lo tronza (3 o 4 más)`, nuevos.reduce((t, o) => t + o.cosa.n, 0) >= 3, `${ad.motivo || ''} ${golpes} golpes · ${tz.motivo || ''}`);
+    comprobar('no le quedan dos troncos cortos: tala un árbol adulto y lo tronza (3 o 4 más)', nuevos.reduce((t, o) => t + o.cosa.n, 0) >= 3, `${ad.motivo || ''} ${golpes} golpes · ${tz.motivo || ''}`);
     await soltarManos();
     // se los lleva al banco de uno en uno, al hombro (dos: la pala y el cubo)
-    for (let k = 0; k < 2 && nCortos() < necesita; k++) {
+    for (let k = 0; k < 2 && nCortos() < 2; k++) {
       const o = enSuelo('tronco_corto', largo, 4)[0];
       if (!o) break;
       await J.andar(o.x + 0.3, o.z);
@@ -215,15 +211,8 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   let q = await hacerDeTronco('pala_madera');
   comprobar('lleva un tronco corto al hombro hasta el banco y se hace la pala de madera', q.ok && J.cuantos('pala_madera') === 1, `${q.motivo || ''} · ${enMano()}`);
   if (enLaMano('pala_madera')) await soltar(enLaMano('pala_madera'));
-  if (tieneCubo) {
-    // (coge el cubo de donde lo dejó y vuelve junto a la pala)
-    const p0 = { ...J.pos };
-    if (cuboYa) { await cogerSuelo('cubo', cuboYa, 3); await J.andar(p0.x, p0.z); }
-    comprobar('y el cubo, el que se hizo para regar el huerto', J.cuantos('cubo') === 1, `${enMano()}`);
-  } else {
-    q = J.cuantos('pala_madera') || enSuelo('pala_madera', J.pos, 3).length ? await hacerDeTronco('cubo') : q;
-    comprobar('y con otro, el cubo', q.ok && J.cuantos('cubo') === 1, `${q.motivo || ''} · ${enMano()}`);
-  }
+  q = J.cuantos('pala_madera') || enSuelo('pala_madera', J.pos, 3).length ? await hacerDeTronco('cubo') : q;
+  comprobar('y con otro, el cubo', q.ok && J.cuantos('cubo') === 1, `${q.motivo || ''} · ${enMano()}`);
   if (!J.cuantos('cubo')) return;
   // (la pala, la recoge del suelo: la dejó junto al banco)
   await soltarManos();
@@ -323,6 +312,8 @@ export async function pozo({ J, s, T, O, comprobar, pausa, cerca }) {
   const sed0 = nec().sed;
   q = await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z });
   comprobar('y bebe del pozo', q.ok && (sed0 === 0 || nec().sed < sed0), `${q.motivo || ''} sed ${Math.round(sed0)} → ${Math.round(nec().sed)}`);
+  // (el cubo, lleno, lo deja junto al pozo: con él riega luego el huerto de la granja, pruebas/recorrido_granja.mjs)
+  await soltarManos();
 }
 
 // Seguir desde lo guardado (ver arriba): KINHOLD_RECORRIDO_DESDE=<carpeta> node pruebas/recorrido_pozo.mjs

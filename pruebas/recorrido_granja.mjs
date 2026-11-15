@@ -7,8 +7,8 @@
 // raspa la piel de la liebre que cazó, se hace una criba de grano en el banco, criba el grano y pone un tejado de paja.
 // Con MUTAR=2 (en pruebas/prueba_recorrido.mjs o aquí) lo sembrado no madura: tiene que FALLAR. Con MUTAR=3 no riega la
 // col ni el nabo (P11b): no maduran a la semana y la cosecha tiene que FALLAR.
-// Riega el huerto (P11b, 15 nov): se hace un cubo en su banco con un tronco corto y riega la col y el nabo con agua del
-// río, cada vez que pasan menos de dos días sin agua del reloj acelerado.
+// Riega el huerto (P11b, 15 nov): con el cubo y el agua de su pozo (el paso 23, que va antes) riega la col y el nabo
+// cada vez que pasan menos de dos días sin agua del reloj acelerado.
 // El reloj acelerado: lo sembrado tarda una semana real (src/logica/campos.js, CRECER); la prueba adelanta la hora a la
 // que se sembró, como adelanta la de lo que se fabrica. No le da nada: solo ahorra la espera.
 //
@@ -21,6 +21,7 @@ import { idArbol } from '../src/logica/tala.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
 import { hayAguaCerca, aguaCerca } from '../src/logica/necesidades.js';
+import { rematado } from '../src/logica/pozo.js';
 import { CRECER, PENDIENTE_MAX, campoEn, labradoEn, casillasVoleo, rejilla, dentroPoligono } from '../src/logica/campos.js';
 
 const MANOS = ['mano:der', 'mano:izq'];
@@ -181,7 +182,8 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const no = (k) => { porque[k] = (porque[k] || 0) + 1; return false; };
   const vale = (a) => {
     if (a.edad !== 'joven' || !enPie(a)) return no('no es joven o no está en pie');
-    if (dist(a, M) < 15 || est.some(e => dist(e, a) < 12) || obras.some(o => dist(o, a) < 12)) return no('cerca de sus obras');
+    if (dist(a, M) < 15 || est.some(e => dist(e, a) < 12) || obras.some(o => dist(o, a) < 12) || (s.mundo.pozos || []).some(p => dist(p, a) < 12)) return no('cerca de sus obras');
+    if (s.objetos.sueloVisible(Date.now()).some(o => Math.abs(o.x - a.x) <= L + 1 && Math.abs(o.z - a.z) <= L + 1)) return no('cosas en el suelo');
     for (let i = -L - 1; i <= L + 1; i++) for (let j = -L - 1; j <= L + 1; j++) {
       const x = a.x + i, z = a.z + j;
       if (!s.mundo.dentroDeTierra(x, z, yo)) return no('fuera de su tierra');
@@ -326,41 +328,51 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   const mVoleo = casillasVoleo(campo).length;
   comprobar('siembra la cebada a voleo, a pasadas (gasta 1 puñado cada 10 m²)', voleo === 2 && mVoleo >= 12, `${voleo} pasadas, ${mVoleo} m² · ${mal.join(' | ')}`);
 
-  // 22h'. El cubo y el riego (P11b, 15 nov): un tronco corto de los que le quedan junto al banco (de tronzar el adulto
-  // del banco), al hombro hasta el banco, y el cubo; lo llena en el agua dulce más cercana al huerto y riega la col y
-  // el nabo (están a 1,1 m: una pasada los moja a los dos). Sin regar ni llover, tardarían hasta 12 días.
-  console.log("22g'. Se hace un cubo en su banco con un tronco corto y riega la col y el nabo con agua del río");
-  await J.andar(deposito.x, deposito.z); await soltarManos();
-  let qc = { ok: false, motivo: 'no le quedan troncos cortos junto al banco' };
-  const corto = enSuelo('tronco_corto', banco, 40)[0];
-  if (corto) {
-    await J.andar(corto.x + 0.3, corto.z);
-    qc = await J.objeto({ tipo: 'coger_suelo', objeto: corto.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
-    if (qc.ok) { await J.andar(banco.x + 1, banco.z); qc = await depositar(banco, 'tronco_corto'); }
-    if (qc.ok) qc = await enEstacion(banco, 'cubo');
-  }
-  comprobar('lleva al hombro hasta el banco un tronco corto de los que le quedan y se hace un cubo', qc.ok && J.cuantos('cubo') === 1, `${qc.motivo || ''} · ${enMano()}`);
-  await J.andar(deposito.x, deposito.z); await soltarManos();
+  // 22h'. El riego (P11b, 15 nov): con el cubo que dejó junto a su pozo (el paso 23, antes que la granja), lo llena en
+  // el pozo y riega la col y el nabo (están a 1,1 m: una pasada los moja a los dos). Sin pozo (este archivo solo, sin
+  // el paso 23), se hace un cubo en su banco con un tronco corto y lo llena en el agua dulce más cercana. Sin regar ni
+  // llover, tardarían hasta 12 días.
   const huerto = { x: r2((plantas[2][2].x + plantas[3][2].x) / 2), z: r2((plantas[2][2].z + plantas[3][2].z) / 2) };
-  let fuente = null;
-  for (let d = 5; d <= 1500 && !fuente; d += 5) for (let k = 0; k < 48 && !fuente; k++) {
-    const x = huerto.x + Math.cos(k / 48 * 2 * Math.PI) * d, z = huerto.z + Math.sin(k / 48 * 2 * Math.PI) * d;
-    if (!T.aguaEn(x, z) && aguaCerca(T.aguaEn, x, z, T.marEn) === 'dulce') fuente = { x: r2(x), z: r2(z) };
-  }
-  comprobar('el agua dulce más cercana al huerto', !!fuente, fuente ? `a ${Math.round(dist(fuente, huerto))} m` : 'ninguna');
+  const miPozo = cerca((s.mundo.pozos || []).filter(p => p.autor === yo && rematado(p)), huerto)[0];
+  let fuente = miPozo ? { x: r2(miPozo.x - 1.3), z: miPozo.z } : null;
+  console.log(miPozo ? "22g'. Riega la col y el nabo con el cubo y el agua de su pozo" : "22g'. Se hace un cubo en su banco con un tronco corto y riega la col y el nabo con agua del río");
+  await J.andar(deposito.x, deposito.z); await soltarManos();
+  const cubosAhi = () => fuente ? [...enSuelo('cubo', fuente, 4), ...enSuelo('cubo_agua', fuente, 4)] : [];
+  if (!cubosAhi().length) {
+    let qc = { ok: false, motivo: 'no le quedan troncos cortos junto al banco' };
+    const corto = enSuelo('tronco_corto', banco, 40)[0];
+    if (corto) {
+      await J.andar(corto.x + 0.3, corto.z);
+      qc = await J.objeto({ tipo: 'coger_suelo', objeto: corto.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+      if (qc.ok) { await J.andar(banco.x + 1, banco.z); qc = await depositar(banco, 'tronco_corto'); }
+      if (qc.ok) qc = await enEstacion(banco, 'cubo');
+    }
+    comprobar('lleva al hombro hasta el banco un tronco corto de los que le quedan y se hace un cubo', qc.ok && J.cuantos('cubo') === 1, `${qc.motivo || ''} · ${enMano()}`);
+    for (let d = 5; d <= 1500 && !fuente; d += 5) for (let k = 0; k < 48 && !fuente; k++) {
+      const x = huerto.x + Math.cos(k / 48 * 2 * Math.PI) * d, z = huerto.z + Math.sin(k / 48 * 2 * Math.PI) * d;
+      if (!T.aguaEn(x, z) && aguaCerca(T.aguaEn, x, z, T.marEn) === 'dulce') fuente = { x: r2(x), z: r2(z) };
+    }
+    if (fuente) { await J.andar(fuente.x, fuente.z); await soltarManos(); }
+  } else comprobar('el cubo está junto a su pozo, donde lo dejó', true, `${cubosAhi().map(o => o.cosa.tipo).join(', ')}`);
+  comprobar(miPozo ? 'el agua para regar, la de su pozo' : 'el agua dulce más cercana al huerto', !!fuente, fuente ? `a ${Math.round(dist(fuente, huerto))} m del huerto` : 'ninguna');
   const riegos = [];
+  // (cada vez: a por el cubo, que espera junto al agua; lo llena si está vacío, riega, y lo vuelve a dejar allí)
   const regarHuerto = async () => {
     if (process.env.MUTAR === '3') return { ok: true, regadas: 2 };   // (MUTAR=3: como si regara, sin regar)
+    if (!fuente) return { ok: false, motivo: 'sin agua' };
     await cuidarse();
-    if (!(await aLaMano('cubo', deposito))) return { ok: false, motivo: `no tiene el cubo · ${enMano()}` };
+    await soltarManos();
     await J.andar(fuente.x, fuente.z);
-    const ll = await J.objeto({ tipo: 'llenar_cubo' });
-    if (!ll.ok) return { ok: false, motivo: `no llena el cubo: ${ll.motivo}` };
+    const o = cubosAhi()[0];
+    if (o) { await J.andar(o.x + 0.3, o.z); await J.objeto({ tipo: 'coger_suelo', objeto: o.id, a: 'mano:der', x: J.pos.x, z: J.pos.z }); await J.andar(fuente.x, fuente.z); }
+    if (!enLaMano('cubo') && !enLaMano('cubo_agua')) return { ok: false, motivo: `no tiene el cubo · ${enMano()}` };
+    if (enLaMano('cubo')) { const ll = await J.objeto({ tipo: 'llenar_cubo' }); if (!ll.ok) return { ok: false, motivo: `no llena el cubo: ${ll.motivo}` }; }
     await J.andar(huerto.x, huerto.z - 1);
     const re = await J.accion({ tipo: 'regar', campo: cid, x: huerto.x, z: huerto.z, t: 0 });
     const regadas = (campo.plantas || []).filter(p => (p.c === 'col' || p.c === 'nabo') && Number.isFinite(p.ag) && Date.now() - p.ag < 30 * 60 * 1000).length;
     const vacio = !!enLaMano('cubo') && !enLaMano('cubo_agua');
-    await J.andar(deposito.x, deposito.z); await soltarManos();
+    await J.andar(fuente.x, fuente.z); await soltarManos();
+    await J.andar(deposito.x, deposito.z);
     return { ok: re.ok && vacio, motivo: re.motivo || (vacio ? '' : 'el cubo no se vacía'), regadas };
   };
 
@@ -384,7 +396,7 @@ export async function granja({ J, s, T, O, comprobar, pausa, cerca }) {
   }
   comprobar('a mitad del crecimiento escarda con las manos vacías', escardadas >= 2, `${escardadas} pasadas`);
   for (let k = 0; k < 3; k++) { riegos.push(await regarHuerto()); adelantarCampo(CRECER * 0.25); }
-  comprobar('riega la col y el nabo con el cubo lleno en el río (una pasada, los dos) cada vez que pasan menos de dos días sin agua: el cubo se vacía al regar', riegos.length === 5 && riegos.every(r => r.ok && r.regadas === 2), riegos.map(r => r.ok ? `${r.regadas}` : r.motivo).join(' | '));
+  comprobar('riega la col y el nabo con el cubo lleno de agua dulce (una pasada, los dos) cada vez que pasan menos de dos días sin agua: el cubo se vacía al regar', riegos.length === 5 && riegos.every(r => r.ok && r.regadas === 2), riegos.map(r => r.ok ? `${r.regadas}` : r.motivo).join(' | '));
 
   // 22j. La hoz: 3 lascas en su piedra de tallar (un sílex y una piedra cada una) y una rama en el banco
   await cuidarse();
@@ -769,9 +781,9 @@ if (process.argv[1] && process.argv[1].endsWith('recorrido_granja.mjs') && proce
     ws.on('error', fallo);
   });
   try {
-    await granja({ J, s, T, O, comprobar, pausa, cerca, RELOJ, base: meta.base });
-    // (y luego el pozo, como en el recorrido entero: pruebas/recorrido_pozo.mjs)
+    // (antes, el pozo, como en el recorrido entero: pruebas/recorrido_pozo.mjs; con su agua riega el huerto)
     const { pozo } = await import('./recorrido_pozo.mjs'); await pozo({ J, s, T, O, comprobar, pausa, cerca });
+    await granja({ J, s, T, O, comprobar, pausa, cerca, RELOJ, base: meta.base });
   }
   catch (e) { comprobar('la granja llega al final', false, e && e.stack); }
   J.ws.close(); await s.cerrar();
