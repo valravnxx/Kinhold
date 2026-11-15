@@ -666,9 +666,9 @@ export function crearLlevado(j) {
     if (l.dos && l.der) {
       const L = nuevoLote();
       if (l.der === 'tronco_corto' || l.der === 'tronco_delgado') troncoCorto(L, 0, 0, 0, l.der === 'tronco_corto' ? 0.9 : 1.2, l.der === 'tronco_corto' ? 0.13 : 0.09, 'x');
-      // la rodaja (P11c), de canto delante de las dos manos, como una rueda: las caras hacia delante y atrás, la de
-      // atrás contra las palmas (así no se cruza con los antebrazos ni con la tripa)
-      else if (l.der === 'rodaja') troncoCorto(L, 0, 0.03, RODAJA.ancho / 2 + 0.05, RODAJA.ancho, RODAJA.r, 'z');
+      // la rodaja (P11c), de canto entre las dos manos, como una rueda: las caras hacia delante y atrás y las manos en
+      // el canto, a los lados (src/juego/personaje.js las abre a su ancho)
+      else if (l.der === 'rodaja') troncoCorto(L, 0, -0.02, 0, RODAJA.ancho, RODAJA.r, 'z');
       else if (CATALOGO[l.der] && CATALOGO[l.der].lugar === 'espalda' && !sinModelo(l.der)) { const E = espalda(l.der, {}).L; for (const p of E.piezas) { p.m.premultiply(new THREE.Matrix4().makeRotationY(Math.PI)).premultiply(new THREE.Matrix4().makeTranslation(0, -0.12, 0.1)); L.piezas.push(p); } } // la mochila o el bastidor, cogido delante por los largueros, la repisa hacia el pecho
       else { hatillo(L, 0, 0.12, 0, 2.2); L.generico = true; }
       // va entre las dos manos (con la animación de llevar en brazos, delante del pecho): lo pone seguir()

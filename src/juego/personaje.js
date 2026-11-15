@@ -243,8 +243,10 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       // delante del pecho, a 35 cm, y las manos a sus lados (a 20 cm del centro)
       const pecho = (j.mh.hueso.spine_03 || j.mh.hueso.spine_02).getWorldPosition(new THREE.Vector3());
       const c = pecho.addScaledVector(_f, 0.35).addScaledVector(_u, -0.22);
-      nudillosA(b.r, c.clone().addScaledVector(_l, -0.2), polo('r'));
-      nudillosA(b.l, c.clone().addScaledVector(_l, 0.2), polo('l'));
+      // la rodaja (P11c), por el canto: las manos a las 3 y a las 9 de la rueda (mide 48 cm de ancho)
+      const lado = j.llevadoPedido && j.llevadoPedido.der === 'rodaja' ? 0.25 : 0.2;
+      nudillosA(b.r, c.clone().addScaledVector(_l, -lado), polo('r'));
+      nudillosA(b.l, c.clone().addScaledVector(_l, lado), polo('l'));
       return true;
     }
     return false;
