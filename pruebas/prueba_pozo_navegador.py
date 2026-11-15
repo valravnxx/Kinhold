@@ -1,8 +1,9 @@
 # Prueba en navegador del pozo en el juego (P11b, «El pozo (2), en el juego»), en línea con un servidor local y dos
 # jugadores. Uso: python3 pruebas/prueba_pozo_navegador.py <html de la demo> <carpeta_capturas>
-# En PC (1280×800), un jugador pone su mojón en la zona de al lado de la salida, coge la pala de madera y, con ella en la
-# mano, Usar (F) marca un pozo un paso delante de él: el aviso dice a qué hondura está el agua (la del servidor, la que
-# sale del terreno) y se ven el círculo raspado y la estaca. Junto al pozo, Usar cava a golpes de pala hasta acabar el
+# En PC (1280×800), un jugador pone su mojón en la zona de al lado de la salida y coge la pala de madera: con ella en la
+# mano, Usar no ofrece marcar un pozo (valravnx, 15 nov: «la pala se usa para más cosas»). El pozo se marca desde
+# construir (pestaña Tierra, «Pozo»): el aviso dice a qué hondura está el agua donde apuntas (la del servidor, la que
+# sale del terreno) y, al marcarlo, se ven el círculo raspado y la estaca. Junto al pozo, Usar cava a golpes de pala hasta acabar el
 # tramo (sin revestirlo no deja bajar más); con piedras, Usar lo reviste (pocas: se ve el montoncito de las puestas);
 # así hasta el agua. Se ven la boca con sus tramos de tierra y de piedra, la hilada de arriba, el montón de tierra sacada
 # y, al final, el agua del fondo. En el móvil (390×844), el otro jugador lo ve igual.
@@ -155,20 +156,40 @@ try:
         A.evaluate(f"{K}.cambiarModo('mover')")
         soltar_manos(A)
 
-        print('Con la pala de madera en la mano, marca el pozo')
+        print('Con la pala de madera en la mano, no sale «Marcar aquí un pozo» (valravnx, 15 nov)')
         coger(A, 'pala_madera', 1, 'mano:der')
         comprobar('lleva la pala de madera en la mano', esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'pala_madera'", 8000))
-        ir(A, x0 - 0.9, z0, 1.5708); A.wait_for_timeout(500)   # mirando al este: el pozo, un paso delante (x0, z0)
-        comprobar('Usar dice «Marcar aquí un pozo»', texto_usar(A) == 'Marcar aquí un pozo', texto_usar(A))
-        usar(A)
+        ir(A, x0 - 0.9, z0, 1.5708); A.wait_for_timeout(500)
+        comprobar('con la pala en la mano, en su tierra, Usar no ofrece marcar un pozo', 'pozo' not in texto_usar(A).lower(), texto_usar(A))
+        usar(A); A.wait_for_timeout(800)
+        comprobar('y Usar con la pala no marca ninguno', A.evaluate(f"({K}.mundo.pozos || []).length") == 0, pozo(A))
+
+        print('Marca el pozo desde construir (pestaña Tierra)')
+        A.evaluate(f"{K}.cambiarModo('construir')")
+        A.evaluate("[...document.querySelectorAll('#pestanas button')].find(b => b.dataset.cat === 'tierra').click()"); A.wait_for_timeout(400)
+        nb = A.evaluate("[...document.querySelectorAll('#piezas button')].map(b => b.textContent).join(' | ')")
+        comprobar('en construir, pestaña Tierra, está el pozo', 'Pozo' in nb, nb)
+        A.evaluate("[...document.querySelectorAll('#piezas button')].find(b => b.textContent.startsWith('Pozo')).click()"); A.wait_for_timeout(400)
+        comprobar('elegido el pozo', A.evaluate(f"{K}.estado.sel.clase") == 'pozo', A.evaluate(f"JSON.stringify({K}.estado.sel)"))
+        A.evaluate(f"{K}.apuntar({x0}, {z0}, {K}.alturaSuelo({x0}, {z0}))"); A.wait_for_timeout(500)
+        hs = str(H).replace('.', ',')
+        comprobar(f'antes de marcarlo, el aviso dice a qué hondura está el agua ahí ({hs} m)', esperar(A, f"{AVISO}.includes('a unos {hs} m') && {AVISO}.includes('{TR} tramos')", 5000), A.evaluate(AVISO))
+        comprobar('se ve el fantasma del pozo', A.evaluate(f"(() => {{ let v = false; {K}.escena.traverse(o => {{ if (o.userData && o.userData.fantasma && o.visible) v = true; }}); return v; }})()"))
+        A.add_style_tag(content='#menuUsar { visibility: hidden !important; }')
+        A.evaluate(f"{K}.cam.yaw = {1.1 + 3.1416}; {K}.cam.dist = 6; {K}.cam.pitch = 0.6"); A.wait_for_timeout(2000)
+        captura(A, f'{SALIDA}/PC_construir_pozo.png')
+        A.evaluate(f"{K}.colocar()"); A.wait_for_timeout(500)
         l = servidorMundo(lambda l: any(e.get('tipo') == 'pozo' and e.get('ok') for e in l))
         e = next((e for e in (l or []) if e.get('tipo') == 'pozo' and e.get('ok')), None)
         comprobar('el pozo se marca en el servidor, con la hondura del terreno', e is not None and abs(((e.get('datos') or {}).get('hondura') or 0) - H) < 0.05, json.dumps(e)[:300] if e else A.evaluate(AVISO))
-        hs = str(H).replace('.', ',')
-        comprobar(f'el aviso dice a qué hondura está el agua ({hs} m, {TR} tramos)', esperar(A, f"{AVISO}.includes('a unos {hs} m') && {AVISO}.includes('{TR} tramos')", 5000), A.evaluate(AVISO))
-        comprobar('en el navegador, el pozo un paso delante de él', esperar(A, f"({K}.mundo.pozos || []).length === 1 && Math.hypot({K}.mundo.pozos[0].x - {x0}, {K}.mundo.pozos[0].z - {z0}) < 0.1", 8000), pozo(A))
+        comprobar(f'el aviso dice a qué hondura está el agua ({hs} m, {TR} tramos) y que se cava con la pala', esperar(A, f"{AVISO}.includes('a unos {hs} m') && {AVISO}.includes('{TR} tramos') && {AVISO}.includes('pala')", 5000), A.evaluate(AVISO))
+        comprobar('y vuelve a moverse (para ir a cavarlo)', A.evaluate(f"{K}.estado.modo") == 'mover')
+        comprobar('en el navegador, el pozo donde apuntó', esperar(A, f"({K}.mundo.pozos || []).length === 1 && Math.hypot({K}.mundo.pozos[0].x - {x0}, {K}.mundo.pozos[0].z - {z0}) < 0.1", 8000), pozo(A))
         comprobar('se dibuja su boca', esperar(A, f"!!{K}.escena.getObjectByName('boca_pozo')", 8000))
-        A.add_style_tag(content='#menuUsar { visibility: hidden !important; }')
+        A.evaluate(f"{K}.cambiarModo('construir')"); A.evaluate(f"{K}.seleccionar('pozo', 'pozo')")
+        A.evaluate(f"{K}.apuntar({x0} + 1.5, {z0}, {K}.alturaSuelo({x0} + 1.5, {z0}))"); A.wait_for_timeout(300)
+        comprobar('pegado a otro pozo, construir no deja marcar otro', A.evaluate(f"{K}.estado.candidato.v.ok") is False and 'ya hay un pozo' in A.evaluate(AVISO), A.evaluate(AVISO))
+        A.evaluate(f"{K}.cambiarModo('mover')")
         ir(A, x0 - 2.2, z0 - 1.2, 1.1)
         ver(A, x0, z0, 1.1 + 3.1416, 3.2, 0.6, f'{SALIDA}/PC_pozo_marcado_de_cerca.png')
 
@@ -242,6 +263,14 @@ try:
         B.wait_for_timeout(15000)
         ver(B, x0, z0, -2.1 + 3.1416, 3.0, 0.9, f'{SALIDA}/movil_pozo_con_agua_de_cerca.png', 3000)
         ver(B, x0, z0, -2.1 + 3.1416, 9, 0.6, f'{SALIDA}/movil_pozo_con_agua.png')
+        print('En el móvil, el pozo está en construir, pestaña Tierra')
+        B.evaluate(f"{K}.cambiarModo('construir')")
+        B.evaluate("[...document.querySelectorAll('#pestanas button')].find(b => b.dataset.cat === 'tierra').click()"); B.wait_for_timeout(400)
+        B.evaluate("[...document.querySelectorAll('#piezas button')].find(b => b.textContent.startsWith('Pozo')).click()"); B.wait_for_timeout(400)
+        comprobar('móvil: en construir, pestaña Tierra, se elige el pozo', B.evaluate(f"{K}.estado.sel.clase") == 'pozo', B.evaluate(f"JSON.stringify({K}.estado.sel)"))
+        B.evaluate(f"{K}.apuntar({x0} + 2, {z0} + 1, {K}.alturaSuelo({x0} + 2, {z0} + 1))"); B.wait_for_timeout(1500)
+        captura(B, f'{SALIDA}/movil_construir_pozo.png')
+        B.evaluate(f"{K}.cambiarModo('mover')")
         comprobar('a él no le deja cavar en el pozo de otro', B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'revestir_pozo', pozo: {K}.mundo.pozos[0].id }}); return r.ok ? 'sí' : r.motivo; }})()") != 'sí')
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:

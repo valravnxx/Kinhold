@@ -2401,9 +2401,9 @@
     },
     {
      "nombre": "El pozo, desde construir: el sitio del pozo se marca desde el menú de construir (como una obra más), no con la pala en la mano, que sirve para más cosas; con la pala en la mano ya no sale «Marcar aquí un pozo». Luego, a su lado, cada tramo se cava con la pala y se reviste de piedra como hasta ahora; en PC y en móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-15T07:40:43+00:00",
-     "rama": "trabajo/20261115-0740"
+     "fin": "2026-11-15T08:32:48+00:00"
     },
     {
      "nombre": "El pozo (3), sacar agua: brocal de piedra, travesaño de varas y cuerda; con el cubo se saca agua dulce (para regar y para beber), lejos de cualquier río; el recorrido de jugador hace un pozo de principio a fin. Cadena: varas ← árbol joven; cuerda ← fibra",
@@ -4714,6 +4714,13 @@
      "archivo": "jugar/demo/v216.html",
      "capturas": "capturas/demo-v216",
      "notas": "El pozo, en el juego: con la pala de madera se marca (el aviso dice a qué hondura está el agua), se cava por tramos y se reviste de piedra hasta el agua; se ven la boca con sus tramos, la piedra y la tierra sacada, y lo ven todos (P11b)"
+    },
+    {
+     "v": "v217",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v217.html",
+     "capturas": "capturas/demo-v217",
+     "notas": "El pozo se marca desde construir (pestaña Tierra); con la pala en la mano ya no sale «Marcar aquí un pozo»; luego se cava con la pala a su lado, como antes"
     }
    ]
   },
