@@ -298,24 +298,41 @@ function portillo() {
 const ENTERRADO = 0.5; // m de cada tronco de la empalizada bajo tierra
 function empalizada(opc = {}) {
   if (opc.porton) {
+    // El portón sin hierro (P11c, provisional): 4 troncos delgados (los dos postes, clavados como los de la empalizada,
+    // y dos rajados en los rollizos de la hoja) y 2 cuerdas. La hoja: seis rollizos de punta afilada, dos
+    // traviesas y una tornapunta por detrás, todo atado con cuerda (ni una pletina ni un clavo). Los goznes, de madera
+    // y cuerda: el rollizo de la bisagra baja más y gira sobre una piedra de quicio, y arriba y abajo lo abraza al poste
+    // una gaza de cuerda gruesa con un taco de madera encima que no la deja resbalar. Se tira de un asidero de vara.
     const F = loteMuro();
     for (const s of [-1, 1]) {
-      F.add(cil(0.15, 0.17, P.altoEmpalizada + 0.2, 10), 'maderaOsc', s * MODULO / 2, (P.altoEmpalizada + 0.2) / 2, 0);
-      F.add(new THREE.ConeGeometry(0.15, 0.32, 10), 'tabla', s * MODULO / 2, P.altoEmpalizada + 0.36, 0, null, { sinSuelo: true });
+      const x = s * MODULO / 2, alto = P.altoEmpalizada + 0.2;
+      F.add(cil(0.16, 0.18, alto + ENTERRADO, 10), 'maderaOsc', x, (alto - ENTERRADO) / 2, 0, { y: s });
+      F.add(new THREE.ConeGeometry(0.16, 0.4, 10), 'tabla', x, alto + 0.2, 0, null, { sinSuelo: true, plano: true });
     }
-    const H = loteMuro(), n = 7, w = 0.27;
+    const xg = -MODULO / 2; // el poste de los goznes
+    for (const y of [0.55, 2.15]) F.add(cajaR(0.14, 0.09, 0.1, 0.02), 'tabla', xg + 0.2, y + 0.11, 0, null, { sinSuelo: true }); // tacos
+    F.add(new THREE.IcosahedronGeometry(1, 0), 'piedraOsc', xg + 0.31, 0.03, 0, { y: 0.4 }, { sinSuelo: true, plano: true, escala: new THREE.Vector3(0.17, 0.09, 0.15) }); // piedra de quicio
+    const H = loteMuro(), n = 6, w = 0.27, r = 0.132;
     for (let t = 0; t < n; t++) {
-      const x = 0.15 + t * w, h = 2.6 + (t % 2 ? 0 : 0.06);
-      H.add(cajaR(w * 0.95, h, 0.12, 0.03), ruido(t * 2.7 + 4) > 0.5 ? 'tabla' : 'madera', x, h / 2 + 0.04, 0);
-      H.add(new THREE.ConeGeometry(w * 0.48, 0.22, 4, 1), 'tabla', x, h + 0.15, 0, { y: Math.PI / 4 }, { sinSuelo: true, escala: new THREE.Vector3(1, 1, 0.3), plano: true });
+      const x = 0.31 + t * w, bisagra = t === 0, h = P.altoEmpalizada - 0.3 + ruido(t * 2.3 + 7) * 0.15 + (bisagra ? 0.05 : 0);
+      const pie = bisagra ? 0.02 : 0.08; // el de la bisagra baja hasta la piedra de quicio
+      H.add(cil(r * 0.93, r, h - pie, 8), ruido(t * 2.7 + 4) > 0.5 ? 'tabla' : 'madera', x, pie + (h - pie) / 2, 0, { y: ruido(t) * 3 });
+      H.add(new THREE.ConeGeometry(r * 0.93, 0.36, 8), ruido(t * 3.9) > 0.5 ? 'tabla' : 'madera', x, h + 0.18, 0, null, { sinSuelo: true, plano: true });
     }
-    const ancho = n * w;
-    for (const y of [0.5, 1.4, 2.3]) {
-      H.add(cajaR(ancho, 0.16, 0.08, 0.02), 'maderaOsc', 0.15 - w / 2 + ancho / 2, y, -0.1); // traviesas por detrás
-      H.add(cajaR(ancho * 0.94, 0.07, 0.015, 0.006), 'hierro', 0.15 - w / 2 + ancho * 0.5, y, 0.068); // pletinas de hierro
-      for (let t = 0; t < n; t += 2) H.add(new THREE.SphereGeometry(0.022, 6, 4), 'hierro', 0.15 + t * w, y, 0.078, null, { sinSuelo: true }); // clavos
+    const x0 = 0.31, x1 = 0.31 + (n - 1) * w, ancho = x1 - x0 + 0.2, xm = (x0 + x1) / 2;
+    // dos traviesas de vara gruesa por detrás, atadas a cada rollizo
+    for (const y of [0.55, 2.15]) {
+      varaX(H, ancho, 0.055, 'maderaOsc', xm, y, -r - 0.05, y > 1 ? 0.005 : -0.005);
+      for (let t = 0; t < n; t++) H.add(new THREE.TorusGeometry(r + 0.01, 0.014, 4, 10), CUERDA, x0 + t * w, y, -0.03, { x: Math.PI / 2 }, { sinSuelo: true, escala: new THREE.Vector3(1, 1.5, 1) });
     }
-    H.add(new THREE.TorusGeometry(0.08, 0.016, 5, 10), 'hierro', ancho - 0.25, 1.15, 0.09); // argolla
+    // tornapunta: de abajo, junto a los goznes, hasta arriba en el lado que cuelga (así la hoja no se descuelga)
+    const dx = x1 - x0 - 0.1, dy = 2.15 - 0.55 - 0.18, l = Math.hypot(dx, dy);
+    H.add(cil(0.05, 0.055, l, 7), 'madera', x0 + 0.05 + dx / 2, 0.64 + dy / 2, -r - 0.11, { z: Math.atan2(dy, dx) - Math.PI / 2 });
+    // las gazas de los goznes: abrazan el rollizo de la bisagra y el poste
+    for (const y of [0.55, 2.15]) H.add(new THREE.TorusGeometry(0.32, 0.024, 5, 14), CUERDA, 0.14, y, 0, { x: Math.PI / 2 }, { sinSuelo: true, escala: new THREE.Vector3(1, 0.66, 1) });
+    // asidero: una vara corta atada por delante, cerca del borde que se abre
+    H.add(cil(0.028, 0.03, 0.42, 6), 'maderaOsc', x1 - 0.12, 1.2, r + 0.06);
+    for (const y of [1.03, 1.37]) H.add(new THREE.TorusGeometry(0.045, 0.011, 4, 8), CUERDA, x1 - 0.12, y, r + 0.03, { x: Math.PI / 2 }, { sinSuelo: true });
     return conHoja(F, H, -MODULO / 2);
   }
   // los 6 troncos delgados que cuesta (P11c), juntos, con la tierra apisonada y unas piedras de calzo al pie

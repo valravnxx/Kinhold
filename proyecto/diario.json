@@ -7268,5 +7268,23 @@
   "pruebas": "Revisor en la nube: lógica, recorrido, construcción, construir con el acabado nuevo (con la empalizada, en PC y móvil) y panel de fabricación, bien; tras el último arreglo del modelo, otra vez construir con el acabado nuevo, bien.",
   "capturas": "capturas/demo-v221",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T21:24:25+00:00",
+  "fin": "2026-11-15T22:09:57+00:00",
+  "titulo": "P11c: el portón de empalizada, sin hierro",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "El portón de empalizada ya no se esconde: en construir, pestaña Exterior, sale con su imagen (piezas v4) y cuesta 4 troncos delgados y 2 cuerdas, sin hierro.",
+   "Dos postes clavados medio metro y afilados, como los de la empalizada; la hoja, seis rollizos de punta afilada con dos traviesas y una tornapunta por detrás, todo atado con cuerda.",
+   "Los goznes, de madera y cuerda: el rollizo de la bisagra gira sobre una piedra de quicio y dos gazas de cuerda gruesa lo abrazan al poste, con un taco de madera encima de cada una.",
+   "Se abre y se cierra con Usar, por el servidor con su autor; solo lo abren el dueño de la tierra y sus invitados (prueba nueva en la lógica: el de fuera no lo toca, el invitado sí).",
+   "La cadena hasta el mundo: tronco delgado ← talar un árbol joven; cuerda ← el banco de tronco. En prueba_origenes.mjs, el portón entre las piezas que P11c deja a la vista.",
+   "Provisional: el coste y los goznes de cuerda; el portón de herrajes, con el hierro (P10).",
+   "Segunda mirada de un agente aparte: sí. Queda: el poste de los goznes sale muy oscuro a contraluz y la piedra de quicio apenas se ve."
+  ],
+  "pruebas": "Revisor en la nube: construcción, panel de fabricación y recorrido, bien; construir con el acabado nuevo (con el portón: abrir y cerrar con Usar, PC y móvil) y la demo única, bien tras traducir los textos del juego; lógica, bien salvo «jugadores que se ven con lag simulado» (un salto de 2,70× sobre 2,5×: no toca este cambio). Probada rota a propósito: con hierro en el coste fallan los orígenes y el tramo.",
+  "capturas": "capturas/demo-v222",
+  "estado": "ok"
  }
 ]
