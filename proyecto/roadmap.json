@@ -2494,9 +2494,9 @@
    "tareas": [
     {
      "nombre": "La canoa de un tronco: junto al agua, el tronco largo se vacía a mano con el hacha y con brasas que se raspan (por tiempo transcurrido, en el servidor; provisional), y queda una canoa en el suelo (enorme: se arrastra con cuerda o en la rastra hasta la orilla). Con el estilo v5 y capturas de cerca. Cadena: tronco largo ← el árbol adulto; hacha ← el banco de tronco; brasas ← la hoguera",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-16T05:24:32+00:00",
-     "rama": "trabajo/20261116-0524"
+     "fin": "2026-11-16T06:29:57+00:00"
     },
     {
      "nombre": "El remo: 1 tronco corto en el banco de tronco, con el hacha; se lleva en las dos manos. Cadena: tronco corto ← tronzar el tronco largo; banco ← 2 troncos cortos",
@@ -4794,6 +4794,13 @@
      "archivo": "jugar/demo/v223.html",
      "capturas": "capturas/demo-v223",
      "notas": "El muro de entramado: liso, con puerta y con ventana, a la vista en construir (troncos delgados, varas y barro), con la madera parda a la vista y paños pequeños de barro claro, como las casas de entramado de la referencia"
+    },
+    {
+     "v": "v224",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v224.html",
+     "capturas": "capturas/demo-v224",
+     "notas": "La canoa de un tronco (P11d): con un hacha en la mano, junto a un tronco largo, se vacía a golpes; con una hoguera encendida al lado se le echan brasas que arden 10 min por el reloj del servidor, se raspa lo quemado, y así 3 vueltas. Queda la canoa en el suelo: se ata con una cuerda y se arrastra hasta la orilla."
     }
    ]
   },

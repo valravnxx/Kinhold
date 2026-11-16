@@ -68,6 +68,7 @@ paso "El fuego de la hoguera" node pruebas/prueba_fuego.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
+paso "La canoa de un tronco" node pruebas/prueba_canoa.mjs
 paso "La rastra" node pruebas/prueba_rastra.mjs
 paso "La carretilla" node pruebas/prueba_carretilla.mjs
 paso "Obras con lo que llevas" node pruebas/prueba_obras_llevas.mjs
@@ -172,6 +173,7 @@ paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_reco
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
 paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
+paso "Navegador: la canoa" python3 pruebas/prueba_canoa_navegador.py dist/kinhold_demo.html "$C/canoa"
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_demo.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html "$C/carretilla"
 paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html "$C/fabricar"

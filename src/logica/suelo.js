@@ -25,7 +25,8 @@ export const ALCANCE_COGER = 2;          // m
 export const DE_PILA = ['tronco_delgado', 'tronco_largo', 'tronco_corto', 'rodaja', 'lena', 'piedra', 'bloque_piedra'];
 export const esDePila = tipo => DE_PILA.includes(tipo);
 // Lo que tampoco desaparece aunque no sea de pila: la rastra se queda donde la dejas (src/logica/rastra.js).
-export const NO_DESAPARECE = ['rastra', 'carretilla'];
+// (P11d) la canoa, a medias o terminada, tampoco (src/logica/canoa.js).
+export const NO_DESAPARECE = ['rastra', 'carretilla', 'canoa_a_medias', 'canoa'];
 
 const copiar = c => c && JSON.parse(JSON.stringify(c));
 const redondo = v => Math.round(v * 100) / 100;

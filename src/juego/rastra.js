@@ -156,7 +156,7 @@ export function moverRastras(grupo, quien, altura) {
   const sitios = {};
   for (const obj of grupo.children) {
     if (obj.name === 'suelo_carretilla') { moverCarretilla(obj, quien, altura, sitios); continue; }
-    if (obj.name === 'suelo_tronco_largo') { moverTronco(obj, quien, altura, sitios); continue; }
+    if (obj.name === 'suelo_tronco_largo' || obj.name === 'suelo_canoa') { moverTronco(obj, quien, altura, sitios); continue; }   // (y la canoa, P11d)
     if (obj.name !== 'suelo_rastra') continue;
     const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
     inclinarRastra(obj, !!p);
@@ -210,7 +210,7 @@ function moverTronco(obj, quien, altura, sitios) {
     obj.add(cu);
   }
   cu.visible = true;
-  const punta = new THREE.Vector3(2.25, 0.18 + 0.1, 0);
+  const punta = obj.name === 'suelo_canoa' ? new THREE.Vector3(2.12, 0.36, 0) : new THREE.Vector3(2.25, 0.18 + 0.1, 0);   // (la de la canoa, en su proa)
   let mano = new THREE.Vector3(DETRAS_TRONCO - 0.3, 0.9, 0);
   const w = p.mano && p.mano();
   if (w) { obj.updateMatrixWorld(true); mano = obj.worldToLocal(w.clone()); }

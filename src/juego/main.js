@@ -60,7 +60,8 @@ import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } f
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, ALCANCE_TROCEO } from '../logica/troceo.js';
-import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
+import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado } from '../logica/canoa.js';
+import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo, vaACuerda } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
 import { crearMovimiento } from './movimiento.js';
@@ -377,6 +378,7 @@ if (decorado.paso) {
 }
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
 const troceo = new Troceo(sueloObjetos.suelo);
+const vaciadoLocal = new Vaciado(sueloObjetos.suelo);   // (P11d) la canoa, sin servidor (las pruebas); en línea, la del servidor
 if (almacen) cargarTroceo(almacen, troceo, Date.now());
 // la rastra: un objeto del suelo que se arrastra con las dos manos, con su carga (src/logica/rastra.js)
 const rastras = new Rastras(sueloObjetos.suelo);
@@ -1790,12 +1792,14 @@ function accionPrincipal() {
   if (!it && pj.k === 0 && miTronco()) {
     const t = miTronco(), ra = t.arrastra === yoSuelo() ? rastras.cercanas(pj.x, pj.z, Date.now()).find(o => o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0) : null;
     if (ra) return A(tr('Subir el tronco largo a la rastra'), 'tronco_largo', ra, () => cargarRastra(ra, { suelo: t.id }), { alto: 0.4 });
-    return A(tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
+    return A(t.cosa.tipo === 'canoa' ? tr('Soltar la canoa') : tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
   }
   if (!it && pj.k === 0 && !miRastra() && ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda')) {
     const t = rastras.troncosCercanos(pj.x, pj.z, Date.now()).find(o => !o.arrastra);
-    if (t) return A(tr('Atar el tronco largo con la cuerda'), 'cuerda', t, () => atarTronco(t), { alto: 0.3 });
+    if (t) return A(t.cosa.tipo === 'canoa' ? tr('Atar la canoa con la cuerda') : tr('Atar el tronco largo con la cuerda'), 'cuerda', t, () => atarTronco(t), { alto: 0.3 });
   }
+  // la canoa a medias (P11d): Usar sigue con lo que le toca (vaciar a golpes, echar brasas o esperar a que se consuman)
+  if (!it && pj.k === 0 && canoaCercana()) { const op = opcionVaciar(canoaCercana()); if (op) return A(op.texto, op.icono, op.pos, op.hacer, { alto: 0.4, prog: op.prog }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
   if (!it && hachaEnMano(inventario()) && troncoCercano()) { const t0 = troncoCercano(); return A(tr('Trocear: {c}', { c: tr(CATALOGO[t0.cosa.tipo].nombre) }), t0.cosa.tipo, t0, () => empezarTroceo(t0), { alto: 0.4 }); }
   // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
@@ -1832,7 +1836,7 @@ function accionPrincipal() {
     // mineral que ya ha salido (cae a tus pies: se coge al terminar)
     const rcs = recoleccion.cercano(pj.x, pj.z);
     if (rcs && RECOLECTABLES[rcs.tipo].alSuelo && tieneCon(inventario(), rcs.tipo)) return A(verboRecoger(rcs), ICONO_RECOGER(rcs), rcs, () => recoger(rcs), { alto: 0.6 });
-    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
+    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo) && o.cosa.tipo !== 'canoa' && o.cosa.tipo !== 'canoa_a_medias'); // lo que hay en el suelo, antes que lo que se recoge (la canoa no se coge: se ata)
     if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);
     if (rc) return A(verboRecoger(rc), ICONO_RECOGER(rc), rc, () => recoger(rc), { alto: 0.6 });
@@ -1931,8 +1935,12 @@ function opcionesUsar() {
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     // la rodaja del tronco largo (P11c): la rueda de la carretilla, y el resto en troncos cortos
     if (tronco && hachaEnMano(inventario()) && sacaRodaja(tronco.cosa.tipo)) ops.push({ texto: tr('Cortar una rodaja (la rueda de la carretilla)'), pos: tronco, hacer: () => empezarTroceo(tronco, 'rodaja') });
+    // la canoa de un tronco (P11d): del tronco largo, vaciándolo con el hacha y las brasas
+    if (tronco && tronco.cosa.tipo === 'tronco_largo' && !tronco.arrastra) ops.push({ texto: tr('Vaciar el tronco para hacer una canoa'), pos: tronco, alto: 0.4, hacer: () => (hachaEnMano(inventario()) ? empezarVaciado(tronco) : mostrarAviso(tr('Necesitas un hacha en la mano para vaciar el tronco.'), true)) });
+    const cn = canoaCercana(), opc = cn && opcionVaciar(cn);
+    if (opc) ops.push({ texto: opc.texto, pos: cn, alto: 0.4, hacer: opc.hacer });
     for (const op of opcionesRastra()) ops.push(op);
-    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
+    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo) && so.cosa.tipo !== 'canoa' && so.cosa.tipo !== 'canoa_a_medias') ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verboRecoger(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
     const db = desbrozableCercano();
     if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
@@ -2272,7 +2280,7 @@ function opcionesRastra() {
   // el tronco largo a cuerda (P11c): atarlo con la cuerda en la mano, ayudar a otro, soltarlo o subirlo a la rastra
   const tronco = miTronco();
   if (tronco) {
-    ops.push({ texto: tr('Soltar la cuerda del tronco'), pos: sitiosRastra[tronco.id] || pj, hacer: soltarTronco });
+    ops.push({ texto: tronco.cosa.tipo === 'canoa' ? tr('Soltar la cuerda de la canoa') : tr('Soltar la cuerda del tronco'), pos: sitiosRastra[tronco.id] || pj, hacer: soltarTronco });
     if (tronco.arrastra === yoSuelo()) for (const o of rastras.cercanas(pj.x, pj.z, ahora)) if (o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0)
       ops.push({ texto: tr('Subir el tronco largo a la rastra'), pos: o, alto: 0.4, hacer: () => cargarRastra(o, { suelo: tronco.id }) });
     return ops;
@@ -2282,13 +2290,15 @@ function opcionesRastra() {
     for (const o of rastras.troncosCercanos(pj.x, pj.z, ahora, 3)) {
       const s = sitiosRastra[o.id] || o;
       if (Math.hypot(s.x - pj.x, s.z - pj.z) > 3) continue;
-      ops.push({ texto: tr(o.arrastra ? 'Ayudar a tirar del tronco largo' : cuerda ? 'Atar el tronco largo con la cuerda' : 'Atar el tronco largo (hace falta una cuerda en la mano)'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
+      const canoa = o.cosa.tipo === 'canoa';
+      ops.push({ texto: canoa ? tr(o.arrastra ? 'Ayudar a tirar de la canoa' : cuerda ? 'Atar la canoa con la cuerda' : 'Atar la canoa (hace falta una cuerda en la mano)')
+        : tr(o.arrastra ? 'Ayudar a tirar del tronco largo' : cuerda ? 'Atar el tronco largo con la cuerda' : 'Atar el tronco largo (hace falta una cuerda en la mano)'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
     }
     // y los que arrastra otro, donde se ven (su sitio en el servidor es el de antes)
     for (const [id, s] of Object.entries(sitiosRastra)) {
       const o = sueloObjetos.suelo.porId(id, ahora);
-      if (!o || o.cosa.tipo !== 'tronco_largo' || !o.arrastra || o.ayuda || Math.hypot(s.x - pj.x, s.z - pj.z) > 3 || ops.some(q => q.pos === s)) continue;
-      ops.push({ texto: tr('Ayudar a tirar del tronco largo'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
+      if (!o || !vaACuerda(o.cosa.tipo) || !o.arrastra || o.ayuda || Math.hypot(s.x - pj.x, s.z - pj.z) > 3 || ops.some(q => q.pos === s)) continue;
+      ops.push({ texto: o.cosa.tipo === 'canoa' ? tr('Ayudar a tirar de la canoa') : tr('Ayudar a tirar del tronco largo'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
     }
   }
   const cargables = (o) => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_RASTRA).filter(s => s !== o && !esVehiculo(s.cosa.tipo) && sitioRastra(o.cosa.carga, s.cosa.tipo, o.cosa.tipo) > 0);
@@ -2311,8 +2321,9 @@ function opcionesRastra() {
 }
 function atarTronco(o) {
   if (!o.arrastra) { const s = sitiosRastra[o.id] || o; pj.rot = Math.atan2(pj.x - s.x, pj.z - s.z); }   // de espaldas a él: va detrás
-  accionRastra({ tipo: 'atar_tronco', objeto: o.id, x: pj.x, z: pj.z }, (r) => mostrarAviso(r.ayuda ? tr('Ayudas a tirar del tronco largo: entre dos va más deprisa.')
-    : tr('Atas el tronco largo y tiras de él: muy despacio, y cansa. Usar suelta la cuerda.')));
+  const canoa = o.cosa.tipo === 'canoa';
+  accionRastra({ tipo: 'atar_tronco', objeto: o.id, x: pj.x, z: pj.z }, (r) => mostrarAviso(r.ayuda ? (canoa ? tr('Ayudas a tirar de la canoa: entre dos va más deprisa.') : tr('Ayudas a tirar del tronco largo: entre dos va más deprisa.'))
+    : canoa ? tr('Atas la canoa y tiras de ella hasta la orilla: despacio, y cansa. Usar suelta la cuerda.') : tr('Atas el tronco largo y tiras de él: muy despacio, y cansa. Usar suelta la cuerda.')));
 }
 function soltarTronco() {
   const o = miTronco(); if (!o) return;
@@ -2394,6 +2405,7 @@ const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
 function golpeTala() {
   const a = estado.talando;
   if (a.troceo) { golpeTroceo(a.troceo, a.modo || null); return; }
+  if (a.vaciado) { golpeVaciado(a); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
   if (a.rotura) { golpeRotura(a); return; }
   if (a.arranque) { golpeArranque(a); return; }
@@ -2835,6 +2847,58 @@ function golpeRotura(a) {
   fin(r);
 }
 
+// La canoa de un tronco (P11d, src/logica/canoa.js): la canoa a medias más cercana, en la planta baja.
+function canoaCercana() {
+  if (pj.k !== 0) return null;
+  return sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now(), ALCANCE_VACIAR - 0.3).find(o => o.cosa.tipo === 'canoa_a_medias' && !o.arrastra) || null;
+}
+// Lo que toca hacerle a la canoa a medias: { texto, icono, pos, hacer, prog } (o null).
+function opcionVaciar(o) {
+  const v = o.cosa.vaciado, f = faseVaciado(v, Date.now()), h = hachaEnMano(inventario());
+  if (f === 'quemando') {
+    const min = Math.max(1, Math.ceil((v.hasta - Date.now()) / 60000));
+    const texto = min === 1 ? tr('Las brasas arden en el hueco: falta 1 min') : tr('Las brasas arden en el hueco: faltan {n} min', { n: min });
+    return { texto, icono: 'lena', pos: o, hacer: () => mostrarAviso(tr('Cuando se consuman las brasas, se raspa lo quemado con el hacha.')) };
+  }
+  if (f === 'brasas') return { texto: tr('Echar brasas en el hueco (vuelta {n} de 3)', { n: v.vuelta + 1 }), icono: 'lena', pos: o, hacer: () => echarBrasas(o) };
+  const vamos = estado.talando && estado.talando.vaciado === o.id;
+  return { texto: f === 'raspar' ? tr('Raspar lo quemado con el hacha') : tr('Vaciar el tronco con el hacha'), icono: h ? h.tipo : 'hacha_piedra', pos: o,
+    hacer: () => (h ? empezarVaciado(o) : mostrarAviso(tr(f === 'raspar' ? 'Necesitas un hacha en la mano para raspar lo quemado.' : 'Necesitas un hacha en la mano para vaciar el tronco.'), true)), prog: vamos ? progresoGolpes(estado.talando) : 0 };
+}
+// Manda lo que le toca a la canoa (en línea, al servidor; sin él, a la lógica de aquí) y llama a fin con el resultado.
+function mandarVaciar(id, fin) {
+  const datos = { tipo: 'vaciar', objeto: id, x: pj.x, z: pj.z };
+  if (objetosRed) { objetosRed.mandar(datos, fin); return; }
+  const r = ejecutarVaciado(vaciadoLocal, inventarios, registroAcciones, { autor: AUTOR_LOCAL, ...datos }, Date.now(), fabCliente.estaciones);
+  if (r.ok) { sueloObjetos.guardar(); sueloObjetos.refrescar(); }
+  fin(r);
+}
+function empezarVaciado(o) {
+  estado.talando = { vaciado: o.id, x: o.x, z: o.z }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(faseVaciado(o.cosa.vaciado, Date.now()) === 'raspar' ? tr('Raspas lo quemado del hueco.') : tr('Vacías el tronco con el hacha.'));
+}
+function golpeVaciado(a) {
+  estado.golpeEn = RITMO_TALA;
+  mandarVaciar(a.vaciado, (r) => {
+    if (estado.talando !== a) return;   // ya ha dejado de golpear
+    if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (r.objeto) a.vaciado = r.objeto;   // (de una pila de troncos largos se aparta uno: es otro objeto)
+    if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
+    if (!r.termina) { mostrarAviso(r.faltan === 1 ? tr('Vacías el tronco: falta 1 golpe.') : tr('Vacías el tronco: faltan {n} golpes.', { n: r.faltan })); return; }
+    estado.talando = null; a.prog = null;
+    mostrarAviso(r.canoa ? tr('¡La canoa está vaciada! Arrástrala con una cuerda hasta la orilla.')
+      : r.paso === 'desbastar' ? tr('Tronco desbastado. Ahora, con una hoguera encendida al lado, echa brasas en el hueco.')
+      : tr('Raspado. Echa otra vez brasas en el hueco (vuelta {n} de 3).', { n: r.vuelta + 1 }));
+  });
+}
+function echarBrasas(o) {
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mandarVaciar(o.id, (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    mostrarAviso(tr('Echas brasas de la hoguera en el hueco: arderán 10 min. Luego se raspa lo quemado.'));
+  });
+}
+
 // Tronzar y partir (src/logica/troceo.js): el tronco del suelo más cercano que se trocea, en la planta baja.
 function troncoCercano() {
   if (pj.k !== 0) return null;
@@ -3257,7 +3321,7 @@ function pintarLlevas() {
   const ra = miRastra();
   if (ra && esCarr(ra)) partes.push(`<span class="llevo"><span>${tr('Empujas:')}</span><b>${tr('Carretilla')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Aparcar')}</button></span>`);
   else if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
-  if (miTronco()) partes.push(`<span class="llevo"><span>${tr('Tiras de:')}</span><b>${tr('Tronco largo')}</b><button data-soltartronco="1">${tr('Soltar')}</button></span>`);
+  if (miTronco()) partes.push(`<span class="llevo"><span>${tr('Tiras de:')}</span><b>${tr(CATALOGO[miTronco().cosa.tipo].nombre)}</b><button data-soltartronco="1">${tr('Soltar')}</button></span>`);
   const f = Math.min(1, inv.lleno().fraccion);
   partes.push(`<span class="carga" title="${tr('Carga: {c}%', { c: Math.round(f * 100) })}"><i style="width:${Math.round(f * 100)}%"></i></span>`);
   $('llevas').hidden = false;
@@ -3729,7 +3793,7 @@ window.__kinhold = {
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV, mirarEras, erasDespejadas: () => (window.__sinDespejarEras ? [] : erasHechas().map(e => [e.x, e.z, ERA + 0.15])),
   calor() { return calorEn(Object.values(fabCliente.estaciones), pj.x, pj.z, Date.now()); }, // el calor de las hogueras donde estás (para el frío)
-  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, cambiarHombro,
+  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, vaciadoLocal, canoaCercana, opcionVaciar, mandarVaciar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
   rastras, miRastra, miTronco, atarTronco, soltarTronco, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)

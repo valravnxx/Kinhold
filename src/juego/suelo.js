@@ -21,6 +21,7 @@ import { modeloCarretilla } from './carretilla.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
 import { CATALOGO } from '../logica/inventario.js';
 import { MODELO_OBJETO } from './modelos_objetos.js';
+import { modeloCanoa, firmaCanoa } from './canoa.js';
 import { crearModeloLanza, crearLiebreMuerta } from './fauna.js';
 
 const mallas = L => {
@@ -111,6 +112,7 @@ export function modeloDe(o) {
   if (t === 'tronco_corto') return troncosConCortes(n, 0.9, 0.14, o.id);
   if (t === 'tronco_delgado') return troncosConCortes(n, 2.6, 0.09, o.id);
   if (t === 'tronco_largo') return troncosConCortes(n, 4.5, 0.18, o.id);
+  if (t === 'canoa_a_medias' || t === 'canoa') return modeloCanoa(o, () => troncosConCortes(1, 4.5, 0.18, o.id));   // (P11d) src/juego/canoa.js
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
   if (Object.hasOwn(MODELO_OBJETO, t)) return MODELO_OBJETO[t](n, o.id); // lo de las recetas de P3 (src/juego/modelos_objetos.js)
   if (t === 'hacha_mano' || t === 'hacha_hierro' || t === 'hacha_piedra') { const h = modeloHacha(); h.rotation.set(Math.PI / 2, 0, az(o.id, 3) * 6); h.position.y = 0.03; const g = new THREE.Group(); g.add(h); return g; }
@@ -129,7 +131,7 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
     const hay = suelo.visibles(ahora).filter(o => !escondidos.has(o.id)), ids = new Set(hay.map(o => o.id));
     for (const [id, v] of vistos) if (!ids.has(id)) { grupo.remove(v.obj); vistos.delete(id); }
     for (const o of hay) {
-      const firma = o.cosa.tipo + ':' + o.cosa.n + (o.cosa.carga ? ':' + o.cosa.carga.tipo + o.cosa.carga.n : '') + (o.arrastra ? '@' + o.arrastra : ''), v = vistos.get(o.id);
+      const firma = o.cosa.tipo + ':' + o.cosa.n + (o.cosa.carga ? ':' + o.cosa.carga.tipo + o.cosa.carga.n : '') + (o.arrastra ? '@' + o.arrastra : '') + (o.cosa.vaciado ? '#' + firmaCanoa(o, ahora) : ''), v = vistos.get(o.id);
       if (v && v.firma === firma) { if (!o.arrastra && (v.obj.position.x !== o.x || v.obj.position.z !== o.z)) { v.obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); if (Number.isFinite(o.giro)) v.obj.rotation.set(0, o.giro, 0); } continue; }
       if (v) grupo.remove(v.obj);
       const obj = modeloDe(o); obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); obj.rotation.y += Number.isFinite(o.giro) ? o.giro : az(o.id, 9) * Math.PI * 2;

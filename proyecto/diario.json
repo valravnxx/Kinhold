@@ -7337,5 +7337,22 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 71 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T05:24:32+00:00",
+  "fin": "2026-11-16T06:29:57+00:00",
+  "titulo": "La canoa de un tronco: vaciar el tronco largo con el hacha y las brasas (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "Con un hacha en la mano, junto a un tronco largo, el menú de Usar ofrece «Vaciar el tronco para hacer una canoa». A golpes se desbasta: se ve la cara de arriba aplanada y las astillas; al primer golpe ya es una canoa a medias, que no desaparece.",
+   "Con una hoguera (o un hogar) encendida a 6 m como mucho, Usar echa sus brasas en el hueco: arden 10 min por el reloj del servidor, aunque nadie juegue, y se ven los trozos encendidos, el carbón y la ceniza. Luego se raspa lo quemado con el hacha, y así 3 vueltas, cada una más honda.",
+   "Queda la canoa en el suelo: no se coge con las manos; con una cuerda en la mano se ata y se arrastra hasta la orilla como el tronco largo (y entre dos, más deprisa). Todo por el servidor, con su autor (acción «vaciar»).",
+   "Provisional (en el registro de la demo): desbastar, 40 golpes con hacha de piedra (14 con la de hierro); raspar cada vuelta, 20 (8); las brasas, 10 min y 3 vueltas, sin gastar la hoguera; no hace falta estar junto al agua para vaciarla; 4,4 m de largo, 0,54 m de ancho y 40 kg; a la rastra no se sube (va a cuerda).",
+   "Imágenes nuevas del panel (iconos v31) para la canoa y la canoa a medias, y la cadena en la prueba de orígenes (tronco largo, hacha y hoguera → canoa).",
+   "Segunda mirada de las capturas por un agente aparte: pidió brasas con volumen, el hueco quemado solo por dentro y el desbaste a la vista; arreglado. Queda por mirar con valravnx: al tirar de la cuerda con el hacha en la otra mano, el hacha sigue en la mano (pasa igual con el tronco largo)."
+  ],
+  "pruebas": "En la nube: lógica (con la nueva de la canoa, 45 comprobaciones), recorrido de jugador (326 bien), la canoa en el navegador PC y móvil, la rastra, objetos en el suelo, panel de inventario, avisos de las necesidades y velocidad con pocos fotogramas: todo bien. La lógica falló la primera vez por las imágenes que faltaban de la canoa (hechas en iconos v31) y la rastra por esas mismas imágenes (404 en el móvil): repetidas, bien. El recorrido de la canoa va en su tarea.",
+  "capturas": "capturas/demo-v224",
+  "estado": "ok"
  }
 ]
