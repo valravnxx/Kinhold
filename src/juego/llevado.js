@@ -462,9 +462,14 @@ function seguir(grupo, raiz) {
     const em = o.userData.entreManos;
     if (em) { // lo grande en las dos manos: entre las dos, atravesado de una a otra
       em[0].getWorldPosition(_a).applyMatrix4(_inv); em[1].getWorldPosition(_b).applyMatrix4(_inv);
+      // lo que se agarra por una caña (el remo): la línea pasa por las palmas (de la muñeca hacia el nudillo del
+      // corazón), no por delante de las muñecas, para que las manos cierren sobre ella
+      const palmas = o.userData.palmas;
+      if (palmas) { _a.lerp(palmas[0].getWorldPosition(_y).applyMatrix4(_inv), 0.75); _b.lerp(palmas[1].getWorldPosition(_y).applyMatrix4(_inv), 0.75); }
       _x.subVectors(_b, _a); const largo = _x.length(); _x.normalize();
       _y.set(0, 1, 0).addScaledVector(_x, -_x.y).normalize(); _z.crossVectors(_x, _y);
-      o.matrix.makeBasis(_x, _y, _z).setPosition(_a.lerp(_b, 0.5).addScaledVector(_z, 0.06).addScaledVector(_y, 0.02));
+      _a.lerp(_b, 0.5); if (!palmas) _a.addScaledVector(_z, 0.06).addScaledVector(_y, 0.02);
+      o.matrix.makeBasis(_x, _y, _z).setPosition(_a);
       o.matrixWorldNeedsUpdate = true; o.userData.largoManos = largo;
       continue;
     }
@@ -678,6 +683,7 @@ export function crearLlevado(j) {
       const g = deMano(L); g.name = 'llevado_manos'; g.matrixAutoUpdate = false; g.userData.generico = !!L.generico;
       g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
       if (H.hand_r && H.hand_l) { g.userData.entreManos = [H.hand_r, H.hand_l]; grupo.add(g); }
+      if (l.der === 'remo' && H.middle_01_r && H.middle_01_l) g.userData.palmas = [H.middle_01_r, H.middle_01_l];
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
       // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma
