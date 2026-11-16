@@ -11,7 +11,7 @@
 // tronco corto ← el tronco largo; vara y tronco delgado ← árbol joven; barro ← la ribera (palo cavador ← 1 rama).
 // Para trabajar en esta parte sin repetir lo de antes: KINHOLD_RECORRIDO_GUARDAR=<carpeta> node pruebas/prueba_recorrido.mjs
 // guarda el mundo antes del pozo; KINHOLD_RECORRIDO_DESDE=<carpeta> node pruebas/recorrido_casa_fuerte.mjs sigue desde
-// ahí con la casa más fuerte (sin el pozo ni la granja).
+// ahí con la casa más fuerte (sin el pozo ni la granja). Con MUTAR=1 además, en la rastra no cabe el tronco largo: debe FALLAR.
 // Decisiones provisionales (anotadas en el diario): la empalizada y el portón, delante de la casa (o a un lado, donde
 // quepan); el entramado, en una casilla nueva pegada a la casa, sobre un cimiento de troncos (el muro pide cimiento).
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
@@ -22,9 +22,11 @@ import { campoEn } from '../src/logica/campos.js';
 import { VIDA as VIDA_DESGASTE } from '../src/logica/desgaste.js';
 import { PIEZAS } from '../src/logica/piezas.js';
 import { clave as claveDe } from '../src/logica/construccion.js';
-import { DETRAS, DETRAS_TRONCO } from '../src/logica/rastra.js';
+import { DETRAS, DETRAS_TRONCO, CABE_RASTRA } from '../src/logica/rastra.js';
 
 const MANOS = ['mano:der', 'mano:izq'];
+// Con MUTAR=1 (solo al seguir desde lo guardado) en la rastra no cabe el tronco largo: debe FALLAR.
+if (process.env.MUTAR === '1' && process.env.KINHOLD_RECORRIDO_DESDE) CABE_RASTRA.tronco_largo = 0;
 
 export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   const yo = J.bienvenida.autor;
@@ -414,7 +416,7 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   comprobar('va a la ribera con un palo cavador y cava 3 cestas de barro', J.cuantos('barro') >= 3, `${cavadas} · ${motivoBarro} · ${enMano()}${barro ? ` · a ${Math.round(dist(barro, C))} m de su casa` : ''}`);
   r = J.cuantos('barro') ? await entregar(muro, 'barro', 3) : { ok: false };
   if (r.ok && falta(muro, 'tronco') <= 0 && falta(muro, 'vara') <= 0) r = await trabajar(muro);
-  comprobar('lleva el barro al muro de entramado y lo levanta: la casa más fuerte, con su empalizada, su portón y su muro de entramado', r.ok && terminada(muro) && terminada(empal) && terminada(porton), `${r.motivo || ''} faltan ${falta(muro, 'barro')} de barro`);
+  comprobar('lleva el barro al muro de entramado y lo levanta: la casa más fuerte, con su empalizada, su portón y su muro de entramado', r.ok && terminada(muro) && terminada(empal) && terminada(porton), terminada(muro) ? '' : `${r.motivo || ''} faltan ${falta(muro, 'barro')} de barro`);
   console.log(`     (${jovenes} árboles jóvenes talados para la empalizada, el portón, el cimiento y el entramado)`);
   await J.andar(hachaMuro.x, hachaMuro.z); await hachaALaMano(); await soltarManos();
   await J.andar(inicio.x, inicio.z);
