@@ -244,11 +244,13 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       const pecho = (j.mh.hueso.spine_03 || j.mh.hueso.spine_02).getWorldPosition(new THREE.Vector3());
       // la rodaja (P11c), por el canto: las manos a las 3 y a las 9 de la rueda (mide 48 cm de ancho), algo más abajo
       // para que los brazos lleguen con la rueda entera delante del pecho
-      const rueda = j.llevadoPedido && j.llevadoPedido.der === 'rodaja', lado = rueda ? 0.25 : 0.2;
+      const rueda = j.llevadoPedido && j.llevadoPedido.der === 'rodaja';
+      // el remo (P11d), por la caña: las manos más abiertas y algo más delante, para que la caña no roce la cadera
+      const remo = j.llevadoPedido && j.llevadoPedido.der === 'remo', lado = rueda ? 0.25 : remo ? 0.27 : 0.2;
       // (la rodaja, con el delante y la izquierda del cuerpo entero, no del pie: en la postura de llevar en brazos el pie
       // va algo girado y la rueda, más ancha que un tronco, se iba hacia un lado)
-      if (rueda) { _f.set(0, 0, 1).applyQuaternion(j.raiz.getWorldQuaternion(new THREE.Quaternion())).setY(0).normalize(); _l.crossVectors(_u, _f).normalize(); }
-      const c = pecho.addScaledVector(_f, rueda ? 0.32 : 0.35).addScaledVector(_u, rueda ? -0.28 : -0.22);
+      if (rueda || remo) { _f.set(0, 0, 1).applyQuaternion(j.raiz.getWorldQuaternion(new THREE.Quaternion())).setY(0).normalize(); _l.crossVectors(_u, _f).normalize(); }
+      const c = pecho.addScaledVector(_f, rueda ? 0.32 : remo ? 0.4 : 0.35).addScaledVector(_u, rueda ? -0.28 : -0.22);
       nudillosA(b.r, c.clone().addScaledVector(_l, -lado), polo('r'));
       nudillosA(b.l, c.clone().addScaledVector(_l, lado), polo('l'));
       return true;

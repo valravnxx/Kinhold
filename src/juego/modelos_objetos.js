@@ -533,7 +533,9 @@ export function loteRemo(L, opc = {}) {
   for (const s of [-1, 1]) L.add(new THREE.CylinderGeometry(r * 0.35, r * 0.85, pala * 0.8, 6), 'tabla', x0 - pala * 0.4, 0, s * grueso * 0.35, { z: Math.PI / 2 }, { escala: v3(1, 1, 0.55), tex: 'veta', ...opc });
   // la caña, algo más gruesa junto a la pala, y el puño en muleta, atravesado
   L.add(cil(r * 1.12, r, 0.93, 7), 'tabla', x0 + 0.465, 0, 0, { z: Math.PI / 2 }, { tex: 'veta', ...opc });
-  L.add(cajaR(0.045, 0.13, 0.034, 0.012), 'tabla', 0.525, 0, 0, null, { tex: 'veta', ...opc });
+  // (redondeado, sacado de la misma pieza: un taco cuadrado parecía la cabeza de un mazo; segunda mirada, 16 nov)
+  L.add(cil(r * 1.05, r * 1.05, 0.12, 7), 'tabla', 0.515, 0, 0, null, { tex: 'veta', ...opc });
+  for (const s of [-1, 1]) L.add(new THREE.SphereGeometry(r * 1.05, 7, 4), 'tabla', 0.515, s * 0.06, 0, null, { tex: 'veta', ...opc });
 }
 function remo(n, id) {
   // tumbado en el suelo, de plano: la pala y el puño apoyados (y la caña algo levantada, como al dejarlo)
