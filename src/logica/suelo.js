@@ -139,7 +139,7 @@ export class Suelo {
       const n = Number.isInteger(o.cosa.n) && o.cosa.n > 0 ? o.cosa.n : 1;
       this.objetos.push({ id: String(o.id), cosa: { ...copiar(o.cosa), n }, x: o.x, z: o.z, autor: String(o.autor || ''),
         soltado: Number.isFinite(o.soltado) ? o.soltado : 0, desaparece: Number.isFinite(o.desaparece) ? o.desaparece : null,
-        ...(Number.isFinite(o.giro) ? { giro: o.giro } : {}), ...(typeof o.guarda === 'string' && o.guarda ? { guarda: o.guarda } : {}) });
+        ...(Number.isFinite(o.giro) ? { giro: o.giro } : {}), ...(typeof o.guarda === 'string' && o.guarda ? { guarda: o.guarda } : {}), ...(o.agua === true && o.cosa.tipo === 'canoa' ? { agua: true } : {}) });
     }
     const max = Math.max(0, ...this.objetos.map(o => Number(String(o.id).slice(1)) || 0));
     this.siguiente = Math.max(Number.isInteger(d.siguiente) ? d.siguiente : 1, max + 1);

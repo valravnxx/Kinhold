@@ -18,6 +18,7 @@
 //     (src/logica/tala.js), a lo que llevas
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
 //   { tipo: 'vaciar', objeto, x, z }              — vaciar el tronco largo para la canoa: un golpe o echar brasas (src/logica/canoa.js)
+//   { tipo: 'echar_canoa' | 'subir_canoa' | 'bajar_canoa', … } — la canoa al agua, subir y bajar (src/logica/canoa.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
 //   { tipo: 'romper', punto, x, z, px, pz, clase: 'roca', tam } — un golpe de mazo a una roca del mundo (ídem); al último,
 //     sus piedras al suelo donde estaba
@@ -71,7 +72,7 @@ import { Suelo, ejecutarSuelo } from './suelo.js';
 import { RegistroAcciones } from './acciones.js';
 import { Tala, ejecutarTala, idArbol, DA, ALCANCE_TALA } from './tala.js';
 import { Troceo, ejecutarTroceo } from './troceo.js';
-import { Vaciado, ejecutarVaciado } from './canoa.js';
+import { Vaciado, ejecutarVaciado, Canoas, ejecutarCanoa, TIPOS_CANOA } from './canoa.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER, idRoca } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
@@ -84,7 +85,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'arrancar', 'trocear', 'vaciar', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'arrancar', 'trocear', 'vaciar', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA, ...TIPOS_CANOA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -112,7 +113,8 @@ export class ObjetosServidor {
     this.fab = new Fabricacion();
     this.registro = new RegistroAcciones(1);   // la última; lo que se audita va al archivo
   }
-  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.vaciado = new Vaciado(suelo); this.vaciado.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo); }
+  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.vaciado = new Vaciado(suelo); this.vaciado.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo);
+    this.canoas = new Canoas(suelo, (x, z) => (this.terreno && this.terreno.aguaEn ? this.terreno.aguaEn(x, z) : null)); this.canoas.posRema = autor => this.posicion(autor); }
 
   // accion: { tipo, ...datos } con el autor ya puesto por el servidor. ahora: la hora del servidor (ms).
   // Devuelve { ok, motivo?, entrada, suelo: bool (si ha cambiado el suelo), estaciones: bool (si ha cambiado alguna
@@ -159,6 +161,9 @@ export class ObjetosServidor {
         estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!(a.estacion && ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.cuelga)) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
+        suelo = !!r.ok;
+      } else if (TIPOS_CANOA.has(a.tipo)) {   // (P11d) echar la canoa al agua, subir y bajar (src/logica/canoa.js)
+        r = ejecutarCanoa(this.canoas, this.invs, this.registro, a, ahora, p);
         suelo = !!r.ok;
       } else if (TIPOS_RASTRA.has(a.tipo)) {
         r = ejecutarRastra(this.rastras, this.invs, this.registro, a, ahora, this.enTierras, p.giro);
@@ -235,6 +240,12 @@ export class ObjetosServidor {
   // El que se va del juego suelta la rastra que arrastraba: se queda donde el servidor la tenía, detrás de su último
   // sitio. Devuelve true si ha cambiado el suelo.
   soltarAlSalir(autor, ahora) {
+    if (this.canoas.deAutor(autor, ahora)) {   // (P11d) el que va en una canoa se baja: la canoa se queda donde estaba, a flote
+      const p = this.posicion(autor), o = this.canoas.deAutor(autor, ahora);
+      const r = this.canoas.bajar(autor, p || o, undefined, undefined, ahora, true);
+      this.anotar({ autor, tipo: 'bajar_canoa', alSalir: true }, r, ahora);
+      return !!r.ok;
+    }
     if (this.rastras.troncoDe(autor, ahora)) {   // y el tronco largo del que tiraba (src/logica/rastra.js)
       const p = this.posicion(autor), o = this.rastras.troncoDe(autor, ahora);
       const r = this.rastras.soltarTronco(this.invs.de(autor), autor, p ? p.x : o.x, p ? p.z : o.z, undefined, undefined, ahora, p && Number.isFinite(p.giro) ? p.giro : 0);

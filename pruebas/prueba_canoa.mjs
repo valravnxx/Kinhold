@@ -2,12 +2,13 @@
 // tiempo transcurrido, hasta que queda la canoa en el suelo; y por la red (src/logica/objetos_red.js), con su autor.
 // Ejecutar: node pruebas/prueba_canoa.mjs
 // Con MUTAR=1 las brasas no esperan (QUEMA = 0) y basta una vuelta: las pruebas deben FALLAR.
-import { Vaciado, ejecutarVaciado, faseDe, fuegoCerca, progresoVaciado, GOLPES_DESBASTAR, GOLPES_RASPAR, VUELTAS, QUEMA, ENTRE_GOLPES } from '../src/logica/canoa.js';
+import { Canoas, ejecutarCanoa, velocidadCanoa, VEL_REMAR, VEL_MAX_CANOA, HONDO_FLOTA, Vaciado, ejecutarVaciado, faseDe, fuegoCerca, progresoVaciado, GOLPES_DESBASTAR, GOLPES_RASPAR, VUELTAS, QUEMA, ENTRE_GOLPES } from '../src/logica/canoa.js';
 import { Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo, NO_DESAPARECE } from '../src/logica/suelo.js';
 import { RegistroAcciones } from '../src/logica/acciones.js';
 import { ObjetosServidor } from '../src/logica/objetos_red.js';
 import { Rastras, DETRAS_TRONCO } from '../src/logica/rastra.js';
+import { VEL_MAX } from '../src/logica/presencia.js';
 
 const MUTAR = process.env.MUTAR === '1';
 let ok = 0, mal = 0;
@@ -158,6 +159,71 @@ console.log('La canoa se arrastra a cuerda hasta la orilla (como el tronco largo
   r = ra.soltarTronco(invs.de('ana'), 'ana', 20, 0, undefined, undefined, T0, Math.PI / 2);
   comprobar('soltada, queda detrás del que tiraba', r.ok && Math.abs(Math.hypot(c.x - 20, c.z) - DETRAS_TRONCO) < 0.05 && !c.arrastra, `${c.x}, ${c.z}`);
   comprobar('y sigue siendo la canoa', suelo.porId(c.id, T0 + 1e9).cosa.tipo === 'canoa');
+}
+
+console.log('Echar la canoa al agua, subir y remar (P11d)');
+{
+  // la orilla en x = 5: más allá, el agua, medio metro más honda por metro (a 7,5 m ya no se hace pie)
+  const agua = (x) => (x > 5 ? (x - 5) * 0.5 : null);
+  const suelo = new Suelo(), invs = new Inventarios(), reg = new RegistroAcciones(), ca = new Canoas(suelo, (x) => agua(x));
+  const c = suelo.dejar({ tipo: 'canoa', n: 1 }, 3, 0, T0, 'ana', false, 0);
+  const A = (autor, tipo, d) => ejecutarCanoa(ca, invs, reg, { autor, tipo, x: d.x, z: d.z ?? 0, ...d }, T0, { x: d.x, z: d.z ?? 0, giro: Math.PI / 2 });
+  let r = A('ana', 'subir_canoa', { objeto: c.id, x: 3 });
+  comprobar('en tierra no se sube: hay que echarla antes al agua', !r.ok && /agua/.test(r.motivo), r.motivo);
+  r = A('ana', 'echar_canoa', { objeto: c.id, x: 2, rx: 5.2, rz: 0 });
+  comprobar('donde casi no hay agua, no flota', !r.ok && /flote/.test(r.motivo), r.motivo);
+  r = A('ana', 'echar_canoa', { objeto: c.id, x: 2, rx: 9, rz: 0 });
+  comprobar('más allá de lo que se empuja, no', !r.ok, r.motivo);
+  r = A('ana', 'echar_canoa', { objeto: c.id, x: -2, rx: 7, rz: 0 });
+  comprobar('lejos de la canoa, no se empuja', !r.ok && /lejos/.test(r.motivo), r.motivo);
+  invs.de('ana').coger('cuerda', 1, 'mano:der');
+  r = A('ana', 'echar_canoa', { objeto: c.id, x: 2, rx: 6.5, rz: 0 });
+  comprobar('con algo en la mano que no es el remo, no se empuja', !r.ok && /manos/.test(r.motivo), r.motivo);
+  invs.de('ana').lugares['mano:der'] = { tipo: 'remo', n: 1 };
+  r = A('ana', 'echar_canoa', { objeto: c.id, x: 2, rx: 6.5, rz: 0 });
+  comprobar('desde la orilla, con el remo en la mano, al agua', r.ok && c.agua && c.x === 6.5 && agua(c.x) >= HONDO_FLOTA, r.motivo);
+  r = A('ana', 'subir_canoa', { objeto: c.id, x: 8.4 });
+  comprobar('nadando no se sube', !r.ok && /Nadando/.test(r.motivo), r.motivo);
+  r = A('ana', 'subir_canoa', { objeto: c.id, x: 5.5 });
+  comprobar('desde el agua poco honda se sube, y el primero rema', r.ok && c.rema === 'ana' && ca.deAutor('ana', T0) === c, r.motivo);
+  r = A('eva', 'subir_canoa', { objeto: c.id, x: 4.5 });
+  comprobar('desde la orilla sube otro, sentado', r.ok && c.pasajero === 'eva', r.motivo);
+  r = A('teo', 'subir_canoa', { objeto: c.id, x: 4.5 });
+  comprobar('no caben tres', !r.ok && /dos/.test(r.motivo), r.motivo);
+  invs.de('teo').coger('cuerda', 1, 'mano:izq');
+  r = new Rastras(suelo).atarTronco(invs.de('teo'), c.id, 4.5, 0, T0, 'teo');
+  comprobar('con gente dentro no se ata', !r.ok && /alguien/.test(r.motivo), r.motivo);
+  // remar: bastante más deprisa que correr (6 m/s); sin remar, a la deriva con la corriente
+  const v = velocidadCanoa({ dir: { x: 1, z: 0 }, remando: true }), deriva = velocidadCanoa({ dir: { x: 1, z: 0 }, remando: false, corriente: { dx: 0, dz: 1.2 } });
+  comprobar('remando, bastante más rápido que corriendo', Math.hypot(v.vx, v.vz) === VEL_REMAR && VEL_REMAR >= 1.4 * 6, `${VEL_REMAR} m/s`);
+  comprobar('sin remar, a la deriva con la corriente del río', deriva.vx === 0 && Math.abs(deriva.vz - 1.2) < 1e-9);
+  const mar = velocidadCanoa({ corriente: { dx: 2, dz: 0 }, mar: true });
+  comprobar('en el mar, a la deriva despacio', mar.vx > 0 && mar.vx <= 0.5, `${mar.vx} m/s`);
+  comprobar('el servidor deja ir así de deprisa al que va en canoa', VEL_MAX_CANOA > VEL_MAX && VEL_MAX_CANOA >= VEL_REMAR + 3);
+  // bajar: solo en la orilla; el que rema deja la canoa donde está él
+  r = ejecutarCanoa(ca, invs, reg, { autor: 'ana', tipo: 'bajar_canoa', x: 20, z: 0, bx: 21, bz: 0 }, T0, { x: 20, z: 0, giro: 0 });
+  comprobar('en medio del agua no se baja', !r.ok && /orilla/.test(r.motivo), r.motivo);
+  r = ejecutarCanoa(ca, invs, reg, { autor: 'ana', tipo: 'bajar_canoa', x: 6, z: 3, bx: 4.6, bz: 3 }, T0, { x: 6, z: 3, giro: 0 });
+  comprobar('en la orilla se baja; la canoa se queda donde iba, a flote, y rema el otro', r.ok && c.x === 6 && c.z === 3 && c.agua && c.rema === 'eva' && !c.pasajero, r.motivo);
+  r = ejecutarCanoa(ca, invs, reg, { autor: 'ana', tipo: 'bajar_canoa', x: 6, z: 3, bx: 4.6, bz: 3 }, T0, { x: 6, z: 3 });
+  comprobar('el que ya se bajó no se vuelve a bajar', !r.ok);
+  comprobar('cada acción, en el registro con su autor', reg.entradas.filter(e => e.accion && /_canoa$/.test(e.accion.tipo)).every(e => e.accion.autor));
+}
+
+console.log('La canoa por la red: el servidor mira el agua de su terreno y el que se va se baja');
+{
+  const pos = { ana: { x: 2, z: 0, giro: Math.PI / 2 } };
+  const S = new ObjetosServidor({ posicion: a => pos[a] || null, terreno: { aguaEn: (x) => (x > 5 ? (x - 5) * 0.5 : null), suelo: () => 0 } });
+  const c = S.suelo.dejar({ tipo: 'canoa', n: 1 }, 3, 0, T0, 'ana', false, 0);
+  let r = S.ejecutar({ autor: 'ana', tipo: 'echar_canoa', objeto: c.id, x: 2, z: 0, rx: 6.5, rz: 0 }, T0);
+  comprobar('echarla al agua cambia el suelo de todos', r.ok && r.suelo && c.agua, r.motivo);
+  pos.ana = { x: 5.4, z: 0 };
+  r = S.ejecutar({ autor: 'ana', tipo: 'subir_canoa', objeto: c.id, x: 5.4, z: 0 }, T0);
+  comprobar('sube', r.ok && c.rema === 'ana', r.motivo);
+  pos.ana = { x: 40, z: 2, giro: 0 };   // ha remado hasta allí
+  comprobar('se va del juego remando: se baja y la canoa se queda allí, a flote', S.soltarAlSalir('ana', T0) && c.x === 40 && c.z === 2 && c.agua && !c.rema);
+  const s2 = new Suelo().importar(S.suelo.exportar());
+  comprobar('a flote se guarda con el suelo', s2.porId(c.id, T0).agua === true);
 }
 
 console.log(`\n${ok} correctas, ${mal} fallidas`);

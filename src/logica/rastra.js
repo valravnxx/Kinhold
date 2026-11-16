@@ -234,6 +234,7 @@ export class Rastras {
     if (this.troncoDe(autor, ahora)) return { ok: false, motivo: 'Ya tiras de un tronco.' };
     if (this.deAutor(autor, ahora)) return { ok: false, motivo: 'Suelta antes la rastra.' };
     if (o.ayuda) return { ok: false, motivo: 'De ese tronco ya tiran dos.' };
+    if (o.rema) return { ok: false, motivo: 'Hay alguien en la canoa: que se baje antes.' };   // (P11d)
     // el que ayuda se pone al lado del que tira: vale estar cerca del tronco o del que tira
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_ATAR && !o.arrastra) return { ok: false, motivo: 'Está demasiado lejos.' };
     if (!cuerdaEnMano(inv)) return { ok: false, motivo: o.cosa.tipo === 'canoa' ? 'Para atar la canoa necesitas una cuerda en la mano.' : 'Para atar el tronco necesitas una cuerda en la mano.' };
@@ -249,6 +250,7 @@ export class Rastras {
     }
     o.arrastra = autor;
     o.desaparece = null;
+    delete o.agua;   // (P11d) la canoa atada sale del agua: se arrastra a la orilla
     inv.manosEn = 'tronco_largo';
     return { ok: true, objeto: o.id };
   }
