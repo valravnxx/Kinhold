@@ -328,7 +328,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   if (!laCanoa) return;
   await soltarManos();
 
-  console.log('26e. Vuelve al banco y se hace el remo de un tronco corto (tronza un tronco largo)');
+  console.log('26e. Vuelve al banco y se hace el remo de un tronco corto (si no hay ninguno, tala un adulto y lo tronza)');
   await J.andar(hachaVaciar.x, hachaVaciar.z); await hachaALaMano();
   await J.andar(banco.x + 1, banco.z);
   let corto = enSuelo('tronco_corto', banco, 40)[0];
@@ -353,13 +353,12 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   await J.andar(hachaRemo.x, hachaRemo.z); await hachaALaMano();
   await J.andar(banco.x + 1, banco.z);
   q = dR.ok ? await enEstacion(banco, 'remo') : dR;
-  comprobar('deja el tronco corto en el banco y, con el hacha, se hace el remo', q.ok && J.cuantos('remo') === 1, `${tronza} · ${q.motivo || ''} · ${enMano()}`);
-  if (!J.cuantos('remo')) return;
-  // a la mano el remo, y la otra libre (el hacha, en la cintura si cabe; si no, junto al banco)
-  for (const l of MANOS) if (J.inv.lugares[l] && J.inv.lugares[l].tipo !== 'remo' && J.inv.lugares[l].tipo !== 'hacha_piedra') await soltar(l);
-  await aLaMano('remo');
-  const lhc = enLaMano('hacha_piedra');
-  if (lhc && !(await J.objeto({ tipo: 'mover', de: lhc, a: 'cintura' })).ok) await soltar(lhc);
+  // (el remo es grande: va en las dos manos. Con el hacha en una, cae a sus pies; el hacha se queda junto al banco)
+  const remoHecho = J.cuantos('remo') + nEnSuelo('remo', J.pos, 4);
+  await soltarManos(['remo']);
+  if (!J.cuantos('remo')) await cogerSuelo('remo', J.pos, 4, 1, 'mano:der');
+  comprobar('deja el tronco corto en el banco y, con el hacha, se hace el remo; deja el hacha junto al banco y lo coge con las dos manos', q.ok && remoHecho === 1 && !!enLaMano('remo'), `${tronza} · ${q.motivo || ''} · ${enMano()}`);
+  if (!enLaMano('remo')) return;
 
   console.log('26f. Con el remo en la mano, echa la canoa al agua, sube y rema río arriba y río abajo');
   await cuidarse();
@@ -425,7 +424,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   comprobar('rema río arriba, contra la corriente, y avanza', arriba.seg >= 3 && arriba.aFavor < -10, `${r2(arriba.seg)} s · ${r2(-arriba.aFavor)} m río arriba · ${r2(arriba.v)} m/s (corriente ${r2(ag0?.vel || 0)} m/s)`);
   const abajo = await remar(1, 60);
   comprobar('rema río abajo, a favor: bastante más deprisa que corriendo', abajo.seg >= 3 && abajo.aFavor > 10 && abajo.v > VEL_MAX * 1.2, `${r2(abajo.seg)} s · ${r2(abajo.aFavor)} m río abajo · ${r2(abajo.v)} m/s (corriendo, ${VEL_MAX}; remando, ${VEL_REMAR} más la corriente)`);
-  comprobar('el servidor le deja ir así de deprisa: le tiene donde rema (sin recortarle)', arriba.desfase < 1.5 && abajo.desfase < 1.5 && abajo.servidor > abajo.aFavor * 0.8, `desfase ${r2(arriba.desfase)} y ${r2(abajo.desfase)} m · el servidor le ha visto ir ${r2(abajo.servidor)} m`);
+  comprobar('el servidor le deja ir así de deprisa: le tiene donde rema (sin recortarle)', arriba.desfase < 1.5 && abajo.desfase < 1.5 && abajo.servidor > abajo.aFavor * 0.8, `desfase ${r2(arriba.desfase)} y ${r2(abajo.desfase)} m · el servidor le ha visto ir ${r2(abajo.servidor)} m · cansancio ${Math.round(nec().cansancio || 0)}`);
 
   console.log('26g. Deja de remar: la canoa va a la deriva con la corriente; y la vara en la orilla');
   const deriva = await remar(1, 80, false);
