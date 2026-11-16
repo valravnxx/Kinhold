@@ -8,7 +8,7 @@
 # MUTAR_RODILLAS=1: sin juntar las rodillas en la canoa (se salen por la borda): tiene que fallar.
 # MUTAR_CASCO=1: el casco atraviesa las rocas: tiene que fallar.
 # MUTAR=1: remar no mueve la canoa más que la corriente (sin remo de verdad): tiene que fallar.
-import sys, os, json, time
+import sys, os, json, time, math
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
 
@@ -92,8 +92,14 @@ def recorrido(pg, pre, movil):
     foto(pg, f'{pre}3_en_la_canoa')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 1.57; k.cam.dist = 2.6; k.cam.pitch = 0.3; }})()")
     foto(pg, f'{pre}3b_en_la_canoa_de_cerca')
-    # remar río arriba (contra la corriente): W con la cámara mirando río arriba (W lleva a (-sin yaw, -cos yaw))
-    pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['ux']}), -({r['uz']})); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
+    # primero, remar hacia el medio del río (la canoa sale de la orilla de proa: girarla allí metería la popa en las rocas de
+    # la orilla, que el casco no atraviesa) y luego girar río arriba remando (W lleva a (-sin yaw, -cos yaw))
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
+    pg.keyboard.down('w'); pg.wait_for_timeout(1200); pg.keyboard.up('w')
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
+    pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w')
+    comprobar(f'{pre}remando, sale de la orilla y gira río arriba', abs(((pg.evaluate(f"{K}.pj.rot") - math.atan2(-r['ux'], -r['uz']) + math.pi) % (2 * math.pi)) - math.pi) < 0.35,
+              f"{pg.evaluate(f'{K}.pj.rot'):.2f} (río arriba: {math.atan2(-r['ux'], -r['uz']):.2f})")
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     # (la velocidad, la que da el juego en cada fotograma: en la nube, sin tarjeta gráfica, van tan pocos fotogramas que el
     # tiempo del juego no sigue al reloj; lo andado, que sea río arriba)
@@ -115,8 +121,8 @@ def recorrido(pg, pre, movil):
     deriva = (p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz']
     comprobar(f'{pre}sin remar, la corriente la lleva río abajo', deriva > 0.2 * r['vel'] * (p1[2] - p0[2]) / 1000, f'{deriva:.2f} m en {(p1[2] - p0[2]) / 1000:.1f} s')
     # una roca en el agua, 3,5 m río arriba de la canoa: remando hacia ella, el casco no la atraviesa (se para contra ella)
-    pg.evaluate(f"""(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['ux']}), -({r['uz']})); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']});
-      k.obstaculos.push({{ x: k.pj.x - ({r['ux']}) * 3.5, z: k.pj.z - ({r['uz']}) * 3.5, r: 0.8, prueba_canoa: true }}); }})()""")
+    pg.evaluate(f"""(() => {{ const k = {K}; k.cam.yaw = k.pj.rot + Math.PI;
+      k.obstaculos.push({{ x: k.pj.x + Math.sin(k.pj.rot) * 3.5, z: k.pj.z + Math.cos(k.pj.rot) * 3.5, r: 0.8, prueba_canoa: true }}); }})()""")
     pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
     mete = pg.evaluate(f"(() => {{ const k = {K}, m = window.__mutarCasco; window.__mutarCasco = false; const v = k.cascoMete(k.pj.x, k.pj.z, k.pj.rot, k.obstaculos.filter(o => o.prueba_canoa)); window.__mutarCasco = m; return v; }})()")
     comprobar(f'{pre}remando contra una roca, el casco no la atraviesa', mete < 0.05, f'{mete:.2f} m dentro')
