@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-16T21:27:52+00:00",
+  "tarea": "La canoa se queda donde la dejas: varada en la orilla no desaparece; en tu tierra queda a tu guarda (como la carretilla); fuera, cualquiera se la lleva",
+  "hito": "canoa",
+  "rama": "trabajo/20261116-2127"
+ },
  "B": null
 }

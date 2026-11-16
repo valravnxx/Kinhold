@@ -2512,7 +2512,9 @@
     },
     {
      "nombre": "La canoa se queda donde la dejas: varada en la orilla no desaparece; en tu tierra queda a tu guarda (como la carretilla); fuera, cualquiera se la lleva",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-16T21:27:52+00:00",
+     "rama": "trabajo/20261116-2127"
     },
     {
      "nombre": "Recorrido de jugador de la canoa, sin arcón: vacía un tronco largo, hace el remo, lleva la canoa a la orilla, rema río arriba y río abajo, la deja ir a la deriva y la vara en la orilla",
