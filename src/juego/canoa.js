@@ -121,12 +121,36 @@ export function hondoDe(v, ahora = Date.now()) {
   return Math.min(1, 0.2 + (v.vuelta + raspado) * paso * 0.8);
 }
 
+// A flote, el agua del río (transparente, se pinta después de lo opaco) no se ve dentro del casco: una tapa a la altura del
+// agua (algo por encima de lo que se hunde, 0,16 m, por lo que se mece), con la forma del hueco a esa altura, que solo
+// escribe la profundidad y se pinta antes que el agua. Lo de dentro (el fondo, las piernas) ya está pintado y se ve.
+export const ALTO_TAPA = 0.21;
+function tapaAgua() {
+  const N = 40, lado = [];
+  for (let i = 0; i <= N; i++) {
+    const sv = i / N * 2 - 1, aD = Math.max(0, anchoFuera(sv) - GRUESO) * hueco(sv), hD = Math.max(0, hondoFuera(sv) - GRUESO) * hueco(sv);
+    const sen = hD > 0 ? (borda(sv) - ALTO_TAPA) / hD : 2;
+    lado.push([sv * H, sen < 1 ? aD * Math.sqrt(1 - sen * sen) : 0]);
+  }
+  const forma = new THREE.Shape();
+  lado.forEach(([x, z], i) => (i ? forma.lineTo(x, z) : forma.moveTo(x, z)));
+  for (let i = N; i >= 0; i--) forma.lineTo(lado[i][0], -lado[i][1]);
+  const geo = new THREE.ShapeGeometry(forma);
+  geo.rotateX(Math.PI / 2);
+  geo.translate(0, ALTO_TAPA, 0);
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, transparent: true, side: THREE.DoubleSide }));
+  m.name = 'tapa_agua'; m.renderOrder = -1;
+  return m;
+}
+
 // El modelo del suelo: la canoa a medias ({ cosa: { tipo: 'canoa_a_medias', vaciado } }) o la canoa.
 export function modeloCanoa(o, troncoLargo, ahora = Date.now()) {
   const id = String(o.id), L = new Lote({ rangoSuelo: 0.5, variacion: 0.06 });
   if (o.cosa.tipo === 'canoa') {
     casco(L, 1, { corteza: false });
-    return mallas(L);
+    const g = mallas(L);
+    g.add(tapaAgua());
+    return g;
   }
   const v = o.cosa.vaciado, f = faseDe(v, ahora);
   if (!v || f === 'desbastar') {   // aún es el tronco, con las astillas que suelta

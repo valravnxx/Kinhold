@@ -127,9 +127,9 @@ const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo
 // En la canoa (P11d), sentado con las rodillas juntas: la de sentarse en el suelo va con las piernas cruzadas y las rodillas
 // abiertas (a unos 0,25 m de cada lado), y en el casco, de 0,45 m por dentro, se salían por la borda. Tras la animación, el
 // muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo, y la pierna, hasta que el pie
-// queda de su lado a PIE_CANOA m (no cruzado) y sin bajar del fondo.
+// queda de su lado a PIE_CANOA m (no cruzado) y sin bajar del fondo, y el pie, con la punta hacia delante.
 const RODILLA_CANOA = 0.12, PIE_CANOA = 0.08;
-const _cen = new THREE.Vector3(), _der = new THREE.Vector3(), _rod = new THREE.Vector3(), _obj = new THREE.Vector3(), _qr = new THREE.Quaternion();
+const _cen = new THREE.Vector3(), _der = new THREE.Vector3(), _rod = new THREE.Vector3(), _obj = new THREE.Vector3(), _qr = new THREE.Quaternion(), _ade = new THREE.Vector3();
 function juntarRodillas(j) {
   const h = j.mh && j.mh.hueso;
   if (!h || (typeof window !== 'undefined' && window.__mutarRodillas)) return;   // (la prueba de la canoa lo rompe a propósito)
@@ -153,6 +153,15 @@ function juntarRodillas(j) {
     _obj.copy(_rod).addScaledVector(_der, s * PIE_CANOA - ladoPie);
     _obj.y = Math.max(_obj.y, _cen.y + 0.04);
     girarHueso(pierna, _rod, _obj);
+    // y la punta del pie, hacia delante (hacia la proa) y algo abajo: de lado, los dedos asomaban por la borda
+    const dedos = h['ball_' + l];
+    if (!dedos) continue;
+    pie.getWorldPosition(_obj);
+    dedos.getWorldPosition(_rod);
+    const largo = _rod.distanceTo(_obj);
+    _ade.set(0, 0, 1).applyQuaternion(_qr);
+    _obj.addScaledVector(_ade, largo * 0.9); _obj.y -= largo * 0.4;
+    girarHueso(pie, _rod, _obj);
   }
 }
 

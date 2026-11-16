@@ -66,6 +66,8 @@ def recorrido(pg, pre, movil):
     comprobar(f'{pre}Usar la empuja al agua: flota', c['agua'] and agua >= 0.3, f"{aviso(pg)} · {agua:.2f} m de agua")
     y = pg.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('suelo_canoa'), a = {K}.mundoJ.aguaEn(o.position.x, o.position.z); return [o.position.y, a ? a.superficie : null]; }})()")
     comprobar(f'{pre}se ve sobre el agua (no en el fondo)', y[1] is not None and abs(y[0] - (y[1] - 0.16)) < 0.1, f'{y}')
+    comprobar(f'{pre}el agua no se ve dentro del casco (la tapa que la esconde)', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_canoa').getObjectByName('tapa_agua')"))
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); k.cam.dist = 8; k.cam.pitch = 0.55; }})()")
     foto(pg, f'{pre}2_canoa_a_flote')
     # subir, desde el borde del agua (lo poco hondo), lo más cerca de la canoa
     pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ; let best = null;
@@ -81,9 +83,9 @@ def recorrido(pg, pre, movil):
     comprobar(f'{pre}va sentado (con el remo en las manos)', pg.evaluate(f"{K}.jugador.sentado === true && {K}.jugador.modo === 'sentado'"), pg.evaluate(f"{K}.jugador.modo"))
     # las rodillas, dentro del casco (0,45 m por dentro): la de sentarse en el suelo las abre y se salían por la borda
     rod = pg.evaluate(f"""(() => {{ const k = {K}, o = k.escena.getObjectByName('suelo_canoa'), h = k.jugador.mh.hueso; k.escena.updateMatrixWorld(true);
-      return ['calf_l', 'calf_r', 'foot_l', 'foot_r', 'upperarm_l', 'upperarm_r'].map(n => {{ const p = o.worldToLocal(h[n].getWorldPosition(h[n].position.clone())); return [Math.round(p.z * 100) / 100, Math.round(p.y * 100) / 100]; }}); }})()""")
-    comprobar(f'{pre}las rodillas y los pies, dentro del casco (a menos de 0,17 m del medio)', all(abs(z) <= 0.17 for z, y in rod[:4]), f'{rod[:4]} (de lado, alto)')
-    comprobar(f'{pre}y mirando a lo largo de la canoa (los hombros, de través)', abs(rod[4][0] - rod[5][0]) > 0.2, f'{rod[4:]}')
+      return ['calf_l', 'calf_r', 'foot_l', 'foot_r', 'ball_l', 'ball_r', 'upperarm_l', 'upperarm_r'].map(n => {{ const p = o.worldToLocal(h[n].getWorldPosition(h[n].position.clone())); return [Math.round(p.z * 100) / 100, Math.round(p.y * 100) / 100]; }}); }})()""")
+    comprobar(f'{pre}las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio)', all(abs(z) <= 0.17 for z, y in rod[:6]), f'{rod[:6]} (de lado, alto)')
+    comprobar(f'{pre}y mirando a lo largo de la canoa (los hombros, de través)', abs(rod[6][0] - rod[7][0]) > 0.2, f'{rod[6:]}')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.2; k.cam.dist = 6; k.cam.pitch = 0.45; }})()")
     foto(pg, f'{pre}3_en_la_canoa')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 1.57; k.cam.dist = 2.6; k.cam.pitch = 0.3; }})()")
