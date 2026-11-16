@@ -186,34 +186,61 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
     return { rx: r2(J.pos.x - (x - p0.x) / d * atras), rz: r2(J.pos.z - (z - p0.z) / d * atras) };
   };
 
-  const taller = { x: r2(banco.x - 1.5), z: r2(banco.z + 1.5) };
+  // su sitio de trabajo, junto al banco y donde no haya nada en el suelo (lo que dejó la granja, a otro lado)
+  let taller = null;
+  for (let d = 2; d <= 8 && !taller; d += 1) for (let k = 0; k < 12 && !taller; k++) {
+    const x = r2(banco.x + Math.cos(k / 12 * 6.283) * d), z = r2(banco.z + Math.sin(k / 12 * 6.283) * d);
+    if (!visibles().some(o => dist(o, { x, z }) < 3.5) && s.mundo.dentroDeTierra(x, z, yo)) taller = { x, z };
+  }
+  taller = taller || { x: r2(banco.x - 1.5), z: r2(banco.z + 1.5) };
   await J.andar(taller.x, taller.z); await soltarManos();
+  // n de fibra en una mano (le caben 10): la de sus pies o la que recoge
+  const fibraEnMano = async (n) => {
+    if (J.cuantos('fibra') < n) await cogerSuelo('fibra', taller, 3, n);
+    const lista = alrededor(taller, 300).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo));
+    for (let k = 0; k < 30 && J.cuantos('fibra') < n; k++) { const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; probados.add(p.id); await recoger(p); }
+    await J.andar(taller.x, taller.z);
+    return J.cuantos('fibra') >= n;
+  };
+  // un cordel con las manos, con 3 de fibra en la mano
+  const cordel = async () => {
+    for (const l of MANOS) if (J.inv.lugares[l] && J.inv.lugares[l].tipo !== 'fibra') await soltar(l);
+    if (!(await fibraEnMano(3))) return { ok: false, motivo: `no junta 3 de fibra (lleva ${J.cuantos('fibra')})` };
+    return deMano('cordel');
+  };
 
-  // 25a. La rastra, con las manos: 5 ramas y 2 cordeles (6 de fibra), dejados a sus pies junto al banco
+  // 25a. La rastra, con las manos: 5 ramas en las manos y 2 cordeles a sus pies, junto al banco
   console.log('25a. Se hace una rastra con las manos (5 ramas y 2 cordeles) junto a su banco');
   await cuidarse();
-  let q = await acopiar(['ramas'], 'rama', 5, taller);
-  let q2 = q && await acopiar(['ortiga', 'hierba_larga'], 'fibra', 6, taller);
-  for (let v = 0; q2 && v < 2; v++) { const c = await deMano('cordel'); q2 = c.ok; if (enLaMano('cordel')) await soltar(enLaMano('cordel')); }
-  let rr = q && q2 ? await deMano('rastra') : { ok: false, motivo: `ramas ${nEnSuelo('rama', taller)} · fibra ${nEnSuelo('fibra', taller)} · cordeles ${nEnSuelo('cordel', taller)}` };
+  const motivos = [];
+  let hechos = 0;
+  for (let v = 0; v < 4 && hechos < 2; v++) { const c = await cordel(); if (c.ok) { hechos++; const lc = enLaMano('cordel'); if (lc) await soltar(lc); } else motivos.push(c.motivo); }
+  const fibraSobra = enLaMano('fibra'); if (fibraSobra) await soltar(fibraSobra);
+  // las ramas, en las manos (3 y 2): las de sus pies o las que recoge
+  const ramas = alrededor(taller, 300).filter(q => q.tipo === 'ramas');
+  for (let k = 0; k < 30 && J.cuantos('rama') < 5; k++) { const p = cerca(ramas.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; probados.add(p.id); await recoger(p); }
+  await J.andar(taller.x, taller.z);
+  let rr = hechos === 2 && J.cuantos('rama') >= 5 ? await deMano('rastra') : { ok: false, motivo: `ramas ${J.cuantos('rama')} · cordeles ${hechos} (${motivos.join(' | ')})` };
   let rastra = enSuelo('rastra', taller, 4)[0];
-  comprobar('junta 5 ramas y 6 de fibra, hace 2 cordeles y, con todo a sus pies, la rastra (enorme: se queda en el suelo)', rr.ok && !!rastra, `${rr.motivo || ''} · ${enMano()}`);
+  comprobar('hace 2 cordeles de fibra, que deja a sus pies, junta 5 ramas en las manos y hace la rastra (enorme: se queda en el suelo)', rr.ok && !!rastra, `${rr.motivo || ''} · ${enMano()}`);
   if (!rastra) return;
+  await soltarManos();
 
   // 25b. Dos cuerdas en el banco: una para tirar del tronco largo, y las dos para el portón
-  console.log('25b. Trenza dos cuerdas en el banco (9 de fibra y 3 cordeles cada una)');
+  console.log('25b. Trenza dos cuerdas en el banco (3 cordeles de 3 de fibra cada una)');
   let cuerdas = 0;
+  const cuerdasAqui = () => J.cuantos('cuerda') + nEnSuelo('cuerda', taller);
+  const antesCuerdas = cuerdasAqui();
   for (let v = 0; v < 2; v++) {
     await cuidarse();
-    if (!(await acopiar(['ortiga', 'hierba_larga'], 'fibra', 9, taller))) break;
     let ok = true;
-    for (let k = 0; ok && k < 3; k++) { const c = await deMano('cordel'); await J.andar(banco.x + 1, banco.z); const d = c.ok ? await depositar(banco, 'cordel') : c; ok = c.ok && d.ok; await J.andar(taller.x, taller.z); }
+    for (let k = 0; ok && k < 3; k++) { const c = await cordel(); if (!c.ok) motivos.push(c.motivo); await J.andar(banco.x + 1, banco.z); const d = c.ok ? await depositar(banco, 'cordel') : c; ok = c.ok && d.ok; await J.andar(taller.x, taller.z); }
     await J.andar(banco.x + 1, banco.z);
     const c = ok ? await enEstacion(banco, 'cuerda') : { ok: false };
-    if (c.ok) cuerdas++;
+    if (c.ok) cuerdas++; else motivos.push(c.motivo);
     await J.andar(taller.x, taller.z); await soltarManos();
   }
-  comprobar('trenza 2 cuerdas en el banco', cuerdas === 2 && nEnSuelo('cuerda', taller) === 2, `${cuerdas} · en el suelo ${nEnSuelo('cuerda', taller)}`);
+  comprobar('trenza 2 cuerdas en el banco', cuerdas === 2 && cuerdasAqui() - antesCuerdas === 2, `${cuerdas} · ${motivos.join(' | ')}`);
 
   // 25c. Tala un árbol adulto con su hacha de piedra
   console.log('25c. Tala un árbol adulto, ata el tronco largo con una cuerda y lo arrastra hasta la rastra');
