@@ -139,8 +139,12 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
       if (J.inv.lugares[otra]) await soltar(otra);
       const aqui = { ...J.pos };
       // 3 de fibra, a sus pies, y el cordel con las manos (con el hacha en una)
-      const lista = alrededor(aqui, 250).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo));
-      for (let n = 0; n < 20 && J.cuantos('fibra') < 3; n++) { const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; probados.add(p.id); await recoger(p); }
+      // (tras la granja y las cuerdas, la fibra de al lado ya está cogida: busca cada vez más lejos)
+      for (const radio of [250, 500, 900]) {
+        if (J.cuantos('fibra') >= 3) break;
+        const lista = alrededor(aqui, radio).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo));
+        for (let n = 0; n < 40 && J.cuantos('fibra') < 3; n++) { const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; probados.add(p.id); await recoger(p); }
+      }
       const lf = enLaMano('fibra'); if (lf) await soltar(lf);
       const c = await deMano('cordel');
       await J.andar(tallar.x + 1, tallar.z);
@@ -197,8 +201,11 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   // n de fibra en una mano (le caben 10): la de sus pies o la que recoge
   const fibraEnMano = async (n) => {
     if (J.cuantos('fibra') < n) await cogerSuelo('fibra', taller, 3, n);
-    const lista = alrededor(taller, 300).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo));
-    for (let k = 0; k < 30 && J.cuantos('fibra') < n; k++) { const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; probados.add(p.id); await recoger(p); }
+    for (const radio of [300, 600, 900]) {
+      if (J.cuantos('fibra') >= n) break;
+      const lista = alrededor(taller, radio).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo));
+      for (let k = 0; k < 40 && J.cuantos('fibra') < n; k++) { const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; probados.add(p.id); await recoger(p); }
+    }
     await J.andar(taller.x, taller.z);
     return J.cuantos('fibra') >= n;
   };
