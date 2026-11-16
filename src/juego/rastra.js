@@ -12,7 +12,6 @@ import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
 import { DETRAS, DELANTE_CARRETILLA, DETRAS_TRONCO } from '../logica/rastra.js';
-import { ADELANTE as ADELANTE_CANOA } from '../logica/canoa.js';
 import { inclinarCarretilla, rodarCarretilla } from './carretilla.js';
 
 export const LARGO_VARAS = 3.2;      // m
@@ -174,13 +173,13 @@ export function moverRastras(grupo, quien, altura, flota = () => null) {
   return sitios;
 }
 
-// La canoa a flote (P11d): sobre el agua, meciéndose un poco; la que lleva alguien, debajo del que rema (sentado atrás:
-// el centro, ADELANTE_CANOA m por delante de él) y girada hacia donde mira (el modelo va a lo largo de X).
+// La canoa a flote (P11d): sobre el agua, meciéndose un poco; la que lleva alguien, debajo del que rema (sentado en medio)
+// y girada hacia donde mira (el modelo va a lo largo de X).
 function moverCanoa(obj, quien, altura, flota, sitios) {
   const autor = obj.userData.rema, p = autor ? quien(autor) : null;
   const t = performance.now() / 1000, id = String(obj.userData.id).length;
   let x = obj.position.x, z = obj.position.z, giro = obj.rotation.y + Math.PI / 2;
-  if (p) { x = p.x + Math.sin(p.giro) * ADELANTE_CANOA; z = p.z + Math.cos(p.giro) * ADELANTE_CANOA; giro = p.giro; }
+  if (p) { x = p.x; z = p.z; giro = p.giro; }
   const y = flota(x, z);
   obj.position.set(x, (y !== null ? y : altura(x, z) - 0.01) + Math.sin(t * 1.3 + id) * 0.02, z);
   obj.rotation.set(Math.sin(t * 1.1 + id) * 0.02, giro - Math.PI / 2, Math.sin(t * 0.9 + id) * 0.025);

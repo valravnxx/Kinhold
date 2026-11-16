@@ -204,7 +204,7 @@ console.log('Echar la canoa al agua, subir y remar (P11d)');
   r = ejecutarCanoa(ca, invs, reg, { autor: 'ana', tipo: 'bajar_canoa', x: 20, z: 0, bx: 21, bz: 0 }, T0, { x: 20, z: 0, giro: 0 });
   comprobar('en medio del agua no se baja', !r.ok && /orilla/.test(r.motivo), r.motivo);
   r = ejecutarCanoa(ca, invs, reg, { autor: 'ana', tipo: 'bajar_canoa', x: 6, z: 3, bx: 4.6, bz: 3 }, T0, { x: 6, z: 3, giro: 0 });
-  comprobar('en la orilla se baja; la canoa se queda donde iba, a flote, y rema el otro', r.ok && c.x === 6 && c.z === 4.1 && c.agua && c.rema === 'eva' && !c.pasajero, r.motivo);
+  comprobar('en la orilla se baja; la canoa se queda donde iba, a flote, y rema el otro', r.ok && c.x === 6 && c.z === 3 && c.agua && c.rema === 'eva' && !c.pasajero, r.motivo);
   r = ejecutarCanoa(ca, invs, reg, { autor: 'ana', tipo: 'bajar_canoa', x: 6, z: 3, bx: 4.6, bz: 3 }, T0, { x: 6, z: 3 });
   comprobar('el que ya se bajó no se vuelve a bajar', !r.ok);
   comprobar('cada acción, en el registro con su autor', reg.entradas.filter(e => e.accion && /_canoa$/.test(e.accion.tipo)).every(e => e.accion.autor));
@@ -221,7 +221,7 @@ console.log('La canoa por la red: el servidor mira el agua de su terreno y el qu
   r = S.ejecutar({ autor: 'ana', tipo: 'subir_canoa', objeto: c.id, x: 5.4, z: 0 }, T0);
   comprobar('sube', r.ok && c.rema === 'ana', r.motivo);
   pos.ana = { x: 40, z: 2, giro: 0 };   // ha remado hasta allí
-  comprobar('se va del juego remando: se baja y la canoa se queda allí, a flote', S.soltarAlSalir('ana', T0) && c.x === 40 && c.z === 3.1 && c.agua && !c.rema);
+  comprobar('se va del juego remando: se baja y la canoa se queda allí, a flote', S.soltarAlSalir('ana', T0) && c.x === 40 && c.z === 2 && c.agua && !c.rema);
   const s2 = new Suelo().importar(S.suelo.exportar());
   comprobar('a flote se guarda con el suelo', s2.porId(c.id, T0).agua === true);
 }

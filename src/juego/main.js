@@ -2296,7 +2296,7 @@ function subirCanoa(o) {
   accionCanoa({ tipo: 'subir_canoa', objeto: o.id, x: pj.x, z: pj.z }, (r) => {
     levantarse();
     const s = sitioCanoa(o), g = Number.isFinite(o.giro) ? o.giro + Math.PI / 2 : pj.rot;
-    if (r.rema) { pj.x = s.x - Math.sin(g) * ADELANTE_CANOA; pj.z = s.z - Math.cos(g) * ADELANTE_CANOA; pj.rot = g; }   // atrás, a remar
+    if (r.rema) { pj.x = s.x; pj.z = s.z; pj.rot = g; }   // en medio, a remar
     mostrarAviso(r.rema ? (remoEnMano(inventario()) ? tr('Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.') : tr('Subes a la canoa, pero sin remo en la mano solo vas a la deriva. Usar en la orilla te baja.'))
       : tr('Subes a la canoa, sentado delante: rema el otro. Usar en la orilla te baja.'));
   });
@@ -2325,7 +2325,7 @@ function pasoCanoa(o, ax, az, mag, dt) {
   const flota = (x, z) => !mundoJ || (hondoAqui(x, z) >= HONDO_FLOTA * 0.8 && mundoJ.dentro(x, z));
   const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
   for (let i = 0; i < trozos; i++) {   // (la canoa tiene que ir por el agua: si no, encalla)
-    const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h, pr = (x, z) => flota(x + Math.sin(pj.rot) * ADELANTE_CANOA, z + Math.cos(pj.rot) * ADELANTE_CANOA);   // (el centro de la canoa)
+    const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h, pr = flota;   // (el centro de la canoa: donde va el que rema)
     if (pr(nx, nz)) { pj.x = nx; pj.z = nz; } else if (pr(nx, pj.z)) pj.x = nx; else if (pr(pj.x, nz)) pj.z = nz;
   }
   if (remando) {   // gobierna el que rema: la canoa gira, más despacio que una persona
