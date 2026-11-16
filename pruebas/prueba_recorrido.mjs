@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la casa más fuerte (P11c, 16 nov), en pruebas/recorrido_casa_fuerte.mjs: el paso 25, detrás de la granja. Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -54,6 +54,7 @@ import { despojar, MOTIVOS } from '../src/logica/muerte.js';
 import { msDeHora } from '../src/logica/cielo.js';
 import { granja } from './recorrido_granja.mjs';
 import { pozo } from './recorrido_pozo.mjs';
+import { casaFuerte } from './recorrido_casa_fuerte.mjs';
 import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -79,7 +80,6 @@ function comprobar(nombre, cond, detalle = '') {
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
 const TODAVIA_NO = {   // (8 nov) lo que el recorrido no hace, con el porqué
   'el secadero': 'pide 4 troncos delgados al hombro y carne de una liebre más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_comida.mjs',
-  'arrastrar el tronco largo con cuerda y subirlo a la rastra': 'lo hará entero la tarea «Recorrido de jugador de la casa más fuerte» (P11c), con la carretilla, la empalizada y el entramado; su lógica y el servidor, en pruebas/prueba_rastra.mjs',
   'el raspador de pieles y el zurrón': 'piden 4 varas, una cuerda y las pieles de dos liebres más: lo hará entero la tarea «Recorrido de jugador de los oficios» (P9), con el resto de los oficios; su lógica y el servidor, en pruebas/prueba_pieles.mjs',
   'el hierro de pantano': 'la mancha más cercana está en la vega del río del norte, a unos 800 m, y pide la pala de madera (otro tronco corto en el banco) y la criba (otro haz de mimbre y una vara): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); cribar, por el servidor y con su autor, lo prueba pruebas/prueba_hierro_pantano.mjs',
   'la resina': 'los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs',
@@ -1798,6 +1798,9 @@ try {
     await pozo({ J: J2, s, T, O, comprobar, pausa, cerca });
     // P11, la granja básica (14 nov): pruebas/recorrido_granja.mjs, con el riego del huerto (P11b)
     await granja({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, base });
+    // P11c, la casa más fuerte (16 nov): pruebas/recorrido_casa_fuerte.mjs (la rastra, el tronco largo a cuerda, la rodaja
+    // y la carretilla, la empalizada con su portón y el muro de entramado)
+    await casaFuerte({ J: J2, s, T, O, comprobar, pausa, cerca });
     J2.ws.close();
   }
 
