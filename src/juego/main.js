@@ -2340,7 +2340,7 @@ function pasoCanoa(o, ax, az, mag, dt) {
   return Math.hypot(v.vx, v.vz);
 }
 // La altura del que va en la canoa: sentado en su fondo, a flote.
-function alturaEnCanoa() { const w = mundoJ ? mundoJ.aguaEn(pj.x, pj.z) : null; return (w ? w.superficie : alturaSuelo()) - CALADO_CANOA + 0.06; }
+function alturaEnCanoa() { const w = mundoJ ? mundoJ.aguaEn(pj.x, pj.z) : null; return (w ? w.superficie : alturaSuelo()) - CALADO_CANOA + 0.1; }   // (sentado sobre el fondo, de 4,5 cm, sin que los pies asomen por debajo)
 const CALADO_CANOA = 0.16;   // m: lo que se hunde la canoa (el casco, con 0,38 m de hondo)
 // dónde va el fondo de una canoa a flote en (x, z) (la superficie del agua, menos lo que se hunde), o null en seco
 function flotaEn(x, z) { const w = mundoJ ? mundoJ.aguaEn(x, z) : null; return w ? w.superficie - CALADO_CANOA : null; }

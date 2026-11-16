@@ -153,14 +153,14 @@ function juntarRodillas(j) {
     _obj.copy(_rod).addScaledVector(_der, s * PIE_CANOA - ladoPie);
     _obj.y = Math.max(_obj.y, _cen.y + 0.04);
     girarHueso(pierna, _rod, _obj);
-    // y la punta del pie, hacia delante (hacia la proa) y algo abajo: de lado, los dedos asomaban por la borda
+    // y la punta del pie, hacia delante (hacia la proa): de lado, los dedos asomaban por la borda
     const dedos = h['ball_' + l];
     if (!dedos) continue;
     pie.getWorldPosition(_obj);
     dedos.getWorldPosition(_rod);
     const largo = _rod.distanceTo(_obj);
     _ade.set(0, 0, 1).applyQuaternion(_qr);
-    _obj.addScaledVector(_ade, largo * 0.9); _obj.y -= largo * 0.4;
+    _obj.addScaledVector(_ade, largo); _obj.y = Math.max(_obj.y, _cen.y + 0.04);   // (sin bajar del fondo)
     girarHueso(pie, _rod, _obj);
   }
 }

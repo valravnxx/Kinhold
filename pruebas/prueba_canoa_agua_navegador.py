@@ -84,7 +84,7 @@ def recorrido(pg, pre, movil):
     # las rodillas, dentro del casco (0,45 m por dentro): la de sentarse en el suelo las abre y se salían por la borda
     rod = pg.evaluate(f"""(() => {{ const k = {K}, o = k.escena.getObjectByName('suelo_canoa'), h = k.jugador.mh.hueso; k.escena.updateMatrixWorld(true);
       return ['calf_l', 'calf_r', 'foot_l', 'foot_r', 'ball_l', 'ball_r', 'upperarm_l', 'upperarm_r'].map(n => {{ const p = o.worldToLocal(h[n].getWorldPosition(h[n].position.clone())); return [Math.round(p.z * 100) / 100, Math.round(p.y * 100) / 100]; }}); }})()""")
-    comprobar(f'{pre}las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio)', all(abs(z) <= 0.17 for z, y in rod[:6]), f'{rod[:6]} (de lado, alto)')
+    comprobar(f'{pre}las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio y sin salir por debajo)', all(abs(z) <= 0.17 and y >= 0.04 for z, y in rod[:6]), f'{rod[:6]} (de lado, alto)')
     comprobar(f'{pre}y mirando a lo largo de la canoa (los hombros, de través)', abs(rod[6][0] - rod[7][0]) > 0.2, f'{rod[6:]}')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.2; k.cam.dist = 6; k.cam.pitch = 0.45; }})()")
     foto(pg, f'{pre}3_en_la_canoa')
