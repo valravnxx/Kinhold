@@ -1792,7 +1792,7 @@ function accionPrincipal() {
   if (!it && pj.k === 0 && miTronco()) {
     const t = miTronco(), ra = t.arrastra === yoSuelo() ? rastras.cercanas(pj.x, pj.z, Date.now()).find(o => o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0) : null;
     if (ra) return A(tr('Subir el tronco largo a la rastra'), 'tronco_largo', ra, () => cargarRastra(ra, { suelo: t.id }), { alto: 0.4 });
-    return A(t.cosa.tipo === 'canoa' ? tr('Soltar la cuerda de la canoa') : tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
+    return A(t.cosa.tipo === 'canoa' ? tr('Soltar la canoa') : tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
   }
   if (!it && pj.k === 0 && !miRastra() && ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda')) {
     const t = rastras.troncosCercanos(pj.x, pj.z, Date.now()).find(o => !o.arrastra);

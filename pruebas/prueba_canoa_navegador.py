@@ -119,7 +119,7 @@ def recorrido(pg, pre):
     camara(pg, 6.5, 0.6, 1.6); pg.wait_for_timeout(600); foto(pg, f'{pre}7_canoa_a_cuerda')
     d = pg.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('suelo_canoa'); return o ? Math.hypot(o.position.x - {K}.pj.x, o.position.z - {K}.pj.z) : -1; }})()")
     comprobar(f'{pre}la canoa va detrás del que tira (a unos 2,9 m)', 2.4 < d < 3.4, f'{d:.2f}')
-    comprobar(f'{pre}Usar suelta la cuerda de la canoa', usar_texto(pg) == 'Soltar la cuerda de la canoa', usar_texto(pg))
+    comprobar(f'{pre}Usar suelta la cuerda de la canoa', usar_texto(pg) == 'Soltar la canoa', usar_texto(pg))
     comprobar(f'{pre}sin errores en la página', not pg.errores, str(pg.errores[:3]))
 
 try:

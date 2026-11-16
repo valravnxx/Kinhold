@@ -12,7 +12,7 @@ import { Lote, materialTex } from '../mundo/estilos.js';
 import { faseDe, VUELTAS, GOLPES_DESBASTAR, GOLPES_RASPAR } from '../logica/canoa.js';
 
 export const LARGO_CANOA = 4.4, MANGA = 0.27, PUNTAL = 0.38, GRUESO = 0.045;
-const QUEMADO = 0x4a3b30;
+const QUEMADO = 0x3d342d;   // el carbón del hueco quemado (casi negro, con la textura agrietada de la corteza)
 
 const az = (id, k) => { let h = 2166136261; for (const ch of id + ':' + k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return h / 4294967296; };
 const suave = (a, b, v) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -87,28 +87,30 @@ function astillas(L, n, id) {
 // El casco con lo que lleve: hondo (0 a 1), por dentro quemado o no, con brasas o no, con o sin corteza por fuera.
 function casco(L, hondo, { quemado = false, corteza = true } = {}) {
   const c = geometriasCasco(hondo);
-  L.add(c.fuera, corteza ? 'corteza' : 'madera', 0, 0, 0, null, { tex: corteza ? 'corteza' : 'veta', brillo: 1.25 });
-  L.add(c.dentro, quemado ? QUEMADO : 'tabla', 0, 0, 0, null, { tex: 'veta', sinSuelo: true, brillo: quemado ? 1 : 1.1 });
+  L.add(c.fuera, corteza ? 'cortezaRoja' : 'madera', 0, 0, 0, null, { tex: corteza ? 'corteza' : 'veta', brillo: corteza ? 1.1 : 1.25 });   // (por fuera, la corteza parda: lo quemado va solo dentro)
+  L.add(c.dentro, quemado ? QUEMADO : 'tabla', 0, 0, 0, null, { tex: quemado ? 'corteza' : 'veta', sinSuelo: true, brillo: quemado ? 1.25 : 1.1 });
   L.add(c.bordas, 'tabla', 0, 0, 0, null, { tex: 'veta', sinSuelo: true });
 }
 
 // Las brasas echadas en el hueco: trozos encendidos a lo largo, con luz propia (sin sombra).
 function brasas(g, hondo, id) {
-  const mat = new THREE.MeshStandardMaterial({ color: 0x5a2010, emissive: 0xb03c14, emissiveIntensity: 0.6, roughness: 0.9 });
-  const ceniza = new THREE.MeshStandardMaterial({ color: 0x5a524b, roughness: 1 });
+  const viva = new THREE.MeshStandardMaterial({ color: 0x4a1a0c, emissive: 0xa8380f, emissiveIntensity: 0.45, roughness: 0.9, flatShading: true });
+  const carbon = new THREE.MeshStandardMaterial({ color: 0x1f1a17, roughness: 1, flatShading: true });
+  const ceniza = new THREE.MeshStandardMaterial({ color: 0x6b645d, roughness: 1, flatShading: true });
   const y = PUNTAL - hondo * (PUNTAL - GRUESO);   // el fondo del hueco, en el centro
-  // el lecho de brasas: una capa que brilla a lo largo del hueco
-  const lecho = new THREE.Mesh(new THREE.CircleGeometry(1, 20), new THREE.MeshStandardMaterial({ color: 0x2c2420, emissive: 0x7a2a0c, emissiveIntensity: 0.35, roughness: 1 }));
-  lecho.rotation.x = -Math.PI / 2; lecho.scale.set(LARGO_CANOA * 0.36, MANGA * 0.62, 1); lecho.position.set(0, y + 0.012, 0); lecho.name = 'brasa';
+  // el lecho: carbón y ceniza a lo largo del hueco (sin brillo: lo que brilla son los trozos encendidos)
+  const lecho = new THREE.Mesh(new THREE.CircleGeometry(1, 20), new THREE.MeshStandardMaterial({ color: 0x241e1a, roughness: 1 }));
+  lecho.rotation.x = -Math.PI / 2; lecho.scale.set(LARGO_CANOA * 0.36, MANGA * 0.62, 1); lecho.position.set(0, y + 0.01, 0); lecho.name = 'lecho_brasas';
   g.add(lecho);
-  for (let i = 0; i < 90; i++) {
-    const x = (az(id, i + 400) - 0.5) * LARGO_CANOA * 0.66, z = (az(id, i + 430) - 0.5) * MANGA * 0.9 * Math.sqrt(1 - (2 * x / (LARGO_CANOA * 0.72)) ** 2);
-    const r = 0.018 + az(id, i + 460) * 0.022;
-    const m = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), az(id, i + 490) < 0.55 ? mat : ceniza);
-    m.position.set(x, y + r * 0.3, z); m.rotation.set(az(id, i + 520) * 6, az(id, i + 550) * 6, 0); m.scale.y = 0.6; m.name = 'brasa';
+  for (let i = 0; i < 110; i++) {
+    const x = (az(id, i + 400) - 0.5) * LARGO_CANOA * 0.56, z = (az(id, i + 430) - 0.5) * MANGA * 0.8 * Math.sqrt(1 - (2 * x / (LARGO_CANOA * 0.72)) ** 2);
+    const r = 0.02 + az(id, i + 460) * 0.026, k = az(id, i + 490);
+    const m = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), k < 0.4 ? viva : k < 0.75 ? carbon : ceniza);
+    m.position.set(x, y + r * 0.6, z); m.rotation.set(az(id, i + 520) * 6, az(id, i + 550) * 6, 0); m.scale.set(1, 0.8, 1);
+    m.name = k < 0.4 ? 'brasa' : 'carbon';
     g.add(m);
   }
-  const luz = new THREE.PointLight(0xff8a3a, 1.2, 4, 2); luz.position.set(0, y + 0.3, 0); luz.name = 'luz_brasas'; g.add(luz);
+  const luz = new THREE.PointLight(0xff8a3a, 0.9, 3.5, 2); luz.position.set(0, y + 0.3, 0); luz.name = 'luz_brasas'; g.add(luz);
 }
 
 // Lo hondo que va el hueco con lo hecho (0 tras desbastar; 1 con la última vuelta raspada).
@@ -128,13 +130,16 @@ export function modeloCanoa(o, troncoLargo, ahora = Date.now()) {
   }
   const v = o.cosa.vaciado, f = faseDe(v, ahora);
   if (!v || f === 'desbastar') {   // aún es el tronco, con las astillas que suelta
-    const g = troncoLargo();
-    astillas(L, 4 + Math.round(18 * Math.min(1, (v ? v.golpes : 0) / GOLPES_DESBASTAR.piedra)), id);
+    const g = troncoLargo(), p = Math.min(1, (v ? v.golpes : 0) / GOLPES_DESBASTAR.piedra);
+    // lo desbastado: la cara de arriba, sin corteza y aplanada a hachazos, más larga cuantos más golpes (el tronco, de
+    // 0,18 m de radio, tumbado a lo largo de X)
+    if (p > 0) L.add(new THREE.BoxGeometry(4.3 * Math.max(0.12, p), 0.03, 0.22), 'corte', -2.15 + 2.15 * Math.max(0.12, p), 0.345, 0, null, { tex: 'veta', sinSuelo: true });
+    astillas(L, 4 + Math.round(18 * p), id);
     g.add(mallas(L));
     return g;
   }
   const hondo = hondoDe(v, ahora);
-  casco(L, hondo, { quemado: f === 'quemando' || f === 'raspar' || v.vuelta > 0 });
+  casco(L, hondo, { quemado: f === 'quemando' || f === 'raspar' });   // (raspado, la madera limpia y más honda)
   astillas(L, 22, id);
   const g = mallas(L);
   if (f === 'quemando') brasas(g, hondo, id);
