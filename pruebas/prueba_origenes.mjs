@@ -80,7 +80,7 @@ const ESENCIAL = {
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
   lluvia: ['cubo', 'cubo_agua', 'col', 'nabo', 'est_pozo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
   'casa-fuerte': ['tronco_largo', 'rodaja', 'carretilla'],   // (P11c; sus piezas, en PIEZAS_ESENCIALES)
-  canoa: ['canoa'],   // (P11d; el remo, con su tarea)
+  canoa: ['canoa', 'remo'],   // (P11d)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };

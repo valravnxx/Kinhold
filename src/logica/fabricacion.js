@@ -240,6 +240,10 @@ export const RECETAS = {
   // banco»): la rodaja es la rueda, las varas los brazos y el tronco corto, hendido en tablas, la caja. Es enorme: al
   // recogerla cae al suelo, a tus pies, como la rastra. Tiempo, provisional (diario y registro)
   carretilla:        r('Carretilla de rueda maciza', 'banco', 'carretilla', { rodaja: 1, vara: 2, tronco_corto: 1 }, 90),
+  // el remo de la canoa (P11d, 16 nov; roadmap: «1 tronco corto en el banco de tronco, con el hacha»): el tronco corto,
+  // hendido, y la mitad desbastada a hacha hasta la pala, la caña y el puño. Se lleva el hacha (no se gasta). Tiempo,
+  // provisional (como la carretilla: es una pieza entera a hacha; diario y registro)
+  remo:              { ...r('Remo', 'banco', 'remo', { tronco_corto: 1 }, 90), requiere: ['hacha_piedra', 'hacha_mano', 'hacha_hierro'] },
   // el zurrón de piel (P9, 13 nov; documento de sistemas: «zurrón de piel — 2 piel limpia + cordel — banco — mochila mixta pequeña»): la
   // mochila mixta pequeña (src/logica/inventario.js: 2 huecos medianos y 2 pequeños). Tiempo, provisional
   zurron:            r('Zurrón de piel', 'banco', 'zurron', { piel_limpia: 2, cordel: 1 }, 60),
@@ -291,6 +295,7 @@ export const PARA = {
   cribar: 'Grano de cebada limpio, el que se siembra.',
   trillar: 'Grano sin limpiar, que se criba, y paja: el tejado de paja, la cama de paja, el almiar.',
   cubo: 'Agua, leche.',
+  remo: 'Para remar en la canoa: con él se va bastante más deprisa que corriendo; sin remar, la canoa va a la deriva. Se lleva con las dos manos.',
   carretilla: 'Se empuja: 4 troncos cortos, 40 de leña, 36 piedras o un bloque de piedra, más deprisa que la rastra; aparcada en tus tierras, lo que lleva está protegido.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };

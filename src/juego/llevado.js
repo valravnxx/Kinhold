@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA, loteRemo } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -669,6 +669,9 @@ export function crearLlevado(j) {
       // la rodaja (P11c), de canto entre las dos manos, como una rueda: las caras hacia delante y atrás y las manos en
       // el canto, a los lados (src/juego/personaje.js las abre a su ancho)
       else if (l.der === 'rodaja') troncoCorto(L, 0, -0.02, 0, RODAJA.ancho, RODAJA.r, 'z');
+      // el remo (P11d), atravesado por la caña de una mano a otra: el puño en muleta algo más allá de la izquierda y la
+      // pala fuera, a la derecha, de canto hacia delante (como se lleva un remo al hombro de la canoa, pero bajo)
+      else if (l.der === 'remo') { const R = nuevoLote(); loteRemo(R, { sinSuelo: true }); const m = new THREE.Matrix4().makeTranslation(-0.2, 0, 0); for (const p of R.piezas) { p.m.premultiply(m); L.piezas.push(p); } }
       else if (CATALOGO[l.der] && CATALOGO[l.der].lugar === 'espalda' && !sinModelo(l.der)) { const E = espalda(l.der, {}).L; for (const p of E.piezas) { p.m.premultiply(new THREE.Matrix4().makeRotationY(Math.PI)).premultiply(new THREE.Matrix4().makeTranslation(0, -0.12, 0.1)); L.piezas.push(p); } } // la mochila o el bastidor, cogido delante por los largueros, la repisa hacia el pecho
       else { hatillo(L, 0, 0.12, 0, 2.2); L.generico = true; }
       // va entre las dos manos (con la animación de llevar en brazos, delante del pecho): lo pone seguir()

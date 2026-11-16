@@ -22,6 +22,7 @@
 //  - rodaja de tronco (P11c, 15 nov): un disco cortado del pie del tronco largo, tumbado, con la corteza en el canto,
 //    los anillos en las caras y una grieta de secado (es madera sin curar); las mismas medidas que la rueda de la
 //    carretilla (src/juego/carretilla.js), que es ella.
+//  - remo (P11d, 16 nov): de una pieza, a hacha, con la pala de punta redonda y su nervio, la caña y el puño en muleta.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
@@ -512,6 +513,37 @@ function cubo(n, id) {
 }
 const cuboAgua = () => { const L = lote(0.1); cuboEn(L, 0, 0, 0, { lleno: true }); return mallas(L); };
 
+// El remo de la canoa (P11d, 16 nov): de una pieza, sacado a hacha de un tronco corto hendido (sin cepillar: las caras
+// con las facetas del hacha). Mide 1,5 m: la pala, ancha y con la punta redonda (16 cm), con el nervio que sigue a la
+// caña hasta la punta; la caña redonda, y arriba el puño en muleta (el travesaño donde va la mano de arriba). Las
+// medidas, de los remos de canoa de un tronco que se conservan (provisional). loteRemo(L) lo pone a lo largo de X: la
+// caña en y = 0, la pala hacia -X (de -1 a -0,42) y el puño en +0,5; la cara de la pala en el plano XY (fina en Z).
+export const REMO = { largo: 1.5, pala: 0.58, ancho: 0.16, grueso: 0.016, r: 0.017 };
+export function loteRemo(L, opc = {}) {
+  const { pala, ancho, grueso, r } = REMO, x0 = -0.42;
+  // la pala: el contorno (hombros que salen de la caña, los lados casi rectos y la punta redonda), con un canto de bisel
+  const f = new THREE.Shape(), a = ancho / 2;
+  f.moveTo(0, -r); f.quadraticCurveTo(-0.07, -a * 0.95, -0.14, -a); f.lineTo(-pala + a, -a * 0.96);
+  f.quadraticCurveTo(-pala, -a * 0.85, -pala, 0); f.quadraticCurveTo(-pala, a * 0.85, -pala + a, a * 0.96);
+  f.lineTo(-0.14, a); f.quadraticCurveTo(-0.07, a * 0.95, 0, r); f.lineTo(0, -r);
+  const g = new THREE.ExtrudeGeometry(f, { depth: grueso * 0.6, bevelEnabled: true, bevelThickness: grueso * 0.2, bevelSize: 0.006, bevelSegments: 1, curveSegments: 6 });
+  g.translate(0, 0, -grueso * 0.3);
+  L.add(g, 'tabla', x0, 0, 0, null, { tex: 'veta', ...opc });
+  // el nervio de la pala, a las dos caras, que se adelgaza hacia la punta
+  for (const s of [-1, 1]) L.add(new THREE.CylinderGeometry(r * 0.35, r * 0.85, pala * 0.8, 6), 'tabla', x0 - pala * 0.4, 0, s * grueso * 0.35, { z: Math.PI / 2 }, { escala: v3(1, 1, 0.55), tex: 'veta', ...opc });
+  // la caña, algo más gruesa junto a la pala, y el puño en muleta, atravesado
+  L.add(cil(r * 1.12, r, 0.93, 7), 'tabla', x0 + 0.465, 0, 0, { z: Math.PI / 2 }, { tex: 'veta', ...opc });
+  L.add(cajaR(0.045, 0.13, 0.034, 0.012), 'tabla', 0.525, 0, 0, null, { tex: 'veta', ...opc });
+}
+function remo(n, id) {
+  // tumbado en el suelo, de plano: la pala y el puño apoyados (y la caña algo levantada, como al dejarlo)
+  const L = lote(0.04), g = new THREE.Group();
+  loteRemo(L, { sinSuelo: true });
+  const m = mallas(L); m.rotation.x = -Math.PI / 2; m.position.y = REMO.grueso * 0.6 + 0.004;
+  g.add(m); g.rotation.y = (az(id || 'remo', 1) - 0.5) * 0.6;
+  return g;
+}
+
 // La rodaja de tronco (P11c): la rueda de la carretilla antes de ponerle el eje, tumbada en el suelo.
 export const RODAJA = { r: 0.24, ancho: 0.11 };
 function rodaja(n, id) {
@@ -808,6 +840,6 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
