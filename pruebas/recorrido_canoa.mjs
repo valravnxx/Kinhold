@@ -101,7 +101,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   const M = s.mundo.mojonDe(yo);
   const banco = M && cerca(suyas('banco_tronco'), M)[0];
   // su hoguera de la orilla (la del paso 11): la suya más cerca del agua
-  const aguaA = (p) => { for (let d = 1; d <= 12; d += 1) for (let k = 0; k < 16; k++) if (T.aguaEn(p.x + Math.cos(k / 16 * 6.283) * d, p.z + Math.sin(k / 16 * 6.283) * d) >= 0.3) return d; return Infinity; };
+  const aguaA = (p) => { for (let d = 1; d <= 40; d += 1) for (let k = 0; k < 32; k++) if (T.aguaEn(p.x + Math.cos(k / 32 * 6.283) * d, p.z + Math.sin(k / 32 * 6.283) * d) >= 0.3) return d; return Infinity; };
   const hog = suyas('hoguera').map(e => ({ e, d: aguaA(e) })).sort((a, b) => a.d - b.d)[0]?.e;
   console.log('26. La canoa (P11d): una cuerda, tala un adulto junto a su hoguera de la orilla, vacía el tronco con el hacha y las brasas, se hace el remo, y rema río arriba y río abajo, a la deriva y la vara en la orilla');
   comprobar('26. tiene su tierra, su banco de tronco y su hoguera de la orilla', !!M && !!banco && !!hog, JSON.stringify({ M, banco: banco && [banco.x, banco.z], hoguera: hog && [hog.x, hog.z, aguaA(hog)] }));
@@ -135,6 +135,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   const resto = () => { const l = MANOS.find(x => s.objetos.invs.de(yo).lugares[x]?.tipo === 'hacha_piedra'); return l ? VIDA_DESGASTE.hacha_piedra - (s.objetos.invs.de(yo).lugares[l].usado || 0) : 0; };
   const hachaALaMano = async () => {
     await pausa(800);
+    if (!enLaMano('hacha_piedra') && MANOS.every(l => J.inv.lugares[l]) && enLaMano('cuerda')) { const l = enLaMano('cuerda'); await soltar(l); }
     if (await aLaMano('hacha_piedra')) return true;
     if (!(await cogerSuelo('hacha_piedra', J.pos, 15)) && !(await cogerSuelo('hacha_piedra', banco, 40))) await cogerSuelo('hacha_piedra', M, 400);
     await pausa(800);
@@ -159,7 +160,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
     }
   };
   const talarAdulto = async (p) => {
-    await soltarManos(['hacha_piedra']);
+    await soltarManos(['hacha_piedra', 'cuerda']);
     if (!(await hachaALaMano())) return { ok: false, motivo: `no encuentra su hacha (en las manos ${enMano()})` };
     await repararHacha(80);
     const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - 200, z0: O.z + p.z - 200, x1: O.x + p.x + 200, z1: O.z + p.z + 200 }).arboles
@@ -214,10 +215,11 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
 
   console.log('26b. Con el hacha y la cuerda, a su hoguera de la orilla: tala un adulto y arrastra el tronco largo junto a ella');
   await J.andar(taller.x, taller.z);
-  const lc = enLaMano('cuerda'); if (lc) await soltar(lc);
+  await soltarManos(['cuerda']);
+  await aLaMano('cuerda');
   await hachaALaMano();
   // (el sitio de vaciarla: junto a la hoguera, a 4 m, en seco y hacia el agua)
-  const haciaAgua = (() => { for (let d = 1; d <= 12; d += 1) for (let k = 0; k < 16; k++) { const x = hog.x + Math.cos(k / 16 * 6.283) * d, z = hog.z + Math.sin(k / 16 * 6.283) * d; if (T.aguaEn(x, z) >= 0.3) return { x: (x - hog.x) / d, z: (z - hog.z) / d }; } return { x: 1, z: 0 }; })();
+  const haciaAgua = (() => { for (let d = 1; d <= 40; d += 1) for (let k = 0; k < 32; k++) { const x = hog.x + Math.cos(k / 32 * 6.283) * d, z = hog.z + Math.sin(k / 32 * 6.283) * d; if (T.aguaEn(x, z) >= 0.3) return { x: (x - hog.x) / d, z: (z - hog.z) / d }; } return { x: 1, z: 0 }; })();
   let sitio = null;
   for (let d = 3.5; d <= ALCANCE_FUEGO - 1.5 && !sitio; d += 0.5) for (const giro of [Math.PI / 2, -Math.PI / 2, Math.PI * 0.75, -Math.PI * 0.75, Math.PI]) {
     const x = r2(hog.x + (haciaAgua.x * Math.cos(giro) - haciaAgua.z * Math.sin(giro)) * d), z = r2(hog.z + (haciaAgua.x * Math.sin(giro) + haciaAgua.z * Math.cos(giro)) * d);
@@ -232,8 +234,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   if (!largo) return;
   const hachaTala = { ...J.pos };
   const lh = enLaMano('hacha_piedra'); if (lh) await soltar(lh);
-  await J.andar(taller.x, taller.z);
-  await aLaMano('cuerda', taller);
+  await aLaMano('cuerda', J.pos, 200) || await aLaMano('cuerda', taller);   // (si la soltó para reparar el hacha, donde la dejó)
   await J.andar(largo.x + 1, largo.z);
   q = await J.objeto({ tipo: 'atar_tronco', objeto: largo.id, x: J.pos.x, z: J.pos.z });
   const atado = q.ok && porId(largo.id)?.arrastra === yo;
@@ -241,7 +242,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   const dS = Math.max(0.1, dist(largo, sitio)), pasada = { x: r2(sitio.x + (sitio.x - largo.x) / dS * DETRAS_TRONCO), z: r2(sitio.z + (sitio.z - largo.z) / dS * DETRAS_TRONCO) };
   let q3 = atado ? await arrastrar(largo.id, pasada.x, pasada.z) : q;
   largo = porId(largo.id);
-  comprobar('vuelve al banco a por la cuerda, ata el tronco largo y lo arrastra junto a la hoguera', atado && q3.ok && !!largo && !largo.arrastra && dist(largo, hog) <= ALCANCE_FUEGO + 2, `${q.motivo || ''} ${q3.motivo || ''} el tronco, a ${largo && Math.round(dist(largo, hog) * 10) / 10} m de la hoguera`);
+  comprobar('suelta el hacha, ata el tronco largo con la cuerda y lo arrastra junto a la hoguera', atado && q3.ok && !!largo && !largo.arrastra && dist(largo, hog) <= ALCANCE_FUEGO + 2, `${q.motivo || ''} ${q3.motivo || ''} el tronco, a ${largo && Math.round(dist(largo, hog) * 10) / 10} m de la hoguera`);
   if (!largo) return;
   const cuerdaAqui = { ...J.pos };
   await soltarManos();
@@ -284,7 +285,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   await repararHacha(100);
   await J.andar(junto.x, junto.z);
   let id = largo.id, golpes = 0, brasas = 0, v = { ok: true }, fases = [];
-  for (let n = 0; n < 400 && v.ok && !v.canoa; n++) {
+  for (let n = 0; n < 400 && v.ok && !v.datos?.canoa; n++) {
     v = await J.objeto({ tipo: 'vaciar', objeto: id, x: J.pos.x, z: J.pos.z });
     if (!v.ok && /hoguera/.test(v.motivo || '')) { await avivar(); v = await J.objeto({ tipo: 'vaciar', objeto: id, x: J.pos.x, z: J.pos.z }); }
     if (!v.ok && /hacha/.test(v.motivo || '')) { await hachaALaMano(); v = await J.objeto({ tipo: 'vaciar', objeto: id, x: J.pos.x, z: J.pos.z }); }
@@ -294,10 +295,10 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
     if (fases[fases.length - 1] !== paso) fases.push(paso);
     if (paso === 'brasas') {
       brasas++;
-      const espera = porId(id)?.cosa.vaciado?.hasta - Date.now();
+      const espera = s.objetos.suelo.porId(id, Date.now())?.cosa.vaciado?.hasta - Date.now();
       const r1 = await J.objeto({ tipo: 'vaciar', objeto: id, x: J.pos.x, z: J.pos.z });
       comprobar(`echa las brasas de la hoguera en el hueco (vuelta ${brasas}): arden ${Math.round(espera / 60000)} min, y mientras no se raspa`, !r1.ok && /brasas/.test(r1.motivo || '') && espera > 5 * 60000, r1.motivo);
-      const o = porId(id); if (o?.cosa.vaciado?.fase === 'quemando') o.cosa.vaciado.hasta = Math.min(o.cosa.vaciado.hasta, Date.now() - 1);   // (sus 10 min, ya pasados)
+      const o = s.objetos.suelo.porId(id, Date.now()); if (o?.cosa.vaciado?.fase === 'quemando') o.cosa.vaciado.hasta = Math.min(o.cosa.vaciado.hasta, Date.now() - 1);   // (sus 10 min, ya pasados)
     } else { golpes++; await pausa(850); }
     if (golpes % 25 === 0 && resto() < 25) await repararHacha(60);
   }
@@ -311,11 +312,11 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   await aLaMano('cuerda', cuerdaAqui, 6);
   // la orilla: lo seco más cerca del agua honda, hacia el agua desde la canoa
   let orilla = null, agua = null;
-  for (let d = 1; d <= 20 && !orilla; d += 0.5) for (let k = 0; k < 32; k++) {
+  for (let d = 1; d <= 40 && !orilla; d += 0.5) for (let k = 0; k < 32; k++) {
     const a = k / 32 * 6.283, x = laCanoa.x + Math.cos(a) * d, z = laCanoa.z + Math.sin(a) * d;
     if (T.aguaEn(x, z)) continue;
     const ax = x + Math.cos(a) * 2.5, az = z + Math.sin(a) * 2.5;
-    if (T.aguaEn(ax, az) >= HONDO_FLOTA + 0.2) { orilla = { x: r2(x), z: r2(z), a }; agua = { x: r2(ax), z: r2(az) }; break; }
+    if (T.aguaEn(ax, az) >= HONDO_FLOTA + 0.1) { orilla = { x: r2(x), z: r2(z), a }; agua = { x: r2(ax), z: r2(az) }; break; }
   }
   await J.andar(laCanoa.x + 1, laCanoa.z);
   q = orilla ? await J.objeto({ tipo: 'atar_tronco', objeto: laCanoa.id, x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: 'no hay agua honda cerca' };
@@ -341,14 +342,16 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
       tronza = `tala un adulto y lo tronza en ${g} golpes`;
       corto = enSuelo('tronco_corto', t2.largo, 5)[0];
     } else tronza = t2.motivo;
-  } else tronza = 'le sobraba uno de la rodaja';
+  } else tronza = 'hay uno junto al banco';
   const hachaRemo = { ...J.pos };
   await soltarManos(['hacha_piedra']);
   const lhr = enLaMano('hacha_piedra'); if (lhr) await soltar(lhr);   // (el hacha, a sus pies: lleva el tronco al hombro)
   q = corto ? (await cogerSuelo('tronco_corto', corto, 3, 1, 'hombro')) : false;
-  await J.andar(hachaRemo.x, hachaRemo.z); await hachaALaMano();
   await J.andar(banco.x + 1, banco.z);
   const dR = q ? await depositar(banco, 'tronco_corto') : { ok: false, motivo: `sin tronco corto (${tronza})` };
+  // (con el tronco al hombro, las manos no llevan nada: el hacha, después)
+  await J.andar(hachaRemo.x, hachaRemo.z); await hachaALaMano();
+  await J.andar(banco.x + 1, banco.z);
   q = dR.ok ? await enEstacion(banco, 'remo') : dR;
   comprobar('deja el tronco corto en el banco y, con el hacha, se hace el remo', q.ok && J.cuantos('remo') === 1, `${tronza} · ${q.motivo || ''} · ${enMano()}`);
   if (!J.cuantos('remo')) return;
