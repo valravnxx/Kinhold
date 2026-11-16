@@ -46,7 +46,7 @@ def recorrido(pg, pre, movil):
     ox, oz = r['x'] - r['nx'] * (r['orilla'] + 2.5), r['z'] - r['nz'] * (r['orilla'] + 2.5)
     cx, cz = r['x'] - r['nx'] * (r['orilla'] + 1.2) + r['ux'] * 1.5, r['z'] - r['nz'] * (r['orilla'] + 1.2) + r['uz'] * 1.5
     id = pg.evaluate(f"""(() => {{ const k = {K}; k.pj.k = 0; k.pj.x = {ox}; k.pj.z = {oz}; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2({r['nx']}, {r['nz']});
-      k.cam.yaw = Math.atan2(-{r['nx']}, -{r['nz']}) + 0.6; k.cam.pitch = 0.5; k.cam.dist = 7;
+      k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})) + 0.6; k.cam.pitch = 0.5; k.cam.dist = 7;
       const o = k.sueloObjetos.suelo.dejar({{ tipo: 'canoa', n: 1 }}, {cx}, {cz}, Date.now(), 'jugador:local', false, Math.atan2({r['ux']}, {r['uz']}) - Math.PI / 2);
       k.sueloObjetos.refrescar(); return o.id; }})()""")
     try: pg.wait_for_function(f'{K}.decorado.pendientes === 0 && Math.hypot({K}.decorado.centro.x - {K}.pj.x, {K}.decorado.centro.z - {K}.pj.z) < 1', timeout=240000)
@@ -76,10 +76,10 @@ def recorrido(pg, pre, movil):
     pg.evaluate(f"{K}.usar()"); pg.wait_for_timeout(700)
     comprobar(f'{pre}sube, y rema él', canoa(pg, id)['rema'] == 'jugador:local' and pg.evaluate(f"!!{K}.miCanoa()"), aviso(pg))
     comprobar(f'{pre}va sentado', pg.evaluate(f"{K}.jugador.sentado === true"))
-    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-{r['ux']}, -{r['uz']}) + 2.2; k.cam.dist = 6; k.cam.pitch = 0.45; }})()")
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.2; k.cam.dist = 6; k.cam.pitch = 0.45; }})()")
     foto(pg, f'{pre}3_en_la_canoa')
     # remar río arriba (contra la corriente): W con la cámara mirando río arriba (W lleva a (-sin yaw, -cos yaw))
-    pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-{r['ux']}, -{r['uz']}); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
+    pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['ux']}), -({r['uz']})); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w')
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
@@ -87,7 +87,7 @@ def recorrido(pg, pre, movil):
     v = avance / ((p1[2] - p0[2]) / 1000)
     comprobar(f'{pre}remando contra la corriente, más deprisa que corriendo (6 m/s)', v > 6, f'{v:.1f} m/s río arriba (corriente {r["vel"]:.1f} m/s)')
     comprobar(f'{pre}sigue en el agua', (pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0) >= 0.2)
-    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-{r['ux']}, -{r['uz']}) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
     foto(pg, f'{pre}4_remando')
     # sin remar: a la deriva, río abajo
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
@@ -96,7 +96,7 @@ def recorrido(pg, pre, movil):
     deriva = (p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz']
     comprobar(f'{pre}sin remar, la corriente la lleva río abajo', deriva > 0.2 * r['vel'] * (p1[2] - p0[2]) / 1000, f'{deriva:.2f} m en {(p1[2] - p0[2]) / 1000:.1f} s')
     # remar hacia la orilla: encalla, no se sale del agua
-    pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-{r['nx']}, -{r['nz']}); k.cam.yaw = Math.atan2({r['nx']}, {r['nz']}); }})()")
+    pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['nx']}), -({r['nz']})); k.cam.yaw = Math.atan2({r['nx']}, {r['nz']}); }})()")
     pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
     h = pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0
     comprobar(f'{pre}remando contra la orilla, encalla en el agua (no sale a tierra)', h >= 0.2, f'{h:.2f} m de agua')
