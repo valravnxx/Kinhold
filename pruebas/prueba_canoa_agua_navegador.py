@@ -81,11 +81,16 @@ def recorrido(pg, pre, movil):
     # remar río arriba (contra la corriente): W con la cámara mirando río arriba (W lleva a (-sin yaw, -cos yaw))
     pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['ux']}), -({r['uz']})); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
-    pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w')
+    # (la velocidad, la que da el juego en cada fotograma: en la nube, sin tarjeta gráfica, van tan pocos fotogramas que el
+    # tiempo del juego no sigue al reloj; lo andado, que sea río arriba)
+    pg.keyboard.down('w'); vs = []
+    for i in range(6): pg.wait_for_timeout(300); vs.append(pg.evaluate(f"{K}.pj.vel"))
+    pg.keyboard.up('w')
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     avance = -((p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz'])   # lo andado río arriba
-    v = avance / ((p1[2] - p0[2]) / 1000)
-    comprobar(f'{pre}remando contra la corriente, más deprisa que corriendo (6 m/s)', v > 6, f'{v:.1f} m/s río arriba (corriente {r["vel"]:.1f} m/s)')
+    v = max(vs)
+    comprobar(f'{pre}remando contra la corriente, más deprisa que corriendo (6 m/s)', v > 6, f'{v:.1f} m/s (corriente {r["vel"]:.1f} m/s)')
+    comprobar(f'{pre}y avanza río arriba', avance > 0.5, f'{avance:.1f} m')
     comprobar(f'{pre}sigue en el agua', (pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0) >= 0.2)
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
     foto(pg, f'{pre}4_remando')
