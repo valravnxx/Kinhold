@@ -1,0 +1,98 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3081 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3433 KB
+
+== Construir demo única
+dist/kinhold_demo.html 4999 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3494 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3076 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3467 KB
+dist/kinhold_trozos.html 3098 KB
+hilo de los trozos 24 KB
+
+== Lógica de construcción
+  OK   el segundo tramo de una pendiente arranca 1 tramo más arriba
+  OK   remate de esquina: limatesa baja hacia los dos aleros, limahoya sube
+
+Resultado: 279 correctas, 0 fallidas
+
+== Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo
+  OK   la pestaña «exterior» tiene algo
+  OK   la pestaña de muebles tiene algo
+
+53 correctas, 0 fallos
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Modelos
+  OK   Cimiento de troncos solo: hacia fuera conserva su margen (control de la prueba de rendijas) — 106 rayos sin madera
+  OK   Cimiento de troncos con vecino a un lado: testas solo hacia fuera
+
+Resultado: 192 correctas, 0 fallidas
+
+== Lógica de combate
+  OK   con el botón pulsado, un movimiento claro hacia arriba cambia a alto
+  OK   y luego a la derecha, sin soltar
+
+Resultado: 125 correctas, 0 fallidas
+
+== Acciones con autor
+  OK   ningún archivo fuera de la lógica pura cambia el mundo directamente (98 revisados)
+  OK   la construcción y el combate usan las acciones
+
+Resultado: 41 correctas, 0 fallidas
+
+== Quitar el mojón: dejar tu tierra y perder lo construido, para reposicionar
+  OK   y construye en su tierra nueva
+  OK   rehecho desde el registro da el mismo mundo
+
+30 bien, 0 mal
+
+== Mojones de más del admin: otra zona para construir de prueba
+  OK   rehecho desde el registro da el mismo mundo
+  OK   el servidor solo deja «extra» con el modo autoconstruir
+
+23 bien, 0 mal
+
+== Alcance de las obras: el servidor solo deja entregar, subir, trabajar y desmontar junto a la obra y en su planta
+  OK   lo que devuelve (6 piedras): lo que le cabe a lo que lleva y lo demás al suelo a sus pies, nada al arcón — mano 3, suelo 3, arcón 106 → 106
+  OK   lo que no existe lo dice la acción misma — No existe.
+
+29 bien, 0 mal
+
+== Lo tuyo es tuyo: en tu tierra solo tú y tus invitados desmontáis y usáis puertas y fuego; el servidor lo comprueba
+  OK   el servidor no deja a Bruno desmontar lo de Ana — Es tierra de otro: solo su dueño y sus invitados.
+  OK   a Ana, sí
+
+35 bien, 0 mal
+
+== La tierra vuelve al rey si no se usa: 30 días sin entrar el dueño ni sus invitados (15 sin obra terminada), avisos por correo y ruinas
+  OK   con obra terminada, el día 20 sigue siendo suya
+  OK   el día 30, al rey
+
+41 bien, 0 mal
+
+== Perfiles gráficos: seis perfiles, gradación de color y perfil de inicio
+  OK   naturaleza en PC: cada perfil, igual o más detalle que el anterior, y el más alto más que el más bajo — pc-1 {"cerca":24,"alto":8} · pc-2 {"cerca":40,"alto":16} · pc-3 {"cerca":60,"alto":30}
+  OK   naturaleza: el PC alto lleva el modelo de cerca hasta 60 m y el de más detalle hasta 30
+
+42 bien, 0 mal
+
+== El ciclo de día y noche: la hora, el sol, la luna, las estrellas y la luz de cada momento
+El reloj del servidor
+  OK   la bienvenida lleva el reloj del servidor (la hora del cielo) — 1794836744782
+
+24 correctas, 0 fallan
+
+== Las necesidades: hambre, sed, frío y cansancio, en la lógica y en el servidor
