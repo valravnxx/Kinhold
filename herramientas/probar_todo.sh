@@ -69,6 +69,7 @@ paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
 paso "La canoa de un tronco" node pruebas/prueba_canoa.mjs
+paso "El modelo de la canoa, cerrado por arriba (las bordas, hacia arriba)" node pruebas/prueba_canoa_modelo.mjs
 paso "La rastra" node pruebas/prueba_rastra.mjs
 paso "La carretilla" node pruebas/prueba_carretilla.mjs
 paso "Obras con lo que llevas" node pruebas/prueba_obras_llevas.mjs

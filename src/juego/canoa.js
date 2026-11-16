@@ -56,9 +56,11 @@ export function geometriasCasco(hondo) {
     const s = a * 2 - 1, w = b ? anchoDentro(s) : anchoFuera(s);
     return [s * H, borda(s), l * w];
   }));
-  // (las caras, hacia arriba: si la rejilla salió al revés, se le da la vuelta)
+  // (las caras, hacia arriba: si la rejilla salió al revés, se le da la vuelta; se mira en medio, no en la punta, donde
+  // el ancho es 0 y la normal sale sin sentido: una borda quedaba boca abajo y, desde arriba, las puntas macizas se veían
+  // abiertas)
   for (const g of bordas) {
-    if (g.attributes.normal.getY(0) >= 0) continue;
+    if (g.attributes.normal.getY(N) >= 0) continue;   // (el vértice N: el del medio de la rejilla de N × 1)
     const ix = g.index.array;
     for (let k = 0; k < ix.length; k += 3) { const t = ix[k + 1]; ix[k + 1] = ix[k + 2]; ix[k + 2] = t; }
     g.computeVertexNormals();
