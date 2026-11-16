@@ -1,0 +1,48 @@
+PC (1280×800)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+  OK   PC_la canoa está en tierra, junto al agua
+  OK   PC_en tierra, Usar no ofrece subir: la echa al agua — Echar la canoa al agua
+  OK   PC_Usar la empuja al agua: flota — Empujas la canoa al agua: flota. Usar, a su lado, sube a ella. · 1.60 m de agua
+  OK   PC_se ve sobre el agua (no en el fondo) — [-6.1979422321379225, -6.022988944544807]
+  OK   PC_el agua no se ve dentro del casco (la tapa que la esconde)
+  OK   PC_Usar a su lado: subir a la canoa — Subir a la canoa
+  OK   PC_sube, y rema él — Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.
+  OK   PC_va sentado (con el remo en las manos) — sentado
+  OK   PC_las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio y sin salir por debajo) — [[-0.12, 0.34], [0.12, 0.35], [-0.07, 0.05], [0.07, 0.1], [-0.06, 0.12], [0.07, 0.12]] (de lado, alto)
+  OK   PC_y mirando a lo largo de la canoa (los hombros, de través) — [[-0.18, 0.69], [0.17, 0.69]]
+  OK   PC_remando, sale de la orilla y gira río arriba — 4.53 (río arriba: -1.75)
+  OK   PC_remando contra la corriente, más deprisa que corriendo (6 m/s) — 7.8 m/s (corriente 0.9 m/s)
+  OK   PC_y avanza río arriba — 26.1 m
+  OK   PC_sigue en el agua
+  OK   PC_sin remar, la corriente la lleva río abajo — 1.18 m en 2.3 s
+  OK   PC_remando contra una roca, el casco no la atraviesa — 0.00 m dentro
+  OK   PC_remando contra la orilla, encalla en el agua (no sale a tierra) — 1.65 m de agua
+  OK   PC_junto a la orilla, Usar baja a tierra — Bajar a la orilla
+  OK   PC_baja a la orilla (en seco o lo poco hondo) y la canoa se queda a flote — Bajas a la orilla: la canoa se queda en el agua. · 0.00 m · {'x': -8122.82, 'z': 1147.24, 'agua': True, 'rema': None}
+  OK   PC_ya no va sentado
+  OK   PC_sin errores en la página — []
+Móvil (390×844)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+  OK   movil_la canoa está en tierra, junto al agua
+  OK   movil_en tierra, Usar no ofrece subir: la echa al agua — Echar la canoa al agua
+  OK   movil_Usar la empuja al agua: flota — Empujas la canoa al agua: flota. Usar, a su lado, sube a ella. · 1.60 m de agua
+  OK   movil_se ve sobre el agua (no en el fondo) — [-6.1835638692572825, -6.022988944544807]
+  OK   movil_el agua no se ve dentro del casco (la tapa que la esconde)
+  OK   movil_Usar a su lado: subir a la canoa — Subir a la canoa
+  OK   movil_sube, y rema él — Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.
+  OK   movil_va sentado (con el remo en las manos) — sentado
+  OK   movil_las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio y sin salir por debajo) — [[-0.12, 0.34], [0.12, 0.35], [-0.07, 0.05], [0.07, 0.1], [-0.06, 0.12], [0.07, 0.12]] (de lado, alto)
+  OK   movil_y mirando a lo largo de la canoa (los hombros, de través) — [[-0.18, 0.69], [0.17, 0.69]]
+  OK   movil_remando, sale de la orilla y gira río arriba — 4.53 (río arriba: -1.75)
+  OK   movil_remando contra la corriente, más deprisa que corriendo (6 m/s) — 7.8 m/s (corriente 0.9 m/s)
+  OK   movil_y avanza río arriba — 23.2 m
+  OK   movil_sigue en el agua
+  OK   movil_sin remar, la corriente la lleva río abajo — 2.53 m en 2.2 s
+  OK   movil_remando contra una roca, el casco no la atraviesa — 0.00 m dentro
+  OK   movil_remando contra la orilla, encalla en el agua (no sale a tierra) — 1.64 m de agua
+  OK   movil_junto a la orilla, Usar baja a tierra — Bajar a la orilla
+  OK   movil_baja a la orilla (en seco o lo poco hondo) y la canoa se queda a flote — Bajas a la orilla: la canoa se queda en el agua. · 0.00 m · {'x': -8124.77, 'z': 1146.85, 'agua': True, 'rema': None}
+  OK   movil_ya no va sentado
+  OK   movil_sin errores en la página — []
+
+TODO CORRECTO
