@@ -2472,9 +2472,9 @@
     },
     {
      "nombre": "Recorrido de jugador de la casa más fuerte, sin arcón: tala un árbol adulto, arrastra el tronco largo con cuerda, lo lleva en la rastra, saca la rodaja y hace la carretilla, levanta un tramo de empalizada con su portón y un muro de entramado",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-16T00:25:24+00:00",
-     "rama": "trabajo/20261116-0025"
+     "fin": "2026-11-16T03:27:19+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",

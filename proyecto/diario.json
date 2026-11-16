@@ -7303,5 +7303,23 @@
   "pruebas": "Revisor en la nube: lógica, recorrido, construcción, construir con el acabado nuevo (el entramado en el menú y levantado, de cerca, PC y móvil) y la demo única, bien. El panel de fabricación falló una vez en «Reparado… le quedan 168 usos»: el aviso llega, pero pasados los 5 s de espera; no toca este cambio (no comprobado en main). Quitado: nada.",
   "capturas": "capturas/demo-v223",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T00:25:24+00:00",
+  "fin": "2026-11-16T03:27:19+00:00",
+  "titulo": "P11c: el recorrido de jugador de la casa más fuerte",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "El recorrido de jugador (sin arcón y con lo que recoge) tiene un paso más, el 25, en pruebas/recorrido_casa_fuerte.mjs, detrás de la granja: la casa más fuerte entera.",
+   "Junto a su banco hace 2 cordeles, junta 5 ramas y se hace la rastra con las manos; trenza 2 cuerdas en el banco.",
+   "Tala un árbol adulto con el hacha de piedra, lleva la rastra vacía cerca, ata el tronco largo con una cuerda, lo arrastra hasta ella, lo sube a pulso y se la lleva con el tronco hasta el banco, donde lo descarga.",
+   "Con el hacha le saca la rodaja por el pie (54 golpes) y 2 o 3 troncos cortos, y en el banco se hace la carretilla de rueda maciza con la rodaja, un tronco corto y 2 varas: queda a su guarda, en su tierra.",
+   "Junto a su casa levanta un tramo de empalizada y su portón (10 troncos delgados de 10 árboles jóvenes, al hombro, y las 2 cuerdas), y lo abre y lo cierra.",
+   "En una casilla nueva pegada a la casa, un cimiento de troncos y, en su lado de fuera, un muro de entramado: 2 troncos delgados, 2 varas y 3 cestas de barro que cava en el río más cercano con un palo cavador. En total, 14 árboles jóvenes.",
+   "Provisional: la empalizada y el portón, delante de la casa (o donde quepan); el entramado, sobre un cimiento de troncos, porque el muro pide cimiento.",
+   "Se puede seguir desde el mundo guardado antes del pozo (KINHOLD_RECORRIDO_DESDE); con MUTAR=1, en la rastra no cabe el tronco largo y falla, como debe."
+  ],
+  "pruebas": "Revisor en la nube: el recorrido (lo único que piden los archivos cambiados). El paso 25 nuevo sale entero en la nube (21 de 21) y desde lo guardado aquí; con MUTAR=1 falla donde debe. En la última pasada fallaron, antes del paso 25, la caza de la liebre a lanzadas (10 lanzadas sin acertar: la puntería tiene desvío al azar) y, por no tener su piel, la criba de la granja; en las dos pasadas anteriores de esta sesión salieron bien, y este cambio no toca nada de eso. Quitado: nada.",
+  "estado": "ok"
  }
 ]
