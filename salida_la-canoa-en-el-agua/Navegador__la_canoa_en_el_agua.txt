@@ -1,0 +1,40 @@
+PC (1280×800)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+Traceback (most recent call last):
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_canoa_agua_navegador.py", line 127, in <module>
+    recorrido(pg, pre, movil)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Kinhold/Kinhold/pruebas/prueba_canoa_agua_navegador.py", line 48, in recorrido
+    id = pg.evaluate(f"""(() => {{ const k = {K}; k.pj.k = 0; k.pj.x = {ox}; k.pj.z = {oz}; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2({r['nx']}, {r['nz']});
+      k.cam.yaw = Math.atan2(-{r['nx']}, -{r['nz']}) + 0.6; k.cam.pitch = 0.5; k.cam.dist = 7;
+      const o = k.sueloObjetos.suelo.dejar({{ tipo: 'canoa', n: 1 }}, {cx}, {cz}, Date.now(), 'jugador:local', false, Math.atan2({r['ux']}, {r['uz']}) - Math.PI / 2);
+      k.sueloObjetos.refrescar(); return o.id; }})()""")
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 9413, in evaluate
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.evaluate(expression=expression, arg=mapping.to_impl(arg))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 474, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 346, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: SyntaxError: Invalid left-hand side expression in prefix operation
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
