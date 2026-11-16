@@ -7321,5 +7321,21 @@
   ],
   "pruebas": "Revisor en la nube: el recorrido (lo único que piden los archivos cambiados). El paso 25 nuevo sale entero en la nube (21 de 21) y desde lo guardado aquí; con MUTAR=1 falla donde debe. En la última pasada fallaron, antes del paso 25, la caza de la liebre a lanzadas (10 lanzadas sin acertar: la puntería tiene desvío al azar) y, por no tener su piel, la criba de la granja; en las dos pasadas anteriores de esta sesión salieron bien, y este cambio no toca nada de eso. Quitado: nada.",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T04:22:06+00:00",
+  "fin": "2026-11-16T04:23:35+00:00",
+  "titulo": "La casa más fuerte: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el tronco largo de un árbol adulto se ata con cuerda, se arrastra despacio y se sube a la rastra, que uno solo arrastra; del tronco largo se corta la rodaja y con ella se hace la carretilla de rueda maciza; la empalizada y su portón sin hierro, que solo abren el dueño y sus invitados; y el muro de entramado, liso, con puerta y con ventana. Todo publicado y unido a main (la última, la demo v223).",
+   "El recorrido de jugador, sin arcón, lo hace entero en su paso 25: tala el árbol adulto, lleva el tronco largo a cuerda hasta la rastra y en ella al banco, saca la rodaja, hace la carretilla, levanta la empalizada con su portón y el muro de entramado (21 de 21 en la nube).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: el tronco largo, la rodaja, la carretilla, la empalizada, el portón y los tres muros de entramado salen del mundo.",
+   "Lo que queda para la revisión: los números del arrastre, la rodaja (15 kg) y los costes del portón y de los muros de entramado con puerta y ventana son provisionales; el relleno del entramado, sin encalar (aún no hay cal); según la segunda mirada, la cuadrícula del entramado es algo regular frente a las aspas de la referencia, el poste de los goznes del portón sale muy oscuro a contraluz y los nudos de la veta parecen agujeros de cerca. En la última pasada entera del recorrido falló, antes del paso 25, la caza de la liebre a lanzadas (la puntería tiene desvío al azar), y por eso la criba; en las pasadas anteriores salieron bien.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 71 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
