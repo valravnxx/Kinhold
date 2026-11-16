@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 16 nov 2026, 06:01 UTC — por el chat, aprobación de P11c
+
+valravnx: «confírmame el hito que está por confirmar, el de la casa más resistente» → P11c, La casa más fuerte (el tronco grande, la empalizada y el entramado), pasa a `hecho`.
+
 ### 15 nov 2026, 16:54 UTC — por el chat, P11b
 
 valravnx: «aprueba» → el hito P11b, La lluvia y el riego, pasa a hecho.
