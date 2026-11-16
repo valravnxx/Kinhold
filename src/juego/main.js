@@ -2345,10 +2345,11 @@ function pasoCanoa(o, ax, az, mag, dt) {
   return Math.hypot(v.vx, v.vz);
 }
 // El casco de la canoa (4,4 m de largo, unos 0,8 m de ancho) contra lo que estorba en el agua y en la orilla: rocas,
-// troncos, tocones y árboles (no las matas). Cinco círculos a lo largo de la canoa, que va con el que rema en medio
+// troncos, tocones y árboles (no las matas, ni las piedras del fondo, que quedan bajo el agua: las que tienen más agua
+// encima que su radio). Cinco círculos a lo largo de la canoa, que va con el que rema en medio
 // mirando hacia la proa (rot: hacia donde mira él). Devuelve cuánto se mete en total (m; 0, nada).
 const CASCO_CANOA = [[-1.75, 0.3], [-0.9, 0.4], [0, 0.42], [0.9, 0.4], [1.75, 0.3]];   // [a lo largo, radio]
-const estorbosCanoa = (x, z, d) => obstaculos.filter(o => !o.mata && !o.oculto && !(o.arbol && o.id && talaV.tala.arrancado(o.id)) && Math.hypot(o.x - x, o.z - z) <= d + o.r);
+const estorbosCanoa = (x, z, d) => obstaculos.filter(o => !o.mata && !o.oculto && !(o.arbol && o.id && talaV.tala.arrancado(o.id)) && Math.hypot(o.x - x, o.z - z) <= d + o.r && hondoAqui(o.x, o.z) < o.r);
 function cascoMete(x, z, rot, estorbos) {
   const ux = Math.sin(rot), uz = Math.cos(rot); let m = 0;
   if (window.__mutarCasco) return 0;   // (solo para romper a propósito la prueba: el casco atraviesa las rocas)
