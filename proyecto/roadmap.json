@@ -2478,7 +2478,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-16T04:22:06+00:00",
+     "rama": "trabajo/20261116-0422"
     }
    ]
   },

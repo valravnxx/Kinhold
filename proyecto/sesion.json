@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-16T04:22:06+00:00",
+  "tarea": "Revisión completa y publicación",
+  "hito": "casa-fuerte",
+  "rama": "trabajo/20261116-0422"
+ },
  "B": null
 }
