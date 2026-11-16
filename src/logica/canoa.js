@@ -129,6 +129,7 @@ export const HONDO_FLOTA = 0.3;      // m de agua
 export const ALCANCE_CANOA = 3;      // m, desde su centro (mide 4,4 m)
 export const ECHAR = 4.5;            // m que se empuja como mucho
 export const HONDO_BAJAR = 0.5;      // m de agua, como mucho, donde se pisa al bajar
+export const ADELANTE = 1.1;         // m: el centro de la canoa, por delante del que rema (sentado atrás); el otro va otro tanto más
 export const VEL_MAX_CANOA = VEL_REMAR + 3 * DERIVA_RIO;   // lo más deprisa: remando río abajo en un torrente (3 m/s)
 
 // Lo que mueve la canoa en un paso (lógica del navegador del que rema; el servidor lo limita con VEL_MAX_CANOA):
@@ -191,8 +192,9 @@ export class Canoas {
       if (this.hondo(bx, bz) >= HONDO_BAJAR) return { ok: false, motivo: 'Aquí no se puede bajar: acércate a la orilla.' };
     }
     if (o.rema === autor) {
-      o.x = redondo(p.x); o.z = redondo(p.z);
-      if (Number.isFinite(p.giro)) o.giro = redondo(p.giro - Math.PI / 2);
+      const g = Number.isFinite(p.giro) ? p.giro : null;   // (el que rema va sentado atrás: la canoa, ADELANTE m por delante)
+      o.x = redondo(p.x + (g === null ? 0 : Math.sin(g) * ADELANTE)); o.z = redondo(p.z + (g === null ? 0 : Math.cos(g) * ADELANTE));
+      if (g !== null) o.giro = redondo(g - Math.PI / 2);
       if (o.pasajero) { o.rema = o.pasajero; delete o.pasajero; } else delete o.rema;
     } else delete o.pasajero;
     return { ok: true, objeto: o.id, x: o.x, z: o.z };
