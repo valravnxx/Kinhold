@@ -40,6 +40,7 @@ export const TOCA = {
   'velocidad-con-pocos-fotogramas': [/^src\/juego\/main\.js$/, /^pruebas\/prueba_velocidad_navegador\.py$/],   // el paso del tiempo del bucle (12 nov)
   'tronzar-y-partir': [/^src\/logica\/troceo\.js$/],
   'la-canoa': [/^src\/(logica|juego)\/canoa\.js$/],
+  'la-canoa-en-el-agua': [/^src\/(logica|juego)\/canoa\.js$/],   // (P11d) echarla al agua, subir, remar y bajar
   'la-rastra': [/^src\/(logica|juego)\/rastra\.js$/],
   'la-carretilla': [/^src\/juego\/carretilla\.js$/],
   'panel-de-fabricacion': [/^src\/logica\/(fabricacion|iconos)\.js$/, /^src\/juego\/(panel_fabricar|estaciones)\.js$/],

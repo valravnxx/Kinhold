@@ -174,6 +174,7 @@ paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py 
 paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
 paso "Navegador: la canoa" python3 pruebas/prueba_canoa_navegador.py dist/kinhold_demo.html "$C/canoa"
+paso "Navegador: la canoa en el agua" python3 pruebas/prueba_canoa_agua_navegador.py dist/kinhold_demo.html "$C/canoa_agua"
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_demo.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html "$C/carretilla"
 paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html "$C/fabricar"

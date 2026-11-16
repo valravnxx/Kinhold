@@ -2252,6 +2252,16 @@ function puntoCerca(x, z, lejos, bien) {
   }
   return null;
 }
+// Hasta dónde se empuja la canoa: lo más cercano con 0,7 m de agua (que no quede rozando el fondo) o, si no, lo más hondo a
+// su alcance; null si no flota en ninguno.
+function aguaMasHonda(x, z, lejos) {
+  let mejor = null, h0 = HONDO_FLOTA + 0.1;
+  for (let d = 1.5; d <= lejos + 1e-6; d += 0.5) for (let k = 0; k < 24; k++) {
+    const a = k / 24 * Math.PI * 2, px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, h = Math.min(0.7, hondoAqui(px, pz));
+    if (h >= h0 + 0.01) { mejor = { x: px, z: pz }; h0 = h; }
+  }
+  return mejor;
+}
 function orillaParaBajar() {
   if (!mundoJ) return null;
   return puntoCerca(pj.x, pj.z, ALCANCE_CANOA - 0.2, (x, z) => hondoAqui(x, z) < HONDO_BAJAR - 0.1 && mundoJ.dentro(x, z) && mundoJ.andable(x, z, x, z));
@@ -2263,7 +2273,7 @@ function opcionCanoa() {
     .sort((a, b) => Math.hypot(sitioCanoa(a).x - pj.x, sitioCanoa(a).z - pj.z) - Math.hypot(sitioCanoa(b).x - pj.x, sitioCanoa(b).z - pj.z))[0];
   if (!o) return null;
   if (!o.agua) {
-    const p = mundoJ && puntoCerca(o.x, o.z, ECHAR - 0.25, (x, z) => hondoAqui(x, z) >= HONDO_FLOTA + 0.1);
+    const p = mundoJ && aguaMasHonda(o.x, o.z, ECHAR - 0.25);
     return p ? { texto: tr('Echar la canoa al agua'), pos: o, hacer: () => echarCanoa(o, p) } : null;
   }
   if (o.rema && o.pasajero) return null;
@@ -2314,8 +2324,8 @@ function pasoCanoa(o, ax, az, mag, dt) {
   if (remando && mag < 1) { v.vx -= VEL_REMAR * (1 - mag) * dir.x; v.vz -= VEL_REMAR * (1 - mag) * dir.z; }   // (el joystick a medias, más despacio)
   const flota = (x, z) => !mundoJ || (hondoAqui(x, z) >= HONDO_FLOTA * 0.8 && mundoJ.dentro(x, z));
   const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
-  for (let i = 0; i < trozos; i++) {   // (la proa también tiene que ir por el agua: si no, encalla)
-    const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h, pr = (x, z) => flota(x, z) && flota(x + Math.sin(pj.rot) * ADELANTE_CANOA * 2, z + Math.cos(pj.rot) * ADELANTE_CANOA * 2);
+  for (let i = 0; i < trozos; i++) {   // (la canoa tiene que ir por el agua: si no, encalla)
+    const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h, pr = (x, z) => flota(x + Math.sin(pj.rot) * ADELANTE_CANOA, z + Math.cos(pj.rot) * ADELANTE_CANOA);   // (el centro de la canoa)
     if (pr(nx, nz)) { pj.x = nx; pj.z = nz; } else if (pr(nx, pj.z)) pj.x = nx; else if (pr(pj.x, nz)) pj.z = nz;
   }
   if (remando) {   // gobierna el que rema: la canoa gira, más despacio que una persona
@@ -3896,6 +3906,7 @@ window.__kinhold = {
   inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, vaciadoLocal, canoaCercana, opcionVaciar, mandarVaciar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
+  canoasLocal, miCanoa, opcionCanoa, orillaParaBajar, // la canoa a flote (P11d)
   rastras, miRastra, miTronco, atarTronco, soltarTronco, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },
