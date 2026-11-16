@@ -1,0 +1,5 @@
+FALLO: «canoa_a_medias» está en el índice y dice si tiene su modelo
+FALLO: existe la imagen de «canoa_a_medias» (docs/recursos/iconos-v30/canoa_a_medias.webp)
+FALLO: «canoa» está en el índice y dice si tiene su modelo
+FALLO: existe la imagen de «canoa» (docs/recursos/iconos-v30/canoa.webp)
+714 bien, 4 fallos · 123 imágenes que enseña el panel, 22 aún sin su modelo
