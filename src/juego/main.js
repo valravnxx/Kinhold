@@ -2261,7 +2261,7 @@ function aguaMasHonda(x, z, lejos) {
   let mejor = null, h0 = HONDO_FLOTA + 0.1;
   for (let d = 1.5; d <= lejos + 1e-6; d += 0.5) for (let k = 0; k < 24; k++) {
     const a = k / 24 * Math.PI * 2, px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, h = Math.min(0.7, hondoAqui(px, pz));
-    if (h >= h0 + 0.01 && !cascoMete(px, pz, a, estorbosCanoa(px, pz, 2.5))) { mejor = { x: px, z: pz }; h0 = h; }   // (sin que el casco quede en una roca)
+    if (h >= h0 + 0.01 && !cascoMete(px, pz, a, estorbosCanoa(px, pz, 2.5)) && !puntasEnSeco(px, pz, a)) { mejor = { x: px, z: pz }; h0 = h; }   // (sin que el casco quede en una roca ni con una punta en seco)
   }
   return mejor;
 }
@@ -2329,7 +2329,8 @@ function pasoCanoa(o, ax, az, mag, dt) {
   const cerca = estorbosCanoa(pj.x, pj.z, 4 + Math.hypot(v.vx, v.vz) * dt);
   // (la canoa tiene que ir por el agua, si no encalla, y su casco entero no atraviesa rocas ni troncos: si ya roza
   // alguna, solo vale lo que no la mete más)
-  const vale = (x, z, rot) => flota(x, z) && cascoMete(x, z, rot, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6;
+  // (y la proa y la popa no se meten en la orilla: si ya toca alguna en seco, solo vale lo que no deja más en seco)
+  const vale = (x, z, rot) => flota(x, z) && cascoMete(x, z, rot, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(x, z, rot) <= puntasEnSeco(pj.x, pj.z, pj.rot);
   const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
   for (let i = 0; i < trozos; i++) {
     const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h;   // (el centro de la canoa: donde va el que rema)
@@ -2340,7 +2341,7 @@ function pasoCanoa(o, ax, az, mag, dt) {
     while (dr > Math.PI) dr -= Math.PI * 2;
     while (dr < -Math.PI) dr += Math.PI * 2;
     const r1 = pj.rot + dr * Math.min(1, dt * 3);
-    if (cascoMete(pj.x, pj.z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6) pj.rot = r1;
+    if (cascoMete(pj.x, pj.z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(pj.x, pj.z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) pj.rot = r1;
   }
   return Math.hypot(v.vx, v.vz);
 }
@@ -2355,6 +2356,12 @@ function cascoMete(x, z, rot, estorbos) {
   if (window.__mutarCasco) return 0;   // (solo para romper a propósito la prueba: el casco atraviesa las rocas)
   for (const [a, r] of CASCO_CANOA) for (const o of estorbos) { const d = Math.hypot(x + ux * a - o.x, z + uz * a - o.z); if (d < r + o.r) m += r + o.r - d; }
   return m;
+}
+// Cuántas puntas de la canoa (la proa y la popa, a 2 m del medio) quedan sobre la orilla en seco (0, 1 o 2).
+function puntasEnSeco(x, z, rot) {
+  if (!mundoJ || window.__mutarCasco) return 0;
+  const ux = Math.sin(rot), uz = Math.cos(rot);
+  return (hondoAqui(x + ux * 2, z + uz * 2) < 0.05 ? 1 : 0) + (hondoAqui(x - ux * 2, z - uz * 2) < 0.05 ? 1 : 0);
 }
 // La altura del que va en la canoa: sentado en su fondo, a flote.
 function alturaEnCanoa() { const w = mundoJ ? mundoJ.aguaEn(pj.x, pj.z) : null; return (w ? w.superficie : alturaSuelo()) - CALADO_CANOA + 0.1; }   // (sentado sobre el fondo, de 4,5 cm, sin que los pies asomen por debajo)
