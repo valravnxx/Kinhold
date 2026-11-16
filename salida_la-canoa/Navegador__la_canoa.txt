@@ -1,0 +1,56 @@
+PC (1280×800)
+  OK   PC_con el hacha, junto al tronco largo, el menú ofrece vaciarlo para hacer una canoa — ['Trocear: Tronco largo', 'Cortar una rodaja (la rueda de la carretilla)', 'Vaciar el tronco para hacer una canoa', 'Atar el tronco largo (hace falta una cuerda en la mano)', 'Coger del suelo: 1 × Tronco largo']
+  OK   PC_a golpes de hacha deja de ser un tronco: canoa a medias — {'ok': True, 'termina': False, 'paso': 'desbastar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 12} {'tipo': 'canoa_a_medias', 'n': 1, 'vaciado': {'fase': 'desbastar', 'golpes': 12, 'vuelta': 0, 'hasta': 0}}
+  OK   PC_Usar sigue vaciándolo — Vaciar el tronco con el hacha
+  OK   PC_desbastado (40 golpes con hacha de piedra) — {'ok': True, 'termina': True, 'paso': 'desbastar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 28}
+  OK   PC_Usar ofrece echar brasas (vuelta 1 de 3) — Echar brasas en el hueco (vuelta 1 de 3)
+  OK   PC_sin hoguera al lado, no se echan: lo dice — {'ok': False, 'termina': False, 'paso': '', 'motivo': 'Para echar brasas en el hueco necesitas una hoguera encendida al lado.', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   PC_con la hoguera encendida al lado, echa las brasas — {'ok': True, 'termina': False, 'paso': 'brasas', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   PC_se ven las brasas encendidas en el hueco
+  OK   PC_Usar dice cuánto les falta — Las brasas arden en el hueco: faltan 10 min
+  OK   PC_vuelta 1: pasadas las brasas, Usar raspa — Raspar lo quemado con el hacha
+  OK   PC_vuelta 1: raspado — {'ok': True, 'termina': True, 'paso': 'raspar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 20}
+  OK   PC_vuelta 2: otra vez brasas — {'ok': True, 'termina': False, 'paso': 'brasas', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   PC_vuelta 2: pasadas las brasas, Usar raspa — Raspar lo quemado con el hacha
+  OK   PC_vuelta 2: raspado — {'ok': True, 'termina': True, 'paso': 'raspar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 20}
+  OK   PC_vuelta 3: otra vez brasas — {'ok': True, 'termina': False, 'paso': 'brasas', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   PC_vuelta 3: pasadas las brasas, Usar raspa — Raspar lo quemado con el hacha
+  OK   PC_vuelta 3: raspado — {'ok': True, 'termina': True, 'paso': 'raspar', 'motivo': '', 'canoa': True, 'objeto': 's1', 'i': 20}
+  OK   PC_queda la canoa en el suelo — {'tipo': 'canoa', 'n': 1}
+  OK   PC_se ve la canoa
+  OK   PC_con la cuerda en la mano, Usar ata la canoa — Atar la canoa con la cuerda
+  OK   PC_y no ofrece cogerla con las manos — ['Atar la canoa con la cuerda']
+  OK   PC_la canoa queda atada a la cuerda — Atas la canoa y tiras de ella hasta la orilla: despacio, y cansa. Usar suelta la cuerda.
+  OK   PC_la canoa va detrás del que tira (a unos 2,9 m) — 2.90
+  OK   PC_Usar suelta la cuerda de la canoa — Soltar la canoa
+  OK   PC_se ve el remo en el suelo
+  OK   PC_sin errores en la página — []
+Móvil (390×844)
+  OK   movil_con el hacha, junto al tronco largo, el menú ofrece vaciarlo para hacer una canoa — ['Trocear: Tronco largo', 'Cortar una rodaja (la rueda de la carretilla)', 'Vaciar el tronco para hacer una canoa', 'Atar el tronco largo (hace falta una cuerda en la mano)', 'Coger del suelo: 1 × Tronco largo']
+  OK   movil_a golpes de hacha deja de ser un tronco: canoa a medias — {'ok': True, 'termina': False, 'paso': 'desbastar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 12} {'tipo': 'canoa_a_medias', 'n': 1, 'vaciado': {'fase': 'desbastar', 'golpes': 12, 'vuelta': 0, 'hasta': 0}}
+  OK   movil_Usar sigue vaciándolo — Vaciar el tronco con el hacha
+  OK   movil_desbastado (40 golpes con hacha de piedra) — {'ok': True, 'termina': True, 'paso': 'desbastar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 28}
+  OK   movil_Usar ofrece echar brasas (vuelta 1 de 3) — Echar brasas en el hueco (vuelta 1 de 3)
+  OK   movil_sin hoguera al lado, no se echan: lo dice — {'ok': False, 'termina': False, 'paso': '', 'motivo': 'Para echar brasas en el hueco necesitas una hoguera encendida al lado.', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   movil_con la hoguera encendida al lado, echa las brasas — {'ok': True, 'termina': False, 'paso': 'brasas', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   movil_se ven las brasas encendidas en el hueco
+  OK   movil_Usar dice cuánto les falta — Las brasas arden en el hueco: faltan 10 min
+  OK   movil_vuelta 1: pasadas las brasas, Usar raspa — Raspar lo quemado con el hacha
+  OK   movil_vuelta 1: raspado — {'ok': True, 'termina': True, 'paso': 'raspar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 20}
+  OK   movil_vuelta 2: otra vez brasas — {'ok': True, 'termina': False, 'paso': 'brasas', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   movil_vuelta 2: pasadas las brasas, Usar raspa — Raspar lo quemado con el hacha
+  OK   movil_vuelta 2: raspado — {'ok': True, 'termina': True, 'paso': 'raspar', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 20}
+  OK   movil_vuelta 3: otra vez brasas — {'ok': True, 'termina': False, 'paso': 'brasas', 'motivo': '', 'canoa': False, 'objeto': 's1', 'i': 1}
+  OK   movil_vuelta 3: pasadas las brasas, Usar raspa — Raspar lo quemado con el hacha
+  OK   movil_vuelta 3: raspado — {'ok': True, 'termina': True, 'paso': 'raspar', 'motivo': '', 'canoa': True, 'objeto': 's1', 'i': 20}
+  OK   movil_queda la canoa en el suelo — {'tipo': 'canoa', 'n': 1}
+  OK   movil_se ve la canoa
+  OK   movil_con la cuerda en la mano, Usar ata la canoa — Atar la canoa con la cuerda
+  OK   movil_y no ofrece cogerla con las manos — ['Atar la canoa con la cuerda']
+  OK   movil_la canoa queda atada a la cuerda — Atas la canoa y tiras de ella hasta la orilla: despacio, y cansa. Usar suelta la cuerda.
+  OK   movil_la canoa va detrás del que tira (a unos 2,9 m) — 2.90
+  OK   movil_Usar suelta la cuerda de la canoa — Soltar la canoa
+  OK   movil_se ve el remo en el suelo
+  OK   movil_sin errores en la página — []
+
+TODO CORRECTO
