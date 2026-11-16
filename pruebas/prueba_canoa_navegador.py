@@ -120,6 +120,11 @@ def recorrido(pg, pre):
     d = pg.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('suelo_canoa'); return o ? Math.hypot(o.position.x - {K}.pj.x, o.position.z - {K}.pj.z) : -1; }})()")
     comprobar(f'{pre}la canoa va detrás del que tira (a unos 2,9 m)', 2.4 < d < 3.4, f'{d:.2f}')
     comprobar(f'{pre}Usar suelta la cuerda de la canoa', usar_texto(pg) == 'Soltar la canoa', usar_texto(pg))
+    # el remo (P11d), en el suelo (al final: que no se cruce con la cuerda)
+    pg.evaluate(f"""(() => {{ const k = {K}; k.sueloObjetos.suelo.dejar({{ tipo: 'remo', n: 1 }}, k.pj.x + 0.9, k.pj.z - 0.9, Date.now(), 'jugador:local', false);
+      k.sueloObjetos.guardar(); k.sueloObjetos.refrescar(); }})()""")
+    comprobar(f'{pre}se ve el remo en el suelo', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_remo')"))
+    camara(pg, 2.6, 0.8, 0.9); foto(pg, f'{pre}8_remo_en_el_suelo')
     comprobar(f'{pre}sin errores en la página', not pg.errores, str(pg.errores[:3]))
 
 try:
