@@ -255,7 +255,7 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   const hachaAqui = { ...J.pos };
   // lleva la rastra hasta cerca del tronco (vacía, despacio) y la suelta a unos 7 m de él
   await J.andar(rastra.x + 1.2, rastra.z);
-  q = await J.objeto({ tipo: 'enganchar_rastra', objeto: rastra.id, x: J.pos.x, z: J.pos.z });
+  let q = await J.objeto({ tipo: 'enganchar_rastra', objeto: rastra.id, x: J.pos.x, z: J.pos.z });
   const haciaLargo = { x: largo.x - J.pos.x, z: largo.z - J.pos.z }, dl = Math.hypot(haciaLargo.x, haciaLargo.z);
   const sitioRastra = { x: r2(largo.x - haciaLargo.x / dl * 7), z: r2(largo.z - haciaLargo.z / dl * 7) };
   let detras = q.ok ? await andarTirando(sitioRastra.x, sitioRastra.z, DETRAS) : null;
