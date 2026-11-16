@@ -6,6 +6,7 @@
 # pruebas/prueba_canoa.mjs; aquí sin servidor (la misma lógica en el navegador).
 # Uso: python3 pruebas/prueba_canoa_agua_navegador.py dist/kinhold_demo.html <carpeta>
 # MUTAR_RODILLAS=1: sin juntar las rodillas en la canoa (se salen por la borda): tiene que fallar.
+# MUTAR_CASCO=1: el casco atraviesa las rocas: tiene que fallar.
 # MUTAR=1: remar no mueve la canoa más que la corriente (sin remo de verdad): tiene que fallar.
 import sys, os, json, time
 from playwright.sync_api import sync_playwright
@@ -59,6 +60,7 @@ def recorrido(pg, pre, movil):
     # el remo en la mano (del arcón de pruebas: aquí se prueba la canoa; sin arcón, en el recorrido del hito)
     pg.evaluate(f"(() => {{ const r = {K}.accionInventario({{ tipo: 'coger', objeto: 'remo', cantidad: 1, a: 'mano:der' }}); {K}.pintarLlevas(); {K}.vestir(); return r.ok; }})()")
     if os.environ.get('MUTAR_RODILLAS') == '1': pg.evaluate('window.__mutarRodillas = true')
+    if os.environ.get('MUTAR_CASCO') == '1': pg.evaluate('window.__mutarCasco = true')
     if MUTAR: pg.evaluate(f"(() => {{ const k = {K}; k.inventario().lugares['mano:der'] = null; k.vestir(); }})()")
     pg.evaluate(f"{K}.usar()"); pg.wait_for_timeout(700)
     c = canoa(pg, id)
@@ -112,6 +114,13 @@ def recorrido(pg, pre, movil):
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     deriva = (p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz']
     comprobar(f'{pre}sin remar, la corriente la lleva río abajo', deriva > 0.2 * r['vel'] * (p1[2] - p0[2]) / 1000, f'{deriva:.2f} m en {(p1[2] - p0[2]) / 1000:.1f} s')
+    # una roca en el agua, 3,5 m río arriba de la canoa: remando hacia ella, el casco no la atraviesa (se para contra ella)
+    pg.evaluate(f"""(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['ux']}), -({r['uz']})); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']});
+      k.obstaculos.push({{ x: k.pj.x - ({r['ux']}) * 3.5, z: k.pj.z - ({r['uz']}) * 3.5, r: 0.8, prueba_canoa: true }}); }})()""")
+    pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
+    mete = pg.evaluate(f"(() => {{ const k = {K}, m = window.__mutarCasco; window.__mutarCasco = false; const v = k.cascoMete(k.pj.x, k.pj.z, k.pj.rot, k.obstaculos.filter(o => o.prueba_canoa)); window.__mutarCasco = m; return v; }})()")
+    comprobar(f'{pre}remando contra una roca, el casco no la atraviesa', mete < 0.05, f'{mete:.2f} m dentro')
+    pg.evaluate(f"(() => {{ const k = {K}, i = k.obstaculos.findIndex(o => o.prueba_canoa); if (i >= 0) k.obstaculos.splice(i, 1); }})()")
     # remar hacia la orilla: encalla, no se sale del agua
     pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['nx']}), -({r['nz']})); k.cam.yaw = Math.atan2({r['nx']}, {r['nz']}); }})()")
     pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
