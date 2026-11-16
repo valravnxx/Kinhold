@@ -120,7 +120,10 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
   const sup = med.superficie; sup.geometry.computeBoundingSphere();
   // por delante, casi tocando (de lado se veía el aire entre la correa y el pecho); por detrás y por encima del hombro,
   // algo más, que al respirar suben los omóplatos y la tapaban
-  const fueraDe = (d) => fuera - (fuera - 0.005) * Math.min(1, Math.max(0, d.z * 1.5));
+  // (y por debajo de los omóplatos, pegada: de espaldas, la vuelta del costado salía 3 cm de la cintura, como un taco
+  // entre el brazo y el cuerpo)
+  const bajo = (y) => y < cH.y - 0.12;
+  const fueraDe = (d, y) => { const f = fuera - (fuera - 0.005) * Math.min(1, Math.max(0, d.z * 1.5)); return bajo(y) ? Math.min(f, 0.005) : f; };
   // cada punto, por su rayo desde dentro: lo más de fuera que cruza; donde no cruza nada (la abertura del cuello de la
   // camisa, algún hueco de la malla), lo que sale de sus vecinos
   const pegar = (lista) => {
@@ -131,7 +134,7 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
       return { o, d, lejos: lejos > 0 ? lejos : null };
     });
     const ok = r.map((x, i) => x.lejos != null ? i : -1).filter(i => i >= 0);
-    const enSitio = r.map((x, i) => x.lejos == null ? null : (() => { const q = x.o.clone().addScaledVector(x.d, x.lejos + fueraDe(x.d)); q.nor = x.d; q.lejos = x.lejos; return q; })());
+    const enSitio = r.map((x, i) => x.lejos == null ? null : (() => { const q = x.o.clone().addScaledVector(x.d, x.lejos + fueraDe(x.d, x.o.y)); q.nor = x.d; q.lejos = x.lejos; return q; })());
     return r.map((x, i) => {
       if (enSitio[i]) return enSitio[i];
       // (sin cruce: en recto entre los vecinos que sí lo tienen. Antes se repartía lo lejos de cada uno, pero arriba y
@@ -141,7 +144,7 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
       if (a == null && b == null) q = x.o.clone().addScaledVector(x.d, 0.15);
       else if (a == null || b == null) q = enSitio[a ?? b].clone();
       else q = enSitio[a].clone().lerp(enSitio[b], (i - a) / (b - a));
-      q.nor = x.d; q.lejos = q.clone().sub(x.o).dot(x.d) - fueraDe(x.d); return q;
+      q.nor = x.d; q.lejos = q.clone().sub(x.o).dot(x.d) - fueraDe(x.d, x.o.y); return q;
     });
   };
   const curva = new THREE.CatmullRomCurve3(guia, false, 'centripetal');
@@ -157,10 +160,10 @@ function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
     const o = p.y >= cH.y ? v3(p.x, cH.y, cH.cz) : v3(cE.cx, p.y, (cE.cz + cH.cz) / 2), d = p.clone().sub(o), r = d.length(); d.normalize();
     _rayo.set(o, d); _rayo.far = 0.6;
     let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
-    if (lejos <= 0) { const f = fueraDe(d), q = r < base[i] + f ? o.addScaledVector(d, base[i] + f) : p.clone(); q.nor = d; return q; }
+    if (lejos <= 0) { const f = fueraDe(d, p.y), q = r < base[i] + f ? o.addScaledVector(d, base[i] + f) : p.clone(); q.nor = d; return q; }
     // (y, donde salva un hueco del cuerpo, como mucho a 1,5 cm de él: la tela de la camisa y su peso la llevan hacia dentro; con 3, de lado se veía la hierba entre ella y el pecho)
     // (por delante, nada: sigue el pecho; con 6 mm y con 15, de lado aún se veía la hierba entre el pecho y la correa)
-    const f = fueraDe(d), puente = 0.015 * (1 - Math.min(1, Math.max(0, d.z * 1.5)));
+    const f = fueraDe(d, p.y), puente = bajo(p.y) ? 0.005 : 0.015 * (1 - Math.min(1, Math.max(0, d.z * 1.5)));
     const q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : lejos > 0 && r > lejos + f + puente ? o.addScaledVector(d, lejos + f + puente) : p.clone(); q.nor = d; return q;
   };
   for (let vuelta = 0; vuelta < 24; vuelta++)
