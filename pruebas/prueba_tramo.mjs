@@ -27,6 +27,8 @@ for (const k of ['cama_paja', 'candil', 'alfombra']) comprobar(`mueble a la vist
 comprobar('a la vista, de nivel 2 pero destapada: Empalizada', enTramo(PIEZAS.empalizada));
 // Su portón sin hierro (P11c): 4 troncos delgados y 2 cuerdas, con goznes de madera y cuerda; también se enseña.
 comprobar('a la vista, de nivel 2 pero destapada: Puerta de empalizada (sin hierro)', enTramo(PIEZAS.empalizada_puerta) && !PIEZAS.empalizada_puerta.coste.hierro);
+// El muro de entramado (P11c), con su puerta y su ventana: troncos delgados, varas y barro; también se enseñan.
+for (const k of ['muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana']) comprobar(`a la vista, de nivel 2 pero destapado: ${PIEZAS[k].nombre}`, enTramo(PIEZAS[k]));
 
 // Ninguna pestaña del menú se queda vacía.
 for (const cat of ['tierra', 'base', 'estructura', 'muro', 'tejado', 'acceso', 'exterior'])

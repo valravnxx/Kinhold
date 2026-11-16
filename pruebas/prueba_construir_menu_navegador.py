@@ -6,7 +6,9 @@
 #   - cada pieza con su imagen (cargada de verdad) y el coste en iconos; lo que no tienes, en rojo;
 #   - deshacer lo último: el marco puesto se quita, y otra vez ya no hay nada que deshacer;
 #   - la empalizada (P11c), a la vista en «Exterior» con su imagen y sus 6 troncos, y de cerca, levantada.
-# Rota a propósito con MUTAR=1 (el botón de deshacer no hace nada), MUTAR=2 (sin la empalizada en el menú) o MUTAR=3 (sin su portón): falla.
+#   - el muro de entramado (P11c), liso, con puerta y con ventana, a la vista en «Muro» y levantado en una casilla, de cerca.
+# Rota a propósito con MUTAR=1 (el botón de deshacer no hace nada), MUTAR=2 (sin la empalizada en el menú), MUTAR=3 (sin su portón)
+# o MUTAR=4 (sin el muro de entramado con ventana): falla.
 # Uso: python3 pruebas/prueba_construir_menu_navegador.py <html> <carpeta_capturas>
 import sys, os, re, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
@@ -54,8 +56,9 @@ with sync_playwright() as p:
         ev(f"{K}.llevarPara('mojon','mojon'); {K}.seleccionar('mojon','mojon'); {K}.apuntar(-3,-6); {K}.colocar()")
         comprobar('mojón puesto', bool(ev(f"{K}.mundo.mojonDe({K}.yo)")) or bool(ev(f"{K}.mundo.mojones && {K}.mundo.mojones.length")))
         pg.click('#pestanas button[data-cat="muro"]'); pg.wait_for_timeout(1500)
-        ev("document.getElementById('piezas').scrollLeft = 1e5"); pg.wait_for_timeout(1500)   # (las de fuera se cargan al deslizar)
-        ev("document.getElementById('piezas').scrollLeft = 0")
+        for paso in range(1, 7):   # (las de fuera se cargan al deslizar: poco a poco, que cada una pase por la vista)
+            ev(f"(() => {{ const e = document.getElementById('piezas'); e.scrollLeft = e.scrollWidth * {paso} / 6; }})()"); pg.wait_for_timeout(700)
+        ev("document.getElementById('piezas').scrollLeft = 0"); pg.wait_for_timeout(800)
         imgs = ev("[...document.querySelectorAll('#piezas button.pieza')].map(b => { const i = b.querySelector('img.pz-img'); return [b.querySelector('b').textContent, !!i && i.complete && i.naturalWidth > 0, b.querySelectorAll('.cc img').length]; })")
         comprobar('cada muro con su imagen cargada', imgs and all(i[1] for i in imgs), str([i for i in imgs if not i[1]][:3]))
         comprobar('y su coste en iconos', imgs and all(i[2] >= 1 for i in imgs))
@@ -146,6 +149,33 @@ with sync_playwright() as p:
             if sitio: ev(f"Object.assign({K}.pj, {{ x: {sitio[0]}, z: {sitio[1]} }})"); pg.wait_for_timeout(600)
             ev(f"{K}.usar()"); pg.wait_for_timeout(500)
             comprobar('y se vuelve a cerrar', bool(sitio) and not ev(abierta))
+        # el muro de entramado (P11c): liso, con puerta y con ventana, en «Muro» con su imagen y su coste (troncos, varas y
+        # barro, nada de hierro ni tablas); en una casilla con cimiento de piedra, de cerca. MUTAR=4: sin el de ventana (tiene que fallar)
+        ev(f"{K}.cambiarModo('construir')"); pg.wait_for_timeout(800)
+        pg.click('#pestanas button[data-cat="muro"]'); pg.wait_for_timeout(1500)
+        ev("document.getElementById('piezas').scrollLeft = 1e5"); pg.wait_for_timeout(1500)
+        mur = ev("[...document.querySelectorAll('#piezas button.pieza')].map(b => { const i = b.querySelector('img.pz-img'); return [b.querySelector('b').textContent, !!i && i.complete && i.naturalWidth > 0, [...b.querySelectorAll('.cc')].map(c => c.title).join(' ')]; })")
+        ent = {e[0]: e for e in mur if e[0].startswith('Muro de entramado')}
+        if os.environ.get('MUTAR') == '4': ent.pop('Muro de entramado con ventana', None)
+        for n in ['Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana']:
+            e = ent.get(n)
+            comprobar(f'en «Muro», {n.lower()} a la vista, con su imagen cargada', bool(e) and e[1], str([m[0] for m in mur]))
+            comprobar(f'  y su coste: troncos, varas y barro, sin hierro ni tablas', bool(e) and 'tronco' in e[2] and 'vara' in e[2] and 'barro' in e[2] and 'hierro' not in e[2] and 'tabla' not in e[2], e[2] if e else '')
+        ev("document.getElementById('piezas').scrollLeft = 0")
+        ev(f"(() => {{ const m = {K}.mundo.materiales; for (const k of ['tronco', 'vara', 'barro', 'piedra']) m[k] = Math.max(m[k] || 0, 200); }})()")
+        antes = ev(f"{K}.mundo.construcciones.reduce((a, c) => a + c.piezas.size, 0)")
+        ev(f"{K}.seleccionar('pieza','cim_piedra'); {K}.apuntar(-5,-1); {K}.colocar(); {K}.terminarObras()")   # (los muros, sobre el cimiento ya hecho)
+        for t, x, z in [('muro_entramado_puerta', -5, 0), ('muro_entramado_ventana', -4, -1), ('muro_entramado', -6, -1), ('muro_entramado', -5, -2)]:
+            ev(f"{K}.seleccionar('pieza','{t}'); {K}.apuntar({x},{z}); {K}.colocar()")
+        ev(f"{K}.terminarObras()")
+        tipos = ev(f"[...{K}.mundo.construcciones.flatMap(c => [...c.piezas.values()])].filter(p => p.tipo.startsWith('muro_entramado') && !p.obra).map(p => p.tipo).sort()")
+        comprobar('los cuatro muros de entramado (liso, con puerta y con ventana), levantados', tipos == ['muro_entramado', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana'], str(tipos))
+        ev(f"{K}.cambiarModo('mover')"); pg.wait_for_timeout(800)
+        vistas = [(-3.3, 2.6, -0.35, 0.14, 5.0), (-2.2, 0.6, 0.95, 0.15, 5.2), (-3.9, 1.3, -0.55, 0.06, 2.8), (-7.6, -4.2, 3.7, 0.15, 5.0)]
+        for i, (px, pz, giro, pitch, dist) in enumerate(vistas):
+            ev(f"(() => {{ const k = {K}; Object.assign(k.pj, {{ x: {px}, z: {pz}, rot: 0 }}); k.cam.yaw = {giro}; k.cam.pitch = {pitch}; k.cam.dist = {dist}; }})()")
+            pg.wait_for_timeout(2500)
+            pg.screenshot(path=f'{SALIDA}/{nombre}_8_entramado_{i + 1}.png'.replace('ó', 'o'))
         ev(f"{K}.cambiarModo('construir')"); pg.wait_for_timeout(800)
         pg.click('#pestanas button[data-cat="almacenajes"]'); pg.wait_for_timeout(2500)
         pg.screenshot(path=f'{SALIDA}/{nombre}_5_almacenajes.png'.replace('ó', 'o'))

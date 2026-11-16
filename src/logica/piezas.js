@@ -61,7 +61,12 @@ export const PIEZAS = {
   muro_tronco:        { nombre: 'Muro de troncos', hueco: 'e', nivel: 1, peso: 300, cap: 1200, coste: { tronco: 4 }, cat: 'muro' },
   muro_tronco_puerta: { nombre: 'Muro de troncos con puerta', hueco: 'e', nivel: 1, peso: 220, cap: 850, coste: { tronco: 3 }, conPuerta: true, cat: 'muro' },
   muro_tronco_ventana:{ nombre: 'Muro de troncos con ventana', hueco: 'e', nivel: 1, peso: 260, cap: 1000, coste: { tronco: 3 }, conVentana: true, cat: 'muro' },
-  muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 1400, coste: { tronco: 2, vara: 2, barro: 3 }, cat: 'muro' },
+  // destapado (P11c, valravnx, 14 nov): de nivel 2, pero sale de lo que hay (troncos delgados y varas del árbol joven y
+  // barro de la ribera). Con puerta y con ventana, como el zarzo; peso, carga y coste provisionales (sistemas no lo trae):
+  // en la proporción de los de troncos con puerta y con ventana.
+  muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 1400, coste: { tronco: 2, vara: 2, barro: 3 }, destapada: true, cat: 'muro' },
+  muro_entramado_puerta: { nombre: 'Muro de entramado con puerta', hueco: 'e', nivel: 2, peso: 185, cap: 1000, coste: { tronco: 2, vara: 1, barro: 2 }, conPuerta: true, destapada: true, cat: 'muro' },
+  muro_entramado_ventana:{ nombre: 'Muro de entramado con ventana', hueco: 'e', nivel: 2, peso: 215, cap: 1170, coste: { tronco: 2, vara: 2, barro: 2 }, conVentana: true, destapada: true, cat: 'muro' },
   muro_tabla:         { nombre: 'Muro de tablas', hueco: 'e', nivel: 2, peso: 200, cap: 900, coste: { tabla: 6, clavo: 6 }, cat: 'muro' },
   muro_tabla_puerta:  { nombre: 'Muro de tablas con puerta', hueco: 'e', nivel: 2, peso: 150, cap: 600, coste: { tabla: 4, clavo: 4 }, conPuerta: true, cat: 'muro' },
   // Peso, carga y coste provisionales (sistemas no lo trae): en la proporción del muro de troncos con ventana.

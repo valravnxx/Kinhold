@@ -85,7 +85,7 @@ const ESENCIAL = {
 };
 // Las piezas de construir que cada hito vivo deja a la vista en el menú, con todo su coste saliendo del mundo.
 const PIEZAS_ESENCIALES = {
-  'casa-fuerte': ['empalizada', 'empalizada_puerta'],   // (P11c: el entramado, al hacer su tarea)
+  'casa-fuerte': ['empalizada', 'empalizada_puerta', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana'],   // (P11c)
 };
 if (MUTAR === '3') delete PIEZAS.empalizada.destapada;
 
