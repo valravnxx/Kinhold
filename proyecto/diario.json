@@ -7354,5 +7354,21 @@
   "pruebas": "En la nube: lógica (con la nueva de la canoa, 45 comprobaciones), recorrido de jugador (326 bien), la canoa en el navegador PC y móvil, la rastra, objetos en el suelo, panel de inventario, avisos de las necesidades y velocidad con pocos fotogramas: todo bien. La lógica falló la primera vez por las imágenes que faltaban de la canoa (hechas en iconos v31) y la rastra por esas mismas imágenes (404 en el móvil): repetidas, bien. El recorrido de la canoa va en su tarea.",
   "capturas": "capturas/demo-v224",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T08:40:24+00:00",
+  "fin": "2026-11-16T09:34:06+00:00",
+  "titulo": "El remo de la canoa (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "En el banco de tronco, con 1 tronco corto depositado y llevando un hacha (de piedra, de mano o de hierro; no se gasta), se hace el remo. Sin el hacha, el banco no lo hace y no gasta el tronco. Por el servidor, con su autor.",
+   "El remo es de una pieza, a hacha: la pala de punta redonda con su nervio, la caña y el puño en muleta, redondeado. Tiene su imagen en el panel (iconos v32).",
+   "Se lleva con las dos manos, atravesado delante del cuerpo: la caña pasa por las dos palmas y por delante de la cadera, en PC y en el móvil. En el suelo queda tumbado.",
+   "Provisional (en el registro de la demo): 90 s en el banco, 1,5 m de largo (la pala, 58 cm por 16) y 2 kg. Remar con él llega en la tarea siguiente.",
+   "Retomada desde la rama de la sesión anterior, que se cortó. Segunda mirada de las capturas por un agente aparte: pidió que las manos agarrasen la caña, que no rozara la cadera y el puño sin aristas; arreglado. Para mirar con valravnx: las manos del personaje siguen casi abiertas sobre la caña (las del modelo), y la veta de la pala es la misma textura de madera de lo demás."
+  ],
+  "pruebas": "Comprobador de código correcto. En la nube: lógica (con el remo en la de fabricar, rota a propósito con MUTAR=6: falla), recorrido de jugador, panel de fabricar e inventario, la canoa (con el remo en el suelo), construir con el acabado nuevo, el mazo, despiezar y la cama: bien. «Lo que llevas se ve puesto»: las comprobaciones nuevas del remo, bien (la de que la caña pasa por las palmas fallaba antes del arreglo); fallan la mano sobre el tronco al hombro (armas y mujer) y a veces el cinturón, igual que en main y sin tocar este cambio. El recorrido se pasó antes de los últimos cambios, que son solo de cómo se ve.",
+  "capturas": "capturas/demo-v225",
+  "estado": "ok"
  }
 ]
