@@ -1,0 +1,38 @@
+PC (1280×800)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+  OK   PC_la canoa está en tierra, junto al agua
+  OK   PC_en tierra, Usar no ofrece subir: la echa al agua — Echar la canoa al agua
+  OK   PC_Usar la empuja al agua: flota — Empujas la canoa al agua: flota. Usar, a su lado, sube a ella. · 0.72 m de agua
+  OK   PC_se ve sobre el agua (no en el fondo) — [-6.194142543813063, -6.022988944544807]
+  OK   PC_Usar a su lado: subir a la canoa — Subir a la canoa
+  OK   PC_sube, y rema él — Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.
+  OK   PC_va sentado
+  OK   PC_remando contra la corriente, más deprisa que corriendo (6 m/s) — 8.2 m/s (corriente 0.9 m/s)
+  OK   PC_y avanza río arriba — 22.7 m
+  OK   PC_sigue en el agua
+  OK   PC_sin remar, la corriente la lleva río abajo — 1.07 m en 2.7 s
+  OK   PC_remando contra la orilla, encalla en el agua (no sale a tierra) — 0.27 m de agua
+  OK   PC_junto a la orilla, Usar baja a tierra — Bajar a la orilla
+  OK   PC_baja a la orilla (en seco o lo poco hondo) y la canoa se queda a flote — Bajas a la orilla: la canoa se queda en el agua. · 0.00 m · {'x': -8113.36, 'z': 1150.9, 'agua': True, 'rema': None}
+  OK   PC_ya no va sentado
+  OK   PC_sin errores en la página — []
+Móvil (390×844)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+  OK   movil_la canoa está en tierra, junto al agua
+  OK   movil_en tierra, Usar no ofrece subir: la echa al agua — Echar la canoa al agua
+  OK   movil_Usar la empuja al agua: flota — Empujas la canoa al agua: flota. Usar, a su lado, sube a ella. · 0.72 m de agua
+  OK   movil_se ve sobre el agua (no en el fondo) — [-6.169209545434006, -6.022988944544807]
+  OK   movil_Usar a su lado: subir a la canoa — Subir a la canoa
+  OK   movil_sube, y rema él — Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.
+  OK   movil_va sentado
+  OK   movil_remando contra la corriente, más deprisa que corriendo (6 m/s) — 8.2 m/s (corriente 0.9 m/s)
+  OK   movil_y avanza río arriba — 20.7 m
+  OK   movil_sigue en el agua
+  OK   movil_sin remar, la corriente la lleva río abajo — 2.10 m en 2.5 s
+  OK   movil_remando contra la orilla, encalla en el agua (no sale a tierra) — 0.25 m de agua
+  OK   movil_junto a la orilla, Usar baja a tierra — Bajar a la orilla
+  OK   movil_baja a la orilla (en seco o lo poco hondo) y la canoa se queda a flote — Bajas a la orilla: la canoa se queda en el agua. · 0.00 m · {'x': -8111.88, 'z': 1151.64, 'agua': True, 'rema': None}
+  OK   movil_ya no va sentado
+  OK   movil_sin errores en la página — []
+
+TODO CORRECTO
