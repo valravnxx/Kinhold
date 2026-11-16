@@ -77,6 +77,9 @@ export const VEL_TRONCO_LARGO = 0.42; // la rastra con el tronco largo: más des
 // El tronco largo a cuerda
 export const DETRAS_TRONCO = 2.9;     // m: el centro del tronco, por detrás del que tira
 export const ALCANCE_ATAR = 2;        // m, desde el centro del tronco (mide 4,5 m: desde cualquier punto a su lado)
+// (P11d) a cuerda va también la canoa de un tronco (src/logica/canoa.js): igual que el tronco largo, hasta la orilla
+export const A_CUERDA = ['tronco_largo', 'canoa'];
+export const vaACuerda = tipo => A_CUERDA.includes(tipo);
 export const VEL_TRONCO_SOLO = 0.3, VEL_TRONCO_DOS = 0.5, VEL_TRONCO_SIN_AGUANTE = 1 / 3;
 export const factorTronco = (o, aguante = 1) => (o && o.ayuda ? VEL_TRONCO_DOS : VEL_TRONCO_SOLO) * (aguante > 0.02 ? 1 : VEL_TRONCO_SIN_AGUANTE);
 const cuerdaEnMano = inv => ['mano:der', 'mano:izq'].some(l => inv.lugares[l] && inv.lugares[l].tipo === 'cuerda');
@@ -218,28 +221,28 @@ export class Rastras {
   }
 
   // El tronco largo que arrastra (o ayuda a arrastrar) un autor, o null.
-  troncoDe(autor, ahora) { return this.suelo.visibles(ahora).find(o => o.cosa.tipo === 'tronco_largo' && (o.arrastra === autor || o.ayuda === autor)) || null; }
+  troncoDe(autor, ahora) { return this.suelo.visibles(ahora).find(o => vaACuerda(o.cosa.tipo) && (o.arrastra === autor || o.ayuda === autor)) || null; }
   // Los troncos largos a mano para atarlos (sin atar o con uno solo tirando), del más cercano al más lejano.
   troncosCercanos(x, z, ahora, dist = ALCANCE_ATAR) {
-    return this.suelo.visibles(ahora).filter(o => o.cosa.tipo === 'tronco_largo' && !o.ayuda && Math.hypot(o.x - x, o.z - z) <= dist)
+    return this.suelo.visibles(ahora).filter(o => vaACuerda(o.cosa.tipo) && !o.ayuda && Math.hypot(o.x - x, o.z - z) <= dist)
       .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
   }
 
   atarTronco(inv, id, x, z, ahora, autor) {
     let o = this.suelo.porId(id, ahora);
-    if (!o || o.cosa.tipo !== 'tronco_largo') return { ok: false, motivo: 'Ahí no hay ningún tronco largo.' };
+    if (!o || !vaACuerda(o.cosa.tipo)) return { ok: false, motivo: 'Ahí no hay ningún tronco largo.' };
     if (this.troncoDe(autor, ahora)) return { ok: false, motivo: 'Ya tiras de un tronco.' };
     if (this.deAutor(autor, ahora)) return { ok: false, motivo: 'Suelta antes la rastra.' };
     if (o.ayuda) return { ok: false, motivo: 'De ese tronco ya tiran dos.' };
     // el que ayuda se pone al lado del que tira: vale estar cerca del tronco o del que tira
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_ATAR && !o.arrastra) return { ok: false, motivo: 'Está demasiado lejos.' };
-    if (!cuerdaEnMano(inv)) return { ok: false, motivo: 'Para atar el tronco necesitas una cuerda en la mano.' };
+    if (!cuerdaEnMano(inv)) return { ok: false, motivo: o.cosa.tipo === 'canoa' ? 'Para atar la canoa necesitas una cuerda en la mano.' : 'Para atar el tronco necesitas una cuerda en la mano.' };
     if (inv.manosEn === 'tronco_largo') inv.manosEn = null;   // (de un tronco que ya no es suyo: se lo subieron a una rastra)
     if (inv.manosEn) return { ok: false, motivo: 'Tienes las manos ocupadas.' };
     if (o.arrastra) { o.ayuda = autor; inv.manosEn = 'tronco_largo'; return { ok: true, objeto: o.id, ayuda: true }; }
     if (o.cosa.n > 1) {   // de una pila se aparta uno
       o.cosa.n -= 1;
-      const u = { id: 's' + this.suelo.siguiente++, cosa: { tipo: 'tronco_largo', n: 1 }, x: o.x, z: o.z, autor, soltado: ahora, desaparece: null };
+      const u = { id: 's' + this.suelo.siguiente++, cosa: { tipo: o.cosa.tipo, n: 1 }, x: o.x, z: o.z, autor, soltado: ahora, desaparece: null };
       if (Number.isFinite(o.giro)) u.giro = o.giro;
       this.suelo.objetos.push(u);
       o = u;

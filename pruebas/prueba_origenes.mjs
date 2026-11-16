@@ -80,6 +80,7 @@ const ESENCIAL = {
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
   lluvia: ['cubo', 'cubo_agua', 'col', 'nabo', 'est_pozo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
   'casa-fuerte': ['tronco_largo', 'rodaja', 'carretilla'],   // (P11c; sus piezas, en PIEZAS_ESENCIALES)
+  canoa: ['canoa'],   // (P11d; el remo, con su tarea)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
@@ -110,6 +111,8 @@ for (let nuevo = true; nuevo;) {
   // de piedra y el travesaño de varas con su cuerda; de él se saca agua con el cubo
   if (['pala_madera', 'piedra', 'vara', 'cuerda'].every(t => hay.has(t)) && poner('est_pozo', 'cavar, revestir y rematar un pozo')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
+  // la canoa de un tronco (P11d; src/logica/canoa.js): el tronco largo, vaciado a golpes de hacha y con brasas de una hoguera
+  if (hay.has('tronco_largo') && tieneAlguna(Object.keys(HACHAS)) && hay.has('est_hoguera') && poner('canoa', 'vaciar un tronco largo con el hacha y las brasas de la hoguera')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
   if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;
   // la granja (P11): el campo se marca con estacas y se labra con la azada; se siembra lo silvestre y, maduro, la cebada
