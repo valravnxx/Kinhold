@@ -7370,5 +7370,22 @@
   "pruebas": "Comprobador de código correcto. En la nube: lógica (con el remo en la de fabricar, rota a propósito con MUTAR=6: falla), recorrido de jugador, panel de fabricar e inventario, la canoa (con el remo en el suelo), construir con el acabado nuevo, el mazo, despiezar y la cama: bien. «Lo que llevas se ve puesto»: las comprobaciones nuevas del remo, bien (la de que la caña pasa por las palmas fallaba antes del arreglo); fallan la mano sobre el tronco al hombro (armas y mujer) y a veces el cinturón, igual que en main y sin tocar este cambio. El recorrido se pasó antes de los últimos cambios, que son solo de cómo se ve.",
   "capturas": "capturas/demo-v225",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T20:22:00+00:00",
+  "fin": "2026-11-16T21:22:39+00:00",
+  "titulo": "La canoa al agua: subir y remar (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "Con la canoa en la orilla, Usar a su lado la empuja al agua y flota, meciéndose un poco. Desde la orilla o el agua poco honda, Usar junto a ella sube: el primero va sentado en medio y rema, y cabe otro sentado delante.",
+   "Con el remo en la mano, moverse rema bastante más deprisa que corriendo y gobierna la canoa; sin remo, o sin remar, va a la deriva con la corriente del río (en el mar, despacio).",
+   "Por donde no hay agua bastante, encalla. El casco entero no atraviesa rocas que asoman, troncos ni árboles, y la proa y la popa no se meten en la orilla en seco. Usar junto a la orilla baja a tierra y la canoa se queda a flote.",
+   "Todo por el servidor con su autor, y los demás la ven moverse debajo del que rema.",
+   "Segunda mirada de las capturas por un agente aparte: vio las puntas de la canoa abiertas por arriba (una de las dos bordas salía boca abajo) y, en la popa, un poco de agua dentro del casco al mecerse; arreglados los dos, con una prueba nueva del modelo.",
+   "Provisional (en el registro de la demo): remando, 9 m/s; va sentado con la pose de descansar y el remo quieto en las manos hasta que valravnx haga la de remar."
+  ],
+  "pruebas": "Comprobador de código correcto. Prueba nueva del modelo de la canoa (las bordas, hacia arriba; rota a propósito con MUTAR=1: falla). En la nube: la canoa y la canoa en el agua (echarla, subir, remar contra la corriente, a la deriva, contra una roca y contra la orilla, y bajar), bien en PC y en el móvil.",
+  "capturas": "capturas/demo-v226",
+  "estado": "ok"
  }
 ]

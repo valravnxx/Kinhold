@@ -2506,9 +2506,9 @@
     },
     {
      "nombre": "Echar la canoa al agua, subir y remar: se empuja desde la orilla al agua; se sube desde la orilla o el agua poco honda y se baja en la orilla. Con el remo, se rema bastante más rápido que corriendo (valravnx; la cifra, provisional); sin remo o sin remar, va a la deriva con la corriente del río (en el mar, despacio). Cabe otro sentado. Por el servidor con su autor, y todos la ven moverse. En PC y en el móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-16T10:24:31+00:00",
-     "rama": "trabajo/20261116-1024"
+     "fin": "2026-11-16T21:22:39+00:00"
     },
     {
      "nombre": "La canoa se queda donde la dejas: varada en la orilla no desaparece; en tu tierra queda a tu guarda (como la carretilla); fuera, cualquiera se la lleva",
@@ -4812,6 +4812,13 @@
      "archivo": "jugar/demo/v225.html",
      "capturas": "capturas/demo-v225",
      "notas": "El remo de la canoa (P11d): en el banco de tronco, con 1 tronco corto y llevando un hacha; se lleva con las dos manos."
+    },
+    {
+     "v": "v226",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v226.html",
+     "capturas": "capturas/demo-v226",
+     "notas": "La canoa al agua (P11d): Usar la empuja al agua, se sube a ella y, con el remo, se rema bastante más deprisa que corriendo; sin remar, va a la deriva con la corriente."
     }
    ]
   },
