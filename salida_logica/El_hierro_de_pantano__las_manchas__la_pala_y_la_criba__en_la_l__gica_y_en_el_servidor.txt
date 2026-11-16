@@ -1,0 +1,28 @@
+La mancha y lo que pide
+  bien  sale en la vega y en las turberas (y solo ahí)
+  bien  da mineral de hierro, de 1 en 1
+  bien  la criba existe y se hace en el banco con 2 mimbres y 1 vara — {"nombre":"Criba","uso":"banco","da":"criba","n":1,"gasta":{"mimbre":2,"vara":1},"s":45}
+  bien  sin nada, no se saca — Necesitas una pala de madera y una criba para sacar el mineral.
+  bien  con la criba sola, tampoco — Necesitas una pala de madera y una criba para sacar el mineral.
+  bien  con la pala sola, tampoco — Necesitas una pala de madera y una criba para sacar el mineral.
+  bien  (lleva la pala en una mano y la criba en la otra)
+  bien  la mancha da de 3 a 5 pasadas — 4
+  bien  con las dos, cada pasada da 1 mineral de hierro, hasta agotarla — 4 pasadas
+  bien  lo sacado queda en un montoncito junto a la mancha, con todo — [[4,1.9,0.35]]
+  bien  la última dice que se ha agotado
+  bien  y ya no da más
+  bien  cada pasada, en el registro con su autor — 4
+  bien  y nada en lo de otro jugador
+  bien  sin suelo donde dejarlo, no se criba
+  bien  vuelve a salir pasados 90 días
+  bien  una mancha a medias se guarda con sus pasadas — {"vuelve":0,"veces":0,"sacadas":1}
+En el mundo de Whitholm y en el servidor
+  bien  hay manchas de hierro de pantano en la vega del río más cercano — 1
+  bien  todas en la vega o en la turbera
+  bien  las mismas para todos (de la semilla del mundo)
+  bien  el servidor la conoce
+  bien  en el servidor, sin pala ni criba, no — Necesitas una pala de madera y una criba para sacar el mineral.
+  bien  con ellas, el servidor deja 1 mineral de hierro junto a la mancha, de quien criba — [{"id":"s1","cosa":{"tipo":"mineral_hierro","n":1},"x":-7.83,"z":-801.34,"autor":"lu","soltado":1794618000000,"desaparece":1794621600000}]
+  bien  y se guarda al volver a abrir el servidor (la mancha a medias) — {"vuelve":0,"veces":0,"sacadas":1}
+
+24/24 bien
