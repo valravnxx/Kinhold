@@ -773,7 +773,8 @@ export function crearLlevado(j) {
         // cruzando el pecho en diagonal hasta la cadera izquierda, y por el costado (por encima de la cadera) a la espalda
         // (en línea recta del hombro a la cadera, sin bajar primero en vertical)
         const F = v3(h.x + 0.01, h.y, zD), Hc = v3(x0 + 0.13, cin.y + 0.05, zD);
-        const delante = [F.clone().lerp(Hc, 0.2), F.clone().lerp(Hc, 0.45), F.clone().lerp(Hc, 0.7), Hc, v3(x0 + 0.3, cin.y + 0.03, cE.cz + 0.12), v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12)];
+        // (y en la cadera da la vuelta en curva, por delante y de lado: con un solo punto de lado, de perfil hacía un pico en V)
+        const delante = [F.clone().lerp(Hc, 0.2), F.clone().lerp(Hc, 0.45), F.clone().lerp(Hc, 0.7), Hc, v3(x0 + 0.22, cin.y + 0.04, cE.cz + 0.24), v3(x0 + 0.3, cin.y + 0.03, cE.cz + 0.05), v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12)];
         let guia, ini = [], fin = [];
         if (morral != null) {
           // el morral (el zurrón): sale de lo alto de la bolsa, sube por la espalda al hombro y, tras el costado, vuelve a la bolsa
