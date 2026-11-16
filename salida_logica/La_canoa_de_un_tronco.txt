@@ -1,0 +1,54 @@
+El catálogo y el suelo
+  OK   la canoa y la canoa a medias son enormes (se arrastran)
+  OK   no desaparecen del suelo
+Desbastar: con el hacha, a golpes; al primer golpe deja de ser un tronco
+  OK   sin hacha, no — Necesitas un hacha en la mano para vaciar el tronco.
+  OK   lejos, no — Está demasiado lejos.
+  OK   el primer golpe vale y lo deja como canoa a medias — {"tipo":"canoa_a_medias","n":1,"vaciado":{"fase":"desbastar","golpes":1,"vuelta":0,"hasta":0}}
+  OK   golpes demasiado seguidos, no
+  OK   con hacha de piedra, 40 golpes en total — 40
+  OK   luego tocan las brasas
+  OK   lo que va a medias no desaparece
+De una pila de troncos largos se aparta uno
+  OK   la pila queda con 2 y al lado una canoa a medias
+  OK   con hacha de hierro, 14 golpes — 14
+Las brasas (de una hoguera encendida al lado), por tiempo transcurrido, y raspar
+  OK   sin hoguera, no se echan brasas — Para echar brasas en el hueco necesitas una hoguera encendida al lado.
+  OK   con la hoguera lejos, tampoco
+  OK   con la hoguera apagada, tampoco
+  OK   fuegoCerca mira el fuego vivo y la distancia
+  OK   vuelta 1: se echan las brasas
+  OK   vuelta 1: mientras arden no se raspa — Las brasas aún arden en el hueco: espera a que se consuman para raspar.
+  OK   vuelta 1: pasados 10 min, toca raspar
+  OK   vuelta 1: se raspa en 8 golpes de hierro — 8
+  OK   vuelta 2: se echan las brasas
+  OK   vuelta 2: mientras arden no se raspa — Las brasas aún arden en el hueco: espera a que se consuman para raspar.
+  OK   vuelta 2: pasados 10 min, toca raspar
+  OK   vuelta 2: se raspa en 8 golpes de hierro — 8
+  OK   vuelta 3: se echan las brasas
+  OK   vuelta 3: mientras arden no se raspa — Las brasas aún arden en el hueco: espera a que se consuman para raspar.
+  OK   vuelta 3: pasados 10 min, toca raspar
+  OK   vuelta 3: se raspa en 8 golpes de hierro — 8
+  OK   tras 3 vueltas queda la canoa en el suelo — canoa
+  OK   la canoa no se coge con las manos
+  OK   el progreso de una a medias va de 0 a 1
+Lo atado no se vacía; lo que no es un tronco largo, tampoco
+  OK   atado, no
+  OK   el tronco corto, no
+  OK   sin autor, no
+  OK   se anota en el registro
+Por la red (objetos_red): con su autor, desde donde el servidor lo tiene, y la hoguera del servidor
+  OK   desbastado por la red — {"ok":true}
+  OK   sin hoguera en el servidor, no hay brasas
+  OK   con la hoguera del servidor ardiendo, sí
+  OK   si el servidor no te tiene ahí, no
+  OK   lo a medias se guarda con el suelo
+  OK   y se carga igual
+La canoa se arrastra a cuerda hasta la orilla (como el tronco largo)
+  OK   sin cuerda en la mano, no — Para atar la canoa necesitas una cuerda en la mano.
+  OK   con la cuerda en la mano, se ata
+  OK   otro ayuda a tirar
+  OK   soltada, queda detrás del que tiraba — 17.1, 0
+  OK   y sigue siendo la canoa
+
+45 correctas, 0 fallidas
