@@ -7286,5 +7286,22 @@
   "pruebas": "Revisor en la nube: construcción, panel de fabricación y recorrido, bien; construir con el acabado nuevo (con el portón: abrir y cerrar con Usar, PC y móvil) y la demo única, bien tras traducir los textos del juego; lógica, bien salvo «jugadores que se ven con lag simulado» (un salto de 2,70× sobre 2,5×: no toca este cambio). Probada rota a propósito: con hierro en el coste fallan los orígenes y el tramo.",
   "capturas": "capturas/demo-v222",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T22:24:07+00:00",
+  "fin": "2026-11-16T00:15:59+00:00",
+  "titulo": "P11c: el muro de entramado, con su puerta y su ventana",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "El muro de entramado ya no se esconde, y con él su puerta y su ventana: en construir, pestaña Muro, salen con su imagen (piezas v5). El liso cuesta 2 troncos delgados, 2 varas y 3 barros; el de puerta, 2 troncos, 1 vara y 2 barros; el de ventana, 2 troncos, 2 varas y 2 barros.",
+   "Como las casas de entramado de la referencia: madera parda y fina a la vista (durmiente, carrera, medio poste en cada esquina, pies cada medio metro, dos riostras y tornapuntas en los paños bajos) y paños pequeños de barro claro. Bajo el tejado se cierra con el mismo barro.",
+   "La puerta, con jambas y dintel (la puerta de varas encaja en su hueco); la ventana, con pies, peana, dintel y alféizar. El canto del relleno queda metido en la madera: nada asoma al hueco.",
+   "La cadena hasta el mundo: tronco delgado y vara ← el árbol joven; barro ← la ribera. En prueba_origenes.mjs, los tres entre las piezas que P11c deja a la vista.",
+   "Provisional: el coste, el peso y lo que aguantan los de puerta y ventana (en la proporción de los de troncos), y el relleno sin encalar (aún no hay cal).",
+   "Segunda mirada de un agente aparte: la primera dijo que no (madera gruesa y casi negra, paños grandes); se rehizo con madera fina y parda y paños pequeños, y después una escalerilla en la jamba y el poste doble en la esquina. A la tercera, sí. Queda: la cuadrícula es algo regular frente a las aspas de la referencia."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido, construcción, construir con el acabado nuevo (el entramado en el menú y levantado, de cerca, PC y móvil) y la demo única, bien. El panel de fabricación falló una vez en «Reparado… le quedan 168 usos»: el aviso llega, pero pasados los 5 s de espera; no toca este cambio (no comprobado en main). Quitado: nada.",
+  "capturas": "capturas/demo-v223",
+  "estado": "ok"
  }
 ]
