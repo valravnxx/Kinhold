@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-16T22:23:17+00:00",
+  "tarea": "Recorrido de jugador de la canoa, sin arcón: vacía un tronco largo, hace el remo, lleva la canoa a la orilla, rema río arriba y río abajo, la deja ir a la deriva y la vara en la orilla",
+  "hito": "canoa",
+  "rama": "trabajo/20261116-2223"
+ },
  "B": null
 }
