@@ -124,6 +124,28 @@ export function modeloHachaDe(tipo) {
 // (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v2. `sexo`: el del personaje elegido.
 // `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
 const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
+// En la canoa (P11d), sentado con las rodillas juntas: la de sentarse en el suelo va con las piernas cruzadas y las rodillas
+// abiertas (a unos 0,25 m de cada lado), y en el casco, de 0,45 m por dentro, se salían por la borda. Tras la animación, el
+// muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo (la pierna entera lo sigue).
+const RODILLA_CANOA = 0.12;
+const _cen = new THREE.Vector3(), _der = new THREE.Vector3(), _rod = new THREE.Vector3(), _obj = new THREE.Vector3(), _qr = new THREE.Quaternion();
+function juntarRodillas(j) {
+  const h = j.mh && j.mh.hueso;
+  if (!h || (typeof window !== 'undefined' && window.__mutarRodillas)) return;   // (la prueba de la canoa lo rompe a propósito)
+  j.raiz.updateMatrixWorld(true);
+  j.raiz.getWorldPosition(_cen);
+  _der.set(1, 0, 0).applyQuaternion(j.raiz.getWorldQuaternion(_qr));
+  for (const l of ['l', 'r']) {
+    const muslo = h['thigh_' + l], pierna = h['calf_' + l];
+    if (!muslo || !pierna || !muslo.parent) continue;
+    pierna.getWorldPosition(_rod);
+    const lado = _obj.copy(_rod).sub(_cen).dot(_der);
+    if (Math.abs(lado) <= RODILLA_CANOA) continue;
+    _obj.copy(_rod).addScaledVector(_der, Math.sign(lado) * RODILLA_CANOA - lado);
+    girarHueso(muslo, _rod, _obj);
+  }
+}
+
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
@@ -180,7 +202,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     const cada = n < NIVELES.length ? NIVELES[n].cada : 0;
     j.dtPendiente = (j.dtPendiente || 0) + dt;
     j.cuadro = (j.cuadro || 0) + 1;
-    if (cada && j.cuadro % cada === 0) { j.mh.mezclador.update(j.dtPendiente); j.dtPendiente = 0; }
+    if (cada && j.cuadro % cada === 0) { j.mh.mezclador.update(j.dtPendiente); j.dtPendiente = 0; if (m === 'sentado' && j.enCanoa) juntarRodillas(j); }
     else if (!cada) j.dtPendiente = Math.min(j.dtPendiente, 1);
   };
   // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos

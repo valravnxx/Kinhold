@@ -5,6 +5,7 @@
 # se queda a flote). Capturas de cerca en PC (1280×800) y en el móvil (390×844). La lógica y el servidor, en
 # pruebas/prueba_canoa.mjs; aquí sin servidor (la misma lógica en el navegador).
 # Uso: python3 pruebas/prueba_canoa_agua_navegador.py dist/kinhold_demo.html <carpeta>
+# MUTAR_RODILLAS=1: sin juntar las rodillas en la canoa (se salen por la borda): tiene que fallar.
 # MUTAR=1: remar no mueve la canoa más que la corriente (sin remo de verdad): tiene que fallar.
 import sys, os, json, time
 from playwright.sync_api import sync_playwright
@@ -57,6 +58,7 @@ def recorrido(pg, pre, movil):
     foto(pg, f'{pre}1_canoa_en_la_orilla')
     # el remo en la mano (del arcón de pruebas: aquí se prueba la canoa; sin arcón, en el recorrido del hito)
     pg.evaluate(f"(() => {{ const r = {K}.accionInventario({{ tipo: 'coger', objeto: 'remo', cantidad: 1, a: 'mano:der' }}); {K}.pintarLlevas(); {K}.vestir(); return r.ok; }})()")
+    if os.environ.get('MUTAR_RODILLAS') == '1': pg.evaluate('window.__mutarRodillas = true')
     if MUTAR: pg.evaluate(f"(() => {{ const k = {K}; k.inventario().lugares['mano:der'] = null; k.vestir(); }})()")
     pg.evaluate(f"{K}.usar()"); pg.wait_for_timeout(700)
     c = canoa(pg, id)
@@ -77,8 +79,14 @@ def recorrido(pg, pre, movil):
     comprobar(f'{pre}sube, y rema él', canoa(pg, id)['rema'] == 'jugador:local' and pg.evaluate(f"!!{K}.miCanoa()"), aviso(pg))
     pg.wait_for_timeout(600)
     comprobar(f'{pre}va sentado (con el remo en las manos)', pg.evaluate(f"{K}.jugador.sentado === true && {K}.jugador.modo === 'sentado'"), pg.evaluate(f"{K}.jugador.modo"))
+    # las rodillas, dentro del casco (0,45 m por dentro): la de sentarse en el suelo las abre y se salían por la borda
+    rod = pg.evaluate(f"""(() => {{ const k = {K}, o = k.escena.getObjectByName('suelo_canoa'), h = k.jugador.mh.hueso; k.escena.updateMatrixWorld(true);
+      return ['calf_l', 'calf_r'].map(n => {{ const p = o.worldToLocal(h[n].getWorldPosition(h[n].position.clone())); return [Math.round(p.z * 100) / 100, Math.round(p.y * 100) / 100]; }}); }})()""")
+    comprobar(f'{pre}las rodillas, dentro del casco (a menos de 0,17 m del medio)', all(abs(z) <= 0.17 for z, y in rod), f'{rod} (de lado, alto)')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.2; k.cam.dist = 6; k.cam.pitch = 0.45; }})()")
     foto(pg, f'{pre}3_en_la_canoa')
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 1.57; k.cam.dist = 2.6; k.cam.pitch = 0.3; }})()")
+    foto(pg, f'{pre}3b_en_la_canoa_de_cerca')
     # remar río arriba (contra la corriente): W con la cámara mirando río arriba (W lleva a (-sin yaw, -cos yaw))
     pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['ux']}), -({r['uz']})); k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")

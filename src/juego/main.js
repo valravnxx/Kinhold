@@ -2237,6 +2237,9 @@ function pasoRastras() {
   const agarraderas = (autor) => { const c = sueloObjetos.grupo.children.find(o => o.name === 'suelo_carretilla' && o.userData.arrastra === autor); return c ? c.userData.agarraderas || null : null; };
   jugador.agarraderas = jugador.empuja ? agarraderas(yoSuelo()) : null;
   if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.agarraderas = r.j.empuja ? agarraderas(autor) : null;
+  // en la canoa, sentado con las rodillas dentro del casco (src/juego/personaje.js), uno mismo y los demás
+  jugador.enCanoa = !!miCanoa();
+  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.enCanoa = !!canoasLocal.deAutor(autor, ahora);
 }
 // ---- La canoa: al agua, subir, remar y bajar (P11d; src/logica/canoa.js) ----
 const hondoAqui = (x, z) => { const w = mundoJ ? mundoJ.aguaEn(x, z) : null; return w ? w.hondo : 0; };
