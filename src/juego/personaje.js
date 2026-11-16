@@ -126,8 +126,9 @@ export function modeloHachaDe(tipo) {
 const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
 // En la canoa (P11d), sentado con las rodillas juntas: la de sentarse en el suelo va con las piernas cruzadas y las rodillas
 // abiertas (a unos 0,25 m de cada lado), y en el casco, de 0,45 m por dentro, se salían por la borda. Tras la animación, el
-// muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo (la pierna entera lo sigue).
-const RODILLA_CANOA = 0.12;
+// muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo, y la pierna, hasta que el pie
+// queda de su lado a PIE_CANOA m (no cruzado) y sin bajar del fondo.
+const RODILLA_CANOA = 0.12, PIE_CANOA = 0.08;
 const _cen = new THREE.Vector3(), _der = new THREE.Vector3(), _rod = new THREE.Vector3(), _obj = new THREE.Vector3(), _qr = new THREE.Quaternion();
 function juntarRodillas(j) {
   const h = j.mh && j.mh.hueso;
@@ -136,13 +137,22 @@ function juntarRodillas(j) {
   j.raiz.getWorldPosition(_cen);
   _der.set(1, 0, 0).applyQuaternion(j.raiz.getWorldQuaternion(_qr));
   for (const l of ['l', 'r']) {
-    const muslo = h['thigh_' + l], pierna = h['calf_' + l];
+    const muslo = h['thigh_' + l], pierna = h['calf_' + l], pie = h['foot_' + l];
     if (!muslo || !pierna || !muslo.parent) continue;
     pierna.getWorldPosition(_rod);
     const lado = _obj.copy(_rod).sub(_cen).dot(_der);
-    if (Math.abs(lado) <= RODILLA_CANOA) continue;
-    _obj.copy(_rod).addScaledVector(_der, Math.sign(lado) * RODILLA_CANOA - lado);
-    girarHueso(muslo, _rod, _obj);
+    if (Math.abs(lado) > RODILLA_CANOA) {
+      _obj.copy(_rod).addScaledVector(_der, Math.sign(lado) * RODILLA_CANOA - lado);
+      girarHueso(muslo, _rod, _obj);
+    }
+    // y el pie, de su lado y no cruzado debajo de la otra pierna (con el muslo girado, se iba por la otra borda)
+    if (!pie) continue;
+    const s = Math.sign(lado) || (l === 'l' ? 1 : -1);
+    pie.getWorldPosition(_rod);
+    const ladoPie = _obj.copy(_rod).sub(_cen).dot(_der);
+    _obj.copy(_rod).addScaledVector(_der, s * PIE_CANOA - ladoPie);
+    _obj.y = Math.max(_obj.y, _cen.y + 0.04);
+    girarHueso(pierna, _rod, _obj);
   }
 }
 
