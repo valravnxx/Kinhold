@@ -122,9 +122,10 @@ export function hondoDe(v, ahora = Date.now()) {
 }
 
 // A flote, el agua del río (transparente, se pinta después de lo opaco) no se ve dentro del casco: una tapa a la altura del
-// agua (algo por encima de lo que se hunde, 0,16 m, por lo que se mece), con la forma del hueco a esa altura, que solo
-// escribe la profundidad y se pinta antes que el agua. Lo de dentro (el fondo, las piernas) ya está pintado y se ve.
-export const ALTO_TAPA = 0.21;
+// agua (bastante por encima de lo que se hunde, 0,16 m: al mecerse, las puntas bajan hasta 7 cm y, con la tapa a 0,21 m,
+// el agua asomaba en un triángulo dentro de la popa), con la forma del hueco a esa altura, que solo escribe la
+// profundidad y se pinta antes que el agua. Lo de dentro (el fondo, las piernas) ya está pintado y se ve.
+export const ALTO_TAPA = 0.30;
 function tapaAgua() {
   const N = 40, lado = [];
   for (let i = 0; i <= N; i++) {
