@@ -2494,7 +2494,9 @@
    "tareas": [
     {
      "nombre": "La canoa de un tronco: junto al agua, el tronco largo se vacía a mano con el hacha y con brasas que se raspan (por tiempo transcurrido, en el servidor; provisional), y queda una canoa en el suelo (enorme: se arrastra con cuerda o en la rastra hasta la orilla). Con el estilo v5 y capturas de cerca. Cadena: tronco largo ← el árbol adulto; hacha ← el banco de tronco; brasas ← la hoguera",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-16T05:24:32+00:00",
+     "rama": "trabajo/20261116-0524"
     },
     {
      "nombre": "El remo: 1 tronco corto en el banco de tronco, con el hacha; se lleva en las dos manos. Cadena: tronco corto ← tronzar el tronco largo; banco ← 2 troncos cortos",
