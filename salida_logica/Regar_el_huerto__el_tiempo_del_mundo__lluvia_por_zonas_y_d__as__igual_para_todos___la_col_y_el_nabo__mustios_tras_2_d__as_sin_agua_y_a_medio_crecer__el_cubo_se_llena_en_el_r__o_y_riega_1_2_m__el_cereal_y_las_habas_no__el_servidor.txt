@@ -1,0 +1,52 @@
+El tiempo del mundo
+  OK   unos 3 días de cada 10 con lluvia (entre 2 y 4) — 0.29
+  OK   igual para todos: el mismo sitio y la misma hora dan lo mismo
+  OK   por zonas: a 5 km no siempre hace el mismo tiempo — 9 de 60 ratos distintos
+  OK   en un mes, llueve alguna vez y la col pasa parte del tiempo seca — 10.4 días mustia, la última lluvia a los 26.4 días
+  OK   sembrado: dos coles, un nabo, una haba y cebada a voleo
+La sed
+  OK   a 1 día, la col está bien
+  OK   a los 2 días y medio sin agua, mustia
+  OK   y ha crecido a la mitad desde los 2 días (cuenta como sembrada 6 h más tarde) — 6.0 h
+  OK   la haba, de secano, nunca mustia y crece como siempre
+  OK   sin regar, la col no está madura a la semana (la haba sí)
+  OK   pero no se muere: madura más tarde (a los 12 días, con 2 de agua y 10 a la mitad)
+  OK   madura, ya no se ve mustia
+  OK   con lluvia, nunca mustia y crece como siempre
+El cubo
+  OK   sin agua al lado, el cubo no se llena — Aquí no hay agua: busca un río.
+  OK   junto al mar, tampoco: es salada, y el aviso lo dice — El agua del mar es salada: no vale para regar. Llena el cubo en un río.
+  OK   con agua dulce al lado, se llena
+  OK   lleno, no otra vez — El cubo ya está lleno.
+  OK   sin cubo en la mano, no
+Regar
+  OK   con el cubo vacío, no se riega — Necesitas el cubo lleno de agua en la mano para regar.
+  OK   las habas no se riegan — La cebada y las habas no se riegan: les basta la lluvia.
+  OK   ni la cebada — La cebada y las habas no se riegan: les basta la lluvia.
+  OK   donde no hay col ni nabo, nada — Aquí no hay col ni nabo que regar.
+  OK   con el cubo lleno, riega la col de delante (un círculo de 1,2 m: solo esa) — {"ok":true,"campo":1,"regadas":1,"mustias":1}
+  OK   y el cubo se vacía
+  OK   regada, ya no está mustia
+  OK   lo que perdió mustia se queda (6 h)
+  OK   dos días más sin agua y mustia otra vez
+  OK   regada a tiempo, nunca mustia
+  OK   y se coge a la semana
+  OK   el nabo sin regar, aún no — Aún no está madura.
+  OK   en tierra ajena, no — Fuera de tu tierra.
+  OK   regar cansa, menos que labrar
+  OK   rehecho desde el registro da el mismo mundo
+  OK   se guarda y se lee: cuándo se regó y lo que perdió, igual
+El servidor de verdad: llena el cubo donde te tiene, pone la hora, mira que estés cerca y lo reparte
+  OK   Ana pone su mojón
+  OK   Ana planta una col en el servidor
+  OK   sin llover tres días, mustia
+  OK   lejos del río, el cubo no se llena — Aquí no hay agua: busca un río.
+  OK   junto al mar, el servidor no lo llena: salada — El agua del mar es salada: no vale para regar. Llena el cubo en un río.
+  OK   junto al río, se llena
+  OK   a más de 3 m de donde está, no se riega — Estás demasiado lejos.
+  OK   cerca y con el cubo lleno, riega la col
+  OK   y el cubo, vacío
+  OK   Bruno lo ve (con la hora del servidor, no la del navegador)
+  OK   con el cubo vacío, no otra vez — Necesitas el cubo lleno de agua en la mano para regar.
+
+45 bien, 0 mal
