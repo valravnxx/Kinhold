@@ -122,7 +122,8 @@ export function sitioDe(x, z, giro, veh = 'rastra') {
 const MAY = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 export class Rastras {
-  constructor(suelo, cat = CATALOGO) { this.suelo = suelo; this.cat = cat; }
+  // suTierra(autor, x, z): si ese sitio es de la tierra del autor o de quien le invita (la canoa, a su guarda; P11d)
+  constructor(suelo, cat = CATALOGO, suTierra = () => false) { this.suelo = suelo; this.cat = cat; this.suTierra = suTierra; }
   todas(ahora) { return this.suelo.visibles(ahora).filter(o => esVehiculo(o.cosa.tipo)); }
   // La que arrastra un autor, o null.
   deAutor(autor, ahora) { return this.todas(ahora).find(o => o.arrastra === autor) || null; }
@@ -235,6 +236,7 @@ export class Rastras {
     if (this.deAutor(autor, ahora)) return { ok: false, motivo: 'Suelta antes la rastra.' };
     if (o.ayuda) return { ok: false, motivo: 'De ese tronco ya tiran dos.' };
     if (o.rema) return { ok: false, motivo: 'Hay alguien en la canoa: que se baje antes.' };   // (P11d)
+    if (o.guarda && o.guarda !== autor && !o.arrastra) return { ok: false, motivo: 'La canoa está en las tierras de otro: no puedes tocarla.' };   // (P11d, la canoa dejada en su tierra)
     // el que ayuda se pone al lado del que tira: vale estar cerca del tronco o del que tira
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_ATAR && !o.arrastra) return { ok: false, motivo: 'Está demasiado lejos.' };
     if (!cuerdaEnMano(inv)) return { ok: false, motivo: o.cosa.tipo === 'canoa' ? 'Para atar la canoa necesitas una cuerda en la mano.' : 'Para atar el tronco necesitas una cuerda en la mano.' };
@@ -251,6 +253,7 @@ export class Rastras {
     o.arrastra = autor;
     o.desaparece = null;
     delete o.agua;   // (P11d) la canoa atada sale del agua: se arrastra a la orilla
+    delete o.guarda; // (atada, la lleva el que tira)
     inv.manosEn = 'tronco_largo';
     return { ok: true, objeto: o.id };
   }
@@ -266,7 +269,9 @@ export class Rastras {
     o.x = redondo(p.x); o.z = redondo(p.z);
     o.giro = redondo(Math.atan2(x - p.x, z - p.z) - Math.PI / 2);   // a lo largo de la cuerda (el modelo va a lo largo de X)
     if (o.ayuda) { o.arrastra = o.ayuda; delete o.ayuda; } else delete o.arrastra;
-    return { ok: true, objeto: o.id, x: o.x, z: o.z };
+    // (P11d) la canoa que se deja en tu tierra, a tu guarda (src/logica/canoa.js)
+    if (o.cosa.tipo === 'canoa' && !o.arrastra && this.suTierra(autor, o.x, o.z)) o.guarda = autor; else delete o.guarda;
+    return { ok: true, objeto: o.id, x: o.x, z: o.z, ...(o.guarda ? { guarda: o.guarda } : {}) };
   }
 
   // Lo que lleva, al suelo, a su lado (a la derecha de hacia donde mira).

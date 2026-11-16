@@ -2305,9 +2305,12 @@ function subirCanoa(o) {
   });
 }
 function bajarCanoa(b) {
-  accionCanoa({ tipo: 'bajar_canoa', x: pj.x, z: pj.z, bx: Math.round(b.x * 100) / 100, bz: Math.round(b.z * 100) / 100 }, () => {
+  const c = miCanoa(), sola = !!c && c.rema === yoSuelo() && !c.pasajero;   // (se baja el último: la canoa se queda donde la deja)
+  accionCanoa({ tipo: 'bajar_canoa', x: pj.x, z: pj.z, bx: Math.round(b.x * 100) / 100, bz: Math.round(b.z * 100) / 100 }, (r) => {
     pj.x = b.x; pj.z = b.z; jugador.sentado = false;
-    mostrarAviso(tr('Bajas a la orilla: la canoa se queda en el agua.'));
+    // (se queda donde la dejas: en tus tierras, a tu guarda; fuera, cualquiera se la lleva; si queda otro, rema él)
+    mostrarAviso(!sola ? tr('Bajas a la orilla: la canoa se queda en el agua.') : r.guarda ? tr('Bajas a la orilla: la canoa se queda en el agua, en tus tierras, a tu guarda.')
+      : tr('Bajas a la orilla: la canoa se queda en el agua. Fuera de tus tierras, cualquiera puede llevársela.'));
   });
 }
 // Un paso yendo en la canoa: el que rema la mueve (remando con el remo, deprisa; si no, la corriente) por donde flota; el
@@ -2462,7 +2465,9 @@ function atarTronco(o) {
 function soltarTronco() {
   const o = miTronco(); if (!o) return;
   const s = sitiosRastra[o.id] || {};
-  accionRastra({ tipo: 'soltar_tronco', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, () => mostrarAviso(tr('Sueltas la cuerda: el tronco se queda aquí.')));
+  const canoa = o.cosa.tipo === 'canoa';
+  accionRastra({ tipo: 'soltar_tronco', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, (r) => mostrarAviso(!canoa ? tr('Sueltas la cuerda: el tronco se queda aquí.')
+    : r && r.guarda ? tr('Sueltas la cuerda: la canoa se queda aquí, en tus tierras, a tu guarda.') : tr('Sueltas la cuerda: la canoa se queda aquí. Fuera de tus tierras, cualquiera puede llevársela.')));
 }
 // del arcón de pruebas al suelo, delante de ti (la rastra y la carretilla no caben en el inventario)
 function arconAlSuelo(tipo) {

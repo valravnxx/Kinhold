@@ -96,7 +96,8 @@ export class ObjetosServidor {
   // terreno: el mundo que conoce el servidor (crearTerreno), o null. puedeTocar(autor, x, z) → { ok, motivo? }: si puede
   // poner algo ahí (en tierra de otro, solo su dueño y sus invitados; Construccion.puedeTocar).
   // bajoTecho(x, z): si ese sitio está bajo techo (Construccion.bajoTecho; los puestos de trabajo: la hoguera, solo fuera).
-  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null, obrasCerca = () => [], sinRebrote = null } = {}) {
+  constructor({ posicion = () => null, enTierras = () => false, arconPruebas = false, terreno = null, puedeTocar = () => ({ ok: true }), bajoTecho = () => false, alMuro = () => null, obrasCerca = () => [], sinRebrote = null, suTierra = () => false } = {}) {
+    this.suTierra = suTierra;      // (autor, x, z) → si es su tierra o la de quien le invita: la canoa dejada ahí, a su guarda (P11d)
     this.sinRebrote = sinRebrote;  // (x, z) → dentro de un campo: lo talado no vuelve a crecer (src/logica/campos.js)
     this.obrasCerca = obrasCerca;  // las piezas de las obras cerca de (x, z): con lo que puede dar un árbol al caer
     this.puedeTocar = puedeTocar;
@@ -113,8 +114,9 @@ export class ObjetosServidor {
     this.fab = new Fabricacion();
     this.registro = new RegistroAcciones(1);   // la última; lo que se audita va al archivo
   }
-  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.vaciado = new Vaciado(suelo); this.vaciado.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo);
-    this.canoas = new Canoas(suelo, (x, z) => (this.terreno && this.terreno.aguaEn ? this.terreno.aguaEn(x, z) : null)); this.canoas.posRema = autor => this.posicion(autor); }
+  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.vaciado = new Vaciado(suelo, (a, x, z) => this.suTierra(a, x, z)); this.vaciado.entre = ENTRE_GOLPES_RED;
+    this.rastras = new Rastras(suelo, undefined, (a, x, z) => this.suTierra(a, x, z));
+    this.canoas = new Canoas(suelo, (x, z) => (this.terreno && this.terreno.aguaEn ? this.terreno.aguaEn(x, z) : null), (a, x, z) => this.suTierra(a, x, z)); this.canoas.posRema = autor => this.posicion(autor); }
 
   // accion: { tipo, ...datos } con el autor ya puesto por el servidor. ahora: la hora del servidor (ms).
   // Devuelve { ok, motivo?, entrada, suelo: bool (si ha cambiado el suelo), estaciones: bool (si ha cambiado alguna

@@ -226,5 +226,66 @@ console.log('La canoa por la red: el servidor mira el agua de su terreno y el qu
   comprobar('a flote se guarda con el suelo', s2.porId(c.id, T0).agua === true);
 }
 
+console.log('La canoa se queda donde la dejas: en tu tierra, a tu guarda; fuera, cualquiera se la lleva (P11d)');
+{
+  // la tierra de ana: x < 0 (y la de nadie, x >= 0); el agua, de x > 5
+  const pos = { ana: { x: -3, z: 0 }, eva: { x: -3, z: 1 } };
+  const suya = (a, x) => (MUTAR ? true : a === 'ana' && x < 0);
+  const S = new ObjetosServidor({ posicion: a => pos[a] || null, suTierra: (a, x, z) => suya(a, x, z), terreno: { aguaEn: (x) => (x > 5 || x < -5 ? Math.abs(x) - 5 : null), suelo: () => 0 } });
+  for (const a of ['ana', 'eva']) S.invs.de(a).lugares['mano:der'] = { tipo: 'cuerda', n: 1 };
+  const c = S.suelo.dejar({ tipo: 'canoa', n: 1 }, -3, 0, T0, 'ana', false, 0);
+  // ana la ata y la suelta en su tierra
+  let r = S.ejecutar({ autor: 'ana', tipo: 'atar_tronco', objeto: c.id, x: -3, z: 0 }, T0);
+  pos.ana = { x: -1, z: 0, giro: Math.PI / 2 };
+  r = S.ejecutar({ autor: 'ana', tipo: 'soltar_tronco', x: -1, z: 0 }, T0);
+  comprobar('soltada la cuerda en su tierra, la canoa queda a su guarda', r.ok && c.guarda === 'ana' && r.guarda === 'ana', JSON.stringify({ r: r.motivo, g: c.guarda }));
+  r = S.ejecutar({ autor: 'eva', tipo: 'atar_tronco', objeto: c.id, x: -3, z: 1 }, T0);
+  comprobar('otro no la ata (en tierra de otro)', !r.ok && /tierras de otro/.test(r.motivo), r.motivo);
+  // ana la echa al agua de su tierra (x < -5)
+  S.invs.de('ana').lugares['mano:der'] = null; S.invs.de('eva').lugares['mano:der'] = null;
+  pos.ana = { x: -4, z: 0 }; pos.eva = { x: -4, z: 1 };
+  r = S.ejecutar({ autor: 'eva', tipo: 'echar_canoa', objeto: c.id, x: -4, z: 1, rx: -6.5, rz: 0 }, T0);
+  comprobar('otro no la echa al agua', !r.ok && /tierras de otro/.test(r.motivo), r.motivo);
+  r = S.ejecutar({ autor: 'ana', tipo: 'echar_canoa', objeto: c.id, x: -4, z: 0, rx: -6.5, rz: 0 }, T0);
+  comprobar('ella sí, y a flote en su tierra sigue a su guarda', r.ok && c.agua && c.guarda === 'ana', r.motivo);
+  pos.eva = { x: -5.4, z: 0 };
+  r = S.ejecutar({ autor: 'eva', tipo: 'subir_canoa', objeto: c.id, x: -5.4, z: 0 }, T0);
+  comprobar('otro no se sube a remarla', !r.ok && /tierras de otro/.test(r.motivo), r.motivo);
+  pos.ana = { x: -5.4, z: 0 };
+  r = S.ejecutar({ autor: 'ana', tipo: 'subir_canoa', objeto: c.id, x: -5.4, z: 0 }, T0);
+  comprobar('ella sube, y con ella dentro la canoa no tiene guarda', r.ok && c.rema === 'ana' && !c.guarda, r.motivo);
+  r = S.ejecutar({ autor: 'eva', tipo: 'subir_canoa', objeto: c.id, x: -5.4, z: 0 }, T0);
+  comprobar('con ella remando, cabe otro delante', r.ok && c.pasajero === 'eva', r.motivo);
+  // reman hasta el agua de nadie (x > 5) y se bajan
+  pos.ana = { x: 6, z: 0, giro: 0 }; pos.eva = { x: 6, z: 0 };
+  r = S.ejecutar({ autor: 'eva', tipo: 'bajar_canoa', x: 6, z: 0, bx: 5, bz: 0 }, T0);
+  r = S.ejecutar({ autor: 'ana', tipo: 'bajar_canoa', x: 6, z: 0, bx: 5, bz: 0 }, T0);
+  comprobar('dejada fuera de su tierra, no tiene guarda', r.ok && !c.guarda && !r.guarda && c.agua && !c.rema, r.motivo);
+  pos.eva = { x: 5.4, z: 0 };
+  r = S.ejecutar({ autor: 'eva', tipo: 'subir_canoa', objeto: c.id, x: 5.4, z: 0 }, T0);
+  comprobar('fuera, cualquiera se sube y se la lleva', r.ok && c.rema === 'eva', r.motivo);
+  // eva se va del juego en el agua de la tierra de ana: no es la suya, sin guarda
+  pos.eva = { x: -6, z: 0, giro: 0 };
+  comprobar('el que se va en tierra que no es la suya la deja sin guarda', S.soltarAlSalir('eva', T0) && !c.guarda && c.x === -6);
+  // ana la vuelve a coger y se va del juego en su tierra: a su guarda
+  pos.ana = { x: -5.6, z: 0 };
+  r = S.ejecutar({ autor: 'ana', tipo: 'subir_canoa', objeto: c.id, x: -5.6, z: 0 }, T0);
+  pos.ana = { x: -7, z: 0, giro: 0 };
+  comprobar('la que se va del juego en su tierra la deja a su guarda', r.ok && S.soltarAlSalir('ana', T0) && c.guarda === 'ana');
+  // varada en la orilla o a flote, no desaparece y se guarda con su guarda
+  const lejos = T0 + 40 * 24 * 3600 * 1000;
+  const s2 = new Suelo().importar(S.suelo.exportar());
+  const c2 = s2.porId(c.id, lejos);
+  comprobar('no desaparece y se guarda con su guarda', !!c2 && c2.guarda === 'ana' && c2.agua === true && S.suelo.porId(c.id, lejos));
+  // la canoa recién vaciada en tu tierra, a tu guarda
+  for (const [autor, x, guarda] of [['ana', -1, 'ana'], ['eva', -1, undefined], ['ana', 3, undefined]]) {
+    const S2 = new ObjetosServidor({ posicion: () => ({ x, z: 0 }), suTierra: (a, xx, z) => suya(a, xx, z) });
+    const m = S2.suelo.dejar({ tipo: 'canoa_a_medias', n: 1, vaciado: { fase: 'raspar', golpes: GOLPES_RASPAR.piedra - 1, vuelta: VUELTAS - 1, hasta: 0 } }, x, 0, T0, autor, false, 0);
+    S2.invs.de(autor).coger('hacha_piedra', 1, 'mano:der');
+    const rv = S2.ejecutar({ autor, tipo: 'vaciar', objeto: m.id, x, z: 0 }, T0);
+    comprobar(`la canoa recién vaciada por ${autor} en x=${x}: ${guarda ? 'a su guarda' : 'sin guarda'}`, rv.ok && rv.canoa && m.cosa.tipo === 'canoa' && m.guarda === guarda, rv.motivo);
+  }
+}
+
 console.log(`\n${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);

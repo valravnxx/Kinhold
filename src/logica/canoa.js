@@ -57,7 +57,7 @@ export function fuegoCerca(estaciones, x, z, ahora) {
 }
 
 export class Vaciado {
-  constructor(suelo) { this.suelo = suelo; this.ultimoGolpe = {}; this.entre = ENTRE_GOLPES; }
+  constructor(suelo, suTierra = () => false) { this.suelo = suelo; this.ultimoGolpe = {}; this.entre = ENTRE_GOLPES; this.suTierra = suTierra; }
 
   // Lo que le toca al objeto del suelo id estando en (x, z). conFuego(x, z): si hay un fuego vivo a mano. Devuelve
   // { ok, paso: 'desbastar' | 'brasas' | 'raspar', termina?, canoa?, … } o { ok: false, motivo }.
@@ -101,7 +101,7 @@ export class Vaciado {
     const vuelta = v.vuelta + 1;
     if (vuelta < VUELTAS) { o.cosa.vaciado = { fase: 'brasas', golpes: 0, vuelta, hasta: 0 }; return { ok: true, paso: f, termina: true, vuelta, objeto: o.id, hacha: h.tipo }; }
     o.cosa = { tipo: 'canoa', n: 1 };
-    return { ok: true, paso: f, termina: true, vuelta, canoa: true, objeto: o.id, hacha: h.tipo };
+    return { ok: true, paso: f, termina: true, vuelta, canoa: true, objeto: o.id, hacha: h.tipo, ...dejarCanoa(o, autor, this.suTierra) };
   }
 }
 
@@ -123,6 +123,12 @@ export class Vaciado {
 //    sube rema; cabe otro sentado delante. Si se baja el que rema, rema el otro.
 //  - Se baja a la orilla: donde se pisa tiene que estar a 3 m como mucho y con poca agua (menos de 0,5 m).
 //  - Con alguien dentro no se ata ni se vacía; atada con cuerda, sale del agua (se arrastra a la orilla).
+// Se queda donde la dejas (valravnx, P11d): varada en la orilla o a flote, no desaparece (NO_DESAPARECE, suelo.js) y
+// se guarda con el suelo. Dejada en tu tierra (o en la de quien te invita), queda a tu guarda (guarda: autor), como la
+// carretilla aparcada: nadie más la echa al agua, se sube a ella ni la ata. Fuera, cualquiera se la lleva. Se deja al
+// bajarse el último (o al irse del juego), al echarla al agua, al soltar su cuerda y al terminar de vaciarla.
+// Decisión provisional (16 nov): la guarda es del que la dejó, no de la tierra; el dueño de la tierra y sus invitados
+// tampoco la tocan si la dejó otro (como la carretilla). Con alguien dentro no tiene guarda (la lleva él).
 export const VEL_REMAR = 9;          // m/s
 export const DERIVA_RIO = 1, DERIVA_MAR = 0.25, DERIVA_MAR_MAX = 0.5;
 export const HONDO_FLOTA = 0.3;      // m de agua
@@ -144,11 +150,19 @@ export function velocidadCanoa({ dir = { x: 0, z: 0 }, remando = false, corrient
   const r = remando ? VEL_REMAR : 0, n = Math.hypot(dir.x || 0, dir.z || 0);
   return { vx: cx + (n > 0 ? r * dir.x / n : 0), vz: cz + (n > 0 ? r * dir.z / n : 0) };
 }
+// La guarda de la canoa (o de lo que sea): si o está a la guarda de otro, lo que se dice; si no, null.
+export const ajenaCanoa = (o, autor) => (o && o.guarda && o.guarda !== autor ? 'La canoa está en las tierras de otro: no puedes tocarla.' : null);
+// Deja la canoa a la guarda de autor si está en su tierra (suTierra(autor, x, z)); fuera, sin guarda.
+export function dejarCanoa(o, autor, suTierra = () => false) {
+  if (o && o.cosa && o.cosa.tipo === 'canoa' && !o.rema && !o.arrastra && suTierra(autor, o.x, o.z)) o.guarda = autor; else if (o) delete o.guarda;
+  return o && o.guarda ? { guarda: o.guarda } : {};
+}
 export const remoEnMano = inv => !!inv && ['mano:der', 'mano:izq'].some(l => inv.lugares[l] && inv.lugares[l].tipo === 'remo');
 
 export class Canoas {
   // aguaEn(x, z): lo hondo del agua ahí (m) o null en seco (el terreno del servidor).
-  constructor(suelo, aguaEn = () => null) { this.suelo = suelo; this.aguaEn = aguaEn; }
+  // suTierra(autor, x, z): si ese sitio es de la tierra del autor o de quien le invita (la canoa dejada ahí, a su guarda).
+  constructor(suelo, aguaEn = () => null, suTierra = () => false) { this.suelo = suelo; this.aguaEn = aguaEn; this.suTierra = suTierra; }
   canoa(id, ahora) { const o = this.suelo.porId(id, ahora); return o && o.cosa.tipo === 'canoa' ? o : null; }
   // La canoa en la que va un autor (remando o sentado), o null.
   deAutor(autor, ahora) { return this.suelo.visibles(ahora).find(o => o.cosa.tipo === 'canoa' && (o.rema === autor || o.pasajero === autor)) || null; }
@@ -160,13 +174,14 @@ export class Canoas {
     if (this.deAutor(autor, ahora)) return { ok: false, motivo: 'Ya vas en una canoa.' };
     if (o.arrastra) return { ok: false, motivo: 'La canoa está atada: suelta antes la cuerda.' };
     if (o.agua) return { ok: false, motivo: 'La canoa ya está en el agua.' };
+    const aj = ajenaCanoa(o, autor); if (aj) return { ok: false, motivo: aj };
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_CANOA) return { ok: false, motivo: 'Está demasiado lejos.' };
     if (inv && (inv.manosEn || inv.lugares['mano:der'] && inv.lugares['mano:der'].tipo !== 'remo' || inv.lugares['mano:izq'] && inv.lugares['mano:izq'].tipo !== 'remo')) return { ok: false, motivo: 'Para empujarla necesitas las manos libres (el remo puede ir en ellas).' };
     if (!Number.isFinite(rx) || !Number.isFinite(rz) || Math.hypot(rx - o.x, rz - o.z) > ECHAR) return { ok: false, motivo: 'El agua está demasiado lejos: acércala a la orilla.' };
     if (this.hondo(rx, rz) < HONDO_FLOTA) return { ok: false, motivo: 'Ahí no hay agua bastante para que flote.' };
     o.giro = redondo(Math.atan2(rx - o.x, rz - o.z) - Math.PI / 2);   // a lo largo de hacia donde se empuja (el modelo va a lo largo de X)
     o.x = redondo(rx); o.z = redondo(rz); o.agua = true; o.desaparece = null;
-    return { ok: true, objeto: o.id, x: o.x, z: o.z };
+    return { ok: true, objeto: o.id, x: o.x, z: o.z, ...dejarCanoa(o, autor, this.suTierra) };
   }
 
   subir(inv, id, x, z, ahora, autor) {
@@ -175,11 +190,13 @@ export class Canoas {
     if (this.deAutor(autor, ahora)) return { ok: false, motivo: 'Ya vas en una canoa.' };
     if (!o.agua) return { ok: false, motivo: 'Échala antes al agua.' };
     if (o.rema && o.pasajero) return { ok: false, motivo: 'En la canoa ya van dos.' };
+    if (!o.rema) { const aj = ajenaCanoa(o, autor); if (aj) return { ok: false, motivo: aj }; }
     const ref = o.rema ? (this.posRema ? this.posRema(o.rema) : null) || o : o;   // (si ya va uno, la canoa está donde está él)
     if (Math.hypot(ref.x - x, ref.z - z) > ALCANCE_CANOA) return { ok: false, motivo: 'Está demasiado lejos.' };
     if (this.hondo(x, z) >= NADO.hondoNadar) return { ok: false, motivo: 'Nadando no se sube: acércate a la orilla o a lo poco hondo.' };
     if (inv && inv.manosEn) return { ok: false, motivo: 'Tienes las manos ocupadas.' };
     if (!o.rema) o.rema = autor; else o.pasajero = autor;
+    delete o.guarda;   // (con alguien dentro, la lleva él)
     return { ok: true, objeto: o.id, rema: o.rema === autor };
   }
 
@@ -194,7 +211,7 @@ export class Canoas {
     if (o.rema === autor) {
       o.x = redondo(p.x); o.z = redondo(p.z);   // (el que rema va sentado en medio: la canoa, donde está él)
       if (Number.isFinite(p.giro)) o.giro = redondo(p.giro - Math.PI / 2);
-      if (o.pasajero) { o.rema = o.pasajero; delete o.pasajero; } else delete o.rema;
+      if (o.pasajero) { o.rema = o.pasajero; delete o.pasajero; } else { delete o.rema; return { ok: true, objeto: o.id, x: o.x, z: o.z, ...dejarCanoa(o, autor, this.suTierra) }; }
     } else delete o.pasajero;
     return { ok: true, objeto: o.id, x: o.x, z: o.z };
   }
