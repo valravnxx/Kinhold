@@ -69,7 +69,8 @@ def recorrido(pg, pre, movil):
     y = pg.evaluate(f"(() => {{ const o = {K}.escena.getObjectByName('suelo_canoa'), a = {K}.mundoJ.aguaEn(o.position.x, o.position.z); return [o.position.y, a ? a.superficie : null]; }})()")
     comprobar(f'{pre}se ve sobre el agua (no en el fondo)', y[1] is not None and abs(y[0] - (y[1] - 0.16)) < 0.1, f'{y}')
     comprobar(f'{pre}el agua no se ve dentro del casco (la tapa que la esconde)', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_canoa').getObjectByName('tapa_agua')"))
-    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})) + 1.2; k.cam.dist = 8; k.cam.pitch = 0.6; }})()")
+    # (la cámara, del que la ha empujado hacia la canoa, de tres cuartos: ya flota a unos metros de él)
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({c['x']} - k.pj.x), -({c['z']} - k.pj.z)) + 0.45; k.cam.dist = 9; k.cam.pitch = 0.55; }})()")
     foto(pg, f'{pre}2_canoa_a_flote')
     # subir, desde el borde del agua (lo poco hondo), lo más cerca de la canoa
     pg.evaluate(f"""(() => {{ const k = {K}, m = k.mundoJ; let best = null;
