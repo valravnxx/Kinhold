@@ -167,7 +167,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     else if ((j.modo === 'tumbarse' || j.modo === 'dormido') && j.mh.acciones.levantarse) { m = 'levantarse'; j.levantaHasta = performance.now() + j.mh.acciones.levantarse.getClip().duration * 1000; }
     else if (j.modo === 'levantarse' && performance.now() < (j.levantaHasta || 0)) m = 'levantarse';
     // sentado en el suelo a descansar (P4, 8 nov; taller-sentarse-v1): quieto; al moverse, se levanta (main.js)
-    else if (j.sentado && m === 'quieto' && j.mh.acciones.sentado) m = 'sentado';
+    // (y en la canoa, P11d: con el remo en las dos manos, sentado igual; la pose de remar, de valravnx, cuando llegue)
+    else if (j.sentado && (m === 'quieto' || m === 'cargar' || m === 'hombroQuieto') && velocidad <= 0.1 && j.mh.acciones.sentado) m = 'sentado';
     if (m === 'dormido' || m === 'sentado') ritmo = 1;
     if (m === 'tumbarse' || m === 'levantarse') { ritmo = 1; const a = j.mh.acciones[m]; if (a.loop !== THREE.LoopOnce) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } }
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
