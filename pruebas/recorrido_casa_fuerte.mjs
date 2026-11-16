@@ -354,13 +354,13 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   const [porton, empal] = valla.piezas;
   let r = await conTroncos(empal);
   if (r.ok) r = await trabajar(empal);
-  comprobar('levanta el tramo de empalizada: 6 troncos delgados, de 6 árboles jóvenes, uno a uno al hombro', r.ok && terminada(empal), `${r.motivo || ''} faltan ${falta(empal, 'tronco')} troncos`);
+  comprobar('levanta el tramo de empalizada: 6 troncos delgados, de 6 árboles jóvenes, uno a uno al hombro', r.ok && terminada(empal), terminada(empal) ? '' : `${r.motivo || ''} faltan ${falta(empal, 'tronco')} troncos`);
   r = await conTroncos(porton);
   await soltarManos(['hacha_piedra']);
   const lh = enLaMano('hacha_piedra'); const hachaPorton = { ...J.pos }; if (lh) await soltar(lh);
   if (r.ok) { await cogerSuelo('cuerda', taller, 3, 2); r = await entregar(porton, 'cuerda', J.cuantos('cuerda')); }
   if (r.ok) r = await trabajar(porton);
-  comprobar('y el portón: 4 troncos delgados más y sus 2 cuerdas, a su lado', r.ok && terminada(porton), `${r.motivo || ''} faltan ${falta(porton, 'tronco')} troncos y ${falta(porton, 'cuerda')} cuerdas`);
+  comprobar('y el portón: 4 troncos delgados más y sus 2 cuerdas, a su lado', r.ok && terminada(porton), terminada(porton) ? '' : `${r.motivo || ''} faltan ${falta(porton, 'tronco')} troncos y ${falta(porton, 'cuerda')} cuerdas`);
   const abierto = () => casa.piezas.get(porton.clave)?.abierta === true;
   const u1 = await J.accion({ tipo: 'usar', construccion: casa.id, clave: porton.clave }); const a1 = abierto();
   const u2 = await J.accion({ tipo: 'usar', construccion: casa.id, clave: porton.clave }); const a2 = abierto();
@@ -375,7 +375,7 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   const [cim] = lado.piezas;
   r = await conTroncos(cim);
   if (r.ok) r = await trabajar(cim);
-  comprobar('lo levanta con 2 troncos delgados más', r.ok && terminada(cim), `${r.motivo || ''} faltan ${falta(cim, 'tronco')} troncos`);
+  comprobar('lo levanta con 2 troncos delgados más', r.ok && terminada(cim), terminada(cim) ? '' : `${r.motivo || ''} faltan ${falta(cim, 'tronco')} troncos`);
   const dx = cim.x - C.x, dz = cim.z - C.z;
   const muro = pieza('muro_entramado', r2(dx * 1.475), r2(dz * 1.475));
   r = await marco(muro);
@@ -391,8 +391,14 @@ export async function casaFuerte({ J, s, T, O, comprobar, pausa, cerca }) {
   await soltarManos();
   // el barro: 3 cestas de la ribera más cercana, con un palo cavador que se hace con una rama
   await cuidarse();
-  const ribera = cerca(alrededor(C, 700).filter(p => p.tipo === 'barro'), C);
-  const barro = ribera[0];
+  // (el río más cercano a su casa, en anillos de 25 m, como al principio del recorrido, y el barro de su orilla)
+  let rio = null;
+  for (let rr = 0; rr < 3000 && !rio; rr += 25) for (let k = 0; k < 96; k++) {
+    const x = C.x + Math.cos(k / 96 * 2 * Math.PI) * rr, z = C.z + Math.sin(k / 96 * 2 * Math.PI) * rr, X = x + O.x, Z = z + O.z;
+    const { dm, ancho } = T.paisaje.rioCerca(X, Z, T.paisaje.riosEn(X - 20, Z - 20, X + 20, Z + 20));
+    if (dm - ancho / 2 < 4 && T.alt(X, Z) > 0.5) { rio = { x: r2(x), z: r2(z) }; break; }
+  }
+  const barro = rio && cerca(alrededor(rio, 100).filter(p => p.tipo === 'barro'), rio)[0];
   let cavadas = 0, motivoBarro = barro ? '' : 'no hay ribera con barro cerca';
   if (barro) {
     if (!J.cuantos('palo_cavador') && !J.cuantos('pala_madera')) {
