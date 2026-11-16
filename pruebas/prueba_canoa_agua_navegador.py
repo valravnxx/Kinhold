@@ -120,9 +120,10 @@ def recorrido(pg, pre, movil):
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     deriva = (p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz']
     comprobar(f'{pre}sin remar, la corriente la lleva río abajo', deriva > 0.2 * r['vel'] * (p1[2] - p0[2]) / 1000, f'{deriva:.2f} m en {(p1[2] - p0[2]) / 1000:.1f} s')
-    # una roca en el agua, 3,5 m río arriba de la canoa: remando hacia ella, el casco no la atraviesa (se para contra ella)
+    # una roca que asoma del agua, 3,5 m por delante de la canoa: remando hacia ella, el casco no la atraviesa (se para contra ella)
     pg.evaluate(f"""(() => {{ const k = {K}; k.cam.yaw = k.pj.rot + Math.PI;
-      k.obstaculos.push({{ x: k.pj.x + Math.sin(k.pj.rot) * 3.5, z: k.pj.z + Math.cos(k.pj.rot) * 3.5, r: 0.8, prueba_canoa: true }}); }})()""")
+      const x = k.pj.x + Math.sin(k.pj.rot) * 3.5, z = k.pj.z + Math.cos(k.pj.rot) * 3.5, a = k.mundoJ.aguaEn(x, z);
+      k.obstaculos.push({{ x, z, r: Math.max(0.8, (a ? a.hondo : 0) + 0.2), prueba_canoa: true }}); }})()""")   # (una que asoma: las del fondo no la paran)
     pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
     mete = pg.evaluate(f"(() => {{ const k = {K}, m = window.__mutarCasco; window.__mutarCasco = false; const v = k.cascoMete(k.pj.x, k.pj.z, k.pj.rot, k.obstaculos.filter(o => o.prueba_canoa)); window.__mutarCasco = m; return v; }})()")
     comprobar(f'{pre}remando contra una roca, el casco no la atraviesa', mete < 0.05, f'{mete:.2f} m dentro')
