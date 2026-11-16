@@ -17,6 +17,7 @@
 //   { tipo: 'descortezar' | 'sangrar', arbol, x, z, ax, az, edad, especie } — la corteza y la resina del árbol en pie
 //     (src/logica/tala.js), a lo que llevas
 //   { tipo: 'trocear', objeto, x, z }             — un golpe de hacha a un tronco del suelo (src/logica/troceo.js)
+//   { tipo: 'vaciar', objeto, x, z }              — vaciar el tronco largo para la canoa: un golpe o echar brasas (src/logica/canoa.js)
 //   { tipo: 'recoger', punto, x, z, px, pz, clase, a? } — recoger del suelo o de una planta (src/logica/recoleccion.js)
 //   { tipo: 'romper', punto, x, z, px, pz, clase: 'roca', tam } — un golpe de mazo a una roca del mundo (ídem); al último,
 //     sus piedras al suelo donde estaba
@@ -70,6 +71,7 @@ import { Suelo, ejecutarSuelo } from './suelo.js';
 import { RegistroAcciones } from './acciones.js';
 import { Tala, ejecutarTala, idArbol, DA, ALCANCE_TALA } from './tala.js';
 import { Troceo, ejecutarTroceo } from './troceo.js';
+import { Vaciado, ejecutarVaciado } from './canoa.js';
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER, idRoca } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
@@ -82,7 +84,7 @@ export const VERSION_OBJETOS = 3;   // 3: lo talado y lo recogido, agrupado por 
 const DEL_INVENTARIO = new Set(['mover', 'ponerse', 'quitarse']);
 const DEL_ARCON = new Set(['coger', 'soltar']);
 const DE_FABRICAR = new Set(TIPOS_FABRICACION);
-const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'arrancar', 'trocear', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
+const DEL_SUELO = new Set([...DE_FABRICAR, 'soltar_suelo', 'coger_suelo', 'talar', 'descortezar', 'sangrar', 'arrancar', 'trocear', 'vaciar', 'recoger', 'desbrozar', 'romper', 'arcon_al_suelo', ...TIPOS_RASTRA]);
 export const TIPOS_OBJETOS = new Set([...DEL_INVENTARIO, ...DEL_ARCON, ...DEL_SUELO]);
 const num = v => typeof v === 'number' && Number.isFinite(v);
 const txt = v => typeof v === 'string' && v.length > 0 && v.length <= 64;
@@ -110,7 +112,7 @@ export class ObjetosServidor {
     this.fab = new Fabricacion();
     this.registro = new RegistroAcciones(1);   // la última; lo que se audita va al archivo
   }
-  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo); }
+  ponerSuelo(suelo) { this.suelo = suelo; this.troceo = new Troceo(suelo); this.troceo.entre = ENTRE_GOLPES_RED; this.vaciado = new Vaciado(suelo); this.vaciado.entre = ENTRE_GOLPES_RED; this.rastras = new Rastras(suelo); }
 
   // accion: { tipo, ...datos } con el autor ya puesto por el servidor. ahora: la hora del servidor (ms).
   // Devuelve { ok, motivo?, entrada, suelo: bool (si ha cambiado el suelo), estaciones: bool (si ha cambiado alguna
@@ -135,6 +137,9 @@ export class ObjetosServidor {
       } else if (a.tipo === 'trocear') {
         r = ejecutarTroceo(this.troceo, this.invs, this.registro, a, ahora, this.enTierras);
         suelo = !!(r.ok && r.termina);
+      } else if (a.tipo === 'vaciar') {   // (P11d) vaciar el tronco largo para la canoa (src/logica/canoa.js), desde donde el servidor lo tiene
+        r = ejecutarVaciado(this.vaciado, this.invs, this.registro, { ...a, x: p.x, z: p.z }, ahora, this.fab.estaciones);
+        suelo = !!(r.ok && (r.termina || r.paso === 'brasas' || r.golpes % 5 === 1));   // (se ve: cada 5 golpes, al echar brasas y al acabar cada paso)
       } else if (a.tipo === 'recoger' || a.tipo === 'desbrozar' || a.tipo === 'romper') {
         const fallo = this.conocerPunto(a, p);
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora, this.suelo);
@@ -230,6 +235,12 @@ export class ObjetosServidor {
   // El que se va del juego suelta la rastra que arrastraba: se queda donde el servidor la tenía, detrás de su último
   // sitio. Devuelve true si ha cambiado el suelo.
   soltarAlSalir(autor, ahora) {
+    if (this.rastras.troncoDe(autor, ahora)) {   // y el tronco largo del que tiraba (src/logica/rastra.js)
+      const p = this.posicion(autor), o = this.rastras.troncoDe(autor, ahora);
+      const r = this.rastras.soltarTronco(this.invs.de(autor), autor, p ? p.x : o.x, p ? p.z : o.z, undefined, undefined, ahora, p && Number.isFinite(p.giro) ? p.giro : 0);
+      this.anotar({ autor, tipo: 'soltar_tronco', alSalir: true }, r, ahora);
+      return !!r.ok;
+    }
     if (!this.rastras.deAutor(autor, ahora)) return false;
     const p = this.posicion(autor);
     const o = this.rastras.deAutor(autor, ahora);

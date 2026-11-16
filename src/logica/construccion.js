@@ -3,6 +3,7 @@ import { PIEZAS, DECORACION, MODULO, ALTURA, RECUPERACION, MAX_PLANTA, MATERIALE
 import { MOTIVO_REY } from './zonas_rey.js';
 import { alisa, centroCasilla, validarPasada, RADIO_CIMIENTO, BORDE as BORDE_NIVELADO } from './nivelado.js';
 import { exportarCampos, importarCampos } from './campos.js';
+import { exportarPozos, importarPozos } from './pozo.js';
 
 export const RADIO_MOJON = 20;        // radio de tierra del mojón sin zonas (pruebas sueltas y prototipos sin mundo) (m)
 // Tu tierra (valravnx, 4 nov): la zona entera (src/logica/comarcas.js, aproximadamente 1,2 km²) en la que pones tu
@@ -138,6 +139,8 @@ export class Mundo {
     this.nivelados = [];
     // los campos de cultivo marcados con estacas (src/logica/campos.js, P11)
     this.campos = [];
+    // los pozos, por tramos cavados y revestidos (src/logica/pozo.js, P11b)
+    this.pozos = [];
     // lo que la lógica sola no sabe del terreno, para los campos (lo pone el servidor; no se guarda)
     this.entorno = null;
   }
@@ -222,6 +225,7 @@ export class Mundo {
     this.construcciones = this.construcciones.filter(c => !fuera.has(c));
     this.decoracion = this.decoracion.filter(d => !fueraM.has(d));
     this.campos = this.campos.filter(c => c.dueno !== yo);   // los campos de su tierra, también
+    this.pozos = (this.pozos || []).filter(p => p.dueno !== yo);   // y los pozos (P11b)
     delete this.mojones[yo];
     delete this.invitados[yo];
     return { ok: true, perdidas: { construcciones: p.construcciones.length, piezas: p.piezas, muebles: p.muebles.length } };
@@ -820,6 +824,7 @@ export class Mundo {
       decoracion: this.decoracion,
       nivelados: this.nivelados,
       campos: exportarCampos(this.campos),
+      pozos: exportarPozos(this.pozos),
     };
   }
   static importar(datos) {
@@ -843,6 +848,8 @@ export class Mundo {
     m.nivelados = Array.isArray(datos.nivelados) ? datos.nivelados.map(n => ({ ...n })) : [];
     // los guardados de antes del 13 nov no tienen campos
     m.campos = importarCampos(datos.campos);
+    // y los de antes del 15 nov, pozos
+    m.pozos = importarPozos(datos.pozos);
     return m;
   }
 }

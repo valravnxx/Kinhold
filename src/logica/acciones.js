@@ -9,7 +9,8 @@ import { PIEZAS } from './piezas.js';
 import { OBJETO_DE_MATERIAL, MATERIAL_DE_OBJETO } from './inventario.js';
 import { resolverGolpe, crearProyectil, moverProyectil } from '../combate/logica.js';
 import { AUTOR_REY } from './abandono.js';
-import { clavarEstaca, quitarEstaca, labrar, sembrar, segar, cogerPlanta, escardar, CULTIVOS } from './campos.js';
+import { marcarPozo, cavarPozo, revestirPozo, rematarPozo } from './pozo.js';
+import { clavarEstaca, quitarEstaca, labrar, sembrar, segar, cogerPlanta, escardar, regar, CULTIVOS } from './campos.js';
 
 // Autor provisional mientras no haya cuentas (hito de servidor): el jugador de este navegador.
 export const AUTOR_LOCAL = 'jugador:local';
@@ -71,7 +72,12 @@ const CAMPOS_CONSTRUCCION = {
   sembrar: { campo: 'n', cultivo: 't', x: 'n', z: 'n', t: 'n' },
   segar: { campo: 'n', x: 'n', z: 'n', t: 'n' },          // segar la cebada madura con la hoz (deja gavillas en el suelo)
   coger_planta: { campo: 'n', x: 'n', z: 'n', t: 'n' },   // coger a mano la planta madura (habas, col, nabo)
+  regar: { campo: 'n', x: 'n', z: 'n', t: 'n' },          // regar la col y el nabo con el cubo de agua en la mano (P11b, 14 nov)
   escardar: { campo: 'n', x: 'n', z: 'n', t: 'n' },       // quitar las malas hierbas de lo sembrado (con las manos o la azada; 14 nov)   // sembrar en lo labrado (a voleo o una planta; t: del servidor)
+  pozo: { x: 'n', z: 'n' },                  // marcar un pozo (desde construir, donde apuntas) (hondura: la del agua ahí, la pone el servidor; P11b, 15 nov)
+  cavar_pozo: { pozo: 'n' },                 // un golpe de pala de madera en el pozo
+  revestir_pozo: { pozo: 'n' },              // revestir de piedra seca el tramo cavado
+  rematar_pozo: { pozo: 'n' },               // el brocal de piedra y el travesaño de varas con su cuerda (P11b, El pozo (3))
   desmontar: { construccion: 'n', clave: 't' },
   quitar: { id: 'n' },
   entregar: { construccion: 'n', clave: 't', material: 't', cantidad: 'n' }, // llevar material a una obra (desde: planta en la que estás)
@@ -97,7 +103,7 @@ const CAMPOS_CONSTRUCCION = {
 // lleva el autor, y al quitar un mueble lo que devuelve va a lo que llevas (todo o nada: si no te cabe, no se quita).
 // Al desmontar una pieza, igual, pero lo que no te cabe cae al suelo a tus pies (r.sobra) en vez de no desmontarse.
 // Al rehacer, con «lleva: true» ni cobran ni devuelven al montón común.
-export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta', 'escardar']);
+export const USAN_INVENTARIO = new Set(['entregar', 'subir', 'sacar_arcon', 'dejar_arcon', 'mojon', 'decorar', 'quitar', 'desmontar', 'estaca', 'quitar_estaca', 'labrar', 'sembrar', 'segar', 'coger_planta', 'escardar', 'regar', 'cavar_pozo', 'revestir_pozo', 'rematar_pozo']);
 const RESERVA_PAGADA = { hay: () => Infinity, gastar: () => {}, parcial: true };
 export function reservaDe(inv) {
   const tipo = m => OBJETO_DE_MATERIAL[m];
@@ -230,6 +236,53 @@ function aplicarConstruccion(m, a, invs) {
         if (!manos.some(r => l[r] && l[r].tipo === 'azada') && manos.some(r => l[r])) return { ok: false, motivo: 'Para escardar, las manos vacías o la azada.' };
       }
       return pagada(escardar(m, a.campo, a.x, a.z, a.t, a.autor), a, invs);
+    }
+    case 'regar': {   // (P11b, 14 nov) con el cubo de agua en la mano; al regar, el cubo se vacía
+      let l = null, mano = null;
+      if (invs) {
+        delete a.lleva;
+        l = invs.de(a.autor).lugares; mano = ['mano:der', 'mano:izq'].find(r => l[r] && l[r].tipo === 'cubo_agua');
+        if (!mano) return { ok: false, motivo: 'Necesitas el cubo lleno de agua en la mano para regar.' };
+      }
+      const r = regar(m, a.campo, a.x, a.z, a.t, a.autor);
+      if (r.ok && mano) l[mano] = { ...l[mano], tipo: 'cubo' };
+      return pagada(r, a, invs);
+    }
+    // el pozo (P11b, 15 nov): se marca donde estás; cada golpe, con la pala de madera en la mano; cada tramo se
+    // reviste con las piedras que llevas, las que le falten o las que lleves (al rehacer uno ya cobrado, «lleva», ni se mira la pala ni se cobra)
+    case 'pozo': return marcarPozo(m, a.x, a.z, a.hondura, a.autor);
+    case 'cavar_pozo': {
+      if (invs) {
+        delete a.lleva;
+        const l = invs.de(a.autor).lugares;
+        if (!['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'pala_madera')) return { ok: false, motivo: 'Necesitas la pala de madera en la mano para cavar el pozo.' };
+      }
+      return pagada(cavarPozo(m, a.pozo, a.autor), a, invs);
+    }
+    case 'revestir_pozo': {
+      const inv = invs ? invs.de(a.autor) : null;
+      if (invs) delete a.lleva;
+      // (al rehacer, las que se pusieron: a.piedras, que lo apunta quien la hizo con los inventarios)
+      if (invs) delete a.piedras;
+      const gastar = inv ? (n) => { const k = Math.min(n, inv.cuantos('piedra')); if (!k) return { ok: false, motivo: 'No llevas piedras.' }; inv.gastar('piedra', k); return { ok: true, n: k }; }
+        : () => ({ ok: true, n: Number.isInteger(a.piedras) ? a.piedras : undefined });
+      const r = revestirPozo(m, a.pozo, a.autor, gastar);
+      if (r.ok && invs) a.piedras = r.puestas;
+      return pagada(r, a, invs);
+    }
+    case 'rematar_pozo': {   // (P11b, El pozo (3)) el brocal, con las piedras que llevas; luego el travesaño, con 3 varas y una cuerda
+      const inv = invs ? invs.de(a.autor) : null;
+      if (invs) { delete a.lleva; delete a.piedras; }
+      const gastar = inv ? (coste, parcial) => {
+        if (parcial) { const k = Math.min(coste.piedra, inv.cuantos('piedra')); if (!k) return { ok: false, motivo: 'No llevas piedras.' }; inv.gastar('piedra', k); return { ok: true, n: k }; }
+        const falta = Object.entries(coste).filter(([t, n]) => inv.cuantos(t) < n);
+        if (falta.length) return { ok: false, motivo: 'Para el travesaño hacen falta 3 varas y una cuerda.' };
+        for (const [t, n] of Object.entries(coste)) inv.gastar(t, n);
+        return { ok: true };
+      } : () => ({ ok: true, n: Number.isInteger(a.piedras) ? a.piedras : undefined });
+      const r = rematarPozo(m, a.pozo, a.autor, gastar);
+      if (r.ok && invs && r.paso === 'brocal') a.piedras = r.puestas;
+      return pagada(r, a, invs);
     }
     case 'quitar_estaca': {
       const inv = invs ? invs.de(a.autor) : null;

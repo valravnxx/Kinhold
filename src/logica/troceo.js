@@ -23,6 +23,11 @@
 //  - Cualquiera puede trocear lo que hay en el suelo (el GDD no protege el suelo, tampoco el de tus tierras).
 //  - Lo que llevan dado los golpes se queda en ese montón hasta que se termina; si la pila desaparece o se coge, se olvida.
 //  - El tronco delgado no se tronza (es el de las obras); el bloque de piedra, con su tarea.
+//  - La rodaja (P11c, 15 nov; documento de sistemas: la carretilla de rueda maciza, «1 rodaja de tronco»): del tronco
+//    largo, en vez de tronzarlo solo en troncos cortos, se corta por el pie una rodaja (la rueda; el árbol joven es
+//    demasiado fino) y el resto en troncos cortos. Son los mismos cortes que tronzarlo, así que los mismos golpes; da 1
+//    rodaja y 2 o 3 troncos cortos (uno menos que tronzar). La rodaja cae a un lado y los cortos al otro. Si el tronco
+//    ya iba a medias, lo hecho cuenta para lo que se termine (es el mismo serrar). Provisional (diario y registro).
 import { hachaEnMano } from './tala.js';
 
 export const ALCANCE_TROCEO = 2.5;      // m, desde el centro del tronco
@@ -32,6 +37,12 @@ export const TROCEO = {
   tronco_corto: { accion: 'partir', golpes: { piedra: 6, hierro: 3 }, da: 'lena', n: [6, 6] },
 };
 export const seTrocea = tipo => !!TROCEO[tipo];
+// los otros modos de trocear: la rodaja del tronco largo (la rueda de la carretilla)
+export const MODOS_TROCEO = {
+  rodaja: { tronco_largo: { accion: 'rodaja', golpes: { piedra: 54, hierro: 18 }, da: 'rodaja', n: [1, 1], resto: 'tronco_corto', nResto: [2, 3] } },
+};
+export const sacaRodaja = tipo => !!MODOS_TROCEO.rodaja[tipo];
+const reglaDe = (tipo, modo) => (modo ? (MODOS_TROCEO[modo] || {})[tipo] : TROCEO[tipo]) || null;
 
 function hash(...ns) {
   let h = 2166136261 >>> 0;
@@ -42,8 +53,8 @@ const numTexto = t => { let h = 0; for (const ch of t) h = (Math.imul(h, 31) + c
 const redondo = v => Math.round(v * 100) / 100;
 
 // Cuánto da el objeto del suelo id al trocearlo la vez «vez» (0, 1, 2…: una pila de varios se trocea de uno en uno).
-export function cuantoDa(tipo, id, vez) {
-  const [a, b] = TROCEO[tipo].n;
+export function cuantoDa(tipo, id, vez, n = TROCEO[tipo].n) {
+  const [a, b] = n;
   return a + Math.floor(hash(numTexto(String(id)), vez, 7) * (b - a + 1));
 }
 
@@ -61,25 +72,28 @@ export class Troceo {
   }
 
   // Un golpe al objeto del suelo id con el inventario inv, estando en (x, z). enTierras(x, z): si ese sitio es de las
-  // tierras del autor (para lo que cae). Si se termina, devuelve lo que cae.
-  golpe(inv, id, x, z, ahora, autor, enTierras = () => false) {
+  // tierras del autor (para lo que cae). modo: nada (tronzar o partir) o 'rodaja'. Si se termina, devuelve lo que cae.
+  golpe(inv, id, x, z, ahora, autor, enTierras = () => false, modo = null) {
     const o = this.suelo.porId(id, ahora);
     if (!o) return { ok: false, motivo: 'Ahí no hay nada que trocear.' };
-    const t = TROCEO[o.cosa.tipo];
-    if (!t) return { ok: false, motivo: 'Eso no se trocea.' };
+    if (modo && !MODOS_TROCEO[modo]) return { ok: false, motivo: 'Eso no se hace.' };
+    const t = reglaDe(o.cosa.tipo, modo);
+    if (!t) return { ok: false, motivo: modo === 'rodaja' ? 'De eso no se saca una rodaja: hace falta un tronco largo.' : 'Eso no se trocea.' };
+    if (o.arrastra) return { ok: false, motivo: 'Ese tronco está atado: que suelten antes la cuerda.' };
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_TROCEO) return { ok: false, motivo: 'Está demasiado lejos.' };
     const h = hachaEnMano(inv);
-    if (!h) return { ok: false, motivo: t.accion === 'tronzar' ? 'Necesitas un hacha en la mano para tronzar.' : 'Necesitas un hacha en la mano para partir leña.' };
+    if (!h) return { ok: false, motivo: t.accion === 'tronzar' ? 'Necesitas un hacha en la mano para tronzar.' : t.accion === 'rodaja' ? 'Necesitas un hacha en la mano para cortar la rodaja.' : 'Necesitas un hacha en la mano para partir leña.' };
     const ult = this.ultimoGolpe[autor];
     if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
     this.ultimoGolpe[autor] = ahora;
     const e = this.estado[id] || (this.estado[id] = { parte: 0, golpes: 0, veces: 0 });
+    if (modo) e.modo = modo; else delete e.modo;
     const total = t.golpes[h.clase];
     e.golpes++; e.parte += 1 / total;
     const base = { accion: t.accion, tipo: o.cosa.tipo, hacha: h.tipo };
     if (e.parte < 1 - 1e-9) return { ok: true, termina: false, golpes: e.golpes, faltan: Math.max(1, Math.round((1 - e.parte) * total)), ...base };
     // terminado: la pila pierde uno y al lado cae lo que da
-    const n = cuantoDa(o.cosa.tipo, id, e.veces);
+    const n = cuantoDa(o.cosa.tipo, id, e.veces, t.n);
     const giro = Number.isFinite(o.giro) ? o.giro : 0;
     // de lado: perpendicular a como está tumbado (los troncos del suelo se dibujan a lo largo de x, girados «giro»)
     const px = redondo(o.x + Math.sin(giro) * 1.2), pz = redondo(o.z + Math.cos(giro) * 1.2);
@@ -87,8 +101,16 @@ export class Troceo {
     o.cosa.n -= 1;
     if (o.cosa.n <= 0) { this.suelo.objetos = this.suelo.objetos.filter(x => x !== o); delete this.estado[id]; }
     else this.estado[id] = { parte: 0, golpes: 0, veces };
-    const cae = this.suelo.dejar({ tipo: t.da, n }, px, pz, ahora, autor, !!enTierras(px, pz), t.da === 'lena' ? undefined : giro);
-    return { ok: true, termina: true, golpes: e.golpes, faltan: 0, ...base, da: { tipo: t.da, n }, objeto: cae.id, queda: Math.max(0, o.cosa.n) };
+    // (la rodaja, plana en el suelo: sin giro de tronco)
+    const cae = this.suelo.dejar({ tipo: t.da, n }, px, pz, ahora, autor, !!enTierras(px, pz), t.da === 'lena' || t.da === 'rodaja' ? undefined : giro);
+    const r = { ok: true, termina: true, golpes: e.golpes, faltan: 0, ...base, da: { tipo: t.da, n }, objeto: cae.id, queda: Math.max(0, o.cosa.n) };
+    if (t.resto) {   // lo que queda del tronco, al otro lado
+      const nr = cuantoDa(o.cosa.tipo, id, veces + 100, t.nResto);
+      const qx = redondo(o.x - Math.sin(giro) * 1.2), qz = redondo(o.z - Math.cos(giro) * 1.2);
+      const cae2 = this.suelo.dejar({ tipo: t.resto, n: nr }, qx, qz, ahora, autor, !!enTierras(qx, qz), giro);
+      r.resto = { tipo: t.resto, n: nr }; r.objetoResto = cae2.id;
+    }
+    return r;
   }
 
   // Lo que va a medias se guarda con el suelo (lo que no esté ya en el suelo se descarta al cargar).
@@ -99,7 +121,7 @@ export class Troceo {
     for (const [id, e] of Object.entries(datos.estado)) {
       if (!e || typeof e !== 'object') continue;
       const parte = Number.isFinite(e.parte) ? Math.min(0.999, Math.max(0, e.parte)) : 0;
-      this.estado[id] = { parte, golpes: Number.isInteger(e.golpes) && e.golpes > 0 ? e.golpes : 0, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : 0 };
+      this.estado[id] = { parte, golpes: Number.isInteger(e.golpes) && e.golpes > 0 ? e.golpes : 0, veces: Number.isInteger(e.veces) && e.veces > 0 ? e.veces : 0, ...(e.modo === 'rodaja' ? { modo: 'rodaja' } : {}) };
     }
     this.limpiar(ahora);
     return this;
@@ -116,8 +138,8 @@ export function cargarTroceo(almacen, tr, ahora, clave = CLAVE_TROCEO) {
 }
 
 // ---------------- Acción con autor ----------------
-// { autor, tipo: 'trocear', objeto, x, z } — un golpe de hacha a un tronco del suelo (tronzar el largo, partir el
-// corto). x, z: dónde está el autor (el servidor usará la suya). ahora: la hora del que valida, nunca la del mensaje.
+// { autor, tipo: 'trocear', objeto, x, z, modo? } — un golpe de hacha a un tronco del suelo (tronzar el largo, partir el
+// corto; con modo: 'rodaja', cortar del largo la rodaja y el resto en troncos cortos). x, z: dónde está el autor (el servidor usará la suya). ahora: la hora del que valida, nunca la del mensaje.
 // enTierras(autor, x, z): si ese sitio es de las tierras del autor. Se anota en el registro, salga bien o no.
 export function ejecutarTroceo(troceo, invs, registro, accion, ahora, enTierras = () => false) {
   let r;
@@ -126,11 +148,11 @@ export function ejecutarTroceo(troceo, invs, registro, accion, ahora, enTierras 
   if (!a || typeof a !== 'object') r = { ok: false, motivo: 'Acción no válida.' };
   else if (!txt(a.autor)) r = { ok: false, motivo: 'Acción sin autor.' };
   else if (a.tipo !== 'trocear') r = { ok: false, motivo: 'Acción desconocida.' };
-  else if (!txt(a.objeto) || !Number.isFinite(a.x) || !Number.isFinite(a.z)) r = { ok: false, motivo: 'Datos no válidos.' };
+  else if (!txt(a.objeto) || !Number.isFinite(a.x) || !Number.isFinite(a.z) || (a.modo !== undefined && a.modo !== null && a.modo !== 'rodaja')) r = { ok: false, motivo: 'Datos no válidos.' };
   else if (!Number.isFinite(ahora)) r = { ok: false, motivo: 'Sin hora.' };
-  else r = troceo.golpe(invs.de(a.autor), a.objeto, a.x, a.z, ahora, a.autor, (x, z) => enTierras(a.autor, x, z));
+  else r = troceo.golpe(invs.de(a.autor), a.objeto, a.x, a.z, ahora, a.autor, (x, z) => enTierras(a.autor, x, z), a.modo || null);
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
-  if (r.ok) e.resultado = r.termina ? { termina: true, da: r.da } : { golpes: r.golpes };
+  if (r.ok) e.resultado = r.termina ? { termina: true, da: r.da, ...(r.resto ? { resto: r.resto } : {}) } : { golpes: r.golpes };
   return r;
 }

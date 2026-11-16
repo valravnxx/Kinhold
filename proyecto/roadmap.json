@@ -2335,23 +2335,188 @@
    "id": "lluvia",
    "num": "P11b",
    "nombre": "La lluvia y el riego",
-   "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o el pozo; el cereal y las habas, de secano, como en la época.",
-   "estado": "en_curso",
-   "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones).",
+   "jugable": "Llueve y escampa en el mundo, igual para todos; la lluvia se ve y se oye y moja. Los cultivos del huerto (col y nabo) piden agua cuando lleva días sin llover, y se riegan con el cubo lleno en el río o en un pozo, que cavar y revestir cuesta (para vivir lejos del río); el cereal y las habas, de secano, como en la época.",
+   "estado": "hecho",
+   "nota": "valravnx, 14 nov: «adelantamos hito de lluvia» y «meteremos regar en las que sí lo requieran, lo de huerto». Va justo después de P11 (antes que los oficios). El GDD ya decide el clima (despejado, nublado, lluvia, nieve y niebla, por zonas grandes y según la estación) y el documento de sistemas, que la lluvia riega sola y que en el sur, en verano, se riega con cubo o acequia; aquí, la lluvia primero (la nieve y la estación, cuando lleguen las estaciones). valravnx, 14 nov, por el chat: «el pozo es algo que define muchísimo el sobrevivir sin río… debe ser laborioso al trivializar el agua de ríos»; el pozo, en este hito, como obra por etapas (cavar y revestir por tramos), sin descongelar la excavación.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD (clima por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo), con la cadena de cada cosa hasta el mundo (el cubo ← tronco corto en el banco; el agua ← el río, el mar no)",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-14T20:23:09+00:00",
+     "fin": "2026-11-14T20:24:29+00:00"
     },
     {
-     "nombre": "Llueve: el tiempo del mundo (despejado, nublado, lluvia, niebla) por zonas grandes y por el reloj del servidor, igual para todos; la lluvia se ve (gotas, cielo gris, suelo mojado) y se oye, en PC y en móvil sin perder fotogramas",
-     "estado": "pendiente"
+     "nombre": "El tiempo del mundo entero en la lógica (src/logica/tiempo.js, sin three.js): despejado, nublado, lluvia y niebla por zonas grandes y por el reloj del servidor, igual para todos y sin guardar nada; nublado antes y después de cada rato de lluvia y niebla algunas mañanas; la lluvia que riega el huerto no cambia",
+     "estado": "hecho",
+     "inicio": "2026-11-14T21:23:06+00:00",
+     "fin": "2026-11-14T22:03:31+00:00"
+    },
+    {
+     "nombre": "La lluvia se ve: gotas alrededor de la cámara (una sola malla, barata), cielo gris y luz más apagada al nublarse, con paso suave de un tiempo a otro; en PC y en móvil midiendo los fotogramas",
+     "estado": "hecho",
+     "inicio": "2026-11-14T22:22:34+00:00",
+     "fin": "2026-11-14T23:31:12+00:00"
+    },
+    {
+     "nombre": "La lluvia se oye y moja: el sonido de la lluvia (más bajo bajo techo) y el suelo y las piezas más oscuros mientras llueve y un rato después",
+     "estado": "hecho",
+     "inicio": "2026-11-15T00:25:00+00:00",
+     "fin": "2026-11-15T01:10:28+00:00"
+    },
+    {
+     "nombre": "La niebla se ve: niebla espesa algunas mañanas que se levanta a media mañana, sin tapar el juego en el móvil",
+     "estado": "hecho",
+     "inicio": "2026-11-15T01:23:06+00:00",
+     "fin": "2026-11-15T02:19:04+00:00"
+    },
+    {
+     "nombre": "La lluvia enfría: bajo la lluvia y sin techo, el frío que pide el sitio sube (GDD: el frío, según la lluvia y la ropa); con techo, nada; la capa y la capucha, cuando lleguen, lo quitan",
+     "estado": "hecho",
+     "inicio": "2026-11-15T02:24:34+00:00",
+     "fin": "2026-11-15T02:59:11+00:00"
+    },
+    {
+     "nombre": "El agua del cubo, dulce: el cubo se llena en el río o el lago, no en el mar (salada), y el aviso lo dice. Cadena: agua ← río, lago o pozo",
+     "estado": "hecho",
+     "inicio": "2026-11-15T03:23:44+00:00",
+     "fin": "2026-11-15T03:54:35+00:00"
     },
     {
      "nombre": "Regar el huerto: la col y el nabo guardan cuánta agua tienen; la lluvia los riega solos; tras días sin llover se ven mustios y crecen más despacio (no se mueren de golpe); se riegan con el cubo lleno de agua del río o del pozo (cada cubo, unos metros cuadrados). El cereal y las habas no se riegan. Cadena: cubo ← tronco corto en el banco; agua ← río o pozo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-14T14:03:44+01:00",
-     "rama": "trabajo/20261114-1404-regar"
+     "fin": "2026-11-14T20:32:07+01:00"
+    },
+    {
+     "nombre": "El pozo (1), la lógica: el agua bajo tierra sale del terreno (cerca del río o en el fondo de un valle, poco hondo; lejos y en alto, hondo, con un tope); el pozo es una obra por tramos de 1 m: cavar cada tramo con la pala de madera (sus golpes, y la tierra que sale) y revestirlo de piedra seca antes de bajar más; con su autor, por el servidor, y su prueba. Cadena: pala de madera ← banco; piedra ← el suelo",
+     "estado": "hecho",
+     "inicio": "2026-11-15T04:24:29+00:00",
+     "fin": "2026-11-15T05:15:26+00:00"
+    },
+    {
+     "nombre": "El pozo (2), en el juego: marcar el sitio (dice a qué hondura está el agua), y cada tramo cavado y revestido se ve (el hoyo, su piedra y la tierra sacada al lado), con el estilo v5; lo ven todos; en PC y en móvil",
+     "estado": "hecho",
+     "inicio": "2026-11-15T05:23:16+00:00",
+     "fin": "2026-11-15T07:31:16+00:00"
+    },
+    {
+     "nombre": "El pozo, desde construir: el sitio del pozo se marca desde el menú de construir (como una obra más), no con la pala en la mano, que sirve para más cosas; con la pala en la mano ya no sale «Marcar aquí un pozo». Luego, a su lado, cada tramo se cava con la pala y se reviste de piedra como hasta ahora; en PC y en móvil",
+     "estado": "hecho",
+     "inicio": "2026-11-15T07:40:43+00:00",
+     "fin": "2026-11-15T08:32:48+00:00"
+    },
+    {
+     "nombre": "El pozo (3), sacar agua: brocal de piedra, travesaño de varas y cuerda; con el cubo se saca agua dulce (para regar y para beber), lejos de cualquier río; el recorrido de jugador hace un pozo de principio a fin. Cadena: varas ← árbol joven; cuerda ← fibra",
+     "estado": "hecho",
+     "inicio": "2026-11-15T09:23:12+00:00",
+     "fin": "2026-11-15T13:09:35+00:00"
+    },
+    {
+     "nombre": "Recorrido de jugador del riego (repaso de lo esencial, 15 nov): en la granja, la col y el nabo se riegan con el cubo lleno de agua dulce (del río o del pozo) en vez de adelantarles el reloj de lo que tardan sin agua; el recorrido no lo hacía",
+     "estado": "hecho",
+     "inicio": "2026-11-15T13:23:05+00:00",
+     "fin": "2026-11-15T15:39:56+00:00"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "hecho",
+     "inicio": "2026-11-15T16:24:06+00:00",
+     "fin": "2026-11-15T16:24:35+00:00"
+    },
+    {
+     "nombre": "El agua salada no se bebe: del mar no se bebe, y el botón y el aviso lo dicen; solo el agua dulce (río, lago o pozo) quita la sed",
+     "estado": "hecho",
+     "inicio": "2026-11-15T13:53:57+00:00",
+     "fin": "2026-11-15T14:46:11+00:00"
+    }
+   ]
+  },
+  {
+   "id": "casa-fuerte",
+   "num": "P11c",
+   "nombre": "La casa más fuerte: el tronco grande, la empalizada y el entramado",
+   "estado": "hecho",
+   "jugable": "El tronco largo de un árbol adulto se arrastra con cuerda y se lleva en la rastra; la rodaja de tronco hace por fin la carretilla; la empalizada con su portón sin hierro cierra tu tierra; el muro de entramado mejora la casa.",
+   "nota": "valravnx, 14 nov, por el chat, al aprobar P11: las piezas escondidas que ya salen de lo que hay (la empalizada y el muro de entramado solo estaban escondidos por ser de nivel 2) y el tronco grande, que hoy solo se tronza: «con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra». Va antes que los oficios. Lo que pide tablas o hierro sigue escondido hasta P10. Sin chimenea (valravnx, 14 nov: «poco realista en esa época y en ese nivel de casa»): la casa humilde tiene el hogar abierto en el suelo y el humo sale por el tejado; la chimenea, para las casas de piedra.",
+   "tareas": [
+    {
+     "nombre": "El tronco largo en la rastra: con una cuerda en la mano se ata y se arrastra muy despacio, gastando mucho aguante (entre dos, más rápido), para arrimarlo a la rastra o a la obra; junto a la rastra (o con la rastra llevada a él) se sube a pulso con la cuerda, y cabe 1; uno solo la arrastra, más despacio que con 3 troncos cortos. Por el servidor con su autor, y todos lo ven. Números provisionales. Cadena: tronco largo ← talar un árbol adulto con el hacha de piedra; cuerda ← el banco de tronco; rastra ← 5 ramas y 2 cordeles con las manos",
+     "estado": "hecho",
+     "inicio": "2026-11-14T18:23:12+00:00",
+     "fin": "2026-11-14T19:30:11+00:00"
+    },
+    {
+     "nombre": "La rodaja de tronco y la carretilla: del tronco largo, con el hacha, se corta una rodaja (la rueda maciza: el árbol joven es demasiado fino) y la carretilla, que ya está programada pero no se podía fabricar, se hace con 1 rodaja, 2 varas y 1 tronco corto. Cadena: rodaja ← el tronco largo; vara ← el árbol joven; tronco corto ← tronzar el tronco largo",
+     "estado": "hecho",
+     "inicio": "2026-11-15T17:23:33+00:00",
+     "fin": "2026-11-15T18:48:03+00:00"
+    },
+    {
+     "nombre": "La empalizada: deja de estar escondida (6 troncos delgados, clavados en el suelo y afilados), con el estilo v5 y capturas de cerca al lado de la referencia. Cadena: tronco delgado ← talar un árbol joven",
+     "estado": "hecho",
+     "inicio": "2026-11-15T19:25:09+00:00",
+     "rama": "trabajo/20261115-1925",
+     "fin": "2026-11-15T20:28:57+00:00"
+    },
+    {
+     "nombre": "El portón de empalizada sin hierro: con goznes de madera y cuerda (troncos delgados y cuerdas; provisional), se abre y se cierra, y solo lo abren el dueño de la tierra y sus invitados. El de herrajes, con P10. Cadena: tronco delgado ← el árbol joven; cuerda ← el banco de tronco",
+     "estado": "hecho",
+     "inicio": "2026-11-15T21:24:25+00:00",
+     "fin": "2026-11-15T22:09:57+00:00"
+    },
+    {
+     "nombre": "El muro de entramado: deja de estar escondido (2 troncos delgados, 2 varas y 3 barros), con su puerta y su ventana, comparado de cerca con las casas de entramado de la referencia. Cadena: tronco delgado y vara ← el árbol joven; barro ← la ribera",
+     "estado": "hecho",
+     "inicio": "2026-11-15T22:24:07+00:00",
+     "fin": "2026-11-16T00:15:59+00:00"
+    },
+    {
+     "nombre": "Recorrido de jugador de la casa más fuerte, sin arcón: tala un árbol adulto, arrastra el tronco largo con cuerda, lo lleva en la rastra, saca la rodaja y hace la carretilla, levanta un tramo de empalizada con su portón y un muro de entramado",
+     "estado": "hecho",
+     "inicio": "2026-11-16T00:25:24+00:00",
+     "fin": "2026-11-16T03:27:19+00:00"
+    },
+    {
+     "nombre": "Revisión completa y publicación",
+     "estado": "hecho",
+     "inicio": "2026-11-16T04:22:06+00:00",
+     "fin": "2026-11-16T04:23:35+00:00"
+    }
+   ]
+  },
+  {
+   "id": "canoa",
+   "num": "P11d",
+   "nombre": "La canoa",
+   "estado": "en_curso",
+   "jugable": "La canoa de un solo tronco, vaciada a mano con el hacha y el fuego, y el remo: con el remo se rema, bastante más rápido que corriendo; sin remar, va a la deriva con la corriente del río. Cabe otro sentado.",
+   "nota": "valravnx, 14 nov, por el chat: «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva». Da uso al tronco largo; la corriente de los ríos y el nado ya existen (src/logica/nado.js, paisaje.corriente). La animación de remar la hace valravnx (11 nov); hasta que llegue, una pose provisional con el remo. Va detrás de «La casa más fuerte». La navegación grande (barcos, el continente) sigue en su hito, congelado.",
+   "tareas": [
+    {
+     "nombre": "La canoa de un tronco: junto al agua, el tronco largo se vacía a mano con el hacha y con brasas que se raspan (por tiempo transcurrido, en el servidor; provisional), y queda una canoa en el suelo (enorme: se arrastra con cuerda o en la rastra hasta la orilla). Con el estilo v5 y capturas de cerca. Cadena: tronco largo ← el árbol adulto; hacha ← el banco de tronco; brasas ← la hoguera",
+     "estado": "hecho",
+     "inicio": "2026-11-16T05:24:32+00:00",
+     "fin": "2026-11-16T06:29:57+00:00"
+    },
+    {
+     "nombre": "El remo: 1 tronco corto en el banco de tronco, con el hacha; se lleva en las dos manos. Cadena: tronco corto ← tronzar el tronco largo; banco ← 2 troncos cortos",
+     "estado": "hecho",
+     "inicio": "2026-11-16T07:25:04+00:00",
+     "fin": "2026-11-16T09:34:06+00:00"
+    },
+    {
+     "nombre": "Echar la canoa al agua, subir y remar: se empuja desde la orilla al agua; se sube desde la orilla o el agua poco honda y se baja en la orilla. Con el remo, se rema bastante más rápido que corriendo (valravnx; la cifra, provisional); sin remo o sin remar, va a la deriva con la corriente del río (en el mar, despacio). Cabe otro sentado. Por el servidor con su autor, y todos la ven moverse. En PC y en el móvil",
+     "estado": "en_curso",
+     "inicio": "2026-11-16T10:24:31+00:00",
+     "rama": "trabajo/20261116-1024"
+    },
+    {
+     "nombre": "La canoa se queda donde la dejas: varada en la orilla no desaparece; en tu tierra queda a tu guarda (como la carretilla); fuera, cualquiera se la lleva",
+     "estado": "pendiente"
+    },
+    {
+     "nombre": "Recorrido de jugador de la canoa, sin arcón: vacía un tronco largo, hace el remo, lleva la canoa a la orilla, rema río arriba y río abajo, la deja ir a la deriva y la vara en la orilla",
+     "estado": "pendiente"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2428,7 +2593,7 @@
    "nombre": "Hierro y tablas",
    "jugable": "Hierro de pantano con pala y criba, horno de reducción, fuelle y fragua; hacha de hierro, pico, sierra y clavos; tablas; arcilla, horno cerámico y tejas; las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y las vetas de hierro con el pico.",
    "estado": "en_curso",
-   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo. Planificado el 13 nov: el primer mineral es el de pantano (pala y criba), porque el pico ya pide hierro; las manchas, por las señales del GDD (tierra encharcada y agua rojiza), en las vegas y las turberas (Whitholm casi no tiene turberas). El carbón y el cuero del fuelle salen de P9. Las herraduras esperan a P8 (congelado): sin caballo no se usan.",
+   "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo. Planificado el 13 nov: el primer mineral es el de pantano (pala y criba), porque el pico ya pide hierro; las manchas, por las señales del GDD (tierra encharcada y agua rojiza), en las vegas y las turberas (Whitholm casi no tiene turberas). El carbón y el cuero del fuelle salen de P9. Las herraduras esperan a P8 (congelado): sin caballo no se usan. Foso de aserrar (valravnx, 14 nov): «me encantaría que requiriera hacer el agujero en el suelo antes con lo de cavar»: el tronco largo encima de un foso cavado y una sierra larga (uno arriba y otro abajo; uno solo, despacio) dan tablones largos y vigas escuadradas. Llega con cavar (hito «Cavar y minar», congelado): hasta entonces, las tablas, en el banco con el tronco corto.",
    "tareas": [
     {
      "nombre": "Planificar el hito: lista de tareas sacada del GDD, del documento de sistemas y del estudio del tramo siguiente (hierro de pantano, carbonera, horno de reducción, fragua, herramientas de hierro, sierra y tablas, las piezas de nivel 2 escondidas), con la cadena de cada material hasta el mundo",
@@ -4542,6 +4707,111 @@
      "archivo": "jugar/demo/v210.html",
      "capturas": null,
      "notas": "Mojones de más del admin: con autoconstruir, otro mojón en otra zona libre para construcciones de prueba; cada uno se quita aparte."
+    },
+    {
+     "v": "v211",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v211.html",
+     "capturas": "capturas/demo-v211",
+     "notas": "El tronco largo a cuerda y en la rastra (P11c): con una cuerda en la mano se ata y se arrastra muy despacio (entre dos, más rápido), y junto a una rastra parada se sube a ella; uno solo la arrastra con él."
+    },
+    {
+     "v": "v212",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v212.html",
+     "capturas": "capturas/demo-v212",
+     "notas": "Regar el huerto: el tiempo del mundo (llueve unos días, por zonas); la col y el nabo, mustios tras dos días sin agua y a medio crecer; el cubo se llena en el río y riega; la cebada y las habas, de secano."
+    },
+    {
+     "v": "v213",
+     "fecha": "2026-11-14",
+     "archivo": "jugar/demo/v213.html",
+     "capturas": "capturas/demo-v213",
+     "notas": "La lluvia se ve (P11b): el tiempo del mundo, igual para todos, ya se ve. Al nublarse, el cielo se cubre de gris, el sol y la luna se tapan y la luz se apaga, casi sin sombras; al llover, caen gotas alrededor de la cámara, también contra el cielo. Nada salta: el cielo se cierra y se abre poco a poco y la lluvia empieza y para de a poco. Bajo techo no caen gotas. Aún no se oye ni moja."
+    },
+    {
+     "v": "v214",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v214.html",
+     "capturas": "capturas/demo-v214",
+     "notas": "La lluvia se oye y moja: rumor de lluvia con gotas sueltas (bajo techo, más bajo y apagado) y el suelo y las piezas más oscuros mientras llueve y un rato después"
+    },
+    {
+     "v": "v215",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v215.html",
+     "capturas": "capturas/demo-v215",
+     "notas": "La niebla de la mañana: algunas mañanas, niebla espesa que se levanta a media mañana; lo de lejos se pierde en gris claro y lo de cerca se sigue viendo, también en el móvil"
+    },
+    {
+     "v": "v216",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v216.html",
+     "capturas": "capturas/demo-v216",
+     "notas": "El pozo, en el juego: con la pala de madera se marca (el aviso dice a qué hondura está el agua), se cava por tramos y se reviste de piedra hasta el agua; se ven la boca con sus tramos, la piedra y la tierra sacada, y lo ven todos (P11b)"
+    },
+    {
+     "v": "v217",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v217.html",
+     "capturas": "capturas/demo-v217",
+     "notas": "El pozo se marca desde construir (pestaña Tierra); con la pala en la mano ya no sale «Marcar aquí un pozo»; luego se cava con la pala a su lado, como antes"
+    },
+    {
+     "v": "v218",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v218.html",
+     "capturas": "capturas/demo-v218",
+     "notas": "El pozo, sacar agua: revestido hasta el agua, se le pone el brocal de piedra (12 piedras) y el travesaño (3 varas y una cuerda); con el cubo vacío se saca agua dulce lejos de cualquier río, y a su lado se bebe (P11b)"
+    },
+    {
+     "v": "v219",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v219.html",
+     "capturas": "capturas/demo-v219",
+     "notas": "El agua salada no se bebe: solo el agua dulce (río, lago o pozo) quita la sed; junto al mar, Usar dice «Agua salada: no se bebe» y lo decide el servidor"
+    },
+    {
+     "v": "v220",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v220.html",
+     "capturas": "capturas/demo-v220",
+     "notas": "La rodaja de tronco y la carretilla: del tronco largo se corta con el hacha la rodaja, la rueda maciza, y en el banco de tronco, con 2 varas y 1 tronco corto, se hace la carretilla"
+    },
+    {
+     "v": "v221",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v221.html",
+     "capturas": "capturas/demo-v221",
+     "notas": "La empalizada ya no se esconde: en construir, pestaña Exterior, cuesta 6 troncos delgados (los del árbol joven). Cada tramo, 6 troncos de pie clavados medio metro en la tierra, con la punta afilada, la zanja apisonada al pie y piedras de calzo."
+    },
+    {
+     "v": "v222",
+     "fecha": "2026-11-15",
+     "archivo": "jugar/demo/v222.html",
+     "capturas": "capturas/demo-v222",
+     "notas": "El portón de empalizada sin hierro: en construir, pestaña Exterior, cuesta 4 troncos delgados y 2 cuerdas. La hoja de seis rollizos afilados, atados con cuerda, gira en goznes de madera y cuerda sobre una piedra de quicio; se abre y se cierra con Usar, y solo lo abren el dueño de la tierra y sus invitados."
+    },
+    {
+     "v": "v223",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v223.html",
+     "capturas": "capturas/demo-v223",
+     "notas": "El muro de entramado: liso, con puerta y con ventana, a la vista en construir (troncos delgados, varas y barro), con la madera parda a la vista y paños pequeños de barro claro, como las casas de entramado de la referencia"
+    },
+    {
+     "v": "v224",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v224.html",
+     "capturas": "capturas/demo-v224",
+     "notas": "La canoa de un tronco (P11d): con un hacha en la mano, junto a un tronco largo, se vacía a golpes; con una hoguera encendida al lado se le echan brasas que arden 10 min por el reloj del servidor, se raspa lo quemado, y así 3 vueltas. Queda la canoa en el suelo: se ata con una cuerda y se arrastra hasta la orilla."
+    },
+    {
+     "v": "v225",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v225.html",
+     "capturas": "capturas/demo-v225",
+     "notas": "El remo de la canoa (P11d): en el banco de tronco, con 1 tronco corto y llevando un hacha; se lleva con las dos manos."
     }
    ]
   },

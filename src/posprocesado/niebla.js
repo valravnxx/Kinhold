@@ -18,13 +18,13 @@ import { GLSL_COMPRESION } from '../logica/horizonte.js';
 // El cielo vivo (el ciclo de día y noche, valravnx 7 nov; src/mundo/cielo.js): si lo hay, el cielo se pinta aquí por la
 // dirección de cada píxel (no por su altura en la pantalla): el degradado, el halo y el disco del sol, la luna con la
 // cara que le da el sol (así sale su fase sola) y las estrellas, que giran con la noche. En sRGB, como la niebla.
-const GLSL_CIELO = `uniform vec3 cieloArriba;uniform vec3 cieloAbajo;uniform float uVivo;uniform vec3 uSol;uniform vec3 uLuna;uniform vec3 uColSol;uniform float uEstrellas;uniform mat3 uGiro;
+const GLSL_CIELO = `uniform vec3 cieloArriba;uniform vec3 cieloAbajo;uniform float uVivo;uniform vec3 uSol;uniform vec3 uLuna;uniform vec3 uColSol;uniform float uEstrellas;uniform mat3 uGiro;uniform float uCubierto;
 uniform mat4 uInvProy;uniform mat4 uCamMundo;uniform float uPx;uniform float uTiempo;
 vec3 rayoDe(vec2 uv){vec4 v=uInvProy*vec4(uv*2.0-1.0,1.0,1.0);v.xyz/=v.w;return normalize((uCamMundo*vec4(v.xyz,0.0)).xyz);}
 // sin luna, sol ni estrellas: lo que tiene detrás lo que se ve lejos (la bruma y los bordes)
 vec3 cieloBase(vec3 d){
   float e=d.y,c=max(dot(d,uSol),0.0),bajo=1.0-smoothstep(4.0,30.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
-  float vis=smoothstep(-0.2,0.02,uSol.y);
+  float vis=smoothstep(-0.2,0.02,uSol.y)*(1.0-uCubierto);
   vec3 h=mix(cieloAbajo,uColSol,0.32*bajo*vis*pow(c,3.0)*(1.0-smoothstep(0.0,0.5,e)));
   // (12 nov: el azul de arriba llega antes; el color del horizonte queda en una franja baja, como la calima de verdad)
   vec3 col=mix(h,cieloArriba,pow(clamp(e/0.27,0.0,1.0),0.55));
@@ -56,13 +56,15 @@ float fbmN(vec2 p){float s=0.0,k=0.5;for(int i=0;i<4;i++){s+=k*ruidoN(p);p=p*2.0
 vec4 nubes(vec3 d){
   if(d.y<0.015)return vec4(0.0);
   vec2 p=d.xz/(d.y+0.16)*1.15+uTiempo*vec2(0.0045,0.0017);
-  float n=fbmN(p),cob=smoothstep(0.5,0.66,n)*smoothstep(0.015,0.14,d.y);
+  // (P11b, la lluvia: con el cielo cubierto, el techo entero, gris y con algo de relieve)
+  float n=fbmN(p),cob=max(smoothstep(0.5,0.66,n),uCubierto*(0.82+0.18*smoothstep(0.3,0.7,n)))*smoothstep(0.015,0.14,d.y);
   if(cob<0.003)return vec4(0.0);
   // la luz: más clara donde la nube es más fina hacia el sol
   float haciaSol=fbmN(p+normalize(uSol.xz+vec2(0.0001))*0.22),luz=clamp(0.62+1.5*(n-haciaSol),0.0,1.0);
   float dia=smoothstep(-0.12,0.14,uSol.y),bajo=1.0-smoothstep(4.0,30.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
   vec3 clara=mix(vec3(1.0,0.99,0.97),mix(vec3(1.0),uColSol,0.6),bajo),sombra=mix(cieloArriba,cieloAbajo,0.5)*0.92+0.04;
   vec3 c=mix(mix(cieloAbajo,cieloArriba,0.5)*0.8,mix(sombra,clara,luz),dia);
+  float g=dot(c,vec3(0.3,0.59,0.11));c=mix(c,vec3(g*0.86,g*0.88,g*0.92)*(0.8+0.25*n),uCubierto*0.85);
   return vec4(c,cob*mix(0.5,0.92,dia));
 }
 vec3 cieloVivo(vec3 d){
@@ -84,7 +86,7 @@ vec3 cieloVivo(vec3 d){
   vec4 nb=nubes(d);col=mix(col,nb.rgb,nb.a);
   // el sol: un disco de 0,7° con el borde suave
   float cs=dot(d,uSol),bajoS=1.0-smoothstep(2.0,25.0,degrees(asin(clamp(uSol.y,-1.0,1.0))));
-  col=mix(col,mix(vec3(1.0,0.98,0.92)*1.5,vec3(1.0,0.9,0.72)*1.35,bajoS),smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre);
+  col=mix(col,mix(vec3(1.0,0.98,0.92)*1.5,vec3(1.0,0.9,0.72)*1.35,bajoS),smoothstep(cos(radians(0.7)+uPx*1.5),cos(radians(0.7)),cs)*sobre*(1.0-uCubierto));
   // la luna: un disco de 1° con la cara que mira al sol iluminada (de ahí sale la fase) y sus mares
   float cl=dot(d,uLuna),rl=radians(1.0);
   if(cl>cos(rl+uPx*2.0)){
@@ -95,7 +97,7 @@ vec3 cieloVivo(vec3 d){
     float luz=smoothstep(-0.04,0.12,dot(n,uSol));
     float mar=0.16*smoothstep(0.38,0.0,length(q-vec2(-0.28,0.22)))+0.14*smoothstep(0.32,0.0,length(q-vec2(0.18,0.05)))+0.1*smoothstep(0.3,0.0,length(q-vec2(-0.05,-0.38)))+0.05*sin(q.x*9.0+1.3)*sin(q.y*7.0-0.4);
     vec3 lc=vec3(0.93,0.93,0.9)*(1.0-mar)*luz*(1.0-0.55*smoothstep(-0.1,0.3,uSol.y))+vec3(0.035,0.04,0.05);
-    col=mix(col,max(col,lc),borde*sobre);
+    col=mix(col,max(col,lc),borde*sobre*(1.0-uCubierto));
   }
   // el halo de la luna, de noche
   col+=vec3(0.55,0.62,0.78)*0.09*pow(max(cl,0.0),220.0)*uEstrellas;
@@ -104,6 +106,17 @@ vec3 cieloVivo(vec3 d){
 `;
 
 const frag = GLSL_COMPRESION + GLSL_CIELO + `uniform vec3 colorNiebla;uniform float nieblaCerca;uniform float nieblaLejos;
+uniform float uMojado;
+uniform float uNiebla;uniform vec3 uNieblaCol;uniform float uNCerca;uniform float uNLejos;uniform float uNMax;
+// la niebla de la mañana (P11b; src/mundo/cielo.js, nieblar): sobre lo que ya se ve, con la distancia por el rayo (rad, m;
+// infinita en el cielo), el color de la niebla; de nada en uNCerca a uNMax en uNLejos (así lo de cerca, el jugador y lo
+// que tiene a mano, se sigue viendo) y el cielo, tapado del todo
+vec3 empanar(vec3 s,float rad){
+  if(uNiebla<=0.0) return s;
+  // (y de uNLejos al triple, lo que falta hasta taparlo todo: el terreno muy lejano se funde con el cielo, sin raya)
+  float k=rad>1e8?1.0:uNMax*smoothstep(uNCerca,uNLejos,rad)+(1.0-uNMax)*smoothstep(uNLejos,uNLejos*3.0,rad);
+  return mix(s,uNieblaCol,k*uNiebla);
+}
 uniform float tope;uniform float maxLejos;uniform float lejosH;uniform float r0;uniform float sComp;uniform float wComp;uniform vec2 tanMedio;
 vec3 aSRGB(const in vec3 c){return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(vec3(0.0031308),c));}
 vec3 aLineal(const in vec3 c){return mix(c/12.92,pow((c+0.055)/1.055,vec3(2.4)),step(vec3(0.04045),c));}
@@ -113,8 +126,9 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
   bool vivo=uVivo>0.5;
   vec3 rayo=vivo?rayoDe(uv):vec3(0.0,1.0,0.0);
   if(depth>=0.999999){
-    if(vivo) outputColor=vec4(aLineal(cieloVivo(rayo)),1.0);
-    else if(tope<1.0) outputColor=vec4(aLineal(mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0))),1.0);
+    // (las gotas de lluvia, que no escriben profundidad: lo dibujado aquí con transparencia, encima del cielo)
+    if(vivo) outputColor=vec4(aLineal(empanar(cieloVivo(rayo),1e9))*(1.0-inputColor.a)+inputColor.rgb,1.0);
+    else if(tope<1.0||uNiebla>0.0) outputColor=vec4(aLineal(empanar(mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0)),1e9))*(1.0-inputColor.a)+inputColor.rgb,1.0);
     else outputColor=inputColor;
     return;
   }
@@ -135,11 +149,16 @@ void mainImage(const in vec4 inputColor,const in vec2 uv,const in float depth,ou
     hacia=vivo?cieloBase(rayo):mix(cieloArriba,cieloAbajo,clamp((1.0-uv.y)/0.6,0.0,1.0));
     f+=(maxLejos-tope)*(1.0-exp2(-max(0.0,real-nieblaLejos)/lejosH));
   }
-  vec3 s=mix(aSRGB(clamp(inputColor.rgb,0.0,1.0)),hacia,f);
+  vec3 s=aSRGB(clamp(inputColor.rgb,0.0,1.0));
+  // mojado por la lluvia (P11b; src/logica/mojado.js): lo mojado se ve más oscuro y de color más hondo (el agua llena
+  // los poros y quita el brillo seco de la superficie), antes de la niebla
+  if(uMojado>0.0){float lm=dot(s,vec3(0.2126,0.7152,0.0722));s=max(mix(vec3(lm),s,1.0+0.15*uMojado),0.0)*(1.0-0.2*uMojado);}
+  s=mix(s,hacia,f);
+  if(uNiebla>0.0){float radN=d*length(vec3((uv*2.0-1.0)*tanMedio,1.0));s=empanar(s,radN);hacia=empanar(hacia,1e9);}
   // en los bordes contra el cielo (el lienzo es transparente ahí) el suavizado deja píxeles a medias, que la página
   // mezclaba con su fondo como si fueran más claros (una raya clara en las crestas): con el horizonte, el cielo de
   // detrás se sabe, así que se mezcla aquí y el píxel queda opaco
-  if(vivo&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(tope<1.0?hacia:cieloBase(rayo),s,inputColor.a)),1.0);
+  if(vivo&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(tope<1.0?hacia:empanar(cieloBase(rayo),1e9),s,inputColor.a)),1.0);
   else if(tope<1.0&&inputColor.a<1.0) outputColor=vec4(aLineal(mix(hacia,s,inputColor.a)),1.0);
   else outputColor=vec4(aLineal(s),inputColor.a);
 }`;
@@ -157,7 +176,8 @@ export class NieblaEffect extends Effect {
         ['tanMedio', new Uniform(new Vector2(1, 1))], ['cieloArriba', new Uniform(new Color(0xa9bfca))], ['cieloAbajo', new Uniform(new Color(0xd9e1e0))],
         ['uVivo', new Uniform(0)], ['uSol', new Uniform(new Vector3(0, 1, 0))], ['uLuna', new Uniform(new Vector3(0, -1, 0))], ['uColSol', new Uniform(new Color(1, 1, 1))],
         ['uEstrellas', new Uniform(0)], ['uGiro', new Uniform(new Matrix3())], ['uInvProy', new Uniform(new Matrix4())], ['uCamMundo', new Uniform(new Matrix4())],
-        ['uPx', new Uniform(0.001)], ['uTiempo', new Uniform(0)]]),
+        ['uPx', new Uniform(0.001)], ['uTiempo', new Uniform(0)], ['uCubierto', new Uniform(0)], ['uMojado', new Uniform(0)],
+        ['uNiebla', new Uniform(0)], ['uNieblaCol', new Uniform(new Color(0.8, 0.8, 0.8))], ['uNCerca', new Uniform(8)], ['uNLejos', new Uniform(60)], ['uNMax', new Uniform(0.95)]]),
     });
     this.camara = camara;
     this.niebla = niebla;
@@ -183,12 +203,16 @@ export class NieblaEffect extends Effect {
     const c = this.camara, U = (k) => this.uniforms.get(k);
     if (c && c.isPerspectiveCamera) { const t = Math.tan(c.fov * Math.PI / 360); U('tanMedio').value.set(t * c.aspect, t); }
     const v = this.vivo;
+    U('uMojado').value = v ? v.mojado || 0 : 0;   // (también con el cielo de la v5 quieto)
+    // la niebla de la mañana (también con el cielo de la v5 quieto)
+    U('uNiebla').value = v ? v.niebla || 0 : 0;
+    if (v && v.niebla > 0) { U('uNieblaCol').value.copy(v.colorNiebla); U('uNCerca').value = v.nieblaCerca; U('uNLejos').value = v.nieblaLejos; U('uNMax').value = v.nieblaMax; }
     U('uVivo').value = v && v.activo && c ? 1 : 0;
     if (!U('uVivo').value) return;
     this.poner(this.niebla);   // (su color cambia con la hora)
     U('uSol').value.copy(v.sol); U('uLuna').value.copy(v.luna); U('uColSol').value.copy(v.colorSol);
     U('cieloArriba').value.copy(v.arriba); U('cieloAbajo').value.copy(v.horizonte);
-    U('uEstrellas').value = v.estrellas; U('uGiro').value.copy(v.giro); U('uTiempo').value = v.tiempo;
+    U('uEstrellas').value = v.estrellas; U('uGiro').value.copy(v.giro); U('uTiempo').value = v.tiempo; U('uCubierto').value = v.cubierto || 0;
     c.updateMatrixWorld();
     U('uInvProy').value.copy(c.projectionMatrixInverse); U('uCamMundo').value.copy(c.matrixWorld);
     // lo que mide un píxel (rad), para que las estrellas y los bordes no salgan ni más finos ni dentados

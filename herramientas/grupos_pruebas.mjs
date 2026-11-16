@@ -20,7 +20,7 @@ export const ESENCIALES = [];   // (8 nov: ninguna de siempre; cada una, solo si
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
 export const TOCA = {
   'logica': [/^src\/logica\//, /^src\/combate\/logica\.js$/, /^servidor\//, /^pruebas\/prueba_(?!recorrido)[^/]*\.mjs$/],
-  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/, /^pruebas\/recorrido_granja\.mjs$/],
+  'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos|tiempo|pozo|rastra)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/, /^pruebas\/recorrido_granja\.mjs$/, /^pruebas\/recorrido_pozo\.mjs$/, /^pruebas\/recorrido_casa_fuerte\.mjs$/],
   'demo-unica': [/^src\/demo\//, /^src\/plantilla\.html$/, /^construir_demo\.mjs$/, /^src\/mundo\/(cliente|conexion|mundo_juego)\.js$/],
   'la-accion-a-la-vista': [/^src\/juego\/accion_vista\.js$/],
   'construccion': [/^src\/logica\/(construccion|piezas|obras_red)\.js$/, /^src\/mundo\/modelos\.js$/, /^src\/juego\/(movimiento|barra_construir)\.js$/],
@@ -29,6 +29,7 @@ export const TOCA = {
   'el-perfil-grafico-en-el-juego': [/^src\/juego\/graficos\.js$/, /^src\/posprocesado\//],
   'la-hierba-densa': [/^src\/mundo\/hierba_densa\.js$/],
   'el-dia-y-la-noche': [/^pruebas\/sitio_prueba\.py$/, /^src\/(logica|mundo)\/cielo\.js$/, /^src\/mundo\/ambiente\.js$/],
+  'la-lluvia-se-ve': [/^src\/mundo\/(lluvia|tiempo_vista|cielo)\.js$/, /^src\/logica\/(tiempo|mojado)\.js$/, /^src\/juego\/sonidos\.js$/, /^pruebas\/prueba_lluvia_navegador\.py$/, /^src\/posprocesado\/niebla\.js$/],   // (P11b: la lluvia, el cielo cubierto, su sonido y lo mojado)
   'los-avisos-de-las-necesidades': [/^src\/juego\/avisos_necesidades\.js$/, /^src\/logica\/necesidades\.js$/],
   'las-bayas-y-las-setas': [/^src\/logica\/recoleccion\.js$/],
   'el-bosque-de-lejos-visto-de-cerca': [/^src\/mundo\/(horizonte|vegetacion_mundo|especies|sotobosque)\.js$/, /^src\/logica\/horizonte\.js$/],
@@ -38,6 +39,7 @@ export const TOCA = {
   'tala-de-los-arboles': [/^src\/(logica|juego)\/tala\.js$/],
   'velocidad-con-pocos-fotogramas': [/^src\/juego\/main\.js$/, /^pruebas\/prueba_velocidad_navegador\.py$/],   // el paso del tiempo del bucle (12 nov)
   'tronzar-y-partir': [/^src\/logica\/troceo\.js$/],
+  'la-canoa': [/^src\/(logica|juego)\/canoa\.js$/],
   'la-rastra': [/^src\/(logica|juego)\/rastra\.js$/],
   'la-carretilla': [/^src\/juego\/carretilla\.js$/],
   'panel-de-fabricacion': [/^src\/logica\/(fabricacion|iconos)\.js$/, /^src\/juego\/(panel_fabricar|estaciones)\.js$/],
@@ -55,7 +57,8 @@ export const TOCA = {
   'personaje': [/^src\/personaje\//, /^src\/personajes\//, /^src\/logica\/(aspecto|hechura|tintes)\.js$/, /^herramientas\/taller\//, /^construir_personaje\.mjs$/],
   'la-demo-en-el-mundo': [/^src\/mundo\/(mundo_juego|terreno_trozos|trozo_suelo|color_suelo|rendimiento)\.js$/, /^src\/demo\/rendimiento\.js$/, /^src\/mapa\/suelo\.js$/],
   'lo-que-se-recoge-en-el-mundo': [/^src\/logica\/recogida_mundo\.js$/, /^src\/mundo\/rocas\.js$/],
-  'marcar-el-campo-con-estacas': [/^src\/logica\/campos\.js$/, /^src\/juego\/campos_vista\.js$/, /^pruebas\/prueba_campos_navegador\.py$/],
+  'el-pozo-en-el-juego': [/^src\/logica\/pozo\.js$/, /^src\/juego\/pozos_vista\.js$/, /^pruebas\/prueba_pozo_navegador\.py$/],
+  'marcar-el-campo-con-estacas': [/^src\/logica\/(campos|tiempo)\.js$/, /^src\/juego\/campos_vista\.js$/, /^pruebas\/prueba_campos_navegador\.py$/],
   'construir-a-la-altura-del-suelo': [/^src\/logica\/nivelado\.js$/, /^src\/juego\/movimiento\.js$/],
   'recursos-de-personaje-v2': [/^docs\/recursos\/personajes\//],
   'juego-en-ingles': [],   // los textos los mira la web y cada grupo con su idioma; este, en la batería entera

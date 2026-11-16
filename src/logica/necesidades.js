@@ -42,7 +42,7 @@ export const RITMOS = {
   sentado: 1,                   // sentado a descansar, por segundo: rendido del todo, unos 100 s (provisional)
 };
 export const COMBATE = { paso: 0.1, suelo: 0.8 };
-export const ESFUERZOS = { labrar: 2, segar: 1.5, escardar: 1.5, arrancar: 1.5, talar: 1.5, trocear: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
+export const ESFUERZOS = { labrar: 2, segar: 1.5, escardar: 1.5, regar: 1, llenar_cubo: 0.3, cavar_pozo: 2, revestir_pozo: 2, rematar_pozo: 1, sacar_agua: 0.5, arrancar: 1.5, talar: 1.5, trocear: 1.5, vaciar: 1.5, trabajar: 2, fabricar: 0.5, recoger: 0.3, desbrozar: 2, romper: 1.5, descortezar: 0.5, sangrar: 0.3 };
 
 const recorta = (v) => Math.min(MAXIMO, Math.max(0, v));
 export const nuevas = () => ({ hambre: 0, sed: 0, frio: 0, cansancio: 0 });
@@ -120,14 +120,29 @@ export function factorVelocidad(n) {
 // del navegador (src/mundo/mundo_juego.js) y el del servidor (src/logica/terreno_servidor.js). Cada trago baja la
 // sed TRAGO puntos; entre trago y trago, ESPERA_TRAGO ms (decisión provisional: tres o cuatro tragos quitan la sed).
 export const TRAGO = 30, ESPERA_TRAGO = 1500;
+const SITIOS_AGUA = [[0, 0]];
+for (const r of [1.5, 2.5]) for (let i = 0; i < 8; i++) SITIOS_AGUA.push([Math.cos(i * Math.PI / 4) * r, Math.sin(i * Math.PI / 4) * r]);
 export function hayAguaCerca(aguaEn, x, z) {
-  if (aguaEn(x, z)) return true;
-  for (const r of [1.5, 2.5]) for (let i = 0; i < 8; i++) {
-    const a = i * Math.PI / 4;
-    if (aguaEn(x + Math.cos(a) * r, z + Math.sin(a) * r)) return true;
-  }
-  return false;
+  return SITIOS_AGUA.some(([dx, dz]) => aguaEn(x + dx, z + dz));
 }
+// El agua de al lado, dulce o salada (P11b, 15 nov: el cubo se llena en el río, no en el mar): en los mismos sitios que
+// hayAguaCerca, 'dulce' si en alguno hay agua que no es del mar (el río; en la desembocadura, con río y mar a la vez,
+// vale el río), 'salada' si solo hay mar y null en seco. esMar(x, z): si el agua ahí es del mar (sin esMar, toda dulce).
+export function aguaCerca(aguaEn, x, z, esMar) {
+  let salada = false;
+  for (const [dx, dz] of SITIOS_AGUA) {
+    const px = x + dx, pz = z + dz;
+    if (!aguaEn(px, pz)) continue;
+    if (esMar && esMar(px, pz)) salada = true; else return 'dulce';
+  }
+  return salada ? 'salada' : null;
+}
+// Beber (valravnx, 15 nov: «que el agua salada se diferencie de la dulce y no se pueda beber»): solo el agua dulce
+// (río, lago o pozo) quita la sed; la del mar, no. Lo que dice el aviso en cada caso (lo mismo en el navegador y en el
+// servidor). agua: lo que dice aguaCerca ('dulce', 'salada' o null).
+export const NO_HAY_AGUA = 'Aquí no hay agua: busca un río, un lago o un pozo.';
+export const AGUA_SALADA = 'El agua del mar es salada: no se bebe. Busca un río, un lago o un pozo.';
+export const motivoSinBeber = (agua) => (agua === 'salada' ? AGUA_SALADA : NO_HAY_AGUA);
 
 // Comer (P4): lo que se come y cuánta hambre quita cada uno (decisión provisional; el documento solo dice que lo
 // cocinado sacia más). Una mata de bayas da de 3 a 6: entre 15 y 30 puntos. La carne de una liebre (9 nov; src/logica/
@@ -159,8 +174,13 @@ export function redondear(n) {
 //   - bajo techo (el de una construcción terminada), la mitad;
 //   - el fuego (la hoguera y el hogar: src/logica/fuego.js, calorEn, de 1 junto al fuego a 0 a 4 m): a 2 m o menos no
 //     hay frío, y de ahí a 4 m vuelve poco a poco;
-//   - la estación y la lluvia aún no cuentan (no hay estaciones ni tiempo en el mundo: llegan con P11).
-export const FRIO = { templado: 16, porGrado: 4, bioma: 60, noche: 50, abrigo: 4, techo: 0.5 };
+//   - la lluvia (P11b, 15 nov; el tiempo del mundo, src/logica/tiempo.js, lloviendo): al raso y lloviendo, suma 30
+//     encima de lo demás, y la ropa de hoy (lino, lana, cuero) no la quita porque se empapa: con lo del principio, de
+//     día bajo la lluvia, 30 (sin aviso, pero el frío sube); de noche, 80 (aviso fuerte). Bajo techo la lluvia no
+//     cuenta nada. La capa y la capucha, cuando lleguen (documento de sistemas: «frío y lluvia»), la quitan con
+//     `cubre` (de 0 a 1: lo que cubren de la lluvia; hoy ninguna prenda cubre, 0). El fuego la quita como lo demás;
+//   - la estación aún no cuenta (no hay estaciones en el mundo).
+export const FRIO = { templado: 16, porGrado: 4, bioma: 60, noche: 50, abrigo: 4, techo: 0.5, lluvia: 30 };
 export function nocheDe(hora) {
   const h = ((hora % 24) + 24) % 24;
   if (h >= 20 || h < 4) return 1;
@@ -168,10 +188,11 @@ export function nocheDe(hora) {
   if (h < 6) return (6 - h) / 2;
   return 0;
 }
-export function frioDelSitio({ T = FRIO.templado, noche = 0, abrigo = 0, techo = false, calor = 0 } = {}) {
+export function frioDelSitio({ T = FRIO.templado, noche = 0, abrigo = 0, techo = false, calor = 0, lluvia = 0, cubre = 0 } = {}) {
   let f = Math.min(FRIO.bioma, Math.max(0, (FRIO.templado - T) * FRIO.porGrado)) + FRIO.noche * Math.min(1, Math.max(0, noche));
-  f -= FRIO.abrigo * Math.max(0, abrigo);
+  f = Math.max(0, f - FRIO.abrigo * Math.max(0, abrigo));
   if (techo) f *= FRIO.techo;
+  else f += FRIO.lluvia * Math.min(1, Math.max(0, lluvia)) * (1 - Math.min(1, Math.max(0, cubre)));
   f *= 1 - Math.min(1, Math.max(0, 2 * calor));
   return recorta(f);
 }

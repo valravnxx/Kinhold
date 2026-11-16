@@ -19,6 +19,10 @@
 //  - nasa: un cono de mimbre con aros, la boca abierta y la punta atada.
 //  - trampa de lazo: la estaca clavada con el cordel y el lazo abierto delante.
 //  - cubo: duelas de madera con dos aros de mimbre y el asa de cuerda.
+//  - rodaja de tronco (P11c, 15 nov): un disco cortado del pie del tronco largo, tumbado, con la corteza en el canto,
+//    los anillos en las caras y una grieta de secado (es madera sin curar); las mismas medidas que la rueda de la
+//    carretilla (src/juego/carretilla.js), que es ella.
+//  - remo (P11d, 16 nov): de una pieza, a hacha, con la pala de punta redonda y su nervio, la caña y el puño en muleta.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
@@ -474,15 +478,83 @@ function trampaLazo(n, id) {
   return mallas(L);
 }
 
+// El cubo (vacío o lleno de agua, P11b): sus piezas en L con el fondo en (x, y, z), derecho, o con la matriz giro
+// (alrededor de ese punto). asa: el ángulo del asa (0, levantada; 0.4, caída a un lado, como en el suelo).
+export const CUBO = { alto: 0.28, r0: 0.12, r1: 0.14, asa: 0.12 };
+export function cuboEn(L, x, y, z, { lleno = false, giro = null, asa = 0.4 } = {}) {
+  const { alto, r0, r1 } = CUBO, D = 14;
+  const pon = (geo, color, px, py, pz, rot, opc) => {
+    const m = (giro ? giro.clone() : new THREE.Matrix4()).multiply(new THREE.Matrix4().makeTranslation(px, py, pz));
+    if (rot) m.multiply(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot.x || 0, rot.y || 0, rot.z || 0)));
+    const c = new THREE.Vector3().setFromMatrixPosition(m); m.setPosition(0, 0, 0);
+    L.add(geo, color, x + c.x, y + c.y, z + c.z, m, opc);
+  };
+  // duelas: un cilindro algo más ancho arriba, con las juntas marcadas; dos aros de mimbre y el asa de cuerda
+  pon(cil(r1, r0, alto, D * 2, true), 'tabla', 0, alto / 2, 0, null, { tex: 'veta', rayas: (v) => { const a = (Math.atan2(v.z, v.x) / (Math.PI * 2) + 1) * D; return (a % 1) < 0.07 ? 0.62 : 0.95 + 0.08 * Math.sin(Math.floor(a) * 2.3); } });
+  pon(new THREE.CircleGeometry(r0 * 0.97, D * 2), 'maderaOsc', 0, 0.025, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'veta', brillo: 0.85 }); // el fondo, visto por dentro
+  // por dentro: un torno de arriba abajo (sus caras miran hacia dentro, a la luz que entra por la boca; segunda mirada,
+  // 14 nov: el cilindro en espejo salía negro, como un agujero)
+  const dentro = new THREE.LatheGeometry([new THREE.Vector2(r1 * 0.955, alto - 0.004), new THREE.Vector2(r0 * 0.955, 0.024)], D * 2);
+  { const p = dentro.attributes.position, n = dentro.attributes.normal; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), l = Math.hypot(x, z) || 1; n.setXYZ(i, -x / l, 0.25, -z / l); } }   // (las normales, hacia el eje y algo hacia arriba: la luz entra por la boca)
+  pon(dentro, 'madera', 0, 0, 0, null, { tex: 'veta', sinSuelo: true });
+  for (const f of [0.22, 0.78]) pon(new THREE.TorusGeometry(r0 + (r1 - r0) * f + 0.004, 0.007, 4, 28), MIMBRE, 0, alto * f, 0, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
+  pon(tubo([v3(-r1, alto * 0.86, 0), v3(-0.1, alto + CUBO.asa, 0.02), v3(0.1, alto + CUBO.asa, 0.02), v3(r1, alto * 0.86, 0)], 0.007, 5), CUERDA, 0, 0, 0, { y: asa }, { tex: 'paja', sinSuelo: true });
+  // el agua: un disco algo por debajo del borde, oscuro y con brillo (refleja el cielo), y su orilla más clara
+  if (lleno) {
+    const h = alto * 0.84, rh = r0 + (r1 - r0) * 0.84;
+    pon(new THREE.CircleGeometry(rh * 0.95, D * 2), 0x2f3b38, 0, h, 0, { x: -Math.PI / 2 }, { sinSuelo: true, plano: true, brillo: 1.05 });
+    pon(new THREE.RingGeometry(rh * 0.88, rh * 0.955, D * 2), 0x5f6b62, 0, h + 0.001, 0, { x: -Math.PI / 2 }, { sinSuelo: true, plano: true });
+  }
+}
 function cubo(n, id) {
   const L = lote(0.1);
-  // duelas: un cilindro algo más ancho arriba, con las juntas marcadas; dos aros de mimbre y el asa de cuerda
-  const alto = 0.28, r0 = 0.12, r1 = 0.14, D = 14;
-  L.add(cil(r1, r0, alto, D * 2, true), 'tabla', 0, alto / 2, 0, null, { tex: 'veta', rayas: (v) => { const a = (Math.atan2(v.z, v.x) / (Math.PI * 2) + 1) * D; return (a % 1) < 0.07 ? 0.62 : 0.95 + 0.08 * Math.sin(Math.floor(a) * 2.3); } });
-  L.add(new THREE.CircleGeometry(r0 * 0.97, D * 2), 'corte', 0, 0.025, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'veta' }); // el fondo, visto por dentro
-  L.add(cil(r1 * 0.96, r0 * 0.96, alto - 0.02, D * 2, true), 'maderaOsc', 0, alto / 2 + 0.01, 0, null, { escala: v3(-1, 1, 1), tex: 'veta', sinSuelo: true, brillo: 0.8 }); // por dentro (en espejo: se ven sus caras de dentro)
-  for (const f of [0.22, 0.78]) L.add(new THREE.TorusGeometry(r0 + (r1 - r0) * f + 0.004, 0.007, 4, 28), MIMBRE, 0, alto * f, 0, { x: Math.PI / 2 }, { tex: 'paja', sinSuelo: true });
-  L.add(tubo([v3(-r1, alto * 0.86, 0), v3(-0.1, alto + 0.12, 0.02), v3(0.1, alto + 0.12, 0.02), v3(r1, alto * 0.86, 0)], 0.007, 5), CUERDA, 0, 0, 0, { y: 0.4 }, { tex: 'paja', sinSuelo: true });
+  cuboEn(L, 0, 0, 0);
+  return mallas(L);
+}
+const cuboAgua = () => { const L = lote(0.1); cuboEn(L, 0, 0, 0, { lleno: true }); return mallas(L); };
+
+// El remo de la canoa (P11d, 16 nov): de una pieza, sacado a hacha de un tronco corto hendido (sin cepillar: las caras
+// con las facetas del hacha). Mide 1,5 m: la pala, ancha y con la punta redonda (16 cm), con el nervio que sigue a la
+// caña hasta la punta; la caña redonda, y arriba el puño en muleta (el travesaño donde va la mano de arriba). Las
+// medidas, de los remos de canoa de un tronco que se conservan (provisional). loteRemo(L) lo pone a lo largo de X: la
+// caña en y = 0, la pala hacia -X (de -1 a -0,42) y el puño en +0,5; la cara de la pala en el plano XY (fina en Z).
+export const REMO = { largo: 1.5, pala: 0.58, ancho: 0.16, grueso: 0.016, r: 0.017 };
+export function loteRemo(L, opc = {}) {
+  const { pala, ancho, grueso, r } = REMO, x0 = -0.42;
+  // la pala: el contorno (hombros que salen de la caña, los lados casi rectos y la punta redonda), con un canto de bisel
+  const f = new THREE.Shape(), a = ancho / 2;
+  f.moveTo(0, -r); f.quadraticCurveTo(-0.07, -a * 0.95, -0.14, -a); f.lineTo(-pala + a, -a * 0.96);
+  f.quadraticCurveTo(-pala, -a * 0.85, -pala, 0); f.quadraticCurveTo(-pala, a * 0.85, -pala + a, a * 0.96);
+  f.lineTo(-0.14, a); f.quadraticCurveTo(-0.07, a * 0.95, 0, r); f.lineTo(0, -r);
+  const g = new THREE.ExtrudeGeometry(f, { depth: grueso * 0.6, bevelEnabled: true, bevelThickness: grueso * 0.2, bevelSize: 0.006, bevelSegments: 1, curveSegments: 6 });
+  g.translate(0, 0, -grueso * 0.3);
+  L.add(g, 'tabla', x0, 0, 0, null, { tex: 'veta', ...opc });
+  // el nervio de la pala, a las dos caras, que se adelgaza hacia la punta
+  for (const s of [-1, 1]) L.add(new THREE.CylinderGeometry(r * 0.35, r * 0.85, pala * 0.8, 6), 'tabla', x0 - pala * 0.4, 0, s * grueso * 0.35, { z: Math.PI / 2 }, { escala: v3(1, 1, 0.55), tex: 'veta', ...opc });
+  // la caña, algo más gruesa junto a la pala, y el puño en muleta, atravesado
+  L.add(cil(r * 1.12, r, 0.93, 7), 'tabla', x0 + 0.465, 0, 0, { z: Math.PI / 2 }, { tex: 'veta', ...opc });
+  // (redondeado, sacado de la misma pieza: un taco cuadrado parecía la cabeza de un mazo; segunda mirada, 16 nov)
+  L.add(cil(r * 1.05, r * 1.05, 0.12, 7), 'tabla', 0.515, 0, 0, null, { tex: 'veta', ...opc });
+  for (const s of [-1, 1]) L.add(new THREE.SphereGeometry(r * 1.05, 7, 4), 'tabla', 0.515, s * 0.06, 0, null, { tex: 'veta', ...opc });
+}
+function remo(n, id) {
+  // tumbado en el suelo, de plano: la pala y el puño apoyados (y la caña algo levantada, como al dejarlo)
+  const L = lote(0.04), g = new THREE.Group();
+  loteRemo(L, { sinSuelo: true });
+  const m = mallas(L); m.rotation.x = -Math.PI / 2; m.position.y = REMO.grueso * 0.6 + 0.004;
+  g.add(m); g.rotation.y = (az(id || 'remo', 1) - 0.5) * 0.6;
+  return g;
+}
+
+// La rodaja de tronco (P11c): la rueda de la carretilla antes de ponerle el eje, tumbada en el suelo.
+export const RODAJA = { r: 0.24, ancho: 0.11 };
+function rodaja(n, id) {
+  const L = lote(0.08), { r, ancho } = RODAJA;
+  L.add(cil(r, r * 0.98, ancho, 14), 'corteza', 0, ancho / 2, 0, null, { tex: 'corteza' });
+  L.add(new THREE.CircleGeometry(r * 0.94, 14), 'corte', 0, ancho + 0.002, 0, { x: -Math.PI / 2 }, { sinSuelo: true });
+  // la grieta de secado, del centro hacia el canto, y el corazón algo más oscuro
+  L.add(new THREE.BoxGeometry(0.006, 0.004, r * 0.6), 'maderaOsc', r * 0.26 * Math.sin(az(id, 1) * 6), ancho + 0.004, r * 0.26 * Math.cos(az(id, 1) * 6), { y: az(id, 1) * 6 }, { sinSuelo: true, tex: 'liso' });
+  L.add(new THREE.CircleGeometry(0.03, 8), 'maderaOsc', 0, ancho + 0.003, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });
   return mallas(L);
 }
 
@@ -770,6 +842,6 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

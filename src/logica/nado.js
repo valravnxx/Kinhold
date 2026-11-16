@@ -21,6 +21,7 @@ export const NADO = {
   velNadar: 0.9,       // m/s nadando (1,5 apretando, que cansa el doble)
   velNadarRapido: 1.5,
   arrastre: 0.8,       // parte de la velocidad de la corriente que te lleva
+  tirarS: 45,          // s andando tirando a cuerda de un tronco largo hasta quedarse sin aguante (P11c; entre dos, el doble)
 };
 
 // Cuánto más deprisa baja el aguante al nadar con `kg` encima: 1 + kg/5 + (kg/8)². Con 0,6 kg (camisa y pantalón de
@@ -46,8 +47,9 @@ export const nuevoAguante = () => ({ aguante: 1, ahogo: 0, muerto: false });
 export const puedeCorrer = (e) => e.aguante > 0.02;
 
 // Un paso de tiempo. modo: 'tierra' | 'vadear' | 'nadar'; moviendo: si se mueve; rapido: con Mayúsculas; kg: lo que
-// lleva encima. Devuelve el estado nuevo (no cambia el de entrada).
-export function pasoAguante(e, dt, { modo = 'tierra', moviendo = false, rapido = false, kg = 0 } = {}) {
+// lleva encima; tira: tirando de un tronco largo a cuerda (1 solo, 0.5 entre dos; cansa al andar). Devuelve el estado
+// nuevo (no cambia el de entrada).
+export function pasoAguante(e, dt, { modo = 'tierra', moviendo = false, rapido = false, kg = 0, tira = 0 } = {}) {
   let { aguante, ahogo, muerto } = e;
   if (muerto) return { aguante, ahogo, muerto };
   if (modo === 'nadar') {
@@ -56,7 +58,8 @@ export function pasoAguante(e, dt, { modo = 'tierra', moviendo = false, rapido =
     if (aguante <= 0) ahogo = Math.min(1, ahogo + dt / NADO.ahogoS);
     if (ahogo >= 1) muerto = true;
   } else {
-    if (moviendo && rapido && aguante > 0) aguante = Math.max(0, aguante - dt / NADO.correrS);
+    if (moviendo && tira > 0) aguante = Math.max(0, aguante - dt * tira / NADO.tirarS);
+    else if (moviendo && rapido && aguante > 0) aguante = Math.max(0, aguante - dt / NADO.correrS);
     else aguante = Math.min(1, aguante + dt / NADO.recuperaS * (moviendo ? 1 : 2));
     ahogo = Math.max(0, ahogo - dt / 2);
   }

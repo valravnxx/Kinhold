@@ -68,6 +68,7 @@ paso "El fuego de la hoguera" node pruebas/prueba_fuego.mjs
 paso "Objetos en el suelo" node pruebas/prueba_suelo.mjs
 paso "Tala de los árboles" node pruebas/prueba_tala.mjs
 paso "Tronzar y partir" node pruebas/prueba_troceo.mjs
+paso "La canoa de un tronco" node pruebas/prueba_canoa.mjs
 paso "La rastra" node pruebas/prueba_rastra.mjs
 paso "La carretilla" node pruebas/prueba_carretilla.mjs
 paso "Obras con lo que llevas" node pruebas/prueba_obras_llevas.mjs
@@ -107,6 +108,10 @@ paso "Labrar con la azada: pasadas de 1,2 m dentro del linde y donde está limpi
 paso "Sembrar y crecer: la cebada a voleo (círculo de 2 m, 1 puñado cada 10 m²) y las habas, la col y el nabo a su distancia, sobre lo labrado; fases en una semana con la hora del servidor" node pruebas/prueba_sembrar.mjs
 paso "Cosechar: la cebada madura se siega con la hoz (gavillas al suelo, 4 cada 10 m²) y las habas, la col y el nabo maduros se cogen a mano (4 veces lo sembrado); el servidor" node pruebas/prueba_cosechar.mjs
 paso "Escardar: malas hierbas en lo verde y en espiga, con las manos o la azada a pasadas; lo escardado da más al cosechar (5 por cada 4, una planta más); el servidor" node pruebas/prueba_escardar.mjs
+paso "Regar el huerto: el tiempo del mundo (lluvia por zonas y días, igual para todos); la col y el nabo, mustios tras 2 días sin agua y a medio crecer; el cubo se llena en el río y riega 1,2 m; el cereal y las habas no; el servidor" node pruebas/prueba_regar.mjs
+paso "El pozo: la hondura del agua del terreno, con un tope; tramos cavados con la pala y revestidos de piedra; el servidor" node pruebas/prueba_pozo.mjs
+paso "El tiempo del mundo: despejado, nublado, lluvia y niebla por zonas y por la hora del servidor, igual para todos; nublado antes y después de la lluvia; niebla algunas mañanas; la lluvia del riego, la de siempre" node pruebas/prueba_tiempo.mjs
+paso "La lluvia moja: se moja al llover y se seca de a poco un rato después, igual para todos" node pruebas/prueba_mojado.mjs
 paso "La era y trillar: la era (8 piedras, fuera, en tu tierra); cada gavilla dejada en ella, con el mayal, da 1 grano de cebada y 1 paja; la paja ya a la vista; por el servidor" node pruebas/prueba_trillar.mjs
 paso "Ríos de verdad: uniones, nacimiento, ancho y hondo" node pruebas/prueba_rios.mjs
 paso "Comarcas y zonas de Whitholm" node pruebas/prueba_comarcas.mjs
@@ -155,6 +160,7 @@ paso "Navegador: posprocesado y perfiles gráficos" python3 pruebas/prueba_pospr
 paso "Navegador: el perfil gráfico en el juego" python3 pruebas/prueba_graficos_juego_navegador.py dist/kinhold_demo.html "$C/graficos_juego"
 paso "Navegador: la hierba densa" python3 pruebas/prueba_hierba_navegador.py dist/kinhold_demo.html "$C/hierba"
 paso "Navegador: el día y la noche" python3 pruebas/prueba_cielo_navegador.py dist/kinhold_demo.html "$C/cielo"
+paso "Navegador: la lluvia se ve" python3 pruebas/prueba_lluvia_navegador.py dist/kinhold_demo.html "$C/lluvia"
 paso "Navegador: los avisos de las necesidades" python3 pruebas/prueba_avisos_navegador.py dist/kinhold_demo.html "$C/avisos"
 paso "Navegador: las bayas y las setas" python3 pruebas/prueba_bayas_navegador.py dist/kinhold_demo.html "$C/bayas"
 paso "Navegador: desbrozar matorrales y arbustos" python3 pruebas/prueba_desbroce_navegador.py dist/kinhold_demo.html "$C/desbroce"
@@ -167,6 +173,7 @@ paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_reco
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
 paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
+paso "Navegador: la canoa" python3 pruebas/prueba_canoa_navegador.py dist/kinhold_demo.html "$C/canoa"
 paso "Navegador: la rastra" python3 pruebas/prueba_rastra_navegador.py dist/kinhold_demo.html "$C/rastra"
 paso "Navegador: la carretilla" python3 pruebas/prueba_carretilla_navegador.py dist/kinhold_demo.html "$C/carretilla"
 paso "Navegador: panel de fabricación" python3 pruebas/prueba_fabricar_navegador.py dist/kinhold_demo.html "$C/fabricar"
@@ -188,6 +195,7 @@ paso "Navegador: demo única" python3 pruebas/prueba_demo_navegador.py dist/kinh
 paso "Navegador: la demo en el mundo (Whitholm)" python3 pruebas/prueba_mundo_navegador.py dist/kinhold_demo.html "$C/mundo"
 paso "Navegador: lo que se recoge en el mundo" python3 pruebas/prueba_recogida_mundo_navegador.py dist/kinhold_demo.html "$C/recogida_mundo"
 paso "Navegador: marcar el campo con estacas" python3 pruebas/prueba_campos_navegador.py dist/kinhold_demo.html "$C/campos"
+paso "Navegador: el pozo en el juego" python3 pruebas/prueba_pozo_navegador.py dist/kinhold_demo.html "$C/pozo"
 paso "Navegador: construir a la altura del suelo (ladera de Whitholm)" python3 pruebas/prueba_nivelado_navegador.py dist/kinhold_demo.html "$C/nivelado"
 paso "Navegador: volver donde lo dejaste" python3 pruebas/prueba_volver_navegador.py dist/kinhold_demo.html "$C/volver"
 paso "Navegador: lo que llevas en línea (inventario, suelo, tala y recogida por el servidor)" python3 pruebas/prueba_objetos_en_linea_navegador.py dist/kinhold_demo.html "$C/objetos_en_linea"

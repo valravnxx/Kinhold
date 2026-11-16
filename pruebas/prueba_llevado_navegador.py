@@ -47,6 +47,10 @@ EQUIPOS = {
     'a_mano2': {'cintura': C('cuerda_trenzada', 1, [C('cuerda'), C('lasca_silex')]), 'mano:der': C('palo_cavador'), 'mano:izq': C('lasca_silex')},
     'a_mano3': {'cintura': C('cordel', 1, [C('lasca_silex')]), 'mano:der': C('taladro_fuego'), 'mano:izq': C('cordel', 3)},
     'lenero_en_manos': {'cintura': C('cordel', 1, [None]), 'mano:der': C('lenero', 1, [None] * 6)},
+    # la rodaja (P11c): de canto delante del cuerpo, cogida por los lados del canto
+    'rodaja': {'cintura': C('cordel', 1, [None]), 'mano:der': C('rodaja')},
+    # el remo (P11d): atravesado delante del cuerpo, la caña de una mano a otra y la pala fuera, a un lado
+    'remo': {'cintura': C('cordel', 1, [None]), 'mano:der': C('remo')},
 }
 # lo que se fabrica con las manos: ninguno sale con la bolsa o el hatillo de lo que aún no tiene modelo
 A_MANO = ('a_mano', 'a_mano2', 'a_mano3', 'lenero_en_manos')
@@ -67,7 +71,7 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
   r.modo = j.modo; r.alHombro = !!j.alHombro;
   r.genericos = j.llevado.grupo.children.filter(o => o.userData.generico).map(o => o.name.slice(8));
   r.hacha = j.hacha ? { nombre: j.hacha.name, visible: j.hacha.visible } : null;
-  for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01', 'head', 'upperarm_r']) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
+  for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01', 'head', 'upperarm_r', 'middle_01_r', 'middle_01_l']) if (H[n]) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
 
 # Lo más que se separa del cuerpo vestido (sin cabeza) un punto de la correa cruzada: la distancia de cada punto al
@@ -159,8 +163,26 @@ def revisar(nombre, m):
             comprobar(f'{nombre}: lo de la mano {lado} está en la mano', dist(p['mano_' + lado], m[hueso]) < 0.35, f'{p["mano_" + lado][:3]} · mano {m[hueso]}')
     if 'manos' in p:
         medio = [(m['hand_r'][i] + m['hand_l'][i]) / 2 for i in range(3)]
-        comprobar(f'{nombre}: lo grande, delante, entre las dos manos', p['manos'][2] > P[2] + 0.1 and dist(p['manos'], medio) < 0.15, f'{p["manos"][:3]} · entre las manos {[round(v, 3) for v in medio]}')
+        # (el remo no: la pala sale a un lado y el centro de su caja no cae entre las manos; lo suyo, abajo)
+        if not nombre.startswith('remo'):
+            comprobar(f'{nombre}: lo grande, delante, entre las dos manos', p['manos'][2] > P[2] + 0.1 and dist(p['manos'], medio) < 0.15, f'{p["manos"][:3]} · entre las manos {[round(v, 3) for v in medio]}')
         comprobar(f'{nombre}: y el personaje lo sujeta (postura de llevar en brazos)', m.get('modo') == 'cargar', m.get('modo'))
+        if nombre.startswith('rodaja'):
+            d, pe, hr, hl = p['manos'], m['spine_03'], m['hand_r'], m['hand_l']
+            comprobar(f'{nombre}: la rodaja entera delante del pecho, sin tocarlo', d[2] - d[5] / 2 > pe[2] + 0.1, f'cara de atrás a z {d[2] - d[5] / 2:.3f} · pecho a z {pe[2]:.3f}')
+            comprobar(f'{nombre}: las manos a los lados del canto, a media altura', abs(hr[0] - hl[0]) > 0.38 and abs((hr[1] + hl[1]) / 2 - d[1]) < 0.12,
+                      f'manos {hr} {hl} · rodaja {d[:3]}')
+        if nombre.startswith('remo'):
+            d, hr, hl = p['manos'], m['hand_r'], m['hand_l']
+            x0, x1 = d[0] - d[3] / 2, d[0] + d[3] / 2
+            comprobar(f'{nombre}: el remo entero (1,5 m), atravesado de lado a lado', d[3] > 1.3, f'ancho {d[3]:.2f} m')
+            comprobar(f'{nombre}: las dos manos sobre la caña (dentro de su largo y a su altura)', all(x0 < h[0] < x1 and abs(h[1] - d[1]) < 0.12 for h in (hr, hl)),
+                      f'manos {hr} {hl} · remo de x {x0:.2f} a {x1:.2f}, altura {d[1]:.2f}')
+            # la caña pasa por las palmas (de la muñeca hacia el nudillo del corazón), para que las manos la agarren
+            if 'middle_01_r' in m and 'middle_01_l' in m:
+                pal = [[h[i] + (k[i] - h[i]) * 0.75 for i in range(3)] for h, k in ((hr, m['middle_01_r']), (hl, m['middle_01_l']))]
+                comprobar(f'{nombre}: la caña pasa por las dos palmas (a menos de 4 cm)', all(abs(q[1] - d[1]) < 0.04 and abs(q[2] - d[2]) < 0.04 for q in pal),
+                          f'palmas {[[round(v, 3) for v in q] for q in pal]} · caña a altura {d[1]:.3f}, z {d[2]:.3f}')
 
 with sync_playwright() as pw:
     nav = pw.chromium.launch(args=ARGS)

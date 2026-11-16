@@ -61,7 +61,12 @@ export const PIEZAS = {
   muro_tronco:        { nombre: 'Muro de troncos', hueco: 'e', nivel: 1, peso: 300, cap: 1200, coste: { tronco: 4 }, cat: 'muro' },
   muro_tronco_puerta: { nombre: 'Muro de troncos con puerta', hueco: 'e', nivel: 1, peso: 220, cap: 850, coste: { tronco: 3 }, conPuerta: true, cat: 'muro' },
   muro_tronco_ventana:{ nombre: 'Muro de troncos con ventana', hueco: 'e', nivel: 1, peso: 260, cap: 1000, coste: { tronco: 3 }, conVentana: true, cat: 'muro' },
-  muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 1400, coste: { tronco: 2, vara: 2, barro: 3 }, cat: 'muro' },
+  // destapado (P11c, valravnx, 14 nov): de nivel 2, pero sale de lo que hay (troncos delgados y varas del árbol joven y
+  // barro de la ribera). Con puerta y con ventana, como el zarzo; peso, carga y coste provisionales (sistemas no lo trae):
+  // en la proporción de los de troncos con puerta y con ventana.
+  muro_entramado:     { nombre: 'Muro de entramado', hueco: 'e', nivel: 2, peso: 250, cap: 1400, coste: { tronco: 2, vara: 2, barro: 3 }, destapada: true, cat: 'muro' },
+  muro_entramado_puerta: { nombre: 'Muro de entramado con puerta', hueco: 'e', nivel: 2, peso: 185, cap: 1000, coste: { tronco: 2, vara: 1, barro: 2 }, conPuerta: true, destapada: true, cat: 'muro' },
+  muro_entramado_ventana:{ nombre: 'Muro de entramado con ventana', hueco: 'e', nivel: 2, peso: 215, cap: 1170, coste: { tronco: 2, vara: 2, barro: 2 }, conVentana: true, destapada: true, cat: 'muro' },
   muro_tabla:         { nombre: 'Muro de tablas', hueco: 'e', nivel: 2, peso: 200, cap: 900, coste: { tabla: 6, clavo: 6 }, cat: 'muro' },
   muro_tabla_puerta:  { nombre: 'Muro de tablas con puerta', hueco: 'e', nivel: 2, peso: 150, cap: 600, coste: { tabla: 4, clavo: 4 }, conPuerta: true, cat: 'muro' },
   // Peso, carga y coste provisionales (sistemas no lo trae): en la proporción del muro de troncos con ventana.
@@ -121,13 +126,17 @@ export const PIEZAS = {
   cerca:              { nombre: 'Cerca de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, cat: 'exterior' },
   // portón: se abre y se cierra con Usar (abierto no corta el paso)
   cerca_portillo:     { nombre: 'Portillo de varas', hueco: 'e', nivel: 1, peso: 20, cap: 0, coste: { vara: 4, cuerda: 1 }, suelo: true, soloPlanta0: true, bajo: true, portón: true, cat: 'exterior' },
-  empalizada:         { nombre: 'Empalizada', hueco: 'e', nivel: 2, peso: 500, cap: 0, coste: { tronco: 6 }, suelo: true, soloPlanta0: true, alto: true, cat: 'exterior' },
+  // destapada (P11c, valravnx, 14 nov): de nivel 2, pero sale de lo que ya hay (6 troncos delgados del árbol joven),
+  // así que ya se enseña en el menú de construir (enEsteTramo).
+  empalizada:         { nombre: 'Empalizada', hueco: 'e', nivel: 2, peso: 500, cap: 0, coste: { tronco: 6 }, suelo: true, soloPlanta0: true, alto: true, destapada: true, cat: 'exterior' },
   // Sistemas: «Adarve (pasarela) — N2, tablas + postes, 100 kg, sostiene 300; por detrás de la empalizada». Un piso de
   // tablas a 1,8 m sobre cuatro postes, en la casilla de detrás de una empalizada terminada (se arrima sola a ella).
   // Coste provisional (sistemas no da cantidades): el del suelo de tablas (4 tablas y 4 clavos, también 100 kg) y dos
   // troncos para los postes. Sostiene 300 kg: a quien está encima (el peso de la gente aún no se cuenta).
   adarve:             { nombre: 'Adarve', hueco: 'a', nivel: 2, peso: 100, cap: 300, coste: { tabla: 4, clavo: 4, tronco: 2 }, soloPlanta0: true, adarve: true, cat: 'exterior' },
-  empalizada_puerta:  { nombre: 'Puerta de empalizada', hueco: 'e', nivel: 2, peso: 400, cap: 0, coste: { tronco: 4, hierro: 2 }, suelo: true, soloPlanta0: true, alto: true, portón: true, cat: 'exterior' },
+  // El portón sin hierro (P11c, valravnx, 14 nov; provisional): goznes de madera y cuerda, sale de lo que hay (4 troncos
+  // delgados del árbol joven y 2 cuerdas del banco de tronco), así que está destapado. El de herrajes, con P10.
+  empalizada_puerta:  { nombre: 'Puerta de empalizada', hueco: 'e', nivel: 2, peso: 400, cap: 0, coste: { tronco: 4, cuerda: 2 }, suelo: true, soloPlanta0: true, alto: true, portón: true, destapada: true, cat: 'exterior' },
 };
 
 // Decoración: colocación libre, no participa en la carga.
@@ -155,8 +164,9 @@ export const DECORACION = {
 // alfombra) se enseña (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
 export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja'];   // (13 nov: la paja ya sale de trillar en la era, P11)
 export const NIVEL_TRAMO = 1;
+// Lo de nivel 2 que ya sale de lo que hay (P11c, «La casa más fuerte»: valravnx, 14 nov) lleva «destapada» y se enseña.
 export function enEsteTramo(def) {
-  return (def.nivel ?? 0) <= NIVEL_TRAMO && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));
+  return ((def.nivel ?? 0) <= NIVEL_TRAMO || !!def.destapada) && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));
 }
 
 export const MATERIALES_INICIALES = {

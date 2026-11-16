@@ -19,6 +19,10 @@ if (process.env.MUTAR === '4') {
   const ligar = Fabricacion.prototype.ligarCama; Fabricacion.prototype.ligarCama = function (a, e, p) { return ligar.call(this, a, e, p, true); };
   const dormir = Fabricacion.prototype.dormir; Fabricacion.prototype.dormir = function (a, e, p) { const c = this.estaciones[e]; if (c) c.ligadas = [...(c.ligadas || []), a]; return dormir.call(this, a, e, p); };
 }
+// Con MUTAR=5 la carretilla no pide la rodaja: las de la carretilla deben FALLAR.
+if (process.env.MUTAR === '5') delete RECETAS.carretilla.gasta.rodaja;
+// Con MUTAR=6 el remo no pide el hacha: las del remo deben FALLAR.
+if (process.env.MUTAR === '6') delete RECETAS.remo.requiere;
 if (process.env.MUTAR === '2') { delete ESTACIONES.pila_piedras.guarda; delete ESTACIONES.pila_piedras.tierra; }
 if (process.env.MUTAR === '3') {
   const colocar = Fabricacion.prototype.colocar; Fabricacion.prototype.colocar = function (a, t, x, z, d, y, en) { return colocar.call(this, a, t, x, z, d, y, en); };
@@ -487,6 +491,46 @@ console.log('Si no te cabe');
   comprobar('con las manos llenas no se recoge y lo hecho sigue esperando', r1.ok && !r.ok && fab.manos.ana.length === 1, r.motivo);
   inv.lugares['mano:izq'] = null;
   comprobar('al hacer sitio, se recoge', fab.recoger('ana', null, { x: 0, z: 0 }, inv, T0 + 3600e3).ok && inv.cuantos('cordel') === 1);
+}
+
+console.log('La carretilla de rueda maciza (P11c): en el banco, con la rodaja');
+{
+  const R = RECETAS.carretilla;
+  comprobar('1 rodaja de tronco, 2 varas y 1 tronco corto, en el banco', R && R.uso === 'banco' && R.da === 'carretilla' && igual(R.gasta, { rodaja: 1, vara: 2, tronco_corto: 1 }));
+  const fab = new Fabricacion(), suelo = new Suelo();
+  suelo.dejar({ tipo: 'tronco_corto', n: 2 }, 0.5, 0, T0, 'ana', true);
+  const banco = levantar(fab, 'ana', 'banco_tronco', 0, 0, jugador(), suelo);
+  let r = fab.fabricar('ana', 'carretilla', banco, { x: 1, z: 0 }, jugador(), suelo, T0);
+  comprobar('sin la rodaja depositada, no', !r.ok && /rodaja/i.test(r.motivo || ''), r.motivo);
+  depositar(fab, banco, { rodaja: 1, vara: 2, tronco_corto: 1 });
+  r = fab.fabricar('ana', 'carretilla', banco, { x: 1, z: 0 }, jugador(), suelo, T0);
+  comprobar('con lo depositado, sí', r.ok && !fab.estaciones[banco].deposito.rodaja, r.motivo);
+  const inv = jugador();
+  r = fab.recoger('ana', banco, { x: 1, z: 0 }, inv, T0 + R.s * 1000 + 1, suelo, true);
+  const c = r.ok && suelo.porId(r.dados[0].alSuelo, T0 + R.s * 1000 + 1);
+  comprobar('es enorme: cae al suelo, a tus pies, y no a lo que llevas', !!c && c.cosa.tipo === 'carretilla' && !inv.cuantos('carretilla'), r.motivo);
+  comprobar('hecha en tu tierra, queda a tu guarda y no desaparece', !!c && c.guarda === 'ana' && c.desaparece === null);
+}
+
+console.log('El remo de la canoa (P11d): 1 tronco corto en el banco, con el hacha; en las dos manos');
+{
+  const R = RECETAS.remo;
+  comprobar('1 tronco corto, en el banco, y da el remo', R && R.uso === 'banco' && R.da === 'remo' && igual(R.gasta, { tronco_corto: 1 }));
+  comprobar('es grande: se lleva con las dos manos', CATALOGO.remo && CATALOGO.remo.tam === 'G');
+  const fab = new Fabricacion(), suelo = new Suelo();
+  suelo.dejar({ tipo: 'tronco_corto', n: 2 }, 0.5, 0, T0, 'ana', true);
+  const banco = levantar(fab, 'ana', 'banco_tronco', 0, 0, jugador(), suelo);
+  depositar(fab, banco, { tronco_corto: 1 });
+  let r = fab.fabricar('ana', 'remo', banco, { x: 1, z: 0 }, jugador(), suelo, T0);
+  comprobar('sin el hacha, no (y no se gasta el tronco)', !r.ok && /hacha/i.test(r.motivo || '') && fab.estaciones[banco].deposito.tronco_corto === 1, r.motivo);
+  const conHacha = jugador(); conHacha.meterDonde('hacha_piedra', 1);
+  r = fab.fabricar('ana', 'remo', banco, { x: 1, z: 0 }, conHacha, suelo, T0);
+  comprobar('con el hacha de piedra, sí: gasta el tronco corto y no el hacha', r.ok && !fab.estaciones[banco].deposito.tronco_corto && conHacha.cuantos('hacha_piedra') === 1, r.motivo);
+  const inv = jugador();
+  comprobar('antes de su tiempo no se recoge', !fab.recoger('ana', banco, { x: 1, z: 0 }, inv, T0 + R.s * 500, suelo, true).ok);
+  r = fab.recoger('ana', banco, { x: 1, z: 0 }, inv, T0 + R.s * 1000 + 1, suelo, true);
+  const l = inv.lugares;
+  comprobar('al recogerlo va a las manos y las ocupa las dos', r.ok && inv.cuantos('remo') === 1 && ['mano:der', 'mano:izq'].some(m => l[m] && l[m].tipo === 'remo') && !!inv.manoBloqueada(['mano:der', 'mano:izq'].find(m => !(l[m] && l[m].tipo === 'remo'))), r.motivo);
 }
 
 console.log('Guardar y cargar');

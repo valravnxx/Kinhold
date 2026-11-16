@@ -6,6 +6,46 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 16 nov 2026, 06:01 UTC — por el chat, aprobación de P11c
+
+valravnx: «confírmame el hito que está por confirmar, el de la casa más resistente» → P11c, La casa más fuerte (el tronco grande, la empalizada y el entramado), pasa a `hecho`.
+
+### 15 nov 2026, 16:54 UTC — por el chat, P11b
+
+valravnx: «aprueba» → el hito P11b, La lluvia y el riego, pasa a hecho.
+
+### 15 nov 2026, 13:54 UTC — por el chat, el agua salada
+
+valravnx: «toca hacer que el agua salada se diferencie de la dulce y no se pueda beber» → tarea nueva en el hito de la lluvia (la lleva el chat): del mar no se bebe; el botón de beber solo sale con agua dulce al lado (río, lago o pozo) y, en la orilla del mar, el aviso dice que es salada.
+
+### 15 nov 2026 — por el chat, idea de futuro sobre el continente (no es tarea; nada se empieza hasta que valravnx diga)
+
+- «el continente tiene aun mucho trabajo y no es prioridad… pero tiene biomas que en la isla no existen y a futuro me encantaria ya introducirlo, aunque requiera de muchisimo».
+- Lo que se ha visto: en las uniones de ríos las láminas de agua, planas y a distinta altura, se cortan en escalones en vez de bajar o caer; los acantilados, con la textura estirada en vertical; fuera de la isla no hay fondo lejano (el horizonte es solo de Whitholm), así que el terreno se ve cargar a trozos; y en el panel de admin, «Traer» sigue activo fuera de la isla aunque no se puede.
+- Reglas: «me gustaria que funcionara con reglas diferentes que whitholm, como mas salvaje y menos organizado, mas como zona negra donde si te pueden asaltar y robar y todo eso».
+
+### 15 nov 2026, 07:40 UTC — por una sesión del carril A, el pozo
+
+valravnx: «lo del pozo que acabas de publicar en vez de que sea con pala, al usarse la pala para más cosas, que sea desde construcción, y luego sí se use la pala, pero que no te esté saliendo todo el rato el "pulsa para hacer pozo" por tener la pala» → tarea nueva en el hito de la lluvia, delante de El pozo (3): el sitio del pozo se marca desde el menú de construir; la pala, solo para cavar cada tramo a su lado; con la pala en la mano ya no sale «Marcar aquí un pozo».
+
+### 14 nov 2026, 21:02 UTC — por el chat, el pozo
+
+valravnx: «el pozo es algo que define muchísimo el "sobrevivir sin río", con lo que entiendo que debe ser laborioso al trivializar el agua de ríos y tal». Elige, de las opciones: el pozo como **obra por etapas en P11b** (no descongelar la excavación). → Tres tareas en el hito de la lluvia: El pozo (1), la lógica (el agua bajo tierra según el terreno; cavar por tramos de 1 m con la pala de madera y revestir de piedra seca cada tramo antes de bajar); El pozo (2), en el juego; El pozo (3), sacar agua (brocal, travesaño de varas, cuerda y cubo; recorrido de jugador lejos del río). `est_pozo` en lo esencial del hito y en PENDIENTES de `pruebas/prueba_origenes.mjs`.
+
+### 14 nov 2026, 17:47 UTC — por el chat, dónde va la chimenea
+
+valravnx: «la chimenea es más para las casas que ya eran de paredes de leño y cal con tejado de teja, ¿no?» y «apunta como está todo hablado» → al GDD (la casa humilde): hogar abierto en la casa humilde; la chimenea, de obra (piedra o ladrillo con mortero de cal), solo con cimiento de piedra y tejado de teja (nunca con paja o juncos), cuando lleguen la teja y la cal (tier 2 alto o tier 3). Para la revisión de rumbo, con lo demás de la casa rica.
+
+### 14 nov 2026, 17:42 UTC — por el chat, la chimenea
+
+valravnx: «la chimenea no es muy… poco realista en esa época y en ese nivel de casa?» → fuera de P11c: la casa humilde tiene el hogar abierto en el suelo (el de P3) y el humo sale por el tejado; la chimenea de obra queda para las casas de piedra (la revisión de rumbo).
+
+### 14 nov 2026, 17:39 UTC — por el chat: la casa más fuerte, la canoa y el foso de aserrar
+
+- Las piezas que solo estaban escondidas por ser de nivel 2 y ya salen de lo que hay (la empalizada, el muro de entramado y la chimenea), y el tronco grande, que hoy solo se tronza. valravnx: «la rastra sí está… con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra, pero necesitamos uso para esos troncos grandes» → hito nuevo P11c «La casa más fuerte» (en curso, delante de los oficios): el tronco largo con cuerda y en la rastra, la rodaja de tronco y la carretilla, la empalizada, su portón sin hierro, el muro de entramado, la chimenea, el recorrido y la revisión.
+- «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva» → hito nuevo P11d «La canoa» (en curso, detrás de P11c): la canoa de un tronco vaciada con hacha y brasas, el remo, echarla al agua y remar (sin remar, a la deriva con la corriente), dónde se queda, el recorrido y la revisión. La animación de remar, de valravnx; hasta entonces, una pose provisional.
+- «el foso de aserrar me encantaría que requiriera hacer el agujero en el suelo antes con lo de cavar» → anotado en la nota de P10: el foso de aserrar llega con cavar (congelado); hasta entonces, las tablas en el banco con el tronco corto. Para la revisión de rumbo.
+
 ### 14 nov 2026, 16:32 UTC — por el chat, aprobación de P11
 
 valravnx: «aprueba el hito actual, pero ten en cuenta de que eso es un sistema que debe ser ampliado en un futuro… tiene que ser bastante más complejo y tener bastante más cositas… anotan el GDD actual y que se tenga presente… cuando se tenga que hacer una fase 2… por ahora los sistemas están bien, así que aprueba» → P11, El año y los campos, pasa a `hecho`. En el GDD (sección 15, Agricultura, y en inglés y ruso): la granja de hoy es la primera fase; habrá una fase 2 más compleja, como hito propio cuando toque.

@@ -18,6 +18,8 @@ import { tmpdir } from 'os';
 import { crearServidor } from '../servidor/servidor.mjs';
 
 if (process.env.MUTAR === '1') globalThis.__mutarEscardar = true;
+// (el tiempo del mundo, siempre lloviendo: aquí no se prueba la sed de la col y el nabo, que es de regar el huerto, P11b)
+globalThis.__tiempo = 'lluvia';
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }

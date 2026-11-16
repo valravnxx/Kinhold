@@ -19,8 +19,10 @@
 //  - Lleva una sola clase de cosa a la vez: hasta 3 troncos cortos, hasta 24 piedras (dos porta-piedras: «un montón»)
 //    o un bloque de piedra en bruto (el inventario ya decía «el bloque es enorme: rastra o carro»). Y (valravnx, 7 nov:
 //    «metelo ya») hasta 5 troncos delgados (75 kg, lo mismo que los 3 cortos: va igual de despacio), apoyados en los
-//    travesaños con la punta de atrás arrastrando, o 12 varas: lo que da la tala del árbol joven, en un viaje. El
-//    tronco largo no (60 kg y 4,5 m: es cosa de carro), ni el delgado en la carretilla (2,6 m no caben en ella).
+//    travesaños con la punta de atrás arrastrando, o 12 varas: lo que da la tala del árbol joven, en un viaje. Y
+//    (valravnx, 14 nov, P11c) un tronco largo, subido a pulso con una cuerda; ni el delgado ni el largo en la carretilla
+//    (no caben en ella).
+//  - Con el tronco largo (60 kg y 4,5 m) va más despacio que con 3 troncos cortos: al 42 %.
 //  - Se arrastra con las dos manos: para engancharla hay que tenerlas libres, y mientras la arrastras no se coge nada
 //    con ellas. Uno solo la arrastra a la vez; cada uno, una.
 //  - «Despacio»: arrastrándola, la velocidad baja con lo que pesa lo que lleva, en línea recta del 70 % (vacía) al
@@ -33,6 +35,22 @@
 //    llevársela (proteger lo que lleva en tus tierras es de la carretilla, la tarea siguiente).
 //  - Lo que se descarga cae a 1,1 m de su centro, de lado (los troncos, a lo largo de ella), y se suma a una pila de lo mismo si la hay, como todo lo del suelo.
 //  - Si el que la arrastra se va del juego, la rastra se queda donde la tiene el servidor (su último sitio conocido).
+//
+// El tronco largo a cuerda (valravnx, 14 nov, P11c: «con cuerdas ser muy lento pero poderlo llevar al lado de la rastra o
+// llevar la rastra al tronco, cargarlo, y poderlo llevar uno solo en rastra»). Acciones con autor:
+//   { autor, tipo: 'atar_tronco', objeto, x, z }   — con una cuerda en la mano, atar un tronco largo del suelo y tirar
+//                                                    de él (si ya tira otro, se le ayuda: entre dos)
+//   { autor, tipo: 'soltar_tronco', x, z, rx, rz } — soltar la cuerda; el tronco se queda donde está
+// Decisiones provisionales (anotadas en el registro de decisiones y en el diario):
+//  - Hace falta una cuerda en una mano (no se gasta: se desata al soltar). Se ata a 2 m como mucho del tronco. De una
+//    pila de troncos largos se ata uno: se aparta de la pila.
+//  - Mientras se tira, las manos van en la cuerda (no se coge nada). Uno tira y como mucho otro ayuda (ayuda: autor).
+//  - Muy despacio: solo, al 30 % de la velocidad; entre dos, al 50 %. Tirar cansa: el aguante baja mientras se anda
+//    (src/logica/nado.js, tirarS); sin aguante, casi no se avanza (un tercio de eso).
+//  - El tronco va 2,9 m por detrás del que tira (la cuerda y medio tronco), a lo largo de la cuerda. Si suelta el que
+//    tira y había otro ayudando, sigue tirando el otro.
+//  - Un tronco atado no se tronza ni se carga hasta soltarlo (el que lo arrastra puede cargarlo en una rastra: se suelta
+//    solo). Subirlo a la rastra pide llevar una cuerda.
 //
 // La carretilla de rueda maciza (GDD, «Transporte desde el inicio»: «la carretilla de rueda maciza (N1: la rueda es una
 // rodaja de tronco). La carretilla se aparca y hace de contenedor: dentro de tus tierras está protegida; fuera,
@@ -48,12 +66,23 @@
 //    la lleva. Mientras no haya tierras de cada uno (hito «Tierras y familias»), vale lo que diga enTierras.
 import { CATALOGO, KILOS, KILOS_TAMANO } from './inventario.js';
 
-export const CABE_RASTRA = { tronco_corto: 3, tronco_delgado: 5, vara: 12, piedra: 24, bloque_piedra: 1 };
+export const CABE_RASTRA = { tronco_corto: 3, tronco_delgado: 5, tronco_largo: 1, vara: 12, piedra: 24, bloque_piedra: 1 };
 export const ALCANCE_RASTRA = 2;      // m, desde su centro
 export const DETRAS = 1.6;            // m: el centro de la rastra, por detrás del que la arrastra
 export const MARGEN_SOLTAR = 0.8;     // m
 export const VEL_VACIA = 0.7, VEL_LLENA = 0.5, KILOS_LLENA = 75;
 export const LADO_DESCARGA = 1.1;     // m
+export const VEL_TRONCO_LARGO = 0.42; // la rastra con el tronco largo: más despacio que con 3 troncos cortos
+
+// El tronco largo a cuerda
+export const DETRAS_TRONCO = 2.9;     // m: el centro del tronco, por detrás del que tira
+export const ALCANCE_ATAR = 2;        // m, desde el centro del tronco (mide 4,5 m: desde cualquier punto a su lado)
+// (P11d) a cuerda va también la canoa de un tronco (src/logica/canoa.js): igual que el tronco largo, hasta la orilla
+export const A_CUERDA = ['tronco_largo', 'canoa'];
+export const vaACuerda = tipo => A_CUERDA.includes(tipo);
+export const VEL_TRONCO_SOLO = 0.3, VEL_TRONCO_DOS = 0.5, VEL_TRONCO_SIN_AGUANTE = 1 / 3;
+export const factorTronco = (o, aguante = 1) => (o && o.ayuda ? VEL_TRONCO_DOS : VEL_TRONCO_SOLO) * (aguante > 0.02 ? 1 : VEL_TRONCO_SIN_AGUANTE);
+const cuerdaEnMano = inv => ['mano:der', 'mano:izq'].some(l => inv.lugares[l] && inv.lugares[l].tipo === 'cuerda');
 
 export const CABE_CARRETILLA = { tronco_corto: 4, lena: 40, piedra: 36, bloque_piedra: 1 };
 export const DELANTE_CARRETILLA = 1.4; // m: el centro de la carretilla, por delante del que la empuja
@@ -72,6 +101,7 @@ export const kilosCarga = carga => (carga ? (KILOS[carga.tipo] ?? KILOS_TAMANO[(
 // Lo que se multiplica la velocidad llevando un vehículo (la rastra si no se dice) con esa carga.
 export function factorRastra(carga, veh = 'rastra') {
   const v = VEHICULOS[veh] || VEHICULOS.rastra;
+  if (carga && carga.tipo === 'tronco_largo' && veh === 'rastra') return VEL_TRONCO_LARGO;
   const k = Math.min(v.kilosLlena, Math.max(0, kilosCarga(carga)));
   return v.vacia - (v.vacia - v.llena) * k / v.kilosLlena;
 }
@@ -167,10 +197,14 @@ export class Rastras {
     } else {
       const s = this.suelo.porId(idSuelo, ahora);
       if (!s || s === o) return { ok: false, motivo: 'Ahí no hay nada que cargar.' };
-      if (Math.hypot(s.x - x, s.z - z) > ALCANCE_RASTRA) return { ok: false, motivo: 'Está demasiado lejos.' };
+      if ((s.arrastra && s.arrastra !== autor) || s.ayuda) return { ok: false, motivo: s.ayuda && s.arrastra === autor ? 'Que suelte antes la cuerda el que te ayuda.' : 'Ese tronco lo arrastra otro.' };
+      if (s.cosa.tipo !== 'tronco_largo' && Math.hypot(s.x - x, s.z - z) > ALCANCE_RASTRA) return { ok: false, motivo: 'Está demasiado lejos.' };
+      if (s.cosa.tipo === 'tronco_largo' && !s.arrastra && Math.hypot(s.x - x, s.z - z) > ALCANCE_ATAR + 1) return { ok: false, motivo: 'Está demasiado lejos.' };
       tipo = s.cosa.tipo; hay = s.cosa.n;
+      if (tipo === 'tronco_largo' && inv.cuantos('cuerda') < 1) return { ok: false, motivo: 'Para subir el tronco largo a la rastra necesitas una cuerda.' };
+      if (tipo === 'tronco_largo' && o.arrastra) return { ok: false, motivo: 'Suelta antes la rastra: el tronco largo se sube con ella parada.' };
     }
-    if (!Object.hasOwn(VEHICULOS[veh].cabe, tipo)) return { ok: false, motivo: carr ? 'En la carretilla solo van troncos cortos, leña, piedras o un bloque de piedra.' : 'En la rastra solo van troncos (cortos o delgados), varas, piedras o un bloque de piedra.' };
+    if (!Object.hasOwn(VEHICULOS[veh].cabe, tipo)) return { ok: false, motivo: carr ? 'En la carretilla solo van troncos cortos, leña, piedras o un bloque de piedra.' : 'En la rastra solo van troncos, varas, piedras o un bloque de piedra.' };
     if (carga && carga.tipo !== tipo) return { ok: false, motivo: carr ? 'La carretilla ya lleva otra cosa: descárgala antes.' : 'La rastra ya lleva otra cosa: descárgala antes.' };
     const sitio = sitioRastra(carga, tipo, veh);
     if (sitio < 1) return { ok: false, motivo: carr ? 'La carretilla va llena.' : 'La rastra va llena.' };
@@ -178,11 +212,59 @@ export class Rastras {
     if (de !== undefined) { const r = inv.sacar(de, n); if (!r.ok) return r; }
     else {
       const s = this.suelo.porId(idSuelo, ahora);
+      if (s.arrastra) { delete s.arrastra; if (inv.manosEn === 'tronco_largo') inv.manosEn = null; }   // se desata para subirlo
       s.cosa.n -= n;
       if (s.cosa.n <= 0) this.suelo.objetos = this.suelo.objetos.filter(q => q !== s);
     }
     o.cosa.carga = { tipo, n: (carga ? carga.n : 0) + n };
     return { ok: true, objeto: o.id, tipo, cantidad: n, lleva: o.cosa.carga.n };
+  }
+
+  // El tronco largo que arrastra (o ayuda a arrastrar) un autor, o null.
+  troncoDe(autor, ahora) { return this.suelo.visibles(ahora).find(o => vaACuerda(o.cosa.tipo) && (o.arrastra === autor || o.ayuda === autor)) || null; }
+  // Los troncos largos a mano para atarlos (sin atar o con uno solo tirando), del más cercano al más lejano.
+  troncosCercanos(x, z, ahora, dist = ALCANCE_ATAR) {
+    return this.suelo.visibles(ahora).filter(o => vaACuerda(o.cosa.tipo) && !o.ayuda && Math.hypot(o.x - x, o.z - z) <= dist)
+      .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
+  }
+
+  atarTronco(inv, id, x, z, ahora, autor) {
+    let o = this.suelo.porId(id, ahora);
+    if (!o || !vaACuerda(o.cosa.tipo)) return { ok: false, motivo: 'Ahí no hay ningún tronco largo.' };
+    if (this.troncoDe(autor, ahora)) return { ok: false, motivo: 'Ya tiras de un tronco.' };
+    if (this.deAutor(autor, ahora)) return { ok: false, motivo: 'Suelta antes la rastra.' };
+    if (o.ayuda) return { ok: false, motivo: 'De ese tronco ya tiran dos.' };
+    // el que ayuda se pone al lado del que tira: vale estar cerca del tronco o del que tira
+    if (Math.hypot(o.x - x, o.z - z) > ALCANCE_ATAR && !o.arrastra) return { ok: false, motivo: 'Está demasiado lejos.' };
+    if (!cuerdaEnMano(inv)) return { ok: false, motivo: o.cosa.tipo === 'canoa' ? 'Para atar la canoa necesitas una cuerda en la mano.' : 'Para atar el tronco necesitas una cuerda en la mano.' };
+    if (inv.manosEn === 'tronco_largo') inv.manosEn = null;   // (de un tronco que ya no es suyo: se lo subieron a una rastra)
+    if (inv.manosEn) return { ok: false, motivo: 'Tienes las manos ocupadas.' };
+    if (o.arrastra) { o.ayuda = autor; inv.manosEn = 'tronco_largo'; return { ok: true, objeto: o.id, ayuda: true }; }
+    if (o.cosa.n > 1) {   // de una pila se aparta uno
+      o.cosa.n -= 1;
+      const u = { id: 's' + this.suelo.siguiente++, cosa: { tipo: o.cosa.tipo, n: 1 }, x: o.x, z: o.z, autor, soltado: ahora, desaparece: null };
+      if (Number.isFinite(o.giro)) u.giro = o.giro;
+      this.suelo.objetos.push(u);
+      o = u;
+    }
+    o.arrastra = autor;
+    o.desaparece = null;
+    inv.manosEn = 'tronco_largo';
+    return { ok: true, objeto: o.id };
+  }
+
+  // Soltar la cuerda: el tronco se queda donde está (rx, rz: donde lo ve su navegador, si está a su distancia).
+  soltarTronco(inv, autor, x, z, rx, rz, ahora, giro = 0) {
+    const o = this.troncoDe(autor, ahora);
+    if (inv && inv.manosEn === 'tronco_largo') inv.manosEn = null;
+    if (!o) return { ok: false, motivo: 'No tiras de ningún tronco.' };
+    if (o.ayuda === autor) { delete o.ayuda; return { ok: true, objeto: o.id }; }
+    let p = { x: rx, z: rz };
+    if (!Number.isFinite(rx) || !Number.isFinite(rz) || Math.abs(Math.hypot(rx - x, rz - z) - DETRAS_TRONCO) > MARGEN_SOLTAR + 0.4) p = { x: x - Math.sin(giro) * DETRAS_TRONCO, z: z - Math.cos(giro) * DETRAS_TRONCO };
+    o.x = redondo(p.x); o.z = redondo(p.z);
+    o.giro = redondo(Math.atan2(x - p.x, z - p.z) - Math.PI / 2);   // a lo largo de la cuerda (el modelo va a lo largo de X)
+    if (o.ayuda) { o.arrastra = o.ayuda; delete o.ayuda; } else delete o.arrastra;
+    return { ok: true, objeto: o.id, x: o.x, z: o.z };
   }
 
   // Lo que lleva, al suelo, a su lado (a la derecha de hacia donde mira).
@@ -204,6 +286,8 @@ const CAMPOS = {
   soltar_rastra: [],
   cargar_rastra: ['objeto'],
   descargar_rastra: ['objeto'],
+  atar_tronco: ['objeto'],
+  soltar_tronco: [],
 };
 // las de la carretilla: las mismas, con su nombre (lo que se anota en el registro dice qué se hizo)
 export const DE_CARRETILLA = { empujar_carretilla: 'enganchar_rastra', aparcar_carretilla: 'soltar_rastra', cargar_carretilla: 'cargar_rastra', descargar_carretilla: 'descargar_rastra' };
@@ -221,19 +305,21 @@ export function ejecutarRastra(rastras, invs, registro, accion, ahora, enTierras
   else if (!txt(a.autor)) r = { ok: false, motivo: 'Acción sin autor.' };
   else if (!TIPOS_RASTRA.has(a.tipo)) r = { ok: false, motivo: 'Acción desconocida.' };
   else if (!num(a.x) || !num(a.z) || CAMPOS[a.tipo].some(k => !txt(a[k]))
-    || ((a.tipo === 'soltar_rastra' || a.tipo === 'aparcar_carretilla') && ((a.rx !== undefined && !num(a.rx)) || (a.rz !== undefined && !num(a.rz))))
+    || ((a.tipo === 'soltar_rastra' || a.tipo === 'aparcar_carretilla' || a.tipo === 'soltar_tronco') && ((a.rx !== undefined && !num(a.rx)) || (a.rz !== undefined && !num(a.rz))))
     || ((a.tipo === 'cargar_rastra' || a.tipo === 'cargar_carretilla') && (a.de === undefined) === (a.suelo === undefined))
     || (a.de !== undefined && !txt(a.de)) || (a.suelo !== undefined && !txt(a.suelo))) r = { ok: false, motivo: 'Datos no válidos.' };
   else if (!num(ahora)) r = { ok: false, motivo: 'Sin hora.' };
   else {
     const inv = invs.de(a.autor), base = DE_CARRETILLA[a.tipo] || a.tipo;
     // la acción de la carretilla, sobre una carretilla; la de la rastra, sobre una rastra
-    const o = base === 'soltar_rastra' ? rastras.deAutor(a.autor, ahora) : rastras.rastra(a.objeto, ahora);
+    const o = base === 'soltar_rastra' ? rastras.deAutor(a.autor, ahora) : base.endsWith('_tronco') ? null : rastras.rastra(a.objeto, ahora);
     if (o && (o.cosa.tipo === 'carretilla') !== !!DE_CARRETILLA[a.tipo]) r = { ok: false, motivo: o.cosa.tipo === 'carretilla' ? 'Eso es una carretilla.' : 'Eso es una rastra.' };
     else switch (base) {
       case 'enganchar_rastra': r = rastras.enganchar(inv, a.objeto, a.x, a.z, ahora, a.autor); break;
       case 'soltar_rastra': r = rastras.soltar(inv, a.autor, a.x, a.z, a.rx, a.rz, ahora, num(giro) ? giro : 0, (x, z) => enTierras(a.autor, x, z)); break;
       case 'cargar_rastra': r = rastras.cargar(inv, a.objeto, a.x, a.z, ahora, a.autor, a.de, a.suelo); break;
+      case 'atar_tronco': r = rastras.atarTronco(inv, a.objeto, a.x, a.z, ahora, a.autor); break;
+      case 'soltar_tronco': r = rastras.soltarTronco(inv, a.autor, a.x, a.z, a.rx, a.rz, ahora, num(giro) ? giro : 0); break;
       case 'descargar_rastra': r = rastras.descargar(a.objeto, a.x, a.z, ahora, a.autor, (x, z) => enTierras(a.autor, x, z)); break;
     }
   }

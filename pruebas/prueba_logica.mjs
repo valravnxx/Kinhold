@@ -96,6 +96,22 @@ console.log('2b. Un mojón por personaje y tu tierra, la zona entera (valravnx, 
   comprobar('los invitados se guardan', guardado.invitadosDe('jugador:ana').join() === 'jugador:cai');
   comprobar('Ana se lo quita', A('jugador:ana', { tipo: 'desinvitar', a: 'jugador:cai' }).ok);
   comprobar('y Cai ya no construye allí', A('jugador:cai', { tipo: 'colocar', pieza: 'cim_piedra', x: 60, z: 160, k: 0, rot: 0, dir: 0 }).motivo === 'Primero coloca tu mojón.');
+  // el portón de empalizada sin hierro (P11c): solo lo abren el dueño de la tierra y sus invitados
+  const pe = A('jugador:ana', { tipo: 'colocar', pieza: 'empalizada_puerta', x: 41, z: 200, k: 0, rot: 0, dir: 0 });
+  comprobar('Ana pone un portón de empalizada en su tierra', pe.ok && !!pe.construccion, pe.motivo || '');
+  if (pe.ok) {
+    const usarP = (autor) => A(autor, { tipo: 'usar', construccion: pe.construccion.id, clave: pe.clave });
+    comprobar('en obras no se abre', !usarP('jugador:ana').ok);
+    delete pe.construccion.piezas.get(pe.clave).obra;   // (terminado: lo que cuesta, en pruebas/prueba_origenes.mjs)
+    const porton = () => pe.construccion.piezas.get(pe.clave).abierta === true;
+    comprobar('Ana lo abre', usarP('jugador:ana').ok && porton());
+    const deBlas = usarP('jugador:blas');
+    comprobar('Blas, de fuera, no lo cierra', !deBlas.ok && porton(), deBlas.motivo || '');
+    comprobar('Cai tampoco, sin invitación', !usarP('jugador:cai').ok && porton());
+    A('jugador:ana', { tipo: 'invitar', a: 'jugador:cai' });
+    comprobar('invitado, Cai sí lo cierra', usarP('jugador:cai').ok && !porton());
+    A('jugador:ana', { tipo: 'desinvitar', a: 'jugador:cai' });
+  }
   ponerZonas(null);
 }
 

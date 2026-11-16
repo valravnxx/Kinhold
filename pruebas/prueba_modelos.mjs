@@ -39,12 +39,12 @@ function hueco(tipo, x0, x1, y0, y1) {
   return dentro.slice(0, 4);
 }
 const a = P.anchoPuerta / 2;
-for (const t of ['muro_tronco_puerta', 'muro_tabla_puerta', 'muro_zarzo_puerta']) {
+for (const t of ['muro_tronco_puerta', 'muro_tabla_puerta', 'muro_zarzo_puerta', 'muro_entramado_puerta']) {
   const d = hueco(t, -a, a, 0, P.altoPuerta);
   comprobar(`${PIEZAS[t].nombre}: hueco de puerta libre hasta ${P.altoPuerta} m`, d.length === 0, d.join(' '));
 }
 const v = P.anchoVentana / 2;
-for (const t of ['muro_tronco_ventana', 'muro_tabla_ventana', 'muro_zarzo_ventana']) {
+for (const t of ['muro_tronco_ventana', 'muro_tabla_ventana', 'muro_zarzo_ventana', 'muro_entramado_ventana']) {
   const dv = hueco(t, -v, v, P.bajoVentana + 0.05, P.altoVentana);
   comprobar(`${PIEZAS[t].nombre}: hueco libre de ${P.bajoVentana} a ${P.altoVentana} m`, dv.length === 0, dv.join(' '));
 }
@@ -165,7 +165,7 @@ console.log('Tejados y rellenos bajo el tejado con el estilo v5');
     }
   }
   // rellenos: cierran del muro al tejado y no lo atraviesan
-  for (const muro of ['muro_tronco', 'muro_tabla', 'muro_zarzo', 'muro_entramado']) {
+  for (const muro of ['muro_tronco', 'muro_tabla', 'muro_zarzo', 'muro_entramado', 'muro_entramado_puerta']) {
     const r = rellenoTejado({ tipo: 'lado', lado: 1, muro, hBajo: 0, hAlto: 1 }, 0);
     const b = caja(r); let fuera = 0;
     r.traverse(o => { if (!o.isMesh) return; const pos = o.geometry.attributes.position;
@@ -205,7 +205,9 @@ console.log('Puertas, cercas, portillo, empalizada y mojón con el estilo v5');
   const bc = caja(modeloPieza('cerca'));
   comprobar('Cerca de varas: las varas llegan al borde de la casilla', bc.min.x > -MODULO / 2 - 0.05 && bc.min.x < -MODULO / 2 + 0.01 && bc.max.x < MODULO / 2 + 0.05, `x de ${r3(bc.min.x)} a ${r3(bc.max.x)}`);
   const be = caja(modeloPieza('empalizada'));
-  comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6 && Math.abs(be.min.y) < 0.02, `y de ${r3(be.min.y)} a ${r3(be.max.y)}`);
+  comprobar(`Empalizada: unos ${P.altoEmpalizada} m de alto con las puntas`, be.max.y > P.altoEmpalizada && be.max.y < P.altoEmpalizada + 0.6, `y hasta ${r3(be.max.y)}`);
+  // clavada (P11c): los troncos siguen bajo tierra, para que en ladera ningún pie quede en el aire
+  comprobar('Empalizada: los troncos van clavados, medio metro bajo tierra', be.min.y < -0.4 && be.min.y > -0.7, `y desde ${r3(be.min.y)}`);
 }
 
 console.log('Contraventana y trampilla con el estilo v5');

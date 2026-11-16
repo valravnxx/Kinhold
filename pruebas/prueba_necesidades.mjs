@@ -23,7 +23,7 @@ import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync } from 'fs
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
+import { nuevas, avanzar, esfuerzo, saciar, efectos, avisos, validarNecesidades, factorVelocidad, hayAguaCerca, aguaCerca, AGUA_SALADA, motivoSinBeber, RITMOS, ESFUERZOS, AVISO, FUERTE, TRAGO, ESPERA_TRAGO, NUTRE, comestible, frioDelSitio, nocheDe, delCombate, alientoMinimo, COMBATE } from '../src/logica/necesidades.js';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { PresenciaServidor } from '../src/logica/presencia.js';
 import { abrigo } from '../src/logica/prendas.js';
@@ -98,6 +98,13 @@ console.log('Beber del río (la lógica)');
   const rio = (x, z) => (x > 10 ? 1 : null);   // agua de x = 10 en adelante
   comprobar('con el agua a 1 m, hay agua cerca; a 2,5 m, también; a 4 m, no', hayAguaCerca(rio, 9, 0) && hayAguaCerca(rio, 7.6, 0) && !hayAguaCerca(rio, 6, 0));
   comprobar('dentro del agua, también', hayAguaCerca(rio, 12, 0));
+  // dulce o salada (P11b, 15 nov: el cubo se llena en el río, no en el mar): mar de x = -10 hacia atrás
+  const agua = (x) => (x > 10 || x < -10 ? 1 : null), mar = (x) => x < -10;
+  comprobar('junto al río, dulce; junto al mar, salada; en seco, nada', aguaCerca(agua, 9, 0, mar) === 'dulce' && aguaCerca(agua, -9, 0, mar) === 'salada' && aguaCerca(agua, 0, 0, mar) === null);
+  comprobar('beber: junto al mar, el aviso dice que es salada; en seco, que no hay agua', motivoSinBeber('salada') === AGUA_SALADA && /salada: no se bebe/.test(AGUA_SALADA) && /no hay agua/.test(motivoSinBeber(null)));
+  const boca = (x) => (x > 10 ? 1 : null), bocaMar = (x) => x > 11.5;   // (la desembocadura: río y mar a la vez)
+  comprobar('en la desembocadura, con río al lado, dulce', aguaCerca(boca, 9, 0, bocaMar) === 'dulce');
+  comprobar('sin saber dónde está el mar, toda el agua es dulce', aguaCerca(agua, -9, 0) === 'dulce');
   // el frío que pide el sitio (frioDelSitio)
   const lino = abrigo(['camisa_lino', 'pantalon_lino']), lana = abrigo(['camisa_lino', 'pantalon_lino', 'tunica_lana']);
   comprobar('la noche: de 20 a 4 entera, de día nada y al anochecer a medias', nocheDe(23) === 1 && nocheDe(2) === 1 && nocheDe(12) === 0 && nocheDe(19) === 0.5 && nocheDe(5) === 0.5);
@@ -108,6 +115,13 @@ console.log('Beber del río (la lógica)');
   comprobar('el bioma: en la taiga (1,5 °C) hace más frío, también de día', frioDelSitio({ T: 1.5, noche: 0, abrigo: lino }) > 0 && frioDelSitio({ T: 1.5, noche: 1, abrigo: lino }) > noche);
   comprobar('bajo techo, la mitad', frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true }) === noche / 2);
   comprobar('junto al fuego (a 2 m o menos) no hay frío, y a 3 m algo', frioDelSitio({ T: 9, noche: 1, abrigo: lino, calor: 0.5 }) === 0 && frioDelSitio({ T: 9, noche: 1, abrigo: lino, calor: 0.25 }) > 0);
+  // la lluvia (P11b, 15 nov): al raso suma, la ropa de hoy no la quita, bajo techo nada; la capa y la capucha (cubre), la quitan
+  const mojadoDia = frioDelSitio({ T: 9, noche: 0, abrigo: lino, lluvia: 1 }), mojadoNoche = frioDelSitio({ T: 9, noche: 1, abrigo: lino, lluvia: 1 });
+  comprobar('bajo la lluvia y al raso, más frío, de día y de noche', mojadoDia > dia && mojadoNoche > noche, `día ${dia} → ${mojadoDia}, noche ${noche} → ${mojadoNoche}`);
+  comprobar('la ropa de hoy no quita el frío de la lluvia (con lana, igual de mojado)', frioDelSitio({ T: 9, noche: 0, abrigo: lana, lluvia: 1 }) - frioDelSitio({ T: 9, noche: 0, abrigo: lana }) === mojadoDia - dia && mojadoDia - dia > 0);
+  comprobar('bajo techo, la lluvia no cuenta nada', frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true, lluvia: 1 }) === frioDelSitio({ T: 9, noche: 1, abrigo: lino, techo: true }));
+  comprobar('lo que cubre de la lluvia (la capa y la capucha, cuando lleguen) la quita', frioDelSitio({ T: 9, noche: 0, abrigo: lino, lluvia: 1, cubre: 1 }) === dia && frioDelSitio({ T: 9, noche: 0, abrigo: lino, lluvia: 1, cubre: 0.5 }) < mojadoDia);
+  comprobar('junto al fuego, ni con lluvia hay frío', frioDelSitio({ T: 9, noche: 1, abrigo: lino, lluvia: 1, calor: 0.5 }) === 0);
   comprobar(`un trago baja la sed ${TRAGO} y van uno cada ${ESPERA_TRAGO / 1000} s`, saciar({ ...nuevas(), sed: 70 }, 'sed', TRAGO).sed === 40 && ESPERA_TRAGO >= 1000);
 }
 
@@ -117,7 +131,7 @@ if (['1', '2', '4', '5', '7', '8', '10', '11'].includes(MUTAR)) {
   const fuente = readFileSync(ruta, 'utf8');
   const mutada = MUTAR === '1' ? fuente.replace('necesidades.set(a, avanzarNecesidades(', 'necesidades.set(a, ((n) => n)(')
     : MUTAR === '2' ? fuente.replace("const velocidad = e && p && dt > 0 ? Math.hypot(e.x - p.x, e.z - p.z) / dt : 0;", "const velocidad = e && e.anim === 'correr' ? 6 : 0;")
-    : MUTAR === '4' ? fuente.replace('if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z))', 'if (!terreno || !p)')
+    : MUTAR === '4' ? fuente.replace("if (!p || (agua !== 'dulce' && ", "if (!p || (false && ")
     : MUTAR === '7' ? fuente.replace('calor: calorEn(cerca, e.x, e.z, ahora)', 'calor: 0')
     : MUTAR === '8' ? fuente.replace('noche: nocheDe(horaDe(horaMundo()).hora)', 'noche: 0')
     : MUTAR === '10' ? fuente.replace("const sentado = !!e && e.anim === 'sentado' && velocidad < 0.3;", 'const sentado = false;')
@@ -249,6 +263,12 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     if (cerca && !orilla) orilla = { x, z }; else if (!cerca && !seco) seco = { x, z };
   }
   comprobar('hay una orilla y un sitio seco cerca de la salida', !!orilla && !!seco, JSON.stringify({ orilla, seco }));
+  // dulce o salada en el terreno de verdad (P11b, 15 nov): la orilla de cerca es del río; la costa, hacia el suroeste
+  // (unos 6,4 km), del mar
+  comprobar('la orilla de cerca de la salida es de agua dulce (el río)', !!orilla && aguaCerca(T.aguaEn, orilla.x, orilla.z, T.marEn) === 'dulce');
+  let costa = null;
+  for (let r = 6500, a = 41 / 64 * 2 * Math.PI; r > 5000 && !costa; r -= 1) if (!T.aguaEn(Math.cos(a) * r, Math.sin(a) * r)) costa = { x: Math.cos(a) * r, z: Math.sin(a) * r };
+  comprobar('en la costa, el agua es salada', !!costa && aguaCerca(T.aguaEn, costa.x, costa.z, T.marEn) === 'salada', JSON.stringify(costa));
   const dir2 = mkdtempSync(join(tmpdir(), 'kinhold-beber-'));
   let srv2 = null;
   try {
@@ -270,6 +290,13 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     await pausa(ESPERA_TRAGO);
     r = await beberAqui(orilla, 904);
     comprobar('pasado el rato, otro trago', r.ok && r.datos.sed < 70 - TRAGO, JSON.stringify(r.datos || r.motivo));
+    // el agua salada no se bebe (valravnx, 15 nov): en la costa, el servidor dice que es salada y la sed no baja
+    if (costa) {
+      await pausa(ESPERA_TRAGO);
+      const antes = srv2.necesidades.get(c.bienvenida.autor).sed;
+      r = await beberAqui(costa, 905);
+      comprobar('en la costa (agua salada), no se bebe: el aviso dice que es salada y la sed no baja', !r.ok && r.motivo === AGUA_SALADA && srv2.necesidades.get(c.bienvenida.autor).sed >= antes, r.motivo);
+    }
     c.ws.close();
   } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
   finally { await pausa(300); if (srv2) await srv2.cerrar(); }
@@ -294,6 +321,12 @@ console.log('Beber con el servidor de verdad y el terreno de Whitholm');
     await estarAhi(p.x, p.z, 3000);
     const f2 = srv3.necesidades.get(yo).frio;
     comprobar('a 1 m de una hoguera encendida, baja', f2 < f1 - 0.3, `${f1.toFixed(2)} → ${f2.toFixed(2)}`);
+    // la lluvia (P11b): lejos del fuego, con el tiempo fijo; en seco y luego lloviendo, desde el mismo frío
+    delete srv3.objetos.fab.estaciones.prueba_hoguera;
+    const subeCon = async (tiempo) => { globalThis.__tiempo = tiempo; srv3.necesidades.set(yo, { ...nuevas(), frio: 40 }); await estarAhi(p.x, p.z, 3000); return srv3.necesidades.get(yo).frio - 40; };
+    const enSeco = await subeCon('seco'), conLluvia = await subeCon(MUTAR === '12' ? 'seco' : 'lluvia');
+    delete globalThis.__tiempo;
+    comprobar('lloviendo y al raso, el frío sube más que en seco', conLluvia > enSeco + 0.3, `seco ${enSeco.toFixed(2)}, lluvia ${conLluvia.toFixed(2)}`);
     c.ws.close();
   } catch (e) { mal++; console.log('  FALLA ' + (e && e.stack || e)); }
   finally { await pausa(300); if (srv3) await srv3.cerrar(); await pausa(300); rmSync(dir2, { recursive: true, force: true }); rmSync(dir3, { recursive: true, force: true }); if (copia) rmSync(copia, { force: true }); }

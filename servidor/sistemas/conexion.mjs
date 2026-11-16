@@ -12,8 +12,9 @@ import { Limitador } from '../../src/logica/limites.js';
 import { GRATIS_AUTOCONSTRUIR } from '../../src/logica/admin.js';
 import { trozoDe, LADO_RED, RADIO_RED } from '../../src/logica/trozos_red.js';
 import { sitioAccion, sitioColocada, comunDe, obrasEnTrozos } from '../../src/logica/obras_red.js';
-import { ALCANCE_LABRAR, ALCANCE_SEMBRAR, ALCANCE_SEGAR, ALCANCE_ESCARDAR, labradoEn } from '../../src/logica/campos.js';
+import { ALCANCE_LABRAR, ALCANCE_SEMBRAR, ALCANCE_SEGAR, ALCANCE_ESCARDAR, ALCANCE_REGAR, labradoEn } from '../../src/logica/campos.js';
 import { dejarSobra } from '../../src/logica/suelo.js';
+import { honduraEn, ALCANCE_POZO } from '../../src/logica/pozo.js';
 import { limpiarTexto, validarFrase, FRASES, quienOye, MOTIVO_VACIO, MOTIVO_DESPACIO } from '../../src/logica/charla.js';
 import { redondear as redondearNecesidades, factorVelocidad as velocidadNecesidades } from '../../src/logica/necesidades.js';
 import { DESCONECTADO } from '../../src/logica/dormidos.js';
@@ -313,11 +314,14 @@ function atenderAccion(S, c, msg) {
   // los campos (P11): la estaca, donde está el jugador (lo que diga el navegador no cuenta), y el linde, contra el
   // agua, la pendiente y los puestos de trabajo (src/logica/campos.js, mundo.entorno)
   // (la hora la pone el servidor; solo en la prueba de cosechar, con KINHOLD_PRUEBAS_HORA=campos, una pasada al sembrar)
-  if (['labrar', 'sembrar', 'segar', 'coger_planta', 'escardar'].includes(accion.tipo)) accion.t = S.horaCampos && accion.tipo === 'sembrar' && Number.isFinite(accion.t) && accion.t < Date.now() ? accion.t : Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
-  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' || accion.tipo === 'labrar' || accion.tipo === 'sembrar' || accion.tipo === 'segar' || accion.tipo === 'coger_planta' || accion.tipo === 'escardar' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
-  if (accion.tipo === 'estaca' || accion.tipo === 'labrar') mundo.entorno = entornoCampos(S);
-  const r = lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
-  if (lejosCampo || sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
+  if (['labrar', 'sembrar', 'segar', 'coger_planta', 'escardar', 'regar'].includes(accion.tipo)) accion.t = S.horaCampos && accion.tipo === 'sembrar' && Number.isFinite(accion.t) && accion.t < Date.now() ? accion.t : Date.now();   // la hora de la pasada, la del servidor (para el plazo del barbecho)
+  const lejosCampo = accion.tipo === 'estaca' || accion.tipo === 'quitar_estaca' || accion.tipo === 'labrar' || accion.tipo === 'sembrar' || accion.tipo === 'segar' || accion.tipo === 'coger_planta' || accion.tipo === 'escardar' || accion.tipo === 'regar' ? fueraDelCampo(mundo, accion, presencia.ultimo.get(autor)) : null;
+  if (accion.tipo === 'estaca' || accion.tipo === 'labrar' || accion.tipo === 'pozo') mundo.entorno = entornoCampos(S);
+  // el pozo (P11b): a qué hondura está el agua ahí lo dice el terreno del servidor (lo que diga el navegador no cuenta)
+  if (accion.tipo === 'pozo') { delete accion.hondura; if (terreno && Number.isFinite(accion.x) && Number.isFinite(accion.z)) { const h = honduraEn(terreno, accion.x, accion.z); if (h !== null) accion.hondura = h; } }
+  const lejosPozo = accion.tipo === 'pozo' || accion.tipo === 'cavar_pozo' || accion.tipo === 'revestir_pozo' || accion.tipo === 'rematar_pozo' ? lejosDelPozo(mundo, accion, presencia.ultimo.get(autor)) : null;
+  const r = lejosPozo ? lejosPozo : lejosCampo ? lejosCampo : soloServidor ? { ok: false, motivo: 'Acción desconocida.' } : sinArcon ? { ok: false, motivo: 'Aquí no hay arcón.' } : contraTerreno ? { ok: false, motivo: contraTerreno } : lejos || ejecutar(mundo, registro, accion, usaInventario ? objetos.invs : null);
+  if (lejosPozo || lejosCampo || sinArcon || contraTerreno || lejos) registro.anotar(accion, r);
   const entrada = registro.entradas[registro.entradas.length - 1];
   registro.entradas.length = 0;   // lo guardado va al archivo; en memoria basta con el mundo
   appendFileSync(archivo, JSON.stringify(entrada) + '\n');
@@ -334,6 +338,10 @@ function atenderAccion(S, c, msg) {
   if (r.ok && accion.tipo === 'labrar') cansar(autor, 'labrar');       // y cada pasada de azada (P11)
   if (r.ok && accion.tipo === 'segar') cansar(autor, 'segar');         // y de hoz
   if (r.ok && accion.tipo === 'escardar') cansar(autor, 'escardar');   // y de escarda (14 nov)
+  if (r.ok && accion.tipo === 'regar') cansar(autor, 'regar');         // y de regar (P11b, 14 nov)
+  if (r.ok && accion.tipo === 'cavar_pozo') cansar(autor, 'cavar_pozo');   // y cada golpe de pala en el pozo (P11b, 15 nov)
+  if (r.ok && accion.tipo === 'revestir_pozo') cansar(autor, 'revestir_pozo');
+  if (r.ok && accion.tipo === 'rematar_pozo') cansar(autor, 'rematar_pozo');
   if (r.ok) {
     // solo a quien tiene su trozo alrededor (y al autor); lo que no tiene sitio, a todos
     const sitio = accion.tipo === 'colocar' ? (sitioColocada(r) || sitioAntes) : sitioAntes;
@@ -398,7 +406,15 @@ function fueraDelCampo(mundo, a, pos) {
   let p = a;
   if (a.tipo === 'quitar_estaca') { const c = (mundo.campos || []).find(x => x.id === a.campo); p = c && Number.isInteger(a.i) ? c.puntos[a.i] : null; if (!p) return null; }
   if (!Number.isFinite(p.x) || !Number.isFinite(p.z)) return null;
-  return Math.hypot(p.x - pos.x, p.z - pos.z) > (a.tipo === 'labrar' ? ALCANCE_LABRAR + 0.5 : a.tipo === 'sembrar' ? ALCANCE_SEMBRAR + 0.5 : a.tipo === 'segar' ? ALCANCE_SEGAR + 0.5 : a.tipo === 'escardar' ? ALCANCE_ESCARDAR + 0.5 : 3) ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
+  return Math.hypot(p.x - pos.x, p.z - pos.z) > (a.tipo === 'labrar' ? ALCANCE_LABRAR + 0.5 : a.tipo === 'sembrar' ? ALCANCE_SEMBRAR + 0.5 : a.tipo === 'segar' ? ALCANCE_SEGAR + 0.5 : a.tipo === 'escardar' ? ALCANCE_ESCARDAR + 0.5 : a.tipo === 'regar' ? ALCANCE_REGAR + 0.5 : 3) ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
+}
+// El pozo se marca donde está el jugador (como mucho a 1 m de donde lo tiene el servidor) y se cava y se reviste a su
+// lado (ALCANCE_POZO, con medio metro de holgura por el retraso).
+function lejosDelPozo(mundo, a, pos) {
+  if (!pos || !Number.isFinite(pos.x) || !Number.isFinite(pos.z)) return { ok: false, motivo: 'El servidor aún no sabe dónde estás.' };
+  const p = a.tipo === 'pozo' ? a : (mundo.pozos || []).find(x => x.id === a.pozo);
+  if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.z)) return null;
+  return Math.hypot(p.x - pos.x, p.z - pos.z) > (a.tipo === 'pozo' ? 1 : ALCANCE_POZO + 0.5) ? { ok: false, motivo: 'Estás demasiado lejos.' } : null;
 }
 // Lo que la lógica de los campos no sabe del terreno: el agua, la pendiente (m por m, en 3 m) y los puestos de trabajo.
 function entornoCampos(S) {

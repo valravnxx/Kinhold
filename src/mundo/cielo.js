@@ -18,7 +18,8 @@ import { rellenoPlantas } from './naturaleza_meshy.js';
 function estadoVacio() {
   return {
     activo: true, sol: new THREE.Vector3(0, 1, 0), luna: new THREE.Vector3(0, -1, 0), colorSol: new THREE.Color(1, 1, 1),
-    arriba: new THREE.Color(), horizonte: new THREE.Color(), estrellas: 0, giro: new THREE.Matrix3(), tiempo: 0,
+    arriba: new THREE.Color(), horizonte: new THREE.Color(), estrellas: 0, giro: new THREE.Matrix3(), tiempo: 0, cubierto: 0, mojado: 0,
+    niebla: 0, colorNiebla: new THREE.Color(0.8, 0.8, 0.8), nieblaCerca: 8, nieblaLejos: 60, nieblaMax: 0.95,
   };
 }
 
@@ -33,6 +34,43 @@ function cieloV5() {
   };
 }
 
+// El cielo cubierto (P11b, la lluvia; src/mundo/tiempo_vista.js): n de 0 (como esté) a 1 (cubierto del todo). El cielo
+// y la luz del cielo van hacia un gris de lo claro que sea ese momento (de día, gris claro; de noche, casi negro), el
+// sol pierde fuerza (la sombra casi se va) y su color, y las estrellas se tapan. Devuelve otro objeto (c no se toca).
+const lum = (hex) => { const r = (hex >> 16 & 255) / 255, g = (hex >> 8 & 255) / 255, b = (hex & 255) / 255; return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+function haciaGris(hex, n, k = 1) {
+  const l = Math.min(1, lum(hex) * k), a = new THREE.Color(hex), b = new THREE.Color().setRGB(l * 0.98, l, l * 1.03, THREE.SRGBColorSpace);
+  a.setHex(hex, THREE.SRGBColorSpace).lerp(b, n);
+  return a.getHex(THREE.SRGBColorSpace);
+}
+export function cubrir(c, n) {
+  if (!(n > 0)) return c;
+  const g = Math.min(1, n);
+  return {
+    ...c,
+    arriba: haciaGris(c.arriba, 0.85 * g, 0.92), horizonte: haciaGris(c.horizonte, 0.8 * g, 0.88), colorSol: haciaGris(c.colorSol, 0.7 * g),
+    estrellas: c.estrellas * (1 - g),
+    luz: { ...c.luz, color: haciaGris(c.luz.color, 0.6 * g), intensidad: c.luz.intensidad * (1 - 0.8 * g) },
+    hemi: { ...c.hemi, arriba: haciaGris(c.hemi.arriba, 0.7 * g), suelo: haciaGris(c.hemi.suelo, 0.3 * g), intensidad: c.hemi.intensidad * (1 + 0.1 * g) },
+    cubierto: g,
+  };
+}
+
+// La niebla de la mañana (P11b; src/mundo/tiempo_vista.js): n de 0 (nada) a 1 (espesa). El sol se apaga y se ablanda (la
+// sombra casi se va), la luz del cielo se vuelve más blanca y pareja, y el color de la niebla es un gris claro de lo
+// claro que sea ese momento (al amanecer, más oscuro; a media mañana, casi blanco). Devuelve otro objeto.
+export function empanar(c, n) {
+  if (!(n > 0)) return c;
+  const g = Math.min(1, n);
+  return {
+    ...c,
+    colorSol: haciaGris(c.colorSol, 0.6 * g),
+    luz: { ...c.luz, color: haciaGris(c.luz.color, 0.5 * g), intensidad: c.luz.intensidad * (1 - 0.6 * g) },
+    hemi: { ...c.hemi, arriba: haciaGris(c.hemi.arriba, 0.6 * g, 1.05), suelo: haciaGris(c.hemi.suelo, 0.25 * g), intensidad: c.hemi.intensidad * (1 + 0.15 * g) },
+    niebla: g, colorNiebla: haciaGris(c.horizonte, 0.85, 1.08),
+  };
+}
+
 // ambiente: el de src/mundo/ambiente.js; reloj(): la hora real del servidor (ms)
 export function crearCielo({ ambiente, reloj = () => Date.now() }) {
   const q = new URLSearchParams(location.search);
@@ -43,6 +81,8 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
   const A = new THREE.Vector3(), B = new THREE.Vector3(), P = new THREE.Vector3();
   const col = new THREE.Color();
   let actual = null;
+  let cub = 0, cubPuesto = -1;   // lo cubierto que está el cielo (nublar) y el que se puso la última vez (las pruebas, v5)
+  let neb = 0;                   // la niebla (nieblar; en cubPuesto va con lo cubierto)
 
   function aplicar(c) {
     actual = c;
@@ -51,7 +91,9 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
     // los colores, tal como se ven (sRGB), que es como los mezcla la niebla (setHex los pasa a luz lineal: se deshace)
     estado.colorSol.setHex(c.colorSol).convertLinearToSRGB();
     estado.arriba.setHex(c.arriba).convertLinearToSRGB(); estado.horizonte.setHex(c.horizonte).convertLinearToSRGB();
-    estado.estrellas = c.estrellas;
+    estado.estrellas = c.estrellas; estado.cubierto = c.cubierto || 0;
+    estado.niebla = c.niebla || 0;
+    if (c.colorNiebla !== undefined) estado.colorNiebla.setHex(c.colorNiebla).convertLinearToSRGB();
     rellenoPlantas.value = 1.4 - 0.7 * c.estrellas;   // (las plantas: más luz del cielo de día, menos de noche)
     // las estrellas: su sitio en el cielo que gira (filas: el punto del ecuador a la hora del sol, el de 90° más allá y el polo)
     const h = c.giro, lat = 42 * Math.PI / 180;
@@ -66,9 +108,9 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
   function paso() {
     estado.tiempo = performance.now() / 1000;
     // (las pruebas: la luz «mañana» quieta y el cielo de antes, el degradado de la página: así dibujan igual que antes)
-    if (fijo === 'v5') { if (!actual) { aplicar(cieloV5()); estado.activo = false; } return actual; }
+    if (fijo === 'v5') { if (!actual || cubPuesto !== `${cub}|${neb}`) { aplicar(empanar(cubrir(cieloV5(), cub), neb)); cubPuesto = `${cub}|${neb}`; estado.activo = false; } return actual; }
     estado.activo = true;
-    aplicar(cieloDe(reloj(), fijo));
+    aplicar(empanar(cubrir(cieloDe(reloj(), fijo), cub), neb));
     return actual;
   }
 
@@ -79,6 +121,19 @@ export function crearCielo({ ambiente, reloj = () => Date.now() }) {
     // para las pruebas y el admin: una hora del mundo quieta ({ hora, fase }), 'v5', o null (la del servidor)
     poner(f) { fijo = f && f !== 'v5' ? { dias: 0, ...f } : f; actual = null; return paso(); },
     get fijo() { return fijo; },
+    // lo cubierto que está el cielo (0–1; src/mundo/tiempo_vista.js): se ve en el siguiente paso
+    nublar(n) { cub = Math.round(Math.min(1, Math.max(0, n)) * 1000) / 1000; },
+    get cubierto() { return cub; },
+    // la niebla (0–1; src/mundo/tiempo_vista.js), y hasta dónde se ve: { cerca, lejos } (m: de nada a lo más espesa) y
+    // max (lo más que tapa, para no perder del todo lo de detrás); la pinta la niebla del posprocesado
+    nieblar(n, { cerca = 8, lejos = 60, max = 0.95 } = {}) {
+      neb = Math.round(Math.min(1, Math.max(0, n)) * 1000) / 1000;
+      estado.nieblaCerca = cerca; estado.nieblaLejos = lejos; estado.nieblaMax = max;
+    },
+    get niebla() { return neb; },
+    // lo mojado que se ve el suelo (0–1; src/mundo/tiempo_vista.js y src/logica/mojado.js): lo pinta la niebla
+    mojar(m) { estado.mojado = Math.round(Math.min(1, Math.max(0, m)) * 1000) / 1000; },
+    get mojado() { return estado.mojado; },
     // para las pruebas: lo claro que es lo que refleja el agua (luz lineal, 0–1)
     get agua() { const c = cieloAgua.value; return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; },
     // cuándo (hora real) es la próxima vez que el mundo tiene esa hora

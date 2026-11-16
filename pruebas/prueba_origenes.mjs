@@ -12,12 +12,13 @@
 // Uso: node pruebas/prueba_origenes.mjs
 //      MUTAR=1 → como si los juncos no se pudieran cortar (sin tejado de la casa humilde: tiene que fallar)
 //      MUTAR=2 → como si la tarea de lo pendiente ya estuviera hecha (tiene que fallar)
+//      MUTAR=3 → como si la empalizada siguiera escondida (tiene que fallar)
 import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 import { OBJETO_DE_MATERIAL } from '../src/logica/inventario.js';
 import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.js';
 import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON } from '../src/logica/tala.js';
-import { TROCEO } from '../src/logica/troceo.js';
+import { TROCEO, MODOS_TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
 import { REPARAR, reparacionDe } from '../src/logica/desgaste.js';
 import { PRENDAS } from '../src/logica/prendas.js';
@@ -42,7 +43,7 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  agua: ['el cubo aún no se llena en el río', 'El cubo lleno de agua y la corteza de roble'],
+  agua: ['el cubo ya se llena en el río (P11b), pero su agua aún no se echa en las cubas', 'El cubo lleno de agua y la corteza de roble'],
   corteza_roble: ['descortezar aún da la misma corteza en todos los árboles', 'El cubo lleno de agua y la corteza de roble'],
   est_cubas_curtido: ['aún no hay cubas de curtido', 'Las cubas de curtido y el cuero'],
   cuero: ['sale de las cubas', 'Las cubas de curtido y el cuero'],
@@ -77,9 +78,17 @@ const ESENCIAL = {
   oficios: ['est_secadero', 'carne_seca', 'est_raspador', 'piel_limpia', 'zurron', 'agua', 'corteza_roble', 'est_cubas_curtido',
     'cuero', 'huso', 'hilo', 'zapatos_cuero', 'cinto_cuero', 'est_carbonera', 'carbon'],
   granja: ['semilla_cebada', 'habas', 'semilla_col', 'semilla_nabo', 'estaca', 'gavilla', 'col', 'nabo', 'est_era', 'paja', 'grano_sucio', 'criba_grano'],   // (el grano de cebada es su semilla: semilla_cebada)
+  lluvia: ['cubo', 'cubo_agua', 'col', 'nabo', 'est_pozo'],   // (regar el huerto: el cubo lleno en el río, y la col y el nabo que se riegan)
+  'casa-fuerte': ['tronco_largo', 'rodaja', 'carretilla'],   // (P11c; sus piezas, en PIEZAS_ESENCIALES)
+  canoa: ['canoa', 'remo'],   // (P11d)
   hierro: ['criba', 'mineral_hierro', 'est_horno_reduccion', 'lupia', 'fuelle', 'est_fragua', 'barra_hierro', 'mango', 'hacha_hierro',
     'pico', 'clavo', 'sierra', 'tabla', 'bloque_piedra', 'arcilla', 'est_horno_ceramico', 'teja'],
 };
+// Las piezas de construir que cada hito vivo deja a la vista en el menú, con todo su coste saliendo del mundo.
+const PIEZAS_ESENCIALES = {
+  'casa-fuerte': ['empalizada', 'empalizada_puerta', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana'],   // (P11c)
+};
+if (MUTAR === '3') delete PIEZAS.empalizada.destapada;
 
 // ---- lo que se puede tener, partiendo de nada ----
 const hay = new Set(), como = {};   // tipo del catálogo → cómo se consigue (la primera vez)
@@ -96,7 +105,14 @@ for (let nuevo = true; nuevo;) {
     if (tieneAlguna(Object.keys(HACHAS))) { if (poner(d.tronco, `talar un árbol ${edad}`)) nuevo = true; if (poner(d.menudo, `talar un árbol ${edad}`)) nuevo = true; }
   // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto
   if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
+  // el cubo lleno (P11b, regar el huerto): el cubo vacío en la mano, junto al río (src/logica/campos.js, llenarCubo)
+  if (hay.has('cubo') && poner('cubo_agua', 'llenar el cubo en el río')) nuevo = true;
+  // el pozo (P11b; src/logica/pozo.js): se cava con la pala de madera, se reviste de piedra y se remata con el brocal
+  // de piedra y el travesaño de varas con su cuerda; de él se saca agua con el cubo
+  if (['pala_madera', 'piedra', 'vara', 'cuerda'].every(t => hay.has(t)) && poner('est_pozo', 'cavar, revestir y rematar un pozo')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
+  // la canoa de un tronco (P11d; src/logica/canoa.js): el tronco largo, vaciado a golpes de hacha y con brasas de una hoguera
+  if (hay.has('tronco_largo') && tieneAlguna(Object.keys(HACHAS)) && hay.has('est_hoguera') && poner('canoa', 'vaciar un tronco largo con el hacha y las brasas de la hoguera')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
   if (tieneAlguna(['lanza_endurecida']) && poner('liebre', 'cazar lanzando la lanza')) nuevo = true;
   // la granja (P11): el campo se marca con estacas y se labra con la azada; se siembra lo silvestre y, maduro, la cebada
@@ -106,6 +122,9 @@ for (let nuevo = true; nuevo;) {
   if (campo && hay.has('semilla_col') && poner('col', 'coger la col sembrada')) nuevo = true;
   if (campo && hay.has('semilla_nabo') && poner('nabo', 'coger el nabo sembrado')) nuevo = true;
   for (const [t, d] of Object.entries(TROCEO)) if (hay.has(t) && tieneAlguna(Object.keys(HACHAS)) && poner(d.da, `${d.accion} un ${t}`)) nuevo = true;
+  // los otros modos de trocear (P11c): la rodaja del tronco largo, con el resto en troncos cortos
+  for (const modo of Object.values(MODOS_TROCEO)) for (const [t, d] of Object.entries(modo))
+    if (hay.has(t) && tieneAlguna(Object.keys(HACHAS))) { if (poner(d.da, `cortar la ${d.da} de un ${t}`)) nuevo = true; if (d.resto && poner(d.resto, `cortar la ${d.da} de un ${t}`)) nuevo = true; }
   for (const [e, d] of Object.entries(ESTACIONES)) if (estacionHecha(e) && poner('est_' + e, 'se levanta')) nuevo = true;
   for (const [k, r] of Object.entries(RECETAS)) {
     if (r.fuera) continue;   // (fuera del tramo: no se enseña ni se hace)
@@ -159,6 +178,15 @@ for (const [id, lista] of Object.entries(ESENCIAL)) {
     const p = PENDIENTES[m];
     ok(`${id}: «${m}» se puede tener o espera su tarea viva`, hay.has(m) || (!!p && viva(p[1])),
       hay.has(m) ? como[m] : p ? `pendiente: ${p[0]} (tarea «${p[1]}»${viva(p[1]) ? '' : ': no existe o ya está hecha'})` : 'no está en PENDIENTES');
+  }
+}
+for (const [id, lista] of Object.entries(PIEZAS_ESENCIALES)) {
+  const hito = roadmap.hitos.find(x => x.id === id);
+  if (!hito || hito.estado === 'congelado' || hito.estado === 'hecho') continue;
+  for (const k of lista) {
+    const d = PIEZAS[k], sin = d ? sePuede(d.coste) : [];
+    ok(`${id}: la pieza «${k}» se enseña en el menú y se hace con lo que sale del mundo`, !!d && enEsteTramo(d) && !sin.length,
+      !d ? 'no existe' : !enEsteTramo(d) ? 'escondida' : sin.length ? `sin ${sin.join(', ')}` : Object.keys(d.coste).map(m => `${m}: ${como[OBJETO_DE_MATERIAL[m] || m]}`).join('; '));
   }
 }
 // ---- 4. nada sobra en PENDIENTES ----

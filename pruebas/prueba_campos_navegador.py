@@ -29,7 +29,7 @@ web = servir(sitio)
 s = socket.socket(); s.bind(('127.0.0.1', 0)); PUERTO = s.getsockname()[1]; s.close()
 OBJETOS = os.path.join(sitio, 'objetos.json')
 servidor = subprocess.Popen(['node', os.path.join(RAIZ, 'servidor/servidor.mjs'), str(PUERTO), os.path.join(sitio, 'mundo.jsonl')], cwd=RAIZ,
-                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_PRUEBAS_ARCON': 'si', 'KINHOLD_PRUEBAS_SALIDA': 'comun', 'KINHOLD_PRUEBAS_MOVIMIENTO': 'libre', 'KINHOLD_PRUEBAS_HORA': 'campos'},
+                            env={**os.environ, 'KINHOLD_PRUEBAS_ALTAS': 'libres', 'KINHOLD_PRUEBAS_ARCON': 'si', 'KINHOLD_PRUEBAS_SALIDA': 'comun', 'KINHOLD_PRUEBAS_MOVIMIENTO': 'libre', 'KINHOLD_PRUEBAS_HORA': 'campos', 'KINHOLD_PRUEBAS_TIEMPO': 'seco'},
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 servidor.stdout.readline()
 codigos = Codigos(servidor)
@@ -77,6 +77,8 @@ def entrar(nav, nombre, vista, movil):
     if MUTAR:
         ctx.add_init_script("""(() => { const s = WebSocket.prototype.send;
           WebSocket.prototype.send = function (d) { if (String(d).includes('"tipo":"accion"')) return; return s.call(this, d); }; })()""")
+    # el tiempo, sin llover (como el servidor, KINHOLD_PRUEBAS_TIEMPO): lo regado y lo mustio, igual en todos (P11b)
+    ctx.add_init_script("globalThis.__tiempo = 'seco';")
     pg = ctx.new_page(); err = []
     pg.on('pageerror', lambda e, err=err: err.append(str(e)))
     pg.on('console', lambda m, err=err: err.append(m.text) if m.type == 'error' else None)
@@ -119,6 +121,19 @@ for (let r = 20; r < 3000; r += 10) { const id = T.zona(-r, 4); if (id === null 
 console.log('null');"""
     out = subprocess.run(['node', '--input-type=module', '-e', js], cwd=RAIZ, capture_output=True, text=True, timeout=600).stdout.strip().splitlines()
     return json.loads(out[-1])
+def sitio_rio(cx, cz):
+    # el sitio en seco más cercano al campo con agua al lado (río, lago o mar; como beber), y hacia dónde mirar el agua
+    js = f"""import {{ terrenoWhitholm }} from './src/logica/terreno_servidor.js';
+import {{ hayAguaCerca }} from './src/logica/necesidades.js';
+const T = terrenoWhitholm();
+for (let r = 4; r < 4000; r += (r < 900 ? 3 : 6)) for (let a = 0; a < 6.283; a += (r < 900 ? 1.5 : 4) / r) {{
+  const x = {cx} + Math.cos(a) * r, z = {cz} + Math.sin(a) * r;
+  if (T.aguaEn(x, z) !== null || !hayAguaCerca(T.aguaEn, x, z)) continue;
+  let rot = 0; for (let b = 0; b < 6.283; b += 0.2) if (T.aguaEn(x + Math.sin(b) * 2, z + Math.cos(b) * 2) !== null) {{ rot = b; break; }}
+  console.log(JSON.stringify({{ x, z, rot }})); process.exit(0); }}
+console.log('null');"""
+    out = subprocess.run(['node', '--input-type=module', '-e', js], cwd=RAIZ, capture_output=True, text=True, timeout=600).stdout.strip().splitlines()
+    return json.loads(out[-1]) if out else None
 def lineas_mundo():
     try: return [json.loads(l) for l in open(os.path.join(sitio, 'mundo.jsonl')) if l.strip()]
     except Exception: return []
@@ -289,7 +304,7 @@ try:
         # las fases: se adelanta la hora de lo sembrado solo en este navegador (lo del servidor no cambia), para verlas todas
         DIA = 24 * 3600 * 1000
         def edades(cebada, plantas):
-            A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0], ahora = Date.now(), e = {plantas}; c.voleo = {{ ...c.voleo, t: c.voleo.t.map(() => ahora - {cebada}) }}; c.plantas = c.plantas.map((p, i) => ({{ ...p, t: ahora - e[i % 4] }})); {K}.camposV.poner({K}.mundo.campos); }})()")
+            A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0], ahora = Date.now(), e = {plantas}; c.voleo = {{ ...c.voleo, t: c.voleo.t.map(() => ahora - {cebada}) }}; c.plantas = c.plantas.map((p, i) => ({{ ...p, t: ahora - e[i % 4], ag: ahora }})); {K}.camposV.poner({K}.mundo.campos); }})()")
             A.wait_for_timeout(1500)
         edades(2.5 * DIA, [0.5 * DIA, 2.5 * DIA, 5 * DIA, 8 * DIA])
         comprobar('crecido: la cebada verde y las plantas en sus cuatro fases', A.evaluate(f"['planta_cebada_1', 'planta_habas_0', 'planta_habas_1', 'planta_habas_2', 'planta_habas_3', 'planta_col_2', 'planta_nabo_3'].every(n => !!{K}.escena.getObjectByName(n))"))
@@ -342,6 +357,61 @@ try:
         ir(A, x0 + 6, z0 + 6.6, 0); A.evaluate(f"{K}.cam.yaw = Math.PI; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.6"); A.wait_for_timeout(1500)
         captura(A, f'{SALIDA}/PC_escardado.png')
 
+        print('Regar el huerto (P11b, 14 nov): dos coles y un nabo «de hace tres días», sin una gota')
+        EN_MANO = lambda t: f"['mano:der', 'mano:izq'].some(m => ({K}.inventario.lugares[m] || {{}}).tipo === '{t}')"
+        manos_vacias()
+        coger(A, 'azada', 1, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'azada'", 5000)
+        lab_antes = sum(1 for e in lineas_mundo() if e.get('tipo') == 'labrar' and e.get('ok'))
+        for dx in (-1.2, 0, 1.2):
+            ir(A, x0 + 10.1 + dx, z0 + 8.6 - 1.6, 0); A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(450)
+        servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'labrar' and e.get('ok')) >= lab_antes + 3)
+        HUERTO = ((x0 + 9.4, z0 + 8.2, 'semilla_col', 'col'), (x0 + 10.8, z0 + 8.2, 'semilla_col', 'col'), (x0 + 10.1, z0 + 8.9, 'semilla_nabo', 'nabo'))   # (a más de 1 m del linde)
+        sem_antes = sum(1 for e in lineas_mundo() if e.get('tipo') == 'sembrar' and e.get('ok'))
+        for xx, zz, semilla, cultivo in HUERTO:
+            manos_vacias()
+            coger(A, semilla, 1, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === '{semilla}'", 5000)
+            ir(A, xx, zz - 0.8, 0)
+            r = A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0]; const r = {K}.accion({{ tipo: 'sembrar', campo: c.id, cultivo: '{cultivo}', x: {xx}, z: {zz}, t: Date.now() - 3 * 86400000 }}); return r.ok ? '' : r.motivo; }})()")
+            if r: print(f'  (sembrar {cultivo}: {r})')
+            A.wait_for_timeout(600)
+        comprobar('las coles y el nabo de hace tres días, en el servidor', servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'sembrar' and e.get('ok')) >= sem_antes + 3) is not None)
+        comprobar('sin agua tres días, se ven mustios', esperar(A, f"!!{K}.escena.getObjectByName('planta_col_mustia_1') && !!{K}.escena.getObjectByName('planta_nabo_mustia_1')", 8000))
+        manos_vacias()
+        ir(A, x0 + 10.8, z0 + 7.3, 0)
+        comprobar('con las manos vacías, Usar no dice «Regar»', texto_usar(A) != 'Regar', texto_usar(A))
+        # (de cerca: el personaje fuera del linde, de espaldas, y la cámara por encima de su hombro mirando el huerto)
+        ir(A, x0 + 10.1, z0 + 9.7, 3.1416); A.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.95"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_huerto_mustio_de_cerca.png')
+        manos_vacias()
+        coger(A, 'cubo', 1, 'mano:der')
+        comprobar('coge el cubo en la mano', esperar(A, EN_MANO('cubo'), 15000))
+        ir(A, x0 + 10.8, z0 + 7.3, 0)
+        comprobar('con el cubo vacío, delante de la col, Usar no dice «Regar»', texto_usar(A) != 'Regar', texto_usar(A))
+        rio = sitio_rio(x0 + 6, z0 + 5)
+        comprobar('hay un río cerca del campo', rio is not None, str(rio))
+        ir(A, rio['x'], rio['z'], rio['rot']); A.wait_for_timeout(2500)
+        comprobar('con el cubo vacío, junto al río, Usar dice «Llenar el cubo»', esperar(A, f"(() => {{ const a = {K}.accionPrincipal(); return a && a.texto === 'Llenar el cubo'; }})()", 20000), texto_usar(A))
+        A.evaluate(f"{K}.usar()")
+        comprobar('el servidor llena el cubo (donde te tiene, con agua)', esperar(A, EN_MANO('cubo_agua'), 8000) and servidorDice(lambda d: cuantos(d, yo, 'cubo_agua') == 1) is not None, A.evaluate(AVISO))
+        comprobar('el aviso lo dice', esperar(A, f"/Llenas el cubo/.test({AVISO})", 5000), A.evaluate(AVISO))
+        A.evaluate(f"{K}.cam.yaw = {rio['rot']} + Math.PI + 0.9; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.25"); A.wait_for_timeout(2000)
+        captura(A, f'{SALIDA}/PC_cubo_lleno_en_mano_de_cerca.png')
+        A.evaluate(f"{K}.cam.yaw = {rio['rot']} + Math.PI - 0.6; {K}.cam.dist = 3.6; {K}.cam.pitch = 0.4"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_llenar_el_cubo.png')
+        ir(A, x0 + 10.8, z0 + 7.3, 0); A.wait_for_timeout(2500)
+        comprobar('con el cubo lleno, delante de la col, Usar dice «Regar»', esperar(A, f"(() => {{ const a = {K}.accionPrincipal(); return a && a.texto === 'Regar'; }})()", 20000), texto_usar(A))
+        A.evaluate(f"{K}.usar()")
+        comprobar('Usar empieza a regar (unos 2 s)', A.evaluate(f"!!({K}.estado.talando && {K}.estado.talando.riego)"))
+        A.evaluate(f"{K}.estado.golpeEn = 0")
+        l = servidorMundo(lambda l: any(e.get('tipo') == 'regar' and e.get('ok') for e in l))
+        comprobar('se riega en el servidor, con su hora', l is not None and any(e.get('tipo') == 'regar' and e.get('ok') and (e.get('datos') or {}).get('t', 0) > 1e12 for e in l), A.evaluate(AVISO))
+        comprobar('el aviso lo dice (dos plantas, que estaban mustias)', esperar(A, f"/Regado: 2 plantas \\(estaban mustias\\)/.test({AVISO})", 5000), A.evaluate(AVISO))
+        comprobar('el cubo, vacío otra vez', esperar(A, EN_MANO('cubo'), 8000))
+        comprobar('lo regado ya no está mustio; la otra col, sí', esperar(A, f"(() => {{ const m = {K}.escena.getObjectByName('planta_col_mustia_1'), b = {K}.escena.getObjectByName('planta_col_1'); return m && m.count === 1 && b && b.count >= 1 && !{K}.escena.getObjectByName('planta_nabo_mustia_1'); }})()", 8000))
+        manos_vacias()
+        ir(A, x0 + 10.1, z0 + 9.7, 3.1416); A.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.95"); A.wait_for_timeout(1500)
+        captura(A, f'{SALIDA}/PC_regado_de_cerca.png')
+
         print('Cosecha (P11): lo sembrado «hace ocho días» (la hora la pone aquí el navegador: KINHOLD_PRUEBAS_HORA=campos)')
         manos_vacias()
         coger(A, 'azada', 1, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'azada'", 5000)
@@ -349,11 +419,12 @@ try:
             ir(A, x0 + 6 + dx, z0 + 0.4, 0); A.evaluate(f"{K}.usar()"); A.evaluate(f"{K}.estado.golpeEn = 0"); A.wait_for_timeout(450)
         servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'labrar' and e.get('ok')) >= 14)
         sembradas_antes = sum(1 for e in lineas_mundo() if e.get('tipo') == 'sembrar' and e.get('ok'))
-        for semilla, cultivo, xx, zz in (('semilla_cebada', 'cebada', x0 + 5, z0 + 2.0), ('habas', 'habas', x0 + 7.9, z0 + 2.3), ('semilla_col', 'col', x0 + 8.7, z0 + 1.6), ('semilla_nabo', 'nabo', x0 + 9.4, z0 + 2.4)):
+        # (la col y el nabo, de huerto y sin regar ni llover, maduran a los 12 días: P11b; la cebada y las habas, a la semana)
+        for semilla, cultivo, xx, zz, dias in (('semilla_cebada', 'cebada', x0 + 5, z0 + 2.0, 8), ('habas', 'habas', x0 + 7.9, z0 + 2.3, 8), ('semilla_col', 'col', x0 + 8.7, z0 + 1.6, 13), ('semilla_nabo', 'nabo', x0 + 9.4, z0 + 2.4, 13)):
             manos_vacias()
             coger(A, semilla, 2, 'mano:der'); esperar(A, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === '{semilla}'", 5000)
             ir(A, xx, zz - 0.8, 0)
-            r = A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0]; const r = {K}.accion({{ tipo: 'sembrar', campo: c.id, cultivo: '{cultivo}', x: {xx}, z: {zz}, t: Date.now() - 8 * 86400000 }}); return r.ok ? '' : r.motivo; }})()")
+            r = A.evaluate(f"(() => {{ const c = {K}.mundo.campos[0]; const r = {K}.accion({{ tipo: 'sembrar', campo: c.id, cultivo: '{cultivo}', x: {xx}, z: {zz}, t: Date.now() - {dias} * 86400000 }}); return r.ok ? '' : r.motivo; }})()")
             if r: print(f'  (sembrar {cultivo}: {r})')
             A.wait_for_timeout(600)
         l = servidorMundo(lambda l: sum(1 for e in l if e.get('tipo') == 'sembrar' and e.get('ok')) >= sembradas_antes + 4)
@@ -415,6 +486,15 @@ try:
         comprobar('y ve las malas hierbas (y lo escardado, sin ellas)', esperar(B, f"!!{K}.escena.getObjectByName('planta_hierbas_1')", 20000))
         ir(B, x0 + 6, z0 + 7.0, 0); B.evaluate(f"{K}.cam.yaw = Math.PI + 0.3; {K}.cam.dist = 3.0; {K}.cam.pitch = 0.6"); B.wait_for_timeout(2000)
         captura(B, f'{SALIDA}/movil_escardado.png')
+        comprobar('y ve la col mustia y la regada', esperar(B, f"!!{K}.escena.getObjectByName('planta_col_mustia_1') && !!{K}.escena.getObjectByName('planta_col_1')", 20000))
+        ir(B, x0 + 10.1, z0 + 9.7, 3.1416); B.evaluate(f"{K}.cam.yaw = 0; {K}.cam.dist = 2.8; {K}.cam.pitch = 0.95"); B.wait_for_timeout(2500)
+        captura(B, f'{SALIDA}/movil_huerto_de_cerca.png')
+        coger(B, 'cubo_agua', 1, 'mano:der')
+        if esperar(B, f"({K}.inventario.lugares['mano:der'] || {{}}).tipo === 'cubo_agua'", 8000):
+            B.evaluate(f"{K}.cam.yaw = Math.PI + 3.1416 - 0.9; {K}.cam.dist = 2.6; {K}.cam.pitch = 0.3"); B.wait_for_timeout(2000)
+            captura(B, f'{SALIDA}/movil_cubo_lleno_en_mano_de_cerca.png')
+            B.evaluate(f"{K}.cam.yaw = Math.PI + 3.1416 + 1.6; {K}.cam.dist = 2.2; {K}.cam.pitch = 0.25"); B.wait_for_timeout(2000)
+            captura(B, f'{SALIDA}/movil_cubo_lleno_de_lado.png')
         comprobar('a Bruno no le deja quitar las estacas de otro (lo dice)', (B.evaluate(f"(() => {{ const r = {K}.accion({{ tipo: 'quitar_estaca', campo: {K}.mundo.campos[0].id, i: 0 }}); return r.ok ? 'quitó' : r.motivo; }})()") == 'Fuera de tu tierra.'))
 
         for nombre, err in [('PC', errA), ('móvil', errB)]:

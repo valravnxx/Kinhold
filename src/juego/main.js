@@ -15,7 +15,8 @@ import { tieneObraTerminada, DIAS as DIAS_ABANDONO, DIAS_SIN_OBRA, DIA as DIA_MS
 import { montarCharla } from './charla.js';
 import { prepararRenderer, crearAmbiente } from '../mundo/ambiente.js';
 import { crearCielo } from '../mundo/cielo.js';
-import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
+import { crearTiempoVista } from '../mundo/tiempo_vista.js';
+import { validarNecesidades, efectos as efectosNecesidades, hayAguaCerca, aguaCerca, motivoSinBeber, AGUA_SALADA, saciar as saciarNecesidad, TRAGO, AVISO as AVISO_NEC, NUTRE, comestible } from '../logica/necesidades.js';
 import { montarAvisos } from './avisos_necesidades.js';
 import { crearDecorado } from '../mundo/decorado.js';
 import { crearHierbaDensa } from '../mundo/hierba_densa.js';
@@ -58,8 +59,9 @@ import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
-import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, ALCANCE_TROCEO } from '../logica/troceo.js';
-import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo } from '../logica/rastra.js';
+import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, ALCANCE_TROCEO } from '../logica/troceo.js';
+import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado } from '../logica/canoa.js';
+import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo, vaACuerda } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
 import { crearMovimiento } from './movimiento.js';
@@ -67,7 +69,9 @@ import { crearCamaraLibre } from './camara_libre.js';
 import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
-import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR } from '../logica/campos.js';
+import { crearPozosVista } from './pozos_vista.js';
+import { pozoCercano, pozoConAgua, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, PIEDRAS_BROCAL, TRAVESANO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
+import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -239,7 +243,10 @@ let desfaseReloj = 0;
 let necesidades = null;
 const avisosNec = montarAvisos({ sentarse: () => sentarse(), sentado: () => !!estado.sentado });   // sus círculos a la derecha (src/juego/avisos_necesidades.js)   // hambre, sed, frío y cansancio, como las manda el servidor (P4; src/logica/necesidades.js)
 const cielo = crearCielo({ ambiente, reloj: () => Date.now() + desfaseReloj });
-cielo.paso();
+// el tiempo que hace (P11b, la lluvia; src/mundo/tiempo_vista.js y src/logica/tiempo.js): el que dice la lógica donde
+// estás y a la hora del servidor (igual para todos); nubla el cielo y hace llover alrededor de la cámara. (pj, más abajo)
+const tiempoV = crearTiempoVista({ escena, camara, cielo, reloj: () => Date.now() + desfaseReloj, donde: () => pj, movil: estado.esTactil });
+cielo.paso();   // (el tiempo, desde el primer fotograma: pj aún no está)
 // Dónde apareces (valravnx, 30 oct): un jugador nuevo, en un sitio al azar de las comarcas de inicio (src/logica/whitholm.js),
 // que se guarda en el navegador para que vuelvas siempre al mismo. Quien ya jugaba (hay algo guardado de antes) sigue en
 // el sitio común, que es donde está lo que construyó. En línea, la escena va relativa al sitio común (las posiciones y
@@ -371,6 +378,7 @@ if (decorado.paso) {
 }
 // los troncos del suelo se tronzan (el largo, en 3–4 cortos) y se parten (el corto, en leña) a golpes de hacha
 const troceo = new Troceo(sueloObjetos.suelo);
+const vaciadoLocal = new Vaciado(sueloObjetos.suelo);   // (P11d) la canoa, sin servidor (las pruebas); en línea, la del servidor
 if (almacen) cargarTroceo(almacen, troceo, Date.now());
 // la rastra: un objeto del suelo que se arrastra con las dos manos, con su carga (src/logica/rastra.js)
 const rastras = new Rastras(sueloObjetos.suelo);
@@ -469,7 +477,7 @@ const raizConstr = new THREE.Group();
 escena.add(raizConstr);
 const raizDeco = new THREE.Group();
 escena.add(raizDeco);
-let mallasMojon = [], anilloTierra = null, camposV = null;
+let mallasMojon = [], anilloTierra = null, camposV = null, pozosV = null;
 // el material del anillo de la tierra es siempre el mismo: si se tirara al rehacer, se volvería a compilar su sombreador
 const MAT_ANILLO = new THREE.MeshBasicMaterial({ color: 0xf2e3b5, transparent: true, opacity: 0.55, depthWrite: false });
 const registroMallas = []; // {obj, c, key, deco}
@@ -524,6 +532,8 @@ function despejarDecorado() {
   }
   for (const d of mundo.decoracion) if (d.y < 0.3) circ.push([d.x, d.z, 0.8]);
   for (const mj of Object.values(mundo.mojones)) circ.push([mj.x, mj.z, 0.9]);
+  // el pozo (P11b): ni hierba ni matas en su boca (es un hoyo) y su reborde de tierra pisada
+  for (const po of mundo.pozos || []) circ.push([po.x, po.z, RADIO_POZO + 0.3]);
   // la era (P11): su suelo apisonado, sin hierba ni matas encima (la hierba llega hasta su canto)
   if (!window.__sinDespejarEras) for (const e of erasHechas()) circ.push([e.x, e.z, ERA + 0.15]);   // (__sinDespejarEras: solo para ver que la prueba falla)
   // la tierra labrada (P11): ahí no sale hierba, ni flores, ni matas
@@ -672,6 +682,9 @@ function reconstruir() {
   // los campos marcados con estacas (P11), de todos
   if (!camposV) camposV = crearCamposVista({ escena, sueloEn });
   camposV.poner(mundo.campos);
+  // los pozos (P11b), de todos: la boca con sus tramos, la piedra y la tierra sacada
+  if (!pozosV) pozosV = crearPozosVista({ escena, sueloEn });
+  pozosV.poner(mundo.pozos);
   const mio = miMojon();
   if (mio && !hayZonas()) {
     const anillo = new THREE.Mesh(new THREE.RingGeometry(RADIO_MOJON - 0.15, RADIO_MOJON, 96), MAT_ANILLO);
@@ -790,6 +803,7 @@ function prepararFantasma() {
   else if (estado.sel.clase === 'deco') fantasma = modeloDeco(estado.sel.tipo);
   else if (estado.sel.clase === 'puesto') fantasma = MODELO_ESTACION[estado.sel.tipo]('fantasma');
   else if (estado.sel.clase === 'nivelar') fantasma = modeloBrocha();
+  else if (estado.sel.clase === 'pozo') fantasma = modeloPozo();
   else fantasma = modeloMojon();
   if (estado.sel.clase === 'pieza' && PIEZAS[estado.sel.tipo].esquina) fantasmaForma = 'tesa';
   velarFantasma();
@@ -871,6 +885,15 @@ function evaluarColocacion() {
     estado.candidato = { tipo: 'nivelar', x, y, z, v };
     return;
   }
+  if (sel.clase === 'pozo') {
+    // el pozo (P11b): se marca donde apuntas; el aviso dice a qué hondura está el agua ahí
+    fantasma.position.set(x, sueloEn(x, z), z); fantasma.rotation.set(0, 0, 0);
+    const h = honduraAqui(x, z), v = puedePozo(x, z, h);
+    pintarFantasma(v.ok);
+    mostrarAviso(v.ok ? tr('Pozo: aquí el agua está a unos {h} m ({t} tramos de cavar y revestir).', { h: String(h).replace('.', ','), t: tramosDe({ hondura: h }) }) : tr(v.motivo), !v.ok);
+    estado.candidato = { tipo: 'pozo', x, z, v };
+    return;
+  }
   if (sel.clase === 'puesto') {
     // un puesto de trabajo (P3): se pone el marco a tu lado; la hoguera, solo fuera (no bajo techo)
     const y = estado.puntero.ySuperficie || 0;
@@ -950,6 +973,7 @@ function colocar() {
     });
     return;
   }
+  if (ca.tipo === 'pozo') { marcarElPozo(ca.x, ca.z); return; }
   let r;
   if (ca.tipo === 'mojon') r = accion({ tipo: 'mojon', x: ca.x, z: ca.z, ...(ca.extra ? { extra: true } : {}) });
   else if (ca.tipo === 'nivelar') r = accion({ tipo: 'nivelar', x: redondoMm(ca.x), z: redondoMm(ca.z), y: ca.y, radio: estado.radioBrocha });
@@ -1727,13 +1751,17 @@ function accionPrincipal() {
   const subirAndamio = it && PIEZAS[it.p.tipo].andamio && it.p.k === pj.k && ob && ob.p.k > pj.k;
   if (ob && !subirAndamio) return accionObra(ob);
   // con sed (desde su aviso) y agua al lado, Usar bebe antes que nada (lo demás, desde el menú del clic derecho)
-  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
+  if (!it && necesidades && necesidades.sed >= AVISO_NEC && aguaDulceAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });
+  if (!it && necesidades && necesidades.sed >= AVISO_NEC && saladaAlLado() && !cuboEnMano('cubo')) return avisoSalada(A, yo);
   // con la lasca encima y una liebre cazada a tus pies, despiezarla (9 nov)
   if (!it && pj.k === 0 && inventario().cuantos('lasca_silex') > 0 && liebreAlLado()) { const l = liebreAlLado(); return A(tr('Despiezar la liebre'), 'liebre', l, despiezar, { alto: 0.2 }); }
   // con un hacha en la mano, junto a un árbol, se tala antes que recoger lo que haya al lado
   if (!it && hachaEnMano(inventario()) && arbolCercano()) { const a = arbolCercano(); return A(tr('Talar el árbol'), hachaQueLlevas(), a, () => empezarTala(a), { alto: 3, prog: estado.talando === a ? progresoGolpes(a) : 0 }); }
   // y junto al árbol caído, se limpia (12 nov): al terminar, deja el tronco y lo menudo
   if (!it && hachaEnMano(inventario()) && caidoCercano()) { const c = caidoCercano(); return A(tr('Limpiar el árbol caído'), hachaQueLlevas(), c, () => empezarLimpieza(c), { alto: 0.9, prog: estado.talando === c.o ? progresoGolpes(c.o) : 0 }); }
+  // el cubo (P11b, regar el huerto): vacío en la mano y con agua al lado, se llena; lleno, delante de la col o el nabo, se riega
+  if (!it && pj.k === 0 && cuboEnMano('cubo') && aguaAlLado()) return A(pozoAlLado() ? tr('Sacar agua del pozo') : tr('Llenar el cubo'), 'cubo', yo, llenarElCubo, { alto: 0.2 });
+  if (!it && pj.k === 0 && cuboEnMano('cubo_agua')) { const rg = sitioRegar(); if (rg) return A(tr('Regar'), 'cubo_agua', rg, () => empezarRiego(rg), { alto: 0.2, prog: estado.talando && estado.talando.riego ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_REGAR : 0 }); }
   // con las manos vacías o la azada, delante de lo sembrado con malas hierbas de tu campo: escardar (P11, 14 nov)
   if (!it && pj.k === 0 && manosParaEscardar()) { const es = sitioEscardar(); if (es) return A(tr('Escardar'), azadaEnMano() ? 'azada' : es.icono, es, () => empezarEscarda(es), { alto: 0.2, prog: estado.talando && estado.talando.escarda ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_ESCARDAR : 0 }); }
   // con la azada en la mano, dentro de tu campo: una pasada de azada delante de ti (P11, labrar)
@@ -1759,6 +1787,19 @@ function accionPrincipal() {
   if (!it && pj.k === 0 && arrancaEnMano(inventario()) && toconCercano()) { const tc = toconCercano(); return A(tr('Arrancar el tocón'), arrancaEnMano(inventario()).tipo, tc, () => empezarArranque(tc), { alto: 0.4, prog: estado.talando && estado.talando.arranque === tc.o ? progresoGolpes(estado.talando) : 0 }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
   if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
+  // el tronco largo a cuerda (P11c): tirando de él, Usar junto a una rastra parada lo sube a ella y, si no, suelta la
+  // cuerda; con una cuerda en la mano, junto a un tronco largo, Usar lo ata (o ayuda al que ya tira de él)
+  if (!it && pj.k === 0 && miTronco()) {
+    const t = miTronco(), ra = t.arrastra === yoSuelo() ? rastras.cercanas(pj.x, pj.z, Date.now()).find(o => o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0) : null;
+    if (ra) return A(tr('Subir el tronco largo a la rastra'), 'tronco_largo', ra, () => cargarRastra(ra, { suelo: t.id }), { alto: 0.4 });
+    return A(t.cosa.tipo === 'canoa' ? tr('Soltar la canoa') : tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
+  }
+  if (!it && pj.k === 0 && !miRastra() && ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda')) {
+    const t = rastras.troncosCercanos(pj.x, pj.z, Date.now()).find(o => !o.arrastra);
+    if (t) return A(t.cosa.tipo === 'canoa' ? tr('Atar la canoa con la cuerda') : tr('Atar el tronco largo con la cuerda'), 'cuerda', t, () => atarTronco(t), { alto: 0.3 });
+  }
+  // la canoa a medias (P11d): Usar sigue con lo que le toca (vaciar a golpes, echar brasas o esperar a que se consuman)
+  if (!it && pj.k === 0 && canoaCercana()) { const op = opcionVaciar(canoaCercana()); if (op) return A(op.texto, op.icono, op.pos, op.hacer, { alto: 0.4, prog: op.prog }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
   if (!it && hachaEnMano(inventario()) && troncoCercano()) { const t0 = troncoCercano(); return A(tr('Trocear: {c}', { c: tr(CATALOGO[t0.cosa.tipo].nombre) }), t0.cosa.tipo, t0, () => empezarTroceo(t0), { alto: 0.4 }); }
   // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
@@ -1769,6 +1810,8 @@ function accionPrincipal() {
     if (de) return A(tr(segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), { c: tr(CATALOGO[inventario().lugares[de].tipo].nombre) }), inventario().lugares[de].tipo, o, () => cargarRastra(o, { de }), { alto: 0.4 });
     return A(tr(segun(o, 'Arrastrar la rastra ({c})', 'Empujar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), o.cosa.tipo, o, () => engancharRastra(o), { alto: 0.4 });
   }
+  // el pozo (P11b): a su lado, cavar el tramo con la pala de madera en la mano o revestirlo con las piedras que llevas
+  if (!it && pj.k === 0) { const po = pozoCercano(mundo, pj.x, pj.z, RADIO_POZO + 1.4); if (po) return accionPozo(po, A); }
   // los campos (P11): con una estaca en la mano, Usar la clava donde estás (o, junto a la primera, cierra el campo); al
   // lado de una estaca clavada, Usar la quita (vuelve a lo que llevas) para moverla
   if (!it && pj.k === 0) {
@@ -1793,7 +1836,7 @@ function accionPrincipal() {
     // mineral que ya ha salido (cae a tus pies: se coge al terminar)
     const rcs = recoleccion.cercano(pj.x, pj.z);
     if (rcs && RECOLECTABLES[rcs.tipo].alSuelo && tieneCon(inventario(), rcs.tipo)) return A(verboRecoger(rcs), ICONO_RECOGER(rcs), rcs, () => recoger(rcs), { alto: 0.6 });
-    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo)); // lo que hay en el suelo, antes que lo que se recoge
+    const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo) && o.cosa.tipo !== 'canoa' && o.cosa.tipo !== 'canoa_a_medias'); // lo que hay en el suelo, antes que lo que se recoge (la canoa no se coge: se ata)
     if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);
     if (rc) return A(verboRecoger(rc), ICONO_RECOGER(rc), rc, () => recoger(rc), { alto: 0.6 });
@@ -1801,6 +1844,7 @@ function accionPrincipal() {
     const db = desbrozableCercano(), con = conQueDesbroza(inventario());
     if (db && con) return A(tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), con, db, () => empezarDesbroce(db), { alto: 0.8, prog: estado.talando && estado.talando.desbroce && estado.talando.desbroce.id === db.id ? estado.talando.dados / estado.talando.golpes : 0 });
   }
+  // (el pozo se marca desde construir, pestaña Tierra; con la pala en la mano no sale nada: valravnx, 15 nov)
   if (!it) {
     // junto a un árbol, se tala con un hacha en la mano: un golpe cada poco (paso → golpeTala) hasta que cae
     const a = arbolCercano();
@@ -1816,7 +1860,8 @@ function accionPrincipal() {
     }
     const caido = caidoCercano();
     if (caido) return A(tr('Limpiar el árbol caído'), 'hacha_piedra', caido, () => mostrarAviso(tr('Necesitas un hacha en la mano para limpiar el árbol caído.'), true), { alto: 0.9, apagada: true, sub: tr('Necesitas un hacha en la mano para limpiar el árbol caído.') });
-    if (aguaAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });   // junto al agua, sin otra cosa que usar, se bebe
+    if (aguaDulceAlLado()) return A(tr('Beber agua'), 'agua', yo, beber, { alto: 0.2 });   // junto al agua dulce, sin otra cosa que usar, se bebe
+    if (saladaAlLado()) return avisoSalada(A, yo);   // (junto al mar: es salada, no se bebe)
     // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
     if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { const c = comidaQueLlevas()[0]; return A(tr('Comer: {c}', { c: tr(CATALOGO[c].nombre).toLowerCase() }), c, yo, () => comer(c), { alto: 1.2 }); }
     return null;
@@ -1888,8 +1933,14 @@ function opcionesUsar() {
     const rq = rocaCercana();
     if (rq) ops.push({ texto: tr('Romper la roca'), pos: rq, alto: 0.6, hacer: () => empezarRotura(rq) });
     if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
+    // la rodaja del tronco largo (P11c): la rueda de la carretilla, y el resto en troncos cortos
+    if (tronco && hachaEnMano(inventario()) && sacaRodaja(tronco.cosa.tipo)) ops.push({ texto: tr('Cortar una rodaja (la rueda de la carretilla)'), pos: tronco, hacer: () => empezarTroceo(tronco, 'rodaja') });
+    // la canoa de un tronco (P11d): del tronco largo, vaciándolo con el hacha y las brasas
+    if (tronco && tronco.cosa.tipo === 'tronco_largo' && !tronco.arrastra) ops.push({ texto: tr('Vaciar el tronco para hacer una canoa'), pos: tronco, alto: 0.4, hacer: () => (hachaEnMano(inventario()) ? empezarVaciado(tronco) : mostrarAviso(tr('Necesitas un hacha en la mano para vaciar el tronco.'), true)) });
+    const cn = canoaCercana(), opc = cn && opcionVaciar(cn);
+    if (opc) ops.push({ texto: opc.texto, pos: cn, alto: 0.4, hacer: opc.hacer });
     for (const op of opcionesRastra()) ops.push(op);
-    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo)) ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
+    for (const so of sueloObjetos.cercanos(pj.x, pj.z)) if (!esVehiculo(so.cosa.tipo) && so.cosa.tipo !== 'canoa' && so.cosa.tipo !== 'canoa_a_medias') ops.push({ texto: tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), pos: so, hacer: () => cogerDelSuelo(so) });
     for (const rc of recoleccion.cercanos(pj.x, pj.z)) ops.push({ texto: verboRecoger(rc), pos: rc, alto: 0.6, hacer: () => recoger(rc) });
     const db = desbrozableCercano();
     if (db) ops.push({ texto: tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), pos: db, alto: 0.6, hacer: () => empezarDesbroce(db) });
@@ -1899,7 +1950,7 @@ function opcionesUsar() {
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
   // el agua de al lado: beber con las manos (P4)
-  if (aguaAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
+  if (aguaDulceAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
   if (enLinea && miMojon()) for (const [autor, r] of enLinea.remotos) {
     if (Math.hypot(r.x - pj.x, r.z - pj.z) > 3) continue;
@@ -2003,7 +2054,15 @@ function usarInteractivo(it) {
 
 // Beber del río con las manos (P4; src/logica/necesidades.js): con agua a tu lado (río, lago o mar) y en el suelo. En
 // línea, el trago lo da el servidor (mira dónde te tiene y si hay agua ahí); sin servidor (las pruebas), aquí.
-const aguaAlLado = () => !!mundoJ && pj.k === 0 && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z);
+const aguaAlLado = () => pj.k === 0 && ((!!mundoJ && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z)) || pozoAlLado());
+// junto a un pozo rematado (P11b, El pozo (3)): se bebe y se saca agua con el cubo como en el río, aunque no haya ninguno cerca
+const pozoAlLado = () => pj.k === 0 && pozoConAgua(mundo, pj.x, pj.z, RADIO_POZO + 1.4);
+// el agua de al lado, dulce o salada (valravnx, 15 nov: «que el agua salada se diferencie de la dulce y no se pueda
+// beber»): solo la dulce (río, lago o pozo) se bebe; junto al mar, Usar dice que es salada
+const aguaQueHay = () => (pj.k === 0 && mundoJ ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
+const aguaDulceAlLado = () => pj.k === 0 && (aguaQueHay() === 'dulce' || pozoAlLado());
+const saladaAlLado = () => !aguaDulceAlLado() && aguaQueHay() === 'salada';
+const avisoSalada = (A, yo) => A(tr('Agua salada: no se bebe'), 'agua', yo, () => mostrarAviso(tr(AGUA_SALADA), true), { alto: 0.2, apagada: true, sub: tr(AGUA_SALADA) });
 function beber() {
   if (objetosRed) {
     objetosRed.mandar({ tipo: 'beber', x: pj.x, z: pj.z }, (r) => {
@@ -2012,7 +2071,7 @@ function beber() {
     });
     return;
   }
-  if (!aguaAlLado()) { mostrarAviso(tr('Aquí no hay agua: busca un río, un lago o el mar.'), true); return; }
+  if (!aguaDulceAlLado()) { mostrarAviso(tr(motivoSinBeber(aguaQueHay())), true); return; }
   if (necesidades) { necesidades = saciarNecesidad(necesidades, 'sed', TRAGO); avisosNec.pintar(necesidades); }
   mostrarAviso(tr('Bebes agua con las manos.'));
 }
@@ -2152,18 +2211,25 @@ function paraCargar(veh = 'rastra') {
   return ['mano:der', 'mano:izq', 'hombro'].find(l => inv.lugares[l] && Object.hasOwn(cabe, inv.lugares[l].tipo)) || null;
 }
 // Arrastrándola o empujándola, vas despacio: lo que frene más, el vehículo o lo que llevas encima.
-function velocidadCarga() { const r = miRastra(); return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga, r.cosa.tipo)) : inventario().velocidad(); }
+function velocidadCarga() {
+  const r = miRastra(), t = miTronco();
+  if (t) return Math.min(inventario().velocidad(), factorTronco(t, nado.e.aguante));   // tirando a cuerda del tronco largo: muy despacio
+  return r ? Math.min(inventario().velocidad(), factorRastra(r.cosa.carga, r.cosa.tipo)) : inventario().velocidad();
+}
+const miTronco = () => rastras.troncoDe(yoSuelo(), Date.now());
 let sitiosRastra = {};   // id → { x, z }: dónde se ve cada rastra o carretilla que se lleva (para dejarla ahí)
 function pasoRastras() {
   const quien = (autor) => {
-    if (autor === yoSuelo()) return pj.k === 0 ? { x: pj.x, z: pj.z, giro: pj.rot } : null;
+    // mano: dónde está la mano derecha (la cuerda del tronco largo va a ella)
+    const mano = j => () => { const h = j && j.mh && j.mh.hueso && (j.mh.hueso.middle_01_r || j.mh.hueso.hand_r); return h ? h.getWorldPosition(new THREE.Vector3()) : null; };
+    if (autor === yoSuelo()) return pj.k === 0 ? { x: pj.x, z: pj.z, giro: pj.rot, mano: mano(jugador) } : null;
     const r = enLinea && enLinea.remotos.get(autor);
-    return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y } : null;
+    return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y, mano: mano(r.j) } : null;
   };
   sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura);
-  const mia = miRastra();
-  jugador.arrastra = !!mia && !esCarr(mia); jugador.empuja = esCarr(mia);
-  if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, Date.now()); r.j.arrastra = !!o && !esCarr(o); r.j.empuja = esCarr(o); }
+  const mia = miRastra(), ahora = Date.now();
+  jugador.arrastra = (!!mia && !esCarr(mia)) || !!miTronco(); jugador.empuja = esCarr(mia);   // tirando del tronco, la misma postura
+  if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, ahora); r.j.arrastra = (!!o && !esCarr(o)) || !!rastras.troncoDe(autor, ahora); r.j.empuja = esCarr(o); }
   // las agarraderas de la carretilla que empuja cada uno, para sus manos (src/juego/personaje.js)
   const agarraderas = (autor) => { const c = sueloObjetos.grupo.children.find(o => o.name === 'suelo_carretilla' && o.userData.arrastra === autor); return c ? c.userData.agarraderas || null : null; };
   jugador.agarraderas = jugador.empuja ? agarraderas(yoSuelo()) : null;
@@ -2211,6 +2277,30 @@ function descargarRastra(o) {
 // lo que se puede hacer con la rastra o la carretilla desde el menú del clic derecho (o el dedo quieto)
 function opcionesRastra() {
   const ops = [], mia = miRastra(), ahora = Date.now();
+  // el tronco largo a cuerda (P11c): atarlo con la cuerda en la mano, ayudar a otro, soltarlo o subirlo a la rastra
+  const tronco = miTronco();
+  if (tronco) {
+    ops.push({ texto: tronco.cosa.tipo === 'canoa' ? tr('Soltar la cuerda de la canoa') : tr('Soltar la cuerda del tronco'), pos: sitiosRastra[tronco.id] || pj, hacer: soltarTronco });
+    if (tronco.arrastra === yoSuelo()) for (const o of rastras.cercanas(pj.x, pj.z, ahora)) if (o.cosa.tipo === 'rastra' && sitioRastra(o.cosa.carga, 'tronco_largo') > 0)
+      ops.push({ texto: tr('Subir el tronco largo a la rastra'), pos: o, alto: 0.4, hacer: () => cargarRastra(o, { suelo: tronco.id }) });
+    return ops;
+  }
+  if (!mia) {
+    const cuerda = ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda');
+    for (const o of rastras.troncosCercanos(pj.x, pj.z, ahora, 3)) {
+      const s = sitiosRastra[o.id] || o;
+      if (Math.hypot(s.x - pj.x, s.z - pj.z) > 3) continue;
+      const canoa = o.cosa.tipo === 'canoa';
+      ops.push({ texto: canoa ? tr(o.arrastra ? 'Ayudar a tirar de la canoa' : cuerda ? 'Atar la canoa con la cuerda' : 'Atar la canoa (hace falta una cuerda en la mano)')
+        : tr(o.arrastra ? 'Ayudar a tirar del tronco largo' : cuerda ? 'Atar el tronco largo con la cuerda' : 'Atar el tronco largo (hace falta una cuerda en la mano)'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
+    }
+    // y los que arrastra otro, donde se ven (su sitio en el servidor es el de antes)
+    for (const [id, s] of Object.entries(sitiosRastra)) {
+      const o = sueloObjetos.suelo.porId(id, ahora);
+      if (!o || !vaACuerda(o.cosa.tipo) || !o.arrastra || o.ayuda || Math.hypot(s.x - pj.x, s.z - pj.z) > 3 || ops.some(q => q.pos === s)) continue;
+      ops.push({ texto: o.cosa.tipo === 'canoa' ? tr('Ayudar a tirar de la canoa') : tr('Ayudar a tirar del tronco largo'), pos: s, alto: 0.3, hacer: () => atarTronco(o) });
+    }
+  }
   const cargables = (o) => sueloObjetos.cercanos(pj.x, pj.z, ALCANCE_RASTRA).filter(s => s !== o && !esVehiculo(s.cosa.tipo) && sitioRastra(o.cosa.carga, s.cosa.tipo, o.cosa.tipo) > 0);
   const tCargar = o => segun(o, 'Cargar en la rastra: {c}', 'Cargar en la carretilla: {c}'), tCargarN = o => segun(o, 'Cargar en la rastra: {n} × {c}', 'Cargar en la carretilla: {n} × {c}');
   if (mia) {
@@ -2228,6 +2318,17 @@ function opcionesRastra() {
     if (o.cosa.carga) ops.push({ texto: tr(segun(o, 'Descargar la rastra ({c})', 'Descargar la carretilla ({c})'), { c: nombreCarga(o.cosa.carga) }), pos: o, alto: 0.4, hacer: () => descargarRastra(o) });
   }
   return ops;
+}
+function atarTronco(o) {
+  if (!o.arrastra) { const s = sitiosRastra[o.id] || o; pj.rot = Math.atan2(pj.x - s.x, pj.z - s.z); }   // de espaldas a él: va detrás
+  const canoa = o.cosa.tipo === 'canoa';
+  accionRastra({ tipo: 'atar_tronco', objeto: o.id, x: pj.x, z: pj.z }, (r) => mostrarAviso(r.ayuda ? (canoa ? tr('Ayudas a tirar de la canoa: entre dos va más deprisa.') : tr('Ayudas a tirar del tronco largo: entre dos va más deprisa.'))
+    : canoa ? tr('Atas la canoa y tiras de ella hasta la orilla: despacio, y cansa. Usar suelta la cuerda.') : tr('Atas el tronco largo y tiras de él: muy despacio, y cansa. Usar suelta la cuerda.')));
+}
+function soltarTronco() {
+  const o = miTronco(); if (!o) return;
+  const s = sitiosRastra[o.id] || {};
+  accionRastra({ tipo: 'soltar_tronco', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, () => mostrarAviso(tr('Sueltas la cuerda: el tronco se queda aquí.')));
 }
 // del arcón de pruebas al suelo, delante de ti (la rastra y la carretilla no caben en el inventario)
 function arconAlSuelo(tipo) {
@@ -2303,7 +2404,8 @@ function empezarLimpieza(c) { const a = c.o; a.prog = null; estado.talando = a; 
 const RITMO_TALA = 0.9; // s entre golpe y golpe (el gesto de talar)
 function golpeTala() {
   const a = estado.talando;
-  if (a.troceo) { golpeTroceo(a.troceo); return; }
+  if (a.troceo) { golpeTroceo(a.troceo, a.modo || null); return; }
+  if (a.vaciado) { golpeVaciado(a); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
   if (a.rotura) { golpeRotura(a); return; }
   if (a.arranque) { golpeArranque(a); return; }
@@ -2311,6 +2413,8 @@ function golpeTala() {
   if (a.siembra) { golpeSiembra(a); return; }
   if (a.siega) { golpeSiega(a); return; }
   if (a.escarda) { golpeEscarda(a); return; }
+  if (a.riego) { golpeRiego(a); return; }
+  if (a.pozo) { golpePozo(a); return; }
   if (a.cosecha) { golpeCosecha(a); return; }
   estado.golpeEn = RITMO_TALA;
   if (objetosRed) { // en línea, el golpe lo da el servidor (el árbol, como lo ve este navegador: decisión provisional)
@@ -2510,6 +2614,126 @@ function golpeEscarda(a) {
   guardar(); reconstruir(); actualizarUI();
   mostrarAviso(tr('Escardado: dará más al cosecharlo.'));
 }
+// Regar el huerto (P11b, 14 nov; src/logica/campos.js): el cubo vacío en la mano, junto al río, se llena (junto al mar
+// no: es salada, y el aviso lo dice); lleno, delante de la col o el nabo de tu campo, una pasada de unos 2 s riega las de un círculo de 1,2 m y el
+// cubo se vacía. En línea, el cubo lo llena el servidor (mira dónde te tiene y si hay agua); sin servidor, aquí.
+const ADELANTE_REGAR = 0.9;
+function cuboEnMano(tipo) { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === tipo); }
+function llenarElCubo() {
+  const delPozo = pozoAlLado() && !(mundoJ && hayAguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z));
+  if (objetosRed) {
+    objetosRed.mandar({ tipo: 'llenar_cubo' }, (r) => {
+      if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+      mostrarAviso(tr(delPozo ? 'Sacas del pozo un cubo de agua.' : 'Llenas el cubo de agua.'));
+    });
+    return;
+  }
+  const r = llenarCubo(inventario().lugares, delPozo ? 'dulce' : aguaAlLado() ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); actualizarUI(); mostrarAviso(tr(delPozo ? 'Sacas del pozo un cubo de agua.' : 'Llenas el cubo de agua.'));
+}
+function sitioRegar() {
+  const x = pj.x + Math.sin(pj.rot) * ADELANTE_REGAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_REGAR, c = campoEn(mundo, x, z);
+  if (!c || !mundo.dentroDeTierra(x, z, yoAutor())) return null;
+  return plantasParaRegar(c, x, z, Date.now()).length ? { x, z, campo: c } : null;
+}
+function empezarRiego(rg) {
+  estado.talando = { riego: rg, x: rg.x, z: rg.z }; estado.golpeEn = SEGUNDOS_REGAR;
+  mostrarAviso(tr('Riegas el huerto.'));
+}
+function golpeRiego(a) {
+  estado.talando = null;
+  const rg = a.riego, r = accion({ tipo: 'regar', campo: rg.campo.id, x: redondoMm(rg.x), z: redondoMm(rg.z), t: Date.now() });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.mustias ? tr('Regado: {n} plantas (estaban mustias). El cubo, vacío.', { n: r.regadas }) : tr('Regado: {n} plantas. El cubo, vacío.', { n: r.regadas }));
+}
+// El pozo (P11b, src/logica/pozo.js; valravnx, 14 nov: «debe ser laborioso»): el sitio se marca desde construir
+// (pestaña Tierra, «Pozo»; valravnx, 15 nov: «la pala se usa para más cosas»: con ella en la mano no sale «marcar un
+// pozo» a cada paso) y el aviso dice a qué hondura está el agua (la que vale, la del servidor).
+// A su lado, cada tramo de 1 m se cava a golpes de pala (uno cada SEGUNDOS_CAVAR, seguidos hasta acabar el tramo) y
+// se reviste de piedra seca con las piedras que llevas antes de bajar más.
+function palaEnMano() { const l = inventario().lugares; return ['mano:der', 'mano:izq'].some(r => l[r] && l[r].tipo === 'pala_madera'); }
+const honduraAqui = (x, z) => (mundoJ ? mundoJ.honduraPozo(x, z) : 4);
+// el fantasma del pozo en construir: el círculo de la boca y la estaca, como queda al marcarlo
+function modeloPozo() {
+  const g = new THREE.Group();
+  const disco = new THREE.Mesh(new THREE.CircleGeometry(RADIO_POZO + 0.22, 40), new THREE.MeshLambertMaterial({ color: 0x6f5c45 }));
+  disco.rotation.x = -Math.PI / 2; disco.position.y = 0.03; g.add(disco);
+  const estaca = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.022, 1.1, 7), new THREE.MeshLambertMaterial({ color: 0x8a6d4a }));
+  estaca.position.set(RADIO_POZO + 0.15, 0.5, 0); estaca.rotation.z = -0.06; g.add(estaca);
+  return g;
+}
+// ¿se puede marcar un pozo en (x, z)? (lo mismo que mira la lógica, src/logica/pozo.js marcarPozo; manda el servidor)
+function puedePozo(x, z, h) {
+  if (!mundo.dentroDeTierra(x, z, yoAutor())) return { ok: false, motivo: miMojon() ? t('fueraTierra') : t('primeroMojon') };
+  if (h === null || h === undefined) return { ok: false, motivo: `Aquí el agua está a más de ${TOPE_POZO} m: busca más abajo, cerca del río o en el fondo de un valle.` };
+  if (pozoCercano(mundo, x, z, ENTRE_POZOS)) return { ok: false, motivo: 'Ahí al lado ya hay un pozo.' };
+  if (campoEn(mundo, x, z)) return { ok: false, motivo: 'Ahí hay algo: el pozo va en suelo libre.' };
+  return { ok: true };
+}
+function marcarElPozo(x, z) {
+  x = redondoMm(x); z = redondoMm(z);
+  const r = accion({ tipo: 'pozo', x, z, hondura: honduraAqui(x, z) });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); cambiarModo('mover');
+  mostrarAviso(tr('Pozo marcado: el agua está a unos {h} m ({t} tramos de cavar y revestir).', { h: String(r.hondura).replace('.', ','), t: r.tramos }) + ' ' + tr('Cávalo con la pala de madera en la mano.'));
+}
+function accionPozo(po, A) {
+  const paso = siguientePaso(po), T = tramosDe(po), h = String(po.hondura).replace('.', ',');
+  if (paso === 'sacar') return A(tr('Pozo con agua, a {h} m', { h }), 'cubo', po, () => mostrarAviso(tr('Para sacar agua, el cubo vacío en la mano.')), { alto: 0.3 });
+  if (paso === 'brocal') {
+    const n = inventario().cuantos('piedra'), falta = PIEDRAS_BROCAL - (po.brocal || 0);
+    return A(tr('Levantar el brocal de piedra ({p} de {m} piedras)', { p: po.brocal || 0, m: PIEDRAS_BROCAL }), 'piedra', po,
+      n ? () => rematarElPozo(po) : () => mostrarAviso(tr('Trae piedras para el brocal: faltan {f}.', { f: falta }), true), { alto: 0.5 });
+  }
+  if (paso === 'travesano') {
+    const tiene = Object.entries(TRAVESANO).every(([t, n]) => inventario().cuantos(t) >= n);
+    return A(tr('Poner el travesaño (3 varas y una cuerda)'), 'vara', po,
+      tiene ? () => rematarElPozo(po) : () => mostrarAviso(tr('Para el travesaño hacen falta 3 varas y una cuerda.'), true), { alto: 1.2 });
+  }
+  if (paso === 'revestir') {
+    const n = inventario().cuantos('piedra'), falta = PIEDRAS_TRAMO - (po.piedras || 0);
+    return A(tr('Revestir de piedra el tramo {n} de {t} ({p} de {m} piedras)', { n: po.revestidos + 1, t: T, p: po.piedras || 0, m: PIEDRAS_TRAMO }), 'piedra', po,
+      n ? () => revestirElPozo(po) : () => mostrarAviso(tr('Trae piedras para revestir el tramo: faltan {f}.', { f: falta }), true), { alto: 0.3 });
+  }
+  const cavando = estado.talando && estado.talando.pozo === po.id;
+  if (!palaEnMano()) return A(tr('Pozo: {c} de {t} tramos cavados (agua a {h} m)', { c: po.cavados, t: T, h }), 'pala_madera', po, () => mostrarAviso(tr('Para cavar el pozo, la pala de madera en la mano.'), true), { alto: 0.3 });
+  return A(tr('Cavar el pozo: tramo {n} de {t}', { n: po.cavados + 1, t: T }), 'pala_madera', po, () => empezarCavaPozo(po),
+    { alto: 0.3, prog: ((po.golpes || 0) + (cavando ? 1 - Math.max(0, estado.golpeEn) / SEGUNDOS_CAVAR : 0)) / GOLPES_TRAMO });
+}
+function empezarCavaPozo(po) {
+  if (estado.talando && estado.talando.pozo === po.id) return;
+  pj.rot = Math.atan2(po.x - pj.x, po.z - pj.z);
+  estado.talando = { pozo: po.id, x: po.x, z: po.z }; estado.golpeEn = SEGUNDOS_CAVAR;
+  mostrarAviso(tr('Cavas el pozo.'));
+}
+function golpePozo(a) {
+  const r = accion({ tipo: 'cavar_pozo', pozo: a.pozo });
+  if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  if (!r.tramo) { estado.golpeEn = SEGUNDOS_CAVAR; return; }   // sigue cavando hasta acabar el tramo
+  estado.talando = null;
+  const po = (mundo.pozos || []).find(p => p.id === a.pozo);
+  mostrarAviso(r.agua ? tr('Has llegado al agua: reviste de piedra este último tramo.')
+    : tr('Tramo {n} cavado: revístelo de piedra antes de bajar más ({p} piedras).', { n: r.cavados, p: PIEDRAS_TRAMO }) + (po ? ' ' + tr('Quedan {q} m.', { q: String(Math.max(0, Math.round((po.hondura - r.cavados) * 10) / 10)).replace('.', ',') }) : ''));
+}
+// Rematar el pozo con agua (P11b, El pozo (3)): el brocal con las piedras que llevas y luego el travesaño de varas con su cuerda
+function rematarElPozo(po) {
+  const r = accion({ tipo: 'rematar_pozo', pozo: po.id });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.rematado ? tr('Travesaño puesto, con su cuerda: ya se saca agua del pozo con el cubo.')
+    : r.brocal >= PIEDRAS_BROCAL ? tr('Brocal terminado: falta el travesaño (3 varas y una cuerda).')
+    : tr('Pones {n} piedras en el brocal: faltan {f}.', { n: r.puestas, f: PIEDRAS_BROCAL - r.brocal }));
+}
+function revestirElPozo(po) {
+  const r = accion({ tipo: 'revestir_pozo', pozo: po.id });
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); reconstruir(); actualizarUI();
+  mostrarAviso(r.agua ? tr('Pozo revestido hasta el agua: ya tiene agua. Para sacarla, el brocal de piedra y el travesaño.') : r.tramo ? tr('Tramo {n} revestido: ya puedes cavar el siguiente.', { n: r.revestidos })
+    : tr('Pones {n} piedras: faltan {f} para este tramo.', { n: r.puestas, f: PIEDRAS_TRAMO - r.piedras }));
+}
 // Cosechar (P11, src/logica/campos.js): con la hoz en la mano, la cebada madura se siega a pasadas (unos 2 s; las
 // gavillas quedan en el suelo); las habas, la col y el nabo maduros se cogen a mano (1 s), a lo que llevas.
 const ADELANTE_SEGAR = 1.4, ADELANTE_COGER = 0.7;
@@ -2623,27 +2847,80 @@ function golpeRotura(a) {
   fin(r);
 }
 
+// La canoa de un tronco (P11d, src/logica/canoa.js): la canoa a medias más cercana, en la planta baja.
+function canoaCercana() {
+  if (pj.k !== 0) return null;
+  return sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now(), ALCANCE_VACIAR - 0.3).find(o => o.cosa.tipo === 'canoa_a_medias' && !o.arrastra) || null;
+}
+// Lo que toca hacerle a la canoa a medias: { texto, icono, pos, hacer, prog } (o null).
+function opcionVaciar(o) {
+  const v = o.cosa.vaciado, f = faseVaciado(v, Date.now()), h = hachaEnMano(inventario());
+  if (f === 'quemando') {
+    const min = Math.max(1, Math.ceil((v.hasta - Date.now()) / 60000));
+    const texto = min === 1 ? tr('Las brasas arden en el hueco: falta 1 min') : tr('Las brasas arden en el hueco: faltan {n} min', { n: min });
+    return { texto, icono: 'lena', pos: o, hacer: () => mostrarAviso(tr('Cuando se consuman las brasas, se raspa lo quemado con el hacha.')) };
+  }
+  if (f === 'brasas') return { texto: tr('Echar brasas en el hueco (vuelta {n} de 3)', { n: v.vuelta + 1 }), icono: 'lena', pos: o, hacer: () => echarBrasas(o) };
+  const vamos = estado.talando && estado.talando.vaciado === o.id;
+  return { texto: f === 'raspar' ? tr('Raspar lo quemado con el hacha') : tr('Vaciar el tronco con el hacha'), icono: h ? h.tipo : 'hacha_piedra', pos: o,
+    hacer: () => (h ? empezarVaciado(o) : mostrarAviso(tr(f === 'raspar' ? 'Necesitas un hacha en la mano para raspar lo quemado.' : 'Necesitas un hacha en la mano para vaciar el tronco.'), true)), prog: vamos ? progresoGolpes(estado.talando) : 0 };
+}
+// Manda lo que le toca a la canoa (en línea, al servidor; sin él, a la lógica de aquí) y llama a fin con el resultado.
+function mandarVaciar(id, fin) {
+  const datos = { tipo: 'vaciar', objeto: id, x: pj.x, z: pj.z };
+  if (objetosRed) { objetosRed.mandar(datos, fin); return; }
+  const r = ejecutarVaciado(vaciadoLocal, inventarios, registroAcciones, { autor: AUTOR_LOCAL, ...datos }, Date.now(), fabCliente.estaciones);
+  if (r.ok) { sueloObjetos.guardar(); sueloObjetos.refrescar(); }
+  fin(r);
+}
+function empezarVaciado(o) {
+  estado.talando = { vaciado: o.id, x: o.x, z: o.z }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(faseVaciado(o.cosa.vaciado, Date.now()) === 'raspar' ? tr('Raspas lo quemado del hueco.') : tr('Vacías el tronco con el hacha.'));
+}
+function golpeVaciado(a) {
+  estado.golpeEn = RITMO_TALA;
+  mandarVaciar(a.vaciado, (r) => {
+    if (estado.talando !== a) return;   // ya ha dejado de golpear
+    if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    if (r.objeto) a.vaciado = r.objeto;   // (de una pila de troncos largos se aparta uno: es otro objeto)
+    if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }
+    if (!r.termina) { mostrarAviso(r.faltan === 1 ? tr('Vacías el tronco: falta 1 golpe.') : tr('Vacías el tronco: faltan {n} golpes.', { n: r.faltan })); return; }
+    estado.talando = null; a.prog = null;
+    mostrarAviso(r.canoa ? tr('¡La canoa está vaciada! Arrástrala con una cuerda hasta la orilla.')
+      : r.paso === 'desbastar' ? tr('Tronco desbastado. Ahora, con una hoguera encendida al lado, echa brasas en el hueco.')
+      : tr('Raspado. Echa otra vez brasas en el hueco (vuelta {n} de 3).', { n: r.vuelta + 1 }));
+  });
+}
+function echarBrasas(o) {
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mandarVaciar(o.id, (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    mostrarAviso(tr('Echas brasas de la hoguera en el hueco: arderán 10 min. Luego se raspa lo quemado.'));
+  });
+}
+
 // Tronzar y partir (src/logica/troceo.js): el tronco del suelo más cercano que se trocea, en la planta baja.
 function troncoCercano() {
   if (pj.k !== 0) return null;
   return sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now(), ALCANCE_TROCEO - 0.3).find(o => seTrocea(o.cosa.tipo)) || null;
 }
-function empezarTroceo(o) {
-  estado.talando = { troceo: o.id, x: o.x, z: o.z }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
-  mostrarAviso(o.cosa.tipo === 'tronco_largo' ? tr('Tronzas el tronco largo.') : tr('Partes el tronco en leña.'));
+function empezarTroceo(o, modo = null) {
+  estado.talando = { troceo: o.id, x: o.x, z: o.z, ...(modo ? { modo } : {}) }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(modo === 'rodaja' ? tr('Cortas una rodaja del tronco largo.') : o.cosa.tipo === 'tronco_largo' ? tr('Tronzas el tronco largo.') : tr('Partes el tronco en leña.'));
 }
-function golpeTroceo(id) {
+function golpeTroceo(id, modo = null) {
   estado.golpeEn = RITMO_TALA;
+  const m = modo ? { modo } : {};
   if (objetosRed) { // en línea, el golpe lo da el servidor, en su suelo
     const yendo = estado.talando;
-    objetosRed.mandar({ tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, (r) => {
+    objetosRed.mandar({ tipo: 'trocear', objeto: id, x: pj.x, z: pj.z, ...m }, (r) => {
       if (estado.talando !== yendo) return;
       if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
       avisoTroceo(r);
     });
     return { ok: true, enviado: true };
   }
-  const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z }, Date.now(),
+  const r = ejecutarTroceo(troceo, inventarios, registroAcciones, { autor: AUTOR_LOCAL, tipo: 'trocear', objeto: id, x: pj.x, z: pj.z, ...m }, Date.now(),
     (autor, x, z) => !!mundo.tierraDe(x, z));
   if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return r; }
   if (almacen) guardarTroceo(almacen, troceo);
@@ -2652,6 +2929,12 @@ function golpeTroceo(id) {
 }
 function avisoTroceo(r) {
   const tronzar = r.accion === 'tronzar';
+  if (r.accion === 'rodaja') {
+    if (!r.termina) { mostrarAviso(r.faltan === 1 ? tr('Cortas la rodaja: falta 1 golpe.') : tr('Cortas la rodaja: faltan {n} golpes.', { n: r.faltan })); return r; }
+    estado.talando = null;
+    mostrarAviso(tr('Cortada: 1 rodaja de tronco y {n} troncos cortos.', { n: r.resto ? r.resto.n : 0 }));
+    return r;
+  }
   if (!r.termina) {
     mostrarAviso(tronzar ? (r.faltan === 1 ? tr('Tronzas el tronco: falta 1 golpe.') : tr('Tronzas el tronco: faltan {n} golpes.', { n: r.faltan }))
       : (r.faltan === 1 ? tr('Partes el tronco: falta 1 golpe.') : tr('Partes el tronco: faltan {n} golpes.', { n: r.faltan })));
@@ -2770,13 +3053,14 @@ function paso() {
   // rendido (el cansancio al máximo), no se corre; helado, más lento (P4; src/logica/necesidades.js; el servidor tampoco
   // deja ir más deprisa, src/logica/presencia.js)
   const efNec = necesidades ? efectosNecesidades(necesidades) : null;
-  const correr = rapido && modo !== 'nadar' && puedeCorrer(nado.e) && !(efNec && efNec.sinCorrer);
+  const tronco = miTronco();   // tirando del tronco largo no se corre, y cansa (P11c)
+  const correr = rapido && !tronco && modo !== 'nadar' && puedeCorrer(nado.e) && !(efNec && efNec.sinCorrer);
   let vel = (correr ? 6 : 3.6) * mag * velocidadCarga() * combate.factorVelocidad(correr); // cargado al máximo en todo, al 80% (GDD); con el arma sacada, lo que diga el combate
   if (modo === 'vadear') vel *= factorVadeo(ag.hondo);
   if (efNec && efNec.torpe) vel *= 0.8;
   if (modo === 'nadar') vel = (rapido && nado.e.aguante > 0 ? NADO.velNadarRapido : NADO.velNadar) * mag;
   vel *= velocidadAdmin();   // la cuenta de admin con su velocidad multiplicada (src/logica/admin.js; el servidor la deja)
-  nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos() });
+  nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos(), tira: tronco ? (tronco.ayuda ? 0.5 : 1) : 0 });
   if (modo === 'nadar' && ag) { pj.x += ag.dx * NADO.arrastre * dt; pj.z += ag.dz * NADO.arrastre * dt; }   // la corriente te lleva
   if (nado.e.muerto) ahogado();
   pintarAguante();
@@ -2857,6 +3141,7 @@ function paso() {
   if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
+  tiempoV.paso(dt, bajoTecho);   // (bajo techo, sin gotas: el tejado se quita para ver dentro)
   cielo.paso();
   graficos.dibujar(dt);
   requestAnimationFrame(paso);
@@ -3036,6 +3321,7 @@ function pintarLlevas() {
   const ra = miRastra();
   if (ra && esCarr(ra)) partes.push(`<span class="llevo"><span>${tr('Empujas:')}</span><b>${tr('Carretilla')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Aparcar')}</button></span>`);
   else if (ra) partes.push(`<span class="llevo"><span>${tr('Arrastras:')}</span><b>${tr('Rastra')} (${nombreCarga(ra.cosa.carga)})</b><button data-soltarrastra="1">${tr('Soltar')}</button></span>`);
+  if (miTronco()) partes.push(`<span class="llevo"><span>${tr('Tiras de:')}</span><b>${tr(CATALOGO[miTronco().cosa.tipo].nombre)}</b><button data-soltartronco="1">${tr('Soltar')}</button></span>`);
   const f = Math.min(1, inv.lleno().fraccion);
   partes.push(`<span class="carga" title="${tr('Carga: {c}%', { c: Math.round(f * 100) })}"><i style="width:${Math.round(f * 100)}%"></i></span>`);
   $('llevas').hidden = false;
@@ -3045,6 +3331,7 @@ $('llevas').onclick = (e) => {
   const h = e.target.closest('[data-alhombro]'), m = e.target.closest('[data-amanos]');
   if (h || m) { cambiarHombro(h ? h.dataset.alhombro : null); return; }
   if (e.target.closest('[data-soltarrastra]')) { soltarRastra(); return; }
+  if (e.target.closest('[data-soltartronco]')) { soltarTronco(); return; }
   const ci = e.target.closest('[data-cinto]');
   if (ci) { cogerDelCinto(ci.dataset.cinto); return; }
   const b = e.target.closest('[data-soltar]'); if (!b) return;
@@ -3385,11 +3672,13 @@ function tomarPara(p) {
 
 // acceso para pruebas automáticas
 window.__kinhold = {
+  tiempoV,   // el tiempo que hace, a la vista (P11b: la lluvia y el cielo cubierto)
   get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, hierbaDensa, combate, cielo, ambiente,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },
-  get camposV() { return camposV; },   // los campos a la vista (P11: lo sembrado, para las pruebas)
+  get camposV() { return camposV; },
+  get pozosV() { return pozosV; },   // los pozos a la vista (P11b, para las pruebas)   // los campos a la vista (P11: lo sembrado, para las pruebas)
   get necesidades() { return necesidades; },   // las del servidor (P4)
   avisosNec,
   // (pruebas, sin servidor) poner unas necesidades como si llegaran del servidor: solo se dibujan y se notan aquí
@@ -3504,10 +3793,10 @@ window.__kinhold = {
   get registroAcciones() { return registroAcciones; },
   accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV, mirarEras, erasDespejadas: () => (window.__sinDespejarEras ? [] : erasHechas().map(e => [e.x, e.z, ERA + 0.15])),
   calor() { return calorEn(Object.values(fabCliente.estaciones), pj.x, pj.z, Date.now()); }, // el calor de las hogueras donde estás (para el frío)
-  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, cambiarHombro,
+  inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, vaciadoLocal, canoaCercana, opcionVaciar, mandarVaciar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
-  rastras, miRastra, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
+  rastras, miRastra, miTronco, atarTronco, soltarTronco, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },
   render() { graficos.dibujar(); },

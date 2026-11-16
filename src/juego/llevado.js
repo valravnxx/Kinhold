@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA, loteRemo } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -570,6 +570,13 @@ function enMano(t) {
     // el brazo caído, la palma hacia atrás): +Z hacia los dedos (abajo), +Y del meñique al índice (hacia el cuerpo); el
     // eje del aro, a lo ancho (+Y), y el aro hacia fuera del cuerpo, para no meterse en el muslo
     cribaEn(L, 0, -CRIBA.alto, CRIBA.r + CRIBA.grosor * 0.5, null, 'mano');
+  } else if (t === 'cubo' || t === 'cubo_agua') {
+    // el cubo (P11b), colgado del asa: el asa en la mano y el cubo derecho debajo (en la base de la mano, +Z es abajo
+    // con el brazo caído: el cubo, girado para que su arriba mire a -Z), algo apartado del muslo
+    // (segunda mirada, 14 nov: el asa, dentro del puño, a lo ancho de los nudillos (+Y), no por encima de la mano; y
+    // algo más pequeño en la mano, que se comía el muslo)
+    const g = new THREE.Matrix4().makeRotationX(-Math.PI / 2).multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)).multiply(new THREE.Matrix4().makeScale(0.85, 0.85, 0.85));
+    cuboEn(L, 0, 0, (CUBO.alto + CUBO.asa) * 0.85, { lleno: t === 'cubo_agua', giro: g, asa: 0 });   // (lo alto del asa, en el centro de la O de la mano cerrada, como el mango de una herramienta)
   } else if (CATALOGO[t] && (CATALOGO[t].herramienta || ['lanza_endurecida', 'antorcha'].includes(t))) {
     const H = nuevoLote(); herramienta(H, t, t === 'lanza_endurecida' || t === 'arpon' ? 1.5 : 0.9);
     // (P10, 14 nov) la pala de madera, el mango dentro del puño e inclinado hacia abajo, la hoja hacia el suelo (antes
@@ -608,9 +615,14 @@ function seguir(grupo, raiz) {
     const em = o.userData.entreManos;
     if (em) { // lo grande en las dos manos: entre las dos, atravesado de una a otra
       em[0].getWorldPosition(_a).applyMatrix4(_inv); em[1].getWorldPosition(_b).applyMatrix4(_inv);
+      // lo que se agarra por una caña (el remo): la línea pasa por las palmas (de la muñeca hacia el nudillo del
+      // corazón), no por delante de las muñecas, para que las manos cierren sobre ella
+      const palmas = o.userData.palmas;
+      if (palmas) { _a.lerp(palmas[0].getWorldPosition(_y).applyMatrix4(_inv), 0.75); _b.lerp(palmas[1].getWorldPosition(_y).applyMatrix4(_inv), 0.75); }
       _x.subVectors(_b, _a); const largo = _x.length(); _x.normalize();
       _y.set(0, 1, 0).addScaledVector(_x, -_x.y).normalize(); _z.crossVectors(_x, _y);
-      o.matrix.makeBasis(_x, _y, _z).setPosition(_a.lerp(_b, 0.5).addScaledVector(_z, 0.06).addScaledVector(_y, 0.02));
+      _a.lerp(_b, 0.5); if (!palmas) _a.addScaledVector(_z, 0.06).addScaledVector(_y, 0.02);
+      o.matrix.makeBasis(_x, _y, _z).setPosition(_a);
       o.matrixWorldNeedsUpdate = true; o.userData.largoManos = largo;
       continue;
     }
@@ -851,16 +863,23 @@ export function crearLlevado(j) {
     if (l.dos && l.der) {
       const L = nuevoLote();
       if (l.der === 'tronco_corto' || l.der === 'tronco_delgado') troncoCorto(L, 0, 0, 0, l.der === 'tronco_corto' ? 0.9 : 1.2, l.der === 'tronco_corto' ? 0.13 : 0.09, 'x');
+      // la rodaja (P11c), de canto entre las dos manos, como una rueda: las caras hacia delante y atrás y las manos en
+      // el canto, a los lados (src/juego/personaje.js las abre a su ancho)
+      else if (l.der === 'rodaja') troncoCorto(L, 0, -0.02, 0, RODAJA.ancho, RODAJA.r, 'z');
+      // el remo (P11d), atravesado por la caña de una mano a otra: el puño en muleta algo más allá de la izquierda y la
+      // pala fuera, a la derecha, de canto hacia delante (como se lleva un remo al hombro de la canoa, pero bajo)
+      else if (l.der === 'remo') { const R = nuevoLote(); loteRemo(R, { sinSuelo: true }); const m = new THREE.Matrix4().makeTranslation(-0.2, 0, 0); for (const p of R.piezas) { p.m.premultiply(m); L.piezas.push(p); } }
       else if (CATALOGO[l.der] && CATALOGO[l.der].lugar === 'espalda' && !sinModelo(l.der)) { const E = espalda(l.der, {}).L; for (const p of E.piezas) { p.m.premultiply(new THREE.Matrix4().makeRotationY(Math.PI)).premultiply(new THREE.Matrix4().makeTranslation(0, -0.12, 0.1)); L.piezas.push(p); } } // la mochila o el bastidor, cogido delante por los largueros, la repisa hacia el pecho
       else { hatillo(L, 0, 0.12, 0, 2.2); L.generico = true; }
       // va entre las dos manos (con la animación de llevar en brazos, delante del pecho): lo pone seguir()
       const g = deMano(L); g.name = 'llevado_manos'; g.matrixAutoUpdate = false; g.userData.generico = !!L.generico;
       g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
       if (H.hand_r && H.hand_l) { g.userData.entreManos = [H.hand_r, H.hand_l]; grupo.add(g); }
+      if (l.der === 'remo' && H.middle_01_r && H.middle_01_l) g.userData.palmas = [H.middle_01_r, H.middle_01_l];
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
       // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma
-      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
+      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo', 'cubo', 'cubo_agua'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
       const b = baseMano(mh, lado, invRaiz, largo ? 1.1 : 0.6); if (!b) continue;
       grupo.add(pieza(enMano(t), 'mano_' + lado, b.m, b.mano, invRaiz));
     }

@@ -50,12 +50,12 @@ const DENTRO = { lenero: { lena: 9, tronco_corto: 1 }, cesta_recoleccion: { baya
   correa_escudo: { escudo: 1 }, fardo: { piel: 8 }, caja_herramientas: { cuchillo: 1, azada: 1 } };
 const deEspalda = t => { const g = new THREE.Group(); g.add(mallas(loteEspalda(t, DENTRO[t] || {}).L)); g.rotation.y = 0.5; return g; };
 // lo largo y plano tumbado en el suelo (haces, troncos, la piel, la honda): en diagonal y visto casi desde arriba
-const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'piel_limpia', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca']);
+const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'piel_limpia', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca', 'remo']);
 const desdeArriba = o => { const g = new THREE.Group(); o.updateMatrixWorld(true); const s = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()); o.rotation.y += s.x >= s.z ? Math.PI / 4 : -Math.PI / 4; g.add(o); g.userData.arriba = true; return g; };
 const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
 
 // De dónde sale cada imagen. Lo que no está aquí sale con el hatillo del suelo (sin modelo aún).
-const SUELO = { liebre: 1, rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco_delgado: 2, tronco_largo: 2, lena: 6, rastra: 1, carretilla: 1 };
+const SUELO = { liebre: 1, rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco_delgado: 2, tronco_largo: 2, lena: 6, rastra: 1, carretilla: 1, canoa_a_medias: 1, canoa: 1 };
 const MANO = ['mineral_hierro', 'vara', 'tabla', 'cuchillo', 'lasca_silex', 'espada', 'escudo', 'palo_cavador', 'arpon', 'pala_madera', 'azada', 'hoz_silex', 'mayal', 'lanza_endurecida', 'antorcha'];
 const ESPALDA = ['lenero', 'porta_piedras', 'mochila_bastidor', 'zurron', 'fardo', 'cesta_recoleccion', 'cesto_pescador', 'caja_herramientas', 'carcaj', 'correa_escudo'];
 const HACHAS = ['hacha_mano', 'hacha_piedra', 'hacha_hierro'];

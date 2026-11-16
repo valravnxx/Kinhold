@@ -2,10 +2,12 @@
 // personaje, beber del río, lo que cansa cada cosa y su tic (con el sueño, el combate, la sangre que se pierde con la sed
 // o el hambre al máximo y la ropa que se gasta con el uso). Todo lo comparte por S, el estado del servidor.
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, saciar as saciarNecesidad, delCombate, alientoMinimo, hayAguaCerca, TRAGO, ESPERA_TRAGO, frioDelSitio, nocheDe } from '../../src/logica/necesidades.js';
+import { nuevas as necesidadesNuevas, validarNecesidades, avanzar as avanzarNecesidades, esfuerzo as esfuerzoNecesidad, redondear as redondearNecesidades, saciar as saciarNecesidad, delCombate, alientoMinimo, aguaCerca, motivoSinBeber, TRAGO, ESPERA_TRAGO, frioDelSitio, nocheDe } from '../../src/logica/necesidades.js';
 import { puestasDe, abrigo as abrigoDe } from '../../src/logica/prendas.js';
 import { horaDe } from '../../src/logica/cielo.js';
 import { calorEn } from '../../src/logica/fuego.js';
+import { lloviendo } from '../../src/logica/tiempo.js';
+import { pozoConAgua, ALCANCE_POZO } from '../../src/logica/pozo.js';
 import { sangrePerdida, motivoNecesidades } from '../../src/logica/muerte.js';
 import { RECUPERAR_SANGRE } from '../../src/combate/logica.js';
 import { reemplazar } from '../guardado.mjs';
@@ -36,7 +38,9 @@ export function instalarNecesidades(S) {
   const ultimoTrago = new Map();
   const beber = (a, ahora) => {
     const p = S.presencia && S.presencia.ultimo.get(a);
-    if (!terreno || !p || !hayAguaCerca(terreno.aguaEn, p.x, p.z)) return { ok: false, motivo: 'Aquí no hay agua: busca un río, un lago o el mar.' };
+    // (en la orilla del agua dulce, o junto a un pozo rematado: P11b; la del mar es salada y no se bebe, 15 nov)
+    const agua = p && terreno ? aguaCerca(terreno.aguaEn, p.x, p.z, terreno.marEn) : null;
+    if (!p || (agua !== 'dulce' && !(S.mundo && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5)))) return { ok: false, motivo: motivoSinBeber(agua) };
     if (ahora - (ultimoTrago.get(a) || -Infinity) < ESPERA_TRAGO) return { ok: false, motivo: 'Despacio: trago a trago.' };
     ultimoTrago.set(a, ahora);
     const n = saciarNecesidad(necesidadesDe(a), 'sed', TRAGO);
@@ -54,7 +58,8 @@ export function instalarNecesidades(S) {
   const puestaDe = new Map();   // autor → ms que lleva la ropa puesta en el mundo desde el último uso contado
   // El frío que pide el sitio de cada uno (P4, 8 nov; src/logica/necesidades.js, frioDelSitio): la temperatura de su
   // bioma (la del paisaje, guardada mientras no se aleje 20 m), la noche (la hora del cielo: horaMundo, la real; las
-  // pruebas la cambian), lo que lleva puesto, si está bajo techo y el calor de los fuegos encendidos a su lado. Sin
+  // pruebas la cambian), lo que lleva puesto, si está bajo techo, el calor de los fuegos encendidos a su lado y si
+  // llueve donde está (P11b; src/logica/tiempo.js, a la hora de verdad, como el navegador la ve y la oye). Sin
   // terreno (las pruebas sin mundo) no hay clima: no pide frío.
   const tempDe = new Map();   // autor → { x, z, T }
   const frioPedido = (a, e, inv) => {
@@ -65,7 +70,7 @@ export function instalarNecesidades(S) {
       c = { x: e.x, z: e.z, T: st && Number.isFinite(st.T) ? st.T : 10 }; tempDe.set(a, c);
     }
     const ahora = Date.now(), cerca = Object.values(S.objetos.fab.estaciones).filter(s => s.fuego && Math.abs(s.x - e.x) < 5 && Math.abs(s.z - e.z) < 5);
-    return frioDelSitio({ T: c.T, noche: nocheDe(horaDe(S.horaMundo()).hora), abrigo: abrigoDe(puestasDe(inv.lugares)), techo: S.mundo.bajoTecho(e.x, e.z), calor: calorEn(cerca, e.x, e.z, ahora) });
+    return frioDelSitio({ T: c.T, noche: nocheDe(horaDe(S.horaMundo()).hora), abrigo: abrigoDe(puestasDe(inv.lugares)), techo: S.mundo.bajoTecho(e.x, e.z), calor: calorEn(cerca, e.x, e.z, ahora), lluvia: lloviendo(e.x, e.z, ahora) ? 1 : 0 });
   };
   Object.assign(S, { necesidades, necesidadesDe, guardarNecesidades, cansar, ultimoTrago, beber, antesNec, durmiendo, alientoAntes, puestaDe, tempDe, frioPedido });
 }

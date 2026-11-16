@@ -6952,5 +6952,423 @@
   "pruebas": "Lógica de los mojones 23/23, quitar el mojón 30/30, tierra al rey 41/41; en la nube, recorrido, construcción y quitar el mojón, bien. En el grupo de lógica fallaron recogida, servidor en internet y una traducción vieja, que aquí pasan y no tocan este cambio. No comprobado: el mojón de más en el juego en línea con la cuenta de admin (lo prueba valravnx).",
   "capturas": null,
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T18:23:12+00:00",
+  "fin": "2026-11-14T19:30:11+00:00",
+  "titulo": "P11c: el tronco largo a cuerda y en la rastra",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "Con una cuerda en la mano, junto al tronco largo que deja un árbol adulto, Usar lo ata y se tira de él: va detrás, a lo largo de la cuerda, que llega a la mano.",
+   "Tirando de él se va muy despacio (al 30 %), no se corre y baja el aguante al andar; sin aguante, casi no se avanza. Otro con cuerda ayuda a tirar: entre dos, al 50 %.",
+   "Usar suelta la cuerda y el tronco se queda donde se ve; quien se va del juego lo suelta donde estaba.",
+   "Tirando de él junto a una rastra parada, Usar lo sube a pulso a ella (cabe uno; hace falta la cuerda); uno solo arrastra la rastra con él, al 42 %, más despacio que con 3 troncos cortos. En la rastra va apoyado en el travesaño de delante, con la punta de atrás rozando el suelo.",
+   "Un tronco atado no se tronza. Todo por el servidor con su autor, y todos lo ven.",
+   "Pruebas nuevas: 16 en prueba_rastra.mjs (con MUTAR=1 fallan) y el tronco largo en la de navegador de la rastra, en PC y en móvil."
+  ],
+  "pruebas": "Lógica de la rastra 64/64; en la nube, recorrido 288/288, la rastra, tronzar y partir, velocidad y panel de inventario, bien. En el grupo de lógica fallaron el servidor en internet (avisos de systemd de la máquina de la nube) y las imágenes del panel de fabricar (5 que faltan, igual en main): no tocan este cambio. No comprobado: dos jugadores tirando a la vez en línea (lo prueba la lógica del servidor).",
+  "capturas": "capturas/demo-v211",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T14:03:44+01:00",
+  "fin": "2026-11-14T20:32:07+01:00",
+  "hito": "lluvia",
+  "titulo": "Regar el huerto (demo v212)",
+  "hecho": [
+   "El mundo tiene su tiempo, igual para todos y sin guardar nada: por zonas de 1 km y por días, unos 3 de cada 10 llueve, en ratos de 3 h (valravnx, 14 nov: «adelantamos hito de lluvia»).",
+   "La col y el nabo, tras dos días sin lluvia ni riego, se ven mustios (las hojas caídas hasta el suelo, de un pardo oliva apagado) y crecen a la mitad; no se mueren: sin regar, la col madura a los 12 días en vez de 7.",
+   "Con el cubo vacío en la mano, junto al río, Usar lo llena; lleno, delante de la col o el nabo, Usar riega los de un círculo de 1,2 m y el cubo se vacía; lo hace el servidor con su hora y lo ven todos (valravnx: «meteremos regar en las que sí lo requieran, lo de huerto»).",
+   "La cebada y las habas no se riegan: son de secano, como en la época.",
+   "El cubo se ve en la mano, colgado del asa, vacío (de madera por dentro) o con el agua; y su imagen en el panel (iconos-v29).",
+   "Al unir main, las imágenes de las piezas vuelven a piezas-v2: la unión del hierro de pantano las había devuelto a v1 y las de paja salían sin imagen en Construir."
+  ],
+  "capturas": "capturas/demo-v212",
+  "estado": "ok",
+  "pruebas": "Regar en la lógica y en el servidor, 43 de 43 (rota a propósito, falla); orígenes, iconos e idiomas, bien. En la nube: los campos en el navegador con regar en línea (llenar el cubo en el río, regar y que el cubo se vacíe), el recorrido de jugador, construir, los avisos de las necesidades, la velocidad con pocos fotogramas, el panel de inventario, la demo única, el mazo, despiezar y el panel de fabricar, bien (este último falló una vez soltando la criba y pasó al repetirlo). En la lógica falla solo prueba_nube (systemd-analyze de la máquina de GitHub), como en main. «Lo que llevas se ve puesto» no se pasó: falla igual en main (la mano sobre el tronco y el cinturón), según el diario. Las pruebas de sembrar, cosechar y escardar, con lluvia fija (la sed es de regar); el recorrido de la granja, con la col y el nabo esperando lo que tardan sin agua. Segunda mirada de un agente aparte: tres vueltas (el asa en la mano, el cubo más pequeño y de madera por dentro, lo mustio caído y de color apagado); a la tercera, todo sí salvo que la mano no cierra los dedos: el personaje del taller no tiene dedos que se doblen (otra tarea). Las capturas de cerca del huerto y del cubo en PC, en una página del juego con el campo puesto solo en ella para encuadrar."
+ },
+ {
+  "inicio": "2026-11-14T20:23:09+00:00",
+  "fin": "2026-11-14T20:24:29+00:00",
+  "titulo": "P11b, La lluvia y el riego: planificado",
+  "hito": "lluvia",
+  "hecho": [
+   "Seis tareas de una sesión sacadas del GDD (el clima: despejado, nublado, lluvia y niebla, por zonas grandes) y del documento de sistemas (la lluvia riega sola; regar con cubo): el tiempo del mundo entero en la lógica; la lluvia se ve; la lluvia se oye y moja; la niebla se ve; la lluvia enfría; el agua del cubo, dulce.",
+   "La lluvia que riega ya estaba en la lógica (src/logica/tiempo.js, con regar el huerto); el resto del tiempo se suma ahí sin cambiarla.",
+   "La cadena del riego: el cubo sale del tronco corto en el banco, y el agua del río o del lago. Hoy el cubo también se llena en el mar: una tarea lo quita (el agua salada no riega). El pozo llega con los pozos y las acequias de la granja, no en este hito.",
+   "El frío con la lluvia ya lo pide el GDD («según bioma, estación, noche, lluvia y ropa») y la lógica del frío ya sabe de techo y abrigo: la lluvia entra ahí. Mojado como estado aparte sigue siendo de más adelante (GDD).",
+   "La nieve y las estaciones, cuando lleguen las estaciones (fuera de este hito)."
+  ],
+  "pruebas": "Sin código cambiado: nada en la nube; la web, con construir_web.mjs",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T21:23:06+00:00",
+  "fin": "2026-11-14T22:03:31+00:00",
+  "titulo": "P11b, La lluvia y el riego: el tiempo del mundo entero en la lógica",
+  "hito": "lluvia",
+  "hecho": [
+   "El tiempo del mundo (src/logica/tiempo.js, sin three.js) ya dice despejado, nublado, lluvia o niebla en cada sitio y a cada hora, por zonas de 1 km y con la hora del servidor: igual para todos y sin guardar nada.",
+   "La lluvia es la de antes, la que riega el huerto: la prueba la compara con la de antes en 4000 sitios y horas, y sale igual.",
+   "Nublado 45 minutos antes y después de cada rato de lluvia, con las nubes creciendo hacia la lluvia sin saltos.",
+   "Niebla algunas mañanas del mundo (unas 2 de cada 10 por zona): se forma antes de amanecer, espesa hasta las 8 y se levanta a las 10; nunca con lluvia, ni por la tarde ni de noche.",
+   "Además del nombre del tiempo, cuánto hay de nubes, de niebla y de lluvia (de 0 a 1), para que las tareas que lo dibujan pasen de un tiempo a otro sin saltos.",
+   "Provisional, para ajustar probando: los 45 minutos de nubes, la niebla 2 mañanas de cada 10, de 4:30 a 10 de la hora del mundo.",
+   "El servidor acepta también nublado y niebla fijos para las pruebas (KINHOLD_PRUEBAS_TIEMPO).",
+   "Arreglada la prueba del servidor de internet: la máquina nueva de GitHub Actions trae avisos de sus propias unidades del sistema y la prueba los contaba como nuestros.",
+   "Aún no se ve ni se oye: son las tareas siguientes del hito."
+  ],
+  "pruebas": "Prueba nueva del tiempo del mundo 19/19 (rota a propósito con MUTAR=1: falla). En la nube: lógica (con regar el huerto 43/43) y marcar el campo con estacas, correctas; la prueba del servidor de internet fallaba por la máquina de GitHub (arreglada y correcta al repetir); al repetir, la del movimiento suave de los jugadores falló una vez por poco (2,58 veces frente a 2,5) y aquí pasa (1,31): no la toca el cambio. Fuera el recorrido: la lluvia no cambia (comprobado en la prueba nueva).",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-14T22:22:34+00:00",
+  "fin": "2026-11-14T23:31:12+00:00",
+  "titulo": "P11b, La lluvia y el riego: la lluvia se ve (demo v213)",
+  "hito": "lluvia",
+  "hecho": [
+   "El tiempo que dice la lógica (el del sitio donde estás, a la hora del servidor) ya se ve en el juego: despejado, nublado o lloviendo.",
+   "Al nublarse, el cielo se cubre entero de nubes grises, con algo de relieve; el sol y la luna se tapan y las estrellas no se ven.",
+   "La luz se apaga: el sol se queda en una quinta parte de su fuerza (casi sin sombras) y la luz del cielo se vuelve gris, de día clara y de noche casi negra.",
+   "La lluvia: gotas alrededor de la cámara, fijas en el mundo (al moverte pasas entre ellas), algo inclinadas por el viento; se ven también contra el cielo.",
+   "Barata: una sola malla de trazos que mueve la tarjeta gráfica, una sola llamada de dibujo; 4500 gotas en el PC y 2400 en el móvil.",
+   "Sin saltos: el cielo va hacia lo que toca en unos 25 s y la lluvia en unos 8 s, y solo llueve con el cielo ya cerrado.",
+   "Bajo techo no caen gotas (el tejado se quita para ver dentro).",
+   "Provisional, para ajustar probando: cuántas gotas, lo que miden y lo deprisa que caen, y lo que tarda en cambiar el cielo.",
+   "No comprobado: los fotogramas de verdad, que mide valravnx en su PC y su móvil; aquí, sin tarjeta gráfica, dibujar con lluvia cuesta lo mismo que sin ella."
+  ],
+  "pruebas": "Prueba nueva de navegador «la lluvia se ve», PC y móvil, correcta en la nube (rota a propósito con MUTAR=1: falla). En la nube también el día y la noche, el posprocesado y los perfiles gráficos, el perfil gráfico en el juego y la velocidad con pocos fotogramas, correctas. Una segunda mirada aparte dijo que las primeras gotas parecían estacas: se hicieron más tenues, inclinadas y desvanecidas, y a la segunda dijo que sí. Fuera la lógica y el recorrido: no cambia la lógica.",
+  "capturas": "capturas/demo-v213",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T00:25:00+00:00",
+  "fin": "2026-11-15T01:10:28+00:00",
+  "titulo": "P11b, La lluvia y el riego: la lluvia se oye y moja (demo v214)",
+  "hito": "lluvia",
+  "hecho": [
+   "La lluvia se oye: un rumor continuo con gotas sueltas encima, más fuerte cuanto más llueve, hecho por código (sin archivos).",
+   "Bajo techo suena más bajo (al 40 %) y apagado, sin los agudos ni las gotas sueltas, como sobre el tejado.",
+   "La lluvia moja: el suelo, las piezas y lo que está al raso se ven más oscuros y de color más hondo mientras llueve.",
+   "Se moja del todo en 4 min de lluvia y, al parar, sigue mojado y se seca poco a poco en 30 min.",
+   "Lo mojado sale del tiempo del mundo (lógica pura, src/logica/mojado.js): igual para todos donde estás y sin guardar nada.",
+   "Bajo techo, lo de dentro se ve al 35 % de mojado.",
+   "Provisional, para ajustar probando: lo que tarda en mojarse y en secarse, lo oscuro que se ve y cómo suena.",
+   "Para más adelante (segunda mirada aparte): un poco de brillo en el suelo mojado para que se lea más como agua, y las matas de musgo se oscurecen menos que lo demás.",
+   "No comprobado: cómo suena de verdad (aquí no hay altavoces; la prueba mira el volumen y el filtro) y los fotogramas, que mide valravnx."
+  ],
+  "pruebas": "Prueba nueva de lógica «la lluvia moja» (rota a propósito con MUTAR=1: falla) y la de navegador de la lluvia ampliada (suena, más bajo bajo techo, moja y se seca), PC y móvil, correctas en la nube; la demo única, correcta. Una segunda mirada aparte dijo que sí. Fuera, por la sesión, el día y la noche y el posprocesado y los perfiles: el cambio solo actúa cuando llueve. En la lógica falló una vez «combate en el servidor con lag» (lo que no se puede se rechaza), que no toca este cambio y pasa aquí.",
+  "capturas": "capturas/demo-v214",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T01:22:12+00:00",
+  "fin": "2026-11-15T02:19:04+00:00",
+  "titulo": "P11b, La lluvia y el riego: la niebla de la mañana (demo v215)",
+  "hito": "lluvia",
+  "hecho": [
+   "Algunas mañanas del mundo hay niebla espesa, igual para todos donde estás: se forma antes de amanecer, es espesa hasta las 8 y se levanta poco a poco hasta las 10 (lo dice la lógica del tiempo).",
+   "Lo de lejos se pierde en un gris claro, más oscuro y cálido al amanecer y casi blanco a media mañana, y el cielo queda tapado.",
+   "Lo de cerca, el jugador y lo que tiene a mano, se sigue viendo: en el PC no se nota nada hasta 9 m de la cámara; en el móvil, algo menos espesa, desde 12 m.",
+   "El sol se apaga (al 40 %) y casi no hay sombras; la niebla llega y se va sin saltos, en unos 20 s.",
+   "Lo muy lejano se funde del todo con el cielo: sin raya en el horizonte (lo vio la segunda mirada en el móvil y se arregló).",
+   "Provisional, para ajustar probando: lo espesa que es y hasta dónde se ve.",
+   "Para más adelante (segunda mirada aparte): quitar un poco de color a lo de cerca con niebla.",
+   "No comprobado: los fotogramas, que mide valravnx (el coste es un cálculo más por píxel en la niebla que ya había)."
+  ],
+  "pruebas": "La prueba de navegador de la lluvia ampliada con la niebla (lo de lejos se pierde, el cielo tapado, lo de cerca se ve, el sol más débil, llega y se va de a poco), PC y móvil, correcta en la nube; rota a propósito con MUTAR=1: falla. El día y la noche, el posprocesado y los perfiles gráficos y el perfil gráfico en el juego, correctos. Una segunda mirada aparte dijo que sí.",
+  "capturas": "capturas/demo-v215",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T02:24:34+00:00",
+  "fin": "2026-11-15T02:59:11+00:00",
+  "titulo": "P11b, La lluvia y el riego: la lluvia enfría",
+  "hito": "lluvia",
+  "hecho": [
+   "Bajo la lluvia y al raso, el frío que pide el sitio sube 30 encima de lo demás (la tierra, la noche y la ropa); el frío del personaje va hacia él poco a poco, como siempre.",
+   "Con lo del principio, de día bajo la lluvia el frío llega a 30 (sin aviso, pero sube); de noche, a 80 (aviso fuerte).",
+   "La ropa de hoy (lino, lana, cuero) no quita el frío de la lluvia: se empapa. La capa y la capucha, cuando lleguen, lo quitarán: la lógica ya lleva lo que cubren de la lluvia (hoy, nada).",
+   "Bajo techo la lluvia no cuenta nada, y junto al fuego tampoco hay frío.",
+   "Lo mira el servidor con el tiempo del mundo donde está cada uno, a la hora de verdad: el mismo que el navegador ve y oye.",
+   "Decisión provisional (los números, para ajustar probando): 30 de frío por la lluvia, fuera del abrigo de la ropa."
+  ],
+  "pruebas": "Lógica y recorrido correctos en la nube (los avisos de las necesidades, fuera: el cambio no toca lo que se ve). La prueba de las necesidades, con el servidor y el terreno de Whitholm: lloviendo y al raso, el frío sube más que en seco; rota a propósito (MUTAR=12 y la lluvia a 0), falla. El recorrido no se amplía: la lluvia no la decide el jugador.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T03:23:44+00:00",
+  "fin": "2026-11-15T03:54:35+00:00",
+  "titulo": "P11b, La lluvia y el riego: el agua del cubo, dulce",
+  "hito": "lluvia",
+  "hecho": [
+   "El cubo solo se llena con agua dulce: junto al río, sí; junto al mar, no, y el aviso lo dice: «El agua del mar es salada: no vale para regar. Llena el cubo en un río.»",
+   "Lejos de cualquier agua, el aviso pide un río (antes decía «un río, un lago o el mar»).",
+   "En la desembocadura, con el río y el mar a la vez al lado, vale el río.",
+   "Lo mira el servidor donde te tiene, con el terreno de verdad: la orilla de cerca de la salida es del río y la costa, a unos 6,4 km hacia el suroeste, del mar.",
+   "Hoy el terreno no tiene lagos: el agua dulce es la del río; el pozo, en las tareas que siguen.",
+   "Beber con las manos sigue como estaba (no entra en esta tarea)."
+  ],
+  "pruebas": "Lógica, recorrido, los avisos de las necesidades, la velocidad con pocos fotogramas y marcar el campo con estacas, correctos en la nube (los grupos de navegador los pidió el revisor por archivos tocados; no cambia nada que se vea). Las pruebas del riego y de las necesidades, ampliadas (dulce, salada y en seco; el servidor no llena el cubo junto al mar; el terreno de Whitholm, río dulce y costa salada); rotas a propósito (sin mirar la sal), fallan.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T04:24:29+00:00",
+  "fin": "2026-11-15T05:15:26+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo (1), la lógica",
+  "hito": "lluvia",
+  "hecho": [
+   "El agua bajo tierra sale del terreno: cuanto más alto queda el sitio sobre lo que lo drena (el fondo del valle de alrededor, hasta 300 m; el río o el mar), más honda, y en un alto de lo de alrededor algo más; en una hondonada, menos.",
+   "Junto al río o en el fondo de un valle, a 2 m; en una ladera 40 m por encima del fondo, a 6 m; más hondo que 12 m no se llega con pala: ahí no hay pozo y el aviso dice que se busque más abajo.",
+   "Medido en Whitholm de verdad: en 9 de cada 10 sitios de tierra el agua está al alcance; la mitad, a unos 6 m; en la salida, a 2 m.",
+   "El pozo se marca donde estás, en tu tierra (o en la de quien te invita), en seco y a más de 4 m de otro pozo; la hondura la pone el servidor con su terreno, no el navegador.",
+   "Cada tramo de 1 m se cava con la pala de madera en la mano, a 10 golpes; cada tramo saca algo más de 1 m³ de tierra, que quedará en un montón al lado.",
+   "No se baja más sin revestir de piedra seca el tramo cavado: 8 piedras por tramo, de lo que llevas, en uno o en varios viajes.",
+   "Al llegar al agua y revestir el último tramo, el pozo tiene agua; sacarla (brocal, travesaño, cuerda y cubo) y verlo en el juego son las dos tareas que siguen.",
+   "Cada golpe y cada revestido cansan como una obra, van con su autor por el servidor (a tu lado, como mucho a 3 m) y los demás los reciben.",
+   "Decisiones provisionales: 10 golpes y 8 piedras por tramo, el tope de 12 m y el modelo del agua bajo tierra (src/logica/pozo.js)."
+  ],
+  "pruebas": "Lógica y recorrido correctos en la nube. Prueba nueva del pozo (49 comprobaciones, con el terreno de Whitholm y el servidor de verdad); rota a propósito (bajar sin revestir), falla. Fuera por la sesión: construcción, quitar el mojón y los avisos de las necesidades (de navegador; solo se añade el pozo al guardado del mundo y su cansancio). La primera pasada de lógica falló por dos avisos sin traducir y un nombre de paso demasiado largo para su archivo; arreglados y vuelta a pasar.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T05:23:16+00:00",
+  "fin": "2026-11-15T07:31:16+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo (2), en el juego",
+  "hito": "lluvia",
+  "hecho": [
+   "Con la pala de madera en la mano, en tu tierra y fuera de los campos, Usar marca un pozo un paso delante de ti; el aviso dice a qué hondura está el agua y cuántos tramos de 1 m hay que cavar y revestir (la hondura la pone el servidor; el navegador hace la misma cuenta con el mismo terreno para el aviso).",
+   "Junto al pozo, Usar cava el tramo a golpes de pala, uno cada 2 s y seguidos hasta acabarlo; cavado, para y pide revestirlo de piedra; Usar pone las piedras que llevas (en una mano caben 3: hacen falta viajes) y dice cuántas faltan.",
+   "La boca se ve: como el terreno no se puede agujerear, lo de dentro va pintado en un disco pegado al suelo, como se ve desde arriba: cada tramo, un anillo de pared más estrecho y oscuro cuanto más hondo, de tierra o de lajas de piedra con sus juntas; al fondo, tierra húmeda o el agua oscura con el cielo reflejado. En la boca no sale hierba.",
+   "Recién marcado, un círculo raspado y una estaca; revestido el primer tramo, una hilada de piedras alrededor de la boca; las piedras ya puestas del tramo a medias, en un montoncito al lado; la tierra sacada, en montones bajos y desiguales con terrones al pie, que crecen con lo cavado hasta un tope (lo demás se da por esparcido).",
+   "Lo ven todos: el otro jugador, en el móvil, ve el pozo con agua. Publicado en la demo v216.",
+   "Decisiones provisionales: el pozo, a 0,9 m delante de ti; la tierra a la vista, hasta 1,1 m³; la boca aún se puede pisar (el brocal, que la cierra, llega con la tarea siguiente)."
+  ],
+  "pruebas": "Prueba nueva de navegador del pozo (en línea, dos jugadores, PC y móvil): marcar, cavar y revestir 8 tramos hasta el agua a 7,4 m, con los golpes y las piedras en el servidor; rota a propósito (sin mandar al servidor las acciones del pozo), falla. Demo única correcta. Fuera por la sesión: velocidad con pocos fotogramas y la demo en el mundo (main.js y mundo_juego.js solo añaden el pozo; la demo única carga el mundo y la prueba del pozo lo juega). Segunda mirada de un agente aparte: la primera vez dijo que no (hierba dentro de la boca, montones enormes y anaranjados, pared sin piedras, agua pequeña); arreglado y vuelto a mirar, sí.",
+  "capturas": "capturas/demo-v216",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T07:40:43+00:00",
+  "fin": "2026-11-15T08:32:48+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo, desde construir",
+  "hito": "lluvia",
+  "hecho": [
+   "Lo pidió valravnx en la sesión: la pala de madera sirve para más cosas, así que el pozo ya no se marca con ella en la mano; con la pala en la mano, Usar no ofrece «Marcar aquí un pozo».",
+   "El pozo está en construir, pestaña Tierra, junto al mojón y la brocha de nivelar: al apuntar sale su fantasma (el círculo de la boca y la estaca) y el aviso dice a qué hondura está el agua ahí y cuántos tramos tiene; en rojo y con el motivo si no se puede (fuera de tu tierra, pegado a otro pozo, en un campo o con el agua a más de 12 m).",
+   "Al marcarlo (por el servidor, con su autor, como antes), vuelves a moverte y el aviso dice que se cava con la pala de madera; cavar y revestir cada tramo sigue igual.",
+   "Provisional: el botón del pozo lleva el icono de la pala (aún no hay icono del pozo). Publicado en la demo v217."
+  ],
+  "pruebas": "Prueba del pozo en navegador al día (en línea, dos jugadores, PC y móvil): con la pala en la mano no sale marcar el pozo, se marca desde construir con la hondura del terreno, no deja otro pegado, y luego se cava y reviste hasta el agua; construcción, lógica, recorrido y velocidad con pocos fotogramas, correctos en la nube. No se ha roto a propósito esta vez (la prueba ya falla sin las acciones del pozo en el servidor, MUTAR=1). Sin segunda mirada de otro agente: solo cambian un botón del menú y un fantasma translúcido; el pozo se ve igual que en la v216.",
+  "capturas": "capturas/demo-v217",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T09:23:12+00:00",
+  "fin": "2026-11-15T13:09:35+00:00",
+  "titulo": "P11b, La lluvia y el riego: el pozo (3), sacar agua",
+  "hito": "lluvia",
+  "hecho": [
+   "Revestido hasta el agua, el pozo se remata a su lado con Usar: primero el brocal, un murete de piedra seca alrededor de la boca (12 piedras, en uno o varios viajes, que se ve crecer hilada a hilada), y luego el travesaño, dos varas de pies y una atravesada con la cuerda que baja al agua (3 varas y una cuerda, de una vez).",
+   "Rematado, con el cubo vacío en la mano Usar dice «Sacar agua del pozo» y lo llena de agua dulce aunque no haya ningún río cerca (sirve para regar el huerto), y a su lado se bebe como en el río. Todo por el servidor con su autor (acción «rematar_pozo»; llenar el cubo y beber miran si estás junto a un pozo rematado); lo ven todos.",
+   "El recorrido de jugador hace un pozo de principio a fin (paso 23, pruebas/recorrido_pozo.mjs): busca en su tierra, a más de 60 m de cualquier río, el sitio de agua menos honda; repara el hacha en su piedra de tallar, tala un árbol adulto y lo tronza para tener troncos cortos; se hace en el banco la pala de madera y el cubo; marca el pozo, cava y reviste los 4 tramos, levanta el brocal, trenza una cuerda y pone el travesaño, saca agua y bebe.",
+   "El pozo sale ya de lo que se consigue en el mundo (pruebas/prueba_origenes.mjs): ya no espera en lo pendiente.",
+   "Provisional: 12 piedras para el brocal; 3 varas y una cuerda para el travesaño; sus varas, descortezadas (con corteza, a contraluz, se veían negras). Sacar agua es al momento, como llenar el cubo en el río. Publicado en la demo v218."
+  ],
+  "pruebas": "En la nube: lógica (con la del pozo: rematarlo y sacar agua, por el servidor), recorrido de jugador (303 bien, con el paso del pozo), el pozo en el juego (PC y móvil, dos jugadores en línea: brocal, travesaño, sacar agua con el cubo, el otro jugador lo ve rematado), construcción, avisos de las necesidades y velocidad con pocos fotogramas, correctos. Roto a propósito: si el pozo con agua sin rematar contara como agua, la prueba del pozo falla. Segunda mirada de otro agente a las capturas: sí, se puede enseñar; dice que el brocal se lee más como un montón de piedras que como hiladas y que la piedra es gris y facetada (la misma de la hilada de arriba, de la v216).",
+  "capturas": "capturas/demo-v218",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T13:23:05+00:00",
+  "fin": "2026-11-15T15:39:56+00:00",
+  "titulo": "P11b, La lluvia y el riego: el recorrido de jugador riega el huerto",
+  "hito": "lluvia",
+  "hecho": [
+   "Al repasar lo esencial del hito para la revisión, el recorrido de jugador no regaba: a la col y al nabo se les adelantaba el reloj de lo que tardan sin agua. Tarea nueva delante de la revisión, hecha en esta sesión.",
+   "Ahora el jugador del recorrido riega la col y el nabo con el cubo lleno en su pozo (una pasada moja a los dos), al sembrar y cada 1,75 días del reloj acelerado, antes de que se pongan mustios; maduran a la semana y los cosecha.",
+   "El pozo va antes que la granja en el recorrido: el río más cercano al campo está a casi 1 km y el pozo, junto al banco. El cubo se queda junto al pozo entre un riego y otro.",
+   "Para que lo de después siga saliendo con el orden nuevo: el pozo se lleva la piel de la liebre a su tierra (lo soltado fuera de ella desaparece a la hora), repara el hacha antes de dejarla junto al banco, y la granja busca el hacha donde la dejó y no pone el campo junto al pozo."
+  ],
+  "pruebas": "En la nube, el recorrido de jugador entero: 306 bien y 0 mal (el pozo, y después la granja con el riego). Aquí, el pozo y la granja desde lo guardado antes de ellos: 57 bien y 0 mal; roto a propósito (MUTAR=3, como si regara sin regar), la col y el nabo no maduran y la cosecha falla. Solo cambian las pruebas: sin versión nueva.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T13:53:57+00:00",
+  "fin": "2026-11-15T14:46:11+00:00",
+  "titulo": "P11b, La lluvia y el riego: el agua salada no se bebe",
+  "hito": "lluvia",
+  "hecho": [
+   "Lo pidió valravnx en el chat: que el agua salada se diferencie de la dulce y no se pueda beber. Solo el agua dulce (río, lago o pozo) quita la sed.",
+   "Lo decide el servidor: mira dónde te tiene y qué agua hay a tu lado; junto al mar, beber no baja la sed y el aviso dice «El agua del mar es salada: no se bebe. Busca un río, un lago o un pozo.».",
+   "En el juego, junto al mar, Usar dice «Agua salada: no se bebe» (apagado, con el porqué debajo) en vez de «Beber agua», y el menú del clic derecho ya no ofrece beber allí. El cubo, como ya era, tampoco se llena en el mar.",
+   "Publicado en la demo v219."
+  ],
+  "pruebas": "En la nube: lógica (con beber en la costa por el servidor: no baja la sed y dice que es salada), avisos de las necesidades (en PC y móvil, en la costa más cercana: Usar dice «Agua salada: no se bebe», la sed no baja y el aviso lo dice) y velocidad con pocos fotogramas, correctos. El recorrido no se ha pasado: bebe en un río a pocos metros, lejos del mar, y esto solo cambia el agua salada. Roto a propósito: si el servidor dejara beber el agua salada, la prueba de las necesidades falla.",
+  "capturas": "capturas/demo-v219",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T16:24:06+00:00",
+  "fin": "2026-11-15T16:24:35+00:00",
+  "titulo": "La lluvia y el riego: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "lluvia",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el tiempo del mundo igual para todos y por zonas grandes (despejado, nublado, lluvia y niebla de mañana); la lluvia se ve, se oye (más bajo bajo techo), moja y enfría al raso; la col y el nabo piden agua tras días sin llover y se riegan con el cubo lleno de agua dulce del río, del lago o del pozo; el cereal y las habas no se riegan; el pozo se marca desde construir, se cava y se reviste por tramos de 1 m hasta el agua y se remata con brocal, travesaño y cuerda; el agua del mar no llena el cubo ni se bebe. Todo publicado y unido a main (la última, la demo v219).",
+   "El recorrido de jugador, sin arcón, lo hace entero: cava y remata un pozo y riega la col y el nabo con el cubo (306 de 306 en la nube).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: el cubo, el cubo lleno, la col, el nabo y el pozo salen del mundo.",
+   "Lo que queda para la revisión: según la segunda mirada, el brocal del pozo se lee más como un montón de piedras que como hiladas; la mano no cierra los dedos en el asa del cubo (el personaje del taller no los dobla). No comprobado: el sonido de la lluvia de oído, y los fotogramas con lluvia y niebla en un móvil de verdad.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 68 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T16:54:30+00:00",
+  "fin": "2026-11-15T16:54:30+00:00",
+  "titulo": "P11b aprobado: la lluvia y el riego",
+  "hito": "lluvia",
+  "hecho": [
+   "valravnx aprueba por el chat el hito P11b, La lluvia y el riego: pasa a hecho."
+  ],
+  "pruebas": "Sin pruebas: aprobado por valravnx.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T17:23:33+00:00",
+  "fin": "2026-11-15T18:48:03+00:00",
+  "titulo": "P11c: la rodaja de tronco y la carretilla",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "Con un hacha en la mano, junto a un tronco largo, el menú de Usar ofrece «Cortar una rodaja (la rueda de la carretilla)»: a golpes, como al tronzarlo, deja 1 rodaja de tronco a un lado y 2 o 3 troncos cortos al otro.",
+   "La rodaja se coge con las dos manos, de canto delante del cuerpo y cogida por el canto; en el suelo, tumbada, con la corteza en el canto y los anillos en la cara. Tiene su imagen en el panel (iconos v30).",
+   "En el banco de tronco, con 1 rodaja, 2 varas y 1 tronco corto depositados, se hace la carretilla de rueda maciza (90 s). Al recogerla cae a tus pies y, en tu tierra, queda a tu guarda.",
+   "La cadena hasta el mundo: rodaja ← cortarla del tronco largo ← talar un árbol adulto con el hacha de piedra; vara ← el árbol joven; tronco corto ← lo que queda al cortar la rodaja o tronzar el largo. En prueba_origenes.mjs, lo esencial de P11c (tronco largo, rodaja y carretilla) sale sin arcón.",
+   "Todo por el servidor con su autor. Provisional: los mismos golpes que tronzar (son los mismos cortes) y un tronco corto menos; la rodaja, 15 kg.",
+   "Pruebas nuevas: la rodaja en prueba_troceo.mjs (MUTAR=2 falla), la carretilla en prueba_fabricacion.mjs (MUTAR=5 falla), la rodaja en las pruebas de navegador de tronzar y de lo que llevas, en PC y en móvil."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido (a la segunda: la primera falló al azar en la caza de la liebre, como otras veces), tronzar y partir (con la rodaja), panel de fabricación e inventario, objetos en el suelo y los demás que pedía el cambio, bien. Fallan «lo que llevas se ve puesto» (la mano sobre el tronco al hombro, en armas y mujer) y «los almacenajes de la base», igual que en main y sin tocar este cambio. No se quitó ningún grupo de la lista del revisor. Segunda mirada a las capturas: la rodaja en las manos se corrigió tres veces (se metía en la tripa, luego se iba a un lado) hasta que dijo que sí.",
+  "capturas": "capturas/demo-v220",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T19:25:09+00:00",
+  "fin": "2026-11-15T20:28:57+00:00",
+  "titulo": "P11c: la empalizada, a la vista",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "La empalizada ya no se esconde: en construir, pestaña Exterior, sale con su imagen (piezas v3) y cuesta 6 troncos delgados. La puerta de empalizada sigue escondida (pide hierro).",
+   "Cada tramo son 6 troncos de pie, clavados medio metro en la tierra (en ladera ningún pie queda en el aire), con la punta afilada, dos traviesas por detrás que no asoman, la zanja apisonada al pie y piedras de calzo; madera más clara, como la de la cabaña de la v5.",
+   "La cadena hasta el mundo: tronco delgado ← talar un árbol joven con el hacha de piedra. En prueba_origenes.mjs, la empalizada entre las piezas que P11c deja a la vista (MUTAR=3 falla).",
+   "Provisional: se enseña aunque sea de nivel 2 porque todo lo que pide ya sale del mundo; lo demás de nivel 2 sigue escondido.",
+   "Segunda mirada de un agente aparte: a la primera dijo que no (madera casi negra, huecos entre troncos, traviesas que asomaban); arreglado, dijo que sí. Queda: los nudos de la textura de veta parecen agujeros en fila de cerca (es la textura de toda la madera del juego)."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido, construcción, construir con el acabado nuevo (con la empalizada, en PC y móvil) y panel de fabricación, bien; tras el último arreglo del modelo, otra vez construir con el acabado nuevo, bien.",
+  "capturas": "capturas/demo-v221",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T21:24:25+00:00",
+  "fin": "2026-11-15T22:09:57+00:00",
+  "titulo": "P11c: el portón de empalizada, sin hierro",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "El portón de empalizada ya no se esconde: en construir, pestaña Exterior, sale con su imagen (piezas v4) y cuesta 4 troncos delgados y 2 cuerdas, sin hierro.",
+   "Dos postes clavados medio metro y afilados, como los de la empalizada; la hoja, seis rollizos de punta afilada con dos traviesas y una tornapunta por detrás, todo atado con cuerda.",
+   "Los goznes, de madera y cuerda: el rollizo de la bisagra gira sobre una piedra de quicio y dos gazas de cuerda gruesa lo abrazan al poste, con un taco de madera encima de cada una.",
+   "Se abre y se cierra con Usar, por el servidor con su autor; solo lo abren el dueño de la tierra y sus invitados (prueba nueva en la lógica: el de fuera no lo toca, el invitado sí).",
+   "La cadena hasta el mundo: tronco delgado ← talar un árbol joven; cuerda ← el banco de tronco. En prueba_origenes.mjs, el portón entre las piezas que P11c deja a la vista.",
+   "Provisional: el coste y los goznes de cuerda; el portón de herrajes, con el hierro (P10).",
+   "Segunda mirada de un agente aparte: sí. Queda: el poste de los goznes sale muy oscuro a contraluz y la piedra de quicio apenas se ve."
+  ],
+  "pruebas": "Revisor en la nube: construcción, panel de fabricación y recorrido, bien; construir con el acabado nuevo (con el portón: abrir y cerrar con Usar, PC y móvil) y la demo única, bien tras traducir los textos del juego; lógica, bien salvo «jugadores que se ven con lag simulado» (un salto de 2,70× sobre 2,5×: no toca este cambio). Probada rota a propósito: con hierro en el coste fallan los orígenes y el tramo.",
+  "capturas": "capturas/demo-v222",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-15T22:24:07+00:00",
+  "fin": "2026-11-16T00:15:59+00:00",
+  "titulo": "P11c: el muro de entramado, con su puerta y su ventana",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "El muro de entramado ya no se esconde, y con él su puerta y su ventana: en construir, pestaña Muro, salen con su imagen (piezas v5). El liso cuesta 2 troncos delgados, 2 varas y 3 barros; el de puerta, 2 troncos, 1 vara y 2 barros; el de ventana, 2 troncos, 2 varas y 2 barros.",
+   "Como las casas de entramado de la referencia: madera parda y fina a la vista (durmiente, carrera, medio poste en cada esquina, pies cada medio metro, dos riostras y tornapuntas en los paños bajos) y paños pequeños de barro claro. Bajo el tejado se cierra con el mismo barro.",
+   "La puerta, con jambas y dintel (la puerta de varas encaja en su hueco); la ventana, con pies, peana, dintel y alféizar. El canto del relleno queda metido en la madera: nada asoma al hueco.",
+   "La cadena hasta el mundo: tronco delgado y vara ← el árbol joven; barro ← la ribera. En prueba_origenes.mjs, los tres entre las piezas que P11c deja a la vista.",
+   "Provisional: el coste, el peso y lo que aguantan los de puerta y ventana (en la proporción de los de troncos), y el relleno sin encalar (aún no hay cal).",
+   "Segunda mirada de un agente aparte: la primera dijo que no (madera gruesa y casi negra, paños grandes); se rehizo con madera fina y parda y paños pequeños, y después una escalerilla en la jamba y el poste doble en la esquina. A la tercera, sí. Queda: la cuadrícula es algo regular frente a las aspas de la referencia."
+  ],
+  "pruebas": "Revisor en la nube: lógica, recorrido, construcción, construir con el acabado nuevo (el entramado en el menú y levantado, de cerca, PC y móvil) y la demo única, bien. El panel de fabricación falló una vez en «Reparado… le quedan 168 usos»: el aviso llega, pero pasados los 5 s de espera; no toca este cambio (no comprobado en main). Quitado: nada.",
+  "capturas": "capturas/demo-v223",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T00:25:24+00:00",
+  "fin": "2026-11-16T03:27:19+00:00",
+  "titulo": "P11c: el recorrido de jugador de la casa más fuerte",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "El recorrido de jugador (sin arcón y con lo que recoge) tiene un paso más, el 25, en pruebas/recorrido_casa_fuerte.mjs, detrás de la granja: la casa más fuerte entera.",
+   "Junto a su banco hace 2 cordeles, junta 5 ramas y se hace la rastra con las manos; trenza 2 cuerdas en el banco.",
+   "Tala un árbol adulto con el hacha de piedra, lleva la rastra vacía cerca, ata el tronco largo con una cuerda, lo arrastra hasta ella, lo sube a pulso y se la lleva con el tronco hasta el banco, donde lo descarga.",
+   "Con el hacha le saca la rodaja por el pie (54 golpes) y 2 o 3 troncos cortos, y en el banco se hace la carretilla de rueda maciza con la rodaja, un tronco corto y 2 varas: queda a su guarda, en su tierra.",
+   "Junto a su casa levanta un tramo de empalizada y su portón (10 troncos delgados de 10 árboles jóvenes, al hombro, y las 2 cuerdas), y lo abre y lo cierra.",
+   "En una casilla nueva pegada a la casa, un cimiento de troncos y, en su lado de fuera, un muro de entramado: 2 troncos delgados, 2 varas y 3 cestas de barro que cava en el río más cercano con un palo cavador. En total, 14 árboles jóvenes.",
+   "Provisional: la empalizada y el portón, delante de la casa (o donde quepan); el entramado, sobre un cimiento de troncos, porque el muro pide cimiento.",
+   "Se puede seguir desde el mundo guardado antes del pozo (KINHOLD_RECORRIDO_DESDE); con MUTAR=1, en la rastra no cabe el tronco largo y falla, como debe."
+  ],
+  "pruebas": "Revisor en la nube: el recorrido (lo único que piden los archivos cambiados). El paso 25 nuevo sale entero en la nube (21 de 21) y desde lo guardado aquí; con MUTAR=1 falla donde debe. En la última pasada fallaron, antes del paso 25, la caza de la liebre a lanzadas (10 lanzadas sin acertar: la puntería tiene desvío al azar) y, por no tener su piel, la criba de la granja; en las dos pasadas anteriores de esta sesión salieron bien, y este cambio no toca nada de eso. Quitado: nada.",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T04:22:06+00:00",
+  "fin": "2026-11-16T04:23:35+00:00",
+  "titulo": "La casa más fuerte: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "casa-fuerte",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el tronco largo de un árbol adulto se ata con cuerda, se arrastra despacio y se sube a la rastra, que uno solo arrastra; del tronco largo se corta la rodaja y con ella se hace la carretilla de rueda maciza; la empalizada y su portón sin hierro, que solo abren el dueño y sus invitados; y el muro de entramado, liso, con puerta y con ventana. Todo publicado y unido a main (la última, la demo v223).",
+   "El recorrido de jugador, sin arcón, lo hace entero en su paso 25: tala el árbol adulto, lleva el tronco largo a cuerda hasta la rastra y en ella al banco, saca la rodaja, hace la carretilla, levanta la empalizada con su portón y el muro de entramado (21 de 21 en la nube).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: el tronco largo, la rodaja, la carretilla, la empalizada, el portón y los tres muros de entramado salen del mundo.",
+   "Lo que queda para la revisión: los números del arrastre, la rodaja (15 kg) y los costes del portón y de los muros de entramado con puerta y ventana son provisionales; el relleno del entramado, sin encalar (aún no hay cal); según la segunda mirada, la cuadrícula del entramado es algo regular frente a las aspas de la referencia, el poste de los goznes del portón sale muy oscuro a contraluz y los nudos de la veta parecen agujeros de cerca. En la última pasada entera del recorrido falló, antes del paso 25, la caza de la liebre a lanzadas (la puntería tiene desvío al azar), y por eso la criba; en las pasadas anteriores salieron bien.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 71 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T05:24:32+00:00",
+  "fin": "2026-11-16T06:29:57+00:00",
+  "titulo": "La canoa de un tronco: vaciar el tronco largo con el hacha y las brasas (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "Con un hacha en la mano, junto a un tronco largo, el menú de Usar ofrece «Vaciar el tronco para hacer una canoa». A golpes se desbasta: se ve la cara de arriba aplanada y las astillas; al primer golpe ya es una canoa a medias, que no desaparece.",
+   "Con una hoguera (o un hogar) encendida a 6 m como mucho, Usar echa sus brasas en el hueco: arden 10 min por el reloj del servidor, aunque nadie juegue, y se ven los trozos encendidos, el carbón y la ceniza. Luego se raspa lo quemado con el hacha, y así 3 vueltas, cada una más honda.",
+   "Queda la canoa en el suelo: no se coge con las manos; con una cuerda en la mano se ata y se arrastra hasta la orilla como el tronco largo (y entre dos, más deprisa). Todo por el servidor, con su autor (acción «vaciar»).",
+   "Provisional (en el registro de la demo): desbastar, 40 golpes con hacha de piedra (14 con la de hierro); raspar cada vuelta, 20 (8); las brasas, 10 min y 3 vueltas, sin gastar la hoguera; no hace falta estar junto al agua para vaciarla; 4,4 m de largo, 0,54 m de ancho y 40 kg; a la rastra no se sube (va a cuerda).",
+   "Imágenes nuevas del panel (iconos v31) para la canoa y la canoa a medias, y la cadena en la prueba de orígenes (tronco largo, hacha y hoguera → canoa).",
+   "Segunda mirada de las capturas por un agente aparte: pidió brasas con volumen, el hueco quemado solo por dentro y el desbaste a la vista; arreglado. Queda por mirar con valravnx: al tirar de la cuerda con el hacha en la otra mano, el hacha sigue en la mano (pasa igual con el tronco largo)."
+  ],
+  "pruebas": "En la nube: lógica (con la nueva de la canoa, 45 comprobaciones), recorrido de jugador (326 bien), la canoa en el navegador PC y móvil, la rastra, objetos en el suelo, panel de inventario, avisos de las necesidades y velocidad con pocos fotogramas: todo bien. La lógica falló la primera vez por las imágenes que faltaban de la canoa (hechas en iconos v31) y la rastra por esas mismas imágenes (404 en el móvil): repetidas, bien. El recorrido de la canoa va en su tarea.",
+  "capturas": "capturas/demo-v224",
+  "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T08:40:24+00:00",
+  "fin": "2026-11-16T09:34:06+00:00",
+  "titulo": "El remo de la canoa (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "En el banco de tronco, con 1 tronco corto depositado y llevando un hacha (de piedra, de mano o de hierro; no se gasta), se hace el remo. Sin el hacha, el banco no lo hace y no gasta el tronco. Por el servidor, con su autor.",
+   "El remo es de una pieza, a hacha: la pala de punta redonda con su nervio, la caña y el puño en muleta, redondeado. Tiene su imagen en el panel (iconos v32).",
+   "Se lleva con las dos manos, atravesado delante del cuerpo: la caña pasa por las dos palmas y por delante de la cadera, en PC y en el móvil. En el suelo queda tumbado.",
+   "Provisional (en el registro de la demo): 90 s en el banco, 1,5 m de largo (la pala, 58 cm por 16) y 2 kg. Remar con él llega en la tarea siguiente.",
+   "Retomada desde la rama de la sesión anterior, que se cortó. Segunda mirada de las capturas por un agente aparte: pidió que las manos agarrasen la caña, que no rozara la cadera y el puño sin aristas; arreglado. Para mirar con valravnx: las manos del personaje siguen casi abiertas sobre la caña (las del modelo), y la veta de la pala es la misma textura de madera de lo demás."
+  ],
+  "pruebas": "Comprobador de código correcto. En la nube: lógica (con el remo en la de fabricar, rota a propósito con MUTAR=6: falla), recorrido de jugador, panel de fabricar e inventario, la canoa (con el remo en el suelo), construir con el acabado nuevo, el mazo, despiezar y la cama: bien. «Lo que llevas se ve puesto»: las comprobaciones nuevas del remo, bien (la de que la caña pasa por las palmas fallaba antes del arreglo); fallan la mano sobre el tronco al hombro (armas y mujer) y a veces el cinturón, igual que en main y sin tocar este cambio. El recorrido se pasó antes de los últimos cambios, que son solo de cómo se ve.",
+  "capturas": "capturas/demo-v225",
+  "estado": "ok"
  }
 ]

@@ -76,7 +76,10 @@ const v = spawnSync('caddy', ['validate', '--adapter', 'caddyfile', '--config', 
 comprobar('caddy validate', v.status === 0, v.error ? 'no está caddy (apt-get install -y caddy)' : (v.status ? v.stderr.toString().trim().split('\n').pop() : ''));
 const conNode = join(tmp, 'node'); archivos({ KINHOLD_IP: '1.2.3.4', KINHOLD_NODE: process.execPath }, conNode);
 const sa = spawnSync('systemd-analyze', ['verify', join(conNode, 'kinhold.service')]);
-const avisos = (sa.stderr || '').toString().split('\n').filter(l => l.trim() && !/not found|unknown user|Failed to resolve user|getpwnam|User=kinhold/i.test(l));
+// (los avisos de las unidades del propio sistema de la máquina, /usr/lib/systemd/…, no son nuestros: la imagen de
+// GitHub Actions trae alguna con opciones ya quitadas, 14 nov)
+const ajenos = (l) => /^\/(usr\/)?lib\/systemd\//.test(l.trim());
+const avisos = (sa.stderr || '').toString().split('\n').filter(l => l.trim() && !ajenos(l) && !/not found|unknown user|Failed to resolve user|getpwnam|User=kinhold/i.test(l));
 comprobar('systemd-analyze verify', !sa.error && avisos.length === 0, sa.error ? 'no está systemd-analyze' : avisos.join(' | '));
 // la copia de seguridad diaria (copia.sh; su prueba de verdad es prueba_copia_servidor.mjs)
 const copiaServ = readFileSync(join(conNode, 'kinhold-copia.service'), 'utf8');
@@ -86,7 +89,7 @@ comprobar('el temporizador de la copia es diario y se pone al día si estaba apa
 const instalarSh = readFileSync(join(nube, 'instalar.sh'), 'utf8'), actualizarSh = readFileSync(join(nube, 'actualizar.sh'), 'utf8');
 comprobar('instalar.sh y actualizar.sh ponen la copia diaria (y rsync)', [instalarSh, actualizarSh].every(t => t.includes('kinhold-copia.service') && t.includes('kinhold-copia.timer') && t.includes('enable --now kinhold-copia.timer') && t.includes('rsync')));
 const saC = spawnSync('systemd-analyze', ['verify', join(conNode, 'kinhold-copia.service'), join(nube, 'kinhold-copia.timer')]);
-const avisosC = (saC.stderr || '').toString().split('\n').filter(l => l.trim() && !/not found|kinhold-copia\.timer: Unit|is not executable|No such file/i.test(l));
+const avisosC = (saC.stderr || '').toString().split('\n').filter(l => l.trim() && !ajenos(l) && !/not found|kinhold-copia\.timer: Unit|is not executable|No such file/i.test(l));
 comprobar('systemd-analyze verify de la copia', !saC.error && avisosC.length === 0, saC.error ? 'no está systemd-analyze' : avisosC.join(' | '));
 
 console.log('De verdad: Caddy (HTTPS local) delante del servidor del juego');
