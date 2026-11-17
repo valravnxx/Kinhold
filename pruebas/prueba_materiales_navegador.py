@@ -5,10 +5,14 @@
 #   - junto a un árbol, sin hacha en la mano y con la lasca, Usar lo descorteza (1 o 2 cortezas) y el menú ya no lo ofrece;
 #   - (oficios, 17 nov) el roble da corteza de roble; en el suelo, al lado de la corteza, de cerca; y con el cubo lleno en
 #     la mano, el menú del clic derecho ofrece «Vaciar el cubo» y al elegirlo queda vacío;
+#   - (oficios, 17 nov) las cubas de curtido, delante, con una piel en remojo: con el cubo lleno en la mano, Usar echa su
+#     agua en ellas (el cubo queda vacío); se ven de lejos y de cerca, curtiendo y con lo curtido, y su pestaña del panel
+#     de fabricar tiene el cuero (1 piel limpia, 2 cortezas de roble y agua; dos días);
 #   - junto a un pino (a unos 4 km), Usar le hace el corte; cuando la resina está lista, Usar la coge (1 resina);
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_materiales_navegador.py <html> <carpeta_capturas>
 # Rota a propósito (8 nov): MUTAR=1 deja las varas de la mimbrera siempre puestas (como si no se cortaran): falla.
+# MUTAR=2 (17 nov): las cubas no se llenan (Usar con el cubo lleno no les echa el agua): falla.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -50,6 +54,39 @@ def poner_lasca(pg):
 
 VIS_MIMBRE = f"(id) => {{ const k = {K}, rec = k.recoleccion, lista = rec.puntos.filter(p => p.tipo === 'mimbre'), i = lista.findIndex(p => p.id === id), m = new k.camara.matrixWorld.constructor(); const r = {{}}; rec.grupo.children.filter(c => c.name.startsWith('recoger_mimbre')).forEach(c => {{ c.getMatrixAt(i, m); r[c.name] = Math.abs(m.determinant()) > 1e-12; }}); return r; }}"
 
+# (oficios, 17 nov) las cubas de curtido, puestas delante (ya cavadas), con piel limpia y corteza de roble dejadas
+def cubas(pg, nombre, pref):
+    pg.evaluate(f"""(() => {{ const k = {K}, f = k.fabCliente, ahora = Date.now();
+      let dx = k.pj.x - k.camara.position.x, dz = k.pj.z - k.camara.position.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
+      const x = k.pj.x + dx * 2.2, z = k.pj.z + dz * 2.2;
+      f.estaciones['cubas_curtido:vista'] = {{ id: 'cubas_curtido:vista', tipo: 'cubas_curtido', x, z, giro: Math.atan2(dx, dz) + Math.PI / 2, autor: 'jugador:local', cola: [], deposito: {{ piel_limpia: 1, corteza_roble: 2 }} }};
+      if ({'true' if MUTAR == '2' else 'false'}) f.estaciones['cubas_curtido:vista'].tipo = 'hoyo_barro';
+      k.estacionesV.refrescar(); k.pj.x = x - dx * 1.2; k.pj.z = z - dz * 1.2; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(dx, dz);
+      const inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); inv.coger('cubo_agua', 1, 'mano:der'); k.pintarTodoInventario(); }})()""")
+    pg.wait_for_timeout(1500)
+    comprobar(f'{nombre}: las cubas de curtido se dibujan', pg.evaluate(f"!!{K}.escena.getObjectByName('estacion_cubas_curtido')"))
+    ops = pg.evaluate(f"{K}.opcionesUsar()")
+    comprobar(f'{nombre}: delante de las cubas, con el cubo lleno, el menú ofrece echarles el agua', 'Echar el agua del cubo en las cubas' in ops, str(ops))
+    pg.keyboard.press('f'); pg.wait_for_timeout(1200)
+    r = pg.evaluate(f"(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'], l = k.inventario.lugares['mano:der']; return {{ agua: e.deposito.agua || 0, mano: l ? l.tipo : null }}; }})()")
+    comprobar(f'{nombre}: Usar echa el agua del cubo en las cubas: el cubo, vacío; las cubas, con agua', r['agua'] == 1 and r['mano'] == 'cubo', str(r))
+    # que se vea lo que se curte (en línea lo manda el servidor: colgado): una curtida y otra en remojo
+    pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'], ahora = Date.now(), inv = k.inventario;
+      if (inv.lugares['mano:der']) inv.sacar('mano:der'); k.pintarTodoInventario();
+      e.colgado = [{{ hasta: ahora + 40 * 3600e3 }}, {{ hasta: ahora - 1000 }}]; k.estacionesV.refrescar(); }})()""")
+    for (cual, dist, pitch, dyaw) in [('cubas', 3.6, 0.5, 0.5), ('cubas_cerca', 2.0, 0.75, -0.4)]:
+        pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'];
+          k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = k.pj.rot + Math.PI + {dyaw}; }})()""")
+        pg.wait_for_timeout(2500)
+        pg.screenshot(path=f'{SALIDA}/{pref}_2d_{cual}.png', timeout=180000)
+    pg.evaluate(f"{K}.panelFabricar.abrirEstacion('cubas_curtido:vista')"); pg.wait_for_timeout(1200)
+    pg.add_style_tag(content='#panelFabricar:not([hidden]), #panelFabricar:not([hidden]) * { visibility: visible !important; }')
+    t = pg.evaluate("document.getElementById('panelFabricar').innerText")
+    pest = pg.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"curtir\"]')")
+    comprobar(f'{nombre}: su pestaña «Cubas de curtido», con el cuero y lo que tiene dentro', pest and 'Cuero' in t and 'Dentro de las cubas de curtido' in t, t[:300])
+    pg.screenshot(path=f'{SALIDA}/{pref}_2e_panel_cubas.png', timeout=180000)
+    pg.evaluate(f"{K}.panelFabricar.cerrar()"); pg.wait_for_timeout(300)
+
 def recorrido(pg, nombre, pref):
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
@@ -63,7 +100,7 @@ def recorrido(pg, nombre, pref):
     m = pg.evaluate(f"(() => {{ const k = {K}, l = k.recoleccion.puntos.filter(p => p.tipo === 'mimbre').sort((a, b) => Math.hypot(a.x - {MIMBRERA[0]}, a.z - {MIMBRERA[1]}) - Math.hypot(b.x - {MIMBRERA[0]}, b.z - {MIMBRERA[1]})); return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z }} : null; }})()")
     comprobar(f'{nombre}: en la ribera del río del sur hay una mimbrera', bool(m) and abs(m['x'] - MIMBRERA[0]) < 3, str(m))
     if not m: return
-    if MUTAR: pg.evaluate(f"{K}.recoleccion.grupo.children.filter(c => c.name === 'recoger_mimbre').forEach(c => c.name = 'recoger_mimbre_planta')")
+    if MUTAR == '1': pg.evaluate(f"{K}.recoleccion.grupo.children.filter(c => c.name === 'recoger_mimbre').forEach(c => c.name = 'recoger_mimbre_planta')")
     mirar(pg, m['x'], m['z'])
     antes = pg.evaluate(VIS_MIMBRE, m['id'])
     comprobar(f'{nombre}: se ven su cepa y sus varas', antes.get('recoger_mimbre_planta') and antes.get('recoger_mimbre'), str(antes))
@@ -120,6 +157,7 @@ def recorrido(pg, nombre, pref):
     t = pg.evaluate(f"(() => {{ const l = {K}.inventario.lugares; return l['mano:der'] ? l['mano:der'].tipo : null; }})()")
     comprobar(f'{nombre}: al elegirlo, el cubo queda vacío en la mano', t == 'cubo', str(t))
     pg.evaluate(f"(() => {{ const inv = {K}.inventario; if (inv.lugares['mano:der']) inv.sacar('mano:der'); }})()")
+    cubas(pg, nombre, pref)
     # un pino: la resina
     ir(pg, *PINAR)
     try: pg.wait_for_function(f"{K}.obstaculos.some(o => o.arbol && (o.especie === 'pino' || o.especie === 'abeto') && Math.hypot(o.x - {K}.pj.x, o.z - {K}.pj.z) < 60)", timeout=240000)

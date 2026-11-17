@@ -143,7 +143,7 @@ function pielLimpia(n, id) {
 }
 // el cuero (oficios, 17 nov, el de las cubas de curtido): la piel curtida, parda y algo lustrosa, doblada por la mitad
 // (la de abajo entera; encima, la otra mitad vuelta, algo corrida), con la flor más oscura que la cara de la carne
-const CUERO = 0x6b4a2e, CUERO_CARNE = 0x8a6a4a;
+const CUERO_CARNE = 0x7c5c3e;   // (la flor, CUERO, la del cuero de los cintos)
 function cuero(n, id) {
   const L = lote(0.02), t = az(id, 40);
   const { geo } = mallaPiel(id, 0.27, 0.38, { pasos: 14, agujeros: 0 });

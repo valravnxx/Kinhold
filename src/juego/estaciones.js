@@ -450,18 +450,20 @@ function llenoCubas(dep, id, colgado = []) {
   const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 });
   if ((dep.agua || 0) > 0 || colgado.length) {
     const agua = new THREE.Shape(); rectRedondo(agua, X + 0.02, Z + 0.02, 0.1);
-    L.add(new THREE.ShapeGeometry(agua, 6), 0x4b3a22, 0, 0.045, 0, { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true, brillo: 1.15 });
+    L.add(new THREE.ShapeGeometry(agua, 6), 0x3e301c, 0, 0.045, 0, { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true, brillo: 1.15 });
   }
   colgado.slice(0, 4).forEach((c, i) => {
-    const sz = i % 2 ? 1 : -1, u = -X * 0.55 + Math.floor(i / 2) * X * 1.1, idp = id + 'p' + i;
-    const { geo } = mallaPiel(idp, 0.2, 0.26, { pasos: 10, agujeros: 0 });
-    // la piel, en dos tramos: el de dentro, tumbado bajo el agua; el borde, subiendo hasta el lomo del tronco
-    const dentro = geo.clone(); dentro.scale(1, 0.62, 1); dentro.rotateX(-Math.PI / 2);
-    L.add(dentro, c.listo ? COLOR_CURTIDA : 0x9a7c58, u, 0.035, sz * Z * 0.35, { y: (az(idp, 1) - 0.5) * 0.4 }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(idp, 1.1) });
-    const borde = new THREE.PlaneGeometry(0.3, 0.2, 4, 3), q = borde.attributes.position;
-    for (let k = 0; k < q.count; k++) q.setZ(k, q.getZ(k) + 0.02 * Math.sin(q.getX(k) * 20 + i));
-    borde.computeVertexNormals();
-    L.add(borde, c.listo ? COLOR_CURTIDA : 0xa68862, u + (az(idp, 2) - 0.5) * 0.06, 0.04 + tronco * 0.75, sz * (Z + labio * 0.6), { x: -Math.PI / 2 + sz * 0.95 }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(idp, 1) });
+    // por los dos cabos del hoyo (en los costados largos están los troncos): la piel flota mojada junto al cabo y su
+    // borde sube por el labio de barro y cae por fuera
+    const sx = i % 2 ? 1 : -1, zc = (Math.floor(i / 2) - 0.5) * Z * 0.9 + (az(id, i + 20) - 0.5) * 0.06, idp = id + 'p' + i;
+    const color = c.listo ? COLOR_CURTIDA : 0x8a6c4c, colorBorde = c.listo ? COLOR_CURTIDA : 0x9c7e5a;
+    const { geo } = mallaPiel(idp, 0.13, 0.2, { pasos: 10, agujeros: 0 });
+    geo.rotateX(-Math.PI / 2); geo.rotateY(Math.PI / 2 + (az(idp, 1) - 0.5) * 0.5);
+    L.add(geo, color, sx * (X - 0.17), 0.052, zc, null, { tex: 'liso', sinSuelo: true, brillo: 0.85, rayas: moteadoPiel(idp, 1.1) });
+    const borde = new THREE.PlaneGeometry(labio + 0.12, 0.2, 4, 3), q = borde.attributes.position;
+    for (let k = 0; k < q.count; k++) { const u = q.getX(k) / (labio + 0.12) + 0.5; q.setZ(k, 0.035 * Math.sin(u * Math.PI) + 0.012 * Math.sin(q.getY(k) * 30 + i)); }   // combado sobre el labio
+    borde.rotateX(-Math.PI / 2); borde.rotateZ(-sx * 0.35); borde.computeVertexNormals();
+    L.add(borde, colorBorde, sx * (X + labio * 0.45), 0.075, zc, null, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(idp, 1) });
   });
   if (L.piezas.length) g.add(mallas(L));
   let k = 0;
