@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 17 nov 2026, 08:38 UTC — por el chat, la canoa antes de aprobarla
+
+valravnx: «antes de aprobar el tema de la canoa… hay que hacer unos cambios. Ahora mismo va a una velocidad fija muy elevada y es velocidad fija, parece como un movimiento estándar, no parece una canoa. Canoa tiene que ser que haga animación de empujar por un lado, de un tironcillo, de la animación por el otro, haga otro tironcillo, tiene que ser de manera realista. Investiga cómo hacer el movimiento de la canoa y cómo hacer la animación, aunque sea una animación más o menos ahora mismo, que luego ya se actualice, pero que sea cómo se movería una canoa» → P11d, La canoa, vuelve a `en_curso` con la tarea «Remar de verdad».
+
 ### 17 nov 2026, 08:06 UTC — por una sesión del carril A, seguir con otra rama
 
 valravnx: «sigue con otra rama» (la sesión del carril A había parado porque la anterior seguía con las cubas de curtido) → el carril A coge la siguiente tarea en otra rama: el horno de reducción y la lupia (hierro). Las cubas quedan a medias en su rama para otra sesión.
