@@ -19,6 +19,8 @@
 //  - el raspador de pieles (P9, 13 nov): un bastidor de cuatro varas atadas en cuadro, con las dos de los lados
 //    hincadas y algo echadas hacia atrás; la piel dejada en él se ve tensada dentro con la cuerda, pasada por sus
 //    agujeros hasta las varas (la que está por raspar, con su pelo; la limpia, pálida), y las demás, al pie.
+//  - las cubas de curtido (oficios, 17 nov): un hoyo alargado forrado de barro, con un tronco corto tumbado en cada
+//    costado; con agua, el agua parda de la corteza, y cada piel en remojo, con el borde echado sobre un tronco.
 //  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
 //    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
 //    almohada de juncos).
@@ -404,6 +406,73 @@ function hoyoBarro(id) {
   }
   return mallas(L);
 }
+// Las cubas de curtido (oficios, 17 nov): un hoyo alargado cavado en la tierra, forrado de barro apretado (el borde,
+// un labio de barro húmedo algo levantado y desigual) y con un tronco corto tumbado a lo largo de cada costado, donde se
+// apoya y se escurre la piel. Dentro, el fondo oscuro; con agua (lo depositado, o algo en remojo), el agua parda de la
+// corteza, con un poco de brillo.
+const CUBAS = { x: 0.52, z: 0.27, labio: 0.13, tronco: 0.13, largo: 1.0 };
+function rectRedondo(sh, x, z, r, agujero = false) {
+  const p = agujero ? new THREE.Path() : sh;
+  p.moveTo(-x + r, -z); p.lineTo(x - r, -z); p.quadraticCurveTo(x, -z, x, -z + r); p.lineTo(x, z - r); p.quadraticCurveTo(x, z, x - r, z);
+  p.lineTo(-x + r, z); p.quadraticCurveTo(-x, z, -x, z - r); p.lineTo(-x, -z + r); p.quadraticCurveTo(-x, -z, -x + r, -z);
+  if (agujero) sh.holes.push(p);
+}
+function cubasCurtido(id) {
+  const g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 }), { x: X, z: Z, labio, tronco, largo } = CUBAS;
+  // la tierra sacada alrededor, y el fondo del hoyo
+  const fuera = new THREE.Shape(); rectRedondo(fuera, X + labio + 0.12, Z + labio + 0.1, 0.2);
+  L.add(new THREE.ShapeGeometry(fuera, 6), 'tierraCorte', 0, 0.006, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' });
+  const fondo = new THREE.Shape(); rectRedondo(fondo, X, Z, 0.1);
+  L.add(new THREE.ShapeGeometry(fondo, 6), 'tierraCorteOsc', 0, 0.01, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' });
+  // el labio de barro: un aro con su grosor, desigual (cada vértice de arriba sube o baja un poco)
+  const aro = new THREE.Shape(); rectRedondo(aro, X + labio, Z + labio, 0.16); rectRedondo(aro, X, Z, 0.1, true);
+  const lab = new THREE.ExtrudeGeometry(aro, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.025, bevelSize: 0.03, bevelSegments: 2, curveSegments: 6 });
+  lab.rotateX(-Math.PI / 2);
+  const p = lab.attributes.position;
+  for (let i = 0; i < p.count; i++) if (p.getY(i) > 0.02) p.setY(i, p.getY(i) + (az(id, `${p.getX(i).toFixed(2)},${p.getZ(i).toFixed(2)}`) - 0.5) * 0.03);
+  lab.computeVertexNormals();
+  L.add(lab, BARRO_HUMEDO, 0, 0.0, 0, null, { tex: 'piedra' });
+  g.add(mallas(L));
+  // los dos troncos cortos, tumbados a lo largo de los costados
+  for (const sz of [-1, 1]) {
+    const t = troncosConCortes(1, largo + (az(id, sz) - 0.5) * 0.08, tronco, id + 't' + sz);
+    t.position.set((az(id, sz + 3) - 0.5) * 0.08, 0, sz * (Z + labio + tronco * 0.7)); t.rotation.y = (az(id, sz + 5) - 0.5) * 0.08;
+    g.add(t);
+  }
+  return g;
+}
+// Lo de las cubas: el agua parda, si tiene agua o algo en remojo; cada piel en remojo, medio dentro del agua y con el
+// borde echado sobre el tronco de un costado (la que está por curtir, pálida y oscureciéndose; la curtida, del color del
+// cuero); y lo dejado (la piel limpia y la corteza de roble que esperan), al pie, delante.
+const COLOR_CURTIDA = 0x6b4a2e;
+function llenoCubas(dep, id, colgado = []) {
+  const g = new THREE.Group(), { x: X, z: Z, labio, tronco } = CUBAS;
+  const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 });
+  if ((dep.agua || 0) > 0 || colgado.length) {
+    const agua = new THREE.Shape(); rectRedondo(agua, X + 0.02, Z + 0.02, 0.1);
+    L.add(new THREE.ShapeGeometry(agua, 6), 0x4b3a22, 0, 0.045, 0, { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true, brillo: 1.15 });
+  }
+  colgado.slice(0, 4).forEach((c, i) => {
+    const sz = i % 2 ? 1 : -1, u = -X * 0.55 + Math.floor(i / 2) * X * 1.1, idp = id + 'p' + i;
+    const { geo } = mallaPiel(idp, 0.2, 0.26, { pasos: 10, agujeros: 0 });
+    // la piel, en dos tramos: el de dentro, tumbado bajo el agua; el borde, subiendo hasta el lomo del tronco
+    const dentro = geo.clone(); dentro.scale(1, 0.62, 1); dentro.rotateX(-Math.PI / 2);
+    L.add(dentro, c.listo ? COLOR_CURTIDA : 0x9a7c58, u, 0.035, sz * Z * 0.35, { y: (az(idp, 1) - 0.5) * 0.4 }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(idp, 1.1) });
+    const borde = new THREE.PlaneGeometry(0.3, 0.2, 4, 3), q = borde.attributes.position;
+    for (let k = 0; k < q.count; k++) q.setZ(k, q.getZ(k) + 0.02 * Math.sin(q.getX(k) * 20 + i));
+    borde.computeVertexNormals();
+    L.add(borde, c.listo ? COLOR_CURTIDA : 0xa68862, u + (az(idp, 2) - 0.5) * 0.06, 0.04 + tronco * 0.75, sz * (Z + labio * 0.6), { x: -Math.PI / 2 + sz * 0.95 }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(idp, 1) });
+  });
+  if (L.piezas.length) g.add(mallas(L));
+  let k = 0;
+  for (const [t, n] of Object.entries(dep)) {
+    if (t === 'agua' || !(n > 0)) continue;
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } });
+    m.position.set(-0.45 + k++ * 0.6, 0, Z + labio + tronco * 2 + 0.38); m.scale.setScalar(0.85); m.rotation.y = az(id + t, 3) * 0.8 - 0.4;
+    m.name = 'deposito_' + t; g.add(m);
+  }
+  return g;
+}
 // La era (P11, «La era y trillar», 13 nov): un suelo redondo de tierra apisonada, al ras del prado, de tierra parda algo más clara que él,
 // que se funde con la hierba por un canto irregular (no un disco recortado), con el corro más pisado donde se trilla,
 // alguna losa plana asomando, grietas y granzas de paja; lo cierran sus 8 piedras hincadas de canto en el borde, medio
@@ -686,7 +755,7 @@ export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_j
 const ASENTAR = { era: true };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
-  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador, era };
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador, era, cubas_curtido: cubasCurtido };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -885,7 +954,7 @@ function varaCorrea(L, a, b) {
   const m = new THREE.Matrix4().compose(new THREE.Vector3(), q, new THREE.Vector3(1, 1, 1)), c = a.clone().addScaledVector(d, 0.5);
   L.add(new THREE.BoxGeometry(0.02, d.length(), 0.004), CUERO_COLG, c.x, c.y, c.z, m, { tex: 'liso', sinSuelo: true });
 }
-const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador, era: llenoEra };
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador, era: llenoEra, cubas_curtido: llenoCubas };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -936,7 +1005,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95, era: 1.3 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95, era: 1.3, cubas_curtido: 0.95 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {

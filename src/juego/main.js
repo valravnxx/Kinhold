@@ -1832,6 +1832,8 @@ function accionPrincipal() {
   // delante de una cama terminada: ligarla si no es la tuya; si lo es, dormir en ella
   if (est && esCama(est.tipo)) return esMiCama(est) ? A(tr('Dormir: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => dormir(est), { alto: 0.6 })
     : A(tr('Ligar tu cama: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => ligarCama(est), { alto: 0.6 });
+  // delante de las cubas de curtido con el cubo lleno en la mano: se vacía en ellas (oficios, 17 nov)
+  if (est && ESTACIONES[est.tipo].llenar && cuboEnMano('cubo_agua')) return A(tr('Echar el agua del cubo en las cubas'), 'cubo_agua', est, () => llenarCubas(est), { alto: 0.4 });
   if (est && panelFabricar) return A(tr(esAlmacen(est.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[est.tipo].nombre) }), 'est_' + est.tipo, est, () => panelFabricar.abrirEstacion(est.id), { alto: 0.6 });
   if (!it && pj.k === 0) {
     // junto a ramas caídas, piedras, sílex u ortigas y hierba larga, se recogen (y van al inventario por huecos)
@@ -1907,6 +1909,8 @@ function opcionesUsar() {
       else ops.push({ texto: tr('Dormir: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => dormir(e) });
     } else {
       ops.push({ texto: tr(esAlmacen(e.tipo) ? 'Guardar y sacar: {e}' : 'Usar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => panelFabricar && panelFabricar.abrirEstacion(e.id) });
+      // las cubas de curtido: echarles el agua del cubo lleno (oficios, 17 nov)
+      if (ESTACIONES[e.tipo].llenar && cuboEnMano('cubo_agua')) ops.push({ texto: tr('Echar el agua del cubo en las cubas'), pos: e, alto: 0.4, hacer: () => llenarCubas(e) });
       // reparar lo que llevas en la mano o puesto (la ropa), gastado, en su puesto (10 nov; src/logica/desgaste.js): con lo
       // depositado en él
       for (const l of ['mano:der', 'mano:izq', ...Object.keys(inventario().lugares).filter(r => r.startsWith('ropa:'))]) {
@@ -2785,6 +2789,15 @@ function vaciarElCubo() {
   const r = vaciarCubo(inventario().lugares);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); actualizarUI(); mostrarAviso(tr('Vacías el cubo.'));
+}
+// Echar el agua del cubo lleno en las cubas de curtido que tienes delante (oficios, 17 nov): el cubo queda vacío y las
+// cubas, con su agua (src/logica/fabricacion.js, llenar). En línea, lo hace el servidor.
+function llenarCubas(e) {
+  pj.rot = Math.atan2(e.x - pj.x, e.z - pj.z);
+  hacerFabricacion({ tipo: 'llenar_estacion', estacion: e.id, x: pj.x, z: pj.z }, (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    mostrarAviso(tr('Echas el agua del cubo en las cubas.'));
+  });
 }
 function sitioRegar() {
   const x = pj.x + Math.sin(pj.rot) * ADELANTE_REGAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_REGAR, c = campoEn(mundo, x, z);

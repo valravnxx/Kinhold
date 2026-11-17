@@ -8,6 +8,7 @@
 //  - haz de juncos: tallos verdes y finos, largos (1,3 m), atados en dos sitios.
 //  - haz de mimbre: varas de sauce peladas, finas y rectas (1,5 m), atadas en dos sitios.
 //  - piel: una piel curtida estirada, de contorno irregular con las patas, el pelo hacia arriba.
+//  - cuero (oficios, 17 nov, de las cubas de curtido): la piel curtida, parda y algo lustrosa, doblada por la mitad.
 //  - piel limpia (P9, 13 nov, la del raspador): la misma piel, raspada de carne y grasa: la cara de dentro hacia arriba,
 //    pálida y algo traslúcida, más tiesa (apenas ondula) y con el borde recortado de los agujeros del bastidor.
 //  - resina: unos grumos de color ámbar sobre un trozo de corteza.
@@ -138,6 +139,18 @@ function pielLimpia(n, id) {
     const x = q.x, z = -q.y;
     L.add(new THREE.CircleGeometry(0.009, 6), 0x3a2c20, x * Math.cos(t) + z * Math.sin(t), y + 0.006, -x * Math.sin(t) + z * Math.cos(t), { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true });
   }
+  return mallas(L);
+}
+// el cuero (oficios, 17 nov, el de las cubas de curtido): la piel curtida, parda y algo lustrosa, doblada por la mitad
+// (la de abajo entera; encima, la otra mitad vuelta, algo corrida), con la flor más oscura que la cara de la carne
+const CUERO = 0x6b4a2e, CUERO_CARNE = 0x8a6a4a;
+function cuero(n, id) {
+  const L = lote(0.02), t = az(id, 40);
+  const { geo } = mallaPiel(id, 0.27, 0.38, { pasos: 14, agujeros: 0 });
+  geo.rotateX(-Math.PI / 2);
+  L.add(geo, CUERO, 0, 0.008, 0, { y: t }, { tex: 'liso', sinSuelo: true, brillo: 1.08, rayas: moteadoPiel(id, 1.4) });
+  const mitad = geo.clone(); mitad.scale(1, 1, 0.52); mitad.translate(0, 0, -0.19);
+  L.add(mitad, CUERO_CARNE, Math.sin(t) * 0.02, 0.022, Math.cos(t) * 0.02, { y: t + Math.PI + (az(id, 41) - 0.5) * 0.2 }, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(id + 'c', 1.1) });
   return mallas(L);
 }
 function piel(n, id) {
@@ -857,7 +870,7 @@ export const MODELO_OBJETO = {
   carne_cruda: carne(false), carne_asada: carne(true), carne_seca: carneSeca,
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
-  fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
+  fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, cuero, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
