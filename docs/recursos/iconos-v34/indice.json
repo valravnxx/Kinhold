@@ -179,7 +179,7 @@
    "propio": false
   },
   "agua": {
-   "propio": false
+   "propio": true
   },
   "flecha": {
    "propio": false

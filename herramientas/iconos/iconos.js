@@ -63,7 +63,9 @@ const PROVISIONAL = new Set(['hacha_hierro']); // hoy, el modelo del hacha de ma
 
 const fuentes = {};
 for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
-  if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
+  // el agua (la de las cubas de curtido, que se les echa con el cubo): su imagen, la del cubo lleno
+  if (t === 'agua') fuentes[t] = { propio: true, hacer: () => delSuelo('cubo_agua', 1) };
+  else if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
   else if (t === 'mazo_piedra') fuentes[t] = { propio: true, hacer: () => { const m = modeloMazoPiedra(); m.rotation.y = Math.PI / 2; const g = new THREE.Group(); g.add(m); return enDiagonal(g, t); } };   // (de lado: la piedra cruzada)
   else if (Object.hasOwn(MODELO_OBJETO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, 3)) : delSuelo(t, 3) };
   else if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, SUELO[t])) : delSuelo(t, SUELO[t]) };
