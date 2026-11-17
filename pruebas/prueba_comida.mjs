@@ -9,9 +9,13 @@
 //     la que antes se estropea, y pasada su hora desaparece de lo que llevas y del suelo; la asada no se estropea.
 // MUTAR=1: la carne cruda no se estropea nunca: tiene que FALLAR.
 // MUTAR=2: la carne seca se recoge nada más ponerla a secar: tiene que FALLAR.
+// MUTAR=3: el cuero se recoge nada más ponerlo a curtir: tiene que FALLAR.
 //   - (P9) el secadero: cada carne cruda colgada da 1 carne seca al cabo de horas, que no se estropea.
+//   - (oficios, 17 nov) las cubas de curtido: 2 cestas de barro y 2 troncos cortos, con el palo cavador; se llenan
+//     vaciando en ellas el cubo lleno; 1 piel limpia, 2 cortezas de roble y 1 de agua dan 1 cuero al cabo de días
+//     reales, varias pieles a la vez; por el servidor, con su autor, y todos ven lo que está en remojo.
 import { Fabricacion, RECETAS, ESTACIONES, MAX_RATO_ESTACION } from '../src/logica/fabricacion.js';
-import { Inventario } from '../src/logica/inventario.js';
+import { Inventario, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
 import { NUTRE, comestible } from '../src/logica/necesidades.js';
 import * as comida from '../src/logica/comida.js';
@@ -138,6 +142,69 @@ console.log('El secadero por el servidor: todos ven lo colgado');
   comprobar('al recogerla, se manda a todos (ya no cuelga)', r.ok && r.estaciones && ana.cuantos('carne_seca') === 1, r.motivo);
   const h = o.fab.colocar('ana', 'hoguera', 5, 0).id;
   comprobar('las demás estaciones no enseñan su cola', !('colgado' in o.estacionesVisibles(null, T).find(e => e.id === h)));
+}
+
+console.log('Las cubas de curtido y el cuero (oficios)');
+{
+  const R = RECETAS.curtir, E = ESTACIONES.cubas_curtido;
+  comprobar('las cubas: 2 cestas de barro y 2 troncos cortos, cavadas con el palo cavador; fuera y en tu tierra; curten', igual(E.coste, { barro: 2, tronco_corto: 2 }) && igual(E.requiere, ['palo_cavador']) && E.donde === 'fuera' && E.tierra && E.uso === 'curtir' && E.llenar, JSON.stringify(E));
+  comprobar('en las cubas, 1 piel limpia, 2 cortezas de roble y agua dan 1 cuero, al cabo de días reales', R.uso === 'curtir' && igual(R.gasta, { piel_limpia: 1, corteza_roble: 2, agua: 1 }) && R.da === 'cuero' && R.n === 1 && R.s >= 24 * 3600, JSON.stringify(R));
+  const fab = new Fabricacion(), suelo = new Suelo(), inv = jugador();
+  for (let i = 0; i < 2; i++) suelo.dejar({ tipo: 'tronco_corto', n: 1 }, 0.4 + i * 0.3, 0.3, T0, 'ana', true);
+  inv.meterDonde('barro', 2);
+  const s = fab.colocar('ana', 'cubas_curtido', 0, 0).id;
+  fab.entregarEstacion('ana', s, { x: 0, z: 0 }, inv, suelo, T0);
+  let r = fab.trabajarEstacion('ana', s, MAX_RATO_ESTACION, { x: 0, z: 0 }, inv);
+  comprobar('sin el palo cavador no se cavan', !r.ok && /palo cavador/.test(r.motivo), r.motivo);
+  inv.meterDonde('palo_cavador', 1);
+  for (let i = 0; i < 20 && fab.estaciones[s].obra; i++) fab.trabajarEstacion('ana', s, MAX_RATO_ESTACION, { x: 0, z: 0 }, inv);
+  comprobar('con él, se levantan (el barro y los troncos, gastados; el palo, no)', !fab.estaciones[s].obra && !suelo.objetos.some(o => o.cosa.tipo === 'tronco_corto') && inv.cuantos('barro') === 0 && inv.cuantos('palo_cavador') === 1, JSON.stringify(fab.estaciones[s].obra));
+  inv.meterDonde('piel_limpia', 2); inv.meterDonde('corteza_roble', 3);
+  for (const t of ['piel_limpia', 'corteza_roble']) fab.depositar('ana', s, inv.rutasCon(t)[0], inv.cuantos(t), { x: 1, z: 0 }, inv);
+  r = fab.fabricar('ana', 'curtir', null, { x: 1, z: 0 }, inv, suelo, T0);
+  comprobar('sin agua no se curte', !r.ok && r.faltan && r.faltan.agua === 1, r.motivo);
+  r = fab.llenar('ana', s, { x: 1, z: 0 }, inv);
+  comprobar('sin el cubo lleno no se llenan', !r.ok, r.motivo);
+  inv.lugares['mano:izq'] = { tipo: 'cubo_agua', n: 1 };
+  r = fab.llenar('ana', s, { x: 1, z: 0 }, inv);
+  comprobar('el cubo lleno se vacía en las cubas: el cubo, vacío; las cubas, con su agua', r.ok && inv.lugares['mano:izq'].tipo === 'cubo' && fab.estaciones[s].deposito.agua === 1, r.motivo);
+  r = fab.llenar('ana', s, { x: 9, z: 0 }, inv);
+  comprobar('de lejos, no', !r.ok, r.motivo);
+  r = fab.retirar('ana', s, 'agua', 1, { x: 1, z: 0 }, inv);
+  comprobar('el agua no se saca de las cubas', !r.ok && fab.estaciones[s].deposito.agua === 1, r.motivo);
+  r = fab.fabricar('ana', 'curtir', null, { x: 1, z: 0 }, inv, suelo, T0);
+  comprobar('con agua, la piel limpia se pone a curtir (gasta la piel, 2 cortezas y el agua)', r.ok && fab.estaciones[s].deposito.piel_limpia === 1 && fab.estaciones[s].deposito.corteza_roble === 1 && !fab.estaciones[s].deposito.agua, r.motivo);
+  inv.lugares['mano:izq'] = { tipo: 'cubo_agua', n: 1 }; fab.llenar('ana', s, { x: 1, z: 0 }, inv);
+  inv.meterDonde('corteza_roble', 1); fab.depositar('ana', s, inv.rutasCon('corteza_roble')[0], 1, { x: 1, z: 0 }, inv);
+  r = fab.fabricar('ana', 'curtir', null, { x: 1, z: 0 }, inv, suelo, T0 + 60e3);
+  comprobar('la segunda piel, a la vez (no espera a la primera)', r.ok && r.encargo.empieza === T0 + 60e3, JSON.stringify(r.encargo || r.motivo));
+  r = fab.recoger('ana', s, { x: 1, z: 0 }, inv, T0 + R.s * 1000 - 1, suelo);
+  comprobar('antes de su hora no está curtida', !r.ok && inv.cuantos('cuero') === 0, r.motivo);
+  r = fab.recoger('ana', s, { x: 1, z: 0 }, inv, T0 + (MUTAR === '3' ? 0 : R.s * 1000 + 60e3), suelo);
+  comprobar('pasados los días, se recogen los dos cueros', r.ok && inv.cuantos('cuero') === 2, JSON.stringify(r));
+  comprobar('el cuero cabe en el fardo, con las pieles', CATALOGO.fardo.admite.includes('cuero'));
+}
+
+console.log('Las cubas por el servidor: con su autor, y todos ven lo que está en remojo');
+{
+  const pos = { ana: { x: 1, z: 0 }, bea: { x: 1, z: 0 } };
+  const o = new ObjetosServidor({ posicion: a => pos[a] || null, puedeTocar: a => (a === 'ana' ? { ok: true } : { ok: false, motivo: 'Esta tierra es de otro.' }) });
+  const id = o.fab.colocar('ana', 'cubas_curtido', 0, 0).id; delete o.fab.estaciones[id].obra;   // ya cavadas
+  const ana = o.invs.de('ana'), T = Date.now();
+  ana.lugares['mano:der'] = { tipo: 'cubo_agua', n: 1 };
+  let r = o.ejecutar({ autor: 'ana', tipo: 'llenar_estacion', estacion: id, x: 1, z: 0 }, T);
+  comprobar('Ana vacía el cubo en las cubas y se manda a todos', r.ok && r.estaciones && o.fab.estaciones[id].deposito.agua === 1 && ana.lugares['mano:der'].tipo === 'cubo', r.motivo);
+  comprobar('y queda en el registro con su autor', o.registro.entradas.at(-1).autor === 'ana' && o.registro.entradas.at(-1).tipo === 'llenar_estacion' && o.registro.entradas.at(-1).ok, JSON.stringify(o.registro.entradas.at(-1)));
+  ana.lugares['mano:der'] = null;   // (suelta el cubo)
+  ana.meterDonde('piel_limpia', 1); ana.meterDonde('corteza_roble', 2);
+  for (const t of ['piel_limpia', 'corteza_roble']) o.ejecutar({ autor: 'ana', tipo: 'depositar_estacion', estacion: id, de: ana.rutasCon(t)[0], x: 1, z: 0 }, T);
+  r = o.ejecutar({ autor: 'ana', tipo: 'fabricar', receta: 'curtir', estacion: id, x: 1, z: 0 }, T);
+  comprobar('la pone a curtir por el servidor', r.ok && r.estaciones, r.motivo);
+  const v = o.estacionesVisibles(null, T + 3600e3).find(e => e.id === id);
+  comprobar('todos ven la piel en remojo, con lo que le queda (sin autor)', v && v.colgado && v.colgado.length === 1 && Math.abs(v.colgado[0].queda - (RECETAS.curtir.s - 3600)) <= 1 && !('autor' in v.colgado[0]), JSON.stringify(v && v.colgado));
+  const bea = o.invs.de('bea'); bea.lugares['mano:der'] = { tipo: 'cubo_agua', n: 1 };
+  r = o.ejecutar({ autor: 'bea', tipo: 'llenar_estacion', estacion: id, x: 1, z: 0 }, T);
+  comprobar('en tierra de Ana, Bea (sin invitación) no las llena', !r.ok, r.motivo);
 }
 
 console.log('La carne cruda se estropea');

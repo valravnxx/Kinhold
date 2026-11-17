@@ -38,6 +38,8 @@
 //   { tipo: 'depositar_estacion', estacion, de, cantidad?, x, z } — dejar en la estación lo que llevas (sus recetas
 //     gastan de ahí); { tipo: 'retirar_estacion', estacion, objeto, cantidad?, x, z } — volver a cogerlo. En tierra de
 //     otro, solo su dueño y sus invitados (como al poner la estación)
+//   { tipo: 'llenar_estacion', estacion, x, z } — vaciar el cubo lleno de la mano en las cubas de curtido (su agua). En
+//     tierra de otro, solo su dueño y sus invitados
 //   { tipo: 'encender_fuego', estacion, x, z } — encender la hoguera (1 yesca de lo que llevas; llevar el taladro de
 //     fuego); { tipo: 'echar_fuego', estacion, objeto: 'rama' | 'lena', x, z } — echarle una (src/logica/fuego.js); { tipo: 'brasas_fuego', estacion, x, z } — dejar el hogar en
 //     brasas (encender_fuego lo aviva). En
@@ -152,7 +154,7 @@ export class ObjetosServidor {
         // fabricar y recoger, desde donde el servidor tiene al autor (no donde dice el navegador); la estación se pone
         // donde dice, que ya está a menos de TOLERANCIA de él
         const fa = a.tipo === 'colocar_estacion' ? a : { ...a, x: p.x, z: p.z };
-        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || a.tipo === 'reparar' || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
+        const est = (a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion' || a.tipo === 'reparar' || a.tipo === 'llenar_estacion' || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo) || (OBRA_ESTACION.includes(a.tipo) && a.tipo !== 'colocar_estacion')) && typeof a.estacion === 'string' && Object.hasOwn(this.fab.estaciones, a.estacion) ? this.fab.estaciones[a.estacion] : null;
         const tocar = a.tipo === 'colocar_estacion' ? this.puedeTocar(a.autor, a.x, a.z) : est ? this.puedeTocar(a.autor, est.x, est.z) : { ok: true };
         const nSuelo = this.suelo.objetos.length, antes = JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n]));
         r = !tocar.ok ? this.anotar(a, { ok: false, motivo: tocar.motivo }, ahora)
@@ -160,7 +162,7 @@ export class ObjetosServidor {
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
-        estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!(a.estacion && ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.cuelga)) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
+        estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!(a.estacion && ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.aLaVez)) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
@@ -280,8 +282,9 @@ export class ObjetosServidor {
       .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito }, ...(e.fuego ? { fuego: fuego(e.fuego) } : {}),
         ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}),
         ...(e.ligadas ? { ligadas: [...e.ligadas] } : {}),   // las camas: quién la tiene ligada (cada navegador mira si es la suya)
-        // lo que se pone a secar en el secadero (P9) se ve colgado para todos: cada encargo, con los s que le quedan (sin el autor)
-        ...(ESTACIONES[e.tipo] && ESTACIONES[e.tipo].cuelga ? { colgado: e.cola.map(c => ({ receta: c.receta, queda: Math.max(0, Math.ceil((c.fin - ahora) / 1000)) })) } : {}) }));
+        // lo que se pone a secar en el secadero (P9) se ve colgado para todos, y lo que se curte en las cubas (oficios), en
+        // remojo: cada encargo, con los s que le quedan (sin el autor)
+        ...(ESTACIONES[e.tipo] && ESTACIONES[e.tipo].aLaVez ? { colgado: e.cola.map(c => ({ receta: c.receta, queda: Math.max(0, Math.ceil((c.fin - ahora) / 1000)) })) } : {}) }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {

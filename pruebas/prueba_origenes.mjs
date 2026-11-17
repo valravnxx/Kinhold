@@ -43,8 +43,6 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  est_cubas_curtido: ['aún no hay cubas de curtido', 'Las cubas de curtido y el cuero'],
-  cuero: ['sale de las cubas', 'Las cubas de curtido y el cuero'],
   huso: ['aún no se hace', 'El huso y el hilo'],
   hilo: ['sale del huso', 'El huso y el hilo'],
   zapatos_cuero: ['piden cuero e hilo', 'Los zapatos y el cinto de cuero'],
