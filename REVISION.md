@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 17 nov 2026, 14:20 UTC — por el chat, la canoa: velocidad y quién la termina
+
+valravnx, sobre remar a paladas: la velocidad de crucero, «2,2 para probar ahora» (m/s de media a paladas; ni la de 1,8 ni la de 4 de la rama del carril A). Y la tarea «Remar de verdad» la termina el chat (rama trabajo/20261117-0940-remar), no el carril: el carril A la suelta y no la retoma; lo útil de su rama (trabajo/20261117-1122-remar: las palmas en la caña, el puño a la altura del pecho) lo pasa el chat a la suya.
+
 ### 17 nov 2026, 08:38 UTC — por el chat, la canoa antes de aprobarla
 
 valravnx: «antes de aprobar el tema de la canoa… hay que hacer unos cambios. Ahora mismo va a una velocidad fija muy elevada y es velocidad fija, parece como un movimiento estándar, no parece una canoa. Canoa tiene que ser que haga animación de empujar por un lado, de un tironcillo, de la animación por el otro, haga otro tironcillo, tiene que ser de manera realista. Investiga cómo hacer el movimiento de la canoa y cómo hacer la animación, aunque sea una animación más o menos ahora mismo, que luego ya se actualice, pero que sea cómo se movería una canoa» → P11d, La canoa, vuelve a `en_curso` con la tarea «Remar de verdad».
