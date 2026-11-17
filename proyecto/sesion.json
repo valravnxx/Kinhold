@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-17T10:32:04+00:00",
-  "tarea": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
-  "hito": "hierro",
-  "rama": "trabajo/20261117-0808"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261117-0940-remar": {
   "inicio": "2026-11-17T09:40:32+01:00",
