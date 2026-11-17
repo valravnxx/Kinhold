@@ -2488,7 +2488,7 @@
    "id": "canoa",
    "num": "P11d",
    "nombre": "La canoa",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "La canoa de un solo tronco, vaciada a mano con el hacha y el fuego, y el remo: con el remo se rema, bastante más rápido que corriendo; sin remar, va a la deriva con la corriente del río. Cabe otro sentado.",
    "nota": "valravnx, 14 nov, por el chat: «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva». Da uso al tronco largo; la corriente de los ríos y el nado ya existen (src/logica/nado.js, paisaje.corriente). La animación de remar la hace valravnx (11 nov); hasta que llegue, una pose provisional con el remo. Va detrás de «La casa más fuerte». La navegación grande (barcos, el continente) sigue en su hito, congelado.",
    "tareas": [
@@ -2524,9 +2524,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-17T00:23:21+00:00",
-     "rama": "trabajo/20261117-0023"
+     "fin": "2026-11-17T00:24:29+00:00"
     }
    ]
   },

@@ -7422,5 +7422,21 @@
   "pruebas": "Revisor en la nube: lógica y el recorrido (los piden el servidor y las pruebas cambiadas): lógica bien y el recorrido entero, 347 bien y 0 mal, con el paso 26 nuevo entero. Aquí, la canoa desde lo guardado antes del pozo: 20 bien y 0 mal; con MUTAR=1 falla donde debe (el servidor le recorta al remar). Quitado: nada. Solo cambian las pruebas y una línea del servidor: sin versión nueva de la demo.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-17T00:22:24+00:00",
+  "fin": "2026-11-17T00:24:29+00:00",
+  "titulo": "La canoa: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el tronco largo de un árbol adulto se vacía a mano con el hacha y con tres vueltas de brasas de una hoguera; la canoa se arrastra con cuerda hasta la orilla; el remo sale del banco de tronco con el hacha y se lleva con las dos manos; la canoa se echa al agua, se sube y, con el remo, se rema bastante más deprisa que corriendo; sin remar va a la deriva con la corriente; cabe otro sentado; y se queda donde la dejas, a tu guarda en tu tierra. Todo publicado y unido a main (la última, la demo v227).",
+   "El recorrido de jugador, sin arcón, lo hace entero en su paso 26: trenza la cuerda, tala el árbol adulto junto a su hoguera de la orilla, vacía el tronco largo, arrastra la canoa al agua, se hace el remo, rema río arriba y río abajo, la deja a la deriva y la vara en la orilla (347 de 347 en la nube, en la sesión anterior).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: la canoa y el remo salen del mundo.",
+   "Lo que queda para la revisión: la animación de remar la hace valravnx (hasta entonces va sentado con la pose de descansar y el remo quieto); los números son provisionales (40 golpes de desbaste, 3 vueltas de brasas de 10 min, 9 m/s remando, 4,4 m y 40 kg); al tirar de la cuerda con el hacha en la otra mano, el hacha sigue en la mano; las manos casi abiertas sobre la caña del remo; y el cansancio no frena al que rema. No comprobado: los fotogramas en el río en un móvil de verdad.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 65 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
