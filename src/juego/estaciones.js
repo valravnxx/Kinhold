@@ -559,7 +559,7 @@ function cubasCurtido(id) {
   // los dos troncos cortos, tumbados en el suelo a lo largo de los costados, por fuera del montón de tierra
   for (const sz of [-1, 1]) {
     const t = troncosConCortes(1, largo + (az(id, sz) - 0.5) * 0.08, tronco, id + 't' + sz);
-    t.position.set((az(id, sz + 3) - 0.5) * 0.08, 0, sz * (Z + labio + monte + tronco + 0.11)); t.rotation.y = (az(id, sz + 5) - 0.5) * 0.08;
+    t.position.set((az(id, sz + 3) - 0.5) * 0.08, 0, sz * (Z + labio + monte + tronco + 0.17)); t.rotation.y = (az(id, sz + 5) - 0.5) * 0.08;
     g.add(t);
   }
   return g;
@@ -577,7 +577,7 @@ function texturaCubas() {
   const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
   const g = cv.getContext('2d');
   let sem = 7; const r = () => (sem = (sem * 16807) % 2147483647) / 2147483647;
-  g.fillStyle = '#3d2c16'; g.fillRect(0, 0, N, N);
+  g.fillStyle = '#4c361a'; g.fillRect(0, 0, N, N);
   // el reflejo del cielo, ancho y suave: más claro hacia un lado, como un charco que mira al cielo
   const gr = g.createLinearGradient(0, 0, N * 0.3, N); gr.addColorStop(0, 'rgba(128,122,110,0.26)'); gr.addColorStop(0.55, 'rgba(90,82,66,0.08)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = gr; g.fillRect(0, 0, N, N);
@@ -626,9 +626,9 @@ function llenoCubas(dep, id, colgado = []) {
     for (let k = 0; k < q.count; k++) {
       const u = sx * (cx + q.getX(k)) - X, w = q.getZ(k);   // u: cuánto pasa del borde de dentro del hoyo (m); w: de través
       let y;
-      if (u < -0.04) {   // en el agua: hundida, con pliegues que asoman
-        const pl = Math.sin(u * 26 + f + w * 6) * 0.5 + Math.sin(u * 11 - w * 14 + f) * 0.5;
-        y = AGUA_CUBAS + 0.001 + pl * 0.007;   // medio metida en el agua: asoman los lomos de los pliegues, y se ve su forma
+      if (u < -0.04) {   // entra en el agua en pendiente, de una vez (segunda mirada: con pliegues por debajo de la
+        // superficie, el agua la agujereaba a manchas): se ve la piel entera hasta la línea del agua, y luego se hunde
+        y = AGUA_CUBAS + 0.004 + (u + 0.04) * 0.22 + Math.sin(w * 18 + f) * 0.002;
       } else if (u < labio) {   // sube por la pared de barro hasta el labio, en una curva
         const t = (u + 0.04) / (labio + 0.04);
         y = AGUA_CUBAS + 0.004 + 0.13 * Math.sin(t * Math.PI / 2);
@@ -636,7 +636,7 @@ function llenoCubas(dep, id, colgado = []) {
         const v = u - labio, h = v < monte * 0.5 ? 0.12 - v / (monte * 0.5) * 0.02 : Math.max(0.004, 0.1 - (v - monte * 0.5) / (monte * 0.5 + 0.1) * 0.1);
         y = h + 0.022;
       }
-      q.setY(k, Math.max(0.016, y) + q.getY(k) * 0.4);
+      q.setY(k, Math.max(0.0, y) + q.getY(k) * 0.4);
     }
     geo.computeVertexNormals();
     const color = c.listo ? COLOR_CURTIDA : COLOR_REMOJO;
