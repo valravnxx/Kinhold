@@ -1,0 +1,74 @@
+El agua bajo tierra
+  OK   junto al río, poco honda (1 m sobre su agua: 2,1 m) — 2.1
+  OK   en el fondo de un valle, poco honda — 2
+  OK   en una ladera 40 m sobre el fondo, más honda (6 m) — 6
+  OK   en un alto sobre lo de alrededor, más aún (12 m: el tope) — 12
+  OK   en una cumbre, más que el tope: no hay pozo — null
+  OK   en un llano alto sin río ni valle por debajo en 300 m, como el fondo de un valle (el agua no se va) — 2
+  OK   con un río por encima del sitio (otro valle), no cuenta
+  OK   con el terreno: cuanto más lejos y más alto, más honda — 2 · 2.6 · 4 · 6
+  OK   y en lo alto de un cerro (60 m sobre el llano de alrededor), más que el tope: no hay pozo — null · al pie, 2
+Whitholm de verdad (el terreno del servidor)
+  OK   casi toda la tierra tiene el agua al alcance (más del 80 %) — 358 de 400
+  OK   y hay de todo: sitios de poco (hasta 4 m) y de mucho (8 m o más) — 72 de poco, 99 hondos
+  OK   en la salida, junto al fondo del valle, poco honda — 2
+Marcar el pozo
+  OK   sin hondura (el agua, más que el tope), no se marca, y el aviso lo dice — Aquí el agua está a más de 12 m: busca más abajo, cerca del río o en el fondo de un valle.
+  OK   con una hondura de más del tope, tampoco (no se fía)
+  OK   en tierra ajena, no — Fuera de tu tierra.
+  OK   con agua encima, no — Aquí hay agua encima: el pozo se cava en seco.
+  OK   en tu tierra, en seco: marcado, con su hondura y sus tramos (2,4 m: 3 tramos) — {"ok":true,"pozo":1,"hondura":2.4,"tramos":3}
+  OK   es de quien tiene la tierra y lo empieza
+  OK   pegado a otro pozo, no
+Cavar y revestir
+  OK   sin la pala de madera en la mano, no se cava — Necesitas la pala de madera en la mano para cavar el pozo.
+  OK   9 golpes: el primer tramo, aún a medias
+  OK   a los 10 golpes, el primer tramo cavado, y saca su tierra — {"ok":true,"pozo":1,"golpes":0,"cavados":1,"tramo":true,"agua":false,"tierra":1.13}
+  OK   sin revestirlo, no se baja más (y el aviso dice por qué) — Reviste antes de piedra este tramo: si bajas más, la tierra se viene abajo.
+  OK   sin piedras, no se reviste — No llevas piedras.
+  OK   con 3 piedras (de 8), se ponen y el tramo sigue a medias — {"ok":true,"pozo":1,"piedras":3,"puestas":3,"revestidos":0}
+  OK   a medio revestir, tampoco se baja
+  OK   otro, en tu tierra sin invitarlo, no — Fuera de tu tierra.
+  OK   con otras 6, se ponen las 5 que faltan (sobra 1) y el tramo queda revestido — {"ok":true,"pozo":1,"piedras":8,"puestas":5,"revestidos":1,"tramo":true,"agua":false}
+  OK   revestido lo cavado, no se reviste más
+  OK   el tercer tramo llega al agua — {"ok":true,"pozo":1,"golpes":0,"cavados":3,"tramo":true,"agua":true,"tierra":3.39}
+  OK   ya en el agua, no se cava más — Ya has llegado al agua: reviste de piedra el último tramo.
+  OK   revestido el último, el pozo tiene agua — {"ok":true,"pozo":1,"piedras":8,"puestas":2,"revestidos":3,"tramo":true,"agua":true}
+  OK   ha gastado 8 piedras por tramo (24) y sacado la tierra de 3 tramos — 4 piedras sobran en la mano
+  OK   ya con agua, ni se cava ni se reviste
+  OK   cavar y revestir cansan, como una obra
+  OK   cada acción, con su autor
+Rematarlo y sacar agua (El pozo (3))
+  OK   con agua, aún no se saca: le faltan el brocal y el travesaño
+  OK   el brocal, con las piedras que lleva: 5 de 12 — {"ok":true,"pozo":1,"paso":"brocal","brocal":5,"puestas":5,"rematado":false}
+  OK   sin piedras, no sigue — No llevas piedras.
+  OK   otro, en tu tierra sin invitarlo, no — Fuera de tu tierra.
+  OK   con 10 más, pone las 7 que faltan (sobran 3): el brocal, entero — {"ok":true,"pozo":1,"paso":"brocal","brocal":12,"puestas":7,"rematado":false}
+  OK   el travesaño con 2 varas, no (hacen falta 3 y la cuerda), y no gasta nada — Para el travesaño hacen falta 3 varas y una cuerda.
+  OK   con 3 varas y la cuerda, el travesaño: rematado — {"ok":true,"pozo":1,"paso":"travesano","brocal":12,"puestas":0,"rematado":true}
+  OK   rematado, no se remata más
+  OK   a su lado hay agua del pozo (a 2 m, sí; a 4 m, no)
+  OK   rematar cansa
+Rehecho y guardado
+  OK   rehecho desde el registro (sin inventarios), el mismo pozo — [{"id":1,"dueno":"jugador:ana","autor":"jugador:ana","x":3,"z":3,"hondura":2.4,"cavados":3,"golpes":0,"revestidos":3,"piedras":0,"brocal":12,"travesano":true}]
+  OK   guardado y leído, igual
+  OK   un guardado de antes (sin pozos), sin pozos
+  OK   al quitar el mojón, sus pozos se van con su tierra
+El servidor de verdad: pone la hondura, mira que estés al lado y lo reparte
+  OK   Ana pone su mojón
+  OK   a más de 1 m de donde la tiene el servidor, no se marca — Estás demasiado lejos.
+  OK   en lo alto del cerro (el servidor mira el terreno), no: el agua, más honda que el tope — Aquí el agua está a más de 12 m: busca más abajo, cerca del río o en el fondo de un valle.
+  OK   en el llano, se marca con la hondura del servidor (no la que dice el navegador) — 2
+  OK   Bruno lo ve, con su hondura
+  OK   a 5 m del pozo, no se cava — Estás demasiado lejos.
+  OK   a su lado, con la pala, cava el primer tramo
+  OK   y lo reviste en tres viajes con las piedras que lleva (3 + 3 + 2) — 1 sobran
+  OK   Bruno ve el tramo revestido (con las piedras puestas en cada viaje)
+  OK   con agua pero sin rematar, lejos del río, el cubo no se llena — Aquí no hay agua: busca un río.
+  OK   le pone el brocal (12 piedras) y el travesaño (3 varas y la cuerda), por el servidor
+  OK   Bruno lo ve rematar
+  OK   lejos del pozo (7 m), no se llena — Aquí no hay agua: busca un río.
+  OK   a su lado, saca agua del pozo: el cubo, lleno (agua dulce, sin río cerca)
+  OK   y bebe del pozo — {"sed":20}
+
+65 bien, 0 mal
