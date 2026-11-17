@@ -1,0 +1,5 @@
+  OK   las bordas miran arriba (hueco 0) — 332 arriba, 0 abajo
+  OK   las bordas miran arriba (hueco 0.5) — 332 arriba, 0 abajo
+  OK   las bordas miran arriba (hueco 1) — 332 arriba, 0 abajo
+
+TODO CORRECTO

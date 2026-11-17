@@ -1,0 +1,6 @@
+FALLO: «agua», de las recetas, tiene su modelo
+FALLO: «La piel sin carne ni grasa: para el zurrón y, en las cubas de curtido, para el cuero.» traducido (en)
+FALLO: «Para los zapatos, el cinto y lo demás de cuero.» traducido (en)
+FALLO: «La piel sin carne ni grasa: para el zurrón y, en las cubas de curtido, para el cuero.» traducido (ru)
+FALLO: «Para los zapatos, el cinto y lo demás de cuero.» traducido (ru)
+739 bien, 5 fallos · 127 imágenes que enseña el panel, 22 aún sin su modelo
