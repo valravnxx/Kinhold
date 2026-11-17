@@ -1,0 +1,20 @@
+Textos del juego: 1969; sin traducir (en): 9; con variables distintas: 0
+  FALTA (en)  v230: las cubas de curtido y el cuero (oficios). Un puesto nuevo en Construir, «Puestos de trabajo»: las cubas, un hoyo alargado cavado y forrado de barro, con un tronco corto tumbado en cada costado; piden 2 cestas de barro y 2 troncos cortos, y llevar el palo cavador al cavarlas (no se gasta); fuera y en tu tierra. Se llenan con el cubo: delante de ellas, con el cubo lleno en la mano, Usar echa su agua dentro (el cubo queda vacío; el agua no se vuelve a sacar). Se les dejan pieles limpias y corteza de roble y, en su pestaña del panel de fabricar, cada piel limpia con 2 cortezas de roble y el agua de un cubo se pone en remojo y da 1 cuero al cabo de dos días reales; varias a la vez, cada una con su tiempo, y todos ven las pieles en remojo, con el borde echado sobre un tronco. Lo hace el servidor, con su autor. El cuero va en el fardo, con las pieles.
+  FALTA (en)  v230, provisional: 2 días reales por cuero, 4 pieles a la vez en unas cubas, el agua de un cubo por piel, 40 s de trabajo para cavarlas y que van en tu tierra (lo que se curte se queda días); al desmontarlas el agua se derrama.
+  FALTA (en)  Demo única · v230 (Las cubas de curtido y el cuero)
+  FALTA (en)  Cuero
+  FALTA (en)  Echar el agua del cubo en las cubas
+  FALTA (en)  Echas el agua del cubo en las cubas.
+  FALTA (en)  Cubas de curtido
+  FALTA (en)  las cubas de curtido
+  FALTA (en)  Dentro de {e}
+Textos del juego: 1969; sin traducir (ru): 9; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  v230: las cubas de curtido y el cuero (oficios). Un puesto nuevo en Construir, «Puestos de trabajo»: las cubas, un hoyo alargado cavado y forrado de barro, con un tronco corto tumbado en cada costado; piden 2 cestas de barro y 2 troncos cortos, y llevar el palo cavador al cavarlas (no se gasta); fuera y en tu tierra. Se llenan con el cubo: delante de ellas, con el cubo lleno en la mano, Usar echa su agua dentro (el cubo queda vacío; el agua no se vuelve a sacar). Se les dejan pieles limpias y corteza de roble y, en su pestaña del panel de fabricar, cada piel limpia con 2 cortezas de roble y el agua de un cubo se pone en remojo y da 1 cuero al cabo de dos días reales; varias a la vez, cada una con su tiempo, y todos ven las pieles en remojo, con el borde echado sobre un tronco. Lo hace el servidor, con su autor. El cuero va en el fardo, con las pieles.
+  FALTA (ru)  v230, provisional: 2 días reales por cuero, 4 pieles a la vez en unas cubas, el agua de un cubo por piel, 40 s de trabajo para cavarlas y que van en tu tierra (lo que se curte se queda días); al desmontarlas el agua se derrama.
+  FALTA (ru)  Demo única · v230 (Las cubas de curtido y el cuero)
+  FALTA (ru)  Cuero
+  FALTA (ru)  Echar el agua del cubo en las cubas
+  FALTA (ru)  Echas el agua del cubo en las cubas.
+  FALTA (ru)  Cubas de curtido
+  FALTA (ru)  las cubas de curtido
+  FALTA (ru)  Dentro de {e}
