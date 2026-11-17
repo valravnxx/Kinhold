@@ -2621,7 +2621,9 @@
     },
     {
      "nombre": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-17T08:08:19+00:00",
+     "rama": "trabajo/20261117-0808"
     },
     {
      "nombre": "La fragua y la barra de hierro: el fuelle (2 cueros y 2 varas, en el banco de tronco) y la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que se enciende con carbón; en ella, con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro. Cadena: cuero ← las cubas de curtido (P9); lupia ← el horno de reducción; mazo de piedra ← piedra, rama y 2 cordeles, a mano",
