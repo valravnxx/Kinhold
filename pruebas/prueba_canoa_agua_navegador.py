@@ -100,7 +100,15 @@ def recorrido(pg, pre, movil):
     # primero, remar hacia el medio del río (la canoa sale de la orilla de proa: girarla allí metería la popa en las rocas de
     # la orilla, que el casco no atraviesa) y luego girar río arriba remando (W lleva a (-sin yaw, -cos yaw))
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
-    pg.keyboard.down('w'); pg.wait_for_timeout(2000); pg.keyboard.up('w')   # (a paladas arranca despacio: unos metros, hasta el medio del río, apartada de las rocas de la orilla)
+    # (a paladas arranca despacio: unos metros, hasta el medio del río, apartada de las rocas de la orilla; en la nube, con
+    # pocos fotogramas, el juego va más despacio que el reloj: hasta que se ha apartado 3,5 m, o 30 s)
+    q0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+    pg.keyboard.down('w')
+    for i in range(60):
+        pg.wait_for_timeout(500)
+        q1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+        if math.hypot(q1[0] - q0[0], q1[1] - q0[1]) > 3.5: break
+    pg.keyboard.up('w')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     # (a paladas, girando por un lado: unos segundos de juego; con pocos fotogramas, más de reloj: hasta que mira río arriba)
     pg.keyboard.down('w')
@@ -141,9 +149,11 @@ def recorrido(pg, pre, movil):
     # cada momento de la palada, de cerca y de lado (la palada fija con __remadaFija: mover la cámara mientras se rema
     # cambiaría hacia dónde va, que W va hacia donde mira la cámara): la pala entra delante por la derecha, tira, vuelve, y
     # por la izquierda; con la pala en el agua, las dos palmas sobre la caña
+    # (en el medio del río, sin rocas ni orilla delante; de tres cuartos por detrás, del lado de la palada)
+    pg.evaluate(f"(() => {{ const k = {K}; k.pj.x = {r['x']}; k.pj.z = {r['z']}; }})()")
     for i, (lado, fase) in enumerate([('r', 0.05), ('r', 0.3), ('r', 0.75), ('l', 0.2)]):
         pg.evaluate(f"""(() => {{ const k = {K}; window.__remadaFija = {{ lado: '{lado}', fase: {fase}, enAgua: {str(fase < 0.5).lower()}, barre: false }};
-          k.cam.yaw = k.pj.rot + 0.6; k.cam.dist = 3.0; k.cam.pitch = 0.35; }})()""")
+          k.pj.x = {r['x']}; k.pj.z = {r['z']}; k.cam.yaw = k.pj.rot + Math.PI + ({'1.0' if lado == 'r' else '-1.0'}); k.cam.dist = 3.2; k.cam.pitch = 0.3; }})()""")
         pg.wait_for_timeout(400)
         pg.screenshot(path=f'{SALIDA}/{pre}4{"efgh"[i]}_palada_de_cerca.png')
         dist = pg.evaluate(f"""(() => {{ const j = {K}.jugador, h = j.mh.hueso, p = j.palaRemo; if (!p) return [9, 9]; j.raiz.updateMatrixWorld(true);
@@ -153,6 +163,11 @@ def recorrido(pg, pre, movil):
         if fase < 0.5: comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 4 cm)', max(dist) < 0.04, f'{dist} m')
         else: print(f'  (palada {lado} {fase}, volviendo: las palmas a {dist} m de la caña)')
     pg.evaluate("window.__remadaFija = null")
+    if os.environ.get('ESTUDIO') == '1':   # (solo para mirar la palada mientras se trabaja: hasta aquí, con dónde queda cada hueso)
+        print(pg.evaluate(f"""(() => {{ const j = {K}.jugador, h = j.mh.hueso; j.raiz.updateMatrixWorld(true);
+          return ['head', 'neck_01', 'spine_03', 'spine_02', 'upperarm_r', 'upperarm_l', 'pelvis'].filter(n => h[n]).map(n => n + ' ' + j.raiz.worldToLocal(h[n].getWorldPosition(h[n].position.clone())).toArray().map(v => v.toFixed(2)).join(',')).join(' | ') + ' | raiz-agua ' + (j.raiz.getWorldPosition(j.raiz.position.clone()).y - {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z).superficie).toFixed(2); }})()"""))
+        return
+    pg.evaluate(f"(() => {{ const k = {K}; k.pj.x = {r['x']}; k.pj.z = {r['z']}; }})()")   # (la deriva, en el medio del río)
     # sin remar: a la deriva, río abajo (antes, lo que aún lleva de las paladas se lo come el agua: unos segundos de juego)
     for i in range(30):
         q0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"); pg.wait_for_timeout(500); q1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
@@ -197,7 +212,7 @@ def recorrido(pg, pre, movil):
 try:
     with sync_playwright() as p:
         nav = p.chromium.launch(args=ARGS)
-        for pre, vista, movil in [('PC_', (1280, 800), False), ('movil_', (390, 844), True)]:
+        for pre, vista, movil in [('PC_', (1280, 800), False), ('movil_', (390, 844), True)][:1 if os.environ.get('ESTUDIO') == '1' else 2]:
             print('PC (1280×800)' if not movil else 'Móvil (390×844)')
             pg = nav.new_page(viewport={'width': vista[0], 'height': vista[1]}, locale='es-ES', is_mobile=movil, has_touch=movil, device_scale_factor=2 if movil else 1)
             pg.errores = []

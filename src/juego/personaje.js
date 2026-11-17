@@ -282,26 +282,28 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // (las medidas, desde la raíz del personaje, que en la canoa va a ras del agua: x a la izquierda, y arriba, z adelante)
     const P = (fw, lat, up, out) => j.raiz.localToWorld(out.set(lat, up, fw));
     const ancho = R.barre ? 0.62 : 0.5;   // (la de girar, más abierta)
-    const T0 = (sd, o) => P(0.5, sd * 0.24, 0.56, o), T1 = (sd, o) => P(0.36, sd * 0.28, 0.48, o);    // el puño (delante del pecho, por debajo de la barbilla: más alto, el antebrazo tapaba la cara): al meter, al sacar
-    const B0 = (sd, o) => P(0.72, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
+    const T0 = (sd, o) => P(0.4, sd * 0.18, 0.56, o), T1 = (sd, o) => P(0.36, sd * 0.28, 0.48, o);    // el puño (delante del pecho, por debajo de la barbilla: más alto, el antebrazo tapaba la cara): al meter, al sacar
+    const B0 = (sd, o) => P(0.5, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
     const a = new THREE.Vector3(), e = new THREE.Vector3();
     if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
     else {
       // fuera del agua: la pala sale baja, junto a la cadera, y vuelve adelante; si cambia de lado, pasa por delante del
       // pecho, el remo casi tumbado de un lado a otro (una curva que pasa por M a mitad de camino)
       _T.lerpVectors(T1(s, a), T0(s2, e), k).addScaledVector(_u, Math.sin(Math.PI * k) * 0.06);
-      const M = s2 !== s ? P(0.75, 0, 0.62, new THREE.Vector3()) : P(0.25, s * (ancho + 0.1), 0.35, new THREE.Vector3());
+      // (al cambiar de lado, la pala cruza por delante, por encima de la proa y más baja que el puño: el remo casi tumbado,
+      // no de punta hacia arriba)
+      const M = s2 !== s ? P(0.95, 0, 0.45, new THREE.Vector3()) : P(0.25, s * (ancho + 0.1), 0.35, new THREE.Vector3());
       B1(s, a); B0(s2, e);
       const c1 = M.multiplyScalar(2).addScaledVector(a, -0.5).addScaledVector(e, -0.5);
       _B.copy(a).multiplyScalar((1 - k) * (1 - k)).addScaledVector(c1, 2 * k * (1 - k)).addScaledVector(e, k * k);
       // (y sale enseguida del agua: sube el remo entero, puño y pala, sin ponerse de punta)
-      const sube = Math.sin(Math.PI * Math.min(1, k * 1.6)) * 0.3; _B.addScaledVector(_u, sube); _T.addScaledVector(_u, sube * 0.5);
+      const sube = Math.sin(Math.PI * Math.min(1, k * 1.6)) * (s2 !== s ? 0.25 : 0.3); _B.addScaledVector(_u, sube); _T.addScaledVector(_u, sube * 0.5);
     }
     // (el remo es rígido: la pala, a su largo del puño, 1,22 m al centro de la pala, en esa dirección)
     const dir = _B.sub(_T).normalize();
     j.palaRemo = { puno: _T.clone(), pala: _T.clone().addScaledVector(dir, 1.22) };
-    // las manos: arriba, en el puño; abajo, por la caña, a 0,55 m de él (la del lado de la palada)
-    const abajo = _T.clone().addScaledVector(dir, 0.55), arriba = _T.clone();
+    // las manos: arriba, en el puño; abajo, por la caña, a 0,5 m de él (la del lado de la palada)
+    const abajo = _T.clone().addScaledVector(dir, 0.5), arriba = _T.clone();
     const sitio = (lado, sd) => ((lado === 'l') === (sd > 0) ? abajo : arriba);
     const mano = (lado) => (agua ? sitio(lado, s) : sitio(lado, s).clone().lerp(sitio(lado, s2), k));
     const poloR = new THREE.Vector3().addScaledVector(_l, -0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
