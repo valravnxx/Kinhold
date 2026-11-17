@@ -1,0 +1,19 @@
+  OK   hay ratos de lluvia sueltos y seguidos en 400 días — 166137 166140
+Se moja y se seca
+  OK   antes de llover, seco
+  OK   al poco de empezar, algo mojado (no de golpe) — 0.25
+  OK   a los 4 min de lluvia, empapado
+  OK   lloviendo un rato largo, empapado
+  OK   un minuto después de parar, sigue casi empapado — 0.9666666666666667
+  OK   a la mitad del secado, a medias — 0.5
+  OK   a los 30 min de parar, seco
+  OK   se seca sin volver a mojarse a saltos
+  OK   el segundo rato seguido de lluvia, empapado desde el principio
+Igual para todos
+  OK   el mismo sitio de la zona, el mismo valor
+El paso a poco (el tiempo fijo de las pruebas)
+  OK   lloviendo, se moja en MOJAR — 0.9999999999999999
+  OK   al parar, un minuto después sigue mojado — 0.9666666666666667
+  OK   y seco en SECAR — 1.3877787807814457e-16
+
+14 correctas, 0 fallan
