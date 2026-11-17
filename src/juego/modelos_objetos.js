@@ -155,15 +155,14 @@ function tiraCorteza(L, largo, ancho, x, z, giro, id, k, { color = 'corteza', ca
   // abajo (bocaAbajo), el arco arriba: se ve la corteza de fuera y apoya en sus bordes; ladeo, tumbada de canto (se
   // ve la cara de dentro); claro: sin oscurecer lo que toca el suelo (las placas planas se verían casi negras)
   const y = bocaAbajo ? 0.004 - r * Math.cos(ab / 2) + Math.abs(Math.sin(ladeo)) * r * 0.9 : r;
-  // (boca abajo, el largo se deja en Z dentro de la pieza y se gira con la matriz: así las grietas de la corteza, que la
-  // textura pone a lo largo de Z en lo que mira arriba, van a lo largo de la placa)
-  const largoEnX = g0 => { if (!bocaAbajo) g0.rotateY(Math.PI / 2); };
-  const fuera = new THREE.CylinderGeometry(r, r * 0.92, largo, 8, 3, true, -ab / 2, ab); fuera.rotateX(vuelta); largoEnX(fuera);
+  // (boca abajo, la placa se deja de pie dentro de la pieza, el largo en Y como un tronco, y se tumba con la matriz:
+  // así las grietas de la corteza, que la textura pone a lo largo de Y, van a lo largo de la placa en todas sus caras)
+  const fuera = new THREE.CylinderGeometry(r, r * 0.92, largo, 8, 3, true, -ab / 2, ab);
   const dentro = new THREE.CylinderGeometry(r * grueso, r * (grueso - 0.08), largo * 0.98, 8, 3, true, -ab / 2, ab); dentro.scale(-1, 1, 1);
   const nd = dentro.attributes.normal; for (let i = 0; i < nd.count; i++) nd.setXYZ(i, -nd.getX(i), -nd.getY(i), -nd.getZ(i));
-  dentro.rotateX(vuelta); largoEnX(dentro);
-  if (ladeo) { fuera.rotateZ(ladeo); dentro.rotateZ(ladeo); }
-  const g = new THREE.Matrix4().makeRotationY(giro + (bocaAbajo ? Math.PI / 2 : 0));
+  if (!bocaAbajo) for (const g0 of [fuera, dentro]) { g0.rotateX(vuelta); g0.rotateY(Math.PI / 2); }
+  const M4 = () => new THREE.Matrix4();
+  const g = bocaAbajo ? M4().makeRotationY(giro + Math.PI / 2).multiply(M4().makeRotationZ(ladeo)).multiply(M4().makeRotationX(vuelta)) : M4().makeRotationY(giro);
   L.add(fuera, color, x, y, z, g, { tex: 'corteza', ...(claro ? { sinSuelo: true } : {}) });
   L.add(dentro, LIBER, x, y, z, g, { tex: 'veta', sinSuelo: true });
 }
