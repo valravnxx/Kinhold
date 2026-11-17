@@ -149,11 +149,12 @@ function piel(n, id) {
 }
 
 // una tira de corteza curvada en canal (medio tubo), tumbada a lo largo de X: fuera la corteza, dentro el líber claro
-function tiraCorteza(L, largo, ancho, x, z, giro, id, k, { color = 'corteza', canal = 0.9, grueso = 0.94, bocaAbajo = false } = {}) {
+function tiraCorteza(L, largo, ancho, x, z, giro, id, k, { color = 'corteza', canal = 0.9, grueso = 0.94, bocaAbajo = false, ladeo = 0, claro = false } = {}) {
   const r = ancho / 2, ab = Math.PI * (canal + az(id, k) * 0.3), vuelta = bocaAbajo ? -Math.PI / 2 : Math.PI / 2;
   // en canal: el arco abajo (rotateX), y la cara de dentro con las caras y las normales vueltas hacia el eje; boca
-  // abajo (bocaAbajo), el arco arriba: se ve la corteza de fuera y apoya en sus bordes
-  const y = bocaAbajo ? 0.004 - r * Math.cos(ab / 2) : r;
+  // abajo (bocaAbajo), el arco arriba: se ve la corteza de fuera y apoya en sus bordes; ladeo, tumbada de canto (se
+  // ve la cara de dentro); claro: sin oscurecer lo que toca el suelo (las placas planas se verían casi negras)
+  const y = bocaAbajo ? 0.004 - r * Math.cos(ab / 2) + Math.abs(Math.sin(ladeo)) * r * 0.9 : r;
   // (boca abajo, el largo se deja en Z dentro de la pieza y se gira con la matriz: así las grietas de la corteza, que la
   // textura pone a lo largo de Z en lo que mira arriba, van a lo largo de la placa)
   const largoEnX = g0 => { if (!bocaAbajo) g0.rotateY(Math.PI / 2); };
@@ -161,8 +162,9 @@ function tiraCorteza(L, largo, ancho, x, z, giro, id, k, { color = 'corteza', ca
   const dentro = new THREE.CylinderGeometry(r * grueso, r * (grueso - 0.08), largo * 0.98, 8, 3, true, -ab / 2, ab); dentro.scale(-1, 1, 1);
   const nd = dentro.attributes.normal; for (let i = 0; i < nd.count; i++) nd.setXYZ(i, -nd.getX(i), -nd.getY(i), -nd.getZ(i));
   dentro.rotateX(vuelta); largoEnX(dentro);
+  if (ladeo) { fuera.rotateZ(ladeo); dentro.rotateZ(ladeo); }
   const g = new THREE.Matrix4().makeRotationY(giro + (bocaAbajo ? Math.PI / 2 : 0));
-  L.add(fuera, color, x, y, z, g, { tex: 'corteza' });
+  L.add(fuera, color, x, y, z, g, { tex: 'corteza', ...(claro ? { sinSuelo: true } : {}) });
   L.add(dentro, LIBER, x, y, z, g, { tex: 'veta', sinSuelo: true });
 }
 function corteza(n, id) {
@@ -171,13 +173,14 @@ function corteza(n, id) {
   tiraCorteza(L, 0.34, 0.08, 0.02, 0.1, -0.3 + az(id, 2) * 0.4, id, 2);
   return mallas(L);
 }
-// la corteza de roble (para curtir, oficios): placas gruesas y casi planas, parda oscura y agrietada por fuera, con el
-// líber claro por dentro (boca abajo: se ve la de fuera); más anchas que las tiras de las otras especies
+// la corteza de roble (para curtir, oficios): placas gruesas y curvas, como cáscaras sacadas del tronco, pardas y
+// agrietadas a lo largo por fuera y con el líber claro por dentro (dos boca abajo, que enseñan la de fuera, y una de
+// canto, que enseña la de dentro); más anchas que las tiras de las otras especies
 function cortezaRoble(n, id) {
-  const L = lote(0.03), o = { color: 'corteza', canal: 0.45, grueso: 0.8, bocaAbajo: true };
-  tiraCorteza(L, 0.4, 0.2, 0, -0.06, az(id, 1) * 0.4, id, 1, o);
-  tiraCorteza(L, 0.32, 0.17, 0.04, 0.12, -0.35 + az(id, 2) * 0.4, id, 2, o);
-  tiraCorteza(L, 0.26, 0.14, -0.1, 0.05, 0.6 + az(id, 3) * 0.4, id, 3, o);
+  const L = lote(0.03), o = { color: 'cortezaRoble', canal: 0.7, grueso: 0.72, bocaAbajo: true, claro: true };
+  tiraCorteza(L, 0.4, 0.19, 0, -0.07, az(id, 1) * 0.4, id, 1, o);
+  tiraCorteza(L, 0.32, 0.16, 0.05, 0.12, -0.35 + az(id, 2) * 0.4, id, 2, o);
+  tiraCorteza(L, 0.28, 0.15, -0.13, 0.04, 0.6 + az(id, 3) * 0.4, id, 3, { ...o, ladeo: -1.2 });
   return mallas(L);
 }
 function yesca(n, id) {
