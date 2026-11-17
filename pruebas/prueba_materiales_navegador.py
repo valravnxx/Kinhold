@@ -89,10 +89,11 @@ def recorrido(pg, nombre, pref):
         comprobar(f'{nombre}: sin hacha y con la lasca, Usar descorteza el {a["especie"]} (1 o 2 de {ct})', 1 <= c <= 2, f'{c}')
         comprobar(f'{nombre}: y ya no se ofrece descortezarlo', not pg.evaluate(f"{K}.talaV.usos({K}.arbolCercano()).descortezar"))
     # (oficios, 17 nov) la corteza de roble y la de las demás, en el suelo una al lado de la otra, de cerca: delante
-    # del jugador según mira la cámara, a un lado de él (que no lo tape)
+    # del jugador según mira la cámara, a un lado de él (que no lo tape), un paso atrás de las rocas de la orilla
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.dist = 2.2; k.cam.pitch = 0.75; }})()"); pg.wait_for_timeout(1500)
     pg.evaluate(f"""(() => {{ const k = {K}, s = k.sueloObjetos, t = Date.now(), inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l);
       let dx = k.pj.x - k.camara.position.x, dz = k.pj.z - k.camara.position.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
+      k.pj.x -= dx * 1.8; k.pj.z -= dz * 1.8; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);   // (un paso atrás, hacia donde estaba la cámara: fuera de las rocas de la orilla)
       s.suelo.dejar({{ tipo: 'corteza_roble', n: 2 }}, k.pj.x + dx * 0.9 + dz * 0.45, k.pj.z + dz * 0.9 - dx * 0.45, t, 'jugador:local', false);
       s.suelo.dejar({{ tipo: 'corteza', n: 2 }}, k.pj.x + dx * 0.9 - dz * 0.45, k.pj.z + dz * 0.9 + dx * 0.45, t, 'jugador:local', false); s.refrescar(); }})()""")
     pg.wait_for_timeout(800)
