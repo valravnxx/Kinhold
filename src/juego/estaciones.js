@@ -626,9 +626,11 @@ function llenoCubas(dep, id, colgado = []) {
     for (let k = 0; k < q.count; k++) {
       const u = sx * (cx + q.getX(k)) - X, w = q.getZ(k);   // u: cuánto pasa del borde de dentro del hoyo (m); w: de través
       let y;
-      if (u < -0.04) {   // entra en el agua en pendiente, de una vez (segunda mirada: con pliegues por debajo de la
-        // superficie, el agua la agujereaba a manchas): se ve la piel entera hasta la línea del agua, y luego se hunde
-        y = AGUA_CUBAS + 0.004 + (u + 0.04) * 0.22 + Math.sin(w * 18 + f) * 0.002;
+      if (u < -0.04) {   // en el agua, empapada y a flor de agua, con los lomos de sus pliegues levantados; siempre por
+        // encima de la superficie (segunda mirada: con los pliegues por debajo, el agua la agujereaba a manchas; hundida en
+        // pendiente, no se veía qué era)
+        const pl = Math.sin(u * 26 + f + w * 6) * 0.5 + Math.sin(u * 11 - w * 14 + f) * 0.5;
+        y = AGUA_CUBAS + 0.003 + Math.max(0, pl) * 0.009;
       } else if (u < labio) {   // sube por la pared de barro hasta el labio, en una curva
         const t = (u + 0.04) / (labio + 0.04);
         y = AGUA_CUBAS + 0.004 + 0.13 * Math.sin(t * Math.PI / 2);
