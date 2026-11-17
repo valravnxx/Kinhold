@@ -88,17 +88,18 @@ def recorrido(pg, nombre, pref):
         c = pg.evaluate(f"{K}.inventario.cuantos('{ct}')")
         comprobar(f'{nombre}: sin hacha y con la lasca, Usar descorteza el {a["especie"]} (1 o 2 de {ct})', 1 <= c <= 2, f'{c}')
         comprobar(f'{nombre}: y ya no se ofrece descortezarlo', not pg.evaluate(f"{K}.talaV.usos({K}.arbolCercano()).descortezar"))
-    # (oficios, 17 nov) la corteza de roble y la de las demás, en el suelo una al lado de la otra, de cerca (con la
-    # cámara de lado, como en la prueba de lo del suelo)
+    # (oficios, 17 nov) la corteza de roble y la de las demás, en el suelo una al lado de la otra, de cerca: delante
+    # del jugador según mira la cámara, a un lado de él (que no lo tape)
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.dist = 2.2; k.cam.pitch = 0.75; }})()"); pg.wait_for_timeout(1500)
     pg.evaluate(f"""(() => {{ const k = {K}, s = k.sueloObjetos, t = Date.now(), inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l);
-      s.suelo.dejar({{ tipo: 'corteza_roble', n: 2 }}, k.pj.x + 1.0, k.pj.z + 0.5, t, 'jugador:local', false);
-      s.suelo.dejar({{ tipo: 'corteza', n: 2 }}, k.pj.x + 1.3, k.pj.z - 0.2, t, 'jugador:local', false); s.refrescar(); }})()""")
+      let dx = k.pj.x - k.camara.position.x, dz = k.pj.z - k.camara.position.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
+      s.suelo.dejar({{ tipo: 'corteza_roble', n: 2 }}, k.pj.x + dx * 0.9 + dz * 0.45, k.pj.z + dz * 0.9 - dx * 0.45, t, 'jugador:local', false);
+      s.suelo.dejar({{ tipo: 'corteza', n: 2 }}, k.pj.x + dx * 0.9 - dz * 0.45, k.pj.z + dz * 0.9 + dx * 0.45, t, 'jugador:local', false); s.refrescar(); }})()""")
     pg.wait_for_timeout(800)
     sc = pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.filter(o => ['corteza', 'corteza_roble'].includes(o.cosa.tipo) && Math.hypot(o.x - k.pj.x, o.z - k.pj.z) < 2); return o.map(o => ({{ t: o.cosa.tipo, x: o.x, z: o.z }})); }})()")
     comprobar(f'{nombre}: la corteza de roble y la corteza, en el suelo', {o['t'] for o in sc} == {'corteza', 'corteza_roble'}, str(sc))
     comprobar(f'{nombre}: y se ven', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_corteza_roble') && !!{K}.escena.getObjectByName('suelo_corteza')"))
-    pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = 0.8; k.cam.dist = 1.9; k.cam.pitch = 0.6; k.cam.yaw = 3.54; }})()")
-    pg.wait_for_timeout(2500)
+    pg.wait_for_timeout(1500)
     pg.screenshot(path=f'{SALIDA}/{pref}_2b_corteza_de_roble.png', timeout=180000)
     # (oficios, 17 nov) el cubo lleno en la mano: el menú del clic derecho ofrece vaciarlo, y vaciado queda vacío
     pg.evaluate(f"(() => {{ const k = {K}, inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); inv.coger('cubo_agua', 1, 'mano:der'); k.pintarTodoInventario(); }})()")
