@@ -642,7 +642,8 @@ function carbon(n, id) {
 // La lupia de hierro (P10, 17 nov, la del horno de reducción): una masa esponjosa del tamaño de un puño grande, gris
 // negruzca, llena de poros y de bultos, con la escoria vidriosa pegada abajo y alguna mancha de óxido; aplastada por
 // debajo, como sale del fondo del horno.
-const LUPIA = 0x5d5955, LUPIA_CLARA = 0x726d67, ESCORIA = 0x2f2c2e, OXIDO_LUPIA = 0x6a4c3a;
+const LUPIA = 0x484542, LUPIA_CLARA = 0x57524d,   // (más oscura: con la luz del panel se leía como guijarros claros)
+      ESCORIA = 0x2f2c2e, OXIDO_LUPIA = 0x6a4c3a;
 function lupia(n, id) {
   const L = lote(0.05), k = Math.min(3, n || 1);
   for (let i = 0; i < k; i++) {

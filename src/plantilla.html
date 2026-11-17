@@ -620,7 +620,9 @@ body.construyendo #pomo{left:25px;top:25px}
   /* dentro del tablero del menú, la ficha sube dentro del marco (no debajo de él), como la del equipo */
   body.hub-abierto #panelFabricar .fab-ficha{position:absolute;left:20px;right:20px;bottom:26px;max-height:72%;border:1px solid rgba(217,164,65,.35);border-radius:10px;-webkit-mask-image:none;mask-image:none;padding-bottom:16px;transform:translateY(calc(100% + 100vh))}
   body.hub-abierto #panelFabricar.fab-ficha-abierta .fab-ficha{transform:none}
-  body.hub-abierto #panelFabricar.fab-ficha-abierta .fab-velo{position:absolute;border-radius:4px}
+  body.hub-abierto #panelFabricar.fab-ficha-abierta .fab-velo{position:absolute;border-radius:4px;background:rgba(14,9,4,.86)}
+  /* (más oscuro: lo de detrás de la ficha, como las pestañas, asomaba cortado y se leía) y la cabecera, con margen a la derecha */
+  #panelFabricar .fab-cab{padding-right:14px}
   #panelFabricar .fab-mat b{font-size:15px}
   #panelFabricar .fab-mat small{font-size:13px}
   #panelInventario{inset:0;width:auto;max-width:none;height:100%;border-radius:0;border:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cab" "centro" "pie";padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}

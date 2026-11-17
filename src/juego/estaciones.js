@@ -315,10 +315,20 @@ function llenoSecadero(dep, id, colgado = []) {
 // la lupia; a un lado, la tobera de barro cocido por donde entra el aire. Las marcas de los
 // dedos al amasar y alguna grieta de secado. Mientras reduce (cargado y encendido): humo espeso por la boca, una llama
 // que asoma arriba y el arco y la tobera al rojo; hecha la lupia, se ve delante del arco hasta que la recoge su dueño.
-const HORNO = { alto: 1.18, abajo: 0.46, arriba: 0.27, boca: 0.17 };
+const HORNO = { alto: 1.04, abajo: 0.46, arriba: 0.27, boca: 0.17 };
 const BARRO_HORNO = 0x7d6a58, HOLLIN = 0x524539;   // el barro seco, apagado; lo tiznado
 const MAT_ARCO = new THREE.MeshLambertMaterial({ color: 0x15110e });
-const MAT_RESCOLDO = new THREE.MeshLambertMaterial({ color: 0xd2621e, emissive: 0xd2621e, emissiveIntensity: 1 });
+// al rojo (segunda mirada, 17 nov: el medio disco naranja plano parecía una pegatina): una brasa con degradado, de
+// naranja apagado abajo en el centro a rojo oscuro en el borde, sin luz (no la cambia el sol); la tobera, roja oscura
+const MAT_RESCOLDO = new THREE.MeshBasicMaterial({ vertexColors: true });
+const MAT_TOBERA_ROJA = new THREE.MeshBasicMaterial({ color: 0x7a2c12 });
+function brasaDegradada(r) {
+  const g = new THREE.CircleGeometry(r, 14, 0, Math.PI), p = g.attributes.position, col = [];
+  const centro = new THREE.Color(0xc0581c), borde = new THREE.Color(0x3a0f07), c = new THREE.Color();
+  for (let i = 0; i < p.count; i++) { const t = Math.min(1, Math.hypot(p.getX(i), p.getY(i)) / r); c.copy(centro).lerp(borde, Math.pow(t, 0.8)); col.push(c.r, c.g, c.b); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  return g;
+}
 function horno(id) {
   const { alto: A, abajo: R0, arriba: R1, boca: B } = HORNO, L = new Lote({ rangoSuelo: 0.35, variacion: 0.08 });
   // la cuba: el perfil de fuera (algo panzudo abajo), el labio y la pared de dentro hasta medio palmo
@@ -335,12 +345,13 @@ function horno(id) {
   cuba.computeVertexNormals();
   L.add(cuba, BARRO_HORNO, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'piedra' });
   // el hollín: arriba, alrededor de la boca (por fuera de lo que se mueve la pared al amasarla)
-  const radio = y => { const t = (y + 0.04) / (A + 0.04); return (R0 + (R1 - R0) * t + Math.sin(t * Math.PI) * 0.035) * 1.045 + 0.006; };
+  // (sale de la pared poco a poco desde abajo: si no, el canto de la primera banda se leía como una junta a media altura)
+  const radio = (y, s) => { const t = (y + 0.04) / (A + 0.04); return (R0 + (R1 - R0) * t + Math.sin(t * Math.PI) * 0.035) * (1 + 0.045 * s) + 0.006 * s; };
   // en seis bandas, de lo poco tiznado de abajo a lo negro del labio (sin borde marcado)
   const TIZNE = [0x766452, 0x6f5e4e, 0x67584a, 0x5f5245, 0x584c41, HOLLIN];   // de abajo arriba, poco a poco
   TIZNE.forEach((color, k) => {
     const d0 = 0.38 - k * 0.064, d1 = Math.max(0, d0 - 0.064), n = 3;
-    const pts = Array.from({ length: n + 1 }, (_, q) => { const d = d0 + (d1 - d0) * q / n; return new THREE.Vector2(radio(A - d) + k * 0.0008, A - d); });
+    const pts = Array.from({ length: n + 1 }, (_, q) => { const d = d0 + (d1 - d0) * q / n; return new THREE.Vector2(radio(A - d, Math.min(1, Math.max(0, (0.38 - d) / 0.14))) + k * 0.0008, A - d); });
     L.add(new THREE.LatheGeometry(pts, 22), color, 0, 0, 0, null, { sinSuelo: true, tex: 'piedra' });
   });
   L.add(new THREE.TorusGeometry(R1 - 0.02, 0.036, 6, 22), 'tierraCorteOsc', 0, A + 0.005, 0, { x: Math.PI / 2 }, { sinSuelo: true, brillo: 0.5 });   // el labio, quemado
@@ -355,7 +366,7 @@ function horno(id) {
   const pendiente = Math.atan2(R0 - R1, A);
   const arco = new THREE.Group(); arco.position.set(0, 0, R0 + 0.035); arco.rotation.x = -pendiente;
   const hueco = new THREE.Mesh(new THREE.CircleGeometry(0.17, 12, 0, Math.PI), MAT_ARCO); hueco.position.set(0, 0.01, 0.012); hueco.name = 'arco'; arco.add(hueco);
-  const brasaArco = new THREE.Mesh(new THREE.CircleGeometry(0.12, 10, 0, Math.PI), MAT_RESCOLDO); brasaArco.position.set(0, 0.01, 0.016); brasaArco.name = 'rescoldo'; brasaArco.visible = false; arco.add(brasaArco);
+  const brasaArco = new THREE.Mesh(brasaDegradada(0.14), MAT_RESCOLDO); brasaArco.position.set(0, 0.01, 0.016); brasaArco.name = 'rescoldo'; brasaArco.visible = false; arco.add(brasaArco);
   const o = new THREE.Group();
   o.add(mallas(L));
   const M = new Lote({ rangoSuelo: 0.2, variacion: 0.08 });
@@ -993,7 +1004,7 @@ function llenoHorno(dep, id, colgado = []) {
   for (const [t, n] of Object.entries(dep || {})) {
     if (!(n > 0)) continue;
     const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }), a = Math.PI / 2 + (k % 2 ? 1 : -1) * (0.75 + Math.floor(k / 2) * 0.55);
-    m.position.set(Math.cos(a) * 0.78, 0, Math.sin(a) * 0.78); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(1.1); m.name = 'deposito_' + t; g.add(m); k++;
+    m.position.set(Math.cos(a) * 0.78, 0, Math.sin(a) * 0.78); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(t === 'yesca' ? 1.8 : 1.1);   // (la yesca, mayor: si no, apenas se veía) m.name = 'deposito_' + t; g.add(m); k++;
   }
   const hechas = colgado.filter(c => c.listo).length;
   if (hechas) { const l = modeloDe({ id: id + ':lupia', cosa: { tipo: 'lupia', n: hechas } }); l.position.set(0.04, 0, HORNO.abajo + 0.36); l.scale.setScalar(1.15); l.name = 'lupia_hecha'; g.add(l); }
@@ -1099,7 +1110,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     o.userData.firmaFuego = firma;
     const viejo = o.getObjectByName('fuego'); if (viejo) o.remove(viejo);
     const r = o.getObjectByName('rescoldo'); if (r) r.visible = arde;
-    const t = o.getObjectByName('tobera'); if (t) t.material = arde ? MAT_RESCOLDO : MAT_ARCO;
+    const t = o.getObjectByName('tobera'); if (t) t.material = arde ? MAT_TOBERA_ROJA : MAT_ARCO;
     if (arde) { const f = humoHorno(e.id); f.position.y = HORNO.alto; o.add(f); }
   }
   // Cada fotograma: el fuego que se apaga solo (al pasar su hora), las llamas y el humo. Devuelve dónde arde cada una
