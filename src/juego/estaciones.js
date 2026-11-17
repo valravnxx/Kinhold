@@ -585,13 +585,13 @@ function texturaCubas() {
   return texCubas;
 }
 let matCubas = null;
-// la lámina del agua: algo transparente (se adivina la piel que está debajo) y lisa, con su brillo de agua; por los
-// bordes, la espuma parda (un aro más claro)
+// la lámina del agua: opaca (el agua cargada de corteza no deja ver el fondo, ni el prado si el suelo sube un poco por
+// debajo) y lisa, con su brillo de agua
 function aguaCubas(X, Z) {
-  if (!matCubas) { const t = texturaCubas(); matCubas = new THREE.MeshStandardMaterial({ map: t, color: t ? 0xffffff : 0x3a2914, roughness: 0.18, metalness: 0.1, transparent: true, opacity: 0.86 }); }
+  if (!matCubas) { const t = texturaCubas(); matCubas = new THREE.MeshStandardMaterial({ map: t, color: t ? 0xffffff : 0x3a2914, roughness: 0.18, metalness: 0.1 }); }
   const sh = new THREE.Shape(); rectRedondo(sh, X + 0.02, Z + 0.02, 0.1);
   const geo = new THREE.ShapeGeometry(sh, 6); geo.rotateX(-Math.PI / 2);
-  const m = new THREE.Mesh(geo, matCubas); m.position.y = AGUA_CUBAS; m.receiveShadow = true; m.name = 'agua_cubas'; m.renderOrder = 2;
+  const m = new THREE.Mesh(geo, matCubas); m.position.y = AGUA_CUBAS; m.receiveShadow = true; m.name = 'agua_cubas';
   return m;
 }
 function llenoCubas(dep, id, colgado = []) {
