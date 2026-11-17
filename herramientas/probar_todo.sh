@@ -56,6 +56,7 @@ paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node prue
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
 paso "El hierro de pantano: las manchas, la pala y la criba, en la lógica y en el servidor" node pruebas/prueba_hierro_pantano.mjs
+paso "El horno de reducción y la lupia (P10), en la lógica y en el servidor" node pruebas/prueba_horno_reduccion.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
 paso "Sin llanos pelados a ras del mar tierra adentro" node pruebas/prueba_llanos.mjs
