@@ -7454,5 +7454,23 @@
   "pruebas": "Nube, grupo «lo que llevas se ve puesto» (dos pasadas): las tres comprobaciones de la correa pegada, bien (MUTAR_CORREA y MUTAR_REAJUSTE fallan, comprobado en sesiones anteriores). Fallan la mano sobre el tronco al hombro (armas y mujer), igual en main (pasada en la nube de main 174bffa esta sesión, que además falló el cinturón del leñero en brazos); el cinturón de a_mano2 salió 6,6 cm de lado en la primera pasada y bien en la segunda: la medida varía con la postura de reposo, también en main.",
   "capturas": "capturas/demo-v228",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-17T02:32:08+00:00",
+  "fin": "2026-11-17T04:43:16+00:00",
+  "titulo": "El cubo se vacía y la corteza de roble (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "Con el cubo lleno en la mano, el menú de Usar (clic derecho o el dedo quieto) ofrece «Vaciar el cubo», y Usar a secas lo hace si no hay nada más que usar: el agua se derrama y el cubo queda vacío, para volver a llenarlo en el río. Lo hace el servidor, con su autor, y queda en su registro.",
+   "Descortezar un roble en pie (con la lasca de sílex, un cuchillo o un hacha) da de 1 a 2 cortezas de roble, la que curtirá en las cubas; las demás especies siguen dando corteza, la de la yesca.",
+   "La corteza de roble tiene su modelo, placas gruesas y curvas, pardas y con la veta a lo largo, una de canto con el líber claro, y su imagen en el panel (iconos v33). La segunda mirada de un agente aparte dijo no dos veces (se leía como palos oscuros y luego con los cantos a rayas) y sí a la tercera.",
+   "En el origen de los materiales, la corteza de roble y el agua (la del cubo lleno) ya salen del mundo.",
+   "Provisional: el roble da de 1 a 2 cortezas de roble, como las demás especies su corteza; la corteza de roble no hace yesca; el agua de las cubas será la del cubo lleno, que se vaciará en ellas.",
+   "El árbol más cercano en el recorrido y en la prueba del mimbre y la corteza es un roble: las dos comprueban ahora la corteza que da cada especie.",
+   "Demo v229."
+  ],
+  "pruebas": "Revisor en la nube: lógica, el recorrido, tala de los árboles, el mazo de piedra, despiezar y asar, velocidad con pocos fotogramas, panel de fabricación, panel de inventario y marcar el campo, bien; añadidos el mimbre, la corteza y la resina (su prueba comprueba la corteza de cada especie) y objetos en el suelo, bien. El recorrido falló una vez en el paso 26b (no encontraba su hacha para la canoa) y a la segunda salió entero, 347 bien y 0 mal. Rotas a propósito: el cubo que no se vacía y el roble que da corteza a secas fallan, como deben.",
+  "capturas": "capturas/demo-v229",
+  "estado": "ok"
  }
 ]
