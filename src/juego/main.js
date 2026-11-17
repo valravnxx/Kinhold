@@ -71,7 +71,7 @@ import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
 import { crearPozosVista } from './pozos_vista.js';
 import { pozoCercano, pozoConAgua, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, PIEDRAS_BROCAL, TRAVESANO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
-import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo } from '../logica/campos.js';
+import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo, vaciarCubo } from '../logica/campos.js';
 
 // lo primero: la página fija en el idioma elegido (antes de rellenar nada desde el código)
 traducirPagina();
@@ -1867,6 +1867,8 @@ function accionPrincipal() {
     if (saladaAlLado()) return avisoSalada(A, yo);   // (junto al mar: es salada, no se bebe)
     // con hambre (desde su aviso) y algo de comer encima, sin otra cosa que usar, se come
     if (necesidades && necesidades.hambre >= AVISO_NEC && comidaQueLlevas().length) { const c = comidaQueLlevas()[0]; return A(tr('Comer: {c}', { c: tr(CATALOGO[c].nombre).toLowerCase() }), c, yo, () => comer(c), { alto: 1.2 }); }
+    // con el cubo lleno en la mano y nada más que usar, se vacía (oficios, 17 nov)
+    if (pj.k === 0 && cuboEnMano('cubo_agua')) return A(tr('Vaciar el cubo'), 'cubo', yo, vaciarElCubo, { alto: 0.2 });
     return null;
   }
   return A(textoInteractivo(it), it.tipo === 'fuego' ? 'est_hogar' : 'g_colocar', posInteractivo(it).pos, () => usarInteractivo(it), { y: posInteractivo(it).y, alto: 1 });
@@ -1952,6 +1954,8 @@ function opcionesUsar() {
   if (pj.k === 0 && liebreAlLado()) ops.push({ texto: tr('Despiezar la liebre'), pos: liebreAlLado(), alto: 0.2, hacer: despiezar });
   // lo que llevas de comer (P4)
   for (const t of comidaQueLlevas()) ops.push({ texto: tr('Comer: {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: { x: pj.x, z: pj.z }, alto: 1.2, hacer: () => comer(t) });
+  // el cubo lleno en la mano: vaciarlo (oficios, 17 nov)
+  if (pj.k === 0 && cuboEnMano('cubo_agua')) ops.push({ texto: tr('Vaciar el cubo'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: vaciarElCubo });
   // el agua de al lado: beber con las manos (P4)
   if (aguaDulceAlLado()) ops.push({ texto: tr('Beber agua'), pos: { x: pj.x, z: pj.z }, alto: 0.2, hacer: beber });
   // quien tienes al lado (a menos de 3 m): dejarle construir en tu tierra, o quitárselo (valravnx, 4 nov: la pareja)
@@ -2770,6 +2774,17 @@ function llenarElCubo() {
   const r = llenarCubo(inventario().lugares, delPozo ? 'dulce' : aguaAlLado() ? aguaCerca((x, z) => mundoJ.aguaEn(x, z), pj.x, pj.z, (x, z) => !!mundoJ.aguaEn(x, z)?.mar) : null);
   if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
   guardar(); actualizarUI(); mostrarAviso(tr(delPozo ? 'Sacas del pozo un cubo de agua.' : 'Llenas el cubo de agua.'));
+}
+// Vaciar el cubo lleno (oficios, 17 nov): el agua se derrama donde estás y el cubo queda vacío (desde el menú del clic
+// derecho o, sin otra cosa que usar, con Usar). En línea, lo vacía el servidor.
+function vaciarElCubo() {
+  if (objetosRed) {
+    objetosRed.mandar({ tipo: 'vaciar_cubo' }, (r) => { if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; } mostrarAviso(tr('Vacías el cubo.')); });
+    return;
+  }
+  const r = vaciarCubo(inventario().lugares);
+  if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+  guardar(); actualizarUI(); mostrarAviso(tr('Vacías el cubo.'));
 }
 function sitioRegar() {
   const x = pj.x + Math.sin(pj.rot) * ADELANTE_REGAR, z = pj.z + Math.cos(pj.rot) * ADELANTE_REGAR, c = campoEn(mundo, x, z);

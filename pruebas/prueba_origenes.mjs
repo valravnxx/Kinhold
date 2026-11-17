@@ -17,7 +17,7 @@ import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 import { OBJETO_DE_MATERIAL } from '../src/logica/inventario.js';
 import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.js';
-import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON } from '../src/logica/tala.js';
+import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON, cortezaDe } from '../src/logica/tala.js';
 import { TROCEO, MODOS_TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
 import { REPARAR, reparacionDe } from '../src/logica/desgaste.js';
@@ -43,8 +43,6 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  agua: ['el cubo ya se llena en el río (P11b), pero su agua aún no se echa en las cubas', 'El cubo lleno de agua y la corteza de roble'],
-  corteza_roble: ['descortezar aún da la misma corteza en todos los árboles', 'El cubo lleno de agua y la corteza de roble'],
   est_cubas_curtido: ['aún no hay cubas de curtido', 'Las cubas de curtido y el cuero'],
   cuero: ['sale de las cubas', 'Las cubas de curtido y el cuero'],
   huso: ['aún no se hace', 'El huso y el hilo'],
@@ -105,8 +103,12 @@ for (let nuevo = true; nuevo;) {
     if (tieneAlguna(Object.keys(HACHAS))) { if (poner(d.tronco, `talar un árbol ${edad}`)) nuevo = true; if (poner(d.menudo, `talar un árbol ${edad}`)) nuevo = true; }
   // lo que da el árbol en pie (8 nov): la corteza, descortezándolo; la resina, sangrando un pino o un abeto
   if (tieneAlguna(DESCORTEZAR_CON) && poner('corteza', 'descortezar un árbol en pie')) nuevo = true;
+  // (17 nov) el roble da su corteza, la de curtir (src/logica/tala.js, cortezaDe); los robles, en los bosques templados
+  if (tieneAlguna(DESCORTEZAR_CON) && poner(cortezaDe('roble'), 'descortezar un roble en pie')) nuevo = true;
   // el cubo lleno (P11b, regar el huerto): el cubo vacío en la mano, junto al río (src/logica/campos.js, llenarCubo)
   if (hay.has('cubo') && poner('cubo_agua', 'llenar el cubo en el río')) nuevo = true;
+  // (17 nov) el agua de las cubas: la del cubo lleno (se vacía en ellas; mientras no las haya, en cualquier sitio)
+  if (hay.has('cubo_agua') && poner('agua', 'el cubo lleno en el río')) nuevo = true;
   // el pozo (P11b; src/logica/pozo.js): se cava con la pala de madera, se reviste de piedra y se remata con el brocal
   // de piedra y el travesaño de varas con su cuerda; de él se saca agua con el cubo
   if (['pala_madera', 'piedra', 'vara', 'cuerda'].every(t => hay.has(t)) && poner('est_pozo', 'cavar, revestir y rematar un pozo')) nuevo = true;

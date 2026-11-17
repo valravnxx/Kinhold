@@ -50,9 +50,9 @@ const usar = (a, tipo, ahora, x = a.x + 1) => ejecutarTala(tala, invs, suelo, re
 const i2 = new Inventarios().de('luis'), t2 = new Tala([{ ...roble }]);
 r = t2.descortezar(i2, roble.id, 10, 5, T0);
 comprobar('sin cuchillo, lasca ni hacha no se descorteza', !r.ok, r.motivo);
-const c0 = inv.cuantos('corteza');
+const c0 = inv.cuantos('corteza_roble'), c1 = inv.cuantos('corteza');
 r = usar(roble, 'descortezar', T0);
-comprobar('con la lasca se descorteza un roble: de 1 a 2 cortezas a lo que llevas', r.ok && inv.cuantos('corteza') - c0 >= 1 && inv.cuantos('corteza') - c0 <= 2, r.motivo);
+comprobar('con la lasca se descorteza un roble: de 1 a 2 cortezas de roble a lo que llevas (17 nov)', r.ok && r.objeto === 'corteza_roble' && inv.cuantos('corteza_roble') - c0 >= 1 && inv.cuantos('corteza_roble') - c0 <= 2 && inv.cuantos('corteza') === c1, r.motivo);
 r = usar(roble, 'descortezar', T0 + 1000);
 comprobar('una sola vez por árbol', !r.ok && /descortezado/.test(r.motivo), r.motivo);
 r = usar(roble, 'descortezar', T0 + 1000, 30);
@@ -60,7 +60,12 @@ comprobar('lejos no', !r.ok);
 r = usar(roble, 'sangrar', T0);
 comprobar('un roble no da resina', !r.ok && /pinos/.test(r.motivo), r.motivo);
 comprobar('el pino y el abeto son las coníferas', CONIFERAS.has('pino') && CONIFERAS.has('abeto') && CONIFERAS.size === 2);
-for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]?.tipo === 'corteza') inv.sacar(l);   // (la corteza, fuera: una mano libre para la resina)
+for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]?.tipo === 'corteza_roble') inv.sacar(l);   // (la corteza, fuera: una mano libre)
+// las demás especies, corteza a secas (la de la yesca): un haya
+const haya = { id: idArbol(13, 5), x: 13, z: 5, edad: 'adulto', especie: 'haya' }, t3 = new Tala([haya]);
+r = ejecutarTala(t3, invs, suelo, reg, { autor: yo, tipo: 'descortezar', arbol: haya.id, x: 14, z: 5 }, T0);
+comprobar('un haya da corteza a secas, no de roble (17 nov)', r.ok && r.objeto === 'corteza' && inv.cuantos('corteza') - c1 >= 1, r.motivo);
+for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]?.tipo === 'corteza') inv.sacar(l);   // (y una mano libre para la resina)   // (la corteza, fuera: una mano libre para la resina)
 r = usar(pino, 'sangrar', T0);
 comprobar('al pino se le hace un corte (aún sin resina)', r.ok && r.cantidad === 0 && tala.usos(pino.id, T0 + 1).resina === 'sangrando', r.motivo);
 r = usar(pino, 'sangrar', T0 + RESINA_TARDA - 60000);

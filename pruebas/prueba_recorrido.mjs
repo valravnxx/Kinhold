@@ -40,7 +40,7 @@ import { tmpdir } from 'os';
 import { terrenoWhitholm } from '../src/logica/terreno_servidor.js';
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn, TAM_ADULTO, CLARO_ARBOLES } from '../src/logica/vegetacion.js';
-import { idArbol, CONIFERAS } from '../src/logica/tala.js';
+import { idArbol, CONIFERAS, cortezaDe } from '../src/logica/tala.js';
 import { idMata, idRoca, rompible, golpesRoca, piedrasRoca } from '../src/logica/recoleccion.js';
 import { Inventario } from '../src/logica/inventario.js';
 import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
@@ -1356,7 +1356,8 @@ try {
     if (arbol) {
       await J.andar(arbol.x + 1, arbol.z);
       const r = await J.objeto({ tipo: 'descortezar', arbol: idArbol(arbol.x, arbol.z), x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad, especie: arbol.especie });
-      comprobar(`descorteza un ${arbol.especie} en pie: de 1 a 2 cortezas`, r.ok && J.cuantos('corteza') >= 1 && J.cuantos('corteza') <= 2, r.motivo);
+      const ct = cortezaDe(arbol.especie);   // (17 nov: el roble da corteza de roble)
+      comprobar(`descorteza un ${arbol.especie} en pie: de 1 a 2 de ${ct}`, r.ok && J.cuantos(ct) >= 1 && J.cuantos(ct) <= 2, r.motivo);
       comprobar('y un roble o un haya no se sangra (no da resina)', CONIFERAS.has(arbol.especie) || !(await J.objeto({ tipo: 'sangrar', arbol: idArbol(arbol.x, arbol.z), x: J.pos.x, z: J.pos.z, ax: arbol.x, az: arbol.z, edad: arbol.edad, especie: arbol.especie })).ok);
     } else comprobar('hay un árbol en pie cerca', false);
   }

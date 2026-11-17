@@ -573,6 +573,14 @@ export function llenarCubo(lugares, agua) {
   lugares[mano] = { ...lugares[mano], tipo: 'cubo_agua' };
   return { ok: true, mano };
 }
+// Vaciar el cubo lleno (en una mano) donde sea: el agua se derrama y el cubo queda vacío (oficios, 17 nov). lugares:
+// los del inventario de quien lo vacía. Devuelve { ok, mano } o { ok: false, motivo }.
+export function vaciarCubo(lugares) {
+  const mano = ['mano:der', 'mano:izq'].find(r => lugares[r] && lugares[r].tipo === 'cubo_agua');
+  if (!mano) return { ok: false, motivo: 'Necesitas el cubo lleno en la mano.' };
+  lugares[mano] = { ...lugares[mano], tipo: 'cubo' };
+  return { ok: true, mano };
+}
 // Regar en (x, z) del campo de id campo, a la hora t. Devuelve { ok, campo, regadas, mustias } o { ok: false, motivo }.
 export function regar(m, campo, x, z, t, autor) {
   if (!num(x) || !num(z) || !num(t)) return { ok: false, motivo: 'Datos no válidos.' };
