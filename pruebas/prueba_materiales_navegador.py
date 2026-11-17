@@ -82,10 +82,12 @@ def cubas(pg, nombre, pref):
       if (inv.lugares['mano:der']) inv.sacar('mano:der'); k.pintarTodoInventario();
       e.colgado = [{{ hasta: ahora + 40 * 3600e3 }}, {{ hasta: ahora - 1000 }}]; k.estacionesV.refrescar(); }})()""")
     e = pg.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['cubas_curtido:vista']; return {{ x: e.x, z: e.z }}; }})()")
-    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55, 0.6), ('cubas_cerca', 1.5, 0.9, 2.6, 0.7, -0.2)] if pref == 'pc' else [('cubas', 0.9, 0.5, 3.6, 0.95, 0.6), ('cubas_cerca', 0.8, 0.4, 2.2, 1.05, -0.2)]   # (en el móvil, la pantalla es estrecha: las cubas a los pies, mirando más desde arriba)
-    for (cual, dx, dz, dist, pitch, yaw) in vistas:
+    # el jugador a un lado de las cubas y la cámara detrás de él, de través (que no las tape); en el móvil, la pantalla
+    # es estrecha: más cerca de ellas y la cámara más lejos
+    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55), ('cubas_cerca', 1.6, 0.8, 2.6, 0.6)] if pref == 'pc' else [('cubas', 1.3, 0.7, 5.0, 0.6), ('cubas_cerca', 1.2, 0.6, 3.4, 0.7)]
+    for (cual, dx, dz, dist, pitch) in vistas:
         pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista']; k.pj.x = e.x + {dx}; k.pj.z = e.z + {dz}; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);
-          k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = {yaw}; }})()""")
+          k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = 0.6; }})()""")
         pg.wait_for_timeout(2500)
         pg.screenshot(path=f'{SALIDA}/{pref}_2d_{cual}.png', timeout=180000)
     pg.evaluate(f"{K}.panelFabricar.abrirEstacion('cubas_curtido:vista')"); pg.wait_for_timeout(1200)
