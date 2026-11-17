@@ -136,7 +136,7 @@ export const ALCANCE_CANOA = 3;      // m, desde su centro (mide 4,4 m)
 export const ECHAR = 4.5;            // m que se empuja como mucho
 export const HONDO_BAJAR = 0.5;      // m de agua, como mucho, donde se pisa al bajar
 export const ADELANTE = 1.1;         // m: el que va de pasajero, por delante del que rema (que va sentado en medio)
-export const VEL_MAX_CANOA = 3.2 + 3 * DERIVA_RIO;   // lo más deprisa: remando (VEL_MAX_REMAR, más abajo) río abajo en un torrente (3 m/s)
+export const VEL_MAX_CANOA = 5.5 + 3 * DERIVA_RIO;   // lo más deprisa: remando (VEL_MAX_REMAR, más abajo) río abajo en un torrente (3 m/s)
 
 // Lo que mueve la canoa en un paso (lógica del navegador del que rema; el servidor lo limita con VEL_MAX_CANOA):
 // dir: { x, z } hacia donde rema (unitario o 0), remando: si rema (con el remo en la mano), corriente: { dx, dz } m/s
@@ -156,7 +156,9 @@ export function velocidadCanoa({ dir = { x: 0, z: 0 }, remando = false, corrient
 //   - cada palada es un ciclo de unos PALADA s (unas 50 por minuto): la pala entra delante, tira hasta la cadera (la
 //     parte EN_AGUA del ciclo, la que empuja, más fuerte a mitad del tirón), sale y vuelve por el aire;
 //   - la canoa arranca con cada tirón y entre uno y otro se frena sola (el agua frena con la velocidad al cuadrado, y algo
-//     más para que acabe parándose): la velocidad sube y baja a cada palada, y no pasa de unos 2 m/s de crucero;
+//     más para que acabe parándose): la velocidad sube y baja a cada palada, entre unos 3,3 y 4,5 m/s de crucero (17 nov: con unos 2 m/s, como una
+//     canoa de paseo, no se subía un río de 3 m/s de corriente; así va más deprisa que andando y algo menos que corriendo,
+//     y nunca a velocidad fija);
 //   - remar por un lado tuerce la canoa hacia el otro: alternando lados va recta (con su vaivén); para girar se rema
 //     varias veces seguidas por el mismo lado, con la palada más abierta (de barrido), que tuerce más y empuja menos;
 //   - sin remar sigue un poco por su impulso y se para.
@@ -165,8 +167,8 @@ export function velocidadCanoa({ dir = { x: 0, z: 0 }, remando = false, corrient
 // barre (si es de girar), fuerza (0–1, del joystick) }. Decisiones provisionales: los números.
 export const PALADA = 1.2;          // s: una palada entera
 export const EN_AGUA = 0.5;         // de la palada, la parte con la pala en el agua tirando
-export const EMPUJE = 2.6;          // m/s²: lo que acelera en lo más fuerte del tirón
-export const ROCE = 0.13;           // 1/m: lo que frena el agua (con la velocidad al cuadrado)
+export const EMPUJE = 5.6;          // m/s²: lo que acelera en lo más fuerte del tirón
+export const ROCE = 0.06;           // 1/m: lo que frena el agua (con la velocidad al cuadrado)
 export const ROCE_LENTO = 0.22;     // 1/s: y algo más, para que acabe parándose
 export const TUERCE = 0.7;          // rad/s²: lo que tuerce una palada hacia el otro lado (en lo más fuerte)
 export const TUERCE_BARRIDO = 3.0;  // rad/s²: la palada de girar, de barrido
@@ -174,7 +176,7 @@ export const EMPUJE_BARRIDO = 0.55; // la de barrido empuja menos (de la normal)
 export const ROCE_GIRO = 2.2;       // 1/s: lo que frena el agua el giro
 export const PARA_GIRAR = 0.3;      // rad: a partir de cuánto falta para mirar donde quiere, rema de barrido por un lado
 export const CORRIGE = 0.09;        // rad (unos 5°): si se le va el rumbo más, la siguiente palada por el lado que lo corrige
-export const VEL_MAX_REMAR = 3.2;   // m/s: lo más deprisa remando (para el servidor)
+export const VEL_MAX_REMAR = 5.5;   // m/s: lo más deprisa remando (para el servidor)
 export const nuevaRemada = () => ({ v: 0, w: 0, t: 0, lado: 'r', activa: false, barre: false, fuerza: 1 });
 // Por dónde va la siguiente palada: para girar a la izquierda (giro > 0), por la derecha (y al revés); si no, cambia de lado.
 // (si se le va el rumbo unos grados, la siguiente por el lado que lo corrige, como hace el que rema; para girar de verdad,

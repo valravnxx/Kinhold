@@ -316,9 +316,14 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       if (i < 2 && !globalThis.__mutarPalmas) for (const lado of ['r', 'l']) apunta[lado].add(quiere[lado].clone().sub(palma(lado)));
     }
     if (!globalThis.__mutarPalmas) {
-      // (lo que no llega el brazo, el remo lo sigue: se corre entero lo que se quedan cortas las dos palmas, de media)
-      const corre = palma('r').sub(quiere.r).add(palma('l').sub(quiere.l)).multiplyScalar(0.5);
-      j.palaRemo.puno.add(corre); j.palaRemo.pala.add(corre);
+      // (lo que no llega el brazo, el remo lo sigue: la caña pasa por las dos palmas, sin cambiar dónde la agarra cada una;
+      // si están muy juntas, al cambiar de lado, solo por la de más arriba y con su inclinación de antes)
+      const P0 = j.palaRemo.puno, D = j.palaRemo.pala.clone().sub(P0).normalize();
+      const pr = palma('r'), pl = palma('l'), tr = pr.clone().sub(P0).dot(D), tl = pl.clone().sub(P0).dot(D);
+      const [A, tA, B, tB] = tr < tl ? [pr, tr, pl, tl] : [pl, tl, pr, tr];
+      const w = Math.min(1, Math.max(0, (tB - tA - 0.15) / 0.15)), D2 = D.clone().lerp(B.clone().sub(A).normalize(), w).normalize();   // (sin saltos)
+      const puno = A.clone().addScaledVector(D2, -tA);
+      j.palaRemo = { puno, pala: puno.clone().addScaledVector(D2, 1.22) };
     }
     return true;
   };

@@ -202,7 +202,7 @@ console.log('Echar la canoa al agua, subir y remar (P11d)');
       if (t > 10) { minV = Math.min(minV, s.v); maxV = Math.max(maxV, s.v); suma += s.v; n++; rumboMax = Math.max(rumboMax, Math.abs(rumbo)); }
       if (!lados.length || lados[lados.length - 1] !== s.lado) lados.push(s.lado);
     }
-    comprobar('remando, a ritmo de canoa: unos 2 m/s de media (entre 1,4 y 2,4), no la velocidad fija de antes', suma / n > 1.4 && suma / n < 2.4, `${(suma / n).toFixed(2)} m/s`);
+    comprobar('remando, a ritmo de canoa: unos 4 m/s de media (entre 3 y 5), no la velocidad fija de antes', suma / n > 3 && suma / n < 5, `${(suma / n).toFixed(2)} m/s`);
     comprobar('a tirones: sube y baja a cada palada (más de 0,3 m/s entre lo más lento y lo más rápido)', maxV - minV > 0.3, `${minV.toFixed(2)}–${maxV.toFixed(2)} m/s`);
     comprobar('una palada por un lado y la siguiente por el otro (casi siempre: si se tuerce, corrige por el lado que toca)', lados.length > 12, `${lados.length} cambios de lado en 20 s`);
     comprobar('alternando lados, va recta (se tuerce menos de 8°)', rumboMax < 0.14, `${(rumboMax * 57.3).toFixed(1)}°`);
@@ -212,9 +212,9 @@ console.log('Echar la canoa al agua, subir y remar (P11d)');
     while (r < Math.PI / 2 - 0.15 && tg < 30) { pasoRemar(g, { rema: true, giro: Math.PI / 2 - r }, 0.05); r += g.w * 0.05; tg += 0.05; }
     comprobar('para girar a la izquierda rema por la derecha, y gira (casi 90° en menos de 10 s)', tg < 10 && g.lado === 'r', `${tg.toFixed(1)} s`);
     const d = nuevaRemada(); let td = 0;
-    while (d.v < 1.5 && td < 20) { pasoRemar(d, { rema: true }, 0.05); td += 0.05; }
+    while (d.v < 3 && td < 20) { pasoRemar(d, { rema: true }, 0.05); td += 0.05; }
     let tp = 0; while (d.v > 0.1 && tp < 60) { pasoRemar(d, { rema: false }, 0.05); tp += 0.05; }
-    comprobar('arranca en unas pocas paladas y, sin remar, sigue un poco y se para', td > PALADA && td < 6 && tp > 2 && tp < 20, `a 1,5 m/s en ${td.toFixed(1)} s; parada en ${tp.toFixed(1)} s`);
+    comprobar('arranca en unas pocas paladas y, sin remar, sigue un poco y se para', td > PALADA && td < 6 && tp > 2 && tp < 20, `a 3 m/s en ${td.toFixed(1)} s; parada en ${tp.toFixed(1)} s`);
     comprobar('el servidor deja ir lo más deprisa remando, con la corriente', VEL_MAX_CANOA >= VEL_MAX_REMAR + 3 && maxV <= VEL_MAX_REMAR);
   }
   const deriva = velocidadCanoa({ dir: { x: 1, z: 0 }, remando: false, corriente: { dx: 0, dz: 1.2 } });

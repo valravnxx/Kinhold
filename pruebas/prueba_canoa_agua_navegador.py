@@ -133,7 +133,7 @@ def recorrido(pg, pre, movil):
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     avance = -((p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz'])   # lo andado río arriba
     v = max(vs)
-    comprobar(f'{pre}remando, a ritmo de canoa (no más de 4 m/s) y a tirones (la velocidad sube y baja)', 0.8 < v < 4 and v - min(vs[2:]) > 0.1, f'{min(vs[2:]):.2f}–{v:.2f} m/s (corriente {r["vel"]:.1f} m/s)')
+    comprobar(f'{pre}remando, a ritmo de canoa (no más de 5,5 m/s) y a tirones (la velocidad sube y baja)', 0.8 < v < 5.5 and v - min(vs[2:]) > 0.1, f'{min(vs[2:]):.2f}–{v:.2f} m/s (corriente {r["vel"]:.1f} m/s)')
     comprobar(f'{pre}y avanza río arriba', avance > 0.5, f'{avance:.1f} m')
     comprobar(f'{pre}sigue en el agua', (pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0) >= 0.2)
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
