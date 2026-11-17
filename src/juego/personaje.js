@@ -258,6 +258,57 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     _u.set(0, 1, 0);
   };
   const polo = (lado) => new THREE.Vector3().addScaledVector(_l, lado === 'l' ? 0.6 : -0.6).addScaledVector(_u, -1).addScaledVector(_f, -0.35);
+  // Remar (17 nov, valravnx: «animación de empujar por un lado, de un tironcillo… por el otro… de manera realista»;
+  // provisional, hasta la animación de verdad). Por la fase de la palada (src/logica/canoa.js, faseRemada: la primera
+  // mitad, la pala en el agua; la segunda, fuera y volviendo): el pecho gira hacia el lado de la palada y se echa adelante
+  // al meter el remo, y se endereza tirando; el remo va con el puño arriba, sobre la borda, y la pala entra delante, tira
+  // hasta la cadera, sale y vuelve por el aire (al otro lado si la siguiente va por el otro); las dos manos, en la caña:
+  // la de arriba en el puño y la del lado de la palada abajo, cerca de la pala (al cambiar de lado se deslizan por ella).
+  // Deja en j.palaRemo dónde van el puño y el centro de la pala, en el mundo (src/juego/llevado.js pone ahí el remo).
+  const _T = new THREE.Vector3(), _B = new THREE.Vector3(), _q1 = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
+  const suave = x => x * x * (3 - 2 * x);
+  const remar = (b) => {
+    const R = j.remada, h = j.mh.hueso, pecho = h.spine_03 || h.spine_02;
+    if (!pecho || !h.spine_01) return false;
+    _f.set(0, 0, 1).applyQuaternion(j.raiz.getWorldQuaternion(_q1)).setY(0).normalize(); _l.crossVectors(_u, _f).normalize();
+    const s = R.lado === 'l' ? 1 : -1, agua = R.fase < 0.5, k = agua ? suave(R.fase / 0.5) : suave((R.fase - 0.5) / 0.5);
+    const s2 = R.barre ? s : -s;   // (la siguiente: por el mismo lado si está girando; si no, por el otro)
+    // el pecho: girado hacia el lado de la palada al meter el remo (el hombro de abajo, adelante), y echado adelante
+    const giro = agua ? (0.38 + (-0.12 - 0.38) * k) * -s : (-0.12 * -s) + ((0.38 * -s2) - (-0.12 * -s)) * k;
+    const echado = agua ? 0.22 * (1 - k) : 0.22 * k;
+    const gira = (hueso, q) => { hueso.getWorldQuaternion(_q2); hueso.parent.getWorldQuaternion(_q3); hueso.quaternion.copy(_q3.invert().multiply(q.multiply(_q2))); hueso.updateMatrixWorld(true); };
+    gira(h.spine_01, _q1.setFromAxisAngle(_l, echado * 0.6));
+    gira(pecho, _q1.setFromAxisAngle(_u, giro));
+    // (las medidas, desde la raíz del personaje, que en la canoa va a ras del agua: x a la izquierda, y arriba, z adelante)
+    const P = (fw, lat, up, out) => j.raiz.localToWorld(out.set(lat, up, fw));
+    const ancho = R.barre ? 0.62 : 0.5;   // (la de girar, más abierta)
+    const T0 = (sd, o) => P(0.45, sd * 0.2, 0.72, o), T1 = (sd, o) => P(0.32, sd * 0.24, 0.6, o);    // el puño (delante de la cara): al meter, al sacar
+    const B0 = (sd, o) => P(0.72, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
+    const a = new THREE.Vector3(), e = new THREE.Vector3();
+    if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
+    else {
+      // fuera del agua: la pala sale baja, junto a la cadera, y vuelve adelante; si cambia de lado, pasa por delante del
+      // pecho, el remo casi tumbado de un lado a otro (una curva que pasa por M a mitad de camino)
+      _T.lerpVectors(T1(s, a), T0(s2, e), k).addScaledVector(_u, Math.sin(Math.PI * k) * 0.06);
+      const M = s2 !== s ? P(0.75, 0, 0.62, new THREE.Vector3()) : P(0.25, s * (ancho + 0.1), 0.35, new THREE.Vector3());
+      B1(s, a); B0(s2, e);
+      const c1 = M.multiplyScalar(2).addScaledVector(a, -0.5).addScaledVector(e, -0.5);
+      _B.copy(a).multiplyScalar((1 - k) * (1 - k)).addScaledVector(c1, 2 * k * (1 - k)).addScaledVector(e, k * k);
+      // (y sale enseguida del agua: sube el remo entero, puño y pala, sin ponerse de punta)
+      const sube = Math.sin(Math.PI * Math.min(1, k * 1.6)) * 0.3; _B.addScaledVector(_u, sube); _T.addScaledVector(_u, sube * 0.5);
+    }
+    // (el remo es rígido: la pala, a su largo del puño, 1,22 m al centro de la pala, en esa dirección)
+    const dir = _B.sub(_T).normalize();
+    j.palaRemo = { puno: _T.clone(), pala: _T.clone().addScaledVector(dir, 1.22) };
+    // las manos: arriba, en el puño; abajo, por la caña, a 0,55 m de él (la del lado de la palada)
+    const abajo = _T.clone().addScaledVector(dir, 0.55), arriba = _T.clone();
+    const sitio = (lado, sd) => ((lado === 'l') === (sd > 0) ? abajo : arriba);
+    const mano = (lado) => (agua ? sitio(lado, s) : sitio(lado, s).clone().lerp(sitio(lado, s2), k));
+    const poloR = new THREE.Vector3().addScaledVector(_l, -0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
+    const poloL = new THREE.Vector3().addScaledVector(_l, 0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
+    nudillosA(b.r, mano('r'), poloR); nudillosA(b.l, mano('l'), poloL);
+    return true;
+  };
   const colocarBrazos = () => {
     if (!j.mh || !j.mh.meshy || !j.mh.raiz.visible || globalThis.__sinBrazosMeshy /* solo para comprobar que las pruebas fallan */) return false;
     const b = brazos(); if (!b.r.sup || !b.l.sup || !j.mh.hueso.ball_l) return false;
@@ -281,6 +332,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       nudillosA(b.r, ar, polo('r')); nudillosA(b.l, al, polo('l'));
       return true;
     }
+    if (j.cargaDos && j.enCanoa && j.remada && j.llevadoPedido && j.llevadoPedido.der === 'remo' && !globalThis.__sinRemar) return remar(b);
     if (j.cargaDos && !j.empuja) {
       // delante del pecho, a 35 cm, y las manos a sus lados (a 20 cm del centro)
       const pecho = (j.mh.hueso.spine_03 || j.mh.hueso.spine_02).getWorldPosition(new THREE.Vector3());
@@ -338,6 +390,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       j.mh.cerrarMano('r', (j.hacha && j.hacha.visible) || (l && l.der) || j.empuja || j.cargaDos || j.alHombro || j.arrastra ? 1 : 0);
       j.mh.cerrarMano('l', (l && l.izq) || j.empuja || j.cargaDos || j.arrastra ? 1 : 0);
     }
+    if (!(j.enCanoa && j.remada)) j.palaRemo = null;
     const antes = colocarBrazos();
     llevado.paso();
     // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima

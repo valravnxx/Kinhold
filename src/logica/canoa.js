@@ -136,7 +136,7 @@ export const ALCANCE_CANOA = 3;      // m, desde su centro (mide 4,4 m)
 export const ECHAR = 4.5;            // m que se empuja como mucho
 export const HONDO_BAJAR = 0.5;      // m de agua, como mucho, donde se pisa al bajar
 export const ADELANTE = 1.1;         // m: el que va de pasajero, por delante del que rema (que va sentado en medio)
-export const VEL_MAX_CANOA = VEL_REMAR + 3 * DERIVA_RIO;   // lo más deprisa: remando río abajo en un torrente (3 m/s)
+export const VEL_MAX_CANOA = 3.2 + 3 * DERIVA_RIO;   // lo más deprisa: remando (VEL_MAX_REMAR, más abajo) río abajo en un torrente (3 m/s)
 
 // Lo que mueve la canoa en un paso (lógica del navegador del que rema; el servidor lo limita con VEL_MAX_CANOA):
 // dir: { x, z } hacia donde rema (unitario o 0), remando: si rema (con el remo en la mano), corriente: { dx, dz } m/s
@@ -150,6 +150,72 @@ export function velocidadCanoa({ dir = { x: 0, z: 0 }, remando = false, corrient
   const r = remando ? VEL_REMAR : 0, n = Math.hypot(dir.x || 0, dir.z || 0);
   return { vx: cx + (n > 0 ? r * dir.x / n : 0), vz: cz + (n > 0 ? r * dir.z / n : 0) };
 }
+// Remar a paladas (17 nov, valravnx: «va a una velocidad fija muy elevada… no parece una canoa. Canoa tiene que ser que
+// haga animación de empujar por un lado, de un tironcillo… por el otro, haga otro tironcillo, tiene que ser de manera
+// realista»). Como se rema de verdad (guías de técnica de canoa y medidas de remeros):
+//   - cada palada es un ciclo de unos PALADA s (unas 50 por minuto): la pala entra delante, tira hasta la cadera (la
+//     parte EN_AGUA del ciclo, la que empuja, más fuerte a mitad del tirón), sale y vuelve por el aire;
+//   - la canoa arranca con cada tirón y entre uno y otro se frena sola (el agua frena con la velocidad al cuadrado, y algo
+//     más para que acabe parándose): la velocidad sube y baja a cada palada, y no pasa de unos 2 m/s de crucero;
+//   - remar por un lado tuerce la canoa hacia el otro: alternando lados va recta (con su vaivén); para girar se rema
+//     varias veces seguidas por el mismo lado, con la palada más abierta (de barrido), que tuerce más y empuja menos;
+//   - sin remar sigue un poco por su impulso y se para.
+// El estado (de quien rema; lo mueve su navegador, el servidor limita con VEL_MAX_CANOA): { v (m/s hacia la proa),
+// w (rad/s de giro; + a la izquierda), t (s dentro de la palada), lado ('r' o 'l', por dónde va esta palada), activa,
+// barre (si es de girar), fuerza (0–1, del joystick) }. Decisiones provisionales: los números.
+export const PALADA = 1.2;          // s: una palada entera
+export const EN_AGUA = 0.5;         // de la palada, la parte con la pala en el agua tirando
+export const EMPUJE = 2.6;          // m/s²: lo que acelera en lo más fuerte del tirón
+export const ROCE = 0.13;           // 1/m: lo que frena el agua (con la velocidad al cuadrado)
+export const ROCE_LENTO = 0.22;     // 1/s: y algo más, para que acabe parándose
+export const TUERCE = 0.7;          // rad/s²: lo que tuerce una palada hacia el otro lado (en lo más fuerte)
+export const TUERCE_BARRIDO = 3.0;  // rad/s²: la palada de girar, de barrido
+export const EMPUJE_BARRIDO = 0.55; // la de barrido empuja menos (de la normal)
+export const ROCE_GIRO = 2.2;       // 1/s: lo que frena el agua el giro
+export const PARA_GIRAR = 0.3;      // rad: a partir de cuánto falta para mirar donde quiere, rema de barrido por un lado
+export const CORRIGE = 0.09;        // rad (unos 5°): si se le va el rumbo más, la siguiente palada por el lado que lo corrige
+export const VEL_MAX_REMAR = 3.2;   // m/s: lo más deprisa remando (para el servidor)
+export const nuevaRemada = () => ({ v: 0, w: 0, t: 0, lado: 'r', activa: false, barre: false, fuerza: 1 });
+// Por dónde va la siguiente palada: para girar a la izquierda (giro > 0), por la derecha (y al revés); si no, cambia de lado.
+// (si se le va el rumbo unos grados, la siguiente por el lado que lo corrige, como hace el que rema; para girar de verdad,
+// de barrido)
+function siguientePalada(s, giro, mag) {
+  s.barre = Math.abs(giro) > PARA_GIRAR;
+  if (giro > CORRIGE) s.lado = 'r';
+  else if (giro < -CORRIGE) s.lado = 'l';
+  else s.lado = s.lado === 'r' ? 'l' : 'r';
+  s.fuerza = Math.max(0, Math.min(1, mag));
+}
+// Un paso de dt s: rema (si quiere remar: con el remo y el joystick), mag (0–1, cuánto empuja el joystick) y giro (rad
+// que le faltan para mirar hacia donde quiere ir; + a la izquierda). Cambia s y lo devuelve.
+export function pasoRemar(s, { rema = false, mag = 1, giro = 0 } = {}, dt = 0) {
+  const n = Math.max(1, Math.ceil(dt / (1 / 60))), h = dt / n;
+  for (let i = 0; i < n; i++) {
+    if (!s.activa && rema) { s.activa = true; s.t = 0; siguientePalada(s, giro, mag); }
+    if (s.activa) {
+      const f = s.t / PALADA;
+      if (f < EN_AGUA) {
+        const k = Math.sin(Math.PI * f / EN_AGUA) * s.fuerza;
+        s.v += EMPUJE * (s.barre ? EMPUJE_BARRIDO : 1) * k * h;
+        // (por la derecha, la proa se va a la izquierda: rot sube; por la izquierda, a la derecha)
+        s.w += (s.lado === 'r' ? 1 : -1) * (s.barre ? TUERCE_BARRIDO : TUERCE) * k * h * (globalThis.__mutarRemar ? 0 : 1);
+      }
+      s.t += h;
+      if (s.t >= PALADA) {
+        if (rema) { s.t -= PALADA; siguientePalada(s, giro, mag); }
+        else { s.activa = false; s.t = 0; }
+      }
+    }
+    s.v -= (ROCE * s.v * Math.abs(s.v) + ROCE_LENTO * s.v) * h;
+    s.w -= ROCE_GIRO * s.w * h;
+    if (globalThis.__mutarRemar) { s.v = rema ? 9 : 0; s.w = 0; }   // (solo para romper la prueba: la velocidad fija de antes)
+    if (Math.abs(s.v) < 0.005 && !s.activa) s.v = 0;
+  }
+  return s;
+}
+// La fase de la palada para la animación: { lado, fase (0–1 en la palada), enAgua } o null si no rema.
+export const faseRemada = s => (s && s.activa ? { lado: s.lado, fase: s.t / PALADA, enAgua: s.t / PALADA < EN_AGUA, barre: s.barre } : null);
+
 // La guarda de la canoa (o de lo que sea): si o está a la guarda de otro, lo que se dice; si no, null.
 export const ajenaCanoa = (o, autor) => (o && o.guarda && o.guarda !== autor ? 'La canoa está en las tierras de otro: no puedes tocarla.' : null);
 // Deja la canoa a la guarda de autor si está en su tierra (suTierra(autor, x, z)); fuera, sin guarda.

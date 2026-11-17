@@ -1,13 +1,14 @@
 # Prueba en navegador (Chromium sin pantalla): la canoa al agua (P11d). En el mundo de verdad (la demo, con su terreno y
 # el río de unos 14 m de ancho de las pruebas de los ríos), con la canoa en la orilla y el remo en la mano: Usar la echa
-# al agua (flota sobre la superficie), Usar a su lado sube (sentado), remando (W) va bastante más deprisa que corriendo
-# (6 m/s), sin remar la lleva la corriente río abajo, no se sale del agua, y Usar en la orilla baja a tierra (la canoa
+# al agua (flota sobre la superficie), Usar a su lado sube (sentado), remando (W) va a paladas (17 nov: a ritmo de canoa,
+# a tirones, la pala en el agua por un lado y luego por el otro; capturas de cada momento de la palada), sin remar la lleva la corriente río abajo, no se sale del agua, y Usar en la orilla baja a tierra (la canoa
 # se queda a flote). Capturas de cerca en PC (1280×800) y en el móvil (390×844). La lógica y el servidor, en
 # pruebas/prueba_canoa.mjs; aquí sin servidor (la misma lógica en el navegador).
 # Uso: python3 pruebas/prueba_canoa_agua_navegador.py dist/kinhold_demo.html <carpeta>
 # MUTAR_RODILLAS=1: sin juntar las rodillas en la canoa (se salen por la borda): tiene que fallar.
 # MUTAR_CASCO=1: el casco atraviesa las rocas: tiene que fallar.
 # MUTAR=1: remar no mueve la canoa más que la corriente (sin remo de verdad): tiene que fallar.
+# MUTAR_REMAR=1: la velocidad fija de antes, sin paladas: tiene que fallar.
 import sys, os, json, time, math
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -61,6 +62,7 @@ def recorrido(pg, pre, movil):
     pg.evaluate(f"(() => {{ const r = {K}.accionInventario({{ tipo: 'coger', objeto: 'remo', cantidad: 1, a: 'mano:der' }}); {K}.pintarLlevas(); {K}.vestir(); return r.ok; }})()")
     if os.environ.get('MUTAR_RODILLAS') == '1': pg.evaluate('window.__mutarRodillas = true')
     if os.environ.get('MUTAR_CASCO') == '1': pg.evaluate('window.__mutarCasco = true')
+    if os.environ.get('MUTAR_REMAR') == '1': pg.evaluate('globalThis.__mutarRemar = true')
     if MUTAR: pg.evaluate(f"(() => {{ const k = {K}; k.inventario().lugares['mano:der'] = null; k.vestir(); }})()")
     pg.evaluate(f"{K}.usar()"); pg.wait_for_timeout(700)
     c = canoa(pg, id)
@@ -98,19 +100,30 @@ def recorrido(pg, pre, movil):
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
     pg.keyboard.down('w'); pg.wait_for_timeout(1200); pg.keyboard.up('w')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
-    pg.keyboard.down('w'); pg.wait_for_timeout(1500); pg.keyboard.up('w')
+    pg.keyboard.down('w'); pg.wait_for_timeout(7000); pg.keyboard.up('w')   # (a paladas, girando por un lado: unos segundos)
     comprobar(f'{pre}remando, sale de la orilla y gira río arriba', abs(((pg.evaluate(f"{K}.pj.rot") - math.atan2(-r['ux'], -r['uz']) + math.pi) % (2 * math.pi)) - math.pi) < 0.35,
               f"{pg.evaluate(f'{K}.pj.rot'):.2f} (río arriba: {math.atan2(-r['ux'], -r['uz']):.2f})")
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     # (la velocidad, la que da el juego en cada fotograma: en la nube, sin tarjeta gráfica, van tan pocos fotogramas que el
     # tiempo del juego no sigue al reloj; lo andado, que sea río arriba)
-    pg.keyboard.down('w'); vs = []
-    for i in range(6): pg.wait_for_timeout(300); vs.append(pg.evaluate(f"{K}.pj.vel"))
+    # (y la pala: dónde va respecto al que rema, a la izquierda o a la derecha y por debajo o por encima del agua)
+    pg.keyboard.down('w'); vs = []; palas = []
+    for i in range(16):
+        pg.wait_for_timeout(250); vs.append(pg.evaluate(f"{K}.pj.vel"))
+        palas.append(pg.evaluate(f"""(() => {{ const j = {K}.jugador, p = j.palaRemo, r = j.remada; if (!p) return null; j.raiz.updateMatrixWorld(true);
+          const l = j.raiz.worldToLocal(p.pala.clone()), a = {K}.mundoJ.aguaEn(p.pala.x, p.pala.z);
+          return {{ lado: l.x > 0.2 ? 'l' : l.x < -0.2 ? 'r' : '', bajo: a ? p.pala.y < a.superficie : false, palada: r ? r.lado : '' }}; }})()"""))
+        if i in (3, 5, 7, 9):
+            pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = k.pj.rot + 0.6; k.cam.dist = 3.0; k.cam.pitch = 0.35; }})()")
+            pg.screenshot(path=f'{SALIDA}/{pre}4{"abcd"[(i - 3) // 2]}_remando_palada.png')
     pg.keyboard.up('w')
+    ps = [q for q in palas if q]
+    comprobar(f'{pre}remando, la pala entra en el agua por un lado y por el otro', any(q['lado'] == 'r' and q['bajo'] for q in ps) and any(q['lado'] == 'l' and q['bajo'] for q in ps), str(ps[:16]))
+    comprobar(f'{pre}y entre palada y palada sale del agua', any(not q['bajo'] for q in ps), '')
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     avance = -((p1[0] - p0[0]) * r['ux'] + (p1[1] - p0[1]) * r['uz'])   # lo andado río arriba
     v = max(vs)
-    comprobar(f'{pre}remando contra la corriente, más deprisa que corriendo (6 m/s)', v > 6, f'{v:.1f} m/s (corriente {r["vel"]:.1f} m/s)')
+    comprobar(f'{pre}remando, a ritmo de canoa (no más de 4 m/s) y a tirones (la velocidad sube y baja)', 0.8 < v < 4 and v - min(vs[2:]) > 0.1, f'{min(vs[2:]):.2f}–{v:.2f} m/s (corriente {r["vel"]:.1f} m/s)')
     comprobar(f'{pre}y avanza río arriba', avance > 0.5, f'{avance:.1f} m')
     comprobar(f'{pre}sigue en el agua', (pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0) >= 0.2)
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
