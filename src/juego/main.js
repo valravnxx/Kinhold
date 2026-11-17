@@ -2354,7 +2354,10 @@ function pasoCanoa(o, ax, az, mag, dt) {
   // (la canoa tiene que ir por el agua, si no encalla, y su casco entero no atraviesa rocas ni troncos: si ya roza
   // alguna, solo vale lo que no la mete más)
   // (y la proa y la popa no se meten en la orilla: si ya toca alguna en seco, solo vale lo que no deja más en seco)
-  const vale = (x, z, rot) => flota(x, z) && cascoMete(x, z, rot, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(x, z, rot) <= puntasEnSeco(pj.x, pj.z, pj.rot);
+  // (cada círculo del casco por su cuenta: con la suma, al ir girando a cada palada, uno se metía lo que otro salía y la
+  // canoa se colaba en la roca a pasitos)
+  const antes = cascoPorPartes(pj.x, pj.z, pj.rot, cerca), noMete = (x, z, rot) => cascoPorPartes(x, z, rot, cerca).every((m, i) => m <= antes[i] + 1e-6);
+  const vale = (x, z, rot) => flota(x, z) && noMete(x, z, rot) && puntasEnSeco(x, z, rot) <= puntasEnSeco(pj.x, pj.z, pj.rot);
   const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
   let choca = false;
   for (let i = 0; i < trozos; i++) {
@@ -2371,7 +2374,8 @@ function pasoCanoa(o, ax, az, mag, dt) {
     for (const a of window.__mutarPivote ? [0] : [0, 1.75, -1.75]) {
       // (el giro alrededor del punto a lo largo de la canoa a m del medio: el medio se mueve)
       const px = pj.x + Math.sin(pj.rot) * a, pz = pj.z + Math.cos(pj.rot) * a, x = px - Math.sin(r1) * a, z = pz - Math.cos(r1) * a;
-      if ((a === 0 || flota(x, z)) && cascoMete(x, z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(x, z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) { pj.x = x; pj.z = z; pj.rot = r1; hecho = true; break; }
+      // (pivotando, solo si así ya no toca nada: si no, la punta se iría colando en la roca a pasitos)
+      if ((a === 0 ? noMete(x, z, r1) : flota(x, z) && cascoMete(x, z, r1, cerca) < 1e-6) && puntasEnSeco(x, z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) { pj.x = x; pj.z = z; pj.rot = r1; hecho = true; break; }
     }
     if (!hecho) rm.w = 0;
   }
@@ -2383,6 +2387,11 @@ function pasoCanoa(o, ax, az, mag, dt) {
 // mirando hacia la proa (rot: hacia donde mira él). Devuelve cuánto se mete en total (m; 0, nada).
 const CASCO_CANOA = [[-1.75, 0.3], [-0.9, 0.4], [0, 0.42], [0.9, 0.4], [1.75, 0.3]];   // [a lo largo, radio]
 const estorbosCanoa = (x, z, d) => obstaculos.filter(o => !o.mata && !o.oculto && !(o.arbol && o.id && talaV.tala.arrancado(o.id)) && Math.hypot(o.x - x, o.z - z) <= d + o.r && hondoAqui(o.x, o.z) < o.r);
+function cascoPorPartes(x, z, rot, estorbos) {
+  const ux = Math.sin(rot), uz = Math.cos(rot);
+  if (window.__mutarCasco) return CASCO_CANOA.map(() => 0);
+  return CASCO_CANOA.map(([a, r]) => { let m = 0; for (const o of estorbos) { const d = Math.hypot(x + ux * a - o.x, z + uz * a - o.z); if (d < r + o.r) m += r + o.r - d; } return m; });
+}
 function cascoMete(x, z, rot, estorbos) {
   const ux = Math.sin(rot), uz = Math.cos(rot); let m = 0;
   if (window.__mutarCasco) return 0;   // (solo para romper a propósito la prueba: el casco atraviesa las rocas)
