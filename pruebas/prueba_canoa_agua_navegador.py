@@ -160,6 +160,9 @@ def recorrido(pg, pre, movil):
           const pos = n => h[n].getWorldPosition(p.puno.clone()), ab = p.pala.clone().sub(p.puno);
           const seg = q => {{ const t = Math.max(0, Math.min(1, q.clone().sub(p.puno).dot(ab) / ab.lengthSq())); return +q.distanceTo(p.puno.clone().addScaledVector(ab, t)).toFixed(3); }};
           return ['r', 'l'].map(l => seg(pos('hand_' + l).lerp(pos('middle_01_' + l), 0.6))); }})()""")
+        if os.environ.get('ESTUDIO') == '1': print(lado, fase, pg.evaluate(f"""(() => {{ const j = {K}.jugador, h = j.mh.hueso, p = j.palaRemo; j.raiz.updateMatrixWorld(true);
+          const L = v => j.raiz.worldToLocal(v.clone()).toArray().map(x => x.toFixed(2)).join(',');
+          return ['upperarm_l', 'lowerarm_l', 'hand_l', 'upperarm_r', 'lowerarm_r', 'hand_r'].map(n => n + ' ' + L(h[n].getWorldPosition(p.puno.clone()))).join(' | ') + ' | puño ' + L(p.puno) + ' | pala ' + L(p.pala); }})()"""))
         if fase < 0.5: comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 4 cm)', max(dist) < 0.04, f'{dist} m')
         else: print(f'  (palada {lado} {fase}, volviendo: las palmas a {dist} m de la caña)')
     pg.evaluate("window.__remadaFija = null")

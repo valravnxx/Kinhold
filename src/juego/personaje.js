@@ -282,7 +282,9 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // (las medidas, desde la raíz del personaje, que en la canoa va a ras del agua: x a la izquierda, y arriba, z adelante)
     const P = (fw, lat, up, out) => j.raiz.localToWorld(out.set(lat, up, fw));
     const ancho = R.barre ? 0.62 : 0.5;   // (la de girar, más abierta)
-    const T0 = (sd, o) => P(0.4, sd * 0.18, 0.56, o), T1 = (sd, o) => P(0.36, sd * 0.28, 0.48, o);    // el puño (delante del pecho, por debajo de la barbilla: más alto, el antebrazo tapaba la cara): al meter, al sacar
+    // el puño, delante de la barbilla y casi en el medio (con los brazos del personaje, si cruza hacia el lado de la palada
+    // el brazo de arriba va estirado a la altura del hombro y pasa por el cuello): al meter, al sacar
+    const T0 = (sd, o) => P(0.3, sd * 0.02, 0.5, o), T1 = (sd, o) => P(0.25, sd * 0.08, 0.45, o);
     const B0 = (sd, o) => P(0.5, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
     const a = new THREE.Vector3(), e = new THREE.Vector3();
     if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
@@ -306,8 +308,10 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     const abajo = _T.clone().addScaledVector(dir, 0.5), arriba = _T.clone();
     const sitio = (lado, sd) => ((lado === 'l') === (sd > 0) ? abajo : arriba);
     const mano = (lado) => (agua ? sitio(lado, s) : sitio(lado, s).clone().lerp(sitio(lado, s2), k));
-    const poloR = new THREE.Vector3().addScaledVector(_l, -0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
-    const poloL = new THREE.Vector3().addScaledVector(_l, 0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
+    // (los codos, abajo y hacia fuera: con el puño delante del pecho, el codo de la mano de arriba se subía a la altura del
+    // hombro y se metía en el cuello, y desde detrás parecía el brazo por la nuca)
+    const poloR = new THREE.Vector3().addScaledVector(_l, -0.6).addScaledVector(_u, -1).addScaledVector(_f, 0.1);
+    const poloL = new THREE.Vector3().addScaledVector(_l, 0.6).addScaledVector(_u, -1).addScaledVector(_f, 0.1);
     // (la palma, no el nudillo, sobre la caña: el nudillo se pone donde toca, se mira dónde ha quedado la palma y se corrige
     // lo que le falta, dos veces; y el remo pasa luego por las dos palmas, como al llevarlo de pie, para que no quede en el
     // aire si el brazo no llega del todo)
