@@ -2362,10 +2362,18 @@ function pasoCanoa(o, ax, az, mag, dt) {
     if (vale(nx, nz, pj.rot)) { pj.x = nx; pj.z = nz; } else { choca = true; if (vale(nx, pj.z, pj.rot)) pj.x = nx; else if (vale(pj.x, nz, pj.rot)) pj.z = nz; }
   }
   if (choca) rm.v *= Math.max(0, 1 - dt * 6);   // (contra una roca o la orilla pierde el impulso)
-  // gira lo que la tuercen las paladas (y no si el casco se mete en una roca o en la orilla: ahí se para el giro)
+  // gira lo que la tuercen las paladas: sobre su medio o, si así el casco se mete en una roca o en la orilla, pivotando
+  // sobre la proa o la popa (como la que está pegada a la orilla, que gira apoyada en ella); si no cabe de ninguna
+  // manera, no gira
   if (Math.abs(rm.w) > 1e-4) {
     const r1 = pj.rot + rm.w * dt;
-    if (cascoMete(pj.x, pj.z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(pj.x, pj.z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) pj.rot = r1; else rm.w = 0;
+    let hecho = false;
+    for (const a of window.__mutarPivote ? [0] : [0, 1.75, -1.75]) {
+      // (el giro alrededor del punto a lo largo de la canoa a m del medio: el medio se mueve)
+      const px = pj.x + Math.sin(pj.rot) * a, pz = pj.z + Math.cos(pj.rot) * a, x = px - Math.sin(r1) * a, z = pz - Math.cos(r1) * a;
+      if ((a === 0 || flota(x, z)) && cascoMete(x, z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(x, z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) { pj.x = x; pj.z = z; pj.rot = r1; hecho = true; break; }
+    }
+    if (!hecho) rm.w = 0;
   }
   return Math.hypot(v.vx, v.vz);
 }

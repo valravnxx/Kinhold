@@ -98,7 +98,7 @@ def recorrido(pg, pre, movil):
     # primero, remar hacia el medio del río (la canoa sale de la orilla de proa: girarla allí metería la popa en las rocas de
     # la orilla, que el casco no atraviesa) y luego girar río arriba remando (W lleva a (-sin yaw, -cos yaw))
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
-    pg.keyboard.down('w'); pg.wait_for_timeout(1200); pg.keyboard.up('w')
+    pg.keyboard.down('w'); pg.wait_for_timeout(4000); pg.keyboard.up('w')   # (a paladas arranca despacio: unos metros, hasta apartarse de las rocas de la orilla)
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     pg.keyboard.down('w'); pg.wait_for_timeout(7000); pg.keyboard.up('w')   # (a paladas, girando por un lado: unos segundos)
     comprobar(f'{pre}remando, sale de la orilla y gira río arriba', abs(((pg.evaluate(f"{K}.pj.rot") - math.atan2(-r['ux'], -r['uz']) + math.pi) % (2 * math.pi)) - math.pi) < 0.35,
