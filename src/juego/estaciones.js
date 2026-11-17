@@ -526,24 +526,39 @@ function cubasCurtido(id) {
   L.add(new THREE.ShapeGeometry(fuera, 8), 0x7d6648, 0, 0.006, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' });
   const fondo = new THREE.Shape(); rectRedondo(fondo, X, Z, 0.1);
   L.add(new THREE.ShapeGeometry(fondo, 6), 0x2e241a, 0, 0.012, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' });
-  // el montón de la tierra sacada: un caballón bajo de terrones alrededor del labio, que hace que el hoyo se vea hundido
-  for (let k = 0; k < 22; k++) {
-    const a = k / 22 * Math.PI * 2 + (az(id, k) - 0.5) * 0.2, [bx, bz] = enBorde(X + labio + monte * 0.45, Z + labio + monte * 0.45, a);
-    L.add(piedraIrregular(0.1 + az(id, k + 30) * 0.05, 1, id + 'm' + k, 0.3), k % 3 ? 0x6e5840 : 0x7d6648, bx, 0.005, bz, { y: az(id, k + 60) * 6 }, { escala: new THREE.Vector3(1.4, 0.5 + az(id, k + 90) * 0.3, 1), tex: 'piedra' });
+  // la tierra sacada y el labio, de una pieza (segunda mirada, 17 nov: los terrones sueltos se leían como piedras y el
+  // hoyo, como pegado encima): por dentro, la pared de barro mojado que baja del labio hasta el agua; por fuera, el
+  // caballón de tierra amontonada, continuo y desigual, que baja hasta el prado. Así el agua queda abajo, hundida.
+  const N = 56, ruido = (k, s) => az(id, s + (k % N)) - 0.5;
+  const lazo = (dx, dz, y, s, r = 0) => Array.from({ length: N }, (_, k) => {
+    const [bx, bz] = enBorde(X + dx + ruido(k, s + 'r') * r, Z + dz + ruido(k, s + 'r') * r, k / N * Math.PI * 2);
+    return [bx, typeof y === 'function' ? y(k) : y, bz];
+  });
+  const banda = (lazos) => {
+    const pos = [];
+    for (let j = 0; j + 1 < lazos.length; j++) for (let k = 0; k < N; k++) {
+      const a0 = lazos[j][k], a1 = lazos[j][(k + 1) % N], b0 = lazos[j + 1][k], b1 = lazos[j + 1][(k + 1) % N];
+      pos.push(...a0, ...a1, ...b0, ...a1, ...b1, ...b0);
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geo.computeVertexNormals(); return geo;
+  };
+  const cresta = (k) => 0.12 + ruido(k, 'c') * 0.035, hombro = (k) => 0.1 + ruido(k, 'h') * 0.04;
+  const dentro = lazo(0.005, 0.005, AGUA_CUBAS - 0.006, 'd'), medio = lazo(labio * 0.45, labio * 0.45, (k) => cresta(k) - 0.03, 'm', 0.01);
+  const arriba = lazo(labio, labio, cresta, 'a', 0.015), ladera = lazo(labio + monte * 0.5, labio + monte * 0.5, hombro, 'l', 0.04);
+  const pie = lazo(labio + monte + 0.1, labio + monte + 0.08, 0.004, 'p', 0.06);
+  L.add(banda([dentro, medio, arriba]), BARRO_HUMEDO, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
+  L.add(banda([arriba, ladera, pie]), 0x6e5840, 0, 0, 0, null, { tex: 'piedra' });
+  // unos pocos terrones, medio hundidos en el caballón (la tierra recién sacada)
+  for (let k = 0; k < 9; k++) {
+    const a = (k + az(id, 'tk' + k)) / 9 * Math.PI * 2, [bx, bz] = enBorde(X + labio + monte * 0.5, Z + labio + monte * 0.5, a);
+    L.add(piedraIrregular(0.05 + az(id, k + 30) * 0.03, 1, id + 'm' + k, 0.3), 0x66513a, bx, 0.07, bz, { y: az(id, k + 60) * 6 }, { escala: new THREE.Vector3(1.4, 0.6, 1), tex: 'piedra' });
   }
-  // el labio de barro apretado: bajo, casi a ras, y por dentro cae hacia el fondo
-  const aro = new THREE.Shape(); rectRedondo(aro, X + labio, Z + labio, 0.14); rectRedondo(aro, X, Z, 0.1, true);
-  const lab = new THREE.ExtrudeGeometry(aro, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.025, bevelSegments: 2, curveSegments: 6 });
-  lab.rotateX(-Math.PI / 2);
-  const p = lab.attributes.position;
-  for (let i = 0; i < p.count; i++) if (p.getY(i) > 0.015) p.setY(i, p.getY(i) + (az(id, `${p.getX(i).toFixed(2)},${p.getZ(i).toFixed(2)}`) - 0.5) * 0.012);
-  lab.computeVertexNormals();
-  L.add(lab, BARRO_HUMEDO, 0, 0.0, 0, null, { tex: 'piedra' });
   g.add(mallas(L));
   // los dos troncos cortos, tumbados en el suelo a lo largo de los costados, por fuera del montón de tierra
   for (const sz of [-1, 1]) {
     const t = troncosConCortes(1, largo + (az(id, sz) - 0.5) * 0.08, tronco, id + 't' + sz);
-    t.position.set((az(id, sz + 3) - 0.5) * 0.08, 0, sz * (Z + labio + monte + tronco + 0.06)); t.rotation.y = (az(id, sz + 5) - 0.5) * 0.08;
+    t.position.set((az(id, sz + 3) - 0.5) * 0.08, 0, sz * (Z + labio + monte + tronco + 0.11)); t.rotation.y = (az(id, sz + 5) - 0.5) * 0.08;
     g.add(t);
   }
   return g;
@@ -561,16 +576,10 @@ function texturaCubas() {
   const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
   const g = cv.getContext('2d');
   let sem = 7; const r = () => (sem = (sem * 16807) % 2147483647) / 2147483647;
-  g.fillStyle = '#35260f'; g.fillRect(0, 0, N, N);
+  g.fillStyle = '#3d2c16'; g.fillRect(0, 0, N, N);
   // el reflejo del cielo, ancho y suave: más claro hacia un lado, como un charco que mira al cielo
-  const gr = g.createLinearGradient(0, 0, N * 0.3, N); gr.addColorStop(0, 'rgba(120,124,118,0.32)'); gr.addColorStop(0.55, 'rgba(90,82,66,0.08)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  const gr = g.createLinearGradient(0, 0, N * 0.3, N); gr.addColorStop(0, 'rgba(128,122,110,0.26)'); gr.addColorStop(0.55, 'rgba(90,82,66,0.08)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = gr; g.fillRect(0, 0, N, N);
-  for (let k = 0; k < 4; k++) {   // unas pocas franjas claras del reflejo, anchas, movidas y muy suaves
-    const y0 = N * (0.15 + k * 0.22) + r() * 12;
-    g.strokeStyle = `rgba(170,176,172,${0.06 + r() * 0.06})`; g.lineWidth = 8 + r() * 10; g.lineCap = 'round'; g.beginPath();
-    for (let x = 10; x <= N - 10; x += 6) { const y = y0 + Math.sin(x * 0.035 + k * 2) * 6; x === 10 ? g.moveTo(x, y) : g.lineTo(x, y); }
-    g.stroke();
-  }
   for (let k = 0; k < 6; k++) {   // ondas
     const x = 30 + r() * (N - 60), y = 30 + r() * (N - 60), rr = 6 + r() * 12;
     g.strokeStyle = `rgba(150,145,130,${0.1 + r() * 0.08})`; g.lineWidth = 1.2; g.beginPath(); g.ellipse(x, y, rr, rr * 0.7, 0, 0, 6.283); g.stroke();
@@ -619,10 +628,13 @@ function llenoCubas(dep, id, colgado = []) {
       if (u < -0.04) {   // en el agua: hundida, con pliegues que asoman
         const pl = Math.sin(u * 26 + f + w * 6) * 0.5 + Math.sin(u * 11 - w * 14 + f) * 0.5;
         y = AGUA_CUBAS + 0.006 + pl * 0.005;
-      } else if (u < labio) {   // sube por el labio, en una curva
+      } else if (u < labio) {   // sube por la pared de barro hasta el labio, en una curva
         const t = (u + 0.04) / (labio + 0.04);
-        y = AGUA_CUBAS + 0.004 + 0.06 * Math.sin(t * Math.PI / 2);
-      } else y = AGUA_CUBAS + 0.064 - (u - labio) * 0.2;   // y cae por fuera, sobre la tierra sacada
+        y = AGUA_CUBAS + 0.004 + 0.13 * Math.sin(t * Math.PI / 2);
+      } else {   // y cae por fuera, sobre el caballón de tierra sacada (pegada a él)
+        const v = u - labio, h = v < monte * 0.5 ? 0.12 - v / (monte * 0.5) * 0.02 : Math.max(0.004, 0.1 - (v - monte * 0.5) / (monte * 0.5 + 0.1) * 0.1);
+        y = h + 0.022;
+      }
       q.setY(k, Math.max(0.016, y) + q.getY(k) * 0.4);
     }
     geo.computeVertexNormals();
