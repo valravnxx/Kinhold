@@ -2565,9 +2565,9 @@
     },
     {
      "nombre": "El cubo lleno de agua y la corteza de roble: el cubo de madera se llena en el río (agua, para las cubas) y se vacía; descortezar un roble en pie da corteza de roble (las demás especies, corteza). Cadena: cubo ← banco de tronco con un tronco corto ← trocear un tronco con el hacha; roble ← los bosques templados; descortezar ← la lasca de sílex o el hacha",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-17T02:32:08+00:00",
-     "rama": "trabajo/20261117-0232"
+     "fin": "2026-11-17T04:43:16+00:00"
     },
     {
      "nombre": "Las cubas de curtido y el cuero: las cubas (un hoyo cavado con el palo cavador, 2 cestas de barro y 2 troncos cortos) como estación, fuera; se llenan con el cubo de agua; 1 piel limpia y 2 cortezas de roble dan 1 cuero al cabo de días reales (por tiempo transcurrido, en el servidor). Cadena: barro ← la ribera con el palo cavador; tronco corto ← trocear; piel limpia ← el raspador; corteza de roble y agua ← la tarea anterior",
@@ -4841,6 +4841,13 @@
      "archivo": "jugar/demo/v228.html",
      "capturas": "capturas/demo-v228",
      "notas": "La correa cruzada del zurrón, del carcaj y del escudo va pegada al cuerpo: de lado ya no hace un arco en el aire sobre el hombro, por delante cruza el pecho a ras de la camisa y la vuelta por el costado pasa por detrás del brazo, sin entrar en él ni en la cadera"
+    },
+    {
+     "v": "v229",
+     "fecha": "2026-11-17",
+     "archivo": "jugar/demo/v229.html",
+     "capturas": "capturas/demo-v229",
+     "notas": "El cubo lleno se vacía donde sea (desde el menú de Usar) y descortezar un roble da corteza de roble, la de curtir"
     }
    ]
   },

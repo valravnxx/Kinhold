@@ -84,6 +84,9 @@ export const DA = {
 export const DESCORTEZAR_CON = ['lasca_silex', 'cuchillo', 'hacha_piedra', 'hacha_hierro', 'hacha_mano'];
 export const SANGRAR_CON = ['lasca_silex', 'cuchillo'];
 export const CORTEZA = [1, 2];
+// La corteza que da cada especie (oficios, 17 nov): el roble, corteza de roble (la que curte en las cubas); las demás,
+// corteza (yesca).
+export const cortezaDe = especie => especie === 'roble' ? 'corteza_roble' : 'corteza';
 export const CONIFERAS = new Set(['abeto', 'pino']);
 export const RESINA_TARDA = 4 * 3600 * 1000;   // ms (4 h reales)
 export const PARTE_BOCA = 1 / 3;         // la boca, el primer tercio de los golpes
@@ -479,10 +482,11 @@ export class Tala {
     const e = this.estado[id] || {};
     if (e.desc) return { ok: false, motivo: 'Ese árbol ya está descortezado.' };
     const n = CORTEZA[0] + Math.floor(hash(numTexto(a.id), e.veces || 0, 17) * (CORTEZA[1] - CORTEZA[0] + 1));
-    const r = inv.meterDonde('corteza', n);
+    const objeto = cortezaDe(a.especie);
+    const r = inv.meterDonde(objeto, n);
     if (!r.ok) return r;
     this.estado[id] = { ...e, golpes: e.golpes || 0, parte: e.parte || 0, veces: e.veces || 0, desc: true };
-    return { ok: true, objeto: 'corteza', cantidad: n, donde: r.donde };
+    return { ok: true, objeto, cantidad: n, donde: r.donde };
   }
   // Sangrar una conífera (hacerle el corte) o, si ya está lista, coger su resina (y vuelve a sangrar).
   sangrar(inv, id, x, z, ahora) {

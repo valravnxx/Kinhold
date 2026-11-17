@@ -5,7 +5,7 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { ObjetosServidor } from '../../src/logica/objetos_red.js';
 import { trozoDe } from '../../src/logica/trozos_red.js';
-import { campoEn, llenarCubo } from '../../src/logica/campos.js';
+import { campoEn, llenarCubo, vaciarCubo } from '../../src/logica/campos.js';
 import { pozoConAgua, ALCANCE_POZO } from '../../src/logica/pozo.js';
 import { saciar as saciarNecesidad, redondear as redondearNecesidades, NUTRE, comestible, aguaCerca } from '../../src/logica/necesidades.js';
 import { reemplazar, reemplazarSinEsperar } from '../guardado.mjs';
@@ -89,6 +89,16 @@ export function atenderObjeto(S, c, msg) {
     const r = llenarCubo(objetos.invs.de(autor).lugares, p && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5) ? 'dulce' : S.terreno && p ? aguaCerca(S.terreno.aguaEn, p.x, p.z, S.terreno.marEn) : null);
     appendFileSync(archivoObjetosReg, JSON.stringify({ t: ahora, autor, accion: { tipo: 'llenar_cubo' }, ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
     if (r.ok) { guardarObjetos(); cansar(autor, p && pozoConAgua(S.mundo, p.x, p.z, ALCANCE_POZO + 0.5) ? 'sacar_agua' : 'llenar_cubo'); }
+    enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: {} } : { motivo: r.motivo }) });
+    enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
+    if (r.ok) repartirLlevado(autor);
+    return;
+  }
+  // vaciar el cubo lleno donde sea (oficios, 17 nov): el agua se derrama y el cubo queda vacío
+  if (msg.accion.tipo === 'vaciar_cubo') {
+    const r = vaciarCubo(objetos.invs.de(autor).lugares);
+    appendFileSync(archivoObjetosReg, JSON.stringify({ t: ahora, autor, accion: { tipo: 'vaciar_cubo' }, ok: r.ok, ...(r.ok ? {} : { motivo: r.motivo }) }) + '\n');
+    if (r.ok) guardarObjetos();
     enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: r.ok, ...(r.ok ? { datos: {} } : { motivo: r.motivo }) });
     enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
     if (r.ok) repartirLlevado(autor);

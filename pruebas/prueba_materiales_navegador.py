@@ -3,6 +3,8 @@
 #   - en la ribera del río de cerca de la salida hay mimbreras, y junto a una se ven su cepa y sus varas;
 #   - con la lasca de sílex, Usar corta sus varas: un haz de mimbre; las varas se van y la cepa se queda;
 #   - junto a un árbol, sin hacha en la mano y con la lasca, Usar lo descorteza (1 o 2 cortezas) y el menú ya no lo ofrece;
+#   - (oficios, 17 nov) el roble da corteza de roble; en el suelo, al lado de la corteza, de cerca; y con el cubo lleno en
+#     la mano, el menú del clic derecho ofrece «Vaciar el cubo» y al elegirlo queda vacío;
 #   - junto a un pino (a unos 4 km), Usar le hace el corte; cuando la resina está lista, Usar la coge (1 resina);
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_materiales_navegador.py <html> <carpeta_capturas>
@@ -82,9 +84,42 @@ def recorrido(pg, nombre, pref):
     if a:
         pg.evaluate(f'([x, z, r]) => {{ const k = {K}; k.pj.x = x + r + 0.5; k.pj.z = z; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); }}', [a['x'], a['z'], a['r']]); pg.wait_for_timeout(800)
         pg.keyboard.press('f'); pg.wait_for_timeout(2000)
-        c = pg.evaluate(f"{K}.inventario.cuantos('corteza')")
-        comprobar(f'{nombre}: sin hacha y con la lasca, Usar descorteza el {a["especie"]} (1 o 2 cortezas)', 1 <= c <= 2, f'{c}')
+        ct = 'corteza_roble' if a['especie'] == 'roble' else 'corteza'   # (17 nov: el roble da corteza de roble)
+        c = pg.evaluate(f"{K}.inventario.cuantos('{ct}')")
+        comprobar(f'{nombre}: sin hacha y con la lasca, Usar descorteza el {a["especie"]} (1 o 2 de {ct})', 1 <= c <= 2, f'{c}')
         comprobar(f'{nombre}: y ya no se ofrece descortezarlo', not pg.evaluate(f"{K}.talaV.usos({K}.arbolCercano()).descortezar"))
+    # (oficios, 17 nov) la corteza de roble y la de las demás, en el suelo una al lado de la otra, de cerca: delante
+    # del jugador según mira la cámara, las dos a su izquierda (que no las tape), un paso atrás de las rocas de la orilla
+    pg.evaluate(f"(() => {{ const k = {K}; k.cam.dist = 2.0; k.cam.pitch = 0.7; }})()"); pg.wait_for_timeout(1500)
+    lado = 0.8 if pref == 'pc' else 0.4   # (en el móvil, la pantalla es estrecha: más cerca de delante)
+    pg.evaluate(f"""(() => {{ const k = {K}, s = k.sueloObjetos, t = Date.now(), inv = k.inventario, lado = {lado}; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l);
+      let dx = k.pj.x - k.camara.position.x, dz = k.pj.z - k.camara.position.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
+      k.pj.x -= dx * 1.8; k.pj.z -= dz * 1.8; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);   // (un paso atrás, hacia donde estaba la cámara: fuera de las rocas de la orilla)
+      s.suelo.dejar({{ tipo: 'corteza_roble', n: 2 }}, k.pj.x + dx * 0.6 + dz * lado, k.pj.z + dz * 0.6 - dx * lado, t, 'jugador:local', false);
+      s.suelo.dejar({{ tipo: 'corteza', n: 2 }}, k.pj.x + dx * 1.3 + dz * lado, k.pj.z + dz * 1.3 - dx * lado, t, 'jugador:local', false); s.refrescar(); }})()""")
+    pg.wait_for_timeout(800)
+    sc = pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.filter(o => ['corteza', 'corteza_roble'].includes(o.cosa.tipo) && Math.hypot(o.x - k.pj.x, o.z - k.pj.z) < 2); return o.map(o => ({{ t: o.cosa.tipo, x: o.x, z: o.z }})); }})()")
+    comprobar(f'{nombre}: la corteza de roble y la corteza, en el suelo', {o['t'] for o in sc} == {'corteza', 'corteza_roble'}, str(sc))
+    comprobar(f'{nombre}: y se ven', pg.evaluate(f"!!{K}.escena.getObjectByName('suelo_corteza_roble') && !!{K}.escena.getObjectByName('suelo_corteza')"))
+    pg.wait_for_timeout(1500)
+    pg.screenshot(path=f'{SALIDA}/{pref}_2b_corteza_de_roble.png', timeout=180000)
+    # (oficios, 17 nov) el cubo lleno en la mano: el menú del clic derecho ofrece vaciarlo, y vaciado queda vacío
+    pg.evaluate(f"(() => {{ const k = {K}, inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); inv.coger('cubo_agua', 1, 'mano:der'); k.pintarTodoInventario(); }})()")
+    pg.wait_for_timeout(600)
+    ops = pg.evaluate(f"{K}.opcionesUsar()")
+    comprobar(f'{nombre}: con el cubo lleno en la mano, el menú ofrece «Vaciar el cubo»', 'Vaciar el cubo' in ops, str(ops))
+    pt = pg.evaluate(f"""(() => {{ const k = {K}, v = new k.camara.position.constructor(k.pj.x, k.alturaSuelo(k.pj.x, k.pj.z) + 0.2, k.pj.z).project(k.camara);
+      return [(v.x + 1) / 2 * innerWidth, (1 - v.y) / 2 * innerHeight]; }})()""")
+    pg.evaluate(f"{K}.abrirMenuUsar({pt[0]}, {pt[1]})"); pg.wait_for_timeout(500)
+    menu = pg.evaluate(f"{K}.menuUsar()") or []
+    comprobar(f'{nombre}: y sale en el menú, junto a ti', any('Vaciar el cubo' in m for m in menu), str(menu))
+    pg.add_style_tag(content='#menuUsar:not([hidden]), #menuUsar:not([hidden]) * { visibility: visible !important; }')   # (el menú se ve en la captura)
+    pg.screenshot(path=f'{SALIDA}/{pref}_2c_menu_vaciar_cubo.png', timeout=180000)
+    pg.evaluate("(() => { const b = [...document.querySelectorAll('#menuUsar button')].find(b => /Vaciar el cubo/.test(b.textContent)); if (b) b.click(); })()")
+    pg.wait_for_timeout(800)
+    t = pg.evaluate(f"(() => {{ const l = {K}.inventario.lugares; return l['mano:der'] ? l['mano:der'].tipo : null; }})()")
+    comprobar(f'{nombre}: al elegirlo, el cubo queda vacío en la mano', t == 'cubo', str(t))
+    pg.evaluate(f"(() => {{ const inv = {K}.inventario; if (inv.lugares['mano:der']) inv.sacar('mano:der'); }})()")
     # un pino: la resina
     ir(pg, *PINAR)
     try: pg.wait_for_function(f"{K}.obstaculos.some(o => o.arbol && (o.especie === 'pino' || o.especie === 'abeto') && Math.hypot(o.x - {K}.pj.x, o.z - {K}.pj.z) < 60)", timeout=240000)

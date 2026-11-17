@@ -85,6 +85,12 @@ r = C.llenarCubo(invs.de(A).lugares, 'dulce');
 comprobar('con agua dulce al lado, se llena', r.ok && enMano(A) === 'cubo_agua');
 r = C.llenarCubo(invs.de(A).lugares, 'dulce');
 comprobar('lleno, no otra vez', !r.ok && r.motivo === 'El cubo ya está lleno.', r.motivo);
+// vaciarlo donde sea (oficios, 17 nov): lleno, se vacía; vacío, no
+r = C.vaciarCubo(invs.de(A).lugares);
+comprobar('lleno, se vacía donde sea (17 nov)', r.ok && enMano(A) === 'cubo', r.motivo);
+r = C.vaciarCubo(invs.de(A).lugares);
+comprobar('vacío, no se vacía', !r.ok && r.motivo === 'Necesitas el cubo lleno en la mano.' && enMano(A) === 'cubo', r.motivo);
+C.llenarCubo(invs.de(A).lugares, 'dulce');
 mano(A, 'azada');
 comprobar('sin cubo en la mano, no', !C.llenarCubo(invs.de(A).lugares, 'dulce').ok);
 
@@ -177,6 +183,13 @@ console.log('El servidor de verdad: llena el cubo donde te tiene, pone la hora, 
     Ana.estar(99.5, 0); await espera(150);
     ro = await Ana.objeto({ tipo: 'llenar_cubo' });
     comprobar('junto al río, se llena', ro.ok && inv.lugares['mano:der'].tipo === 'cubo_agua', ro.motivo || '');
+    // (oficios, 17 nov) el servidor lo vacía donde sea, y se vuelve a llenar
+    ro = await Ana.objeto({ tipo: 'vaciar_cubo' });
+    comprobar('el servidor vacía el cubo lleno (17 nov)', ro.ok && inv.lugares['mano:der'].tipo === 'cubo', ro.motivo || '');
+    ro = await Ana.objeto({ tipo: 'vaciar_cubo' });
+    comprobar('y vacío, no', !ro.ok && ro.motivo === 'Necesitas el cubo lleno en la mano.', ro.motivo || '');
+    ro = await Ana.objeto({ tipo: 'llenar_cubo' });
+    comprobar('y se vuelve a llenar en el río', ro.ok && inv.lugares['mano:der'].tipo === 'cubo_agua', ro.motivo || '');
     const lejos = await Ana.accion({ tipo: 'regar', campo: c.id, x: 0, z: 0.3 });
     comprobar('a más de 3 m de donde está, no se riega', !lejos.ok && lejos.motivo === 'Estás demasiado lejos.', lejos.motivo);
     Ana.estar(0, -0.6); await espera(150);

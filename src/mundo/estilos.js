@@ -16,7 +16,7 @@ export const PALETA = {
   teja: 0x91654f, tejaOsc: 0x745040, // barro cocido, apagado y algo terroso (no el rojo vivo de una teja nueva)
   // especies de árbol del mapa (verdes y cortezas apagados, cada especie con su tono para que se distingan de lejos)
   abeto: 0x415a3d, abetoOsc: 0x354b33, haya: 0x76964a, hayaOsc: 0x637f3f, fresno: 0x86a05e, encina: 0x5a6443, encinaOsc: 0x4a5338,
-  cortezaClara: 0xc9c2b3, cortezaGris: 0x857f74, cortezaRoja: 0x8a5d40,
+  cortezaClara: 0xc9c2b3, cortezaGris: 0x857f74, cortezaRoja: 0x8a5d40, cortezaRoble: 0x74604c,
 };
 
 export const LUCES = {
@@ -84,7 +84,7 @@ export const TEX = {
   piedra: 'piedra', piedraOsc: 'piedra', mortero: 'piedra', corteza: 'corteza',
   hoja: 'hojas', hojaOsc: 'hojas', hojaClara: 'hojas', pino: 'hojas', pinoOsc: 'hojas',
   abeto: 'hojas', abetoOsc: 'hojas', haya: 'hojas', hayaOsc: 'hojas', fresno: 'hojas', encina: 'hojas', encinaOsc: 'hojas',
-  cortezaClara: 'corteza', cortezaGris: 'corteza', cortezaRoja: 'corteza',
+  cortezaClara: 'corteza', cortezaGris: 'corteza', cortezaRoja: 'corteza', cortezaRoble: 'corteza',
   lino: 'tejido', lana: 'tejido', lanaOsc: 'tejido', pano: 'tejido', barro: 'piedra',
   teja: 'piedra', tejaOsc: 'piedra', // el barro cocido, moteado como la piedra
 };

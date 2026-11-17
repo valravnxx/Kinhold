@@ -76,6 +76,7 @@ export const CATALOGO = {
   rama: R('Rama', 'M'), piedra: R('Piedra', 'M'), silex: R('Sílex', 'P'), fibra: R('Fibra cruda', 'P'),
   junco: R('Haz de juncos', 'M'), mimbre: R('Haz de mimbre', 'M'), bayas: R('Bayas', 'P'), setas: R('Setas', 'P'),
   frutos_secos: R('Frutos secos', 'P'), hierbas: R('Manojo de hierbas', 'P'), corteza: R('Corteza', 'M'),
+  corteza_roble: R('Corteza de roble', 'M'),   // la del roble, para curtir en las cubas (oficios, 17 nov)
   resina: R('Resina', 'P'), barro: R('Cesta de barro', 'M'), arcilla: R('Cesta de arcilla', 'M'), arena: R('Saco de arena', 'M'),
   turba: R('Bloque de turba', 'M'), panal: R('Panal', 'P'), huevo: R('Huevo', 'P'), yesca: R('Yesca', 'P'),
   // de los árboles
