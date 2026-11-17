@@ -162,7 +162,7 @@ export class ObjetosServidor {
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
-        estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!(a.estacion && ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.aLaVez)) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
+        estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!(a.estacion && (ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.aLaVez || ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.humea))) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;
@@ -283,8 +283,9 @@ export class ObjetosServidor {
         ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}),
         ...(e.ligadas ? { ligadas: [...e.ligadas] } : {}),   // las camas: quién la tiene ligada (cada navegador mira si es la suya)
         // lo que se pone a secar en el secadero (P9) se ve colgado para todos, y lo que se curte en las cubas (oficios), en
-        // remojo: cada encargo, con los s que le quedan (sin el autor)
-        ...(ESTACIONES[e.tipo] && ESTACIONES[e.tipo].aLaVez ? { colgado: e.cola.map(c => ({ receta: c.receta, queda: Math.max(0, Math.ceil((c.fin - ahora) / 1000)) })) } : {}) }));
+        // remojo: cada encargo, con los s que le quedan (sin el autor); y lo mismo la carga del horno de reducción (P10),
+        // para que todos vean su humo mientras reduce
+        ...(ESTACIONES[e.tipo] && (ESTACIONES[e.tipo].aLaVez || ESTACIONES[e.tipo].humea) ? { colgado: e.cola.map(c => ({ receta: c.receta, queda: Math.max(0, Math.ceil((c.fin - ahora) / 1000)) })) } : {}) }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {
