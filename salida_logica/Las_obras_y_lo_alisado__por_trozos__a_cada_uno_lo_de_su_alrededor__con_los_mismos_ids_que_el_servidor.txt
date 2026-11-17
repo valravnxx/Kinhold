@@ -1,0 +1,32 @@
+Lógica
+  OK   el mundo de la prueba se construye — ok, ok, ok, ok
+  OK   dos construcciones, una en cada trozo — 109,-1 · 139,-1
+  OK   sitio de cada acción: obras por su construcción, mueble y brocha por su punto; mojón y arcón, de todos
+  OK   la foto de un trozo lleva solo lo suyo
+  OK   y lo de todos: el contador de ids, el arcón y el mojón
+  OK   la foto se lee como un mundo
+  OK   lo de todos se copia de un mundo a otro
+  OK   lo de todos mal formado no rompe nada
+  OK   la bienvenida lleva la foto de las obras (no la lista de entradas) y el número de la última acción
+  OK   B tiene alrededor el trozo 0,0 y no el 1,0
+A construye en los dos trozos, con B lejos
+  OK   el mojón es de todo el mundo: le llega también a B — sacar_arcon mojon@126
+  OK   A construye, pone un mueble y alisa en el trozo 1,0 — ok, ok, ok
+  OK   a A le llega lo suyo
+  OK   a B no le llega nada de lo del trozo 1,0 — sacar_arcon mojon@126 sacar_arcon sacar_arcon
+  OK   ni lo que se hace después en esa obra (entregar), aunque no lleve sitio — no entregado: Estás demasiado lejos: acércate.
+A construye en el trozo 0,0, que B sí tiene
+  OK   A construye, pone un mueble y alisa en el trozo 0,0 — ok, ok, ok
+  OK   a B le llegan las tres, con «antes» — sacar_arcon mojon@126 sacar_arcon sacar_arcon colocar@110 sacar_arcon sacar_arcon decorar@112 nivelar@113
+  OK   el mundo de B es el del servidor en sus trozos: los mismos ids aunque no le llegó lo del otro trozo, y el mismo arcón — B: ids 5 · servidor: 5
+  OK   B no ha tenido que pedir la foto otra vez (todo le ha salido igual) — 1 al irse lejos, 1 ahora
+B se acerca
+  OK   al cambiar de trozo le llega la foto de las obras de sus trozos nuevos
+  OK   y su mundo queda igual que el del servidor
+  OK   B construye junto a lo de A y A lo recibe
+  OK   después, el mundo de B sigue igual que el del servidor
+Quien llega nuevo, y pedir la foto
+  OK   quien llega a la salida recibe en la bienvenida las obras de alrededor, iguales que en el servidor — 2 construcciones
+  OK   si la pide, le llega la foto de sus trozos
+
+25 correctas, 0 fallos
