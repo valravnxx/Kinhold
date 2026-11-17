@@ -3188,5 +3188,8 @@
  "Corteza de roble": "Дубовая кора",
  "Vaciar el cubo": "Вылить ведро",
  "Vacías el cubo.": "Ты выливаешь ведро.",
- "Necesitas el cubo lleno en la mano.": "Нужно полное ведро в руке."
+ "Necesitas el cubo lleno en la mano.": "Нужно полное ведро в руке.",
+ "Demo única · v229 (El cubo se vacía y la corteza de roble)": "Единое демо · v229 (Ведро выливается, и дубовая кора)",
+ "v229: el cubo lleno se vacía donde sea (oficios). Con el cubo de agua en la mano, el menú de Usar (clic derecho o el dedo quieto) ofrece «Vaciar el cubo»; si no hay nada más que usar, también Usar a secas. El agua se derrama y el cubo queda vacío en la mano, para volver a llenarlo en el río. Lo hace el servidor, con su autor. Y descortezar un roble en pie (con la lasca de sílex, un cuchillo o un hacha) da corteza de roble, la que curtirá en las cubas: placas gruesas, pardas y agrietadas; las demás especies siguen dando corteza (la de la yesca).": "v229: полное ведро можно вылить где угодно (ремёсла). С ведром воды в руке меню «Использовать» (правый клик или неподвижный палец) предлагает «Вылить ведро»; если больше нечего использовать, то и простое «Использовать». Вода проливается, и ведро остаётся в руке пустым, чтобы снова наполнить его в реке. Это делает сервер, с автором. А если снять кору со стоящего дуба (кремнёвым отщепом, ножом или топором), получится дубовая кора, которой будут дубить в чанах: толстые, бурые, растрескавшиеся пластины; другие породы по-прежнему дают кору (для трута).",
+ "v229, provisional: el roble da de 1 a 2 cortezas de roble, como las demás especies su corteza; la corteza de roble no hace yesca; el agua de las cubas será la del cubo lleno (se vaciará en ellas).": "v229, предварительно: дуб даёт от 1 до 2 дубовых кор, как другие породы — свою кору; из дубовой коры трут не делается; вода для чанов будет из полного ведра (его выльют в них)."
 }

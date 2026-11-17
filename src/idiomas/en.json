@@ -3188,5 +3188,8 @@
  "Corteza de roble": "Oak bark",
  "Vaciar el cubo": "Empty the bucket",
  "Vacías el cubo.": "You empty the bucket.",
- "Necesitas el cubo lleno en la mano.": "You need the full bucket in your hand."
+ "Necesitas el cubo lleno en la mano.": "You need the full bucket in your hand.",
+ "Demo única · v229 (El cubo se vacía y la corteza de roble)": "Single demo · v229 (The bucket is emptied, and oak bark)",
+ "v229: el cubo lleno se vacía donde sea (oficios). Con el cubo de agua en la mano, el menú de Usar (clic derecho o el dedo quieto) ofrece «Vaciar el cubo»; si no hay nada más que usar, también Usar a secas. El agua se derrama y el cubo queda vacío en la mano, para volver a llenarlo en el río. Lo hace el servidor, con su autor. Y descortezar un roble en pie (con la lasca de sílex, un cuchillo o un hacha) da corteza de roble, la que curtirá en las cubas: placas gruesas, pardas y agrietadas; las demás especies siguen dando corteza (la de la yesca).": "v229: the full bucket can be emptied anywhere (crafts). With the bucket of water in your hand, the Use menu (right click or a still finger) offers «Empty the bucket»; if there is nothing else to use, plain Use does it too. The water spills and the bucket is left empty in your hand, to fill again at the river. The server does it, with its author. And stripping the bark of a standing oak (with the flint flake, a knife or an axe) gives oak bark, the one that will tan in the vats: thick, brown, cracked plates; the other species still give bark (the one for tinder).",
+ "v229, provisional: el roble da de 1 a 2 cortezas de roble, como las demás especies su corteza; la corteza de roble no hace yesca; el agua de las cubas será la del cubo lleno (se vaciará en ellas).": "v229, provisional: the oak gives 1 to 2 oak barks, as the other species give their bark; oak bark does not make tinder; the water of the vats will be that of the full bucket (it will be emptied into them)."
 }
