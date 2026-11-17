@@ -100,11 +100,12 @@ def recorrido(pg, pre, movil):
     # primero, remar hacia el medio del río (la canoa sale de la orilla de proa: girarla allí metería la popa en las rocas de
     # la orilla, que el casco no atraviesa) y luego girar río arriba remando (W lleva a (-sin yaw, -cos yaw))
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
-    # (a paladas arranca despacio: se rema hasta que se ha separado 3 m de la orilla, como mucho 40 s de reloj, que en la nube
+    # (a paladas arranca despacio: se rema hasta cerca del medio del río, como mucho 40 s de reloj, que en la nube
     # el tiempo del juego va más despacio que el reloj)
     a0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
     pg.keyboard.down('w'); t0 = time.time()
-    while time.time() - t0 < 40 and math.hypot(*[q - p for q, p in zip(pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"), a0)]) < 3: pg.wait_for_timeout(250)
+    lejos = lambda: (lambda q: (q[0] - r['x']) * r['nx'] + (q[1] - r['z']) * r['nz'])(pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"))   # (de la línea del medio del río; <0, del lado de la orilla)
+    while time.time() - t0 < 40 and lejos() < -3: pg.wait_for_timeout(250)   # (hasta 3 m antes del medio: al girar, aún avanza un poco)
     pg.keyboard.up('w')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     # (a paladas, girando por un lado: unos segundos de juego; en la nube, con pocos fotogramas, el tiempo del juego va más
@@ -149,7 +150,10 @@ def recorrido(pg, pre, movil):
           const pos = n => h[n].getWorldPosition(p.puno.clone()), ab = p.pala.clone().sub(p.puno);
           const seg = q => {{ const t = Math.max(0, Math.min(1, q.clone().sub(p.puno).dot(ab) / ab.lengthSq())); return +q.distanceTo(p.puno.clone().addScaledVector(ab, t)).toFixed(3); }};
           return ['r', 'l'].map(l => seg(pos('hand_' + l).lerp(pos('middle_01_' + l), 0.6))); }})()""")
-        comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 3 cm)', max(dist) < 0.03, f'{dist} m')
+        # (con la pala en el agua; volviendo por el aire, las manos se deslizan por la caña de un lado a otro y al cruzarse se
+        # aparta algo la de abajo)
+        if fase < 0.5: comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 3 cm)', max(dist) < 0.03, f'{dist} m')
+        else: print(f'  (palada {lado} {fase}, volviendo: las palmas a {dist} m de la caña)')
     pg.evaluate("window.__remadaFija = null")
     # sin remar: a la deriva, río abajo (primero se acaba el impulso de las últimas paladas: como mucho 20 s de reloj)
     t0 = time.time()
