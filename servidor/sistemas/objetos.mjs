@@ -17,6 +17,7 @@ export function instalarObjetos(S) {
     posicion: (a) => { const e = S.presencia && S.presencia.ultimo.get(a); return e ? { x: e.x, z: e.z, giro: e.giro } : null; },
     enTierras: (a, x, z) => !!mundo.tierraDe(x, z),   // en la tierra de alguien, lo soltado no se pierde
     arconPruebas, terreno,
+    suTierra: (a, x, z) => mundo.dentroDeTierra(x, z, a),   // (P11d) la canoa dejada en tu tierra (o en la de quien te invita), a tu guarda
     puedeTocar: (a, x, z) => mundo.puedeTocar(x, z, a),   // las estaciones de fabricar, en tierra de otro solo si te ha invitado
     bajoTecho: (x, z) => mundo.bajoTecho(x, z),           // los puestos de trabajo: la hoguera, solo fuera
     alMuro: (x, z) => mundo.muroCercano(x, z, 0.5),       // los colgaderos, pegados a un muro

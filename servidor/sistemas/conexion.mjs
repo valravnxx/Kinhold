@@ -5,7 +5,8 @@
 import { appendFileSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { ejecutar, USAN_INVENTARIO, fueraDeAlcance } from '../../src/logica/acciones.js';
-import { validarAspecto, validarEstado } from '../../src/logica/presencia.js';
+import { validarAspecto, validarEstado, VEL_MAX } from '../../src/logica/presencia.js';
+import { VEL_MAX_CANOA } from '../../src/logica/canoa.js';
 import { llevadoDe } from '../../src/logica/llevado.js';
 import { PROTOCOLO } from '../../src/logica/protocolo.js';
 import { Limitador } from '../../src/logica/limites.js';
@@ -241,7 +242,11 @@ function atenderEstado(S, c, msg) {
   }
   // movimiento sin trampas: lo que llega más lejos de lo que se puede andar se recorta (src/logica/presencia.js)
   if (msg.anim === DESCONECTADO) msg.anim = 'dormir';   // (desconectado solo lo pone el servidor)
-  const rec = presencia.recibir(autor, msg, reloj(), { admin: esAdmin(autor), vel: (modosDe(autor).velocidad || 1) * velocidadNecesidades(necesidadesDe(autor)) });   // (rendido, no corre; helado, más lento)
+  // (rendido, no corre; helado, más lento; en canoa, remando: más deprisa, src/logica/canoa.js. En la canoa no se corre:
+  // el cansancio y el frío no la frenan, como en el navegador, que rema igual; antes el servidor recortaba al rendido que
+  // remaba río abajo y lo devolvía atrás. Lo encontró el recorrido de jugador de la canoa, 16 nov; provisional)
+  const enCanoa = !!objetos.canoas.deAutor(autor, Date.now());
+  const rec = presencia.recibir(autor, msg, reloj(), { admin: esAdmin(autor), vel: (modosDe(autor).velocidad || 1) * (enCanoa ? VEL_MAX_CANOA / VEL_MAX : velocidadNecesidades(necesidadesDe(autor))) });
   if (!rec) return enviar(ws, { tipo: 'error', motivo: 'Estado no válido.' });
   if (rec.recortado) anotarRecorte(autor, rec.recortado);
   ponerAlDia();

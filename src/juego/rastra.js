@@ -152,10 +152,11 @@ export function inclinarRastra(raiz, arrastrando) {
 // altura(x, z): el terreno. Devuelve el sitio de cada una ({ id: { x, z } }), para soltarla donde se ve.
 // La carretilla va delante, firme en las manos: su centro a DELANTE_CARRETILLA m, mirando hacia donde mira él, y la
 // rueda rueda lo que avanza.
-export function moverRastras(grupo, quien, altura) {
+export function moverRastras(grupo, quien, altura, flota = () => null) {
   const sitios = {};
   for (const obj of grupo.children) {
     if (obj.name === 'suelo_carretilla') { moverCarretilla(obj, quien, altura, sitios); continue; }
+    if (obj.name === 'suelo_canoa' && (obj.userData.rema || obj.userData.agua)) { moverCanoa(obj, quien, altura, flota, sitios); continue; }   // (P11d) a flote
     if (obj.name === 'suelo_tronco_largo' || obj.name === 'suelo_canoa') { moverTronco(obj, quien, altura, sitios); continue; }   // (y la canoa, P11d)
     if (obj.name !== 'suelo_rastra') continue;
     const autor = obj.userData.arrastra, p = autor ? quien(autor) : null;
@@ -170,6 +171,19 @@ export function moverRastras(grupo, quien, altura) {
     sitios[obj.userData.id] = { x: s.x, z: s.z };
   }
   return sitios;
+}
+
+// La canoa a flote (P11d): sobre el agua, meciéndose un poco; la que lleva alguien, debajo del que rema (sentado en medio)
+// y girada hacia donde mira (el modelo va a lo largo de X).
+function moverCanoa(obj, quien, altura, flota, sitios) {
+  const autor = obj.userData.rema, p = autor ? quien(autor) : null;
+  const t = performance.now() / 1000, id = String(obj.userData.id).length;
+  let x = obj.position.x, z = obj.position.z, giro = obj.rotation.y + Math.PI / 2;
+  if (p) { x = p.x; z = p.z; giro = p.giro; }
+  const y = flota(x, z);
+  obj.position.set(x, (y !== null ? y : altura(x, z) - 0.01) + Math.sin(t * 1.3 + id) * 0.02, z);
+  obj.rotation.set(Math.sin(t * 1.1 + id) * 0.02, giro - Math.PI / 2, Math.sin(t * 0.9 + id) * 0.025);
+  if (p) sitios[obj.userData.id] = { x, z, giro };
 }
 
 function moverCarretilla(obj, quien, altura, sitios) {

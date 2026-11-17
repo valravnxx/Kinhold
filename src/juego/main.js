@@ -60,7 +60,7 @@ import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } f
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, ALCANCE_TROCEO } from '../logica/troceo.js';
-import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado } from '../logica/canoa.js';
+import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado, Canoas, ejecutarCanoa, velocidadCanoa, remoEnMano, ALCANCE_CANOA, HONDO_FLOTA, ECHAR, HONDO_BAJAR, VEL_REMAR, ADELANTE as ADELANTE_CANOA } from '../logica/canoa.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo, vaACuerda } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
@@ -1794,6 +1794,9 @@ function accionPrincipal() {
     if (ra) return A(tr('Subir el tronco largo a la rastra'), 'tronco_largo', ra, () => cargarRastra(ra, { suelo: t.id }), { alto: 0.4 });
     return A(t.cosa.tipo === 'canoa' ? tr('Soltar la canoa') : tr('Soltar la cuerda del tronco'), 'cuerda', sitiosRastra[t.id] || yo, soltarTronco, { alto: 0.3 });
   }
+  // la canoa (P11d): yendo en ella, Usar baja a la orilla (si la hay al lado); junto a una, la echa al agua o sube
+  if (miCanoa()) { const b = orillaParaBajar(); return b ? A(tr('Bajar a la orilla'), 'canoa', b, () => bajarCanoa(b), { alto: 0.2 }) : null; }
+  if (!it && pj.k === 0 && !miRastra() && !miTronco()) { const op = opcionCanoa(); if (op) return A(op.texto, 'canoa', op.pos, op.hacer, { alto: 0.4 }); }
   if (!it && pj.k === 0 && !miRastra() && ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'cuerda')) {
     const t = rastras.troncosCercanos(pj.x, pj.z, Date.now()).find(o => !o.arrastra);
     if (t) return A(t.cosa.tipo === 'canoa' ? tr('Atar la canoa con la cuerda') : tr('Atar el tronco largo con la cuerda'), 'cuerda', t, () => atarTronco(t), { alto: 0.3 });
@@ -2226,7 +2229,7 @@ function pasoRastras() {
     const r = enLinea && enLinea.remotos.get(autor);
     return r ? { x: r.x, z: r.z, giro: r.j.raiz.rotation.y, mano: mano(r.j) } : null;
   };
-  sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura);
+  sitiosRastra = moverRastras(sueloObjetos.grupo, quien, decorado.altura, flotaEn);
   const mia = miRastra(), ahora = Date.now();
   jugador.arrastra = (!!mia && !esCarr(mia)) || !!miTronco(); jugador.empuja = esCarr(mia);   // tirando del tronco, la misma postura
   if (enLinea) for (const [autor, r] of enLinea.remotos) { const o = rastras.deAutor(autor, ahora); r.j.arrastra = (!!o && !esCarr(o)) || !!rastras.troncoDe(autor, ahora); r.j.empuja = esCarr(o); }
@@ -2234,7 +2237,141 @@ function pasoRastras() {
   const agarraderas = (autor) => { const c = sueloObjetos.grupo.children.find(o => o.name === 'suelo_carretilla' && o.userData.arrastra === autor); return c ? c.userData.agarraderas || null : null; };
   jugador.agarraderas = jugador.empuja ? agarraderas(yoSuelo()) : null;
   if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.agarraderas = r.j.empuja ? agarraderas(autor) : null;
+  // en la canoa, sentado con las rodillas dentro del casco (src/juego/personaje.js), uno mismo y los demás
+  jugador.enCanoa = !!miCanoa();
+  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.enCanoa = !!canoasLocal.deAutor(autor, ahora);
 }
+// ---- La canoa: al agua, subir, remar y bajar (P11d; src/logica/canoa.js) ----
+const hondoAqui = (x, z) => { const w = mundoJ ? mundoJ.aguaEn(x, z) : null; return w ? w.hondo : 0; };
+const canoasLocal = new Canoas(sueloObjetos.suelo, hondoAqui);   // (sin servidor, las pruebas; en línea, la del servidor)
+const miCanoa = () => canoasLocal.deAutor(yoSuelo(), Date.now());
+// Dónde se ve una canoa (la que lleva alguien, debajo de él; si no, donde está).
+const sitioCanoa = o => sitiosRastra[o.id] || o;
+// Hasta dónde se empuja la canoa o dónde se pisa al bajar: el punto más cercano a (x, z), a 1,5–lejos m, que cumpla bien(x, z).
+function puntoCerca(x, z, lejos, bien) {
+  for (let d = 1.5; d <= lejos + 1e-6; d += 0.75) for (let k = 0; k < 24; k++) {
+    const a = k / 24 * Math.PI * 2, px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d;
+    if (bien(px, pz)) return { x: px, z: pz };
+  }
+  return null;
+}
+// Hasta dónde se empuja la canoa: lo más cercano con 0,7 m de agua (que no quede rozando el fondo) o, si no, lo más hondo a
+// su alcance; null si no flota en ninguno.
+function aguaMasHonda(x, z, lejos) {
+  let mejor = null, h0 = HONDO_FLOTA + 0.1;
+  for (let d = 1.5; d <= lejos + 1e-6; d += 0.5) for (let k = 0; k < 24; k++) {
+    const a = k / 24 * Math.PI * 2, px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, h = Math.min(0.7, hondoAqui(px, pz));
+    if (h >= h0 + 0.01 && !cascoMete(px, pz, a, estorbosCanoa(px, pz, 2.5)) && !puntasEnSeco(px, pz, a)) { mejor = { x: px, z: pz }; h0 = h; }   // (sin que el casco quede en una roca ni con una punta en seco)
+  }
+  return mejor;
+}
+function orillaParaBajar() {
+  if (!mundoJ) return null;
+  return puntoCerca(pj.x, pj.z, ALCANCE_CANOA - 0.2, (x, z) => hondoAqui(x, z) < HONDO_BAJAR - 0.1 && mundoJ.dentro(x, z) && mundoJ.andable(x, z, x, z));
+}
+// Lo que se puede hacer con la canoa que hay al lado: { texto, pos, hacer } o null.
+function opcionCanoa() {
+  const ahora = Date.now();
+  const o = sueloObjetos.suelo.visibles(ahora).filter(q => q.cosa.tipo === 'canoa' && !q.arrastra && Math.hypot(sitioCanoa(q).x - pj.x, sitioCanoa(q).z - pj.z) <= ALCANCE_CANOA - 0.2)
+    .sort((a, b) => Math.hypot(sitioCanoa(a).x - pj.x, sitioCanoa(a).z - pj.z) - Math.hypot(sitioCanoa(b).x - pj.x, sitioCanoa(b).z - pj.z))[0];
+  if (!o) return null;
+  if (!o.agua) {
+    const p = mundoJ && aguaMasHonda(o.x, o.z, ECHAR - 0.25);
+    return p ? { texto: tr('Echar la canoa al agua'), pos: o, hacer: () => echarCanoa(o, p) } : null;
+  }
+  if (o.rema && o.pasajero) return null;
+  return { texto: o.rema ? tr('Subir a la canoa, delante') : tr('Subir a la canoa'), pos: sitioCanoa(o), hacer: () => subirCanoa(o) };
+}
+function accionCanoa(a, alSalir) {
+  const fin = (r) => {
+    if (!r.ok) { mostrarAviso(tr(r.motivo), true); return; }
+    if (!objetosRed) sueloObjetos.refrescar();
+    alSalir(r);
+  };
+  if (objetosRed) { objetosRed.mandar(a, fin); return; }
+  fin(ejecutarCanoa(canoasLocal, inventarios, registroAcciones, { autor: AUTOR_LOCAL, ...a }, Date.now(), { x: pj.x, z: pj.z, giro: pj.rot }));
+}
+function echarCanoa(o, p) {
+  pj.rot = Math.atan2(p.x - pj.x, p.z - pj.z);
+  accionCanoa({ tipo: 'echar_canoa', objeto: o.id, x: pj.x, z: pj.z, rx: Math.round(p.x * 100) / 100, rz: Math.round(p.z * 100) / 100 }, () => mostrarAviso(tr('Empujas la canoa al agua: flota. Usar, a su lado, sube a ella.')));
+}
+function subirCanoa(o) {
+  accionCanoa({ tipo: 'subir_canoa', objeto: o.id, x: pj.x, z: pj.z }, (r) => {
+    levantarse();
+    const s = sitioCanoa(o), g = Number.isFinite(o.giro) ? o.giro + Math.PI / 2 : pj.rot;
+    if (r.rema) { pj.x = s.x; pj.z = s.z; pj.rot = g; }   // en medio, a remar
+    mostrarAviso(r.rema ? (remoEnMano(inventario()) ? tr('Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.') : tr('Subes a la canoa, pero sin remo en la mano solo vas a la deriva. Usar en la orilla te baja.'))
+      : tr('Subes a la canoa, sentado delante: rema el otro. Usar en la orilla te baja.'));
+  });
+}
+function bajarCanoa(b) {
+  const c = miCanoa(), sola = !!c && c.rema === yoSuelo() && !c.pasajero;   // (se baja el último: la canoa se queda donde la deja)
+  accionCanoa({ tipo: 'bajar_canoa', x: pj.x, z: pj.z, bx: Math.round(b.x * 100) / 100, bz: Math.round(b.z * 100) / 100 }, (r) => {
+    pj.x = b.x; pj.z = b.z; jugador.sentado = false;
+    // (se queda donde la dejas: en tus tierras, a tu guarda; fuera, cualquiera se la lleva; si queda otro, rema él)
+    mostrarAviso(!sola ? tr('Bajas a la orilla: la canoa se queda en el agua.') : r.guarda ? tr('Bajas a la orilla: la canoa se queda en el agua, en tus tierras, a tu guarda.')
+      : tr('Bajas a la orilla: la canoa se queda en el agua. Fuera de tus tierras, cualquiera puede llevársela.'));
+  });
+}
+// Un paso yendo en la canoa: el que rema la mueve (remando con el remo, deprisa; si no, la corriente) por donde flota; el
+// otro va sentado delante, donde se ve la canoa. Devuelve la velocidad (m/s).
+function pasoCanoa(o, ax, az, mag, dt) {
+  jugador.sentado = true;
+  if (o.rema !== yoSuelo()) {
+    const s = sitiosRastra[o.id];
+    if (s && Number.isFinite(s.giro)) { pj.x = s.x + Math.sin(s.giro) * ADELANTE_CANOA; pj.z = s.z + Math.cos(s.giro) * ADELANTE_CANOA; pj.rot = s.giro; }
+    return 0;
+  }
+  let dir = { x: 0, z: 0 };
+  if (mag > 0.05) { const sy = Math.sin(cam.yaw), cy = Math.cos(cam.yaw), n = Math.hypot(ax, az); dir = { x: (ax * cy + az * sy) / n, z: (-ax * sy + az * cy) / n }; }
+  const remando = mag > 0.05 && remoEnMano(inventario());
+  const ag = mundoJ ? mundoJ.aguaEn(pj.x, pj.z) : null;
+  const v = velocidadCanoa({ dir, remando, corriente: ag ? { dx: ag.dx, dz: ag.dz } : null, mar: !!(ag && ag.mar) });
+  if (remando && mag < 1) { v.vx -= VEL_REMAR * (1 - mag) * dir.x; v.vz -= VEL_REMAR * (1 - mag) * dir.z; }   // (el joystick a medias, más despacio)
+  const flota = (x, z) => !mundoJ || (hondoAqui(x, z) >= HONDO_FLOTA * 0.8 && mundoJ.dentro(x, z));
+  const cerca = estorbosCanoa(pj.x, pj.z, 4 + Math.hypot(v.vx, v.vz) * dt);
+  // (la canoa tiene que ir por el agua, si no encalla, y su casco entero no atraviesa rocas ni troncos: si ya roza
+  // alguna, solo vale lo que no la mete más)
+  // (y la proa y la popa no se meten en la orilla: si ya toca alguna en seco, solo vale lo que no deja más en seco)
+  const vale = (x, z, rot) => flota(x, z) && cascoMete(x, z, rot, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(x, z, rot) <= puntasEnSeco(pj.x, pj.z, pj.rot);
+  const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
+  for (let i = 0; i < trozos; i++) {
+    const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h;   // (el centro de la canoa: donde va el que rema)
+    if (vale(nx, nz, pj.rot)) { pj.x = nx; pj.z = nz; } else if (vale(nx, pj.z, pj.rot)) pj.x = nx; else if (vale(pj.x, nz, pj.rot)) pj.z = nz;
+  }
+  if (remando) {   // gobierna el que rema: la canoa gira, más despacio que una persona (y no si el casco se mete en una roca)
+    let dr = Math.atan2(dir.x, dir.z) - pj.rot;
+    while (dr > Math.PI) dr -= Math.PI * 2;
+    while (dr < -Math.PI) dr += Math.PI * 2;
+    const r1 = pj.rot + dr * Math.min(1, dt * 3);
+    if (cascoMete(pj.x, pj.z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(pj.x, pj.z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) pj.rot = r1;
+  }
+  return Math.hypot(v.vx, v.vz);
+}
+// El casco de la canoa (4,4 m de largo, unos 0,8 m de ancho) contra lo que estorba en el agua y en la orilla: rocas,
+// troncos, tocones y árboles (no las matas, ni las piedras del fondo, que quedan bajo el agua: las que tienen más agua
+// encima que su radio). Cinco círculos a lo largo de la canoa, que va con el que rema en medio
+// mirando hacia la proa (rot: hacia donde mira él). Devuelve cuánto se mete en total (m; 0, nada).
+const CASCO_CANOA = [[-1.75, 0.3], [-0.9, 0.4], [0, 0.42], [0.9, 0.4], [1.75, 0.3]];   // [a lo largo, radio]
+const estorbosCanoa = (x, z, d) => obstaculos.filter(o => !o.mata && !o.oculto && !(o.arbol && o.id && talaV.tala.arrancado(o.id)) && Math.hypot(o.x - x, o.z - z) <= d + o.r && hondoAqui(o.x, o.z) < o.r);
+function cascoMete(x, z, rot, estorbos) {
+  const ux = Math.sin(rot), uz = Math.cos(rot); let m = 0;
+  if (window.__mutarCasco) return 0;   // (solo para romper a propósito la prueba: el casco atraviesa las rocas)
+  for (const [a, r] of CASCO_CANOA) for (const o of estorbos) { const d = Math.hypot(x + ux * a - o.x, z + uz * a - o.z); if (d < r + o.r) m += r + o.r - d; }
+  return m;
+}
+// Cuántas puntas de la canoa (la proa y la popa, a 2 m del medio) quedan sobre la orilla en seco (0, 1 o 2).
+function puntasEnSeco(x, z, rot) {
+  if (!mundoJ || window.__mutarCasco) return 0;
+  const ux = Math.sin(rot), uz = Math.cos(rot);
+  return (hondoAqui(x + ux * 2, z + uz * 2) < 0.05 ? 1 : 0) + (hondoAqui(x - ux * 2, z - uz * 2) < 0.05 ? 1 : 0);
+}
+// La altura del que va en la canoa: sentado en su fondo, a flote.
+function alturaEnCanoa() { const w = mundoJ ? mundoJ.aguaEn(pj.x, pj.z) : null; return (w ? w.superficie : alturaSuelo()) - CALADO_CANOA + 0.1; }   // (sentado sobre el fondo, de 4,5 cm, sin que los pies asomen por debajo)
+const CALADO_CANOA = 0.16;   // m: lo que se hunde la canoa (el casco, con 0,38 m de hondo)
+// dónde va el fondo de una canoa a flote en (x, z) (la superficie del agua, menos lo que se hunde), o null en seco
+function flotaEn(x, z) { const w = mundoJ ? mundoJ.aguaEn(x, z) : null; return w ? w.superficie - CALADO_CANOA : null; }
+
 // Una acción de la rastra o la carretilla: en línea, al servidor (se espera su respuesta); sin red, aquí con la misma lógica.
 function accionRastra(a, alSalir) {
   const fin = (r) => {
@@ -2328,7 +2465,9 @@ function atarTronco(o) {
 function soltarTronco() {
   const o = miTronco(); if (!o) return;
   const s = sitiosRastra[o.id] || {};
-  accionRastra({ tipo: 'soltar_tronco', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, () => mostrarAviso(tr('Sueltas la cuerda: el tronco se queda aquí.')));
+  const canoa = o.cosa.tipo === 'canoa';
+  accionRastra({ tipo: 'soltar_tronco', x: pj.x, z: pj.z, ...(Number.isFinite(s.x) ? { rx: s.x, rz: s.z } : {}) }, (r) => mostrarAviso(!canoa ? tr('Sueltas la cuerda: el tronco se queda aquí.')
+    : r && r.guarda ? tr('Sueltas la cuerda: la canoa se queda aquí, en tus tierras, a tu guarda.') : tr('Sueltas la cuerda: la canoa se queda aquí. Fuera de tus tierras, cualquiera puede llevársela.')));
 }
 // del arcón de pruebas al suelo, delante de ti (la rastra y la carretilla no caben en el inventario)
 function arconAlSuelo(tipo) {
@@ -3045,8 +3184,9 @@ function paso() {
   const mag = Math.min(1, Math.hypot(ax, az));
   // el agua donde estás (valravnx, 30 oct; src/logica/nado.js): a pie, vadeando o nadando, con un solo aguante para
   // correr y nadar; nadando baja más deprisa cuanto más pesa lo que llevas, y sin aguante te ahogas
+  const canoaYo = miCanoa();   // (P11d) en la canoa no se nada ni se anda: se rema
   const ag = mundoJ && pj.k === 0 ? mundoJ.aguaEn(pj.x, pj.z) : null;
-  const modo = modoAgua(ag ? ag.hondo : null);
+  const modo = canoaYo ? 'tierra' : modoAgua(ag ? ag.hondo : null);
   nado.modo = modo; nado.agua = ag;
   if (modo === 'nadar' && combate.activo && !window.__mutarPelea) { combate.guardar(); mostrarAviso(t('armaNadando')); }   // nadando no se lucha
   const rapido = teclas.has('shift');
@@ -3062,9 +3202,10 @@ function paso() {
   vel *= velocidadAdmin();   // la cuenta de admin con su velocidad multiplicada (src/logica/admin.js; el servidor la deja)
   nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos(), tira: tronco ? (tronco.ayuda ? 0.5 : 1) : 0 });
   if (modo === 'nadar' && ag) { pj.x += ag.dx * NADO.arrastre * dt; pj.z += ag.dz * NADO.arrastre * dt; }   // la corriente te lleva
+  if (canoaYo) { vel = pasoCanoa(canoaYo, ax, az, mag, dt); estado.talando = null; }
   if (nado.e.muerto) ahogado();
   pintarAguante();
-  if (mag > 0.05) {
+  if (mag > 0.05 && !canoaYo) {
     despertar();           // moverse te levanta de la cama
     levantarse();          // y del suelo
     estado.talando = null; // moverse deja de talar
@@ -3100,7 +3241,7 @@ function paso() {
   pj.vel = vel;
   // nadando, el cuerpo va en el agua con la cabeza fuera (el pecho a ras del agua: las olas del mar suben hasta medio metro) y se mece un poco
   // (en el mar, subiendo y bajando con las olas)
-  const yObjetivo = modo === 'nadar' ? ag.superficie - 1.25 + (ag.mar ? alturaOla(pj.x, pj.z) : Math.sin(performance.now() / 600) * 0.04) : alturaSuelo();
+  const yObjetivo = canoaYo ? alturaEnCanoa() : modo === 'nadar' ? ag.superficie - 1.25 + (ag.mar ? alturaOla(pj.x, pj.z) : Math.sin(performance.now() / 600) * 0.04) : alturaSuelo();
   // (window.__mutarSuelo: solo para romper a propósito la prueba del mundo, los pies siguen el suelo muy despacio)
   pj.y += (yObjetivo + (estado.durmiendo ? estado.durmiendo.alto : 0) - pj.y) * Math.min(1, dt * (window.__mutarSuelo ? 0.5 : 14));   // dormido, encima del lecho
   jugador.raiz.position.set(pj.x, pj.y, pj.z);
@@ -3108,7 +3249,8 @@ function paso() {
   pasoObra(); pasoPuesto();
   if (rampa && !(estado.obrando && estado.obrando.subir)) quitarRampa(); // se dejó de subir (moverse, reiniciar…)
   moverRampa(dt);
-  jugador.animar(mag > 0.05 ? vel : 0, dt, !!estado.talando || !!estado.obrando || !!estado.obrandoPuesto);
+  if (!canoaYo && jugador.sentado && !estado.sentado) jugador.sentado = false;   // (bajado de la canoa)
+  jugador.animar(mag > 0.05 && !canoaYo ? vel : 0, dt, !!estado.talando || !!estado.obrando || !!estado.obrandoPuesto);
   combate.paso(dt, { corriendo: correr && mag > 0.05, velocidad: mag > 0.05 ? vel : 0 });
 
   // interiores: ocultar plantas superiores y tejados si estás bajo techo, y también los muebles de esas plantas
@@ -3138,7 +3280,7 @@ function paso() {
   if (fauna) fauna.paso(dt, pj);
   moverFuegos();
   if (charla) charla.paso();
-  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
+  if (enLinea) enLinea.paso(dt, { x: pj.x, y: pj.y, z: pj.z, giro: pj.rot, anim: canoaYo ? 'sentado' : mag > 0.05 ? (vel < 1.8 ? 'andar' : 'correr') : estado.durmiendo ? 'dormir' : estado.sentado ? 'sentado' : (estado.talando || estado.obrando ? 'talar' : 'quieto') });
   pasoRastras();
   actualizarCamara();
   tiempoV.paso(dt, bajoTecho);   // (bajo techo, sin gotas: el tejado se quita para ver dentro)
@@ -3796,6 +3938,7 @@ window.__kinhold = {
   inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, vaciadoLocal, canoaCercana, opcionVaciar, mandarVaciar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)
   sueloObjetos, soltarAlSuelo, cogerDelSuelo, pintarLlevas,
+  canoasLocal, miCanoa, opcionCanoa, orillaParaBajar, cascoMete, estorbosCanoa, // la canoa a flote (P11d)
   rastras, miRastra, miTronco, atarTronco, soltarTronco, engancharRastra, soltarRastra, cargarRastra, descargarRastra, arconAlSuelo, opcionesRastra: () => opcionesRastra().map(o => o.texto), velocidadCarga, sitiosRastra: () => sitiosRastra, // la rastra // lo soltado en el suelo (src/juego/suelo.js)
   get enLinea() { return enLinea; }, objetosRed, // en línea: lo que llevas y el suelo del servidor
   reconstruir() { reconstruir(); },

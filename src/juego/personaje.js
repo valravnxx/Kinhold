@@ -124,6 +124,47 @@ export function modeloHachaDe(tipo) {
 // (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v2. `sexo`: el del personaje elegido.
 // `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
 const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
+// En la canoa (P11d), sentado con las rodillas juntas: la de sentarse en el suelo va con las piernas cruzadas y las rodillas
+// abiertas (a unos 0,25 m de cada lado), y en el casco, de 0,45 m por dentro, se salían por la borda. Tras la animación, el
+// muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo, y la pierna, hasta que el pie
+// queda de su lado a PIE_CANOA m (no cruzado) y sin bajar del fondo, y el pie, con la punta hacia delante.
+const RODILLA_CANOA = 0.12, PIE_CANOA = 0.08;
+const _cen = new THREE.Vector3(), _der = new THREE.Vector3(), _rod = new THREE.Vector3(), _obj = new THREE.Vector3(), _qr = new THREE.Quaternion(), _ade = new THREE.Vector3();
+function juntarRodillas(j) {
+  const h = j.mh && j.mh.hueso;
+  if (!h || (typeof window !== 'undefined' && window.__mutarRodillas)) return;   // (la prueba de la canoa lo rompe a propósito)
+  j.raiz.updateMatrixWorld(true);
+  j.raiz.getWorldPosition(_cen);
+  _der.set(1, 0, 0).applyQuaternion(j.raiz.getWorldQuaternion(_qr));
+  for (const l of ['l', 'r']) {
+    const muslo = h['thigh_' + l], pierna = h['calf_' + l], pie = h['foot_' + l];
+    if (!muslo || !pierna || !muslo.parent) continue;
+    pierna.getWorldPosition(_rod);
+    const lado = _obj.copy(_rod).sub(_cen).dot(_der);
+    if (Math.abs(lado) > RODILLA_CANOA) {
+      _obj.copy(_rod).addScaledVector(_der, Math.sign(lado) * RODILLA_CANOA - lado);
+      girarHueso(muslo, _rod, _obj);
+    }
+    // y el pie, de su lado y no cruzado debajo de la otra pierna (con el muslo girado, se iba por la otra borda)
+    if (!pie) continue;
+    const s = Math.sign(lado) || (l === 'l' ? 1 : -1);
+    pie.getWorldPosition(_rod);
+    const ladoPie = _obj.copy(_rod).sub(_cen).dot(_der);
+    _obj.copy(_rod).addScaledVector(_der, s * PIE_CANOA - ladoPie);
+    _obj.y = Math.max(_obj.y, _cen.y + 0.04);
+    girarHueso(pierna, _rod, _obj);
+    // y la punta del pie, hacia delante (hacia la proa): de lado, los dedos asomaban por la borda
+    const dedos = h['ball_' + l];
+    if (!dedos) continue;
+    pie.getWorldPosition(_obj);
+    dedos.getWorldPosition(_rod);
+    const largo = _rod.distanceTo(_obj);
+    _ade.set(0, 0, 1).applyQuaternion(_qr);
+    _obj.addScaledVector(_ade, largo); _obj.y = Math.max(_obj.y, _cen.y + 0.04);   // (sin bajar del fondo)
+    girarHueso(pie, _rod, _obj);
+  }
+}
+
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
@@ -167,7 +208,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     else if ((j.modo === 'tumbarse' || j.modo === 'dormido') && j.mh.acciones.levantarse) { m = 'levantarse'; j.levantaHasta = performance.now() + j.mh.acciones.levantarse.getClip().duration * 1000; }
     else if (j.modo === 'levantarse' && performance.now() < (j.levantaHasta || 0)) m = 'levantarse';
     // sentado en el suelo a descansar (P4, 8 nov; taller-sentarse-v1): quieto; al moverse, se levanta (main.js)
-    else if (j.sentado && m === 'quieto' && j.mh.acciones.sentado) m = 'sentado';
+    // (y en la canoa, P11d: con el remo en las dos manos, sentado igual; la pose de remar, de valravnx, cuando llegue)
+    else if (j.sentado && (m === 'quieto' || m === 'cargar' || m === 'hombroQuieto') && velocidad <= 0.1 && j.mh.acciones.sentado) m = 'sentado';
     if (m === 'dormido' || m === 'sentado') ritmo = 1;
     if (m === 'tumbarse' || m === 'levantarse') { ritmo = 1; const a = j.mh.acciones[m]; if (a.loop !== THREE.LoopOnce) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } }
     if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
@@ -179,7 +221,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     const cada = n < NIVELES.length ? NIVELES[n].cada : 0;
     j.dtPendiente = (j.dtPendiente || 0) + dt;
     j.cuadro = (j.cuadro || 0) + 1;
-    if (cada && j.cuadro % cada === 0) { j.mh.mezclador.update(j.dtPendiente); j.dtPendiente = 0; }
+    if (cada && j.cuadro % cada === 0) { j.mh.mezclador.update(j.dtPendiente); j.dtPendiente = 0; if (m === 'sentado' && j.enCanoa) juntarRodillas(j); }
     else if (!cada) j.dtPendiente = Math.min(j.dtPendiente, 1);
   };
   // lo que llevas se ve puesto (src/juego/llevado.js): ponerLlevado(lo de src/logica/llevado.js); va con los huesos

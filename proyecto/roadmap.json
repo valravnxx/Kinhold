@@ -2488,7 +2488,7 @@
    "id": "canoa",
    "num": "P11d",
    "nombre": "La canoa",
-   "estado": "en_curso",
+   "estado": "revision",
    "jugable": "La canoa de un solo tronco, vaciada a mano con el hacha y el fuego, y el remo: con el remo se rema, bastante más rápido que corriendo; sin remar, va a la deriva con la corriente del río. Cabe otro sentado.",
    "nota": "valravnx, 14 nov, por el chat: «me flipa lo de la canoa… debe ser más rápida (bastante más) que correr y poder usar un remo para remar en ella, si no irías a la deriva». Da uso al tronco largo; la corriente de los ríos y el nado ya existen (src/logica/nado.js, paisaje.corriente). La animación de remar la hace valravnx (11 nov); hasta que llegue, una pose provisional con el remo. Va detrás de «La casa más fuerte». La navegación grande (barcos, el continente) sigue en su hito, congelado.",
    "tareas": [
@@ -2506,21 +2506,27 @@
     },
     {
      "nombre": "Echar la canoa al agua, subir y remar: se empuja desde la orilla al agua; se sube desde la orilla o el agua poco honda y se baja en la orilla. Con el remo, se rema bastante más rápido que corriendo (valravnx; la cifra, provisional); sin remo o sin remar, va a la deriva con la corriente del río (en el mar, despacio). Cabe otro sentado. Por el servidor con su autor, y todos la ven moverse. En PC y en el móvil",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-16T10:24:31+00:00",
-     "rama": "trabajo/20261116-1024"
+     "fin": "2026-11-16T21:22:39+00:00"
     },
     {
      "nombre": "La canoa se queda donde la dejas: varada en la orilla no desaparece; en tu tierra queda a tu guarda (como la carretilla); fuera, cualquiera se la lleva",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-16T21:27:52+00:00",
+     "fin": "2026-11-16T22:18:05+00:00"
     },
     {
      "nombre": "Recorrido de jugador de la canoa, sin arcón: vacía un tronco largo, hace el remo, lleva la canoa a la orilla, rema río arriba y río abajo, la deja ir a la deriva y la vara en la orilla",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-16T22:23:17+00:00",
+     "fin": "2026-11-17T00:16:25+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-17T00:23:21+00:00",
+     "fin": "2026-11-17T00:24:29+00:00"
     }
    ]
   },
@@ -4812,6 +4818,20 @@
      "archivo": "jugar/demo/v225.html",
      "capturas": "capturas/demo-v225",
      "notas": "El remo de la canoa (P11d): en el banco de tronco, con 1 tronco corto y llevando un hacha; se lleva con las dos manos."
+    },
+    {
+     "v": "v226",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v226.html",
+     "capturas": "capturas/demo-v226",
+     "notas": "La canoa al agua (P11d): Usar la empuja al agua, se sube a ella y, con el remo, se rema bastante más deprisa que corriendo; sin remar, va a la deriva con la corriente."
+    },
+    {
+     "v": "v227",
+     "fecha": "2026-11-16",
+     "archivo": "jugar/demo/v227.html",
+     "capturas": "capturas/demo-v227",
+     "notas": "La canoa se queda donde la dejas: varada en la orilla o a flote, no desaparece; en tu tierra queda a tu guarda (nadie más la echa al agua, se sube a remarla ni la ata); fuera, cualquiera se la lleva."
     }
    ]
   },
