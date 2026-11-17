@@ -53,8 +53,9 @@ const PENDIENTES = {
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
-  est_horno_reduccion: ['aún no hay horno de reducción', 'El horno de reducción y la lupia'],
-  lupia: ['sale del horno de reducción', 'El horno de reducción y la lupia'],
+  // (17 nov) el horno de reducción ya está, pero pide carbón para levantarlo y para cada carga: espera a la carbonera
+  est_horno_reduccion: ['pide carbón, que sale de la carbonera', 'La carbonera y el carbón'],
+  lupia: ['sale del horno de reducción, que pide carbón', 'La carbonera y el carbón'],
   fuelle: ['aún no se hace', 'La fragua y la barra de hierro'],
   est_fragua: ['aún no hay fragua', 'La fragua y la barra de hierro'],
   barra_hierro: ['sale de la fragua', 'La fragua y la barra de hierro'],

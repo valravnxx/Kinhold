@@ -2625,9 +2625,9 @@
     },
     {
      "nombre": "El horno de reducción y la lupia: el horno (20 barros, 10 piedras y 4 carbones; fuera, en tu tierra) como estación; se carga con 3 minerales de hierro y 4 carbones, se enciende con yesca y el taladro de fuego y al cabo de un rato real deja 1 lupia de hierro (por tiempo transcurrido, en el servidor; todos ven el humo). Cadena: mineral ← el hierro de pantano; carbón ← la carbonera (P9); barro ← la ribera con el palo cavador; piedra ← se recoge o se rompe con el mazo",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-17T08:08:19+00:00",
-     "rama": "trabajo/20261117-0808"
+     "fin": "2026-11-17T11:20:30+00:00"
     },
     {
      "nombre": "La fragua y la barra de hierro: el fuelle (2 cueros y 2 varas, en el banco de tronco) y la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que se enciende con carbón; en ella, con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro. Cadena: cuero ← las cubas de curtido (P9); lupia ← el horno de reducción; mazo de piedra ← piedra, rama y 2 cordeles, a mano",
@@ -4856,6 +4856,13 @@
      "archivo": "jugar/demo/v229.html",
      "capturas": "capturas/demo-v229",
      "notas": "El cubo lleno se vacía donde sea (desde el menú de Usar) y descortezar un roble da corteza de roble, la de curtir"
+    },
+    {
+     "v": "v230",
+     "fecha": "2026-11-17",
+     "archivo": "jugar/demo/v230.html",
+     "capturas": "capturas/demo-v230",
+     "notas": "El horno de reducción y la lupia (P10): un puesto nuevo, la cuba de barro con su arco y su tobera; cargado con 3 minerales de hierro, 4 carbones y la yesca y encendido con el taladro de fuego, echa humo y llama para todos y al cabo de 1 h deja una lupia de hierro. El carbón aún no sale de ningún sitio (lo dará la carbonera)."
     }
    ]
   },
