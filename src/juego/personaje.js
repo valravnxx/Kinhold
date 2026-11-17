@@ -282,7 +282,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // (las medidas, desde la raíz del personaje, que en la canoa va a ras del agua: x a la izquierda, y arriba, z adelante)
     const P = (fw, lat, up, out) => j.raiz.localToWorld(out.set(lat, up, fw));
     const ancho = R.barre ? 0.62 : 0.5;   // (la de girar, más abierta)
-    const T0 = (sd, o) => P(0.45, sd * 0.2, 0.72, o), T1 = (sd, o) => P(0.32, sd * 0.24, 0.6, o);    // el puño (delante de la cara): al meter, al sacar
+    const T0 = (sd, o) => P(0.5, sd * 0.24, 0.56, o), T1 = (sd, o) => P(0.36, sd * 0.28, 0.48, o);    // el puño (delante del pecho, por debajo de la barbilla: más alto, el antebrazo tapaba la cara): al meter, al sacar
     const B0 = (sd, o) => P(0.72, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
     const a = new THREE.Vector3(), e = new THREE.Vector3();
     if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
