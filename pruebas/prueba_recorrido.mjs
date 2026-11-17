@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la casa más fuerte (P11c, 16 nov), en pruebas/recorrido_casa_fuerte.mjs: el paso 25, detrás de la granja. Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la casa más fuerte (P11c, 16 nov), en pruebas/recorrido_casa_fuerte.mjs: el paso 25, detrás de la granja. Y la canoa (P11d, 16 nov), en pruebas/recorrido_canoa.mjs: el paso 26, el último. Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -55,6 +55,7 @@ import { msDeHora } from '../src/logica/cielo.js';
 import { granja } from './recorrido_granja.mjs';
 import { pozo } from './recorrido_pozo.mjs';
 import { casaFuerte } from './recorrido_casa_fuerte.mjs';
+import { canoa } from './recorrido_canoa.mjs';
 import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -1801,6 +1802,9 @@ try {
     // P11c, la casa más fuerte (16 nov): pruebas/recorrido_casa_fuerte.mjs (la rastra, el tronco largo a cuerda, la rodaja
     // y la carretilla, la empalizada con su portón y el muro de entramado)
     await casaFuerte({ J: J2, s, T, O, comprobar, pausa, cerca });
+    // P11d, la canoa (16 nov): pruebas/recorrido_canoa.mjs (la cuerda, el adulto junto a su hoguera de la orilla, vaciarlo
+    // con el hacha y las brasas, el remo, y remar río arriba y río abajo, a la deriva y vararla en la orilla)
+    await canoa({ J: J2, s, T, O, comprobar, pausa, cerca });
     J2.ws.close();
   }
 
