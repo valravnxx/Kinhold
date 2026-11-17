@@ -91,11 +91,12 @@ def recorrido(pg, nombre, pref):
     # (oficios, 17 nov) la corteza de roble y la de las demás, en el suelo una al lado de la otra, de cerca: delante
     # del jugador según mira la cámara, las dos a su izquierda (que no las tape), un paso atrás de las rocas de la orilla
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.dist = 2.0; k.cam.pitch = 0.7; }})()"); pg.wait_for_timeout(1500)
-    pg.evaluate(f"""(() => {{ const k = {K}, s = k.sueloObjetos, t = Date.now(), inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l);
+    lado = 0.8 if pref == 'pc' else 0.4   # (en el móvil, la pantalla es estrecha: más cerca de delante)
+    pg.evaluate(f"""(() => {{ const k = {K}, s = k.sueloObjetos, t = Date.now(), inv = k.inventario, lado = {lado}; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l);
       let dx = k.pj.x - k.camara.position.x, dz = k.pj.z - k.camara.position.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
       k.pj.x -= dx * 1.8; k.pj.z -= dz * 1.8; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);   // (un paso atrás, hacia donde estaba la cámara: fuera de las rocas de la orilla)
-      s.suelo.dejar({{ tipo: 'corteza_roble', n: 2 }}, k.pj.x + dx * 0.5 + dz * 0.8, k.pj.z + dz * 0.5 - dx * 0.8, t, 'jugador:local', false);
-      s.suelo.dejar({{ tipo: 'corteza', n: 2 }}, k.pj.x + dx * 1.2 + dz * 0.8, k.pj.z + dz * 1.2 - dx * 0.8, t, 'jugador:local', false); s.refrescar(); }})()""")
+      s.suelo.dejar({{ tipo: 'corteza_roble', n: 2 }}, k.pj.x + dx * 0.6 + dz * lado, k.pj.z + dz * 0.6 - dx * lado, t, 'jugador:local', false);
+      s.suelo.dejar({{ tipo: 'corteza', n: 2 }}, k.pj.x + dx * 1.3 + dz * lado, k.pj.z + dz * 1.3 - dx * lado, t, 'jugador:local', false); s.refrescar(); }})()""")
     pg.wait_for_timeout(800)
     sc = pg.evaluate(f"(() => {{ const k = {K}, o = k.sueloObjetos.suelo.objetos.filter(o => ['corteza', 'corteza_roble'].includes(o.cosa.tipo) && Math.hypot(o.x - k.pj.x, o.z - k.pj.z) < 2); return o.map(o => ({{ t: o.cosa.tipo, x: o.x, z: o.z }})); }})()")
     comprobar(f'{nombre}: la corteza de roble y la corteza, en el suelo', {o['t'] for o in sc} == {'corteza', 'corteza_roble'}, str(sc))
