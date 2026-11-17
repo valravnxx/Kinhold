@@ -63,7 +63,9 @@ const PROVISIONAL = new Set(['hacha_hierro']); // hoy, el modelo del hacha de ma
 
 const fuentes = {};
 for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
-  if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
+  // el agua (la de las cubas de curtido, que se les echa con el cubo): su imagen, la del cubo lleno
+  if (t === 'agua') fuentes[t] = { propio: true, hacer: () => delSuelo('cubo_agua', 1) };
+  else if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
   else if (t === 'mazo_piedra') fuentes[t] = { propio: true, hacer: () => { const m = modeloMazoPiedra(); m.rotation.y = Math.PI / 2; const g = new THREE.Group(); g.add(m); return enDiagonal(g, t); } };   // (de lado: la piedra cruzada)
   else if (Object.hasOwn(MODELO_OBJETO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, 3)) : delSuelo(t, 3) };
   else if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, SUELO[t])) : delSuelo(t, SUELO[t]) };
@@ -81,7 +83,8 @@ LLENOS.secadero = { carne_cruda: 2 };
 // el raspador de pieles (P9): con una piel tensada, por raspar
 LLENOS.raspador = { piel: 1 };
 LLENOS.era = { gavilla: 2 };   // la era (P11): con gavillas por trillar
-const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }] };
+LLENOS.cubas_curtido = { agua: 1 };   // las cubas de curtido (oficios): con agua y una piel en remojo
+const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }], cubas_curtido: [{ listo: false }] };
 const conLleno = (t, o) => { o.traverse(m => { if (m.name === 'bajo_tierra') m.visible = false; });   // (lo que en el mundo queda enterrado, como la explanada de la era)
   if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };
 for (const [t, hacer] of Object.entries(MODELO_ESTACION)) if (ESTACIONES[t]) fuentes['est_' + t] = { propio: true, hacer: () => conLleno(t, hacer('icono_' + t)), estacion: true };

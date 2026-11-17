@@ -5,10 +5,15 @@
 #   - junto a un árbol, sin hacha en la mano y con la lasca, Usar lo descorteza (1 o 2 cortezas) y el menú ya no lo ofrece;
 #   - (oficios, 17 nov) el roble da corteza de roble; en el suelo, al lado de la corteza, de cerca; y con el cubo lleno en
 #     la mano, el menú del clic derecho ofrece «Vaciar el cubo» y al elegirlo queda vacío;
+#   - (oficios, 17 nov) las cubas de curtido, delante, con una piel en remojo: con el cubo lleno en la mano, Usar echa su
+#     agua en ellas (el cubo queda vacío); se ven de lejos y de cerca, curtiendo y con lo curtido, y su pestaña del panel
+#     de fabricar tiene el cuero (1 piel limpia, 2 cortezas de roble y agua; dos días);
 #   - junto a un pino (a unos 4 km), Usar le hace el corte; cuando la resina está lista, Usar la coge (1 resina);
 #   - sin errores en la página.
 # Uso: python3 pruebas/prueba_materiales_navegador.py <html> <carpeta_capturas>
 # Rota a propósito (8 nov): MUTAR=1 deja las varas de la mimbrera siempre puestas (como si no se cortaran): falla.
+# MUTAR=2 (17 nov): las cubas no se llenan (Usar con el cubo lleno no les echa el agua): falla.
+# MUTAR=3 (17 nov): las cubas no despejan la hierba (como __sinDespejarEras): falla.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -50,6 +55,57 @@ def poner_lasca(pg):
 
 VIS_MIMBRE = f"(id) => {{ const k = {K}, rec = k.recoleccion, lista = rec.puntos.filter(p => p.tipo === 'mimbre'), i = lista.findIndex(p => p.id === id), m = new k.camara.matrixWorld.constructor(); const r = {{}}; rec.grupo.children.filter(c => c.name.startsWith('recoger_mimbre')).forEach(c => {{ c.getMatrixAt(i, m); r[c.name] = Math.abs(m.determinant()) > 1e-12; }}); return r; }}"
 
+# (oficios, 17 nov) las cubas de curtido, puestas delante (ya cavadas), con piel limpia y corteza de roble dejadas
+def cubas(pg, nombre, pref):
+    # un sitio despejado de prado (sin árboles, rocas ni matas a 3,5 m, y lo más alto de alrededor: lejos del río)
+    pg.evaluate(f"""(() => {{ const k = {K}, f = k.fabCliente, x0 = k.pj.x, z0 = k.pj.z; let mejor = null;
+      for (let r = 6; r <= 24; r += 3) for (let a = 0; a < 6.28; a += 0.4) {{
+        const x = x0 + Math.cos(a) * r, z = z0 + Math.sin(a) * r, h = k.alturaSuelo(x, z);
+        if (!Number.isFinite(h) || k.obstaculos.some(o => Math.hypot(o.x - x, o.z - z) < 3.5 + (o.r || 0))) continue;
+        const llano = Math.abs(k.alturaSuelo(x + 1, z) - h) + Math.abs(k.alturaSuelo(x, z + 1) - h);
+        if (llano > 0.25) continue;
+        if (!mejor || h > mejor.h) mejor = {{ x, z, h }};
+      }}
+      const x = mejor ? mejor.x : x0 + 8, z = mejor ? mejor.z : z0;
+      f.estaciones['cubas_curtido:vista'] = {{ id: 'cubas_curtido:vista', tipo: 'cubas_curtido', x, z, giro: 0.4, autor: 'jugador:local', cola: [], deposito: {{ piel_limpia: 1, corteza_roble: 2 }} }};
+      if ({'true' if MUTAR == '2' else 'false'}) f.estaciones['cubas_curtido:vista'].tipo = 'hoyo_barro';
+      if ({'true' if MUTAR == '3' else 'false'}) window.__sinDespejarEras = true;
+      k.estacionesV.refrescar(); k.mirarEras(); k.pj.x = x + 1.3; k.pj.z = z + 0.2; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z);
+      const inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); inv.coger('cubo_agua', 1, 'mano:der'); k.pintarTodoInventario(); }})()""")
+    esperar(pg, 2000)
+    comprobar(f'{nombre}: las cubas de curtido se dibujan', pg.evaluate(f"!!{K}.escena.getObjectByName('estacion_cubas_curtido')"))
+    comprobar(f'{nombre}: y sin hierba que asome en el agua ni en la tierra sacada (las cubas despejan la hierba densa)', pg.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['cubas_curtido:vista']; return {K}.erasDespejadas().some(c => Math.hypot(c[0] - e.x, c[1] - e.z) < 0.01 && c[2] >= 0.9); }})()"))
+    ops = pg.evaluate(f"{K}.opcionesUsar()")
+    comprobar(f'{nombre}: delante de las cubas, con el cubo lleno, el menú ofrece echarles el agua', 'Echar el agua del cubo en las cubas' in ops, str(ops))
+    pg.keyboard.press('f'); pg.wait_for_timeout(1200)
+    r = pg.evaluate(f"(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'], l = k.inventario.lugares['mano:der']; return {{ agua: e.deposito.agua || 0, mano: l ? l.tipo : null }}; }})()")
+    comprobar(f'{nombre}: Usar echa el agua del cubo en las cubas: el cubo, vacío; las cubas, con agua', r['agua'] == 1 and r['mano'] == 'cubo', str(r))
+    # que se vea lo que se curte (en línea lo manda el servidor: colgado): una curtida y otra en remojo
+    pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'], ahora = Date.now(), inv = k.inventario;
+      if (inv.lugares['mano:der']) inv.sacar('mano:der'); k.pintarTodoInventario();
+      e.colgado = [{{ hasta: ahora + 40 * 3600e3 }}, {{ hasta: ahora - 1000 }}]; k.estacionesV.refrescar(); }})()""")
+    e = pg.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['cubas_curtido:vista']; return {{ x: e.x, z: e.z }}; }})()")
+    # (sin tarjeta gráfica, la hierba densa tarda en rehacerse sin lo que tapan las cubas: se espera a que acabe)
+    esperar_hierba = f"!{K}.hierbaDensa || !{K}.hierbaDensa.activa || {K}.hierbaDensa.porRehacer === 0"
+    # el jugador a un lado de las cubas y la cámara detrás de él, de través (que no las tape); en el móvil, la pantalla
+    # es estrecha y de lado no caben: las cubas delante del jugador, en la línea de la cámara (yaw 0,6), y la cámara alta,
+    # para que se vean por encima de él
+    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55), ('cubas_cerca', 1.6, 0.8, 2.6, 0.6)] if pref == 'pc' else [('cubas', 1.35, 1.98, 4.4, 0.8), ('cubas_cerca', 1.19, 1.73, 2.8, 1.0)]
+    for (cual, dx, dz, dist, pitch) in vistas:
+        pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista']; k.pj.x = e.x + {dx}; k.pj.z = e.z + {dz}; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);
+          k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = 0.6; }})()""")
+        pg.wait_for_timeout(2500)
+        try: pg.wait_for_function(esperar_hierba, timeout=90000, polling=500)
+        except Exception: pass
+        pg.screenshot(path=f'{SALIDA}/{pref}_2d_{cual}.png', timeout=180000)
+    pg.evaluate(f"{K}.panelFabricar.abrirEstacion('cubas_curtido:vista')"); pg.wait_for_timeout(1200)
+    pg.add_style_tag(content='#panelFabricar:not([hidden]), #panelFabricar:not([hidden]) * { visibility: visible !important; }')
+    t = pg.evaluate("document.getElementById('panelFabricar').innerText")
+    pest = pg.evaluate("!!document.querySelector('#panelFabricar .fab-pest[data-pestana=\"curtir\"]')")
+    comprobar(f'{nombre}: su pestaña «Cubas de curtido», con el cuero y lo que tiene dentro', pest and 'Cuero' in t and 'Dentro de las cubas de curtido' in t, t[:300])
+    pg.screenshot(path=f'{SALIDA}/{pref}_2e_panel_cubas.png', timeout=180000)
+    pg.evaluate(f"{K}.panelFabricar.cerrar()"); pg.wait_for_timeout(300)
+
 def recorrido(pg, nombre, pref):
     errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
@@ -63,7 +119,7 @@ def recorrido(pg, nombre, pref):
     m = pg.evaluate(f"(() => {{ const k = {K}, l = k.recoleccion.puntos.filter(p => p.tipo === 'mimbre').sort((a, b) => Math.hypot(a.x - {MIMBRERA[0]}, a.z - {MIMBRERA[1]}) - Math.hypot(b.x - {MIMBRERA[0]}, b.z - {MIMBRERA[1]})); return l[0] ? {{ id: l[0].id, x: l[0].x, z: l[0].z }} : null; }})()")
     comprobar(f'{nombre}: en la ribera del río del sur hay una mimbrera', bool(m) and abs(m['x'] - MIMBRERA[0]) < 3, str(m))
     if not m: return
-    if MUTAR: pg.evaluate(f"{K}.recoleccion.grupo.children.filter(c => c.name === 'recoger_mimbre').forEach(c => c.name = 'recoger_mimbre_planta')")
+    if MUTAR == '1': pg.evaluate(f"{K}.recoleccion.grupo.children.filter(c => c.name === 'recoger_mimbre').forEach(c => c.name = 'recoger_mimbre_planta')")
     mirar(pg, m['x'], m['z'])
     antes = pg.evaluate(VIS_MIMBRE, m['id'])
     comprobar(f'{nombre}: se ven su cepa y sus varas', antes.get('recoger_mimbre_planta') and antes.get('recoger_mimbre'), str(antes))
@@ -120,6 +176,7 @@ def recorrido(pg, nombre, pref):
     t = pg.evaluate(f"(() => {{ const l = {K}.inventario.lugares; return l['mano:der'] ? l['mano:der'].tipo : null; }})()")
     comprobar(f'{nombre}: al elegirlo, el cubo queda vacío en la mano', t == 'cubo', str(t))
     pg.evaluate(f"(() => {{ const inv = {K}.inventario; if (inv.lugares['mano:der']) inv.sacar('mano:der'); }})()")
+    cubas(pg, nombre, pref)
     # un pino: la resina
     ir(pg, *PINAR)
     try: pg.wait_for_function(f"{K}.obstaculos.some(o => o.arbol && (o.especie === 'pino' || o.especie === 'abeto') && Math.hypot(o.x - {K}.pj.x, o.z - {K}.pj.z) < 60)", timeout=240000)

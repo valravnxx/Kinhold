@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-17T18:23:14+00:00",
-  "tarea": "Las cubas de curtido y el cuero: las cubas (un hoyo cavado con el palo cavador, 2 cestas de barro y 2 troncos cortos) como estación, fuera; se llenan con el cubo de agua; 1 piel limpia y 2 cortezas de roble dan 1 cuero al cabo de días reales (por tiempo transcurrido, en el servidor). Cadena: barro ← la ribera con el palo cavador; tronco corto ← trocear; piel limpia ← el raspador; corteza de roble y agua ← la tarea anterior",
-  "hito": "oficios",
-  "rama": "trabajo/20261117-0524"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261117-0940-remar": {
   "inicio": "2026-11-17T15:17:09+01:00",
