@@ -381,7 +381,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   for (let d = 1.5; d <= 4.25; d += 0.5) for (let k = 0; k < 24; k++) { const a = k / 24 * 6.283, x = laCanoa.x + Math.sin(a) * d, z = laCanoa.z + Math.cos(a) * d, h = Math.min(0.7, hondo(x, z)); if (h >= h0 + 0.01) { echarA = { x: r2(x), z: r2(z) }; h0 = h; } }
   q = echarA ? await J.objeto({ tipo: 'echar_canoa', objeto: laCanoa.id, x: J.pos.x, z: J.pos.z, rx: echarA.x, rz: echarA.z }) : { ok: false, motivo: 'no hay agua donde empujarla' };
   laCanoa = porId(laCanoa.id);
-  comprobar('con el remo en una mano, empuja la canoa al agua: flota', q.ok && laCanoa?.agua === true, q.motivo);
+  comprobar('con el remo en las manos, empuja la canoa al agua: flota', q.ok && laCanoa?.agua === true, q.motivo);
   if (!q.ok) return;
   // sube desde la orilla (o lo poco hondo), a su lado
   let desde = null;
@@ -423,7 +423,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   const arriba = await remar(-1, 60);
   comprobar('rema río arriba, contra la corriente, y avanza', arriba.seg >= 3 && arriba.aFavor < -10, `${r2(arriba.seg)} s · ${r2(-arriba.aFavor)} m río arriba · ${r2(arriba.v)} m/s (corriente ${r2(ag0?.vel || 0)} m/s)`);
   const abajo = await remar(1, 60);
-  comprobar('rema río abajo, a favor: bastante más deprisa que corriendo', abajo.seg >= 3 && abajo.aFavor > 10 && abajo.v > VEL_MAX * 1.2, `${r2(abajo.seg)} s · ${r2(abajo.aFavor)} m río abajo · ${r2(abajo.v)} m/s (corriendo, ${VEL_MAX}; remando, ${VEL_REMAR} más la corriente)`);
+  comprobar('rema río abajo, a favor: bastante más deprisa que corriendo', abajo.seg >= 3 && abajo.aFavor > 10 && abajo.v > VEL_MAX * 1.2, `${r2(abajo.seg)} s · ${r2(abajo.aFavor)} m río abajo · ${r2(abajo.v)} m/s (a pie, el servidor deja como mucho ${VEL_MAX}; remando, ${VEL_REMAR} más la corriente)`);
   comprobar('el servidor le deja ir así de deprisa: le tiene donde rema (sin recortarle)', arriba.desfase < 1.5 && abajo.desfase < 1.5 && abajo.servidor > abajo.aFavor * 0.8, `desfase ${r2(arriba.desfase)} y ${r2(abajo.desfase)} m · el servidor le ha visto ir ${r2(abajo.servidor)} m · cansancio ${Math.round(nec().cansancio || 0)}`);
 
   console.log('26g. Deja de remar: la canoa va a la deriva con la corriente; y la vara en la orilla');
