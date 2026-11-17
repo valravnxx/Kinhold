@@ -1,0 +1,61 @@
+PC (1280×800)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+  (el decorado no ha acabado de ponerse a tiempo)
+  OK   PC_la canoa está en tierra, junto al agua
+  OK   PC_en tierra, Usar no ofrece subir: la echa al agua — Echar la canoa al agua
+  OK   PC_Usar la empuja al agua: flota — Empujas la canoa al agua: flota. Usar, a su lado, sube a ella. · 1.60 m de agua
+  OK   PC_se ve sobre el agua (no en el fondo) — [-6.189525295114604, -6.022988944544807]
+  OK   PC_el agua no se ve dentro del casco (la tapa que la esconde)
+  OK   PC_Usar a su lado: subir a la canoa — Subir a la canoa
+  OK   PC_sube, y rema él — Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.
+  OK   PC_va sentado (con el remo en las manos) — sentado
+  OK   PC_las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio y sin salir por debajo) — [[-0.12, 0.36], [0.12, 0.37], [-0.07, 0.07], [0.07, 0.11], [-0.06, 0.14], [0.07, 0.14]] (de lado, alto)
+  OK   PC_y mirando a lo largo de la canoa (los hombros, de través) — [[-0.18, 0.7], [0.17, 0.7]]
+  OK   PC_remando, sale de la orilla y gira río arriba — 4.50 (río arriba: -1.75)
+  OK   PC_remando, la pala entra en el agua por un lado y por el otro — [{'lado': 'r', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'r'}, {'lado': 'l', 'bajo': False, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}]
+  OK   PC_y entre palada y palada sale del agua
+  OK   PC_remando, a ritmo de canoa (no más de 5,5 m/s) y a tirones (la velocidad sube y baja) — 0.06–2.03 m/s (corriente 0.9 m/s)
+  FALLA PC_y avanza río arriba — -0.4 m
+  OK   PC_sigue en el agua
+  FALLA PC_palada r 0.05: las dos palmas sobre la caña (a menos de 3 cm) — [0, 0.035] m
+  OK   PC_palada r 0.3: las dos palmas sobre la caña (a menos de 3 cm) — [0, 0] m
+  (palada r 0.75, volviendo: las palmas a [0, 0.091] m de la caña)
+  OK   PC_palada l 0.2: las dos palmas sobre la caña (a menos de 3 cm) — [0.005, 0] m
+  OK   PC_sin remar, la corriente la lleva río abajo — 1.78 m en 4.0 s
+  OK   PC_remando contra una roca, el casco no la atraviesa — 0.00 m dentro
+  OK   PC_remando contra la orilla, encalla en el agua (no sale a tierra) — 2.16 m de agua
+  FALLA PC_junto a la orilla, Usar baja a tierra
+  FALLA PC_baja a la orilla (en seco o lo poco hondo) y la canoa se queda a flote — No hay nada que usar cerca. · 2.08 m · {'x': -8111.25, 'z': 1149.83, 'agua': True, 'rema': 'jugador:local'}
+  FALLA PC_ya no va sentado
+  OK   PC_sin errores en la página — []
+Móvil (390×844)
+  río: {"x": -8112, "z": 1144, "ux": 0.98, "uz": 0.18, "nx": 0.18, "nz": -0.98, "orilla": 7.89, "ancho": 14.28, "vel": 0.86}
+  OK   movil_la canoa está en tierra, junto al agua
+  OK   movil_en tierra, Usar no ofrece subir: la echa al agua — Echar la canoa al agua
+  OK   movil_Usar la empuja al agua: flota — Empujas la canoa al agua: flota. Usar, a su lado, sube a ella. · 1.60 m de agua
+  OK   movil_se ve sobre el agua (no en el fondo) — [-6.180698970027997, -6.022988944544807]
+  OK   movil_el agua no se ve dentro del casco (la tapa que la esconde)
+  OK   movil_Usar a su lado: subir a la canoa — Subir a la canoa
+  OK   movil_sube, y rema él — Subes a la canoa. Rema moviéndote; sin remar, la lleva la corriente. Usar en la orilla te baja.
+  OK   movil_va sentado (con el remo en las manos) — sentado
+  OK   movil_las rodillas, los pies y sus dedos, dentro del casco (a menos de 0,17 m del medio y sin salir por debajo) — [[-0.13, 0.35], [0.12, 0.36], [-0.07, 0.07], [0.07, 0.12], [-0.07, 0.13], [0.07, 0.14]] (de lado, alto)
+  OK   movil_y mirando a lo largo de la canoa (los hombros, de través) — [[-0.18, 0.71], [0.16, 0.71]]
+  OK   movil_remando, sale de la orilla y gira río arriba — 4.50 (río arriba: -1.75)
+  OK   movil_remando, la pala entra en el agua por un lado y por el otro — [{'lado': 'r', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'r'}, {'lado': 'l', 'bajo': False, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}, {'lado': 'l', 'bajo': True, 'palada': 'l'}, {'lado': 'r', 'bajo': False, 'palada': 'r'}]
+  OK   movil_y entre palada y palada sale del agua
+  OK   movil_remando, a ritmo de canoa (no más de 5,5 m/s) y a tirones (la velocidad sube y baja) — 0.06–2.03 m/s (corriente 0.9 m/s)
+  FALLA movil_y avanza río arriba — -0.4 m
+  OK   movil_sigue en el agua
+  FALLA movil_palada r 0.05: las dos palmas sobre la caña (a menos de 3 cm) — [0, 0.036] m
+  OK   movil_palada r 0.3: las dos palmas sobre la caña (a menos de 3 cm) — [0, 0] m
+  (palada r 0.75, volviendo: las palmas a [0, 0.089] m de la caña)
+  OK   movil_palada l 0.2: las dos palmas sobre la caña (a menos de 3 cm) — [0.005, 0] m
+  OK   movil_sin remar, la corriente la lleva río abajo — 2.62 m en 2.5 s
+  OK   movil_remando contra una roca, el casco no la atraviesa — 0.00 m dentro
+  OK   movil_remando contra la orilla, encalla en el agua (no sale a tierra) — 2.14 m de agua
+  FALLA movil_junto a la orilla, Usar baja a tierra
+  OK   movil_baja a la orilla (en seco o lo poco hondo) y la canoa se queda a flote — Bajas a la orilla: la canoa se queda en el agua. Fuera de tus tierras, cualquiera puede llevársela. · 0.17 m · {'x': -8044.65, 'z': 1177.44, 'agua': True, 'rema': None}
+  OK   movil_ya no va sentado
+  OK   movil_sin errores en la página — []
+
+8 FALLOS
