@@ -622,19 +622,19 @@ function mineralHierro(n, id) {
 
 // El carbón vegetal (P10, 17 nov; lo dará la carbonera): un montoncito de trozos de leña carbonizada, negros y ligeros,
 // partidos y de cantos vivos, unos encima de otros.
-const CARBON = 0x35312c, CARBON_CLARO = 0x4c4741;
+const CARBON = 0x302c28, CARBON_CLARO = 0x4a4540;
 function carbon(n, id) {
   const L = lote(0.035), k = Math.min(16, 6 + (n || 1));
   for (let i = 0; i < k; i++) {
     const a = i * 2.399 + az(id, i), capa = i < 8 ? 0 : i < 13 ? 1 : 2, d = capa === 2 ? 0.02 : capa ? 0.045 : 0.035 + Math.sqrt(i / 8) * 0.075;
-    const largo = 0.04 + az(id, i + 10) * 0.05, r = 0.016 + az(id, i + 20) * 0.014;
+    const largo = 0.07 + az(id, i + 10) * 0.07, r = 0.018 + az(id, i + 20) * 0.014;
     const g = new THREE.CylinderGeometry(r * (0.7 + az(id, i + 25) * 0.3), r, largo, 5, 2), p = g.attributes.position;   // un trozo partido, facetado
     for (let j = 0; j < p.count; j++) {
       const y = p.getY(j), f = 0.65 + 0.5 * az(id + ':' + i, Math.round(p.getX(j) * 2000) + ':' + Math.round(y * 2000) + ':' + Math.round(p.getZ(j) * 2000));
       p.setX(j, p.getX(j) * f); p.setZ(j, p.getZ(j) * f); p.setY(j, y * (0.85 + 0.3 * az(id + 'y' + i, Math.round(p.getX(j) * 900))));
     }
     g.computeVertexNormals();
-    L.add(g, i % 3 ? CARBON : CARBON_CLARO, Math.cos(a) * d * 1.2, r * 0.8 + capa * 0.028, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, i + 40) - 0.5) * 0.9, y: az(id, i + 50) * 6, x: (az(id, i + 45) - 0.5) * 0.8 }, { plano: true, tex: 'corteza', brillo: 0.95 });
+    L.add(g, i % 3 ? CARBON : CARBON_CLARO, Math.cos(a) * d * 1.2, r * 0.8 + capa * 0.028, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, i + 40) - 0.5) * 0.9, y: az(id, i + 50) * 6, x: (az(id, i + 45) - 0.5) * 0.8 }, { plano: true, tex: 'veta', brillo: 1.0 });
   }
   return mallas(L);
 }
@@ -642,7 +642,7 @@ function carbon(n, id) {
 // La lupia de hierro (P10, 17 nov, la del horno de reducción): una masa esponjosa del tamaño de un puño grande, gris
 // negruzca, llena de poros y de bultos, con la escoria vidriosa pegada abajo y alguna mancha de óxido; aplastada por
 // debajo, como sale del fondo del horno.
-const LUPIA = 0x3d3a37, LUPIA_CLARA = 0x58534d, ESCORIA = 0x2b2a2c, OXIDO_LUPIA = 0x6e4630;
+const LUPIA = 0x5d5955, LUPIA_CLARA = 0x726d67, ESCORIA = 0x2f2c2e, OXIDO_LUPIA = 0x6a4c3a;
 function lupia(n, id) {
   const L = lote(0.05), k = Math.min(3, n || 1);
   for (let i = 0; i < k; i++) {
@@ -661,9 +661,9 @@ function lupia(n, id) {
       const b = e * 1.6 + az(id, i * 10 + e), re = r * (0.22 + az(id, i * 10 + e + 5) * 0.12);
       L.add(new THREE.IcosahedronGeometry(re, 1), ESCORIA, cx + Math.cos(b) * r * 1.0, re * 0.5, cz + Math.sin(b) * r * 0.85, null, { escala: v3(1.3, 0.55, 1), brillo: 1.25, tex: 'liso' });
     }
-    for (let o = 0; o < 3; o++) {   // manchas de óxido en lo alto
+    for (let o = 0; o < 2; o++) {   // manchas de óxido en lo alto
       const b = o * 2.1 + az(id, i * 20 + o);
-      L.add(new THREE.IcosahedronGeometry(r * 0.28, 1), OXIDO_LUPIA, cx + Math.cos(b) * r * 0.55, cy + r * 0.45, cz + Math.sin(b) * r * 0.5, null, { escala: v3(1, 0.35, 1), plano: true, tex: 'piedra', sinSuelo: true });
+      L.add(new THREE.IcosahedronGeometry(r * 0.2, 1), OXIDO_LUPIA, cx + Math.cos(b) * r * 0.55, cy + r * 0.45, cz + Math.sin(b) * r * 0.5, null, { escala: v3(1, 0.35, 1), plano: true, tex: 'piedra', sinSuelo: true });
     }
   }
   return mallas(L);

@@ -96,6 +96,9 @@ def recorrido(nav, nombre, pref, vista, movil):
     ficha = pg.evaluate("(document.querySelector('#panelFabricar .fab-ficha') || {}).innerText || ''")
     comprobar(f'{nombre}: la ficha pide el mineral y el carbón y el taladro de fuego, y dice lo que tarda (1 h)', re.search('mineral', ficha, re.I) and re.search('carb', ficha, re.I) and re.search('taladro', ficha, re.I) and '1 h' in ficha, ficha[:400])
     comprobar(f'{nombre}: el panel no se sale de lado', pg.evaluate("document.getElementById('panelFabricar').scrollWidth <= document.getElementById('panelFabricar').clientWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1"))
+    pg.evaluate("(() => { const f = document.querySelector('#panelFabricar .fab-ficha'); const u = f && f.lastElementChild; if (u) u.scrollIntoView({ block: 'end' }); })()")   # (en el móvil la hoja se desplaza: lo de abajo, entero)
+    pg.wait_for_function("[...document.querySelectorAll('#panelFabricar img')].every(i => i.complete && i.naturalWidth > 0)", timeout=60000)
+    pg.wait_for_timeout(600)
     pg.screenshot(path=f'{SALIDA}/{pref}_panel_horno.png', timeout=180000)
     pg.evaluate(f"{K}.panelFabricar.cerrar()")
     if not movil:   # el carbón y la lupia en el suelo, de cerca, lejos de los hornos
