@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3102 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3455 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5036 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3514 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3096 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3498 KB
+dist/kinhold_trozos.html 3118 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la canoa
+  OK   movil_se ve el remo en el suelo
+  OK   movil_sin errores en la página — []
+
+TODO CORRECTO
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 86 s
