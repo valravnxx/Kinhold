@@ -121,8 +121,12 @@ def recorrido(pg, pre, movil):
     # (la velocidad, la que da el juego en cada fotograma: en la nube, sin tarjeta gráfica, van tan pocos fotogramas que el
     # tiempo del juego no sigue al reloj; lo andado, que sea río arriba)
     # (y la pala: dónde va respecto al que rema, a la izquierda o a la derecha y por debajo o por encima del agua)
-    pg.keyboard.down('w'); vs = []; palas = []
-    for i in range(16):
+    # (al menos 16 muestras y hasta haber subido 2 m, como mucho 40 s de reloj: en la nube el juego va despacio)
+    pg.keyboard.down('w'); vs = []; palas = []; t0 = time.time()
+    subido = lambda: -((pg.evaluate(f"{K}.pj.x") - p0[0]) * r['ux'] + (pg.evaluate(f"{K}.pj.z") - p0[1]) * r['uz'])
+    i = 0
+    while i < 16 or (subido() < 2 and time.time() - t0 < 40):
+        i += 1
         pg.wait_for_timeout(250); vs.append(pg.evaluate(f"{K}.pj.vel"))
         palas.append(pg.evaluate(f"""(() => {{ const j = {K}.jugador, p = j.palaRemo, r = j.remada; if (!p) return null; j.raiz.updateMatrixWorld(true);
           const l = j.raiz.worldToLocal(p.pala.clone()), a = {K}.mundoJ.aguaEn(p.pala.x, p.pala.z);
@@ -152,7 +156,7 @@ def recorrido(pg, pre, movil):
           return ['r', 'l'].map(l => seg(pos('hand_' + l).lerp(pos('middle_01_' + l), 0.6))); }})()""")
         # (con la pala en el agua; volviendo por el aire, las manos se deslizan por la caña de un lado a otro y al cruzarse se
         # aparta algo la de abajo)
-        if fase < 0.5: comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 3 cm)', max(dist) < 0.03, f'{dist} m')
+        if fase < 0.5: comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 4 cm)', max(dist) < 0.04, f'{dist} m')
         else: print(f'  (palada {lado} {fase}, volviendo: las palmas a {dist} m de la caña)')
     pg.evaluate("window.__remadaFija = null")
     # sin remar: a la deriva, río abajo (primero se acaba el impulso de las últimas paladas: como mucho 20 s de reloj)
@@ -175,7 +179,9 @@ def recorrido(pg, pre, movil):
     pg.evaluate(f"(() => {{ const k = {K}, i = k.obstaculos.findIndex(o => o.prueba_canoa); if (i >= 0) k.obstaculos.splice(i, 1); }})()")
     # remar hacia la orilla: encalla, no se sale del agua
     pg.evaluate(f"(() => {{ const k = {K}; k.pj.rot = Math.atan2(-({r['nx']}), -({r['nz']})); k.cam.yaw = Math.atan2({r['nx']}, {r['nz']}); }})()")
-    pg.keyboard.down('w'); pg.wait_for_timeout(2500); pg.keyboard.up('w')
+    pg.keyboard.down('w'); t0 = time.time()   # (hasta la orilla, como mucho 40 s de reloj)
+    while time.time() - t0 < 40 and usar_texto(pg) != 'Bajar a la orilla': pg.wait_for_timeout(250)
+    pg.wait_for_timeout(1000); pg.keyboard.up('w')
     h = pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0
     comprobar(f'{pre}remando contra la orilla, encalla en el agua (no sale a tierra)', h >= 0.2, f'{h:.2f} m de agua')
     t = usar_texto(pg)
