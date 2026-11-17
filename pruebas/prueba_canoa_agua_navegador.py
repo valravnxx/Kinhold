@@ -9,6 +9,7 @@
 # MUTAR_CASCO=1: el casco atraviesa las rocas: tiene que fallar.
 # MUTAR=1: remar no mueve la canoa más que la corriente (sin remo de verdad): tiene que fallar.
 # MUTAR_REMAR=1: la velocidad fija de antes, sin paladas: tiene que fallar.
+# MUTAR_PALMAS=1: las manos sin corregir (la palma fuera de la caña): tiene que fallar.
 import sys, os, json, time, math
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -63,6 +64,7 @@ def recorrido(pg, pre, movil):
     if os.environ.get('MUTAR_RODILLAS') == '1': pg.evaluate('window.__mutarRodillas = true')
     if os.environ.get('MUTAR_CASCO') == '1': pg.evaluate('window.__mutarCasco = true')
     if os.environ.get('MUTAR_REMAR') == '1': pg.evaluate('globalThis.__mutarRemar = true')
+    if os.environ.get('MUTAR_PALMAS') == '1': pg.evaluate('globalThis.__mutarPalmas = true')
     if MUTAR: pg.evaluate(f"(() => {{ const k = {K}; k.inventario().lugares['mano:der'] = null; k.vestir(); }})()")
     pg.evaluate(f"{K}.usar()"); pg.wait_for_timeout(700)
     c = canoa(pg, id)
@@ -98,7 +100,12 @@ def recorrido(pg, pre, movil):
     # primero, remar hacia el medio del río (la canoa sale de la orilla de proa: girarla allí metería la popa en las rocas de
     # la orilla, que el casco no atraviesa) y luego girar río arriba remando (W lleva a (-sin yaw, -cos yaw))
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
-    pg.keyboard.down('w'); pg.wait_for_timeout(1200); pg.keyboard.up('w')
+    # (a paladas arranca despacio: se rema hasta que se ha separado 3 m de la orilla, como mucho 40 s de reloj, que en la nube
+    # el tiempo del juego va más despacio que el reloj)
+    a0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+    pg.keyboard.down('w'); t0 = time.time()
+    while time.time() - t0 < 40 and math.hypot(*[q - p for q, p in zip(pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"), a0)]) < 3: pg.wait_for_timeout(250)
+    pg.keyboard.up('w')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
     # (a paladas, girando por un lado: unos segundos de juego; en la nube, con pocos fotogramas, el tiempo del juego va más
     # despacio que el reloj: se rema hasta que mira río arriba, como mucho 40 s de reloj)
@@ -138,6 +145,11 @@ def recorrido(pg, pre, movil):
           k.cam.yaw = k.pj.rot + 0.6; k.cam.dist = 3.0; k.cam.pitch = 0.35; }})()""")
         pg.wait_for_timeout(400)
         pg.screenshot(path=f'{SALIDA}/{pre}4{"abcd"[i]}_remando_palada.png')
+        dist = pg.evaluate(f"""(() => {{ const j = {K}.jugador, h = j.mh.hueso, p = j.palaRemo; if (!p) return [9, 9]; j.raiz.updateMatrixWorld(true);
+          const pos = n => h[n].getWorldPosition(p.puno.clone()), ab = p.pala.clone().sub(p.puno);
+          const seg = q => {{ const t = Math.max(0, Math.min(1, q.clone().sub(p.puno).dot(ab) / ab.lengthSq())); return +q.distanceTo(p.puno.clone().addScaledVector(ab, t)).toFixed(3); }};
+          return ['r', 'l'].map(l => seg(pos('hand_' + l).lerp(pos('middle_01_' + l), 0.6))); }})()""")
+        comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 3 cm)', max(dist) < 0.03, f'{dist} m')
     pg.evaluate("window.__remadaFija = null")
     # sin remar: a la deriva, río abajo (primero se acaba el impulso de las últimas paladas: como mucho 20 s de reloj)
     t0 = time.time()

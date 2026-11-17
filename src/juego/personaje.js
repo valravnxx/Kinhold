@@ -306,7 +306,20 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     const mano = (lado) => (agua ? sitio(lado, s) : sitio(lado, s).clone().lerp(sitio(lado, s2), k));
     const poloR = new THREE.Vector3().addScaledVector(_l, -0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
     const poloL = new THREE.Vector3().addScaledVector(_l, 0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
-    nudillosA(b.r, mano('r'), poloR); nudillosA(b.l, mano('l'), poloL);
+    // (la palma, no el nudillo, sobre la caña: el nudillo se pone donde toca, se mira dónde ha quedado la palma y se corrige
+    // lo que le falta, dos veces; y el remo pasa luego por las dos palmas, como al llevarlo de pie, para que no quede en el
+    // aire si el brazo no llega del todo)
+    const palma = (lado) => b[lado].mano.getWorldPosition(new THREE.Vector3()).lerp(b[lado].nudillo.getWorldPosition(new THREE.Vector3()), 0.6);
+    const quiere = { r: mano('r'), l: mano('l') }, apunta = { r: quiere.r.clone(), l: quiere.l.clone() };
+    for (let i = 0; i < 3; i++) {
+      nudillosA(b.r, apunta.r, poloR); nudillosA(b.l, apunta.l, poloL);
+      if (i < 2 && !globalThis.__mutarPalmas) for (const lado of ['r', 'l']) apunta[lado].add(quiere[lado].clone().sub(palma(lado)));
+    }
+    if (!globalThis.__mutarPalmas) {
+      // (lo que no llega el brazo, el remo lo sigue: se corre entero lo que se quedan cortas las dos palmas, de media)
+      const corre = palma('r').sub(quiere.r).add(palma('l').sub(quiere.l)).multiplyScalar(0.5);
+      j.palaRemo.puno.add(corre); j.palaRemo.pala.add(corre);
+    }
     return true;
   };
   const colocarBrazos = () => {
