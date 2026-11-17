@@ -56,14 +56,21 @@ VIS_MIMBRE = f"(id) => {{ const k = {K}, rec = k.recoleccion, lista = rec.puntos
 
 # (oficios, 17 nov) las cubas de curtido, puestas delante (ya cavadas), con piel limpia y corteza de roble dejadas
 def cubas(pg, nombre, pref):
-    pg.evaluate(f"""(() => {{ const k = {K}, f = k.fabCliente, ahora = Date.now();
-      let dx = k.pj.x - k.camara.position.x, dz = k.pj.z - k.camara.position.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
-      const x = k.pj.x + dx * 2.2, z = k.pj.z + dz * 2.2;
-      f.estaciones['cubas_curtido:vista'] = {{ id: 'cubas_curtido:vista', tipo: 'cubas_curtido', x, z, giro: Math.atan2(dx, dz) + Math.PI / 2, autor: 'jugador:local', cola: [], deposito: {{ piel_limpia: 1, corteza_roble: 2 }} }};
+    # un sitio despejado de prado (sin árboles, rocas ni matas a 3,5 m, y lo más alto de alrededor: lejos del río)
+    pg.evaluate(f"""(() => {{ const k = {K}, f = k.fabCliente, x0 = k.pj.x, z0 = k.pj.z; let mejor = null;
+      for (let r = 6; r <= 24; r += 3) for (let a = 0; a < 6.28; a += 0.4) {{
+        const x = x0 + Math.cos(a) * r, z = z0 + Math.sin(a) * r, h = k.alturaSuelo(x, z);
+        if (!Number.isFinite(h) || k.obstaculos.some(o => Math.hypot(o.x - x, o.z - z) < 3.5 + (o.r || 0))) continue;
+        const llano = Math.abs(k.alturaSuelo(x + 1, z) - h) + Math.abs(k.alturaSuelo(x, z + 1) - h);
+        if (llano > 0.25) continue;
+        if (!mejor || h > mejor.h) mejor = {{ x, z, h }};
+      }}
+      const x = mejor ? mejor.x : x0 + 8, z = mejor ? mejor.z : z0;
+      f.estaciones['cubas_curtido:vista'] = {{ id: 'cubas_curtido:vista', tipo: 'cubas_curtido', x, z, giro: 0.4, autor: 'jugador:local', cola: [], deposito: {{ piel_limpia: 1, corteza_roble: 2 }} }};
       if ({'true' if MUTAR == '2' else 'false'}) f.estaciones['cubas_curtido:vista'].tipo = 'hoyo_barro';
-      k.estacionesV.refrescar(); k.pj.x = x - dx * 1.2; k.pj.z = z - dz * 1.2; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(dx, dz);
+      k.estacionesV.refrescar(); k.pj.x = x + 1.3; k.pj.z = z + 0.2; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z);
       const inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); inv.coger('cubo_agua', 1, 'mano:der'); k.pintarTodoInventario(); }})()""")
-    pg.wait_for_timeout(1500)
+    esperar(pg, 2000)
     comprobar(f'{nombre}: las cubas de curtido se dibujan', pg.evaluate(f"!!{K}.escena.getObjectByName('estacion_cubas_curtido')"))
     ops = pg.evaluate(f"{K}.opcionesUsar()")
     comprobar(f'{nombre}: delante de las cubas, con el cubo lleno, el menú ofrece echarles el agua', 'Echar el agua del cubo en las cubas' in ops, str(ops))
@@ -74,10 +81,9 @@ def cubas(pg, nombre, pref):
     pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'], ahora = Date.now(), inv = k.inventario;
       if (inv.lugares['mano:der']) inv.sacar('mano:der'); k.pintarTodoInventario();
       e.colgado = [{{ hasta: ahora + 40 * 3600e3 }}, {{ hasta: ahora - 1000 }}]; k.estacionesV.refrescar(); }})()""")
-    for (cual, dist, pitch, dyaw) in [('cubas', 3.6, 0.5, 0.5), ('cubas_cerca', 2.0, 0.75, -0.4)]:
-        pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista'];
-          k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = k.pj.rot + Math.PI + {dyaw}; }})()""")
-        pg.wait_for_timeout(2500)
+    e = pg.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['cubas_curtido:vista']; return {{ x: e.x, z: e.z }}; }})()")
+    for (cual, dist, pitch, yaw) in [('cubas', 4.2, 0.55, 0.6), ('cubas_cerca', 2.6, 0.8, 1.2)]:
+        mirar(pg, e['x'], e['z'], dist, pitch, yaw)
         pg.screenshot(path=f'{SALIDA}/{pref}_2d_{cual}.png', timeout=180000)
     pg.evaluate(f"{K}.panelFabricar.abrirEstacion('cubas_curtido:vista')"); pg.wait_for_timeout(1200)
     pg.add_style_tag(content='#panelFabricar:not([hidden]), #panelFabricar:not([hidden]) * { visibility: visible !important; }')
