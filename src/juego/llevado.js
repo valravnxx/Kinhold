@@ -41,7 +41,8 @@ const CABEZA = /(pelo|barba|ojo|iris|cejas|orejas|vello|cofia|dientes|lengua)/;
 function medir(mh, raiz) {
   raiz.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(raiz.matrixWorld).invert();
-  const pts = [], cint = [], p = new THREE.Vector3(), m = new THREE.Matrix4();
+  const pts = [], cint = [], tris = [], p = new THREE.Vector3(), m = new THREE.Matrix4();
+  const cuello = mh.hueso && (mh.hueso.neck_01 || mh.hueso.spine_03), yAxila = cuello ? cuello.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv).y - 0.14 : 1.25;
   mh.modelo.traverse(o => {
     if (!o.isSkinnedMesh || !o.visible || o.userData.herramienta || CABEZA.test(o.name)) return;
     const g = o.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
@@ -57,11 +58,30 @@ function medir(mh, raiz) {
       o.getVertexPosition(i, p); p.applyMatrix4(m);
       (esCinturon ? cint : pts).push(p.x, p.y, p.z);
     }
+    // y la superficie del tronco (los triángulos sin brazos ni cabeza): a ella se pegan las correas (pegarAlCuerpo)
+    // (de los brazos, solo lo de encima de las axilas: lo alto y lo de delante del hombro, por donde pasa la correa; lo de
+    // más abajo cuelga junto al cuerpo y no es donde se apoya; pero lo de la camisa que va del brazo y queda contra la
+    // espalda, junto al omóplato, sí: si no, la correa se metía en la camisa por detrás del hombro)
+    const cuelloDe = o.skeleton.bones.map(b => /neck/i.test(b.name) ? 1 : 0);
+    const idx = g.index, n = idx ? idx.count : pos.count, vale = new Int8Array(pos.count), xyz = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) {
+      let mejor = 0, w = -1;
+      for (let k = 0; k < 4; k++) { const wk = sw.getComponent(i, k); if (wk > w) { w = wk; mejor = si.getComponent(i, k); } }
+      if (huesos[mejor] === 1 && cuelloDe[mejor] === 0) continue;   // (del cuello, solo lo de más abajo: el pecho que asoma por la camisa)
+      o.getVertexPosition(i, p); p.applyMatrix4(m);
+      if (p.y < 0.8 || p.y > 1.8 || (huesos[mejor] === 2 && p.y < yAxila && Math.abs(p.x) > 0.15) || (huesos[mejor] === 1 && p.y > yAxila + 0.04)) continue;
+      vale[i] = 1; xyz[i * 3] = p.x; xyz[i * 3 + 1] = p.y; xyz[i * 3 + 2] = p.z;
+    }
+    for (let t = 0; t + 2 < n; t += 3) {
+      const a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, c = idx ? idx.getX(t + 2) : t + 2;
+      if (vale[a] && vale[b] && vale[c]) for (const v of [a, b, c]) tris.push(xyz[v * 3], xyz[v * 3 + 1], xyz[v * 3 + 2]);
+    }
   });
   let yCint = null;
   if (cint.length) { let s = 0; for (let i = 1; i < cint.length; i += 3) s += cint[i]; yCint = s / (cint.length / 3); }
   for (let i = 0; i < cint.length; i++) pts.push(cint[i]);
-  return { pts: new Float32Array(pts), yCint };
+  const sup = new THREE.BufferGeometry(); sup.setAttribute('position', new THREE.Float32BufferAttribute(tris, 3));
+  return { pts: new Float32Array(pts), yCint, superficie: new THREE.Mesh(sup, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide })) };
 }
 // Contorno a la altura y: el centro (cx, cz) y, por cada uno de `n` ángulos (0 = delante, +Z; positivo hacia la
 // izquierda, +X), lo más lejos que llega el cuerpo. Los ángulos sin puntos se rellenan con los vecinos.
@@ -91,6 +111,140 @@ function altoEn(med, x, z, ancho = 0.025) {
   return isFinite(y) ? y : null;
 }
 
+// Una correa pegada al cuerpo: la curva por los puntos de guía, en muchos puntos, y cada uno llevado a la superficie del
+// tronco medida (lo más de fuera que se cruza, separado `fuera`), mirando desde dentro del cuerpo: por debajo de las
+// axilas (cH.y), desde el eje del tronco a esa altura; por encima (el hombro), desde debajo del hombro, en su corte de
+// lado. Así no queda en el aire ni entra en el cuerpo.
+const _rayo = new THREE.Raycaster();
+function pegarAlCuerpo(med, guia, cE, cH, fuera = 0.008, n = 56) {
+  const sup = med.superficie; sup.geometry.computeBoundingSphere();
+  // por delante, casi tocando (de lado se veía el aire entre la correa y el pecho); por detrás y por encima del hombro,
+  // algo más, que al respirar suben los omóplatos y la tapaban
+  // (y por debajo de los omóplatos, pegada: de espaldas, la vuelta del costado salía 3 cm de la cintura, como un taco
+  // entre el brazo y el cuerpo)
+  const bajo = (y) => y < cH.y - 0.12;
+  // (y por los lados del pecho, también pegada: de perfil se veía la hierba entre la correa y la camisa; segunda mirada, 16 nov)
+  const fueraDe = (d, y) => { const f = fuera - (fuera - 0.005) * Math.min(1, Math.max(0, (d.z + 0.2) * 2)); return bajo(y) ? Math.min(f, 0.005) : f; };
+  // cada punto, por su rayo desde dentro: lo más de fuera que cruza; donde no cruza nada (la abertura del cuello de la
+  // camisa, algún hueco de la malla), lo que sale de sus vecinos
+  const pegar = (lista) => {
+    const r = lista.map(p => {
+      const o = p.y >= cH.y ? v3(p.x, cH.y, cH.cz) : v3(cE.cx, p.y, (cE.cz + cH.cz) / 2), d = p.clone().sub(o).normalize();
+      _rayo.set(o, d); _rayo.far = 0.6;
+      let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
+      return { o, d, lejos: lejos > 0 ? lejos : null };
+    });
+    const ok = r.map((x, i) => x.lejos != null ? i : -1).filter(i => i >= 0);
+    const enSitio = r.map((x, i) => x.lejos == null ? null : (() => { const q = x.o.clone().addScaledVector(x.d, x.lejos + fueraDe(x.d, x.o.y)); q.nor = x.d; q.lejos = x.lejos; return q; })());
+    return r.map((x, i) => {
+      if (enSitio[i]) return enSitio[i];
+      // (sin cruce: en recto entre los vecinos que sí lo tienen. Antes se repartía lo lejos de cada uno, pero arriba y
+      // abajo de las axilas se mide desde sitios distintos y, en la abertura de la camisa, la correa salía 4 cm del pecho)
+      const a = ok.filter(k => k < i).pop(), b = ok.find(k => k > i);
+      let q;
+      if (a == null && b == null) q = x.o.clone().addScaledVector(x.d, 0.15);
+      else if (a == null || b == null) q = enSitio[a ?? b].clone();
+      else q = enSitio[a].clone().lerp(enSitio[b], (i - a) / (b - a));
+      q.nor = x.d; q.lejos = q.clone().sub(x.o).dot(x.d) - fueraDe(x.d, x.o.y); return q;
+    });
+  };
+  const curva = new THREE.CatmullRomCurve3(guia, false, 'centripetal');
+  if (globalThis.__correaSinPegar) return curva.getSpacedPoints(n).map(p => Object.assign(p, { nor: v3(0, 0, 1) })); // solo para comprobar que la prueba falla
+  let pts = pegar(curva.getSpacedPoints(n));
+  // y tensa, como va una correa de verdad: cada vuelta tira de cada punto hacia sus vecinos y, si así se mete en el
+  // cuerpo, se queda en su superficie; donde el cuerpo se hunde (la abertura de la camisa, entre el pecho y el hombro)
+  // pasa por encima, recta, sin escalones
+  // (donde el rayo no cruza nada, un agujero de la malla medida, no más adentro que el recto entre los vecinos que
+  // dio al pegarla: si no, por un agujero de la espalda se metía en ella)
+  const base = pts.map(p => p.lejos);
+  const fuera_ = (p, i) => {
+    const o = p.y >= cH.y ? v3(p.x, cH.y, cH.cz) : v3(cE.cx, p.y, (cE.cz + cH.cz) / 2), d = p.clone().sub(o), r = d.length(); d.normalize();
+    _rayo.set(o, d); _rayo.far = 0.6;
+    let lejos = -1; for (const c of _rayo.intersectObject(sup, false)) lejos = Math.max(lejos, c.distance);
+    // (por delante, en la abertura de la camisa, hasta 2 cm más adentro: el pecho de debajo está más hundido que el recto
+    // entre los bordes de la camisa, y por encima de él la correa salía 4 cm y de perfil se veía la hierba)
+    if (lejos <= 0) { const f = fueraDe(d, p.y) - (d.z > 0.6 ? 0.02 : 0), q = r < base[i] + f ? o.addScaledVector(d, base[i] + f) : p.clone(); q.nor = d; return q; }
+    // (y, donde salva un hueco del cuerpo, como mucho a 1,5 cm de él: la tela de la camisa y su peso la llevan hacia dentro; con 3, de lado se veía la hierba entre ella y el pecho)
+    // (por delante, nada: sigue el pecho; con 6 mm y con 15, de lado aún se veía la hierba entre el pecho y la correa)
+    // (16 nov: por los lados del pecho tampoco; solo por detrás del hombro, donde suben los omóplatos)
+    const f = fueraDe(d, p.y), puente = bajo(p.y) ? 0.005 : 0.015 * (1 - Math.min(1, Math.max(0, (d.z + 0.2) * 2)));
+    const q = lejos > 0 && r < lejos + f ? o.addScaledVector(d, lejos + f) : lejos > 0 && r > lejos + f + puente ? o.addScaledVector(d, lejos + f + puente) : p.clone(); q.nor = d; return q;
+  };
+  for (let vuelta = 0; vuelta < 24; vuelta++)
+    pts = pts.map((p, i) => i === 0 || i === pts.length - 1 ? p : fuera_(p.clone().multiplyScalar(2).add(pts[i - 1]).add(pts[i + 1]).multiplyScalar(1 / 4), i));
+  // las normales, suavizadas (la malla es de pocas caras: de una a otra, la correa daba saltos de luz)
+  for (let vuelta = 0; vuelta < 4; vuelta++) {
+    const N = pts.map(p => p.nor.clone());
+    pts.forEach((p, i) => { p.nor = N[i].clone().multiplyScalar(2).add(N[Math.max(0, i - 1)]).add(N[Math.min(N.length - 1, i + 1)]).normalize(); });
+  }
+  return pts;
+}
+
+// Lo que se ha hecho con forma (el grupo `g`, en el espacio de la raíz) pasa a tener piel: cada vértice, con los huesos y
+// los pesos de los vértices del cuerpo que tiene más cerca (los 6 más cercanos, por cercanía), como la ropa. Así se
+// dobla con el cuerpo en vez de ir tieso atado a un hueso. Devuelve un grupo de mallas con piel (o null si no hay cuerpo).
+function enPiel(g, mh, raiz) {
+  raiz.updateMatrixWorld(true); g.updateMatrixWorld(true);
+  const fuentes = [];
+  mh.modelo.traverse(o => { if (o.isSkinnedMesh && o.visible && !o.userData.herramienta && !CABEZA.test(o.name) && o.geometry.attributes.skinIndex) fuentes.push(o); });
+  if (!fuentes.length) return null;
+  const ref = fuentes.reduce((a, o) => o.skeleton.bones.length > a.skeleton.bones.length ? o : a), sk = ref.skeleton;
+  const indice = new Map(sk.bones.map((b, i) => [b, i]));
+  // lo que ocupa (en el mundo), para mirar solo el cuerpo de alrededor
+  const caja = new THREE.Box3();
+  g.traverse(o => { if (o.isMesh) { o.geometry.computeBoundingBox(); caja.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
+  caja.applyMatrix4(raiz.matrixWorld).expandByScalar(0.12);
+  const P = [], H = [], p = new THREE.Vector3();
+  for (const o of fuentes) {
+    const pos = o.geometry.attributes.position, si = o.geometry.attributes.skinIndex, sw = o.geometry.attributes.skinWeight;
+    for (let i = 0; i < pos.count; i++) {
+      o.getVertexPosition(i, p).applyMatrix4(o.matrixWorld);
+      if (!caja.containsPoint(p)) continue;
+      const h = [];
+      for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k), b = indice.get(o.skeleton.bones[si.getComponent(i, k)]); if (w > 0 && b != null) h.push(b, w); }
+      if (h.length) { P.push(p.x, p.y, p.z); H.push(h); }
+    }
+  }
+  if (!H.length) return null;
+  const sale = new THREE.Group(); sale.name = 'llevado_correa_piel';
+  const M = new THREE.Matrix4(), Bm = new THREE.Matrix4(), Binv = ref.bindMatrix.clone().invert(), aRaiz = raiz.matrixWorld;
+  g.traverse(c => {
+    if (!c.isMesh) return;
+    const geo = c.geometry.clone(), pos = geo.attributes.position, nor = geo.attributes.normal, n = pos.count;
+    const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4), q = new THREE.Vector3(), d = new THREE.Vector3();
+    const aMundo = new THREE.Matrix4().multiplyMatrices(aRaiz, c.matrixWorld);
+    for (let v = 0; v < n; v++) {
+      q.fromBufferAttribute(pos, v).applyMatrix4(aMundo);
+      // los 6 vértices del cuerpo más cercanos
+      const cerca = [];
+      for (let k = 0; k < H.length; k++) {
+        const dx = P[k * 3] - q.x, dy = P[k * 3 + 1] - q.y, dz = P[k * 3 + 2] - q.z, dd = dx * dx + dy * dy + dz * dz;
+        if (cerca.length < 6 || dd < cerca[cerca.length - 1][0]) { cerca.push([dd, k]); cerca.sort((a, b) => a[0] - b[0]); if (cerca.length > 6) cerca.pop(); }
+      }
+      const suma = new Map();
+      for (const [dd, k] of cerca) { const f = 1 / (Math.sqrt(dd) + 0.01), h = H[k]; for (let t = 0; t < h.length; t += 2) suma.set(h[t], (suma.get(h[t]) || 0) + h[t + 1] * f); }
+      const top = [...suma].sort((a, b) => b[1] - a[1]).slice(0, 4), tot = top.reduce((s, x) => s + x[1], 0);
+      M.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      top.forEach(([b, w], k) => {
+        si[v * 4 + k] = b; sw[v * 4 + k] = w / tot;
+        Bm.multiplyMatrices(sk.bones[b].matrixWorld, sk.boneInverses[b]);
+        for (let e = 0; e < 16; e++) M.elements[e] += Bm.elements[e] * w / tot;
+      });
+      // lo que hay que poner en la malla para que, con esa piel y en la postura de ahora, quede donde está
+      const vuelta = Binv.clone().multiply(M.clone().invert());
+      q.applyMatrix4(vuelta); pos.setXYZ(v, q.x, q.y, q.z);
+      if (nor) { d.fromBufferAttribute(nor, v).transformDirection(aMundo).transformDirection(vuelta); nor.setXYZ(v, d.x, d.y, d.z); }
+    }
+    geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4));
+    geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+    const sm = new THREE.SkinnedMesh(geo, c.material);
+    sm.bind(sk, ref.bindMatrix); sm.frustumCulled = false; sm.castShadow = c.castShadow; sm.receiveShadow = c.receiveShadow;
+    sm.userData.herramienta = true; sm.name = c.name;
+    sale.add(sm);
+  });
+  return sale;
+}
+
 // ---------- piezas ----------
 // Banda de cuero que sigue el contorno (el cinto): `alto` de canto, `grueso` de grueso, separada `fuera` del cuerpo.
 function banda(c, alto, grueso, fuera) {
@@ -111,14 +265,20 @@ function banda(c, alto, grueso, fuera) {
 // cordón que sigue unos puntos (cerrado o no)
 const cordon = (puntos, r, cerrado = false, lados = 5) => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(puntos, cerrado, 'catmullrom', 0.3), Math.max(8, puntos.length * 6), r, lados, cerrado);
 // Correa plana entre puntos (las de la mochila y la bandolera): tubo aplastado
-function correa(L, puntos, ancho = 0.035, grueso = 0.006, color = CUERO) {
-  const curva = new THREE.CatmullRomCurve3(puntos, false, 'catmullrom', 0.3), n = Math.max(10, puntos.length * 8);
+// `normales` (si se dan, una por punto): hacia fuera del cuerpo; lo ancho va entonces tendido sobre él.
+function correa(L, puntos, ancho = 0.035, grueso = 0.006, color = CUERO, normales = null) {
+  const curva = new THREE.CatmullRomCurve3(puntos, false, 'catmullrom', 0.3), n = Math.max(10, Math.min(puntos.length * 8, 200));
   const pos = [], idx = [], arriba = v3(0, 1, 0);
   const marcos = curva.computeFrenetFrames(n, false);
+  let antes = null;
   for (let i = 0; i <= n; i++) {
     const p = curva.getPointAt(i / n), t = marcos.tangents[i];
-    // lo ancho, de lado sobre el cuerpo: perpendicular a la tangente y lo más horizontal posible
-    let lado = new THREE.Vector3().crossVectors(t, arriba); if (lado.lengthSq() < 1e-4) lado.set(1, 0, 0); lado.normalize();
+    // lo ancho, de lado sobre el cuerpo: perpendicular a la tangente y lo más horizontal posible; sin dar la vuelta de
+    // un punto al siguiente (donde la correa va casi vertical, el de antes: si no, se retorcía)
+    let lado = normales ? new THREE.Vector3().crossVectors(normales[Math.round(i / n * (normales.length - 1))], t) : new THREE.Vector3().crossVectors(t, arriba);
+    if (lado.lengthSq() < 0.04 && antes) lado.copy(antes).addScaledVector(t, -antes.dot(t));
+    if (lado.lengthSq() < 1e-6) lado.set(1, 0, 0);
+    lado.normalize(); if (antes && lado.dot(antes) < 0) lado.negate(); antes = lado;
     const nor = new THREE.Vector3().crossVectors(lado, t).normalize();
     for (const [a, b] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) pos.push(...p.clone().addScaledVector(lado, a * ancho / 2).addScaledVector(nor, b * grueso / 2).toArray());
   }
@@ -504,16 +664,22 @@ export function crearLlevado(j) {
   const grupo = new THREE.Group(); grupo.name = 'llevado';
   j.raiz.add(grupo);
   let huella = '', ultimo = null, medida = null, claveMedida = '';
+  // la correa cruzada se ajusta al cuerpo en la postura de ese momento: si se la pone en mitad de un fundido (al soltar lo
+  // que llevaba en brazos) o cambia de postura, se vuelve a ajustar una vez, medio segundo después (paso)
+  let ajusteCruzada = null;
   const vaciar = () => {
     for (const o of [...grupo.children]) { grupo.remove(o); o.traverse(m => { if (m.isMesh) m.geometry.dispose(); }); }
   };
-  function montar(l) {
-    vaciar();
+  function montar(l, reajuste = false) {
+    vaciar(); ajusteCruzada = null;
     const mh = j.mh; if (!mh || !l) return;
     if (!l.cintura && !l.espalda && !l.hombro && !l.der && !l.izq) return; // nada encima: ni se mide el cuerpo
     // el cuerpo, medido solo si ha cambiado lo que lleva puesto (cuesta unos milisegundos)
     const clave = JSON.stringify([mh.capas, mh.hechuras, mh.nivel]);
-    if (!medida || clave !== claveMedida) { medida = medir(mh, j.raiz); claveMedida = clave; }
+    // (con correa cruzada, siempre: va pegada al pecho en la postura de ahora, y la de la última medida puede ser otra)
+    const cruza = l.espalda && ['zurron', 'carcaj', 'correa_escudo'].includes(l.espalda);
+    if (!medida || clave !== claveMedida || cruza) { medida = medir(mh, j.raiz); claveMedida = clave; }
+    if (cruza) ajusteCruzada = { t: performance.now(), modo: j.modo, pendiente: !reajuste };
     j.raiz.updateMatrixWorld(true);
     const invRaiz = new THREE.Matrix4().copy(j.raiz.matrixWorld).invert();
     const H = mh.hueso, pelvis = H.pelvis, pecho = H.spine_03 || H.spine_02 || pelvis;
@@ -600,13 +766,47 @@ export function crearLlevado(j) {
       // las correas: de arriba del bulto, por encima del hombro, bajan por delante y vuelven bajo el brazo
       const zDel = cH.cz + cH.en(0);
       if (cruzada) {
+        // una sola correa, cruzada del hombro derecho a la cadera izquierda, pegada al cuerpo (segunda mirada del zurrón,
+        // 14 nov: de lado hacía un arco en el aire sobre el hombro y por el costado entraba en el antebrazo): se traza
+        // por unos puntos de guía y cada tramo se pega a la superficie medida (pegarAlCuerpo)
         const h = hombroDe(-1), cin = contorno(medida, yPelvis + 0.12, 0.03) || cC;
-        // el morral (el zurrón): la correa sale de lo alto de la bolsa, sube en diagonal por la espalda hasta el hombro,
-        // cruza el pecho y, por el costado, vuelve a la bolsa (morral: lo que sube la bolsa sobre su centro)
-        const ini = morral != null ? [v3(cE.cx + 0.07, yCentro + morral + 0.19, zAtras - 0.01), v3((cE.cx + 0.07 + h.x) / 2, (yCentro + morral + h.y) / 2, zAtras - 0.005)] : [];
-        const fin = morral != null ? v3(cE.cx + 0.12, yCentro + morral + 0.02, zAtras - 0.03) : v3(cE.cx + 0.15, cin.y + 0.02, zAtras);
-        correa(L, [...ini, v3(h.x - 0.02, h.y - 0.1, zAtras), v3(h.x, h.y, h.z), v3(h.x + 0.06, h.y - 0.08, zDel + 0.01),
-          puntoEn(cE, 0.2, 0.01), puntoEn(cin, 0.9, 0.01), puntoEn(cin, 1.6, 0.012), fin].map(p => p.clone().applyMatrix4(new THREE.Matrix4().copy(m).invert())), 0.03);
+        // (los puntos de guía solo dan la dirección desde dentro del cuerpo: luego se pegan a él)
+        const x0 = cE.cx, zA = cE.cz - 0.3, zD = cE.cz + 0.3, yM = (h.y + cin.y) / 2;   // (yM: media altura, para el tahalí por la espalda)
+        // por encima del hombro derecho: de la espalda a lo alto y al pecho
+        const hombro = [v3(h.x + 0.01, h.y - 0.09, cH.cz - 0.3), v3(h.x, h.y + 0.05, cH.cz - 0.03), v3(h.x + 0.01, h.y + 0.05, cH.cz + 0.04)];
+        // cruzando el pecho en diagonal hasta la cadera izquierda, y por el costado (por encima de la cadera) a la espalda
+        // (en línea recta del hombro a la cadera, sin bajar primero en vertical)
+        const F = v3(h.x + 0.01, h.y, zD), Hc = v3(x0 + 0.13, cin.y + 0.05, zD);
+        // (y en la cadera da la vuelta en curva, por delante y de lado: con un solo punto de lado, de perfil hacía un pico en V)
+        const delante = [F.clone().lerp(Hc, 0.2), F.clone().lerp(Hc, 0.45), F.clone().lerp(Hc, 0.7), Hc, v3(x0 + 0.22, cin.y + 0.04, cE.cz + 0.24), v3(x0 + 0.3, cin.y + 0.03, cE.cz + 0.05), v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12)];
+        let guia, ini = [], fin = [];
+        if (morral != null) {
+          // el morral (el zurrón): sale de lo alto de la bolsa, sube por la espalda al hombro y, tras el costado, vuelve a la bolsa
+          const yB = yCentro + morral;
+          // (sale de lo alto de la bolsa algo a la derecha, por donde sube al hombro: sin dar la vuelta en gancho)
+          // (los dos cabos, pegados a la espalda por detrás de la bolsa, que va contra ella: vista de espaldas, la correa
+          // asoma de lo alto de la bolsa sin dar la vuelta en gancho por el aire, y por el costado no va tiesa como una vara)
+          // (y el cabo del costado acaba bien dentro de la bolsa, por detrás de ella: en el borde asomaba como un taco tras el brazo)
+          guia = [v3(x0 - 0.03, yB + 0.1, zA), v3(x0 - 0.04, yB + 0.25, zA), v3(x0 - 0.07, (yB + 0.25 + h.y) / 2, zA), ...hombro, ...delante, v3(x0 + 0.04, yB + 0.04, zA)];
+        } else {
+          // el carcaj y el escudo: un tahalí entero, de la cadera izquierda por la espalda al hombro derecho y por el pecho a la cadera
+          guia = [v3(x0 + 0.3, cin.y + 0.03, cE.cz - 0.12), v3(x0 + 0.1, cin.y + 0.08, zA), v3(x0 - 0.02, yM + 0.05, zA), ...hombro, ...delante];
+        }
+        const pegada = pegarAlCuerpo(medida, guia, cE, cH, 0.014), pts = [...ini, ...pegada, ...fin];
+        const nor = [...ini.map(() => pegada[0].nor), ...pegada.map(p => p.nor), ...fin.map(() => pegada[pegada.length - 1].nor)];
+        // la correa, con piel (enPiel): se dobla con el cuerpo como la camisa, al respirar, al mover los brazos y al andar
+        // (atada al pecho, el omóplato y la camisa se movían por encima y la tapaban)
+        const Lc = nuevoLote(); correa(Lc, pts, 0.03, 0.006, CUERO, nor);
+        // el tahalí se cierra en la cadera con un nudo de la misma correa, que tapa los dos cabos (sin él, acababa en una
+        // pestaña recortada)
+        if (morral == null) {
+          const P = pegada[0], n = P.nor.clone().normalize(), t = pegada[2].clone().sub(P); t.addScaledVector(n, -t.dot(n)).normalize();
+          const b2 = new THREE.Vector3().crossVectors(n, t), giro = new THREE.Matrix4().makeBasis(t, b2, n);
+          Lc.add(new THREE.SphereGeometry(1, 8, 6), CUERO, P.x + n.x * 0.006, P.y + n.y * 0.006, P.z + n.z * 0.006, giro, { escala: v3(0.03, 0.024, 0.011), tex: 'liso' });
+        }
+        const piel = enPiel(deMano(Lc), mh, j.raiz);
+        if (piel) { piel.userData.correa = true; grupo.add(piel); }
+        else { const mi = new THREE.Matrix4().copy(m).invert(); correa(L, pts.map(p => p.clone().applyMatrix4(mi)), 0.03, 0.006, CUERO, nor.map(d => d.clone().transformDirection(mi))); }
       } else for (const s of [1, -1]) {
         const h = hombroDe(s), yA = yHombro - 0.16;
         const pts = [v3(cE.cx + s * 0.07, yHombro - 0.1, zAtras + 0.01), v3(h.x - s * 0.01, h.y, h.z - 0.03), v3(h.x + s * 0.005, h.y - 0.02, h.z + 0.04),
@@ -724,6 +924,12 @@ export function crearLlevado(j) {
       if (!j.mh) return;
       grupo.visible = j.mh.nivel < OCULTO && j.mh.raiz.visible !== false;
       if (grupo.visible && grupo.children.length) seguir(grupo, j.raiz);
+      const a = ajusteCruzada;
+      if (a) {
+        if (j.modo !== a.modo) { a.modo = j.modo; a.t = performance.now(); a.pendiente = true; }
+        if (globalThis.__correaSinReajuste) return;   // (solo para comprobar que la prueba falla)
+        if (a.pendiente && performance.now() - a.t > 500) montar(ultimo, true);
+      }
     },
   };
 }

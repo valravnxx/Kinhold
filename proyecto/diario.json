@@ -7438,5 +7438,21 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 65 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-17T01:26:03+00:00",
+  "fin": "2026-11-17T02:02:56+00:00",
+  "titulo": "La correa cruzada, pegada al cuerpo (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "La correa cruzada del zurrón, del carcaj y del escudo se pega al tronco medido del personaje: de lado ya no hace un arco en el aire sobre el hombro, por delante cruza el pecho a ras de la camisa y la vuelta por el costado rodea la cintura por detrás del brazo, sin entrar en él ni en la cadera.",
+   "Se vuelve a ajustar medio segundo después de cambiar de postura (si se la pone mientras suelta lo que llevaba en brazos, ya no se queda ajustada a esa postura).",
+   "El tahalí del carcaj y del escudo se cierra en la cadera con un nudo de la misma correa; en el zurrón, el cabo del costado acaba por detrás de la bolsa.",
+   "Segunda mirada de un agente aparte sobre las 24 capturas (lado, lado izquierdo, frente y espalda; PC y móvil): sí en los tres puntos y en los tres objetos. Lo que vio menor: en PC, ampliando, una rendija de 3–4 px entre la correa y la camisa detrás del hombro.",
+   "Demo v228."
+  ],
+  "pruebas": "Nube, grupo «lo que llevas se ve puesto» (dos pasadas): las tres comprobaciones de la correa pegada, bien (MUTAR_CORREA y MUTAR_REAJUSTE fallan, comprobado en sesiones anteriores). Fallan la mano sobre el tronco al hombro (armas y mujer), igual en main (pasada en la nube de main 174bffa esta sesión, que además falló el cinturón del leñero en brazos); el cinturón de a_mano2 salió 6,6 cm de lado en la primera pasada y bien en la segunda: la medida varía con la postura de reposo, también en main.",
+  "capturas": "capturas/demo-v228",
+  "estado": "ok"
  }
 ]

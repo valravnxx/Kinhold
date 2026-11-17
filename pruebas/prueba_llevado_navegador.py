@@ -4,6 +4,8 @@
 # en la cintura, lo de la espalda detrás, lo del hombro arriba, lo de la mano en la mano) y que, al andar, sigue a su
 # hueso. Capturas de cerca, de frente, de lado y de espalda, en PC y en móvil.
 # Uso: python3 pruebas/prueba_llevado_navegador.py dist/kinhold_demo.html <carpeta>
+# La correa cruzada (zurrón, carcaj, escudo; 14 nov): pegada al cuerpo, sin arcos en el aire (MUTAR_CORREA=1 la deja
+# sin pegar: tiene que fallar; MUTAR_REAJUSTE=1 no la vuelve a ajustar al cambiar de postura: también).
 # MUTAR=1 hace que las piezas no sigan a los huesos: tiene que fallar. MUTAR_MANOS=1 dibuja lo hecho a mano con la
 # bolsa o el hatillo y el hacha de piedra como la de hierro: tiene que fallar.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver, json
@@ -71,6 +73,37 @@ MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.
   r.hacha = j.hacha ? { nombre: j.hacha.name, visible: j.hacha.visible } : null;
   for (const n of ['pelvis', 'spine_03', 'hand_r', 'hand_l', 'neck_01', 'head', 'upperarm_r', 'middle_01_r', 'middle_01_l']) if (H[n]) r[n] = local(H[n]).toArray().map(v => +v.toFixed(3));
   return r; }'''
+
+# Lo más que se separa del cuerpo vestido (sin cabeza) un punto de la correa cruzada: la distancia de cada punto al
+# triángulo más cercano, en la postura de ahora
+SEPARA_CORREA = '''() => { const K = window.__kinhold, j = K.jugador; K.escena.updateMatrixWorld(true);
+  const g = j.llevado.grupo.children.find(o => o.userData.correa); if (!g) return null;
+  const inv = j.raiz.matrixWorld.clone().invert(), V = () => j.raiz.position.clone(), tris = [];
+  j.mh.modelo.traverse(o => { if (!o.isSkinnedMesh || !o.visible || o.userData.herramienta || /(pelo|barba|ojo|iris|cejas|orejas|vello|cofia|dientes|lengua)/.test(o.name)) return;
+    const pos = o.geometry.attributes.position, idx = o.geometry.index, n = idx ? idx.count : pos.count, P = [], si = o.geometry.attributes.skinIndex, sw = o.geometry.attributes.skinWeight;
+    // los brazos, solo por encima de las axilas (lo de abajo cuelga al lado: estar cerca de él no es ir pegada al cuerpo)
+    const brazo = o.skeleton.bones.map(b => /upperarm|lowerarm|hand|thumb|index|middle|ring|pinky|metacarpal|Arm$|Hand$/.test(b.name)), yAx = j.mh.hueso.neck_01.getWorldPosition(V()).applyMatrix4(inv).y - 0.14;
+    for (let i = 0; i < pos.count; i++) { const q = o.getVertexPosition(i, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv);
+      let mejor = 0, w = -1; for (let k = 0; k < 4; k++) { const wk = sw.getComponent(i, k); if (wk > w) { w = wk; mejor = si.getComponent(i, k); } }
+      P.push(brazo[mejor] && q.y < yAx ? null : q); }
+    for (let t = 0; t + 2 < n; t += 3) { const tr = [P[idx ? idx.getX(t) : t], P[idx ? idx.getX(t + 1) : t + 1], P[idx ? idx.getX(t + 2) : t + 2]]; if (tr.every(Boolean)) tris.push(tr); } });
+  // (Ericson, el punto más cercano de un triángulo)
+  const cerca = (p, a, b, c) => { const ab = b.clone().sub(a), ac = c.clone().sub(a), ap = p.clone().sub(a);
+    const d1 = ab.dot(ap), d2 = ac.dot(ap); if (d1 <= 0 && d2 <= 0) return a;
+    const bp = p.clone().sub(b), d3 = ab.dot(bp), d4 = ac.dot(bp); if (d3 >= 0 && d4 <= d3) return b;
+    const vc = d1 * d4 - d3 * d2; if (vc <= 0 && d1 >= 0 && d3 <= 0) return a.clone().addScaledVector(ab, d1 / (d1 - d3));
+    const cp = p.clone().sub(c), d5 = ab.dot(cp), d6 = ac.dot(cp); if (d6 >= 0 && d5 <= d6) return c;
+    const vb = d5 * d2 - d1 * d6; if (vb <= 0 && d2 >= 0 && d6 <= 0) return a.clone().addScaledVector(ac, d2 / (d2 - d6));
+    const va = d3 * d6 - d5 * d4; if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) return b.clone().addScaledVector(c.clone().sub(b), (d4 - d3) / (d4 - d3 + d5 - d6));
+    const den = 1 / (va + vb + vc); return a.clone().addScaledVector(ab, vb * den).addScaledVector(ac, vc * den); };
+  let peor = 0, dondePeor = null;
+  /* los vértices de la correa, donde los pone ahora su piel */
+  const correa = []; g.traverse(o => { if (!o.isSkinnedMesh) return; const n = o.geometry.attributes.position.count;
+    for (let i = 0; i < n; i += 3) correa.push(o.getVertexPosition(i, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv)); });
+  for (const p of correa) { let d = 1e9;
+    for (const [a, b, c] of tris) { if (Math.abs(a.y - p.y) > 0.15) continue; d = Math.min(d, cerca(p, a, b, c).distanceTo(p)); }
+    if (d > peor) { peor = d; dondePeor = p.toArray().map(v => +v.toFixed(3)); } }
+  return { peor: +peor.toFixed(3), donde: dondePeor, n: correa.length }; }'''
 
 def equipar(pg, lugares):
     pg.evaluate('''(l) => { const K = window.__kinhold, inv = K.inventario;
@@ -165,6 +198,8 @@ with sync_playwright() as pw:
         if os.environ.get('MUTAR'): pg.evaluate('globalThis.__sinSeguirLlevado = true')
         if os.environ.get('MUTAR_TRONCO'): pg.evaluate('globalThis.__troncoComoAntes = true')
         if os.environ.get('MUTAR_MANOS'): pg.evaluate('globalThis.__sinModelosManos = true')
+        if os.environ.get('MUTAR_CORREA'): pg.evaluate('globalThis.__correaSinPegar = true')
+        if os.environ.get('MUTAR_REAJUSTE'): pg.evaluate('globalThis.__correaSinReajuste = true')
         pg.evaluate("document.querySelectorAll('#ayuda, .ayuda, #panelAyuda').forEach(e => e.style.display = 'none')")
         for nombre, lugares in EQUIPOS.items():
             equipar(pg, lugares)
@@ -183,6 +218,20 @@ with sync_playwright() as pw:
             for v, g in vistas.items():
                 mirar(pg, g, 2.3 if disp == 'pc' else 3.2)
                 pg.screenshot(path=f'{SALIDA}/{disp}_{nombre}_{v}.png')
+        # la correa cruzada, pegada al cuerpo (14 nov: de lado hacía un arco en el aire sobre el hombro); de cerca, de lado,
+        # de frente y de espaldas
+        for nombre, esp in (('zurron', C('zurron', 1, [None] * 4)), ('carcaj', C('carcaj', 1, [C('flecha', 10)])), ('escudo', C('correa_escudo', 1, [C('escudo')]))):
+            # (justo después de llevar algo en brazos: al ponérsela aún está soltando esa postura; medio segundo después de
+            # quedarse quieto, la correa se vuelve a ajustar)
+            equipar(pg, EQUIPOS['lenero_en_manos'])
+            equipar(pg, {'espalda': esp})
+            pg.wait_for_timeout(1500)
+            if disp == 'pc':
+                r = pg.evaluate(SEPARA_CORREA)
+                comprobar(f'correa de {nombre}: pegada al cuerpo (ningún punto a más de 5 cm de él; con la abertura de la camisa y la tela, unos 4)', r is not None and r['peor'] < 0.05, str(r))
+            for v, (g, d, a) in ({'lado': (-1.5708, 1.4, 0.15), 'izq': (1.5708, 1.4, 0.15), 'frente': (0.0, 1.4, 0.15), 'espalda': (3.1416, 1.4, 0.15)} if disp == 'pc' else {'lado': (-1.5708, 2.0, 0.15), 'izq': (1.5708, 2.0, 0.15), 'frente': (0.4, 2.0, 0.15), 'espalda': (3.1416, 2.0, 0.15)}).items():
+                mirar(pg, g, d, a)
+                pg.screenshot(path=f'{SALIDA}/{disp}_correa_{nombre}_{v}.png')
         # lo hecho a mano, de cerca (en la mano y en el cinturón)
         for nombre in A_MANO:
             equipar(pg, EQUIPOS[nombre])
