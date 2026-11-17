@@ -100,7 +100,13 @@ def recorrido(pg, pre, movil):
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['nx']}), -({r['nz']})); }})()")
     pg.keyboard.down('w'); pg.wait_for_timeout(1200); pg.keyboard.up('w')
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2({r['ux']}, {r['uz']}); }})()")
-    pg.keyboard.down('w'); pg.wait_for_timeout(7000); pg.keyboard.up('w')   # (a paladas, girando por un lado: unos segundos)
+    # (a paladas, girando por un lado: unos segundos de juego; en la nube, con pocos fotogramas, el tiempo del juego va más
+    # despacio que el reloj: se rema hasta que mira río arriba, como mucho 40 s de reloj)
+    arriba = math.atan2(-r['ux'], -r['uz'])
+    falta = lambda: abs(((pg.evaluate(f"{K}.pj.rot") - arriba + math.pi) % (2 * math.pi)) - math.pi)
+    pg.keyboard.down('w'); t0 = time.time()
+    while time.time() - t0 < 40 and falta() > 0.2: pg.wait_for_timeout(250)
+    pg.keyboard.up('w')
     comprobar(f'{pre}remando, sale de la orilla y gira río arriba', abs(((pg.evaluate(f"{K}.pj.rot") - math.atan2(-r['ux'], -r['uz']) + math.pi) % (2 * math.pi)) - math.pi) < 0.35,
               f"{pg.evaluate(f'{K}.pj.rot'):.2f} (río arriba: {math.atan2(-r['ux'], -r['uz']):.2f})")
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
@@ -113,9 +119,6 @@ def recorrido(pg, pre, movil):
         palas.append(pg.evaluate(f"""(() => {{ const j = {K}.jugador, p = j.palaRemo, r = j.remada; if (!p) return null; j.raiz.updateMatrixWorld(true);
           const l = j.raiz.worldToLocal(p.pala.clone()), a = {K}.mundoJ.aguaEn(p.pala.x, p.pala.z);
           return {{ lado: l.x > 0.2 ? 'l' : l.x < -0.2 ? 'r' : '', bajo: a ? p.pala.y < a.superficie : false, palada: r ? r.lado : '' }}; }})()"""))
-        if i in (3, 5, 7, 9):
-            pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = k.pj.rot + 0.6; k.cam.dist = 3.0; k.cam.pitch = 0.35; }})()")
-            pg.screenshot(path=f'{SALIDA}/{pre}4{"abcd"[(i - 3) // 2]}_remando_palada.png')
     pg.keyboard.up('w')
     ps = [q for q in palas if q]
     comprobar(f'{pre}remando, la pala entra en el agua por un lado y por el otro', any(q['lado'] == 'r' and q['bajo'] for q in ps) and any(q['lado'] == 'l' and q['bajo'] for q in ps), str(ps[:16]))
@@ -128,7 +131,19 @@ def recorrido(pg, pre, movil):
     comprobar(f'{pre}sigue en el agua', (pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0) >= 0.2)
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
     foto(pg, f'{pre}4_remando')
-    # sin remar: a la deriva, río abajo
+    # cada momento de la palada, de cerca (la palada fija con __remadaFija: mover la cámara mientras se rema cambiaría hacia
+    # dónde va, que W va hacia donde mira la cámara): la pala entra delante por la derecha, tira, vuelve, y por la izquierda
+    for i, (lado, fase) in enumerate([('r', 0.05), ('r', 0.3), ('r', 0.75), ('l', 0.2)]):
+        pg.evaluate(f"""(() => {{ const k = {K}; window.__remadaFija = {{ lado: '{lado}', fase: {fase}, enAgua: {str(fase < 0.5).lower()}, barre: false }};
+          k.cam.yaw = k.pj.rot + 0.6; k.cam.dist = 3.0; k.cam.pitch = 0.35; }})()""")
+        pg.wait_for_timeout(400)
+        pg.screenshot(path=f'{SALIDA}/{pre}4{"abcd"[i]}_remando_palada.png')
+    pg.evaluate("window.__remadaFija = null")
+    # sin remar: a la deriva, río abajo (primero se acaba el impulso de las últimas paladas: como mucho 20 s de reloj)
+    t0 = time.time()
+    while time.time() - t0 < 20:
+        q0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"); pg.wait_for_timeout(500); q1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
+        if (q1[0] - q0[0]) * r['ux'] + (q1[1] - q0[1]) * r['uz'] > 0.05: break
     p0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
     pg.wait_for_timeout(2000)
     p1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z, performance.now()]")
