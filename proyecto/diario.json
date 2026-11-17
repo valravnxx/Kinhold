@@ -7403,5 +7403,24 @@
   "pruebas": "Comprobador de código correcto. Pruebas nuevas de la guarda de la canoa (rotas a propósito con MUTAR=1: fallan). En la nube, lo que pide el revisor: lógica, recorrido, la canoa, la canoa en el agua, la rastra y velocidad con pocos fotogramas, todo bien (44,7 min).",
   "capturas": "capturas/demo-v227",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-16T22:23:17+00:00",
+  "fin": "2026-11-17T00:16:25+00:00",
+  "titulo": "P11d: el recorrido de jugador de la canoa",
+  "hito": "canoa",
+  "hecho": [
+   "El recorrido de jugador (sin arcón y con lo que recoge) tiene un paso más, el 26, en pruebas/recorrido_canoa.mjs, detrás de la casa más fuerte: la canoa entera.",
+   "Trenza una cuerda en su banco (3 cordeles de fibra) y, con el hacha y la cuerda, va a su hoguera de la orilla del río; tala un árbol adulto cerca, ata el tronco largo y lo arrastra junto a la hoguera.",
+   "Lo vacía: 40 golpes de hacha para desbastarlo y tres vueltas de brasas de la hoguera (que vuelve a encender con su yesca y su taladro si se ha apagado) y de raspar lo quemado; mientras arden las brasas no se raspa.",
+   "Ata la canoa con la cuerda y la arrastra hasta la orilla; en el banco se hace el remo de un tronco corto. El remo va en las dos manos, así que el hacha se queda junto al banco.",
+   "Con el remo echa la canoa al agua, sube y rema: río arriba a 6 m/s contra una corriente de 3 m/s, río abajo a 12 m/s (corriendo se va a 6); sin remar, la corriente la lleva a 3 m/s. La vara en la orilla, se baja, y la canoa se queda a flote donde la dejó (fuera de su tierra, sin guarda).",
+   "El recorrido encontró un fallo: el servidor recortaba al que rema cansado (rendido, «no corre») y lo devolvía atrás al remar río abajo. Ahora, en la canoa, el cansancio y el frío no la frenan, como en el navegador. Provisional: si se quiere que el cansado reme más despacio, se hace a la vez en el navegador y en el servidor.",
+   "Provisional: la canoa se vacía junto a la hoguera de la orilla (las brasas, de un fuego a 6 m como mucho), y la prueba adelanta la hora a la que se consumen las brasas que echó (como lo que se fabrica), en vez de esperar sus 10 minutos.",
+   "Se puede seguir desde el mundo guardado antes del pozo (KINHOLD_RECORRIDO_DESDE); con MUTAR=1, el servidor no ve que va en canoa y le recorta al remar, y falla, como debe."
+  ],
+  "pruebas": "Revisor en la nube: lógica y el recorrido (los piden el servidor y las pruebas cambiadas): lógica bien y el recorrido entero, 347 bien y 0 mal, con el paso 26 nuevo entero. Aquí, la canoa desde lo guardado antes del pozo: 20 bien y 0 mal; con MUTAR=1 falla donde debe (el servidor le recorta al remar). Quitado: nada. Solo cambian las pruebas y una línea del servidor: sin versión nueva de la demo.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

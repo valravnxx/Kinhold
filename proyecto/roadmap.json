@@ -2518,9 +2518,9 @@
     },
     {
      "nombre": "Recorrido de jugador de la canoa, sin arcón: vacía un tronco largo, hace el remo, lleva la canoa a la orilla, rema río arriba y río abajo, la deja ir a la deriva y la vara en la orilla",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-16T22:23:17+00:00",
-     "rama": "trabajo/20261116-2223"
+     "fin": "2026-11-17T00:16:25+00:00"
     },
     {
      "nombre": "Revisión completa y publicación",
