@@ -282,7 +282,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // (las medidas, desde la raíz del personaje, que en la canoa va a ras del agua: x a la izquierda, y arriba, z adelante)
     const P = (fw, lat, up, out) => j.raiz.localToWorld(out.set(lat, up, fw));
     const ancho = R.barre ? 0.62 : 0.5;   // (la de girar, más abierta)
-    const T0 = (sd, o) => P(0.45, sd * 0.2, 0.72, o), T1 = (sd, o) => P(0.32, sd * 0.24, 0.6, o);    // el puño (delante de la cara): al meter, al sacar
+    const T0 = (sd, o) => P(0.5, sd * 0.24, 0.56, o), T1 = (sd, o) => P(0.36, sd * 0.28, 0.48, o);    // el puño (delante del pecho, por debajo de la barbilla: más alto, el antebrazo tapaba la cara): al meter, al sacar
     const B0 = (sd, o) => P(0.72, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
     const a = new THREE.Vector3(), e = new THREE.Vector3();
     if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
@@ -306,7 +306,25 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     const mano = (lado) => (agua ? sitio(lado, s) : sitio(lado, s).clone().lerp(sitio(lado, s2), k));
     const poloR = new THREE.Vector3().addScaledVector(_l, -0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
     const poloL = new THREE.Vector3().addScaledVector(_l, 0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
-    nudillosA(b.r, mano('r'), poloR); nudillosA(b.l, mano('l'), poloL);
+    // (la palma, no el nudillo, sobre la caña: el nudillo se pone donde toca, se mira dónde ha quedado la palma y se corrige
+    // lo que le falta, dos veces; y el remo pasa luego por las dos palmas, como al llevarlo de pie, para que no quede en el
+    // aire si el brazo no llega del todo)
+    const palma = (lado) => b[lado].mano.getWorldPosition(new THREE.Vector3()).lerp(b[lado].nudillo.getWorldPosition(new THREE.Vector3()), 0.6);
+    const quiere = { r: mano('r'), l: mano('l') }, apunta = { r: quiere.r.clone(), l: quiere.l.clone() };
+    for (let i = 0; i < 3; i++) {
+      nudillosA(b.r, apunta.r, poloR); nudillosA(b.l, apunta.l, poloL);
+      if (i < 2 && !globalThis.__mutarPalmas) for (const lado of ['r', 'l']) apunta[lado].add(quiere[lado].clone().sub(palma(lado)));
+    }
+    if (!globalThis.__mutarPalmas) {
+      // (lo que no llega el brazo, el remo lo sigue: la caña pasa por las dos palmas, sin cambiar dónde la agarra cada una;
+      // si están muy juntas, al cambiar de lado, solo por la de más arriba y con su inclinación de antes)
+      const P0 = j.palaRemo.puno, D = j.palaRemo.pala.clone().sub(P0).normalize();
+      const pr = palma('r'), pl = palma('l'), tr = pr.clone().sub(P0).dot(D), tl = pl.clone().sub(P0).dot(D);
+      const [A, tA, B, tB] = tr < tl ? [pr, tr, pl, tl] : [pl, tl, pr, tr];
+      const w = Math.min(1, Math.max(0, (tB - tA - 0.15) / 0.15)), D2 = D.clone().lerp(B.clone().sub(A).normalize(), w).normalize();   // (sin saltos)
+      const puno = A.clone().addScaledVector(D2, -tA);
+      j.palaRemo = { puno, pala: puno.clone().addScaledVector(D2, 1.22) };
+    }
     return true;
   };
   const colocarBrazos = () => {

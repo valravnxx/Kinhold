@@ -156,7 +156,8 @@ export function velocidadCanoa({ dir = { x: 0, z: 0 }, remando = false, corrient
 //   - cada palada es un ciclo de unos PALADA s (unas 50 por minuto): la pala entra delante, tira hasta la cadera (la
 //     parte EN_AGUA del ciclo, la que empuja, más fuerte a mitad del tirón), sale y vuelve por el aire;
 //   - la canoa arranca con cada tirón y entre uno y otro se frena sola (el agua frena con la velocidad al cuadrado, y algo
-//     más para que acabe parándose): la velocidad sube y baja a cada palada, y no pasa de unos 2 m/s de crucero;
+//     más para que acabe parándose): la velocidad sube y baja a cada palada, con unos 2,2 m/s de media de crucero (valravnx, 17 nov:
+//     «2,2 para probar ahora»);
 //   - remar por un lado tuerce la canoa hacia el otro: alternando lados va recta (con su vaivén); para girar se rema
 //     varias veces seguidas por el mismo lado, con la palada más abierta (de barrido), que tuerce más y empuja menos;
 //   - sin remar sigue un poco por su impulso y se para.
@@ -165,7 +166,7 @@ export function velocidadCanoa({ dir = { x: 0, z: 0 }, remando = false, corrient
 // barre (si es de girar), fuerza (0–1, del joystick) }. Decisiones provisionales: los números.
 export const PALADA = 1.2;          // s: una palada entera
 export const EN_AGUA = 0.5;         // de la palada, la parte con la pala en el agua tirando
-export const EMPUJE = 2.6;          // m/s²: lo que acelera en lo más fuerte del tirón
+export const EMPUJE = 3.6;          // m/s²: lo que acelera en lo más fuerte del tirón
 export const ROCE = 0.13;           // 1/m: lo que frena el agua (con la velocidad al cuadrado)
 export const ROCE_LENTO = 0.22;     // 1/s: y algo más, para que acabe parándose
 export const TUERCE = 0.7;          // rad/s²: lo que tuerce una palada hacia el otro lado (en lo más fuerte)

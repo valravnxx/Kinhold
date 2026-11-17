@@ -9,6 +9,7 @@
 # MUTAR_CASCO=1: el casco atraviesa las rocas: tiene que fallar.
 # MUTAR=1: remar no mueve la canoa más que la corriente (sin remo de verdad): tiene que fallar.
 # MUTAR_REMAR=1: la velocidad fija de antes, sin paladas: tiene que fallar.
+# MUTAR_PALMAS=1: las manos sin corregir (la palma fuera de la caña): tiene que fallar.
 import sys, os, json, time, math
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -63,6 +64,7 @@ def recorrido(pg, pre, movil):
     if os.environ.get('MUTAR_RODILLAS') == '1': pg.evaluate('window.__mutarRodillas = true')
     if os.environ.get('MUTAR_CASCO') == '1': pg.evaluate('window.__mutarCasco = true')
     if os.environ.get('MUTAR_REMAR') == '1': pg.evaluate('globalThis.__mutarRemar = true')
+    if os.environ.get('MUTAR_PALMAS') == '1': pg.evaluate('globalThis.__mutarPalmas = true')
     if MUTAR: pg.evaluate(f"(() => {{ const k = {K}; k.inventario().lugares['mano:der'] = null; k.vestir(); }})()")
     pg.evaluate(f"{K}.usar()"); pg.wait_for_timeout(700)
     c = canoa(pg, id)
@@ -136,6 +138,21 @@ def recorrido(pg, pre, movil):
     comprobar(f'{pre}sigue en el agua', (pg.evaluate(f"(() => {{ const a = {K}.mundoJ.aguaEn({K}.pj.x, {K}.pj.z); return a ? a.hondo : 0; }})()") or 0) >= 0.2)
     pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = Math.atan2(-({r['ux']}), -({r['uz']})) + 2.4; k.cam.dist = 5.5; k.cam.pitch = 0.4; }})()")
     foto(pg, f'{pre}4_remando')
+    # cada momento de la palada, de cerca y de lado (la palada fija con __remadaFija: mover la cámara mientras se rema
+    # cambiaría hacia dónde va, que W va hacia donde mira la cámara): la pala entra delante por la derecha, tira, vuelve, y
+    # por la izquierda; con la pala en el agua, las dos palmas sobre la caña
+    for i, (lado, fase) in enumerate([('r', 0.05), ('r', 0.3), ('r', 0.75), ('l', 0.2)]):
+        pg.evaluate(f"""(() => {{ const k = {K}; window.__remadaFija = {{ lado: '{lado}', fase: {fase}, enAgua: {str(fase < 0.5).lower()}, barre: false }};
+          k.cam.yaw = k.pj.rot + 0.6; k.cam.dist = 3.0; k.cam.pitch = 0.35; }})()""")
+        pg.wait_for_timeout(400)
+        pg.screenshot(path=f'{SALIDA}/{pre}4{"efgh"[i]}_palada_de_cerca.png')
+        dist = pg.evaluate(f"""(() => {{ const j = {K}.jugador, h = j.mh.hueso, p = j.palaRemo; if (!p) return [9, 9]; j.raiz.updateMatrixWorld(true);
+          const pos = n => h[n].getWorldPosition(p.puno.clone()), ab = p.pala.clone().sub(p.puno);
+          const seg = q => {{ const t = Math.max(0, Math.min(1, q.clone().sub(p.puno).dot(ab) / ab.lengthSq())); return +q.distanceTo(p.puno.clone().addScaledVector(ab, t)).toFixed(3); }};
+          return ['r', 'l'].map(l => seg(pos('hand_' + l).lerp(pos('middle_01_' + l), 0.6))); }})()""")
+        if fase < 0.5: comprobar(f'{pre}palada {lado} {fase}: las dos palmas sobre la caña (a menos de 4 cm)', max(dist) < 0.04, f'{dist} m')
+        else: print(f'  (palada {lado} {fase}, volviendo: las palmas a {dist} m de la caña)')
+    pg.evaluate("window.__remadaFija = null")
     # sin remar: a la deriva, río abajo (antes, lo que aún lleva de las paladas se lo come el agua: unos segundos de juego)
     for i in range(30):
         q0 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]"); pg.wait_for_timeout(500); q1 = pg.evaluate(f"[{K}.pj.x, {K}.pj.z]")
