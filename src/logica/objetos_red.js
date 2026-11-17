@@ -280,8 +280,9 @@ export class ObjetosServidor {
       .map(e => ({ id: e.id, tipo: e.tipo, x: e.x, z: e.z, autor: e.autor, deposito: { ...e.deposito }, ...(e.fuego ? { fuego: fuego(e.fuego) } : {}),
         ...(Number.isFinite(e.y) ? { y: e.y } : {}), ...(Number.isFinite(e.giro) ? { giro: e.giro } : {}), ...(e.obra ? { obra: { entregado: { ...e.obra.entregado }, trabajo: e.obra.trabajo } } : {}),
         ...(e.ligadas ? { ligadas: [...e.ligadas] } : {}),   // las camas: quién la tiene ligada (cada navegador mira si es la suya)
-        // lo que se pone a secar en el secadero (P9) se ve colgado para todos: cada encargo, con los s que le quedan (sin el autor)
-        ...(ESTACIONES[e.tipo] && ESTACIONES[e.tipo].cuelga ? { colgado: e.cola.map(c => ({ receta: c.receta, queda: Math.max(0, Math.ceil((c.fin - ahora) / 1000)) })) } : {}) }));
+        // lo que se pone a secar en el secadero (P9) se ve colgado para todos: cada encargo, con los s que le quedan (sin el
+        // autor); y lo mismo la carga del horno de reducción (P10), para que todos vean su humo mientras reduce
+        ...(ESTACIONES[e.tipo] && (ESTACIONES[e.tipo].cuelga || ESTACIONES[e.tipo].humea) ? { colgado: e.cola.map(c => ({ receta: c.receta, queda: Math.max(0, Math.ceil((c.fin - ahora) / 1000)) })) } : {}) }));
   }
   // Lo que un jugador tiene encargado: en sus manos y en cada estación (con cuánto le falta).
   encargosDe(autor, ahora) {

@@ -78,6 +78,7 @@ export const COLA_MANOS = 1;
 export const COLA_SECADERO = 10;            // lo que se seca a la vez en un secadero (sus dos cuerdas; provisional)
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
 export const SECAR_CARNE = 6 * 3600;           // s que tarda la carne en secarse en el secadero (provisional)
+export const REDUCIR = 3600;                // s que tarda una carga del horno de reducción en dar la lupia (provisional)
 export const MAX_RATO_ESTACION = 5;         // s de trabajo como mucho en una sola acción (como en las obras)
 
 // Los usos: qué estaciones dan cada uno. Una receta pide un uso, no una estación concreta.
@@ -89,6 +90,7 @@ export const USOS = {
   secar:  { nombre: 'En el secadero', estaciones: ['secadero'] },
   raspar: { nombre: 'En el raspador de pieles', estaciones: ['raspador'] },
   trillar: { nombre: 'En la era', estaciones: ['era'] },
+  reducir: { nombre: 'En el horno de reducción', estaciones: ['horno_reduccion'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -134,6 +136,15 @@ export const ESTACIONES = {
   // apisonado, nueva estación), con el mayal: dan el grano y la paja»): un suelo redondo apisonado y bordeado de piedras,
   // fuera y en tu tierra. Provisional (diario y registro): 8 piedras y 30 s de trabajo (apisonar es lo que más cuesta).
   era:            { nombre: 'Era', un: 'una era', uso: 'trillar', coste: { piedra: 8 }, donde: 'fuera', trabajo: 30, tierra: true, hace: 'Trillar las gavillas con el mayal: grano sin limpiar y paja' },
+  // el horno de reducción (P10, 17 nov; GDD, «del hierro de pantano a la lupia»; documento de sistemas: «horno de
+  // reducción — barro, piedras y carbón»): un horno de cuba de barro, algo más alto que la cintura, sobre un anillo de
+  // piedras, con la boca de la tobera a un lado y el arco de sangrar la escoria delante; fuera y en tu tierra. Se carga
+  // (Usar: dejar en él) con 3 minerales de hierro, 4 carbones y la yesca y se enciende llevando el taladro de fuego: eso
+  // es el encargo (la receta reducir), una carga cada vez (carga: 1). Mientras reduce echa humo para todos (humea; lo
+  // manda el servidor como lo colgado del secadero) y al cabo de REDUCIR deja la lupia, que recoge quien lo encendió.
+  // Provisional (diario y registro): 1 h real, 60 s de trabajo para levantarlo y que los 4 carbones de su coste son los
+  // del primer secado del barro.
+  horno_reduccion: { nombre: 'Horno de reducción', un: 'un horno de reducción', uso: 'reducir', coste: { barro: 20, piedra: 10, carbon: 4 }, donde: 'fuera', trabajo: 60, tierra: true, humea: true, carga: 1, hace: 'Un horno de cuba de barro: cargado con mineral de hierro y carbón y encendido, al cabo de un rato deja una lupia de hierro' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -152,6 +163,7 @@ export const motivoTierra = tipo => {
   return !e || e.uso === 'almacen' ? 'Los almacenajes van en tu tierra (o en la de quien te invita).'
     : e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).'
     : tipo === 'era' ? 'La era va en tu tierra (o en la de quien te invita).'
+    : tipo === 'horno_reduccion' ? 'El horno de reducción va en tu tierra (o en la de quien te invita).'
     : 'El secadero va en tu tierra (o en la de quien te invita).';
 };
 export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
@@ -220,6 +232,10 @@ export const RECETAS = {
   // llevando la criba de grano (no se gasta): cada puñado de grano sin limpiar da 1 puñado de grano de cebada limpio, el
   // que se siembra; las granzas y las chinas se quedan en la criba y se tiran. Tiempo, provisional (diario y registro)
   cribar:            { ...r('Cribar el grano', 'manos', 'semilla_cebada', { grano_sucio: 1 }, 15), requiere: ['criba_grano'] },
+  // en el horno de reducción (P10, 17 nov): la carga (3 minerales de hierro y 4 carbones, con la yesca para prenderla),
+  // encendida con el taladro de fuego (que se lleva y no se gasta), da 1 lupia de hierro al cabo de REDUCIR. Se cuenta por
+  // tiempo transcurrido, como el secadero: la cola guarda cuándo termina
+  reducir:           { ...r('Lupia de hierro', 'reducir', 'lupia', { mineral_hierro: 3, carbon: 4, yesca: 1 }, REDUCIR), requiere: ['taladro_fuego'] },
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
   cuerda_trenzada:   r('Cinturón de cuerda', 'banco', 'cuerda_trenzada', { cuerda: 2 }, 30),
@@ -297,6 +313,7 @@ export const PARA = {
   cubo: 'Agua, leche.',
   remo: 'Para remar en la canoa: con él se va bastante más deprisa que corriendo; sin remar, la canoa va a la deriva. Se lleva con las dos manos.',
   carretilla: 'Se empuja: 4 troncos cortos, 40 de leña, 36 piedras o un bloque de piedra, más deprisa que la rastra; aparcada en tus tierras, lo que lleva está protegido.',
+  reducir: 'El hierro en bruto, con su escoria: la fragua lo bate en barra.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 
@@ -736,10 +753,10 @@ export class Fabricacion {
         if (!e) return { ok: false, motivo: `Hace falta ${conQue(rc.uso)} a tu lado.` };
       }
       if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: estadoFuego(e.fuego, ahora).brasas ? 'Está en brasas: avívalo para que vuelva la llama.' : 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
-      cola = e.cola; max = ESTACIONES[e.tipo].cuelga ? COLA_SECADERO : COLA_ESTACION; enEst = e;
+      cola = e.cola; max = ESTACIONES[e.tipo].cuelga ? COLA_SECADERO : ESTACIONES[e.tipo].carga || COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);
-    if (sinTerminar.length >= max) return { ok: false, motivo: rc.uso === 'manos' ? 'Ya estás haciendo otra cosa.' : 'La cola de la estación está llena.' };
+    if (sinTerminar.length >= max) return { ok: false, motivo: rc.uso === 'manos' ? 'Ya estás haciendo otra cosa.' : enEst && ESTACIONES[enEst.tipo].humea ? 'El horno ya está encendido con su carga: espera a que termine.' : 'La cola de la estación está llena.' };
     let usado;
     if (enEst) { // con lo depositado en la estación, y nada más
       const f = cuentasEstacion(rc.gasta, enEst.deposito).faltan;

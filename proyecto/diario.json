@@ -7472,5 +7472,24 @@
   "pruebas": "Revisor en la nube: lógica, el recorrido, tala de los árboles, el mazo de piedra, despiezar y asar, velocidad con pocos fotogramas, panel de fabricación, panel de inventario y marcar el campo, bien; añadidos el mimbre, la corteza y la resina (su prueba comprueba la corteza de cada especie) y objetos en el suelo, bien. El recorrido falló una vez en el paso 26b (no encontraba su hacha para la canoa) y a la segunda salió entero, 347 bien y 0 mal. Rotas a propósito: el cubo que no se vacía y el roble que da corteza a secas fallan, como deben.",
   "capturas": "capturas/demo-v229",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-17T08:08:19+00:00",
+  "fin": "2026-11-17T11:20:30+00:00",
+  "titulo": "El horno de reducción y la lupia (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "Un puesto nuevo en Construir, «Puestos de trabajo»: el horno de reducción, una cuba de barro algo más alta que la cintura sobre un anillo de piedras, con el arco de sacar la lupia delante y la tobera de barro cocido a un lado. Cuesta 20 cestas de barro, 10 piedras y 4 carbones; va fuera, en tu tierra.",
+   "Se carga (Usar: dejar en él) con 3 minerales de hierro, 4 carbones y la yesca y, llevando el taladro de fuego, se enciende desde su pestaña del panel. Mientras reduce echa humo espeso y llama por la boca, con el arco y la tobera al rojo, y lo ven todos. Al cabo de 1 h deja una lupia de hierro delante del arco, que solo recoge quien lo encendió. Una carga cada vez; mientras reduce no se desmonta. Lo hace el servidor, con su autor.",
+   "El carbón vegetal y la lupia tienen su modelo y su imagen (iconos v35; la v34 es de la rama de las cubas de curtido). En el panel, las herramientas que se llevan dicen «llevarlo» o «llevarla» según el nombre.",
+   "La segunda mirada de un agente aparte dijo no dos veces (humo en globos, barro naranja, arco como un asa, carbón y lupia que no se leían; luego el hollín en aros) y sí a la tercera.",
+   "El carbón aún no sale de ningún sitio: el horno y la lupia esperan en el origen de los materiales a la tarea «La carbonera y el carbón» (P9), y en el recorrido, en «todavía no».",
+   "Provisional: 1 h real por carga, 60 s de trabajo para levantar el horno, la lupia de 4 kg y mediana, y la yesca de encenderlo se deja en el horno con la carga.",
+   "Valravnx pidió seguir con otra rama mientras la sesión anterior terminaba las cubas de curtido: se hizo en trabajo/20261117-0808.",
+   "Demo v230."
+  ],
+  "pruebas": "Comprobador de código correcto. Prueba nueva del horno (lógica y servidor, 26 bien) y su prueba de navegador (PC y móvil), rotas a propósito con MUTAR=1: fallan. En la nube, el revisor: lógica, el horno, el panel de fabricar (a la segunda), el hogar, los colgaderos, la cama, el mazo, despiezar y asar y el inventario, bien. Fallan «los almacenajes de la base» (lo dibujado tarda más de 5 s en la nube; ya fallaba igual en main el 15 nov) y el recorrido en el paso 26b de la canoa (no encuentra su hacha en la nube; aquí, con node, el recorrido de main y el de esta rama van idénticos hasta pasado ese paso, con los mismos fallos de la caza de la liebre al azar). No se quitó ningún grupo.",
+  "capturas": "capturas/demo-v230",
+  "estado": "ok"
  }
 ]
