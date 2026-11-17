@@ -1,0 +1,73 @@
+  OK   PC: el horno apagado, sin humo y con la carga al pie (mineral, carbón y yesca) — {'humo': False, 'llama': False, 'rescoldo': False, 'lupia': False, 'carga': True}
+  OK   PC: el que reduce, con humo, llama por la boca y el arco al rojo — {'humo': 16, 'llama': True, 'rescoldo': True, 'lupia': False, 'carga': False}
+  OK   PC: el de la lupia hecha, sin humo y con la lupia delante del arco — {'humo': False, 'llama': False, 'rescoldo': False, 'lupia': True, 'carga': False}
+  OK   PC: al pasar su hora deja de humear y se ve la lupia — {'humo': False, 'llama': False, 'rescoldo': False, 'lupia': True, 'carga': False}
+  OK   PC: su pestaña «Horno de reducción», con la lupia de hierro — Horno de reducción
+Un horno de cuba de barro: cargado con mineral de hierro y carbón y encendido, al cabo de un rato deja una lupia de hierro · sus recetas gastan lo que se le deja
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Sec
+  OK   PC: la ficha pide el mineral y el carbón y el taladro de fuego, y dice lo que tarda (1 h) — Lupia de hierro
+
+El hierro en bruto, con su escoria: la fragua lo bate en barra.
+
+En el horno de reducción
+1 h
+da Lupia de hierro
+Lo que pide (de lo que está en la estación)
+Mineral de hierroen la estación
+3 de 3
+Carbón vegetalen la estación
+4 de 4
+Yescaen la estación
+1 de 1
+Taladro de fuegohay que llevarlo (no se gasta)
+0/1
+Hace falta llevar: taladro de fuego
+  OK   PC: el panel no se sale de lado
+  OK   PC: el carbón y la lupia se dejan en el suelo — 2
+  OK   PC: sin errores en la página — []
+  OK   móvil: el horno apagado, sin humo y con la carga al pie (mineral, carbón y yesca) — {'humo': False, 'llama': False, 'rescoldo': False, 'lupia': False, 'carga': True}
+  OK   móvil: el que reduce, con humo, llama por la boca y el arco al rojo — {'humo': 16, 'llama': True, 'rescoldo': True, 'lupia': False, 'carga': False}
+  OK   móvil: el de la lupia hecha, sin humo y con la lupia delante del arco — {'humo': False, 'llama': False, 'rescoldo': False, 'lupia': True, 'carga': False}
+  OK   móvil: al pasar su hora deja de humear y se ve la lupia — {'humo': False, 'llama': False, 'rescoldo': False, 'lupia': True, 'carga': False}
+  OK   móvil: su pestaña «Horno de reducción», con la lupia de hierro — Horno de reducción
+Un horno de cuba de barro: cargado con mineral de hierro y carbón y encendido, al cabo de un rato deja una lupia de hierro · sus recetas gastan lo que se le deja
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Sec
+  OK   móvil: la ficha pide el mineral y el carbón y el taladro de fuego, y dice lo que tarda (1 h) — Lupia de hierro
+
+El hierro en bruto, con su escoria: la fragua lo bate en barra.
+
+En el horno de reducción
+1 h
+da Lupia de hierro
+Lo que pide (de lo que está en la estación)
+Mineral de hierroen la estación
+3 de 3
+Carbón vegetalen la estación
+4 de 4
+Yescaen la estación
+1 de 1
+Taladro de fuegohay que llevarlo (no se gasta)
+0/1
+Hace falta llevar: taladro de fuego
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: sin errores en la página — []
+
+TODO CORRECTO
