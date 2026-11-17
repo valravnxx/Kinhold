@@ -3191,5 +3191,17 @@
  "Necesitas el cubo lleno en la mano.": "Нужно полное ведро в руке.",
  "Demo única · v229 (El cubo se vacía y la corteza de roble)": "Единое демо · v229 (Ведро выливается, и дубовая кора)",
  "v229: el cubo lleno se vacía donde sea (oficios). Con el cubo de agua en la mano, el menú de Usar (clic derecho o el dedo quieto) ofrece «Vaciar el cubo»; si no hay nada más que usar, también Usar a secas. El agua se derrama y el cubo queda vacío en la mano, para volver a llenarlo en el río. Lo hace el servidor, con su autor. Y descortezar un roble en pie (con la lasca de sílex, un cuchillo o un hacha) da corteza de roble, la que curtirá en las cubas: placas gruesas, pardas y agrietadas; las demás especies siguen dando corteza (la de la yesca).": "v229: полное ведро можно вылить где угодно (ремёсла). С ведром воды в руке меню «Использовать» (правый клик или неподвижный палец) предлагает «Вылить ведро»; если больше нечего использовать, то и простое «Использовать». Вода проливается, и ведро остаётся в руке пустым, чтобы снова наполнить его в реке. Это делает сервер, с автором. А если снять кору со стоящего дуба (кремнёвым отщепом, ножом или топором), получится дубовая кора, которой будут дубить в чанах: толстые, бурые, растрескавшиеся пластины; другие породы по-прежнему дают кору (для трута).",
- "v229, provisional: el roble da de 1 a 2 cortezas de roble, como las demás especies su corteza; la corteza de roble no hace yesca; el agua de las cubas será la del cubo lleno (se vaciará en ellas).": "v229, предварительно: дуб даёт от 1 до 2 дубовых кор, как другие породы — свою кору; из дубовой коры трут не делается; вода для чанов будет из полного ведра (его выльют в них)."
+ "v229, provisional: el roble da de 1 a 2 cortezas de roble, como las demás especies su corteza; la corteza de roble no hace yesca; el agua de las cubas será la del cubo lleno (se vaciará en ellas).": "v229, предварительно: дуб даёт от 1 до 2 дубовых кор, как другие породы — свою кору; из дубовой коры трут не делается; вода для чанов будет из полного ведра (его выльют в них).",
+ "Carbón vegetal": "Древесный уголь",
+ "Lupia de hierro": "Железная крица",
+ "el horno de reducción": "сыродутную печь",
+ "Horno de reducción": "Сыродутная печь",
+ "un horno de reducción": "сыродутную печь",
+ "En el horno de reducción": "В сыродутной печи",
+ "Un horno de cuba de barro: cargado con mineral de hierro y carbón y encendido, al cabo de un rato deja una lupia de hierro": "Шахтная печь из глины: если загрузить в неё железную руду и уголь и разжечь, через некоторое время она даёт железную крицу",
+ "El hierro en bruto, con su escoria: la fragua lo bate en barra.": "Сырое железо со шлаком: в кузне его проковывают в пруток.",
+ "El horno de reducción va en tu tierra (o en la de quien te invita).": "Сыродутная печь ставится на твоей земле (или на земле того, кто тебя пригласил).",
+ "El horno ya está encendido con su carga: espera a que termine.": "Печь уже горит с загрузкой: подожди, пока она закончит.",
+ "hay que llevarlo (no se gasta)": "нужно иметь при себе (не расходуется)",
+ "lo llevas (no se gasta)": "у вас с собой (не расходуется)"
 }

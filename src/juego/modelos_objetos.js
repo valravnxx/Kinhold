@@ -23,6 +23,8 @@
 //    los anillos en las caras y una grieta de secado (es madera sin curar); las mismas medidas que la rueda de la
 //    carretilla (src/juego/carretilla.js), que es ella.
 //  - remo (P11d, 16 nov): de una pieza, a hacha, con la pala de punta redonda y su nervio, la caña y el puño en muleta.
+//  - carbón vegetal (P10, 17 nov): trozos de leña carbonizada, negros, facetados y agrietados de través.
+//  - lupia de hierro (P10, 17 nov): una masa esponjosa gris negruzca con poros, escoria vidriosa abajo y algo de óxido.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
@@ -618,6 +620,55 @@ function mineralHierro(n, id) {
   return mallas(L);
 }
 
+// El carbón vegetal (P10, 17 nov; lo dará la carbonera): un montoncito de trozos de leña carbonizada, negros y ligeros,
+// partidos y de cantos vivos, unos encima de otros.
+const CARBON = 0x35312c, CARBON_CLARO = 0x4c4741;
+function carbon(n, id) {
+  const L = lote(0.035), k = Math.min(16, 6 + (n || 1));
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399 + az(id, i), capa = i < 8 ? 0 : i < 13 ? 1 : 2, d = capa === 2 ? 0.02 : capa ? 0.045 : 0.035 + Math.sqrt(i / 8) * 0.075;
+    const largo = 0.04 + az(id, i + 10) * 0.05, r = 0.016 + az(id, i + 20) * 0.014;
+    const g = new THREE.CylinderGeometry(r * (0.7 + az(id, i + 25) * 0.3), r, largo, 5, 2), p = g.attributes.position;   // un trozo partido, facetado
+    for (let j = 0; j < p.count; j++) {
+      const y = p.getY(j), f = 0.65 + 0.5 * az(id + ':' + i, Math.round(p.getX(j) * 2000) + ':' + Math.round(y * 2000) + ':' + Math.round(p.getZ(j) * 2000));
+      p.setX(j, p.getX(j) * f); p.setZ(j, p.getZ(j) * f); p.setY(j, y * (0.85 + 0.3 * az(id + 'y' + i, Math.round(p.getX(j) * 900))));
+    }
+    g.computeVertexNormals();
+    L.add(g, i % 3 ? CARBON : CARBON_CLARO, Math.cos(a) * d * 1.2, r * 0.8 + capa * 0.028, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, i + 40) - 0.5) * 0.9, y: az(id, i + 50) * 6, x: (az(id, i + 45) - 0.5) * 0.8 }, { plano: true, tex: 'corteza', brillo: 0.95 });
+  }
+  return mallas(L);
+}
+
+// La lupia de hierro (P10, 17 nov, la del horno de reducción): una masa esponjosa del tamaño de un puño grande, gris
+// negruzca, llena de poros y de bultos, con la escoria vidriosa pegada abajo y alguna mancha de óxido; aplastada por
+// debajo, como sale del fondo del horno.
+const LUPIA = 0x3d3a37, LUPIA_CLARA = 0x58534d, ESCORIA = 0x2b2a2c, OXIDO_LUPIA = 0x6e4630;
+function lupia(n, id) {
+  const L = lote(0.05), k = Math.min(3, n || 1);
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.3 + az(id, i), d = i ? 0.17 : 0, r = 0.085 - i * 0.008;
+    const g = new THREE.IcosahedronGeometry(r, 3), p = g.attributes.position;
+    for (let j = 0; j < p.count; j++) {   // bultos grandes y poros pequeños
+      const x = p.getX(j), y = p.getY(j), z = p.getZ(j), clave = Math.round(x * 300) + ':' + Math.round(y * 300) + ':' + Math.round(z * 300);
+      const bulto = 0.82 + 0.3 * az(id + 'b' + i, Math.round(x * 40) + ':' + Math.round(y * 40) + ':' + Math.round(z * 40));
+      const poro = az(id + 'p' + i, clave) < 0.22 ? 0.88 : 1;
+      p.setXYZ(j, x * bulto * poro * 1.15, (y < 0 ? y * 0.45 : y * 0.8) * bulto * poro, z * bulto * poro);
+    }
+    g.computeVertexNormals();
+    const cx = Math.cos(a) * d, cz = Math.sin(a) * d, cy = r * 0.42;
+    L.add(g, i % 2 ? LUPIA_CLARA : LUPIA, cx, cy, cz, { y: az(id, i + 9) * 6 }, { plano: true, tex: 'piedra', brillo: 0.8 });
+    for (let e = 0; e < 4; e++) {   // la escoria pegada abajo: gotas vidriosas
+      const b = e * 1.6 + az(id, i * 10 + e), re = r * (0.22 + az(id, i * 10 + e + 5) * 0.12);
+      L.add(new THREE.IcosahedronGeometry(re, 1), ESCORIA, cx + Math.cos(b) * r * 1.0, re * 0.5, cz + Math.sin(b) * r * 0.85, null, { escala: v3(1.3, 0.55, 1), brillo: 1.25, tex: 'liso' });
+    }
+    for (let o = 0; o < 3; o++) {   // manchas de óxido en lo alto
+      const b = o * 2.1 + az(id, i * 20 + o);
+      L.add(new THREE.IcosahedronGeometry(r * 0.28, 1), OXIDO_LUPIA, cx + Math.cos(b) * r * 0.55, cy + r * 0.45, cz + Math.sin(b) * r * 0.5, null, { escala: v3(1, 0.35, 1), plano: true, tex: 'piedra', sinSuelo: true });
+    }
+  }
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -858,6 +909,6 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

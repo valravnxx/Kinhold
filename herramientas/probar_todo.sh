@@ -170,6 +170,7 @@ paso "Navegador: la acción a la vista (etiqueta, aro, lista y botón de acción
 paso "Navegador: el mazo de piedra y romper rocas" python3 pruebas/prueba_rocas_navegador.py dist/kinhold_demo.html "$C/rocas"
 paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_materiales_navegador.py dist/kinhold_demo.html "$C/materiales"
 paso "Navegador: el hierro de pantano" python3 pruebas/prueba_hierro_pantano_navegador.py dist/kinhold_demo.html "$C/hierro_pantano"
+paso "Navegador: el horno de reducción" python3 pruebas/prueba_horno_navegador.py dist/kinhold_demo.html "$C/horno"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
