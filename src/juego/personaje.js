@@ -300,8 +300,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     // (el remo es rígido: la pala, a su largo del puño, 1,22 m al centro de la pala, en esa dirección)
     const dir = _B.sub(_T).normalize();
     j.palaRemo = { puno: _T.clone(), pala: _T.clone().addScaledVector(dir, 1.22) };
-    // las manos: arriba, en el puño; abajo, por la caña, a 0,55 m de él (la del lado de la palada)
-    const abajo = _T.clone().addScaledVector(dir, 0.55), arriba = _T.clone();
+    // las manos: arriba, en el puño; abajo, por la caña, a 0,45 m de él (con 0,55 no llegaba al meter la pala) (la del lado de la palada)
+    const abajo = _T.clone().addScaledVector(dir, 0.45), arriba = _T.clone();
     const sitio = (lado, sd) => ((lado === 'l') === (sd > 0) ? abajo : arriba);
     const mano = (lado) => (agua ? sitio(lado, s) : sitio(lado, s).clone().lerp(sitio(lado, s2), k));
     const poloR = new THREE.Vector3().addScaledVector(_l, -0.8).addScaledVector(_u, -0.5).addScaledVector(_f, -0.3);
@@ -321,8 +321,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       const P0 = j.palaRemo.puno, D = j.palaRemo.pala.clone().sub(P0).normalize();
       const pr = palma('r'), pl = palma('l'), tr = pr.clone().sub(P0).dot(D), tl = pl.clone().sub(P0).dot(D);
       const [A, tA, B, tB] = tr < tl ? [pr, tr, pl, tl] : [pl, tl, pr, tr];
-      const w = Math.min(1, Math.max(0, (tB - tA - 0.15) / 0.15)), D2 = D.clone().lerp(B.clone().sub(A).normalize(), w).normalize();   // (sin saltos)
-      const puno = A.clone().addScaledVector(D2, -tA);
+      const w = Math.min(1, Math.max(0, (tB - tA - 0.08) / 0.1)), D2 = D.clone().lerp(B.clone().sub(A).normalize(), w).normalize();   // (sin saltos)
+      const puno = A.clone().addScaledVector(D2, -Math.max(0, tA));   // (si la mano no llega al puño, el remo baja hasta ella: la mano en el puño, no en el aire más allá)
       j.palaRemo = { puno, pala: puno.clone().addScaledVector(D2, 1.22) };
     }
     return true;
