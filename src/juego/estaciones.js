@@ -521,9 +521,7 @@ function rectRedondo(sh, x, z, r, agujero = false) {
 const enBorde = (x, z, a) => { const c = Math.cos(a), s = Math.sin(a), k = 1 / Math.max(Math.abs(c) / x, Math.abs(s) / z); return [c * k, s * k]; };
 function cubasCurtido(id) {
   const g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 }), { x: X, z: Z, labio, tronco, largo, monte } = CUBAS;
-  // la tierra sacada del hoyo, removida y pisada alrededor (más clara que el prado), y el fondo, oscuro
-  const fuera = new THREE.Shape(); rectRedondo(fuera, X + labio + monte + 0.12, Z + labio + monte + 0.1, 0.3);
-  L.add(new THREE.ShapeGeometry(fuera, 8), 0x7d6648, 0, 0.006, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' });
+  // el fondo del hoyo, oscuro (la tierra sacada es el caballón de abajo, sin parche plano alrededor)
   const fondo = new THREE.Shape(); rectRedondo(fondo, X, Z, 0.1);
   L.add(new THREE.ShapeGeometry(fondo, 6), 0x2e241a, 0, 0.012, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'piedra' });
   // la tierra sacada y el labio, de una pieza (segunda mirada, 17 nov: los terrones sueltos se leían como piedras y el
@@ -630,7 +628,7 @@ function llenoCubas(dep, id, colgado = []) {
       let y;
       if (u < -0.04) {   // en el agua: hundida, con pliegues que asoman
         const pl = Math.sin(u * 26 + f + w * 6) * 0.5 + Math.sin(u * 11 - w * 14 + f) * 0.5;
-        y = AGUA_CUBAS - 0.004 + pl * 0.009;   // metida en el agua: solo asoman los lomos de los pliegues
+        y = AGUA_CUBAS + 0.001 + pl * 0.007;   // medio metida en el agua: asoman los lomos de los pliegues, y se ve su forma
       } else if (u < labio) {   // sube por la pared de barro hasta el labio, en una curva
         const t = (u + 0.04) / (labio + 0.04);
         y = AGUA_CUBAS + 0.004 + 0.13 * Math.sin(t * Math.PI / 2);
