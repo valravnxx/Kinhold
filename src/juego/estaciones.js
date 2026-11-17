@@ -20,7 +20,7 @@
 //    hincadas y algo echadas hacia atrás; la piel dejada en él se ve tensada dentro con la cuerda, pasada por sus
 //    agujeros hasta las varas (la que está por raspar, con su pelo; la limpia, pálida), y las demás, al pie.
 //  - las cubas de curtido (oficios, 17 nov): un hoyo alargado forrado de barro, con un tronco corto tumbado en cada
-//    costado; con agua, el agua parda de la corteza, y cada piel en remojo, con el borde echado sobre un tronco.
+//    costado; con agua, el agua parda de la corteza, y cada piel en remojo, con la punta echada sobre el labio.
 //  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
 //    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
 //    almohada de juncos).
@@ -442,7 +442,7 @@ function cubasCurtido(id) {
   return g;
 }
 // Lo de las cubas: el agua parda, si tiene agua o algo en remojo; cada piel en remojo, medio dentro del agua y con el
-// borde echado sobre el tronco de un costado (la que está por curtir, pálida y oscureciéndose; la curtida, del color del
+// punta echada sobre el labio de barro de un cabo (la que está por curtir, pálida y oscureciéndose; la curtida, del color del
 // cuero); y lo dejado (la piel limpia y la corteza de roble que esperan), al pie, delante.
 const COLOR_CURTIDA = 0x6b4a2e;
 function llenoCubas(dep, id, colgado = []) {
