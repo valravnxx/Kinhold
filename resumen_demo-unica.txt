@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3102 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3455 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5038 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3514 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3096 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3496 KB
+dist/kinhold_trozos.html 3118 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v230 (Las cubas de curtido y el cuero); v230: las cubas de curtido y el cuero (oficios). Un puesto nuevo en Construir, «Puestos de trabajo»: las cubas, un hoyo alargado cavado y forrado de barro, con un tronco corto tumbado en cada costado; piden 2 cestas de barro y 2 troncos cortos, y llevar el palo cavador al cavarlas (no se gasta); fuera y en tu tierra. Se llenan con el cubo: delante de ellas, con el cubo lleno en la mano, Usar echa su agua dentro (el cubo queda vacío; el agua no se vuelve a sacar). Se les dejan pieles limpias y corteza de roble y, en su pestaña del panel de fabricar, cada piel limpia con 2 cortezas de roble y el agua de un cubo se pone en remojo y da 1 cuero al cabo de dos días reales; varias a la vez, cada una con su tiempo, y todos ven las pieles en remojo, con el borde echado sobre un tronco. Lo hace el servidor, con su autor. El cuero va en el fardo, con las pieles.; v230, provisional: 2 días reales por cuero, 4 pieles a la vez en unas cubas, el agua de un cubo por piel, 40 s de trabajo para cavarlas y que van en tu tierra (lo que se curte se queda días); al desmontarlas el agua se derrama.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 444 s
