@@ -16,7 +16,8 @@
 //  - La canoa se vacía junto a la hoguera de la orilla del paso 11 (las brasas, de un fuego a 6 m como mucho): el
 //    tronco largo se arrastra hasta ella. Las brasas arden sus 10 minutos de reloj: la prueba adelanta la hora a la que
 //    se consumen las que echó este jugador (como lo que se fabrica), en vez de esperarla. No le da nada.
-//  - Rema como el navegador (src/juego/main.js, pasoCanoa): cada 100 ms, con velocidadCanoa, por donde flota; río
+//  - Rema como el navegador (src/juego/main.js, pasoCanoa): cada 100 ms, a paladas (pasoRemar: la canoa con su rumbo,
+//    que gira con los tirones, y la corriente aparte, con velocidadCanoa), por donde flota; río
 //    arriba y río abajo, siguiendo el cauce (el agua más honda hacia donde va).
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn } from '../src/logica/vegetacion.js';
@@ -26,7 +27,7 @@ import { campoEn } from '../src/logica/campos.js';
 import { VIDA as VIDA_DESGASTE } from '../src/logica/desgaste.js';
 import { DETRAS_TRONCO } from '../src/logica/rastra.js';
 import { vivo } from '../src/logica/fuego.js';
-import { velocidadCanoa, remoEnMano, HONDO_FLOTA, HONDO_BAJAR, ALCANCE_FUEGO, VEL_REMAR } from '../src/logica/canoa.js';
+import { velocidadCanoa, remoEnMano, HONDO_FLOTA, HONDO_BAJAR, ALCANCE_FUEGO, nuevaRemada, pasoRemar } from '../src/logica/canoa.js';
 import { VEL_MAX } from '../src/logica/presencia.js';
 
 const MANOS = ['mano:der', 'mano:izq'];
@@ -392,6 +393,16 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
   if (!q.ok) return;
   estar(laCanoa.x, laCanoa.z); await pausa(300);
   if (MUTAR) s.objetos.canoas.deAutor = () => null;   // (roto a propósito: el servidor no ve que va en canoa)
+  // a paladas, como el navegador: la canoa con su rumbo y su palada; vel: la de este paso (m/s)
+  let rumbo = null; const palada = nuevaRemada();
+  const pasoRemo = (dir, remando, ag) => {
+    if (rumbo === null) rumbo = Math.atan2(dir.x, dir.z);
+    let giro = Math.atan2(dir.x, dir.z) - rumbo; while (giro > Math.PI) giro -= Math.PI * 2; while (giro < -Math.PI) giro += Math.PI * 2;
+    pasoRemar(palada, { rema: remando, mag: 1, giro: remando ? giro : 0 }, 0.1);
+    rumbo += palada.w * 0.1;
+    const v = velocidadCanoa({ corriente: { dx: ag.dx, dz: ag.dz }, mar: !!ag.mar });
+    return { vx: v.vx + Math.sin(rumbo) * palada.v, vz: v.vz + Math.cos(rumbo) * palada.v };
+  };
   // remar (o no) n pasos de 100 ms hacia donde va el río (sentido 1: río abajo; -1: río arriba), siguiendo el cauce
   const remar = async (sentido, pasos, conRemo = true) => {
     const p0 = { ...J.pos }, s0 = { ...(servidor() || J.pos) };
@@ -408,9 +419,9 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
         if (!mejor || h > mejor.h) mejor = { dir, h };
       }
       const remando = conRemo && remoEnMano(J.inv);
-      const vel = velocidadCanoa({ dir: mejor.dir, remando, corriente: { dx: ag.dx, dz: ag.dz }, mar: !!ag.mar });
+      const vel = pasoRemo(mejor.dir, remando, ag);
       const nx = J.pos.x + vel.vx * 0.1, nz = J.pos.z + vel.vz * 0.1;
-      if (hondo(nx, nz) < HONDO_FLOTA * 0.8) { encalla++; if (encalla > 5) break; continue; }
+      if (hondo(nx, nz) < HONDO_FLOTA * 0.8) { encalla++; palada.v *= 0.4; if (encalla > 5) break; continue; }
       recorrido += Math.hypot(nx - J.pos.x, nz - J.pos.z);
       aFavor += ((nx - J.pos.x) * ag.dx + (nz - J.pos.z) * ag.dz) / c;
       estar(nx, nz); await pausa(100);
@@ -420,10 +431,10 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
     return { seg, recorrido, v: recorrido / Math.max(0.1, seg), aFavor, servidor: dist(s0, s1), desfase: dist(s1, J.pos), p0, p1: { ...J.pos } };
   };
   const ag0 = aguaAqui(J.pos.x, J.pos.z);
-  const arriba = await remar(-1, 60);
-  comprobar('rema río arriba, contra la corriente, y avanza', arriba.seg >= 3 && arriba.aFavor < -10, `${r2(arriba.seg)} s · ${r2(-arriba.aFavor)} m río arriba · ${r2(arriba.v)} m/s (corriente ${r2(ag0?.vel || 0)} m/s)`);
-  const abajo = await remar(1, 60);
-  comprobar('rema río abajo, a favor: bastante más deprisa que corriendo', abajo.seg >= 3 && abajo.aFavor > 10 && abajo.v > VEL_MAX * 1.2, `${r2(abajo.seg)} s · ${r2(abajo.aFavor)} m río abajo · ${r2(abajo.v)} m/s (a pie, el servidor deja como mucho ${VEL_MAX}; remando, ${VEL_REMAR} más la corriente)`);
+  const arriba = await remar(-1, 150);
+  comprobar('rema río arriba, contra la corriente, y avanza (a paladas: unos 2 m/s menos la corriente)', arriba.seg >= 3 && arriba.aFavor < -5, `${r2(arriba.seg)} s · ${r2(-arriba.aFavor)} m río arriba · ${r2(arriba.v)} m/s (corriente ${r2(ag0?.vel || 0)} m/s)`);
+  const abajo = await remar(1, 100);
+  comprobar('rema río abajo, a favor: a paladas, a ritmo de canoa (entre 1 y 6 m/s con la corriente)', abajo.seg >= 3 && abajo.aFavor > 10 && abajo.v > 1 && abajo.v < 6, `${r2(abajo.seg)} s · ${r2(abajo.aFavor)} m río abajo · ${r2(abajo.v)} m/s (a paladas, unos 2 m/s más la corriente)`);
   comprobar('el servidor le deja ir así de deprisa: le tiene donde rema (sin recortarle)', arriba.desfase < 1.5 && abajo.desfase < 1.5 && abajo.servidor > abajo.aFavor * 0.8, `desfase ${r2(arriba.desfase)} y ${r2(abajo.desfase)} m · el servidor le ha visto ir ${r2(abajo.servidor)} m · cansancio ${Math.round(nec().cansancio || 0)}`);
 
   console.log('26g. Deja de remar: la canoa va a la deriva con la corriente; y la vara en la orilla');
@@ -439,7 +450,7 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
     for (let d = 2; d <= 30 && !o; d += 1) for (let k = 0; k < 32; k++) { const a = k / 32 * 6.283, x = J.pos.x + Math.sin(a) * d, z = J.pos.z + Math.cos(a) * d; if (hondo(x, z) < HONDO_BAJAR - 0.1) { o = { x: Math.sin(a), z: Math.cos(a) }; break; } }
     if (!o) break;
     const ag = aguaAqui(J.pos.x, J.pos.z) || { dx: 0, dz: 0 };
-    const vel = velocidadCanoa({ dir: o, remando: remoEnMano(J.inv), corriente: { dx: ag.dx, dz: ag.dz }, mar: !!ag.mar });
+    const vel = pasoRemo(o, remoEnMano(J.inv), ag);
     const nx = J.pos.x + vel.vx * 0.1, nz = J.pos.z + vel.vz * 0.1;
     if (hondo(nx, nz) < HONDO_FLOTA * 0.8) { b = pisar(); break; }
     estar(nx, nz); await pausa(100);
