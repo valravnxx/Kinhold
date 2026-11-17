@@ -518,8 +518,8 @@ function aplicarAperturas(obj, p) {
 // compartidos (salen de una caché) y no se liberan.
 function liberar(obj) { if (window.__sinLiberar) return; obj.traverse(o => { if (o.isMesh && !o.geometry.userData.compartida) o.geometry.dispose(); }); } // __sinLiberar: solo para comprobar que la prueba de la fuga falla
 // Esconde la hierba, las flores y las matas bajo lo construido en la planta baja y bajo los muebles del suelo.
-// las eras ya levantadas (de todos), y su firma: si cambian, se vuelve a despejar la hierba
-const erasHechas = () => Object.values(fabCliente.estaciones || {}).filter(e => e.tipo === 'era' && !e.obra);
+// las eras y las cubas de curtido ya levantadas (de todos), y su firma: si cambian, se vuelve a despejar la hierba
+const erasHechas = () => Object.values(fabCliente.estaciones || {}).filter(e => (e.tipo === 'era' || e.tipo === 'cubas_curtido') && !e.obra);
 let firmaEras = '';
 function mirarEras() { const f = erasHechas().map(e => `${e.id}:${e.x.toFixed(1)},${e.z.toFixed(1)}`).sort().join(';'); if (f !== firmaEras) { firmaEras = f; despejarDecorado(); } }
 function despejarDecorado() {
@@ -535,7 +535,8 @@ function despejarDecorado() {
   // el pozo (P11b): ni hierba ni matas en su boca (es un hoyo) y su reborde de tierra pisada
   for (const po of mundo.pozos || []) circ.push([po.x, po.z, RADIO_POZO + 0.3]);
   // la era (P11): su suelo apisonado, sin hierba ni matas encima (la hierba llega hasta su canto)
-  if (!window.__sinDespejarEras) for (const e of erasHechas()) circ.push([e.x, e.z, ERA + 0.15]);   // (__sinDespejarEras: solo para ver que la prueba falla)
+  // y las cubas de curtido (oficios): un hoyo con agua y la tierra sacada alrededor, donde no asoma la hierba
+  if (!window.__sinDespejarEras) for (const e of erasHechas()) circ.push([e.x, e.z, e.tipo === 'era' ? ERA + 0.15 : 0.95]);   // (__sinDespejarEras: solo para ver que la prueba falla)
   // la tierra labrada (P11): ahí no sale hierba, ni flores, ni matas
   const ahoraL = Date.now(), labrados = (mundo.campos || []).filter(c => c.cerrado && labradoVivo(c, ahoraL)).map(c => ({ c, r: rejilla(c) }));
   const enLabrado = (x, z) => labrados.some(({ c, r }) => x >= r.x0 - 0.3 && z >= r.z0 - 0.3 && x <= r.x0 + r.w + 0.3 && z <= r.z0 + r.h + 0.3
@@ -3961,7 +3962,7 @@ window.__kinhold = {
   opcionesUsar: () => opcionesUsar().map(o => o.texto), abrirMenuUsar, cerrarMenuUsar, opcionesEn: (cx, cy) => opcionesEn(cx, cy).map(o => o.texto), menuUsar: () => menuUsar.hidden ? null : [...menuUsar.children].map(b => b.textContent),
   reiniciar() { mundo = new Mundo(); registroAcciones = new RegistroAcciones(); inventarios.jugadores = {}; sueloObjetos.suelo.objetos = []; sueloObjetos.refrescar(); talaV.tala.estado = {}; talaV.refrescar(); troceo.estado = {}; reconstruir(); ropaDelVisor(); vestir(); pintarLlevas(); panelInventario.pintar(); },
   get registroAcciones() { return registroAcciones; },
-  accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV, mirarEras, erasDespejadas: () => (window.__sinDespejarEras ? [] : erasHechas().map(e => [e.x, e.z, ERA + 0.15])),
+  accionInventario, get inventario() { return inventario(); }, panelInventario, panelFabricar, fabCliente, estacionesV, mirarEras, erasDespejadas: () => (window.__sinDespejarEras ? [] : erasHechas().map(e => [e.x, e.z, e.tipo === 'era' ? ERA + 0.15 : 0.95])),
   calor() { return calorEn(Object.values(fabCliente.estaciones), pj.x, pj.z, Date.now()); }, // el calor de las hogueras donde estás (para el frío)
   inventarios, golpeTala, arbolCercano, caidoCercano, vestir, troceo, troncoCercano, golpeTroceo, vaciadoLocal, canoaCercana, opcionVaciar, mandarVaciar, cambiarHombro,
   recoleccion, // lo que se recoge del suelo y de las plantas (puntos, estado, recoger)

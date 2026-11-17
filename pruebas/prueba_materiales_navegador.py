@@ -13,6 +13,7 @@
 # Uso: python3 pruebas/prueba_materiales_navegador.py <html> <carpeta_capturas>
 # Rota a propósito (8 nov): MUTAR=1 deja las varas de la mimbrera siempre puestas (como si no se cortaran): falla.
 # MUTAR=2 (17 nov): las cubas no se llenan (Usar con el cubo lleno no les echa el agua): falla.
+# MUTAR=3 (17 nov): las cubas no despejan la hierba (como __sinDespejarEras): falla.
 import sys, os, shutil, tempfile, threading, http.server, functools, socketserver
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -68,10 +69,12 @@ def cubas(pg, nombre, pref):
       const x = mejor ? mejor.x : x0 + 8, z = mejor ? mejor.z : z0;
       f.estaciones['cubas_curtido:vista'] = {{ id: 'cubas_curtido:vista', tipo: 'cubas_curtido', x, z, giro: 0.4, autor: 'jugador:local', cola: [], deposito: {{ piel_limpia: 1, corteza_roble: 2 }} }};
       if ({'true' if MUTAR == '2' else 'false'}) f.estaciones['cubas_curtido:vista'].tipo = 'hoyo_barro';
-      k.estacionesV.refrescar(); k.pj.x = x + 1.3; k.pj.z = z + 0.2; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z);
+      if ({'true' if MUTAR == '3' else 'false'}) window.__sinDespejarEras = true;
+      k.estacionesV.refrescar(); k.mirarEras(); k.pj.x = x + 1.3; k.pj.z = z + 0.2; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z);
       const inv = k.inventario; for (const l of ['mano:der', 'mano:izq']) if (inv.lugares[l]) inv.sacar(l); inv.coger('cubo_agua', 1, 'mano:der'); k.pintarTodoInventario(); }})()""")
     esperar(pg, 2000)
     comprobar(f'{nombre}: las cubas de curtido se dibujan', pg.evaluate(f"!!{K}.escena.getObjectByName('estacion_cubas_curtido')"))
+    comprobar(f'{nombre}: y sin hierba que asome en el agua ni en la tierra sacada (las cubas despejan la hierba densa)', pg.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['cubas_curtido:vista']; return {K}.erasDespejadas().some(c => Math.hypot(c[0] - e.x, c[1] - e.z) < 0.01 && c[2] >= 0.9); }})()"))
     ops = pg.evaluate(f"{K}.opcionesUsar()")
     comprobar(f'{nombre}: delante de las cubas, con el cubo lleno, el menú ofrece echarles el agua', 'Echar el agua del cubo en las cubas' in ops, str(ops))
     pg.keyboard.press('f'); pg.wait_for_timeout(1200)
@@ -85,7 +88,7 @@ def cubas(pg, nombre, pref):
     # el jugador a un lado de las cubas y la cámara detrás de él, de través (que no las tape); en el móvil, la pantalla
     # es estrecha y de lado no caben: las cubas delante del jugador, en la línea de la cámara (yaw 0,6), y la cámara alta,
     # para que se vean por encima de él
-    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55), ('cubas_cerca', 1.6, 0.8, 2.6, 0.6)] if pref == 'pc' else [('cubas', 1.35, 1.98, 4.4, 0.8), ('cubas_cerca', 1.07, 1.57, 3.0, 0.9)]
+    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55), ('cubas_cerca', 1.6, 0.8, 2.6, 0.6)] if pref == 'pc' else [('cubas', 1.35, 1.98, 4.4, 0.8), ('cubas_cerca', 1.19, 1.73, 2.8, 1.0)]
     for (cual, dx, dz, dist, pitch) in vistas:
         pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista']; k.pj.x = e.x + {dx}; k.pj.z = e.z + {dz}; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);
           k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = 0.6; }})()""")
