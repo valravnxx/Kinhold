@@ -83,8 +83,9 @@ def cubas(pg, nombre, pref):
       e.colgado = [{{ hasta: ahora + 40 * 3600e3 }}, {{ hasta: ahora - 1000 }}]; k.estacionesV.refrescar(); }})()""")
     e = pg.evaluate(f"(() => {{ const e = {K}.fabCliente.estaciones['cubas_curtido:vista']; return {{ x: e.x, z: e.z }}; }})()")
     # el jugador a un lado de las cubas y la cámara detrás de él, de través (que no las tape); en el móvil, la pantalla
-    # es estrecha: más cerca de ellas y la cámara más lejos
-    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55), ('cubas_cerca', 1.6, 0.8, 2.6, 0.6)] if pref == 'pc' else [('cubas', 1.3, 0.7, 5.0, 0.6), ('cubas_cerca', 1.2, 0.6, 3.4, 0.7)]
+    # es estrecha y de lado no caben: las cubas delante del jugador, en la línea de la cámara (yaw 0,6), y la cámara alta,
+    # para que se vean por encima de él
+    vistas = [('cubas', 1.9, 1.0, 4.2, 0.55), ('cubas_cerca', 1.6, 0.8, 2.6, 0.6)] if pref == 'pc' else [('cubas', 1.35, 1.98, 4.4, 0.8), ('cubas_cerca', 1.07, 1.57, 3.0, 0.9)]
     for (cual, dx, dz, dist, pitch) in vistas:
         pg.evaluate(f"""(() => {{ const k = {K}, e = k.fabCliente.estaciones['cubas_curtido:vista']; k.pj.x = e.x + {dx}; k.pj.z = e.z + {dz}; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z);
           k.pj.rot = Math.atan2(e.x - k.pj.x, e.z - k.pj.z); k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = 0.6; }})()""")

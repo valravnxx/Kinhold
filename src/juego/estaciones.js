@@ -548,31 +548,89 @@ function cubasCurtido(id) {
   }
   return g;
 }
-// Lo de las cubas: el agua parda, si tiene agua o algo en remojo; cada piel en remojo, medio dentro del agua y con el
-// punta echada sobre el labio de barro de un cabo (la que está por curtir, pálida y oscureciéndose; la curtida, del color del
-// cuero); y lo dejado (la piel limpia y la corteza de roble que esperan), al pie, delante.
-const COLOR_CURTIDA = 0x8e6038;
+// Lo de las cubas: el agua parda, si tiene agua o algo en remojo; cada piel en remojo, medio dentro del agua y con la
+// punta echada sobre el labio de barro de un cabo (la que está por curtir, de un pardo grisáceo de piel mojada; la
+// curtida, del color del cuero); y lo dejado (la piel limpia y la corteza de roble que esperan), al pie, delante.
+const COLOR_CURTIDA = 0x5f4129, COLOR_REMOJO = 0x7d6c56, AGUA_CUBAS = 0.024;
+// el agua de las cubas, en un lienzo (las cubas enteras, sin repetirse): parda oscura de la corteza (como té cargado),
+// con el reflejo del cielo ancho y suave, unas franjas claras movidas, unas ondas y briznas de corteza flotando
+let texCubas = null;
+function texturaCubas() {
+  if (texCubas) return texCubas;
+  if (typeof document === 'undefined') return null;
+  const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const g = cv.getContext('2d');
+  let sem = 7; const r = () => (sem = (sem * 16807) % 2147483647) / 2147483647;
+  g.fillStyle = '#35260f'; g.fillRect(0, 0, N, N);
+  // el reflejo del cielo, ancho y suave: más claro hacia un lado, como un charco que mira al cielo
+  const gr = g.createLinearGradient(0, 0, N * 0.3, N); gr.addColorStop(0, 'rgba(120,124,118,0.32)'); gr.addColorStop(0.55, 'rgba(90,82,66,0.08)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, N, N);
+  for (let k = 0; k < 4; k++) {   // unas pocas franjas claras del reflejo, anchas, movidas y muy suaves
+    const y0 = N * (0.15 + k * 0.22) + r() * 12;
+    g.strokeStyle = `rgba(170,176,172,${0.06 + r() * 0.06})`; g.lineWidth = 8 + r() * 10; g.lineCap = 'round'; g.beginPath();
+    for (let x = 10; x <= N - 10; x += 6) { const y = y0 + Math.sin(x * 0.035 + k * 2) * 6; x === 10 ? g.moveTo(x, y) : g.lineTo(x, y); }
+    g.stroke();
+  }
+  for (let k = 0; k < 6; k++) {   // ondas
+    const x = 30 + r() * (N - 60), y = 30 + r() * (N - 60), rr = 6 + r() * 12;
+    g.strokeStyle = `rgba(150,145,130,${0.1 + r() * 0.08})`; g.lineWidth = 1.2; g.beginPath(); g.ellipse(x, y, rr, rr * 0.7, 0, 0, 6.283); g.stroke();
+  }
+  for (let k = 0; k < 40; k++) {   // briznas de corteza que flotan
+    const x = r() * N, y = r() * N, a = r() * 6.283, l = 2 + r() * 4;
+    g.strokeStyle = `rgba(${84 + r() * 30 | 0},${58 + r() * 20 | 0},${34 + r() * 12 | 0},0.7)`; g.lineWidth = 1 + r();
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  texCubas = new THREE.CanvasTexture(cv);
+  texCubas.repeat.set(0.75, 0.75); texCubas.offset.set(0.5, 0.5); texCubas.colorSpace = THREE.SRGBColorSpace; texCubas.anisotropy = 4;
+  return texCubas;
+}
+let matCubas = null;
+// la lámina del agua: algo transparente (se adivina la piel que está debajo) y lisa, con su brillo de agua; por los
+// bordes, la espuma parda (un aro más claro)
+function aguaCubas(X, Z) {
+  if (!matCubas) { const t = texturaCubas(); matCubas = new THREE.MeshStandardMaterial({ map: t, color: t ? 0xffffff : 0x3a2914, roughness: 0.18, metalness: 0.1, transparent: true, opacity: 0.86 }); }
+  const sh = new THREE.Shape(); rectRedondo(sh, X + 0.02, Z + 0.02, 0.1);
+  const geo = new THREE.ShapeGeometry(sh, 6); geo.rotateX(-Math.PI / 2);
+  const m = new THREE.Mesh(geo, matCubas); m.position.y = AGUA_CUBAS; m.receiveShadow = true; m.name = 'agua_cubas'; m.renderOrder = 2;
+  return m;
+}
 function llenoCubas(dep, id, colgado = []) {
   const g = new THREE.Group(), { x: X, z: Z, labio, tronco, monte } = CUBAS;
   const L = new Lote({ rangoSuelo: 0.4, variacion: 0.05 });
   if ((dep.agua || 0) > 0 || colgado.length) {
-    const agua = new THREE.Shape(); rectRedondo(agua, X + 0.02, Z + 0.02, 0.1);
-    L.add(new THREE.ShapeGeometry(agua, 6), 0x3d2a17, 0, 0.03, 0, { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true, brillo: 1.25 });
+    g.add(aguaCubas(X, Z));
+    // la espuma sucia de la corteza, arrimada al barro: manchas sueltas, claras y planas, por los bordes
+    for (let k = 0; k < 10; k++) {
+      const a = k / 10 * Math.PI * 2 + (az(id, 'e' + k) - 0.5) * 0.4, [bx, bz] = enBorde(X - 0.02, Z - 0.02, a), rr = 0.012 + az(id, 'r' + k) * 0.02;
+      L.add(new THREE.CircleGeometry(rr, 7), 0x5c4a34, bx, AGUA_CUBAS + 0.003, bz, { x: -Math.PI / 2 }, { tex: 'piedra', sinSuelo: true, escala: new THREE.Vector3(1.6 + az(id, 's' + k), 1, 1) });
+    }
   }
   colgado.slice(0, 4).forEach((c, i) => {
-    // por los dos cabos del hoyo (en los costados largos están los troncos): la piel entera, mojada, flota a lo largo
-    // junto al cabo y su punta sube por el labio de barro y cae por fuera (se dobla siguiendo el borde)
-    const sx = i % 2 ? 1 : -1, zc = (Math.floor(i / 2) - 0.5) * Z * 0.85 + (az(id, i + 20) - 0.5) * 0.05, idp = id + 'p' + i;
-    const cx = sx * (X - 0.17), { geo } = mallaPiel(idp, 0.17, 0.34, { pasos: 16, agujeros: 0 });
-    geo.rotateZ(Math.PI / 2 + (az(idp, 1) - 0.5) * 0.2); geo.rotateX(-Math.PI / 2);   // a lo largo de X, tumbada
-    const q = geo.attributes.position;
+    // por los dos cabos del hoyo (en los costados largos están los troncos): la piel entera, mojada, a lo largo junto al
+    // cabo, hundida en el agua, que solo deja asomar los lomos de sus pliegues; la parte del cuello sube por el labio de
+    // barro y cae por fuera, con las patas de delante colgando: así se lee que es una piel
+    const sx = i % 2 ? 1 : -1, zc = (Math.floor(i / 2) - 0.5) * Z * 0.9 + (az(id, i + 20) - 0.5) * 0.05, idp = id + 'p' + i;
+    const cx = sx * (X - 0.14), { geo } = mallaPiel(idp, 0.19, 0.36, { pasos: 22, agujeros: 0 });
+    geo.rotateZ(-sx * Math.PI / 2 + (az(idp, 1) - 0.5) * 0.25); geo.rotateX(-Math.PI / 2);   // a lo largo de X, tumbada, el cuello hacia fuera
+    const q = geo.attributes.position, f = az(idp, 2) * 6;
     for (let k = 0; k < q.count; k++) {
-      const u = sx * (cx + q.getX(k)) - X;   // cuánto pasa del borde de dentro del hoyo (m)
-      const y = u < -0.02 ? 0.036 : u < labio ? 0.036 + 0.03 * Math.sin(Math.min(1, (u + 0.02) / labio) * Math.PI / 2) : 0.066 - (u - labio) * 0.35;
-      q.setY(k, Math.max(0.02, y) + q.getY(k) * 0.3);
+      const u = sx * (cx + q.getX(k)) - X, w = q.getZ(k);   // u: cuánto pasa del borde de dentro del hoyo (m); w: de través
+      let y;
+      if (u < -0.04) {   // en el agua: hundida, con pliegues que asoman
+        const pl = Math.sin(u * 26 + f + w * 6) * 0.5 + Math.sin(u * 11 - w * 14 + f) * 0.5;
+        y = AGUA_CUBAS + 0.006 + pl * 0.005;
+      } else if (u < labio) {   // sube por el labio, en una curva
+        const t = (u + 0.04) / (labio + 0.04);
+        y = AGUA_CUBAS + 0.004 + 0.06 * Math.sin(t * Math.PI / 2);
+      } else y = AGUA_CUBAS + 0.064 - (u - labio) * 0.2;   // y cae por fuera, sobre la tierra sacada
+      q.setY(k, Math.max(0.016, y) + q.getY(k) * 0.4);
     }
     geo.computeVertexNormals();
-    L.add(geo, c.listo ? COLOR_CURTIDA : 0xb39470, cx, 0, zc, null, { tex: 'liso', sinSuelo: true, brillo: 1, rayas: moteadoPiel(idp, 1.2) });
+    const color = c.listo ? COLOR_CURTIDA : COLOR_REMOJO;
+    L.add(geo, color, cx, 0, zc, null, { tex: 'liso', sinSuelo: true, brillo: 1, rayas: moteadoPiel(idp, 1.6) });
+    // el canto de la piel (su grosor), un poco más oscuro, debajo: que no sea una lámina de papel
+    const canto = geo.clone(); canto.scale(1.015, 1, 1.015);
+    L.add(canto, c.listo ? 0x4e3420 : 0x5e4c38, cx, -0.007, zc, null, { tex: 'liso', sinSuelo: true });
   });
   if (L.piezas.length) g.add(mallas(L));
   let k = 0;
