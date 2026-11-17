@@ -131,6 +131,9 @@ def recorrido(pg, pre, movil):
         palas.append(pg.evaluate(f"""(() => {{ const j = {K}.jugador, p = j.palaRemo, r = j.remada; if (!p) return null; j.raiz.updateMatrixWorld(true);
           const l = j.raiz.worldToLocal(p.pala.clone()), a = {K}.mundoJ.aguaEn(p.pala.x, p.pala.z);
           return {{ lado: l.x > 0.2 ? 'l' : l.x < -0.2 ? 'r' : '', bajo: a ? p.pala.y < a.superficie : false, palada: r ? r.lado : '' }}; }})()"""))
+        if os.environ.get('ESTUDIO') == '1': print('mov', i, pg.evaluate(f"""(() => {{ const j = {K}.jugador, h = j.mh.hueso, R = j.remada || {{}}; j.raiz.updateMatrixWorld(true);
+          const L = n => j.raiz.worldToLocal(h[n].getWorldPosition(h[n].position.clone())).toArray().map(x => x.toFixed(2)).join(',');
+          return [R.lado, (R.fase || 0).toFixed(2), R.barre ? 'barre' : ''].join(' ') + ' | ' + ['neck_01', 'head', 'lowerarm_l', 'hand_l', 'middle_01_l', 'lowerarm_r', 'hand_r', 'middle_01_r'].map(n => n + ' ' + L(n)).join(' | '); }})()"""))
         if i in (3, 5, 7, 9):   # (desde detrás: la cámara de lado cambiaría hacia dónde rema con W)
             pg.evaluate(f"(() => {{ const k = {K}; k.cam.yaw = k.pj.rot + Math.PI; k.cam.dist = 3.2; k.cam.pitch = 0.5; }})()")
             pg.screenshot(path=f'{SALIDA}/{pre}4{"abcd"[(i - 3) // 2]}_remando_palada.png')

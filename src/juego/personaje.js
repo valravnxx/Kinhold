@@ -268,14 +268,17 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
   const _T = new THREE.Vector3(), _B = new THREE.Vector3(), _q1 = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
   const suave = x => x * x * (3 - 2 * x);
   const remar = (b) => {
-    const R = j.remada, h = j.mh.hueso, pecho = h.spine_03 || h.spine_02;
+    // (sin remar, el remo descansa atravesado delante, sobre las bordas, con la pala fuera por la derecha: con la postura
+    // de llevarlo en las dos manos, sentado, la caña atravesaba el cuerpo)
+    const quieto = !j.remada;
+    const R = j.remada || { lado: 'r', fase: 0, enAgua: true, barre: false }, h = j.mh.hueso, pecho = h.spine_03 || h.spine_02;
     if (!pecho || !h.spine_01) return false;
     _f.set(0, 0, 1).applyQuaternion(j.raiz.getWorldQuaternion(_q1)).setY(0).normalize(); _l.crossVectors(_u, _f).normalize();
     const s = R.lado === 'l' ? 1 : -1, agua = R.fase < 0.5, k = agua ? suave(R.fase / 0.5) : suave((R.fase - 0.5) / 0.5);
     const s2 = R.barre ? s : -s;   // (la siguiente: por el mismo lado si está girando; si no, por el otro)
     // el pecho: girado hacia el lado de la palada al meter el remo (el hombro de abajo, adelante), y echado adelante
-    const giro = agua ? (0.38 + (-0.12 - 0.38) * k) * -s : (-0.12 * -s) + ((0.38 * -s2) - (-0.12 * -s)) * k;
-    const echado = agua ? 0.22 * (1 - k) : 0.22 * k;
+    const giro = quieto ? 0 : agua ? (0.38 + (-0.12 - 0.38) * k) * -s : (-0.12 * -s) + ((0.38 * -s2) - (-0.12 * -s)) * k;
+    const echado = quieto ? 0.05 : agua ? 0.22 * (1 - k) : 0.22 * k;
     const gira = (hueso, q) => { hueso.getWorldQuaternion(_q2); hueso.parent.getWorldQuaternion(_q3); hueso.quaternion.copy(_q3.invert().multiply(q.multiply(_q2))); hueso.updateMatrixWorld(true); };
     gira(h.spine_01, _q1.setFromAxisAngle(_l, echado * 0.6));
     gira(pecho, _q1.setFromAxisAngle(_u, giro));
@@ -287,7 +290,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     const T0 = (sd, o) => P(0.3, sd * 0.02, 0.5, o), T1 = (sd, o) => P(0.25, sd * 0.08, 0.45, o);
     const B0 = (sd, o) => P(0.5, sd * ancho, -0.15, o), B1 = (sd, o) => P(R.barre ? -0.45 : -0.32, sd * ancho, -0.1, o);   // hacia la pala
     const a = new THREE.Vector3(), e = new THREE.Vector3();
-    if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
+    if (quieto) { P(0.32, 0.3, 0.3, _T); P(0.3, -0.9, 0.24, _B); }
+    else if (agua) { _T.lerpVectors(T0(s, a), T1(s, e), k); _B.lerpVectors(B0(s, a), B1(s, e), k); }
     else {
       // fuera del agua: la pala sale baja, junto a la cadera, y vuelve adelante; si cambia de lado, pasa por delante del
       // pecho, el remo casi tumbado de un lado a otro (una curva que pasa por M a mitad de camino)
@@ -327,7 +331,10 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       const P0 = j.palaRemo.puno, D = j.palaRemo.pala.clone().sub(P0).normalize();
       const pr = palma('r'), pl = palma('l'), tr = pr.clone().sub(P0).dot(D), tl = pl.clone().sub(P0).dot(D);
       const [A, tA, B, tB] = tr < tl ? [pr, tr, pl, tl] : [pl, tl, pr, tr];
-      const w = Math.min(1, Math.max(0, (tB - tA - 0.15) / 0.15)), D2 = D.clone().lerp(B.clone().sub(A).normalize(), w).normalize();   // (sin saltos)
+      // (y solo si la caña entre las palmas va más o menos como el remo: si no, al cambiar de lado, las manos aún a medio
+      // camino la ponían atravesando el cuerpo)
+      const cosPalmas = B.clone().sub(A).normalize().dot(D);
+      const w = Math.min(1, Math.max(0, (tB - tA - 0.15) / 0.15)) * Math.min(1, Math.max(0, (cosPalmas - 0.85) / 0.1)), D2 = D.clone().lerp(B.clone().sub(A).normalize(), w).normalize();   // (sin saltos)
       const puno = A.clone().addScaledVector(D2, -tA);
       j.palaRemo = { puno, pala: puno.clone().addScaledVector(D2, 1.22) };
     }
@@ -356,7 +363,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       nudillosA(b.r, ar, polo('r')); nudillosA(b.l, al, polo('l'));
       return true;
     }
-    if (j.cargaDos && j.enCanoa && j.remada && j.llevadoPedido && j.llevadoPedido.der === 'remo' && !globalThis.__sinRemar) return remar(b);
+    if (j.cargaDos && j.enCanoa && j.llevadoPedido && j.llevadoPedido.der === 'remo' && !globalThis.__sinRemar) return remar(b);
     if (j.cargaDos && !j.empuja) {
       // delante del pecho, a 35 cm, y las manos a sus lados (a 20 cm del centro)
       const pecho = (j.mh.hueso.spine_03 || j.mh.hueso.spine_02).getWorldPosition(new THREE.Vector3());
@@ -414,7 +421,7 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
       j.mh.cerrarMano('r', (j.hacha && j.hacha.visible) || (l && l.der) || j.empuja || j.cargaDos || j.alHombro || j.arrastra ? 1 : 0);
       j.mh.cerrarMano('l', (l && l.izq) || j.empuja || j.cargaDos || j.arrastra ? 1 : 0);
     }
-    if (!(j.enCanoa && j.remada)) j.palaRemo = null;
+    if (!j.enCanoa) j.palaRemo = null;
     const antes = colocarBrazos();
     llevado.paso();
     // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima
