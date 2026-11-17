@@ -530,8 +530,11 @@ function cubasCurtido(id) {
   // hoyo, como pegado encima): por dentro, la pared de barro mojado que baja del labio hasta el agua; por fuera, el
   // caballón de tierra amontonada, continuo y desigual, que baja hasta el prado. Así el agua queda abajo, hundida.
   const N = 56, ruido = (k, s) => az(id, s + (k % N)) - 0.5;
-  const lazo = (dx, dz, y, s, r = 0) => Array.from({ length: N }, (_, k) => {
-    const [bx, bz] = enBorde(X + dx + ruido(k, s + 'r') * r, Z + dz + ruido(k, s + 'r') * r, k / N * Math.PI * 2);
+  // cada vuelta, un rectángulo de esquinas tanto más redondas cuanto más afuera (superelipse de grado q): el hoyo, casi
+  // recto; el pie del caballón, redondeado y desigual, que se funde con el prado
+  const lazo = (dx, dz, y, s, r = 0, q = 5) => Array.from({ length: N }, (_, k) => {
+    const a = k / N * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), ex = X + dx + ruido(k, s + 'r') * r, ez = Z + dz + ruido(k, s + 'r') * r;
+    const kk = 1 / Math.pow(Math.pow(Math.abs(c) / ex, q) + Math.pow(Math.abs(sn) / ez, q), 1 / q), bx = c * kk, bz = sn * kk;
     return [bx, typeof y === 'function' ? y(k) : y, bz];
   });
   const banda = (lazos) => {
@@ -544,9 +547,9 @@ function cubasCurtido(id) {
     geo.computeVertexNormals(); return geo;
   };
   const cresta = (k) => 0.12 + ruido(k, 'c') * 0.035, hombro = (k) => 0.1 + ruido(k, 'h') * 0.04;
-  const dentro = lazo(0.005, 0.005, AGUA_CUBAS - 0.006, 'd'), medio = lazo(labio * 0.45, labio * 0.45, (k) => cresta(k) - 0.03, 'm', 0.01);
-  const arriba = lazo(labio, labio, cresta, 'a', 0.015), ladera = lazo(labio + monte * 0.5, labio + monte * 0.5, hombro, 'l', 0.04);
-  const pie = lazo(labio + monte + 0.1, labio + monte + 0.08, 0.004, 'p', 0.06);
+  const dentro = lazo(0.005, 0.005, AGUA_CUBAS - 0.006, 'd', 0, 6), medio = lazo(labio * 0.45, labio * 0.45, (k) => cresta(k) - 0.03, 'm', 0.015, 5);
+  const arriba = lazo(labio, labio, cresta, 'a', 0.03, 4), ladera = lazo(labio + monte * 0.5, labio + monte * 0.5, hombro, 'l', 0.08, 3.2);
+  const pie = lazo(labio + monte + 0.12, labio + monte + 0.1, -0.012, 'p', 0.14, 2.6);
   L.add(banda([dentro, medio, arriba]), BARRO_HUMEDO, 0, 0, 0, null, { tex: 'piedra', sinSuelo: true });
   L.add(banda([arriba, ladera, pie]), 0x6e5840, 0, 0, 0, null, { tex: 'piedra' });
   // unos pocos terrones, medio hundidos en el caballón (la tierra recién sacada)
@@ -627,7 +630,7 @@ function llenoCubas(dep, id, colgado = []) {
       let y;
       if (u < -0.04) {   // en el agua: hundida, con pliegues que asoman
         const pl = Math.sin(u * 26 + f + w * 6) * 0.5 + Math.sin(u * 11 - w * 14 + f) * 0.5;
-        y = AGUA_CUBAS + 0.006 + pl * 0.005;
+        y = AGUA_CUBAS - 0.004 + pl * 0.009;   // metida en el agua: solo asoman los lomos de los pliegues
       } else if (u < labio) {   // sube por la pared de barro hasta el labio, en una curva
         const t = (u + 0.04) / (labio + 0.04);
         y = AGUA_CUBAS + 0.004 + 0.13 * Math.sin(t * Math.PI / 2);
