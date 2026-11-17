@@ -453,17 +453,19 @@ function llenoCubas(dep, id, colgado = []) {
     L.add(new THREE.ShapeGeometry(agua, 6), 0x3e301c, 0, 0.045, 0, { x: -Math.PI / 2 }, { tex: 'liso', sinSuelo: true, brillo: 1.15 });
   }
   colgado.slice(0, 4).forEach((c, i) => {
-    // por los dos cabos del hoyo (en los costados largos están los troncos): la piel flota mojada junto al cabo y su
-    // borde sube por el labio de barro y cae por fuera
-    const sx = i % 2 ? 1 : -1, zc = (Math.floor(i / 2) - 0.5) * Z * 0.9 + (az(id, i + 20) - 0.5) * 0.06, idp = id + 'p' + i;
-    const color = c.listo ? COLOR_CURTIDA : 0x8a6c4c, colorBorde = c.listo ? COLOR_CURTIDA : 0x9c7e5a;
-    const { geo } = mallaPiel(idp, 0.13, 0.2, { pasos: 10, agujeros: 0 });
-    geo.rotateX(-Math.PI / 2); geo.rotateY(Math.PI / 2 + (az(idp, 1) - 0.5) * 0.5);
-    L.add(geo, color, sx * (X - 0.17), 0.052, zc, null, { tex: 'liso', sinSuelo: true, brillo: 0.85, rayas: moteadoPiel(idp, 1.1) });
-    const borde = new THREE.PlaneGeometry(labio + 0.12, 0.2, 4, 3), q = borde.attributes.position;
-    for (let k = 0; k < q.count; k++) { const u = q.getX(k) / (labio + 0.12) + 0.5; q.setZ(k, 0.035 * Math.sin(u * Math.PI) + 0.012 * Math.sin(q.getY(k) * 30 + i)); }   // combado sobre el labio
-    borde.rotateX(-Math.PI / 2); borde.rotateZ(-sx * 0.35); borde.computeVertexNormals();
-    L.add(borde, colorBorde, sx * (X + labio * 0.45), 0.075, zc, null, { tex: 'liso', sinSuelo: true, rayas: moteadoPiel(idp, 1) });
+    // por los dos cabos del hoyo (en los costados largos están los troncos): la piel entera, mojada, flota a lo largo
+    // junto al cabo y su punta sube por el labio de barro y cae por fuera (se dobla siguiendo el borde)
+    const sx = i % 2 ? 1 : -1, zc = (Math.floor(i / 2) - 0.5) * Z * 0.85 + (az(id, i + 20) - 0.5) * 0.05, idp = id + 'p' + i;
+    const cx = sx * (X - 0.13), { geo } = mallaPiel(idp, 0.12, 0.27, { pasos: 14, agujeros: 0 });
+    geo.rotateZ(Math.PI / 2 + (az(idp, 1) - 0.5) * 0.2); geo.rotateX(-Math.PI / 2);   // a lo largo de X, tumbada
+    const q = geo.attributes.position;
+    for (let k = 0; k < q.count; k++) {
+      const u = sx * (cx + q.getX(k)) - X;   // cuánto pasa del borde de dentro del hoyo (m)
+      const y = u < -0.03 ? 0.05 : u < labio ? 0.05 + 0.075 * Math.sin(Math.min(1, (u + 0.03) / (labio * 0.6)) * Math.PI / 2) : 0.125 - (u - labio) * 0.9;
+      q.setY(k, Math.max(0.012, y) + q.getY(k) * 0.3);
+    }
+    geo.computeVertexNormals();
+    L.add(geo, c.listo ? COLOR_CURTIDA : 0x87674a, cx, 0, zc, null, { tex: 'liso', sinSuelo: true, brillo: c.listo ? 1 : 0.9, rayas: moteadoPiel(idp, 1.2) });
   });
   if (L.piezas.length) g.add(mallas(L));
   let k = 0;
