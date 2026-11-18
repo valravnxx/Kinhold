@@ -562,8 +562,8 @@ function enMano(t) {
   else if (t === 'cordel') madeja(L, 0.045, 0.004, 7, CORDEL);
   else if (t === 'cuerda') madeja(L, 0.075, 0.009, 5, CUERDA);
   else if (t === 'taladro_fuego') arcoTaladro(L, -0.04);
-  // el huso (oficios, 18 nov): cogido por el palo, encima de la husada; la tortera, por el lado del meñique
-  else if (t === 'huso') husoEn(L, 0, -0.2, 0, {});
+  // el huso (oficios, 18 nov): cogido por la punta de arriba, como se deja colgar al hilar; la tortera, abajo
+  else if (t === 'huso') husoEn(L, 0, 0, 0.27, { x: -Math.PI / 2 });   // colgando del puño hacia abajo (+Z), cogido por arriba
   else if (t === 'cuchillo') {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
