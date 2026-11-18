@@ -737,7 +737,11 @@ export function crearLlevado(j) {
           else if (t === 'cordel') madeja(C, 0.04, 0.004, 6, CORDEL);
           else if (t === 'cuerda') madeja(C, 0.07, 0.009, 5, CUERDA);
           else if (t === 'taladro_fuego') arcoTaladro(C, -0.3);
-          else if (t === 'huso') husoEn(C, -0.15, -0.035, 0.022, { z: -Math.PI / 2 });   // (oficios) metido en el cinto a lo largo, tumbado junto a la cadera (de pie, colgaba junto a la mano y parecía un segundo huso en ella)
+          else if (t === 'huso') {   // (oficios) en su bolsa de cuero, asomando la punta de arriba del palo con su vuelta de hilo (suelto en el cinto, el palo se cruzaba con la mano)
+            bolsa(C, 0, 0, 0, 0.9);
+            C.add(cil(0.0055, 0.0045, 0.12, 6), 'madera', 0.006, 0.0, 0.004, { z: -0.12 }, { tex: 'veta' });
+            C.add(new THREE.TorusGeometry(0.0062, 0.0013, 4, 10), 0xc7b893, 0.0015, 0.035, 0.004, { x: Math.PI / 2 }, { tex: 'liso' });
+          }
           else if (CATALOGO[t].herramienta) herramienta(C, t, 0.55);
           else if (CATALOGO[t].tam === 'P') { bolsa(C, 0, 0, 0, 1); C.generico = true; }
           else { hatillo(C, 0, 0, 0, 0.9); C.generico = true; }
