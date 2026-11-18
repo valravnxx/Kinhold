@@ -622,6 +622,18 @@ function seguir(grupo, raiz) {
   _inv.copy(raiz.matrixWorld).invert();
   for (const o of grupo.children) {
     const em = o.userData.entreManos;
+    // el remo remando (src/juego/personaje.js, remar): del puño a la pala, por donde los pone la palada, con la cara de
+    // la pala hacia delante (empuja el agua hacia atrás). En el modelo el puño está en x = 0,315 y la pala hacia −x
+    const pr = em && o.userData.j && o.userData.j.palaRemo;
+    if (pr) {
+      _a.copy(pr.puno).applyMatrix4(_inv); _b.copy(pr.pala).applyMatrix4(_inv);
+      _x.subVectors(_a, _b).normalize();
+      _z.set(0, 0, 1); _z.addScaledVector(_x, -_z.dot(_x)).normalize(); _y.crossVectors(_z, _x);
+      _a.addScaledVector(_x, -0.315);
+      o.matrix.makeBasis(_x, _y, _z).setPosition(_a);
+      o.matrixWorldNeedsUpdate = true;
+      continue;
+    }
     if (em) { // lo grande en las dos manos: entre las dos, atravesado de una a otra
       em[0].getWorldPosition(_a).applyMatrix4(_inv); em[1].getWorldPosition(_b).applyMatrix4(_inv);
       // lo que se agarra por una caña (el remo): la línea pasa por las palmas (de la muñeca hacia el nudillo del
@@ -896,7 +908,7 @@ export function crearLlevado(j) {
       const g = deMano(L); g.name = 'llevado_manos'; g.matrixAutoUpdate = false; g.userData.generico = !!L.generico;
       g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
       if (H.hand_r && H.hand_l) { g.userData.entreManos = [H.hand_r, H.hand_l]; grupo.add(g); }
-      if (l.der === 'remo' && H.middle_01_r && H.middle_01_l) g.userData.palmas = [H.middle_01_r, H.middle_01_l];
+      if (l.der === 'remo' && H.middle_01_r && H.middle_01_l) { g.userData.palmas = [H.middle_01_r, H.middle_01_l]; g.userData.j = j; }
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
       // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma

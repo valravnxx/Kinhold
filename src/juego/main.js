@@ -60,7 +60,7 @@ import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } f
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
 import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, ALCANCE_TROCEO } from '../logica/troceo.js';
-import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado, Canoas, ejecutarCanoa, velocidadCanoa, remoEnMano, ALCANCE_CANOA, HONDO_FLOTA, ECHAR, HONDO_BAJAR, VEL_REMAR, ADELANTE as ADELANTE_CANOA } from '../logica/canoa.js';
+import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado, Canoas, ejecutarCanoa, velocidadCanoa, remoEnMano, ALCANCE_CANOA, HONDO_FLOTA, ECHAR, HONDO_BAJAR, ADELANTE as ADELANTE_CANOA, nuevaRemada, pasoRemar, faseRemada, PALADA } from '../logica/canoa.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo, vaACuerda } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
 import { montarMenuJuego } from './menu_juego.js';
@@ -2248,7 +2248,14 @@ function pasoRastras() {
   if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.agarraderas = r.j.empuja ? agarraderas(autor) : null;
   // en la canoa, sentado con las rodillas dentro del casco (src/juego/personaje.js), uno mismo y los demás
   jugador.enCanoa = !!miCanoa();
-  if (enLinea) for (const [autor, r] of enLinea.remotos) r.j.enCanoa = !!canoasLocal.deAutor(autor, ahora);
+  if (enLinea) for (const [autor, r] of enLinea.remotos) {
+    const c = canoasLocal.deAutor(autor, ahora);
+    r.j.enCanoa = !!c;
+    // (los demás, remando: la palada con un reloj de aquí mientras se mueven; la suya la mueve su navegador)
+    const rema = c && c.rema === autor && r.vel > 0.3 && r.llevado && r.llevado.der === 'remo';
+    const k = ahora / 1000 / PALADA;
+    r.j.remada = rema ? { lado: Math.floor(k) % 2 ? 'l' : 'r', fase: k % 1, enAgua: k % 1 < 0.5, barre: false } : null;
+  }
 }
 // ---- La canoa: al agua, subir, remar y bajar (P11d; src/logica/canoa.js) ----
 const hondoAqui = (x, z) => { const w = mundoJ ? mundoJ.aguaEn(x, z) : null; return w ? w.hondo : 0; };
@@ -2322,11 +2329,13 @@ function bajarCanoa(b) {
       : tr('Bajas a la orilla: la canoa se queda en el agua. Fuera de tus tierras, cualquiera puede llevársela.'));
   });
 }
+let remadaYo = null;   // (la palada del que rema: src/logica/canoa.js, pasoRemar)
 // Un paso yendo en la canoa: el que rema la mueve (remando con el remo, deprisa; si no, la corriente) por donde flota; el
 // otro va sentado delante, donde se ve la canoa. Devuelve la velocidad (m/s).
 function pasoCanoa(o, ax, az, mag, dt) {
   jugador.sentado = true;
   if (o.rema !== yoSuelo()) {
+    jugador.remada = null; remadaYo = null;
     const s = sitiosRastra[o.id];
     if (s && Number.isFinite(s.giro)) { pj.x = s.x + Math.sin(s.giro) * ADELANTE_CANOA; pj.z = s.z + Math.cos(s.giro) * ADELANTE_CANOA; pj.rot = s.giro; }
     return 0;
@@ -2335,25 +2344,45 @@ function pasoCanoa(o, ax, az, mag, dt) {
   if (mag > 0.05) { const sy = Math.sin(cam.yaw), cy = Math.cos(cam.yaw), n = Math.hypot(ax, az); dir = { x: (ax * cy + az * sy) / n, z: (-ax * sy + az * cy) / n }; }
   const remando = mag > 0.05 && remoEnMano(inventario());
   const ag = mundoJ ? mundoJ.aguaEn(pj.x, pj.z) : null;
-  const v = velocidadCanoa({ dir, remando, corriente: ag ? { dx: ag.dx, dz: ag.dz } : null, mar: !!(ag && ag.mar) });
-  if (remando && mag < 1) { v.vx -= VEL_REMAR * (1 - mag) * dir.x; v.vz -= VEL_REMAR * (1 - mag) * dir.z; }   // (el joystick a medias, más despacio)
+  // a paladas (17 nov, src/logica/canoa.js: pasoRemar): cada tirón la empuja hacia la proa y la tuerce hacia el otro
+  // lado; entre palada y palada se frena sola. Lo que le falta para mirar hacia donde quieres ir decide por dónde rema
+  // (para girar, varias por el mismo lado). La corriente se suma aparte.
+  if (!remadaYo || remadaYo.canoa !== o.id) remadaYo = { ...nuevaRemada(), canoa: o.id };
+  let giro = 0;
+  if (remando) { giro = Math.atan2(dir.x, dir.z) - pj.rot; while (giro > Math.PI) giro -= Math.PI * 2; while (giro < -Math.PI) giro += Math.PI * 2; }
+  const rm = pasoRemar(remadaYo, { rema: remando, mag: Math.min(1, mag), giro }, dt);
+  jugador.remada = window.__remadaFija || faseRemada(rm);   // (__remadaFija: solo para las capturas de cada momento de la palada)
+  const v = velocidadCanoa({ corriente: ag ? { dx: ag.dx, dz: ag.dz } : null, mar: !!(ag && ag.mar) });
+  v.vx += Math.sin(pj.rot) * rm.v; v.vz += Math.cos(pj.rot) * rm.v;
   const flota = (x, z) => !mundoJ || (hondoAqui(x, z) >= HONDO_FLOTA * 0.8 && mundoJ.dentro(x, z));
   const cerca = estorbosCanoa(pj.x, pj.z, 4 + Math.hypot(v.vx, v.vz) * dt);
   // (la canoa tiene que ir por el agua, si no encalla, y su casco entero no atraviesa rocas ni troncos: si ya roza
   // alguna, solo vale lo que no la mete más)
   // (y la proa y la popa no se meten en la orilla: si ya toca alguna en seco, solo vale lo que no deja más en seco)
-  const vale = (x, z, rot) => flota(x, z) && cascoMete(x, z, rot, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(x, z, rot) <= puntasEnSeco(pj.x, pj.z, pj.rot);
+  // (cada círculo del casco por su cuenta: con la suma, al ir girando a cada palada, uno se metía lo que otro salía y la
+  // canoa se colaba en la roca a pasitos)
+  const antes = cascoPorPartes(pj.x, pj.z, pj.rot, cerca), noMete = (x, z, rot) => cascoPorPartes(x, z, rot, cerca).every((m, i) => m <= antes[i] + 1e-6);
+  const vale = (x, z, rot) => flota(x, z) && noMete(x, z, rot) && puntasEnSeco(x, z, rot) <= puntasEnSeco(pj.x, pj.z, pj.rot);
   const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
+  let choca = false;
   for (let i = 0; i < trozos; i++) {
     const nx = pj.x + v.vx * h, nz = pj.z + v.vz * h;   // (el centro de la canoa: donde va el que rema)
-    if (vale(nx, nz, pj.rot)) { pj.x = nx; pj.z = nz; } else if (vale(nx, pj.z, pj.rot)) pj.x = nx; else if (vale(pj.x, nz, pj.rot)) pj.z = nz;
+    if (vale(nx, nz, pj.rot)) { pj.x = nx; pj.z = nz; } else { choca = true; if (vale(nx, pj.z, pj.rot)) pj.x = nx; else if (vale(pj.x, nz, pj.rot)) pj.z = nz; }
   }
-  if (remando) {   // gobierna el que rema: la canoa gira, más despacio que una persona (y no si el casco se mete en una roca)
-    let dr = Math.atan2(dir.x, dir.z) - pj.rot;
-    while (dr > Math.PI) dr -= Math.PI * 2;
-    while (dr < -Math.PI) dr += Math.PI * 2;
-    const r1 = pj.rot + dr * Math.min(1, dt * 3);
-    if (cascoMete(pj.x, pj.z, r1, cerca) <= cascoMete(pj.x, pj.z, pj.rot, cerca) + 1e-6 && puntasEnSeco(pj.x, pj.z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) pj.rot = r1;
+  if (choca) rm.v *= Math.max(0, 1 - dt * 6);   // (contra una roca o la orilla pierde el impulso)
+  // gira lo que la tuercen las paladas: sobre su medio o, si así el casco se mete en una roca o en la orilla, pivotando
+  // sobre la proa o la popa (como la que está pegada a la orilla, que gira apoyada en ella); si no cabe de ninguna
+  // manera, no gira
+  if (Math.abs(rm.w) > 1e-4) {
+    const r1 = pj.rot + rm.w * dt;
+    let hecho = false;
+    for (const a of window.__mutarPivote ? [0] : [0, 1.75, -1.75]) {
+      // (el giro alrededor del punto a lo largo de la canoa a m del medio: el medio se mueve)
+      const px = pj.x + Math.sin(pj.rot) * a, pz = pj.z + Math.cos(pj.rot) * a, x = px - Math.sin(r1) * a, z = pz - Math.cos(r1) * a;
+      // (pivotando, solo si así ya no toca nada: si no, la punta se iría colando en la roca a pasitos)
+      if ((a === 0 ? noMete(x, z, r1) : flota(x, z) && cascoMete(x, z, r1, cerca) < 1e-6) && puntasEnSeco(x, z, r1) <= puntasEnSeco(pj.x, pj.z, pj.rot)) { pj.x = x; pj.z = z; pj.rot = r1; hecho = true; break; }
+    }
+    if (!hecho) rm.w = 0;
   }
   return Math.hypot(v.vx, v.vz);
 }
@@ -2363,6 +2392,11 @@ function pasoCanoa(o, ax, az, mag, dt) {
 // mirando hacia la proa (rot: hacia donde mira él). Devuelve cuánto se mete en total (m; 0, nada).
 const CASCO_CANOA = [[-1.75, 0.3], [-0.9, 0.4], [0, 0.42], [0.9, 0.4], [1.75, 0.3]];   // [a lo largo, radio]
 const estorbosCanoa = (x, z, d) => obstaculos.filter(o => !o.mata && !o.oculto && !(o.arbol && o.id && talaV.tala.arrancado(o.id)) && Math.hypot(o.x - x, o.z - z) <= d + o.r && hondoAqui(o.x, o.z) < o.r);
+function cascoPorPartes(x, z, rot, estorbos) {
+  const ux = Math.sin(rot), uz = Math.cos(rot);
+  if (window.__mutarCasco) return CASCO_CANOA.map(() => 0);
+  return CASCO_CANOA.map(([a, r]) => { let m = 0; for (const o of estorbos) { const d = Math.hypot(x + ux * a - o.x, z + uz * a - o.z); if (d < r + o.r) m += r + o.r - d; } return m; });
+}
 function cascoMete(x, z, rot, estorbos) {
   const ux = Math.sin(rot), uz = Math.cos(rot); let m = 0;
   if (window.__mutarCasco) return 0;   // (solo para romper a propósito la prueba: el casco atraviesa las rocas)
@@ -3231,7 +3265,7 @@ function paso() {
   vel *= velocidadAdmin();   // la cuenta de admin con su velocidad multiplicada (src/logica/admin.js; el servidor la deja)
   nado.e = pasoAguante(nado.e, dt, { modo, moviendo: mag > 0.05, rapido, kg: inventario().kilos(), tira: tronco ? (tronco.ayuda ? 0.5 : 1) : 0 });
   if (modo === 'nadar' && ag) { pj.x += ag.dx * NADO.arrastre * dt; pj.z += ag.dz * NADO.arrastre * dt; }   // la corriente te lleva
-  if (canoaYo) { vel = pasoCanoa(canoaYo, ax, az, mag, dt); estado.talando = null; }
+  if (canoaYo) { vel = pasoCanoa(canoaYo, ax, az, mag, dt); estado.talando = null; } else if (jugador.remada || remadaYo) { jugador.remada = null; remadaYo = null; }
   if (nado.e.muerto) ahogado();
   pintarAguante();
   if (mag > 0.05 && !canoaYo) {
