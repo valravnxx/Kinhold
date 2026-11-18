@@ -1,0 +1,33 @@
+Desbrozar en la lógica
+  bien  el nombre del matorral sale de su sitio — matorral:100,40
+  bien  sin hacha ni lasca no se desbroza — Necesitas un hacha o una lasca de sílex para desbrozarlo.
+  bien  (se pone un hacha de piedra en la mano)
+  bien  con el hacha se desbroza más deprisa que con la lasca — {"hacha_hierro":2,"hacha_mano":2,"hacha_piedra":3,"lasca_silex":6,"cuchillo":5}
+  bien  lejos no — Está demasiado lejos.
+  bien  con el hacha de piedra se desbroza: de 2 a 4 ramas y como mucho una vara —  ramas 4, varas 0
+  bien  caen al suelo donde estaba la mata (no a lo que llevas) — [["rama",10,4]]
+  bien  el matorral queda quitado
+  bien  no se vuelve a desbrozar hasta que rebrota — Ya está desbrozado: aún no ha rebrotado.
+  bien  rebrota en una estación
+  bien  un matorral no está entre lo que se recoge
+  bien  ni se recoge: se desbroza — Eso no se recoge: se desbroza con un hacha.
+  bien  cada vez da su azar fijo (el mismo en el navegador y en el servidor)
+  bien  sin el suelo (donde cae lo cortado) no se desbroza
+El arbusto de bayas
+  bien  primero se le cogen las bayas (el arbusto sigue en pie)
+  bien  y luego se desbroza: da ramas y el arbusto se va
+  bien  en una estación vuelven el arbusto y sus bayas
+Las manos, y lo guardado
+  bien  con algo al hombro no se desbroza — Con algo al hombro no puedes desbrozar.
+  bien  lo guardado recuerda lo quitado
+  bien  desbrozar cansa (como un rato de obra) — 2
+  bien  y queda en el registro con su autor
+En el servidor, con el terreno de Whitholm
+  bien  hay matorrales cerca de la salida — a 10 m
+  bien  el servidor lo conoce por su nombre (el mismo que el del navegador) — {"id":"matorral:-51,90","tipo":"matorral","x":-5.14,"z":8.98}
+  bien  y un matorral que no existe, no
+  bien  en el servidor, con el hacha, se desbroza y las ramas caen a su suelo
+  bien  uno que no existe, no — Ahí no hay nada que recoger.
+  bien  lo desbrozado sale en lo que se reparte (quitado)
+
+27/27 bien
