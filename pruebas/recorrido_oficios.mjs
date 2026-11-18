@@ -169,6 +169,9 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     }
     if (dist(J.pos, desde) > 1) await J.andar(desde.x, desde.z);
   };
+  // (si se muere por el camino, que se diga: le despojan de lo que lleva en las manos)
+  const muertes = [];
+  J.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'muerte') { muertes.push(m.motivo); console.log(`     (se muere: ${m.motivo} · ${JSON.stringify(nec())})`); } });
   const secoHasta = (p, q) => { const n = Math.ceil(dist(p, q)); for (let i = 0; i <= n; i++) if (T.aguaEn(p.x + (q.x - p.x) * i / n, p.z + (q.z - p.z) * i / n)) return false; return true; };
 
   // su sitio de trabajo, junto al banco, en su tierra y donde no haya nada en el suelo
@@ -492,6 +495,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
 
   // ── 27d. El raspador, las pieles limpias y el zurrón ──
   console.log('27d. Levanta el raspador de pieles (4 varas y una cuerda) y deja limpias las 5 pieles con la lasca; con dos, el zurrón en el banco');
+  await cuidarse();
   // (el de la granja, si ya tiene uno en su tierra, le vale; si no, lo levanta)
   let raspador = cerca(suyas('raspador'), taller)[0];
   if (raspador) comprobar('ya tiene un raspador de pieles (el de la criba de la granja): raspa en él', true);
@@ -537,6 +541,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
 
   // ── 27e. El cubo lleno, la corteza de roble, las cubas y el cuero ──
   console.log('27e. Descorteza robles (6 de corteza), cava las cubas de curtido (2 de barro y 2 troncos cortos), las llena con el cubo y curte 3 pieles limpias: 3 cueros');
+  await cuidarse();
   // la corteza de roble: de robles en pie de por aquí, uno a uno (cada uno, una vez)
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
   await buscar('lasca_silex');   // (la dejó en el banco al hacer el zurrón)
@@ -646,6 +651,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   let cueros = 0;
   if (cubas && !cubas.obra) {
     for (let k = 0; k < 3; k++) {
+      await cuidarse();
       // lleno en el río y vaciado en las cubas
       // (el cubo, que dejó a sus pies junto a las cubas)
       if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo'); await aLaMano('cubo'); }
@@ -689,6 +695,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
 
   // ── 27f. El huso y el hilo ──
   console.log('27f. Se hace el huso (una vara y una piedra) e hila 2 de fibra: un ovillo de hilo');
+  await cuidarse();
   await J.andar(taller.x, taller.z); await soltarManos();
   if (!nEnSuelo('vara', taller, 4)) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 1); await J.andar(taller.x, taller.z); await soltarManos(); } }
   if (!nEnSuelo('piedra', taller, 4)) await acopiar(['piedra'], 'piedra', 1, taller);
@@ -708,6 +715,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
 
   // ── 27g. Los zapatos y el cinto de cuero, en el banco ──
   console.log('27g. En el banco, los zapatos de cuero (1 cuero y el hilo) y el cinto de cuero (2 cueros y una rama)');
+  await cuidarse();
   {
     await J.andar(banco.x + 1, banco.z);
     const d1 = await depositar(banco, 'hilo');
@@ -727,6 +735,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
 
   // ── 27h. La carbonera y el carbón ──
   console.log('27h. Parte 2 troncos cortos con el hacha (10 leñas), levanta la carbonera, la enciende y, pasadas las horas, saca 4 carbones');
+  await cuidarse();
   await J.andar(taller.x, taller.z); await soltarManos();
   const sitioCarb = libreEn(taller, 30, 2) || { x: taller.x - 4, z: taller.z - 4 };
   const lena = () => nEnSuelo('lena', sitioCarb, 4);
@@ -774,6 +783,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     comprobar('arde horas; pasadas, saca los 4 carbones y la carbonera se deshace', !g0.ok && g.ok && carbon >= 4 && !s.objetos.fab.estaciones[carbonera.id], `${g0.motivo || 'los da antes'} · ${carbon} carbones · ${g.motivo || ''}`);
   }
   await soltarManos();
+  comprobar('en todos los oficios no se ha muerto (bebe y come cuando lo necesita)', muertes.length === 0, muertes.join('; '));
 }
 
 // seguir desde lo guardado: KINHOLD_RECORRIDO_DESDE=<carpeta> node pruebas/recorrido_oficios.mjs
