@@ -6,6 +6,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 18 nov 2026, 16:12 UTC — por una sesión del carril A, aprobación de P11d
+
+valravnx: «aprueba, se ve decente» → P11d, La canoa (vaciar el tronco, el remo, remar a paladas, a la deriva y varada en la orilla), pasa a `hecho`.
+
 ### 17 nov 2026, 14:20 UTC — por el chat, la canoa: velocidad y quién la termina
 
 valravnx, sobre remar a paladas: la velocidad de crucero, «2,2 para probar ahora» (m/s de media a paladas; ni la de 1,8 ni la de 4 de la rama del carril A). Y la tarea «Remar de verdad» la termina el chat (rama trabajo/20261117-0940-remar), no el carril: el carril A la suelta y no la retoma; lo útil de su rama (trabajo/20261117-1122-remar: las palmas en la caña, el puño a la altura del pecho) lo pasa el chat a la suya.
