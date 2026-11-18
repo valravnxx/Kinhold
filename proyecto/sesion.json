@@ -5,5 +5,11 @@
   "hito": "oficios",
   "rama": "trabajo/20261118-1624"
  },
- "B": null
+ "B": null,
+ "chat:trabajo/20261118-2115-castillo-rey": {
+  "inicio": "21:15",
+  "tarea": "El castillo del rey, visitable: se pisa, para el paso y la cámara corta por plantas",
+  "hito": "aspecto",
+  "rama": "trabajo/20261118-2115-castillo-rey"
+ }
 }

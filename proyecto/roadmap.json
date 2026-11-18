@@ -1561,6 +1561,12 @@
      "estado": "hecho",
      "inicio": "2026-11-14T16:49:45+01:00",
      "fin": "2026-11-14T18:08:00+01:00"
+    },
+    {
+     "nombre": "El castillo del rey, visitable: se pisa, para el paso y la cámara corta por plantas",
+     "estado": "en_curso",
+     "inicio": "21:15",
+     "rama": "trabajo/20261118-2115-castillo-rey"
     }
    ]
   },
