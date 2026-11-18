@@ -7544,5 +7544,26 @@
   "pruebas": "Comprobador de código correcto. Revisor en la nube: el recorrido de jugador entero, el panel de fabricación, la cama ligada, el acabado de construir, el mazo de piedra y despiezar y asar, bien. La lógica, bien en la segunda pasada: en la primera falló cazar la liebre (prueba del modo arma y el mismo paso del recorrido), que aquí pasa tres veces seguidas y no toca este cambio. La demo única falló solo por las traducciones del registro, ya puestas (no se volvió a pasar en la nube; la prueba de idiomas, bien). «Lo que llevas se ve puesto»: el cinto con su hebilla de madera, bien; falla, igual que en main, la mano sobre el tronco al hombro (armas y mujer). Prueba de fabricar con los zapatos: rota a propósito (MUTAR=8, sin pedir el hilo) falla. Prueba de orígenes e imágenes, bien. No comprobado: el rayado de la correa en la imagen del cinto, que ya estaba en la v37 y la hace parecer de madera.",
   "capturas": "capturas/demo-v233",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-17T09:40:32+01:00",
+  "fin": "2026-11-18T15:37:42+01:00",
+  "titulo": "Remar a paladas (chat con valravnx)",
+  "hito": "canoa",
+  "hecho": [
+   "Ya no va a una velocidad fija: cada palada es un tirón. El remo entra delante por un lado, tira hacia atrás y sale; la siguiente, por el otro. La canoa arranca con cada tirón, se frena sola en el agua entre palada y palada y tuerce un poco hacia el lado contrario.",
+   "Una palada cada 1,2 s, la mitad con la pala en el agua. De crucero, 2,2 m/s de media, entre 1,9 y 2,6 en cada palada (valravnx: «2,2 para probar ahora»). Sin remar se para en unos 13 s, y girar 90° remando lleva unos 3,5 s.",
+   "Para girar, paladas más abiertas por un lado; para ir recto, la siguiente palada va por el lado que corrige el rumbo.",
+   "Animación de remar, provisional: el tronco gira y se echa hacia delante en cada tirón. El puño queda delante de la barbilla, las dos palmas sobre la caña y los codos abajo. Al cambiar de lado, el remo cruza tumbado por encima de la proa. Sin remar, el remo descansa atravesado sobre las bordas.",
+   "Los demás jugadores ven remar al que lleva la canoa mientras se mueve.",
+   "Pegada a la orilla o a una roca, la canoa gira apoyándose en la proa o en la popa, sin meterse en ellas: el casco se comprueba círculo a círculo.",
+   "Contra un río que corre más de 2,2 m/s no se avanza (los torrentes van a 3 m/s): se sube por la orilla.",
+   "Las manos van abiertas: el modelo del personaje no tiene dedos que se cierren.",
+   "La segunda mirada de un agente aparte dijo no dos veces (el brazo de arriba parecía pasar por la nuca; el remo atravesaba el cuerpo al sentarse con él) y sí a la tercera, como animación provisional.",
+   "Demo v234."
+  ],
+  "pruebas": "Comprobador de código correcto. Lógica de la canoa 89/89; con la mutación de remar, 5 fallan. En la nube, el revisor: lógica, recorrido de jugador, la canoa, la canoa en el agua y la cama ligada, bien. «Lo que llevas se ve puesto» falla igual que en main, en lo que no toca este cambio: la mano encima del tronco (armas, mujer) y el cinturón del leñero. La canoa en el agua, también aquí, entera en PC y en móvil; con MUTAR_REMAR y MUTAR_PALMAS falla.",
+  "capturas": "capturas/demo-v234",
+  "estado": "ok"
  }
 ]
