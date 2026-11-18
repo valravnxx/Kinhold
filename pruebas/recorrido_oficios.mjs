@@ -530,6 +530,8 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   console.log('27e. Descorteza robles (6 de corteza), cava las cubas de curtido (2 de barro y 2 troncos cortos), las llena con el cubo y curte 3 pieles limpias: 3 cueros');
   // la corteza de roble: de robles en pie de por aquí, uno a uno (cada uno, una vez)
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
+  await buscar('lasca_silex');   // (la dejó en el banco al hacer el zurrón)
+  let motivoCorteza = '';
   const corteza = () => nEnSuelo('corteza_roble', taller, 4) + J.cuantos('corteza_roble');
   let robles = 0;
   for (const radio of [150, 400, 900]) {
@@ -542,11 +544,12 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       if (MANOS.every(l => J.inv.lugares[l])) { await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']); }
       await J.andar(a.x + 1, a.z);
       const r = await J.objeto({ tipo: 'descortezar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad, especie: a.especie });
-      if (r.ok) robles++;
+      if (r.ok) robles++; else motivoCorteza = r.motivo;
+      if (!r.ok && /Necesitas/.test(r.motivo || '')) break;
     }
   }
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
-  comprobar('descorteza robles en pie con la lasca: 6 de corteza de roble', corteza() >= 6, `${robles} robles, ${corteza()} de corteza`);
+  comprobar('descorteza robles en pie con la lasca: 6 de corteza de roble', corteza() >= 6, `${robles} robles, ${corteza()} de corteza${motivoCorteza ? ' · ' + motivoCorteza : ''}`);
   // troncos cortos (2 para las cubas y 2 para la leña de la carbonera): los del suelo de su tierra y, si no bastan, tala un
   // árbol adulto y tronza el tronco largo (3 o 4); cada uno, al hombro hasta el taller
   const cortos = () => nEnSuelo('tronco_corto', taller, 4);
