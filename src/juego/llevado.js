@@ -737,7 +737,7 @@ export function crearLlevado(j) {
           else if (t === 'cordel') madeja(C, 0.04, 0.004, 6, CORDEL);
           else if (t === 'cuerda') madeja(C, 0.07, 0.009, 5, CUERDA);
           else if (t === 'taladro_fuego') arcoTaladro(C, -0.3);
-          else if (t === 'huso') husoEn(C, 0, -0.2, 0.012, {});   // (oficios) metido de pie en el cinto, la tortera abajo
+          else if (t === 'huso') husoEn(C, 0, -0.29, 0.03, {});   // (oficios) metido de pie en el cinto, la tortera abajo y la punta de arriba justo asomando (más alto se cruzaba con el antebrazo)
           else if (CATALOGO[t].herramienta) herramienta(C, t, 0.55);
           else if (CATALOGO[t].tam === 'P') { bolsa(C, 0, 0, 0, 1); C.generico = true; }
           else { hatillo(C, 0, 0, 0, 0.9); C.generico = true; }

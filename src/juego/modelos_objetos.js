@@ -935,7 +935,7 @@ export function husoEn(L, x, y, z, giro = {}, opc = {}) {
   const t = new THREE.CylinderGeometry(HUSO.tortera, HUSO.tortera * 0.94, 0.012, 16), q = t.attributes.position;
   for (let i = 0; i < q.count; i++) { const a = Math.atan2(q.getZ(i), q.getX(i)), f = 1 + 0.06 * Math.sin(a * 3 + 1) + 0.04 * Math.cos(a * 5); q.setX(i, q.getX(i) * f); q.setZ(i, q.getZ(i) * f); }
   t.computeVertexNormals();
-  pon(t, 'piedra', HUSO.yTortera, { tex: 'piedra', plano: true });
+  pon(t, 0x6b675e, HUSO.yTortera, { tex: 'piedra', plano: true });   // (gris de piedra oscuro: el claro parecía plástico)
   // la husada: el hilo enrollado encima de la tortera, en forma de huso (más gordo en medio)
   const perfil = []; for (let i = 0; i <= 8; i++) { const u = i / 8; perfil.push(new THREE.Vector2(HUSO.r + 0.016 * Math.sin(u * Math.PI) ** 0.8, u * 0.11)); }
   pon(new THREE.LatheGeometry(perfil, 14), HILO_OSC, HUSO.yTortera + 0.008, { tex: 'liso', rayas: v => 0.84 + 0.16 * Math.sin((v.x + v.y + v.z) * 1400) });
