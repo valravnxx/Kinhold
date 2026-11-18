@@ -180,6 +180,14 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   };
   // (si se muere por el camino, que se diga: le despojan de lo que lleva en las manos)
   const muertes = [];
+  // (rastro, mientras lleva el cubo: si se le va de las manos, qué mensaje lo dice)
+  let rastroCubo = false, tiposVistos = [];
+  J.ws.on('message', (d) => {
+    if (!rastroCubo) return;
+    const m = JSON.parse(d.toString()); tiposVistos.push(m.tipo); if (tiposVistos.length > 30) tiposVistos.shift();
+    const srv = s.objetos.invs.de(yo).lugares;
+    if (!MANOS.some(l => ['cubo', 'cubo_agua'].includes(srv[l]?.tipo))) { rastroCubo = false; console.log(`     (el cubo se le va de las manos tras: ${tiposVistos.join(', ')} · en ${JSON.stringify(J.pos)} · ${JSON.stringify(nec())} · ${JSON.stringify(m).slice(0, 300)})`); }
+  });
   J.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'muerte') { muertes.push(m.motivo); console.log(`     (se muere: ${m.motivo} · ${JSON.stringify(nec())})`); } });
   const secoHasta = (p, q) => { const n = Math.ceil(dist(p, q)); for (let i = 0; i <= n; i++) if (T.aguaEn(p.x + (q.x - p.x) * i / n, p.z + (q.z - p.z) * i / n)) return false; return true; };
 
@@ -194,6 +202,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     }
     return null;
   };
+  await cuidarse();   // (viene de remar: con sed, a beber antes de nada)
   const taller = tallerGuardado || libreEn(banco, 30) || { x: r2(banco.x - 2), z: r2(banco.z + 2) };
   await J.andar(taller.x, taller.z); await soltarManos();
 
@@ -665,6 +674,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       // (el cubo, que dejó a sus pies junto a las cubas)
       if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo'); await aLaMano('cubo'); }
       await soltarManos(['cubo', 'cubo_agua']);
+      rastroCubo = true; tiposVistos = [];
       if (enLaMano('cubo')) {
         await J.andar(rio.x, rio.z);
         // (ya que está en el río, bebe: está lejos de su tierra)
