@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-18T08:27:01+00:00",
-  "tarea": "El huso y el hilo: el huso (1 vara y 1 piedra, con las manos) es una herramienta; con él, 2 fibras → 1 hilo (de la fibra cruda que se recoge; el lino y la lana, cuando haya campos y ovejas). Cadena: vara ← talar un árbol joven; piedra y fibra ← se recogen a mano",
-  "hito": "oficios",
-  "rama": "trabajo/20261118-0827"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261117-0940-remar": {
   "inicio": "2026-11-17T15:17:09+01:00",
