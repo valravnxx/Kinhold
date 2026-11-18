@@ -462,25 +462,28 @@ function actualizarCamara() {
     return;
   }
   const objetivo = new THREE.Vector3(pj.x, pj.y + 1.2, pj.z);
-  const cp = Math.cos(cam.pitch);
+  // bajo techo en el castillo del rey (cortado por plantas), la cámara mira más desde arriba: si no, el grueso de sus
+  // muros tapa al personaje
+  const pitch = castillo && castillo.corte !== null ? Math.max(cam.pitch, 1.1) : cam.pitch;
+  const cp = Math.cos(pitch);
   let dist = cam.dist;
   // en el mundo, el terreno no se mete entre la cámara y tú: si una loma o un cortado lo tapa, la cámara se acerca
   // (se mira la línea de ti a la cámara en 12 puntos; cada uno, al menos 0,4 m por encima del suelo)
   if (mundoJ) for (let i = 1; i <= 12; i++) {
     const d = cam.dist * i / 12;
-    const x = objetivo.x + Math.sin(cam.yaw) * cp * d, y = objetivo.y + Math.sin(cam.pitch) * d, z = objetivo.z + Math.cos(cam.yaw) * cp * d;
+    const x = objetivo.x + Math.sin(cam.yaw) * cp * d, y = objetivo.y + Math.sin(pitch) * d, z = objetivo.z + Math.cos(cam.yaw) * cp * d;
     if (y < decorado.altura(x, z) + 0.4) { dist = Math.max(1.5, cam.dist * (i - 1) / 12); break; }
   }
   // el castillo del rey: bajo techo se corta a la altura del techo (src/mundo/castillo_rey.js) y la cámara mira desde
   // arriba, por encima del corte; si no, sus muros no se meten entre la cámara y tú: la cámara se acerca
   if (ch && castillo.corte === null) {
-    const cx = objetivo.x + Math.sin(cam.yaw) * cp * dist, cy = objetivo.y + Math.sin(cam.pitch) * dist, cz = objetivo.z + Math.cos(cam.yaw) * cp * dist;
+    const cx = objetivo.x + Math.sin(cam.yaw) * cp * dist, cy = objetivo.y + Math.sin(pitch) * dist, cz = objetivo.z + Math.cos(cam.yaw) * cp * dist;
     const f = ch.rayo(objetivo.x, objetivo.y, objetivo.z, cx, cy, cz);
     if (f < 1) dist = Math.max(1.2, dist * f - 0.35);
   }
   camara.position.set(
     objetivo.x + Math.sin(cam.yaw) * cp * dist,
-    objetivo.y + Math.sin(cam.pitch) * dist,
+    objetivo.y + Math.sin(pitch) * dist,
     objetivo.z + Math.cos(cam.yaw) * cp * dist);
   camara.lookAt(objetivo);
   ambiente.seguir(pj.x, pj.z);
