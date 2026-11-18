@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3135 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3494 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5089 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3548 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3130 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3535 KB
+dist/kinhold_trozos.html 3152 KB
+hilo de los trozos 24 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v233 (Los zapatos y el cinto de cuero); v233: los zapatos y el cinto de cuero (oficios). En el banco de tronco: los zapatos de cuero, de 1 cuero y 1 ovillo de hilo (la prenda de los pies, que ya se veía puesta), y el cinto de cuero, de 2 cueros y 1 rama para la hebilla, que ahora es de madera (en el suelo y puesto): 3 huecos, uno mediano y dos pequeños. Con su imagen en el panel (iconos v38) y su modelo en el suelo: el par de zapatos de suela vuelta, con la boca abierta y el lazo de cordón.; v233, provisional: los zapatos y el cinto tardan 60 s cada uno en el banco, como el zurrón.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 358 s
