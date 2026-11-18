@@ -168,13 +168,13 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       const agua = aguaCerca(desde);
       if (agua) { await J.andar(agua.x, agua.z); for (let i = 0; i < 10 && nec().sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); } }
     }
-    // (con las manos llenas, deja una herramienta aquí mientras va a por bayas, y luego vuelve a cogerla)
+    // (con las manos llenas, deja aquí lo de una mano mientras va a por bayas, y luego vuelve a cogerlo)
     let dejada = null;
     if (nec().hambre > 60) {
       if (MANOS.every(l => J.inv.lugares[l])) {
         const l = MANOS.find(x => !HERRAMIENTAS.includes(J.inv.lugares[x].tipo)) || 'mano:izq', tipo = J.inv.lugares[l].tipo;
         const q = await soltar(l);
-        if (q.ok && HERRAMIENTAS.includes(tipo)) dejada = { id: q.datos.objeto, a: l, x: J.pos.x, z: J.pos.z };
+        if (q.ok) dejada = { id: q.datos.objeto, a: l, x: J.pos.x, z: J.pos.z, tipo };
       }
       for (const m of cerca(alrededor(J.pos, 200).filter(p => (p.tipo === 'bayas' || p.tipo === 'setas') && !probados.has(p.id)), J.pos).slice(0, 16)) {
         if (nec().hambre <= 40) break;
