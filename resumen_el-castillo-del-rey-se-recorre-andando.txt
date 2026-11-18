@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3163 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3522 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5143 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3579 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3158 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3573 KB
+dist/kinhold_trozos.html 3186 KB
+hilo de los trozos 27 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: el castillo del rey se recorre andando
+playwright._impl._errors.Error: Page.evaluate: SyntaxError: Unexpected token ')'
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+!! FALLA: python3 pruebas/prueba_castillo_rey_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/castillo_rey
+
+HAY FALLOS
+tardó 22 s
