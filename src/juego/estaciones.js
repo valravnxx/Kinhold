@@ -418,10 +418,10 @@ function humoHorno(id) {
 // bordes). Arriba, el tiro (el hueco del palo, que se saca para encenderla); al pie, unos respiraderos abiertos con el
 // palo y las puntas de alguna leña que asoma. Alrededor, la tierra removida de donde se sacó. Sin fuego que se vea:
 // mientras arde, humo blanquecino y espeso por el tiro y los respiraderos al rojo (lo cambia ponerHumo).
-const CARBONERA = { r: 0.82, alto: 0.78, tiro: 0.07 };
-const TIERRA_CARB = 0x5a4632, TEPE = 0x5f4e36, TEPE_VERDE = 0x5a5a36, TIERRA_SUELTA = 0x5c4a36;
+const CARBONERA = { r: 0.82, alto: 0.86, tiro: 0.1 };
+const TIERRA_CARB = 0x66503a, TEPE = 0x4a3a28, TEPE_VERDE = 0x5f6a36, TIERRA_SUELTA = 0x6a5640;
 function carbonera(id) {
-  const { r: R, alto: A, tiro: T } = CARBONERA, g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.3, variacion: 0.08 });
+  const { r: R, alto: A, tiro: T } = CARBONERA, g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.3, variacion: 0.16 });
   // la tierra removida alrededor, de donde se cavó: un anillo bajo y desigual que se funde con el prado
   const anillo = [];
   for (let i = 0; i <= 6; i++) { const t = i / 6; anillo.push(new THREE.Vector2(R + 0.05 + t * 0.55, 0.05 * Math.sin((1 - t) * Math.PI * 0.5) - 0.015)); }
@@ -431,7 +431,7 @@ function carbonera(id) {
   L.add(suelta, TIERRA_SUELTA, 0, 0, 0, null, { tex: 'piedra' });
   // el montón: una cúpula achatada, de hombros redondos, apretada a paladas (ni lisa ni redonda del todo)
   const perfil = [];
-  for (let i = 0; i <= 12; i++) { const t = i / 12, a = t * Math.PI / 2; perfil.push(new THREE.Vector2(Math.max(T, R * Math.cos(a) * (1 - 0.06 * t)), -0.03 + A * Math.pow(Math.sin(a), 0.85))); }
+  for (let i = 0; i <= 12; i++) { const t = i / 12, a = t * Math.PI / 2; perfil.push(new THREE.Vector2(Math.max(T, R * Math.pow(Math.cos(a), 0.8) * (1 - 0.22 * t)), -0.05 + (A + 0.02) * Math.pow(Math.sin(a), 1.15))); }
   perfil.push(new THREE.Vector2(T * 0.8, A - 0.06));   // el borde del tiro, hacia dentro
   const cupula = new THREE.LatheGeometry(perfil, 28), p = cupula.attributes.position;
   for (let i = 0; i < p.count; i++) {
@@ -441,30 +441,35 @@ function carbonera(id) {
     p.setX(i, x * k); p.setZ(i, z * k); p.setY(i, y + (az(id, 'h' + Math.round(ang * 6) + ':' + Math.round(y * 6)) - 0.5) * 0.06 * (y > 0.05 ? 1 : 0));
   }
   cupula.computeVertexNormals();
-  L.add(cupula, TIERRA_CARB, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'piedra' });
+  L.add(cupula, TIERRA_CARB, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'liso' });
   // los tepes vueltos, pegados a la ladera: losas finas y desiguales, unos con la raíz y otros con su borde de hierba
-  for (let i = 0; i < 22; i++) {
-    const a = (i * 2.399 + az(id, 't' + i)) % (Math.PI * 2), v = 0.18 + (i % 4) * 0.2 + az(id, 'v' + i) * 0.08, ang = v * Math.PI / 2;
-    const rr = R * Math.cos(ang) * 0.97, y = -0.03 + A * Math.pow(Math.sin(ang), 0.85) - 0.01;
-    const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(-(Math.PI / 2 - ang) * 0.95));
-    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.3), i % 4 ? TEPE : TEPE_VERDE, Math.cos(a) * rr, y, Math.sin(a) * rr, m, { escala: new THREE.Vector3(1.3, 0.2, 1.1), tex: 'piedra' });
+  // (el perfil de la cúpula, para pegarles los tepes)
+  const enCupula = v => { const a = v * Math.PI / 2; return [R * Math.pow(Math.cos(a), 0.8) * (1 - 0.22 * v), -0.05 + (A + 0.02) * Math.pow(Math.sin(a), 1.15)]; };
+  for (let i = 0; i < 34; i++) {
+    const a = (i * 2.399 + az(id, 't' + i)) % (Math.PI * 2), v = 0.12 + (i % 5) * 0.16 + az(id, 'v' + i) * 0.06;
+    const [rr, y] = enCupula(v), [r2, y2] = enCupula(Math.min(0.99, v + 0.05)), incl = Math.atan2(y2 - y, rr - r2);
+    const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(incl));
+    const verde = i % 3 === 0;
+    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.25), verde ? TEPE_VERDE : TEPE, Math.cos(a) * rr * 0.99, y + 0.008, Math.sin(a) * rr * 0.99, m, { escala: new THREE.Vector3(1.3, 0.32, 1.1), tex: 'liso' });
   }
+  // el tiro: un collar de tierra apretada alrededor del hueco, en la cima
+  L.add(new THREE.TorusGeometry(T + 0.02, 0.035, 6, 14), TEPE, 0, A - 0.03, 0, { x: Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });
   g.add(mallas(L));
   // las puntas de leña que asoman al pie, entre la tierra
   const W = new Lote({ rangoSuelo: 0.15, variacion: 0.08 });
   for (let i = 0; i < 4; i++) {
     const a = i * 1.7 + az(id, 'l' + i) + 0.6, rr = R * 0.93;
-    W.add(cil(0.045, 0.05, 0.22, 7), i % 2 ? 'madera' : 'maderaOsc', Math.cos(a) * rr, 0.07, Math.sin(a) * rr, { y: -a, z: Math.PI / 2 - 0.3 }, { sinSuelo: true });
+    W.add(cil(0.045, 0.05, 0.34, 7), i % 2 ? 'madera' : 'maderaOsc', Math.cos(a) * rr, 0.05, Math.sin(a) * rr, { y: -a, z: Math.PI / 2 - 0.3 }, { sinSuelo: true });
   }
   g.add(mallas(W));
   // el tiro arriba y los respiraderos al pie: huecos oscuros (al rojo mientras arde)
-  const tiro = new THREE.Mesh(new THREE.CircleGeometry(T * 0.85, 10), MAT_ARCO); tiro.rotation.x = -Math.PI / 2; tiro.position.y = A - 0.055; tiro.name = 'tiro'; g.add(tiro);
+  const tiro = new THREE.Mesh(new THREE.CircleGeometry(T * 0.95, 12), MAT_ARCO); tiro.rotation.x = -Math.PI / 2; tiro.position.y = A - 0.02; tiro.name = 'tiro'; g.add(tiro);
   for (let i = 0; i < 5; i++) {
-    const a = i * Math.PI * 2 / 5 + az(id, 'q' + i) * 0.4, ang = 0.32, rr = R * Math.cos(ang) + 0.005, y = -0.03 + A * Math.pow(Math.sin(ang), 0.85);
-    const h = new THREE.Mesh(new THREE.CircleGeometry(0.035, 7), MAT_ARCO);
-    h.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); h.lookAt(Math.cos(a) * 3, y + 3 * Math.tan(Math.PI / 2 - ang) * 0.4, Math.sin(a) * 3); h.name = 'respiradero'; g.add(h);
+    const a = i * Math.PI * 2 / 5 + az(id, 'q' + i) * 0.4, ang = 0.16, rr = R * Math.pow(Math.cos(ang), 0.8) * (1 - 0.22 * ang / (Math.PI / 2)) + 0.012, y = -0.05 + (A + 0.02) * Math.pow(Math.sin(ang), 1.15);
+    const h = new THREE.Mesh(new THREE.CircleGeometry(0.06, 8), MAT_ARCO);
+    h.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); h.lookAt(Math.cos(a) * 3, y + 0.5, Math.sin(a) * 3); h.name = 'respiradero'; g.add(h);
   }
-  g.userData.alzaFuego = A - 0.05;
+  g.userData.alzaFuego = A - 0.02;
   return g;
 }
 // El humo de la carbonera: blanquecino y lento, sin llama (la leña arde ahogada bajo la tierra)
@@ -1225,10 +1230,10 @@ function llenoCarbonera(dep, id, colgado = []) {
   const g = new THREE.Group();
   for (const [t, n] of Object.entries(dep || {})) {
     if (!(n > 0)) continue;
-    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.25, 0, CARBONERA.r + 0.22); m.rotation.y = az(id + t, 3) * 6; m.name = 'deposito_' + t; g.add(m);
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.3, 0, CARBONERA.r + 0.32); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(1.6); m.name = 'deposito_' + t; g.add(m);
   }
   if (colgado.some(c => c.listo)) {
-    for (let i = 0; i < 2; i++) { const c = modeloDe({ id: `${id}:carbon${i}`, cosa: { tipo: 'carbon', n: 2 } }); c.position.set(-0.18 + i * 0.3, 0, CARBONERA.r + 0.3 + i * 0.06); c.rotation.y = az(id, 'c' + i) * 6; c.scale.setScalar(1.2); c.name = 'carbon_hecho'; g.add(c); }
+    for (let i = 0; i < 2; i++) { const c = modeloDe({ id: `${id}:carbon${i}`, cosa: { tipo: 'carbon', n: 2 } }); c.position.set(-0.2 + i * 0.34, 0.01, CARBONERA.r + 0.36 + i * 0.08); c.rotation.y = az(id, 'c' + i) * 6; c.scale.setScalar(1.9); c.name = 'carbon_hecho'; g.add(c); }
   }
   return g;
 }

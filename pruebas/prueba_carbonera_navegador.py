@@ -73,7 +73,7 @@ def recorrido(nav, nombre, pref, vista, movil):
     pg.screenshot(path=f'{SALIDA}/{pref}_carboneras.png', timeout=180000)
     mirar(pg, c, 0, 0.6, 0.25, 3.4 * D, 0.14, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_humo.png', timeout=180000)
-    mirar(pg, c, 3.2, 0.9, -0.2, 2.8 * D, 0.32, LADO)
+    mirar(pg, c, 3.2, 1.3, -0.2, 2.8 * D, 0.4, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_carbon.png', timeout=180000)
     mirar(pg, c, -3.2, 0.9, 0.2, 2.8 * D, 0.3, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_yesca.png', timeout=180000)
