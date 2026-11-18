@@ -70,6 +70,8 @@ import { crearBarraConstruir } from './barra_construir.js';
 import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
 import { crearPozosVista } from './pozos_vista.js';
+import { crearCastilloRey } from '../mundo/castillo_rey.js';
+import { MARCAS_FOSO, enZonaCastillo } from '../logica/castillo_rey.js';
 import { pozoCercano, pozoConAgua, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, PIEDRAS_BROCAL, TRAVESANO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
 import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo, vaciarCubo } from '../logica/campos.js';
 
@@ -270,6 +272,11 @@ function sitioDeSalida() {
   return s;
 }
 const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitioDeSalida(), camara }) : null;
+// el castillo del rey (src/mundo/castillo_rey.js): pieza fija del mundo, se carga al acercarse; se pisa y para el paso.
+// Su foso baja el suelo con marcas de nivelado (en metros de la escena, como las de lo construido).
+const castillo = mundoJ ? crearCastilloRey({ escena, origen: mundoJ.salida, y0: mundoJ.y0, base: '../../' }) : null;
+const marcasFoso = mundoJ ? MARCAS_FOSO.map(m => ({ x: m.x - mundoJ.salida.x, z: m.z - mundoJ.salida.z, y: m.y - mundoJ.y0, r: m.r, borde: m.borde })) : [];
+renderer.localClippingEnabled = true;   // (el corte por plantas del castillo)
 // el perfil gráfico y el posprocesado (valravnx, 5 nov; src/juego/graficos.js): la oclusión ambiental, el mapeo tonal, la
 // gradación de color, el brillo de las luces y la niebla, según el perfil (de móvil básico a PC alto); en los altos, el
 // horizonte: la isla entera, basta, detrás del terreno de cerca (src/mundo/horizonte.js)
@@ -444,6 +451,8 @@ function moverGente(dt) {
 }
 
 function actualizarCamara() {
+  // el castillo del rey: se carga al acercarse y, bajo techo, se corta (con la cámara libre, donde está la cámara)
+  const ch = castillo ? castillo.paso(camLibre.activa ? { x: camLibre.x, z: camLibre.z, y: camLibre.y - 1.6 } : pj) : null;
   if (camLibre.activa) {
     // la cámara libre del admin: donde está, mirando hacia donde dicen yaw y pitch (lo contrario de la cámara que sigue)
     const cp = Math.cos(cam.pitch);
@@ -461,6 +470,13 @@ function actualizarCamara() {
     const d = cam.dist * i / 12;
     const x = objetivo.x + Math.sin(cam.yaw) * cp * d, y = objetivo.y + Math.sin(cam.pitch) * d, z = objetivo.z + Math.cos(cam.yaw) * cp * d;
     if (y < decorado.altura(x, z) + 0.4) { dist = Math.max(1.5, cam.dist * (i - 1) / 12); break; }
+  }
+  // el castillo del rey: bajo techo se corta a la altura del techo (src/mundo/castillo_rey.js); y sus muros no se meten
+  // entre la cámara y tú (por debajo del corte): la cámara se acerca
+  if (ch) {
+    const cx = objetivo.x + Math.sin(cam.yaw) * cp * dist, cy = objetivo.y + Math.sin(cam.pitch) * dist, cz = objetivo.z + Math.cos(cam.yaw) * cp * dist;
+    const f = ch.rayo(objetivo.x, objetivo.y, objetivo.z, cx, cy, cz, castillo.corte ?? Infinity);
+    if (f < 1) dist = Math.max(1.2, dist * f - 0.35);
   }
   camara.position.set(
     objetivo.x + Math.sin(cam.yaw) * cp * dist,
@@ -541,7 +557,9 @@ function despejarDecorado() {
   const ahoraL = Date.now(), labrados = (mundo.campos || []).filter(c => c.cerrado && labradoVivo(c, ahoraL)).map(c => ({ c, r: rejilla(c) }));
   const enLabrado = (x, z) => labrados.some(({ c, r }) => x >= r.x0 - 0.3 && z >= r.z0 - 0.3 && x <= r.x0 + r.w + 0.3 && z <= r.z0 + r.h + 0.3
     && (labradoEn(c, x, z, ahoraL) || labradoEn(c, x + 0.25, z, ahoraL) || labradoEn(c, x - 0.25, z, ahoraL) || labradoEn(c, x, z + 0.25, ahoraL) || labradoEn(c, x, z - 0.25, ahoraL)));
-  const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r) || (labrados.length > 0 && enLabrado(x, z));
+  // y el castillo del rey, su foso y su explanada (en metros del mundo: src/logica/castillo_rey.js)
+  const enCastillo = mundoJ ? (x, z) => enZonaCastillo(x + mundoJ.salida.x, z + mundoJ.salida.z) : () => false;
+  const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r) || (labrados.length > 0 && enLabrado(x, z)) || enCastillo(x, z);
   estado.plantasOcultas = decorado.despejar(ocupado);
   recoleccion.despejar(ocupado); // lo que queda debajo de lo construido no se ve ni se recoge
   if (hierbaDensa) hierbaDensa.despejar(ocupado);
@@ -666,8 +684,8 @@ function reconstruir() {
   }
   despejarDecorado();
   // los cimientos alisan el suelo de debajo: se rehacen los trozos del terreno que tocan
-  if (mundoJ) mundoJ.nivelar(mundo.marcasNivelado());
-  if (decorado.nivelar && !window.__sinNivelarVegetacion) decorado.nivelar(mundo.marcasNivelado()); // la hierba, las matas y lo demás, a la altura nueva
+  if (mundoJ) mundoJ.nivelar([...marcasFoso, ...mundo.marcasNivelado()]);
+  if (decorado.nivelar && !window.__sinNivelarVegetacion) decorado.nivelar([...marcasFoso, ...mundo.marcasNivelado()]); // la hierba, las matas y lo demás, a la altura nueva
   // los mojones de todos (cada personaje el suyo); el anillo de la tierra, solo sin zonas (sin mundo): con ellas, tu
   // tierra es la zona entera y se ve en el mapa
   for (const g of mallasMojon) { escena.remove(g); liberar(g); }
@@ -2543,7 +2561,26 @@ function dentroDeCasilla(c, p) {
   return Math.floor(l.lx / MODULO) === p.i && Math.floor(l.lz / MODULO) === p.j;
 }
 // ---------------- Movimiento y colisiones (src/juego/movimiento.js) ----------------
-const { resolverColision, andarHasta, alturaSuelo } = crearMovimiento({ mundo: () => mundo, pj, obstaculos, altosCanon, mundoJ, decorado });
+const { resolverColision, andarHasta, alturaSuelo: alturaSueloMov } = crearMovimiento({ mundo: () => mundo, pj, obstaculos, altosCanon, mundoJ, decorado });
+// el suelo bajo los pies: el de lo construido o el terreno, y encima, el del castillo del rey si está más alto y se llega
+function alturaSuelo() {
+  const b = alturaSueloMov(), ch = castillo && castillo.choques;
+  if (!ch) return b;
+  const c = ch.altura(pj.x, pj.z, pj.y);
+  return c !== null && c > b - 0.05 ? c : b;
+}
+// ¿estás sobre algo del castillo (no sobre el terreno)? Ahí no cuentan las cuestas del terreno de debajo
+function sobreCastillo(x, z) {
+  const ch = castillo && castillo.choques; if (!ch) return false;
+  const c = ch.altura(x, z, pj.y); return c !== null && c > decorado.altura(x, z) + 0.05;
+}
+// un paso de (pj.x, pj.z) a (x, z) contra el castillo: { x, z } donde quedas (apartado de los muros) o null si no se puede
+function pasoCastillo(x, z) {
+  const ch = castillo && castillo.choques; if (!ch) return { x, z };
+  const r = ch.apartar(x, z, pj.y);
+  if (!ch.cabe(r.x, r.z, pj.y) || ch.cruzaMuro(pj.x, pj.z, r.x, r.z, pj.y)) return null;
+  return r;
+}
 
 // planta en la que está un mueble, por su altura (los del suelo de arriba están a una altura de planta o más)
 const plantaDeco = (d) => Math.max(0, Math.floor((d.y - sueloEn(d.x, d.z) + 0.3) / ALTURA));
@@ -3279,11 +3316,16 @@ function paso() {
     const trozos = Math.max(1, Math.ceil(dt / PASO_ANDAR)), h = dt / trozos;
     for (let i = 0; i < trozos; i++) {
       const nx = pj.x + dx * vel * h, nz = pj.z + dz * vel * h;
-      const r = resolverColision(nx, nz, pj.k);
+      let r = resolverColision(nx, nz, pj.k);
+      // el castillo del rey: sus muros apartan, y lo macizo más alto que un paso (o un muro en medio) no deja pasar;
+      // entonces se prueba a deslizarse por cada eje
+      const rc = pasoCastillo(r.x, r.z) || pasoCastillo(r.x, pj.z) || pasoCastillo(pj.x, r.z);
+      r = rc || { x: pj.x, z: pj.z };
+      const enCastillo = sobreCastillo(pj.x, pj.z) || sobreCastillo(r.x, r.z);
       if (!mundoJ) { pj.x = THREE.MathUtils.clamp(r.x, -190, 190); pj.z = THREE.MathUtils.clamp(r.z, -190, 190); }
       // en el mundo: dentro de la isla, sin meterse en el mar ni subir por las paredes de los cortados (si no se puede
       // de frente, se prueba a deslizarse por cada eje)
-      else if (pj.k > 0 || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
+      else if (pj.k > 0 || enCastillo || mundoJ.andable(pj.x, pj.z, r.x, r.z) || (modo === 'nadar' && modoAgua(mundoJ.aguaEn(r.x, r.z)?.hondo) === 'nadar' && mundoJ.dentro(r.x, r.z))) { pj.x = r.x; pj.z = r.z; }   // nadando, el fondo no frena
       else if (mundoJ.andable(pj.x, pj.z, r.x, pj.z)) pj.x = r.x;
       else if (mundoJ.andable(pj.x, pj.z, pj.x, r.z)) pj.z = r.z;
       // y los pies siguen el suelo en cada trozo (14 nov): con un paso entero de golpe, en una escalera subías más de lo
@@ -3894,7 +3936,7 @@ window.__kinhold = {
   usarArbol,   // la corteza y la resina (8 nov)
   pintarTodoInventario,   // (pruebas: lo que llevas, otra vez en el panel y puesto, tras cambiarlo a mano)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
-  mundoJ, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
+  mundoJ, get castillo() { return castillo; }, get mundoListo() { return mundoListo; }, tierrasRey, get cartelTierras() { return cartelTierras; }, mapaRey, panelAdmin, camLibre, alternarCamaraLibre, velocidadAdmin, msMundo, alturaSuelo: (x, z) => decorado.altura(x, z),
   // el agua y el nado: el estado del aguante, dónde estás (tierra, vadear, nadar) y cuántas veces te has ahogado
   nado,
   // la última vez que has muerto (P4; src/logica/muerte.js): de qué, si a tu cama, y tu cuerpo
