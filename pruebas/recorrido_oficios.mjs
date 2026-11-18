@@ -324,9 +324,10 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   // una liebre: se acerca a la más cercana que tenga a tiro, se la lanza y, si falla, recoge la lanza y prueba otra vez
   const cazarUna = async () => {
     const aTiro = () => cerca([...J.liebres.values()], J.pos).filter(l => seco(J.pos, l) && s.fauna.de(l.id) && dist(l, J.pos) < 120);
+    const fallos = [];
     for (let k = 0; k < 12 && lanzaEnMano(); k++) {
-      const l = aTiro().find(x => sitioPara(x)); if (!l) return { muerta: null, motivo: `ninguna a tiro (${J.liebres.size} a la vista)` };
-      const q = await acercarse(l.id); if (!q) continue;
+      const l = aTiro().find(x => sitioPara(x)); if (!l) return { muerta: null, motivo: `ninguna a tiro (${J.liebres.size} a la vista${fallos.length ? '; ' + fallos.join(', ') : ''})` };
+      const q = await acercarse(l.id); if (!q) { fallos.push('huye'); continue; }
       await pausa(800 * RELOJ);
       const v = s.fauna.de(l.id) || q;
       combate({ que: 'tensar' }); await pausa(1400);
@@ -338,9 +339,10 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       await J.andar(lz.x, lz.z);
       await J.objeto({ tipo: 'coger_suelo', objeto: lz.id, x: J.pos.x, z: J.pos.z, a: 'mano:der' });
       if (muerta) return { muerta, tiros: k + 1 };
+      fallos.push('falla');
       await pausa(1500 * RELOJ);
     }
-    return { muerta: null, motivo: 'no le da' };
+    return { muerta: null, motivo: `no le da (${fallos.join(', ') || (lanzaEnMano() ? '' : 'sin la lanza en la mano: ' + enMano())})` };
   };
 
   // ── 27a. Dos cuerdas para el secadero (y una para el raspador, si no tiene): 9 de fibra y 3 cordeles cada una, en el banco ──
@@ -427,7 +429,9 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   const conCarne = () => J.cuantos('carne_cruda') + nEnSuelo('carne_cruda', taller, 6);
   let cazadas = 0, intentos = 0, porque = '';
   // por los prados de alrededor de su taller (a 150 m como mucho, por donde vuelve enseguida): en cada salida, a otro
-  const sitiosCaza = [taller, ...Array.from({ length: 8 }, (_, k) => ({ x: r2(taller.x + Math.cos(k * Math.PI / 4) * 120), z: r2(taller.z + Math.sin(k * Math.PI / 4) * 120) })).filter(p => !T.aguaEn(p.x, p.z))];
+  // (las cazadas tardan en volver a salir: en cada vuelta, más lejos, por otros trozos del mundo)
+  const sitiosCaza = [taller, ...[120, 260, 400].flatMap(rr => Array.from({ length: 8 }, (_, k) => ({ x: r2(taller.x + Math.cos(k * Math.PI / 4 + rr) * rr), z: r2(taller.z + Math.sin(k * Math.PI / 4 + rr) * rr) })))].filter(p => !T.aguaEn(p.x, p.z));
+  const salidas = [];
   while ((pieles() < 5 || conCarne() < 1) && intentos < 40) {
     intentos++;
     const donde = sitiosCaza[(intentos - 1) % sitiosCaza.length];
@@ -435,7 +439,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     combate({ que: 'arma', sacada: true });
     const r = await cazarUna();
     combate({ que: 'arma', sacada: false });
-    if (!r.muerta) { porque = r.motivo; continue; }
+    if (!r.muerta) { porque = r.motivo; salidas.push(r.motivo); continue; }
     cazadas++;
     console.log(`     (una liebre, en la salida ${intentos}, a ${Math.round(dist(r.muerta, taller))} m del taller, en ${r.tiros} tiros)`);
     // la coge con la mano libre, la lleva a su taller y la despieza allí con la lasca (que dejó allí): carne y piel
@@ -455,7 +459,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     // lo que no le cabe en las manos cae a sus pies: deja también lo demás (salvo la lanza)
     await soltarManos(['lanza_endurecida']);
   }
-  comprobar(`caza con la lanza y despieza con la lasca: 5 pieles (y su carne) a sus pies, en su taller`, pieles() >= 5 && conCarne() >= 1, `${cazadas} liebres en ${intentos} salidas; ${pieles()} pieles, ${conCarne()} carnes${porque ? ' · ' + porque : ''}`);
+  comprobar(`caza con la lanza y despieza con la lasca: 5 pieles (y su carne) a sus pies, en su taller`, pieles() >= 5 && conCarne() >= 1, `${cazadas} liebres en ${intentos} salidas; ${pieles()} pieles, ${conCarne()} carnes${porque ? ' · ' + porque : ''}${salidas.length ? ' · las que no: ' + salidas.join('; ') : ''}`);
   if (pieles() < 5 || conCarne() < 1) return;
   if (guardarTrasCaza) { await J.andar(taller.x, taller.z); await soltarManos(); await guardarTrasCaza(); }
   // la lanza, a sus pies (luego no la necesita)
