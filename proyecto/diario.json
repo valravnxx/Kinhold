@@ -7491,5 +7491,22 @@
   "pruebas": "Comprobador de código correcto. Prueba nueva del horno (lógica y servidor, 26 bien) y su prueba de navegador (PC y móvil), rotas a propósito con MUTAR=1: fallan. En la nube, el revisor: lógica, el horno, el panel de fabricar (a la segunda), el hogar, los colgaderos, la cama, el mazo, despiezar y asar y el inventario, bien. Fallan «los almacenajes de la base» (lo dibujado tarda más de 5 s en la nube; ya fallaba igual en main el 15 nov) y el recorrido en el paso 26b de la canoa (no encuentra su hacha en la nube; aquí, con node, el recorrido de main y el de esta rama van idénticos hasta pasado ese paso, con los mismos fallos de la caza de la liebre al azar). No se quitó ningún grupo.",
   "capturas": "capturas/demo-v230",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-17T05:25:10+00:00",
+  "fin": "2026-11-17T20:32:49+00:00",
+  "titulo": "Las cubas de curtido y el cuero (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "Un puesto nuevo en Construir, «Puestos de trabajo»: las cubas de curtido, un hoyo alargado cavado en la tierra, con su pared de barro mojado que baja hasta el agua, el caballón de tierra sacada alrededor y un tronco corto tumbado a cada lado. Piden 2 cestas de barro y 2 troncos cortos, y llevar el palo cavador al cavarlas (no se gasta); van fuera, en tu tierra.",
+   "Se llenan con el cubo: delante de ellas, con el cubo lleno en la mano, Usar echa su agua dentro. Se les dejan pieles limpias y corteza de roble y, en su pestaña del panel, cada piel limpia con 2 cortezas de roble y el agua de un cubo se pone en remojo y da 1 cuero al cabo de dos días reales. Lo hace el servidor, con su autor, y todos ven las pieles en remojo.",
+   "El cuero tiene su modelo y su imagen, y va en el fardo con las pieles. Las cubas despejan la hierba de alrededor.",
+   "La segunda mirada de un agente aparte dijo no dos veces (el agua con vetas como de madera, el hoyo que parecía pegado encima, terrones sueltos como piedras; luego, las pieles agujereadas por el agua) y sí a la tercera.",
+   "Provisional: 2 días reales por cuero, 4 pieles a la vez en unas cubas, el agua de un cubo por piel y 40 s de trabajo para cavarlas; al desmontarlas, el agua se derrama.",
+   "Demo v231."
+  ],
+  "pruebas": "Comprobador de código correcto. En la nube, el revisor: lógica, recorrido, el panel de fabricar, el inventario, el hogar, los colgaderos, la cama, el mazo, despiezar y asar, el acabado de construir, la demo única, la velocidad y las cubas (en el grupo del mimbre, la corteza y la resina, con MUTAR=2 y MUTAR=3), bien. Tras los arreglos de la segunda mirada, solo el grupo de las cubas, otra vez bien (sin la velocidad: el cambio de main.js es el radio de hierba despejada). Falla «los almacenajes de la base» por lo dibujado que tarda en la nube: en main falla igual (y en más puntos).",
+  "capturas": "capturas/demo-v231",
+  "estado": "ok"
  }
 ]

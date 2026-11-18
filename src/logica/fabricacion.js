@@ -79,6 +79,9 @@ export const COLA_SECADERO = 10;            // lo que se seca a la vez en un sec
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
 export const SECAR_CARNE = 6 * 3600;           // s que tarda la carne en secarse en el secadero (provisional)
 export const REDUCIR = 3600;                // s que tarda una carga del horno de reducción en dar la lupia (provisional)
+export const COLA_CUBAS = 4;                // las pieles que se curten a la vez en unas cubas (provisional)
+export const CURTIR = 2 * 24 * 3600;        // s que tarda una piel limpia en curtirse en las cubas: dos días reales (provisional)
+export const AGUA_CUBO = 1;                 // el agua que deja en las cubas un cubo lleno vaciado en ellas (unos 10 l)
 export const MAX_RATO_ESTACION = 5;         // s de trabajo como mucho en una sola acción (como en las obras)
 
 // Los usos: qué estaciones dan cada uno. Una receta pide un uso, no una estación concreta.
@@ -91,6 +94,7 @@ export const USOS = {
   raspar: { nombre: 'En el raspador de pieles', estaciones: ['raspador'] },
   trillar: { nombre: 'En la era', estaciones: ['era'] },
   reducir: { nombre: 'En el horno de reducción', estaciones: ['horno_reduccion'] },
+  curtir: { nombre: 'En las cubas de curtido', estaciones: ['cubas_curtido'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -126,7 +130,7 @@ export const ESTACIONES = {
   // cuatro troncos delgados hincados de postes y dos cuerdas tendidas entre ellos; fuera y en tu tierra. Lo que se
   // cuelga (lo depositado) no se estropea mientras está colgado, y la carne puesta a secar (su cola) se ve colgada para
   // todos (cuelga: true). Provisional (diario y registro): 30 s de trabajo para levantarlo.
-  secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
+  secadero:       { nombre: 'Secadero', un: 'un secadero', uso: 'secar', coste: { tronco_delgado: 4, cuerda: 2 }, donde: 'fuera', trabajo: 30, tierra: true, cuelga: true, aLaVez: COLA_SECADERO, hace: 'Secar carne: colgada aquí no se estropea, y seca dura mucho' },
   // el raspador de pieles (P9, 13 nov; documento de sistemas: «Raspador de pieles (bastidor) — 4 varas + cuerda — limpiar pieles»):
   // un bastidor de cuatro varas atadas en cuadro, con dos de ellas hincadas de pies, donde la piel se tensa con la
   // cuerda para rasparle la carne y la grasa con la lasca de sílex (que hay que llevar: no se gasta). Provisional
@@ -145,6 +149,14 @@ export const ESTACIONES = {
   // Provisional (diario y registro): 1 h real, 60 s de trabajo para levantarlo y que los 4 carbones de su coste son los
   // del primer secado del barro.
   horno_reduccion: { nombre: 'Horno de reducción', un: 'un horno de reducción', uso: 'reducir', coste: { barro: 20, piedra: 10, carbon: 4 }, donde: 'fuera', trabajo: 60, tierra: true, humea: true, carga: 1, hace: 'Un horno de cuba de barro: cargado con mineral de hierro y carbón y encendido, al cabo de un rato deja una lupia de hierro' },
+  // las cubas de curtido (oficios, 17 nov; documento de sistemas: «cuero — 1 piel limpia + corteza de roble + agua —
+  // cubas — días reales»): un hoyo cavado con el palo cavador (que hay que llevar al levantarlas: no se gasta),
+  // forrado con 2 cestas de barro apretado para que no se escape el agua y con 2 troncos cortos tumbados en los bordes,
+  // donde se pisa y se escurre la piel; fuera y en tu tierra (lo que se curte se queda días). Se llenan vaciando en
+  // ellas el cubo lleno (llenar: cada cubo, AGUA_CUBO de agua en lo depositado; el agua no se saca). Las pieles se
+  // curten a la vez (aLaVez), cada una con su tiempo, y se ven en remojo para todos. Provisional (diario y registro):
+  // 40 s de trabajo para levantarlas.
+  cubas_curtido:  { nombre: 'Cubas de curtido', un: 'unas cubas de curtido', uso: 'curtir', coste: { barro: 2, tronco_corto: 2 }, requiere: ['palo_cavador'], donde: 'fuera', trabajo: 40, tierra: true, aLaVez: COLA_CUBAS, llenar: true, hace: 'Curtir pieles limpias con corteza de roble y agua: dan cuero al cabo de días' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -164,6 +176,7 @@ export const motivoTierra = tipo => {
     : e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).'
     : tipo === 'era' ? 'La era va en tu tierra (o en la de quien te invita).'
     : tipo === 'horno_reduccion' ? 'El horno de reducción va en tu tierra (o en la de quien te invita).'
+    : tipo === 'cubas_curtido' ? 'Las cubas de curtido van en tu tierra (o en la de quien te invita).'
     : 'El secadero va en tu tierra (o en la de quien te invita).';
 };
 export const DONDE = { fuera: 'Solo fuera', dentro: 'Solo dentro de la casa', ambos: 'Dentro o fuera' };
@@ -218,6 +231,11 @@ export const RECETAS = {
   // tensada en el bastidor, raspada con la lasca de sílex (que se lleva y no se gasta). Tiempo, provisional (como lo
   // del banco, algo más: es raspar la piel entera)
   raspar_piel:       { ...r('Piel limpia', 'raspar', 'piel_limpia', { piel: 1 }, 60), requiere: ['lasca_silex'] },
+  // en las cubas de curtido (oficios, 17 nov; roadmap: «1 piel limpia y 2 cortezas de roble dan 1 cuero al cabo de días
+  // reales»): la piel en remojo con la corteza machacada, en el agua que se le echa con el cubo; lo que tarda se cuenta
+  // por tiempo transcurrido, como en el secadero (el servidor no simula nada). Provisional (diario y registro): 1 de
+  // agua (un cubo) por piel y dos días reales
+  curtir:            r('Cuero', 'curtir', 'cuero', { piel_limpia: 1, corteza_roble: 2, agua: AGUA_CUBO }, CURTIR),
   // asar las habas (P11, 13 nov): crudas no se comen (son las silvestres: amargas); un puñado de 3 al fuego. Tiempo, provisional
   asar_habas:        r('Habas asadas', 'fuego', 'habas_asadas', { habas: 3 }, 30, 3),
   // la col y el nabo del campo (P11, cosechar): se comen crudos, o asados al fuego, que sacian más. Tiempo, provisional
@@ -281,7 +299,8 @@ export const PARA = {
   arpon: 'Pesca.',
   odre: 'Agua; va al hombro.',
   secar_carne: 'Comida que no se estropea y sacia como la asada.',
-  raspar_piel: 'La piel sin carne ni grasa: para el zurrón; luego, paso previo al cuero.',
+  raspar_piel: 'La piel sin carne ni grasa: para el zurrón y, en las cubas de curtido, para el cuero.',
+  curtir: 'Para los zapatos, el cinto y lo demás de cuero.',
   zurron: 'A la espalda: 2 huecos medianos y 2 pequeños, de lo que sea.',
   yesca: 'Prende la chispa para encender la hoguera o el hogar.',
   yesca_corteza: 'Prende la chispa para encender la hoguera o el hogar.',
@@ -570,6 +589,7 @@ export class Fabricacion {
     const devuelto = {};
     for (const [t, n] of Object.entries(ESTACIONES[e.tipo].coste)) { const r = Math.floor(n * RECUPERA_ESTACION); if (r > 0) devuelto[t] = r; }
     const guardado = { ...e.deposito }, alSuelo = [];
+    if (ESTACIONES[e.tipo].llenar) delete guardado.agua;   // (el agua de las cubas se derrama)
     if (suelo) for (const l of [devuelto, guardado]) for (const [t, n] of Object.entries(l)) if (n > 0) alSuelo.push(suelo.dejar({ tipo: t, n }, e.x, e.z, ahora, autor, !!enTierras).id);
     delete this.estaciones[e.id];
     return { ok: true, estacion: e.id, desmontada: true, devuelto, guardado, alSuelo };
@@ -615,6 +635,7 @@ export class Fabricacion {
     const { e, motivo } = this.estacionAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
     if (typeof tipo !== 'string' || !Object.hasOwn(e.deposito, tipo)) return { ok: false, motivo: 'Eso no está en la estación.' };
+    if (tipo === 'agua' && ESTACIONES[e.tipo].llenar) return { ok: false, motivo: 'El agua de las cubas no se saca: se queda en ellas.' };
     const pide = cantidad === undefined || cantidad === null ? e.deposito[tipo] : cantidad;
     if (!Number.isInteger(pide) || pide < 1 || pide > e.deposito[tipo]) return { ok: false, motivo: 'Cantidad no válida.' };
     // lo de la espalda, primero a la espalda si la tienes libre (te lo pones al descolgarlo)
@@ -627,6 +648,21 @@ export class Fabricacion {
     e.deposito[tipo] -= n;
     if (!e.deposito[tipo]) delete e.deposito[tipo];
     return { ok: true, estacion: e.id, cogido: { [tipo]: n }, donde: m.donde, ...(n < pide ? { noCabia: pide - n } : {}) };
+  }
+
+  // Vaciar en la estación que se llena (las cubas de curtido) el cubo lleno que llevas en una mano: el cubo queda vacío y
+  // ella, con AGUA_CUBO más de agua en lo depositado (hasta lo que le cabe).
+  llenar(autor, estacion, pos, inv) {
+    const { e, motivo } = this.estacionAlLado(estacion, pos);
+    if (!e) return { ok: false, motivo };
+    if (!ESTACIONES[e.tipo].llenar) return { ok: false, motivo: 'Ahí no se echa agua.' };
+    if (e.obra) return { ok: false, motivo: 'Aún está en obra: llévale su material y trabaja en ella.' };
+    const mano = ['mano:der', 'mano:izq'].find(r => inv.lugares[r] && inv.lugares[r].tipo === 'cubo_agua');
+    if (!mano) return { ok: false, motivo: 'Necesitas el cubo lleno en la mano.' };
+    if (totalDeposito(e.deposito) + AGUA_CUBO > cabeEn(e.tipo)) return { ok: false, motivo: `${ESTACIONES[e.tipo].nombre}: no cabe nada más.` };
+    inv.lugares[mano] = { ...inv.lugares[mano], tipo: 'cubo' };
+    e.deposito.agua = (e.deposito.agua || 0) + AGUA_CUBO;
+    return { ok: true, estacion: e.id, dejado: { agua: AGUA_CUBO }, mano };
   }
 
   // Reparar lo que llevas en de (una mano, casi siempre) en la estación que tienes al lado, con lo depositado en ella
@@ -753,7 +789,7 @@ export class Fabricacion {
         if (!e) return { ok: false, motivo: `Hace falta ${conQue(rc.uso)} a tu lado.` };
       }
       if (ESTACIONES[e.tipo].fuego && !encendida(e.fuego, ahora)) return { ok: false, motivo: estadoFuego(e.fuego, ahora).brasas ? 'Está en brasas: avívalo para que vuelva la llama.' : 'El fuego está apagado: enciéndelo con yesca y el taladro de fuego.' };
-      cola = e.cola; max = ESTACIONES[e.tipo].cuelga ? COLA_SECADERO : ESTACIONES[e.tipo].carga || COLA_ESTACION; enEst = e;
+      cola = e.cola; max = ESTACIONES[e.tipo].aLaVez || ESTACIONES[e.tipo].carga || COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);
     if (sinTerminar.length >= max) return { ok: false, motivo: rc.uso === 'manos' ? 'Ya estás haciendo otra cosa.' : enEst && ESTACIONES[enEst.tipo].humea ? 'El horno ya está encendido con su carga: espera a que termine.' : 'La cola de la estación está llena.' };
@@ -768,8 +804,8 @@ export class Fabricacion {
       if (Object.keys(f).length) return { ok: false, motivo: textoFaltan(f), faltan: f };
       usado = gastarTodo(rc.gasta, inv, cerca, suelo);
     }
-    // empieza cuando acaba lo anterior de la cola (o ya); en el secadero, todo lo colgado se seca a la vez
-    const empieza = enEst && ESTACIONES[enEst.tipo].cuelga ? ahora : Math.max(ahora, ...cola.map(c => c.fin));
+    // empieza cuando acaba lo anterior de la cola (o ya); en el secadero y en las cubas, todo a la vez (aLaVez)
+    const empieza = enEst && ESTACIONES[enEst.tipo].aLaVez ? ahora : Math.max(ahora, ...cola.map(c => c.fin));
     const encargo = { autor, receta, empieza, fin: empieza + rc.s * 1000 };
     cola.push(encargo);
     const est = Object.values(this.estaciones).find(x => x.cola === cola);
@@ -886,6 +922,7 @@ export function migrarFabricacion(datos) {
 // { autor, tipo: 'recoger_fabricado', estacion: id | null, x, z }
 // { autor, tipo: 'depositar_estacion', estacion: id, de: ruta, cantidad?, x, z } — de lo que llevas a la estación
 // { autor, tipo: 'retirar_estacion', estacion: id, objeto: tipo, cantidad?, x, z } — de la estación a lo que llevas
+// { autor, tipo: 'llenar_estacion', estacion: id, x, z }    — vaciar en ella (las cubas) el cubo lleno de la mano
 // { autor, tipo: 'ligar_cama', estacion: id, x, z }          — ligar esa cama (la de antes deja de serlo)
 // { autor, tipo: 'dormir', estacion: id, x, z }              — dormir en tu cama ligada
 // { autor, tipo: 'encender_fuego', estacion: id, x, z }      — encender su fuego (1 yesca; llevar el taladro de fuego)
@@ -898,7 +935,7 @@ export function migrarFabricacion(datos) {
 export const OBRA_ESTACION = ['colocar_estacion', 'entregar_estacion', 'trabajar_estacion', 'quitar_estacion', 'desmontar_estacion'];
 export const DEL_FUEGO = ['encender_fuego', 'echar_fuego', 'brasas_fuego'];
 export const DE_LA_CAMA = ['ligar_cama', 'dormir'];
-export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', 'reparar', ...DEL_FUEGO, ...DE_LA_CAMA];
+export const TIPOS_FABRICACION = [...OBRA_ESTACION, 'fabricar', 'recoger_fabricado', 'depositar_estacion', 'retirar_estacion', 'reparar', 'llenar_estacion', ...DEL_FUEGO, ...DE_LA_CAMA];
 export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = null, enTierras = () => false, bajoTecho = () => false, alMuro = () => null) {
   let res;
   const a = accion;
@@ -909,7 +946,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
   else if (!TIPOS_FABRICACION.includes(a.tipo)) res = { ok: false, motivo: 'Acción desconocida.' };
   else if (!Number.isFinite(a.x) || !Number.isFinite(a.z) || !est(a.estacion) || (a.tipo === 'fabricar' && !txt(a.receta))
     || ((a.tipo === 'depositar_estacion' || a.tipo === 'retirar_estacion') && (!txt(a.estacion) || (a.cantidad !== undefined && a.cantidad !== null && !Number.isInteger(a.cantidad))))
-    || (a.tipo === 'reparar' && (!txt(a.estacion) || !txt(a.de))) || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
+    || ((a.tipo === 'reparar' || a.tipo === 'llenar_estacion') && (!txt(a.estacion) || (a.tipo === 'reparar' && !txt(a.de)))) || (a.tipo === 'depositar_estacion' && !txt(a.de)) || (a.tipo === 'retirar_estacion' && !txt(a.objeto))
     || ((OBRA_ESTACION.includes(a.tipo) || DEL_FUEGO.includes(a.tipo) || DE_LA_CAMA.includes(a.tipo)) && !txt(a.estacion)) || (a.tipo === 'echar_fuego' && !txt(a.objeto)) || (a.tipo === 'trabajar_estacion' && !Number.isFinite(a.segundos))
     || (a.tipo === 'colocar_estacion' && a.y !== undefined && a.y !== null && !Number.isFinite(a.y))
     || (a.tipo === 'colocar_estacion' && a.giro !== undefined && a.giro !== null && !Number.isFinite(a.giro))) res = { ok: false, motivo: 'Datos no válidos.' };
@@ -929,6 +966,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
     else if (a.tipo === 'quitar_estacion') { const e = fab.estaciones[a.estacion]; res = fab.quitarEstacion(a.autor, a.estacion, pos, suelo, ahora, suelo && e ? enTierras(e.x, e.z) : false); }
     else if (a.tipo === 'depositar_estacion') res = fab.depositar(a.autor, a.estacion, a.de, a.cantidad, pos, inv);
     else if (a.tipo === 'reparar') res = fab.reparar(a.autor, a.estacion, a.de, pos, inv);
+    else if (a.tipo === 'llenar_estacion') res = fab.llenar(a.autor, a.estacion, pos, inv);
     else if (a.tipo === 'retirar_estacion') res = fab.retirar(a.autor, a.estacion, a.objeto, a.cantidad, pos, inv);
     else if (a.tipo === 'encender_fuego') res = fab.encenderFuego(a.autor, a.estacion, pos, inv, ahora);
     else if (a.tipo === 'echar_fuego') res = fab.echarFuego(a.autor, a.estacion, a.objeto, pos, inv, ahora);
