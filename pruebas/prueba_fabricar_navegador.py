@@ -177,8 +177,8 @@ try:
         A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); A.wait_for_timeout(300)
         menu = A.evaluate("[...document.querySelectorAll('#piezas button.pieza')].map(b => b.innerText)")
         nombres = [m.split('\n')[0] for m in menu]
-        comprobar('la pestaña «Puestos de trabajo», con los nueve puestos (el hogar, 8 nov; el secadero, el raspador de pieles y la era, 13 nov; el horno de reducción y las cubas de curtido, 17 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
-                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Raspador de pieles', 'Era', 'Horno de reducción', 'Cubas de curtido'] and menu[5].split('\n')[1:] == ['4', '/0', '1', '/0'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'] and menu[6].split('\n')[1:3] == ['8', '/1'], str(menu))
+        comprobar('la pestaña «Puestos de trabajo», con los diez puestos (el hogar, 8 nov; el secadero, el raspador de pieles y la era, 13 nov; el horno de reducción y las cubas de curtido, 17 nov; la carbonera, 18 nov) y lo que piden (cada carta, sus materiales: lo que tienes / lo que pide)', A.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').textContent") == 'Puestos de trabajo'
+                  and nombres == ['Hoguera', 'Hogar', 'Piedra de tallar', 'Banco de trabajo de tronco', 'Secadero', 'Raspador de pieles', 'Era', 'Horno de reducción', 'Cubas de curtido', 'Carbonera'] and menu[5].split('\n')[1:] == ['4', '/0', '1', '/0'] and menu[4].split('\n')[1:] == ['4', '/0', '2', '/0'] and menu[2].split('\n')[1:] == ['1', '/1'] and menu[6].split('\n')[1:3] == ['8', '/1'], str(menu))
         A.wait_for_timeout(300)
         captura(A, f'{SALIDA}/PC_menu_puestos.png')
         A.evaluate(f"{K}.seleccionar('puesto', 'piedra_tallar')")
@@ -487,7 +487,7 @@ try:
         B.evaluate(f"{K}.panelFabricar.cerrar()"); B.wait_for_timeout(500)
         B.evaluate(f"{K}.cambiarModo('construir')"); B.wait_for_timeout(200)
         B.evaluate("document.querySelector('#pestanas button[data-cat=\"puestos\"]').click()"); B.wait_for_timeout(500)
-        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 9 && document.documentElement.scrollWidth <= innerWidth + 1"))
+        comprobar('en el móvil, la pestaña de los puestos en el menú de construcción, sin salirse de lado', B.evaluate("document.querySelectorAll('#piezas button.pieza').length === 10 && document.documentElement.scrollWidth <= innerWidth + 1"))
         captura(B, f'{SALIDA}/movil_menu_puestos.png')
         B.evaluate(f"{K}.cambiarModo('mover')")
 
