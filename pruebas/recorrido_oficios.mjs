@@ -168,7 +168,14 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       const agua = aguaCerca(desde);
       if (agua) { await J.andar(agua.x, agua.z); for (let i = 0; i < 10 && nec().sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); } }
     }
+    // (con las manos llenas, deja una herramienta aquí mientras va a por bayas, y luego vuelve a cogerla)
+    let dejada = null;
     if (nec().hambre > 60) {
+      if (MANOS.every(l => J.inv.lugares[l])) {
+        const l = MANOS.find(x => !HERRAMIENTAS.includes(J.inv.lugares[x].tipo)) || 'mano:izq', tipo = J.inv.lugares[l].tipo;
+        const q = await soltar(l);
+        if (q.ok && HERRAMIENTAS.includes(tipo)) dejada = { id: q.datos.objeto, a: l, x: J.pos.x, z: J.pos.z };
+      }
       for (const m of cerca(alrededor(J.pos, 200).filter(p => (p.tipo === 'bayas' || p.tipo === 'setas') && !probados.has(p.id)), J.pos).slice(0, 16)) {
         if (nec().hambre <= 40) break;
         if (MANOS.every(l => J.inv.lugares[l])) await manoLibre();
@@ -177,6 +184,11 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       }
     }
     if (dist(J.pos, desde) > 1) await J.andar(desde.x, desde.z);
+    if (dejada) {
+      if (J.inv.lugares[dejada.a]) await soltar(dejada.a);
+      await J.andar(dejada.x, dejada.z);
+      await J.objeto({ tipo: 'coger_suelo', objeto: dejada.id, a: dejada.a, x: J.pos.x, z: J.pos.z });
+    }
   };
   // (si se muere por el camino, que se diga: le despojan de lo que lleva en las manos)
   const muertes = [];
@@ -675,11 +687,11 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   let cueros = 0;
   if (cubas && !cubas.obra) {
     for (let k = 0; k < 3; k++) {
-      await cuidarse();
       // lleno en el río y vaciado en las cubas
       // (el cubo, que dejó a sus pies junto a las cubas)
       if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo'); await aLaMano('cubo'); }
       await soltarManos(['cubo', 'cubo_agua']);
+      await cuidarse();
       if (enLaMano('cubo')) {
         await J.andar(rio.x, rio.z);
         // (ya que está en el río, bebe: está lejos de su tierra)
