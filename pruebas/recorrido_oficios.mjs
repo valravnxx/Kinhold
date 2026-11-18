@@ -650,7 +650,16 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       // (el cubo, que dejó a sus pies junto a las cubas)
       if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo'); await aLaMano('cubo'); }
       await soltarManos(['cubo', 'cubo_agua']);
-      if (enLaMano('cubo')) { await J.andar(rio.x, rio.z); const ll = await J.objeto({ tipo: 'llenar_cubo' }); if (!ll.ok) { console.log(`     (no llena el cubo: ${ll.motivo})`); break; } }
+      if (enLaMano('cubo')) {
+        await J.andar(rio.x, rio.z);
+        let ll = await J.objeto({ tipo: 'llenar_cubo' });
+        if (!ll.ok) {   // (otra vez, con el cubo bien en la mano)
+          const srv = s.objetos.invs.de(yo).lugares;
+          console.log(`     (no llena el cubo: ${ll.motivo} · en sus manos, para el servidor: ${MANOS.map(l => srv[l]?.tipo || '–').join(' ')}; para él: ${enMano()})`);
+          await pausa(500); await aLaMano('cubo', J.pos, 5); ll = await J.objeto({ tipo: 'llenar_cubo' });
+        }
+        if (!ll.ok) break;
+      }
       await J.andar(cubas.x + 1, cubas.z);
       const lv = await J.objeto({ tipo: 'llenar_estacion', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
       if (k === 0) comprobar('llena el cubo en el río y lo vacía en las cubas', lv.ok && (s.objetos.fab.estaciones[cubas.id].deposito.agua || 0) >= 1, lv.motivo || '');
@@ -664,7 +673,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       cueros++;
     }
     comprobar('pone a curtir 3 pieles limpias, con su corteza y su agua', cueros === 3, `${cueros}`);
-    await soltarManos();
+    await J.andar(cubas.x + 1, cubas.z); await soltarManos();
     const g0 = await J.objeto({ tipo: 'recoger_fabricado', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
     if (!MUTAR) adelantar('curtir');
     let g = { ok: true };
