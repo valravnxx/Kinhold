@@ -133,5 +133,15 @@ comprobar('choque: solo los archivos de verdad, no los que se unen solos', cs.le
   const e8 = elegir(r7, {}, 'B', ahora);
   comprobar('el carril B retoma la de su hito, desde su rama', e8 && e8.hito === 'arte' && e8.retoma && e8.rama === 'trabajo/arte', JSON.stringify(e8));
 }
+{
+  // una tarea a medias con «lleva»: «chat» (17 nov: «Remar de verdad» la termina el chat) no la retoma el carril, y
+  // su hito queda ocupado: el carril sigue con el hito siguiente
+  const r9 = { hitos: [
+    { id: 'canoa', estado: 'en_curso', tareas: [{ ...T('remar', 'en_curso'), rama: 'trabajo/remar', inicio: hace(300), lleva: 'chat' }, T('canoa-2')] },
+    { id: 'oficios', estado: 'en_curso', tareas: [T('huso')] },
+  ] };
+  const e9 = elegir(r9, {}, 'A', ahora);
+  comprobar('la tarea a medias que lleva el chat no la retoma el carril', e9 && e9.hito === 'oficios' && e9.tarea === 'huso', JSON.stringify(e9));
+}
 console.log(`\nResultado: ${ok} correctas, ${mal} fallidas`);
 process.exit(mal ? 1 : 0);
