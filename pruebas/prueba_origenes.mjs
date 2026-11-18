@@ -43,10 +43,6 @@ const CASA_HUMILDE = {
 // caza con la lanza, y con ella vuelven la honda y el odre)
 const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
-  huso: ['aún no se hace', 'El huso y el hilo'],
-  hilo: ['sale del huso', 'El huso y el hilo'],
-  zapatos_cuero: ['piden cuero e hilo', 'Los zapatos y el cinto de cuero'],
-  cinto_cuero: ['pide cuero', 'Los zapatos y el cinto de cuero'],
   est_carbonera: ['aún no hay carbonera', 'La carbonera y el carbón'],
   carbon: ['sale de la carbonera', 'La carbonera y el carbón'],
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)

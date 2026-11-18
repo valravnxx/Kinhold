@@ -82,7 +82,10 @@ export function aMedias(roadmap, sesion, ahora = Date.now(), ramas = {}) {
 export function elegir(roadmap, sesion, carril, ahora = Date.now(), ramas = {}) {
   const c = leerCarriles(sesion);
   const lleva = quienLleva(sesion, ahora);
-  const medias = aMedias(roadmap, sesion, ahora, ramas), huerfana = new Map(medias.map(m => [m.hito + '\n' + m.tarea, m]));
+  // una tarea con «lleva»: «chat» la termina el chat aunque su sesión se haya cortado (valravnx, 17 nov: «Remar de
+  // verdad» la termina el chat, el carril no la retoma): no está a medias para los carriles, y su hito queda ocupado
+  const delChat = new Set(roadmap.hitos.flatMap(h => (h.tareas || []).filter(t => t.lleva === 'chat').map(t => h.id + '\n' + t.nombre)));
+  const medias = aMedias(roadmap, sesion, ahora, ramas).filter(m => !delChat.has(m.hito + '\n' + m.tarea)), huerfana = new Map(medias.map(m => [m.hito + '\n' + m.tarea, m]));
   // la clave es hito + tarea: «Revisión completa y publicación» se llama igual en todos los hitos
   const ocupados = new Set();
   for (const a of leerAgentes(sesion)) if (a.clave !== carril && ocupado(a, ahora)) ocupados.add(a.hito || hitoDeTarea(roadmap, a.tarea));

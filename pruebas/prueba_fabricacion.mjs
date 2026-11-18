@@ -23,6 +23,10 @@ if (process.env.MUTAR === '4') {
 if (process.env.MUTAR === '5') delete RECETAS.carretilla.gasta.rodaja;
 // Con MUTAR=6 el remo no pide el hacha: las del remo deben FALLAR.
 if (process.env.MUTAR === '6') delete RECETAS.remo.requiere;
+// Con MUTAR=7 hilar no pide el huso: las del huso deben FALLAR.
+if (process.env.MUTAR === '7') delete RECETAS.hilar.requiere;
+// Con MUTAR=8 los zapatos no piden el hilo: las de los zapatos deben FALLAR.
+if (process.env.MUTAR === '8') delete RECETAS.zapatos_cuero.gasta.hilo;
 if (process.env.MUTAR === '2') { delete ESTACIONES.pila_piedras.guarda; delete ESTACIONES.pila_piedras.tierra; }
 if (process.env.MUTAR === '3') {
   const colocar = Fabricacion.prototype.colocar; Fabricacion.prototype.colocar = function (a, t, x, z, d, y, en) { return colocar.call(this, a, t, x, z, d, y, en); };
@@ -531,6 +535,54 @@ console.log('El remo de la canoa (P11d): 1 tronco corto en el banco, con el hach
   r = fab.recoger('ana', banco, { x: 1, z: 0 }, inv, T0 + R.s * 1000 + 1, suelo, true);
   const l = inv.lugares;
   comprobar('al recogerlo va a las manos y las ocupa las dos', r.ok && inv.cuantos('remo') === 1 && ['mano:der', 'mano:izq'].some(m => l[m] && l[m].tipo === 'remo') && !!inv.manoBloqueada(['mano:der', 'mano:izq'].find(m => !(l[m] && l[m].tipo === 'remo'))), r.motivo);
+}
+
+console.log('El huso y el hilo (oficios): el huso, de 1 vara y 1 piedra con las manos; con él, 2 fibras dan 1 ovillo de hilo');
+{
+  const H = RECETAS.huso, R = RECETAS.hilar;
+  comprobar('el huso: 1 vara y 1 piedra, con las manos; es herramienta', H && H.uso === 'manos' && H.da === 'huso' && igual(H.gasta, { vara: 1, piedra: 1 }) && CATALOGO.huso.herramienta === true);
+  comprobar('hilar: 2 fibras, con las manos, da 1 hilo y pide el huso (no se gasta)', R && R.uso === 'manos' && R.da === 'hilo' && R.n === 1 && igual(R.gasta, { fibra: 2 }) && igual(R.requiere, ['huso']), JSON.stringify(R));
+  const fab = new Fabricacion(), suelo = new Suelo(), inv = jugador(), aqui = { x: 0, z: 0 };
+  inv.meterDonde('vara', 1); inv.meterDonde('piedra', 1); inv.meterDonde('fibra', 4);
+  let r = fab.fabricar('ana', 'hilar', null, aqui, inv, suelo, T0);
+  comprobar('sin el huso no se hila, dice qué hace falta y no gasta la fibra', !r.ok && /huso/i.test(r.motivo || '') && inv.cuantos('fibra') === 4, r.motivo);
+  r = fab.fabricar('ana', 'huso', null, aqui, inv, suelo, T0);
+  comprobar('el huso se hace con las manos, gasta la vara y la piedra', r.ok && !inv.cuantos('vara') && !inv.cuantos('piedra'), r.motivo);
+  r = fab.recoger('ana', null, aqui, inv, T0 + H.s * 1000, suelo);
+  comprobar('y se tiene el huso', r.ok && inv.cuantos('huso') === 1, JSON.stringify(r));
+  const t1 = T0 + H.s * 1000 + 1;
+  r = fab.fabricar('ana', 'hilar', null, aqui, inv, suelo, t1);
+  comprobar('con el huso, en cualquier sitio, se hila: gasta 2 fibras', r.ok && inv.cuantos('fibra') === 2, r.motivo);
+  r = fab.recoger('ana', null, aqui, inv, t1 + R.s * 1000, suelo);
+  comprobar('da 1 ovillo de hilo y el huso sigue ahí', r.ok && inv.cuantos('hilo') === 1 && inv.cuantos('huso') === 1, JSON.stringify(r));
+}
+
+console.log('Los zapatos y el cinto de cuero (oficios): en el banco, los zapatos de 1 cuero y 1 hilo; el cinto, de 2 cueros y 1 rama');
+{
+  const Z = RECETAS.zapatos_cuero, C = RECETAS.cinto_cuero;
+  comprobar('los zapatos: 1 cuero y 1 hilo, en el banco', Z && Z.uso === 'banco' && Z.da === 'zapatos_cuero' && igual(Z.gasta, { cuero: 1, hilo: 1 }), JSON.stringify(Z));
+  comprobar('el cinto: 2 cueros y 1 rama (la hebilla), en el banco', C && C.uso === 'banco' && C.da === 'cinto_cuero' && igual(C.gasta, { cuero: 2, rama: 1 }), JSON.stringify(C));
+  comprobar('los zapatos son la prenda de los pies; el cinto, a la cintura con 3 huecos, uno mediano', CATALOGO.zapatos_cuero && CATALOGO.zapatos_cuero.capa === 'pies'
+    && CATALOGO.cinto_cuero.lugar === 'cintura' && CATALOGO.cinto_cuero.huecos.length === 3 && CATALOGO.cinto_cuero.huecos.filter(h => h.tam === 'M').length === 1);
+  const fab = new Fabricacion(), suelo = new Suelo();
+  suelo.dejar({ tipo: 'tronco_corto', n: 2 }, 0.5, 0, T0, 'ana', true);
+  const banco = levantar(fab, 'ana', 'banco_tronco', 0, 0, jugador(), suelo);
+  depositar(fab, banco, { cuero: 1 });
+  let r = fab.fabricar('ana', 'zapatos_cuero', banco, { x: 1, z: 0 }, jugador(), suelo, T0);
+  comprobar('sin el hilo no se cosen los zapatos, y no se gasta el cuero', !r.ok && /hilo/i.test(r.motivo || '') && fab.estaciones[banco].deposito.cuero === 1, r.motivo);
+  depositar(fab, banco, { hilo: 1 });
+  r = fab.fabricar('ana', 'zapatos_cuero', banco, { x: 1, z: 0 }, jugador(), suelo, T0);
+  comprobar('con el cuero y el hilo, sí: los gasta', r.ok && !fab.estaciones[banco].deposito.cuero && !fab.estaciones[banco].deposito.hilo, r.motivo);
+  let inv = jugador();
+  r = fab.recoger('ana', banco, { x: 1, z: 0 }, inv, T0 + Z.s * 1000 + 1, suelo, true);
+  comprobar('y se tienen los zapatos de cuero', r.ok && inv.cuantos('zapatos_cuero') === 1, JSON.stringify(r));
+  const t1 = T0 + Z.s * 1000 + 2;
+  depositar(fab, banco, { cuero: 2, rama: 1 });
+  r = fab.fabricar('ana', 'cinto_cuero', banco, { x: 1, z: 0 }, jugador(), suelo, t1);
+  comprobar('el cinto, con 2 cueros y la rama: los gasta', r.ok && !fab.estaciones[banco].deposito.cuero && !fab.estaciones[banco].deposito.rama, r.motivo);
+  inv = jugador();
+  r = fab.recoger('ana', banco, { x: 1, z: 0 }, inv, t1 + C.s * 1000 + 1, suelo, true);
+  comprobar('y se tiene el cinto de cuero', r.ok && inv.cuantos('cinto_cuero') === 1, JSON.stringify(r));
 }
 
 console.log('Guardar y cargar');

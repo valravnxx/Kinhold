@@ -2526,7 +2526,8 @@
      "nombre": "Remar de verdad: cada palada es un tirón (el remo entra por un lado, empuja y sale; la siguiente, por el otro); la canoa arranca con cada tirón y se frena sola en el agua entre palada y palada, y tuerce un poco hacia el lado contrario de la palada; con su animación de remar a cada lado (provisional, se mejorará luego). Cadena: la canoa y el remo, ya hechos",
      "estado": "en_curso",
      "inicio": "2026-11-17T09:40:32+01:00",
-     "rama": "trabajo/20261117-0940-remar"
+     "rama": "trabajo/20261117-0940-remar",
+     "lleva": "chat"
     },
     {
      "nombre": "Revisión completa y publicación",
@@ -2582,15 +2583,22 @@
     },
     {
      "nombre": "El huso y el hilo: el huso (1 vara y 1 piedra, con las manos) es una herramienta; con él, 2 fibras → 1 hilo (de la fibra cruda que se recoge; el lino y la lana, cuando haya campos y ovejas). Cadena: vara ← talar un árbol joven; piedra y fibra ← se recogen a mano",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-18T08:27:01+00:00",
+     "rama": "trabajo/20261118-0827",
+     "fin": "2026-11-18T09:46:12+00:00"
     },
     {
      "nombre": "Los zapatos y el cinto de cuero: zapatos de cuero (1 cuero y 1 hilo, en el banco de tronco; la prenda ya existe y se ve puesta) y cinto de cuero (2 cueros y 1 rama para la hebilla de madera, en el banco: 3 huecos, uno mediano). Cadena: cuero ← las cubas; hilo ← el huso; rama ← se recoge",
-     "estado": "pendiente"
+     "estado": "hecho",
+     "inicio": "2026-11-18T10:23:09+00:00",
+     "fin": "2026-11-18T12:27:36+00:00"
     },
     {
      "nombre": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-18T13:27:58+00:00",
+     "rama": "trabajo/20261118-1327"
     },
     {
      "nombre": "Recorrido de jugador de los oficios, sin arcón: cuelga carne en el secadero, raspa la piel de una liebre y hace el zurrón, llena el cubo, descorteza un roble y curte un cuero (con el reloj acelerado), hila, hace los zapatos y el cinto de cuero y saca carbón de la carbonera",
@@ -4871,6 +4879,20 @@
      "archivo": "jugar/demo/v231.html",
      "capturas": "capturas/demo-v231",
      "notas": "Las cubas de curtido y el cuero (oficios): las cubas, un hoyo cavado y forrado de barro con su caballón de tierra sacada y un tronco corto a cada lado (2 cestas de barro y 2 troncos cortos, con el palo cavador), se llenan con el cubo de agua; cada piel limpia con 2 cortezas de roble se pone en remojo y da 1 cuero al cabo de dos días reales, en el servidor y con su autor"
+    },
+    {
+     "v": "v232",
+     "fecha": "2026-11-18",
+     "archivo": "jugar/demo/v232.html",
+     "capturas": "capturas/demo-v232",
+     "notas": "El huso y el hilo (oficios): el huso, de 1 vara y 1 piedra con las manos, y con él 2 fibras dan 1 ovillo de hilo; el huso cuelga del puño en la mano y va en su bolsa en el cinto"
+    },
+    {
+     "v": "v233",
+     "fecha": "2026-11-18",
+     "archivo": "jugar/demo/v233.html",
+     "capturas": "capturas/demo-v233",
+     "notas": "Los zapatos y el cinto de cuero: en el banco de tronco, los zapatos de cuero (1 cuero y 1 ovillo de hilo) y el cinto de cuero (2 cueros y 1 rama para la hebilla, ahora de madera), con su imagen en el panel y su modelo en el suelo"
     }
    ]
   },
