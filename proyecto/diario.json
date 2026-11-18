@@ -7565,5 +7565,23 @@
   "pruebas": "Comprobador de código correcto. Lógica de la canoa 89/89; con la mutación de remar, 5 fallan. En la nube, el revisor: lógica, recorrido de jugador, la canoa, la canoa en el agua y la cama ligada, bien. «Lo que llevas se ve puesto» falla igual que en main, en lo que no toca este cambio: la mano encima del tronco (armas, mujer) y el cinturón del leñero. La canoa en el agua, también aquí, entera en PC y en móvil; con MUTAR_REMAR y MUTAR_PALMAS falla.",
   "capturas": "capturas/demo-v234",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-18T13:27:58+00:00",
+  "fin": "2026-11-18T15:10:45+00:00",
+  "titulo": "La carbonera y el carbón (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "La carbonera, un puesto nuevo: 10 leñas apiladas y tapadas de tierra y tepes. Se levanta llevando el palo cavador o la pala de madera, que no se gastan, y la tierra no gasta material. Va fuera, en cualquier sitio.",
+   "Se deja en ella la yesca y, llevando el taladro de fuego, se enciende. Arde ahogada, sin llama: humo tenue por el tiro y la brasa en el tiro y los respiraderos, para todos.",
+   "Al cabo de 4 h reales deja 4 carbones vegetales delante, que solo saca quien la encendió. Sacados, la carbonera se deshace y el servidor la quita a todos; queda en el registro con su autor.",
+   "Con el carbón, el horno de reducción y la lupia ya salen de algo: fuera de lo pendiente de la prueba de orígenes la carbonera, el carbón, el horno y la lupia.",
+   "La segunda mirada de un agente aparte dijo no dos veces (la cúpula lisa sin tiro, los tepes como pegatinas, la brasa naranja chillona); se rehízo el montón y la brasa. La tercera dijo no por la yesca al pie, que es el mismo modelo de la yesca del suelo: se dejó a su tamaño.",
+   "Provisional: 4 h reales, 40 s de trabajo para levantarla, en cualquier sitio de fuera y solo cabe en ella la yesca.",
+   "Imágenes nuevas, iconos v39. Demo v235."
+  ],
+  "pruebas": "Comprobador de código correcto. Revisor en la nube: la lógica, el recorrido de jugador, la carbonera (PC y móvil, 18/18), la demo única, el hogar, la cama ligada, los colgaderos y el acabado de construir, bien. El panel de fabricación falló al principio por contar nueve puestos (ya son diez, corregido) y dos comprobaciones que no toca el cambio; repetido, bien. Los almacenajes de la base fallaron en «desplegado cuenta lo guardado: 40 piedras», que no toca el cambio; no se repitió. Prueba de la carbonera (lógica y servidor, 31/31): rota a propósito (MUTAR=1, sin deshacerse) falla. No comprobado: la de navegador rota a propósito, y en el móvil las capturas de cerca del carbón y la yesca quedan al borde.",
+  "capturas": "capturas/demo-v235",
+  "estado": "ok"
  }
 ]

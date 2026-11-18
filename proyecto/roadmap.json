@@ -2595,9 +2595,9 @@
     },
     {
      "nombre": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-18T13:27:58+00:00",
-     "rama": "trabajo/20261118-1327"
+     "fin": "2026-11-18T15:10:45+00:00"
     },
     {
      "nombre": "Recorrido de jugador de los oficios, sin arcón: cuelga carne en el secadero, raspa la piel de una liebre y hace el zurrón, llena el cubo, descorteza un roble y curte un cuero (con el reloj acelerado), hila, hace los zapatos y el cinto de cuero y saca carbón de la carbonera",
@@ -4899,6 +4899,13 @@
      "archivo": "jugar/demo/v234.html",
      "capturas": "capturas/demo-v234",
      "notas": "Remar a paladas: cada palada es un tirón por un lado y la siguiente por el otro; la canoa arranca con cada tirón y se frena sola en el agua (unos 2,2 m/s de crucero); animación de remar provisional"
+    },
+    {
+     "v": "v235",
+     "fecha": "2026-11-18",
+     "archivo": "jugar/demo/v235.html",
+     "capturas": "capturas/demo-v235",
+     "notas": "La carbonera y el carbón"
     }
    ]
   },
