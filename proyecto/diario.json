@@ -7583,5 +7583,21 @@
   "pruebas": "Comprobador de código correcto. Revisor en la nube: la lógica, el recorrido de jugador, la carbonera (PC y móvil, 18/18), la demo única, el hogar, la cama ligada, los colgaderos y el acabado de construir, bien. El panel de fabricación falló al principio por contar nueve puestos (ya son diez, corregido) y dos comprobaciones que no toca el cambio; repetido, bien. Los almacenajes de la base fallaron en «desplegado cuenta lo guardado: 40 piedras», que no toca el cambio; no se repitió. Prueba de la carbonera (lógica y servidor, 31/31): rota a propósito (MUTAR=1, sin deshacerse) falla. No comprobado: la de navegador rota a propósito, y en el móvil las capturas de cerca del carbón y la yesca quedan al borde.",
   "capturas": "capturas/demo-v235",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-18T15:24:37+00:00",
+  "fin": "2026-11-18T15:25:04+00:00",
+  "titulo": "La canoa: revisión completa, ya con las paladas; el hito vuelve a revisión de valravnx (carril A)",
+  "hito": "canoa",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa, ahora con «Remar de verdad»: la canoa de un tronco largo vaciado con el hacha y las brasas; el remo del banco de tronco; echarla al agua, subir y remar a paladas (cada palada un tirón, por un lado y por el otro, que arranca la canoa, se frena sola entre palada y palada y tuerce un poco); sin remar, a la deriva con la corriente; cabe otro sentado; y se queda donde la dejas. Todo publicado y unido a main (la última, la demo v234).",
+   "El recorrido de jugador, sin arcón, lo hace entero en su paso 26 con las paladas nuevas (en la nube, en la sesión de «Remar de verdad»).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: la canoa y el remo salen del mundo.",
+   "Lo que queda para la revisión: la animación de remar es provisional (hasta la de valravnx), con las manos abiertas porque el modelo no cierra los dedos; los números son provisionales (2,2 m/s de crucero, una palada cada 1,2 s, 40 golpes de desbaste, 3 vueltas de brasas, 4,4 m y 40 kg); contra un río de más de 2,2 m/s no se avanza; el cansancio no frena al que rema. No comprobado: los fotogramas en el río en un móvil de verdad.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 53 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
