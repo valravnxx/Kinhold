@@ -66,8 +66,8 @@ def recorrido(nav, nombre, pref, vista, movil):
     comprobar(f'{nombre}: la que arde, con humo y el tiro y los respiraderos al rojo, sin llama (arde ahogada)', r['humo'] >= 6 and not r['llama'] and r['rojo'] and not r['carbon'], str(r))
     comprobar(f'{nombre}: la del carbón hecho, sin humo y con el carbón delante', not l['humo'] and not l['rojo'] and l['carbon'], str(l))
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
-    D = 1.25 if movil else 1
-    LADO = 0.55 if movil else 1.2
+    D = 1.6 if movil else 1   # (en el móvil, estrecho, más lejos y el jugador más a un lado: no tapa lo mirado)
+    LADO = 1.1 if movil else 1.2
     mirar(pg, c, 0, 1.2, 0, 7.0 * D, 0.32)
     pg.wait_for_timeout(1500)
     pg.screenshot(path=f'{SALIDA}/{pref}_carboneras.png', timeout=180000)

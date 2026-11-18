@@ -419,7 +419,7 @@ function humoHorno(id) {
 // palo y las puntas de alguna leña que asoma. Alrededor, la tierra removida de donde se sacó. Sin fuego que se vea:
 // mientras arde, humo blanquecino y espeso por el tiro y los respiraderos al rojo (lo cambia ponerHumo).
 const CARBONERA = { r: 0.82, alto: 0.78, tiro: 0.07 };
-const TIERRA_CARB = 0x4f3e2d, TEPE = 0x5a5233, TEPE_VERDE = 0x5d6435, TIERRA_SUELTA = 0x5c4a36;
+const TIERRA_CARB = 0x5a4632, TEPE = 0x5f4e36, TEPE_VERDE = 0x5a5a36, TIERRA_SUELTA = 0x5c4a36;
 function carbonera(id) {
   const { r: R, alto: A, tiro: T } = CARBONERA, g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.3, variacion: 0.08 });
   // la tierra removida alrededor, de donde se cavó: un anillo bajo y desigual que se funde con el prado
@@ -437,17 +437,17 @@ function carbonera(id) {
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i), z = p.getZ(i), rr = Math.hypot(x, z);
     if (rr < T * 1.05) continue;
-    const ang = Math.atan2(z, x), k = 1 + (az(id, Math.round(ang * 5) + ':' + Math.round(y * 8)) - 0.5) * 0.1;
-    p.setX(i, x * k); p.setZ(i, z * k); p.setY(i, y + (az(id, 'h' + Math.round(ang * 6) + ':' + Math.round(y * 6)) - 0.5) * 0.04 * (y > 0.05 ? 1 : 0));
+    const ang = Math.atan2(z, x), k = 1 + (az(id, Math.round(ang * 5) + ':' + Math.round(y * 8)) - 0.5) * 0.14 + Math.sin(ang * 3 + az(id, 'o') * 6) * 0.04;
+    p.setX(i, x * k); p.setZ(i, z * k); p.setY(i, y + (az(id, 'h' + Math.round(ang * 6) + ':' + Math.round(y * 6)) - 0.5) * 0.06 * (y > 0.05 ? 1 : 0));
   }
   cupula.computeVertexNormals();
   L.add(cupula, TIERRA_CARB, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'piedra' });
   // los tepes vueltos, pegados a la ladera: losas finas y desiguales, unos con la raíz y otros con su borde de hierba
   for (let i = 0; i < 22; i++) {
     const a = (i * 2.399 + az(id, 't' + i)) % (Math.PI * 2), v = 0.18 + (i % 4) * 0.2 + az(id, 'v' + i) * 0.08, ang = v * Math.PI / 2;
-    const rr = R * Math.cos(ang) * 0.99, y = -0.03 + A * Math.pow(Math.sin(ang), 0.85) + 0.005;
+    const rr = R * Math.cos(ang) * 0.97, y = -0.03 + A * Math.pow(Math.sin(ang), 0.85) - 0.01;
     const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(-(Math.PI / 2 - ang) * 0.95));
-    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.3), i % 3 ? TEPE : TEPE_VERDE, Math.cos(a) * rr, y, Math.sin(a) * rr, m, { escala: new THREE.Vector3(1.25, 0.28, 1.05), tex: 'piedra' });
+    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.3), i % 4 ? TEPE : TEPE_VERDE, Math.cos(a) * rr, y, Math.sin(a) * rr, m, { escala: new THREE.Vector3(1.3, 0.2, 1.1), tex: 'piedra' });
   }
   g.add(mallas(L));
   // las puntas de leña que asoman al pie, entre la tierra
@@ -468,11 +468,11 @@ function carbonera(id) {
   return g;
 }
 // El humo de la carbonera: blanquecino y lento, sin llama (la leña arde ahogada bajo la tierra)
-const MAT_HUMO_CARB = () => new THREE.SpriteMaterial({ map: texturaHumo(), color: 0xb3ada4, transparent: true, opacity: 0, depthWrite: false, fog: true });
+const MAT_HUMO_CARB = () => new THREE.SpriteMaterial({ map: texturaHumo(), color: 0x8e8a83, transparent: true, opacity: 0, depthWrite: false, fog: true });
 function humoCarbonera() {
   const g = new THREE.Group(); g.name = 'fuego';
   g.userData.humo = { x: 0, y: -0.12, z: 0 }; g.userData.fuego = { x: 0, y: 0, z: 0 };
-  for (let i = 0; i < 16; i++) { const m = new THREE.Sprite(MAT_HUMO_CARB()); m.name = 'humo'; m.userData.fase = i / 16; g.add(m); }
+  for (let i = 0; i < 10; i++) { const m = new THREE.Sprite(MAT_HUMO_CARB()); m.name = 'humo'; m.userData.fase = i / 10; g.add(m); }
   return g;
 }
 
