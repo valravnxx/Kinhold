@@ -32,7 +32,7 @@ const MANOS = ['mano:der', 'mano:izq'];
 // Con MUTAR=1 (solo al seguir desde lo guardado) no se adelantan los días de las cubas: el cuero no sale y debe FALLAR.
 const MUTAR = process.env.MUTAR === '1' && !!process.env.KINHOLD_RECORRIDO_DESDE;
 
-export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, sitioCaza = null, guardarTrasCaza = null }) {
+export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, sitioCaza = null, guardarTrasCaza = null, tallerGuardado = null }) {
   const yo = J.bienvenida.autor;
   const r2 = v => Math.round(v * 100) / 100;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -173,7 +173,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     }
     return null;
   };
-  const taller = libreEn(banco, 30) || { x: r2(banco.x - 2), z: r2(banco.z + 2) };
+  const taller = tallerGuardado || libreEn(banco, 30) || { x: r2(banco.x - 2), z: r2(banco.z + 2) };
   await J.andar(taller.x, taller.z); await soltarManos();
 
   // ── herramientas: el hacha, la lasca, el palo cavador ──
@@ -345,67 +345,71 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     return { muerta: null, motivo: `no le da (${fallos.join(', ') || (lanzaEnMano() ? '' : 'sin la lanza en la mano: ' + enMano())})` };
   };
 
-  // ── 27a. Dos cuerdas para el secadero (y una para el raspador, si no tiene): 9 de fibra y 3 cordeles cada una, en el banco ──
-  console.log('27a. Trenza cuerdas en su banco (3 cordeles de 9 de fibra cada una) y tala árboles jóvenes: 4 troncos delgados y varas');
-  const cuerda = async () => {
-    await J.andar(banco.x + 1, banco.z); await soltarManos(['lasca_silex']);
-    for (let v = 0; v < 3; v++) {
-      const q = await cordel();
-      if (!q.ok) return q;
-      await J.andar(banco.x + 1, banco.z);
-      const d = await depositar(banco, 'cordel');
-      if (!d.ok) return d;
+  // (para seguir desde lo guardado después de cazar: el secadero ya está en pie)
+  let secadero = cerca(suyas('secadero'), taller)[0];
+  if (!secadero) {
+    // ── 27a. Dos cuerdas para el secadero (y una para el raspador, si no tiene): 9 de fibra y 3 cordeles cada una, en el banco ──
+    console.log('27a. Trenza cuerdas en su banco (3 cordeles de 9 de fibra cada una) y tala árboles jóvenes: 4 troncos delgados y varas');
+    const cuerda = async () => {
+      await J.andar(banco.x + 1, banco.z); await soltarManos(['lasca_silex']);
+      for (let v = 0; v < 3; v++) {
+        const q = await cordel();
+        if (!q.ok) return q;
+        await J.andar(banco.x + 1, banco.z);
+        const d = await depositar(banco, 'cordel');
+        if (!d.ok) return d;
+      }
+      return enEstacion(banco, 'cuerda');
+    };
+    // (2 para el secadero, y otra para el raspador si aún no tiene uno)
+    const nCuerdas = suyas('raspador').length ? 2 : 3;
+    let rq = { ok: true };
+    for (let i = 0; i < nCuerdas && rq.ok; i++) {
+      await cuidarse();
+      rq = await cuerda();
+      if (rq.ok) { await J.andar(taller.x, taller.z); const lc = enLaMano('cuerda'); if (lc) await soltar(lc); }
     }
-    return enEstacion(banco, 'cuerda');
-  };
-  // (2 para el secadero, y otra para el raspador si aún no tiene uno)
-  const nCuerdas = suyas('raspador').length ? 2 : 3;
-  let rq = { ok: true };
-  for (let i = 0; i < nCuerdas && rq.ok; i++) {
-    await cuidarse();
-    rq = await cuerda();
-    if (rq.ok) { await J.andar(taller.x, taller.z); const lc = enLaMano('cuerda'); if (lc) await soltar(lc); }
-  }
-  comprobar(`trenza ${nCuerdas} cuerdas en su banco`, rq.ok && nEnSuelo('cuerda', taller, 4) + J.cuantos('cuerda') >= nCuerdas, rq.motivo || `${nEnSuelo('cuerda', taller, 4)}`);
-  // los troncos delgados, de árboles jóvenes, cada uno al hombro hasta el taller; las varas, de dos en dos a la mano
-  let jovenes = 0, rt = { ok: true };
-  while (rt.ok && (nEnSuelo('tronco_delgado', taller, 4) < 4 || nEnSuelo('vara', taller, 4) < 5) && jovenes < 10) {
-    await cuidarse();
-    rt = await talarJoven(taller);
-    if (!rt.ok) break;
-    jovenes++;
-    const hachaEn = { ...J.pos };
-    await soltarManos();
-    const tr = enSuelo('tronco_delgado', rt.a, 6)[0];
-    if (tr && nEnSuelo('tronco_delgado', taller, 4) < 4) {
-      await J.andar(tr.x + 0.6, tr.z);
-      const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
-      if (c.ok) { await J.andar(taller.x, taller.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z }); }
+    comprobar(`trenza ${nCuerdas} cuerdas en su banco`, rq.ok && nEnSuelo('cuerda', taller, 4) + J.cuantos('cuerda') >= nCuerdas, rq.motivo || `${nEnSuelo('cuerda', taller, 4)}`);
+    // los troncos delgados, de árboles jóvenes, cada uno al hombro hasta el taller; las varas, de dos en dos a la mano
+    let jovenes = 0, rt = { ok: true };
+    while (rt.ok && (nEnSuelo('tronco_delgado', taller, 4) < 4 || nEnSuelo('vara', taller, 4) < 5) && jovenes < 10) {
+      await cuidarse();
+      rt = await talarJoven(taller);
+      if (!rt.ok) break;
+      jovenes++;
+      const hachaEn = { ...J.pos };
+      await soltarManos();
+      const tr = enSuelo('tronco_delgado', rt.a, 6)[0];
+      if (tr && nEnSuelo('tronco_delgado', taller, 4) < 4) {
+        await J.andar(tr.x + 0.6, tr.z);
+        const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+        if (c.ok) { await J.andar(taller.x, taller.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z }); }
+      }
+      for (let v = 0; v < 2 && nEnSuelo('vara', taller, 4) < 5; v++) {
+        if (!(await cogerSuelo('vara', rt.a, 6, 3))) break;
+        await J.andar(taller.x, taller.z); await soltarManos();
+      }
+      await J.andar(hachaEn.x, hachaEn.z); await hachaALaMano();
     }
-    for (let v = 0; v < 2 && nEnSuelo('vara', taller, 4) < 5; v++) {
-      if (!(await cogerSuelo('vara', rt.a, 6, 3))) break;
-      await J.andar(taller.x, taller.z); await soltarManos();
-    }
-    await J.andar(hachaEn.x, hachaEn.z); await hachaALaMano();
-  }
-  await J.andar(taller.x, taller.z); await soltarManos();
-  comprobar('tala árboles jóvenes: 4 troncos delgados, uno a uno al hombro, y 5 varas, en su taller', nEnSuelo('tronco_delgado', taller, 4) >= 4 && nEnSuelo('vara', taller, 4) >= 5, `${jovenes} jóvenes; ${nEnSuelo('tronco_delgado', taller, 4)} troncos, ${nEnSuelo('vara', taller, 4)} varas${rt.ok ? '' : ' · ' + rt.motivo}`);
+    await J.andar(taller.x, taller.z); await soltarManos();
+    comprobar('tala árboles jóvenes: 4 troncos delgados, uno a uno al hombro, y 5 varas, en su taller', nEnSuelo('tronco_delgado', taller, 4) >= 4 && nEnSuelo('vara', taller, 4) >= 5, `${jovenes} jóvenes; ${nEnSuelo('tronco_delgado', taller, 4)} troncos, ${nEnSuelo('vara', taller, 4)} varas${rt.ok ? '' : ' · ' + rt.motivo}`);
 
-  // ── 27b. El secadero ──
-  console.log('27b. Levanta el secadero en su tierra: 4 troncos delgados y 2 cuerdas');
-  const sitioSec = libreEn(taller, 25, 2) || { x: taller.x + 4, z: taller.z };
-  // lo que pide, a sus pies junto al sitio: los 4 troncos (uno a uno al hombro) y 2 cuerdas
-  for (let k = 0; k < 4; k++) {
-    const tr = enSuelo('tronco_delgado', taller, 4)[0]; if (!tr) break;
-    await soltarManos(); await J.andar(tr.x + 0.5, tr.z);
-    const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
-    if (!c.ok) break;
-    await J.andar(sitioSec.x + 1, sitioSec.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
+    // ── 27b. El secadero ──
+    console.log('27b. Levanta el secadero en su tierra: 4 troncos delgados y 2 cuerdas');
+    const sitioSec = libreEn(taller, 25, 2) || { x: taller.x + 4, z: taller.z };
+    // lo que pide, a sus pies junto al sitio: los 4 troncos (uno a uno al hombro) y 2 cuerdas
+    for (let k = 0; k < 4; k++) {
+      const tr = enSuelo('tronco_delgado', taller, 4)[0]; if (!tr) break;
+      await soltarManos(); await J.andar(tr.x + 0.5, tr.z);
+      const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+      if (!c.ok) break;
+      await J.andar(sitioSec.x + 1, sitioSec.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
+    }
+    await cogerSuelo('cuerda', taller, 4, 2); await J.andar(sitioSec.x + 1, sitioSec.z); await soltarManos();
+    let sec = await levantar('secadero', sitioSec.x, sitioSec.z);
+    comprobar('levanta el secadero en su tierra: 4 troncos delgados y 2 cuerdas', sec.ok && sec.datos && sec.datos.terminada, sec.motivo || '');
+    secadero = sec.ok && s.objetos.fab.estaciones[sec.id];
   }
-  await cogerSuelo('cuerda', taller, 4, 2); await J.andar(sitioSec.x + 1, sitioSec.z); await soltarManos();
-  let sec = await levantar('secadero', sitioSec.x, sitioSec.z);
-  comprobar('levanta el secadero en su tierra: 4 troncos delgados y 2 cuerdas', sec.ok && sec.datos && sec.datos.terminada, sec.motivo || '');
-  const secadero = sec.ok && s.objetos.fab.estaciones[sec.id];
 
   // ── 27c. Con el secadero ya en pie, a cazar: la carne se cuelga en cuanto llega (cruda se estropea en horas) ──
   console.log('27c. Con su lanza caza liebres hasta tener 5 pieles, las despieza con la lasca y cuelga una carne en el secadero: al cabo de las horas, carne seca');
@@ -461,7 +465,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   }
   comprobar(`caza con la lanza y despieza con la lasca: 5 pieles (y su carne) a sus pies, en su taller`, pieles() >= 5 && conCarne() >= 1, `${cazadas} liebres en ${intentos} salidas; ${pieles()} pieles, ${conCarne()} carnes${porque ? ' · ' + porque : ''}${salidas.length ? ' · las que no: ' + salidas.join('; ') : ''}`);
   if (pieles() < 5 || conCarne() < 1) return;
-  if (guardarTrasCaza) { await J.andar(taller.x, taller.z); await soltarManos(); await guardarTrasCaza(); }
+  if (guardarTrasCaza) { await J.andar(taller.x, taller.z); await soltarManos(); await guardarTrasCaza({ taller }); }
   // la lanza, a sus pies (luego no la necesita)
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
   if (secadero && !secadero.obra) {
@@ -762,16 +766,16 @@ if (process.argv[1] && process.argv[1].endsWith('recorrido_oficios.mjs') && proc
   });
   // (KINHOLD_OFICIOS_GUARDAR_CAZA=<carpeta>: guarda el mundo después de cazar y sale; con KINHOLD_RECORRIDO_DESDE=<carpeta>
   // se sigue desde ahí, sin volver a cazar: ya tiene las pieles)
-  const guardarTrasCaza = process.env.KINHOLD_OFICIOS_GUARDAR_CAZA ? async () => {
+  const guardarTrasCaza = process.env.KINHOLD_OFICIOS_GUARDAR_CAZA ? async ({ taller }) => {
     const destino = process.env.KINHOLD_OFICIOS_GUARDAR_CAZA, ahora = Date.now();
     J.ws.close(); await pausa(300); await s.cerrar();
     cpSync(dir, destino, { recursive: true });
     const { writeFileSync } = await import('fs');
-    writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ...meta, ahora, pos: J.pos }));
+    writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ...meta, ahora, pos: J.pos, taller }));
     console.log(`(guardado en ${destino}: después de cazar)`);
     process.exit(0);
   } : null;
-  try { await oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ, sitioCaza: meta.sitioCaza, guardarTrasCaza }); }
+  try { await oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ, sitioCaza: meta.sitioCaza, guardarTrasCaza, tallerGuardado: meta.taller || null }); }
   catch (e) { comprobar('los oficios llegan al final', false, e && e.stack); }
   J.ws.close(); await s.cerrar();
   console.log(`\n${ok} bien, ${mal} mal`);
