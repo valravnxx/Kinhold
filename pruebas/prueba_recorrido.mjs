@@ -56,6 +56,7 @@ import { granja } from './recorrido_granja.mjs';
 import { pozo } from './recorrido_pozo.mjs';
 import { casaFuerte } from './recorrido_casa_fuerte.mjs';
 import { canoa } from './recorrido_canoa.mjs';
+import { oficios } from './recorrido_oficios.mjs';
 import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -1808,6 +1809,20 @@ try {
     // P11d, la canoa (16 nov): pruebas/recorrido_canoa.mjs (la cuerda, el adulto junto a su hoguera de la orilla, vaciarlo
     // con el hacha y las brasas, el remo, y remar río arriba y río abajo, a la deriva y vararla en la orilla)
     await canoa({ J: J2, s, T, O, comprobar, pausa, cerca });
+    // (como KINHOLD_RECORRIDO_GUARDAR, pero aquí, antes de los oficios: KINHOLD_RECORRIDO_GUARDAR_OFICIOS=<carpeta>, y
+    // pruebas/recorrido_oficios.mjs con KINHOLD_RECORRIDO_DESDE=<carpeta> sigue desde ahí)
+    if (process.env.KINHOLD_RECORRIDO_GUARDAR_OFICIOS) {
+      const destino = process.env.KINHOLD_RECORRIDO_GUARDAR_OFICIOS, ahora = Date.now();
+      J2.ws.close(); await pausa(300); await s.cerrar(); s = null;
+      cpSync(dir, destino, { recursive: true });
+      writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ficha: J2.bienvenida.ficha || J.bienvenida.ficha, yo: J2.bienvenida.autor, pos: J2.pos, ahora, base, sitioCaza }));
+      console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes de los oficios)`);
+      J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
+    }
+    // P9, los oficios (18 nov): pruebas/recorrido_oficios.mjs (cazar más liebres, el secadero y la carne seca, el
+    // raspador, la piel limpia y el zurrón, el cubo lleno y la corteza de roble, las cubas y el cuero, el huso y el hilo,
+    // los zapatos y el cinto de cuero, y la carbonera y el carbón)
+    await oficios({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, sitioCaza });
     J2.ws.close();
   }
 
