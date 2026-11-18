@@ -419,7 +419,7 @@ function humoHorno(id) {
 // palo y las puntas de alguna leña que asoma. Alrededor, la tierra removida de donde se sacó. Sin fuego que se vea:
 // mientras arde, humo blanquecino y espeso por el tiro y los respiraderos al rojo (lo cambia ponerHumo).
 const CARBONERA = { r: 0.82, alto: 0.86, tiro: 0.1 };
-const TIERRA_CARB = 0x66503a, TEPE = 0x4a3a28, TEPE_VERDE = 0x5f6a36, TIERRA_SUELTA = 0x6a5640;
+const TIERRA_CARB = 0x6b5a47, TEPE = 0x5f4f3c, TEPE_VERDE = 0x5e6442, TIERRA_SUELTA = 0x6a5844;
 function carbonera(id) {
   const { r: R, alto: A, tiro: T } = CARBONERA, g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.3, variacion: 0.16 });
   // la tierra removida alrededor, de donde se cavó: un anillo bajo y desigual que se funde con el prado
@@ -441,7 +441,7 @@ function carbonera(id) {
     p.setX(i, x * k); p.setZ(i, z * k); p.setY(i, y + (az(id, 'h' + Math.round(ang * 6) + ':' + Math.round(y * 6)) - 0.5) * 0.06 * (y > 0.05 ? 1 : 0));
   }
   cupula.computeVertexNormals();
-  L.add(cupula, TIERRA_CARB, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'liso' });
+  L.add(cupula, TIERRA_CARB, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'piedra' });
   // los tepes vueltos, pegados a la ladera: losas finas y desiguales, unos con la raíz y otros con su borde de hierba
   // (el perfil de la cúpula, para pegarles los tepes)
   const enCupula = v => { const a = v * Math.PI / 2; return [R * Math.pow(Math.cos(a), 0.8) * (1 - 0.22 * v), -0.05 + (A + 0.02) * Math.pow(Math.sin(a), 1.15)]; };
@@ -450,7 +450,7 @@ function carbonera(id) {
     const [rr, y] = enCupula(v), [r2, y2] = enCupula(Math.min(0.99, v + 0.05)), incl = Math.atan2(y2 - y, rr - r2);
     const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(-incl));
     const verde = i % 3 === 0;
-    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.25), verde ? TEPE_VERDE : TEPE, Math.cos(a) * rr * 0.985, y, Math.sin(a) * rr * 0.985, m, { escala: new THREE.Vector3(1.3, 0.26, 1.1), tex: 'liso' });
+    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.25), verde ? TEPE_VERDE : TEPE, Math.cos(a) * rr * 0.985, y, Math.sin(a) * rr * 0.985, m, { escala: new THREE.Vector3(1.3, 0.34, 1.1), tex: 'piedra' });
   }
   // el tiro: un collar de tierra apretada alrededor del hueco, en la cima
   L.add(new THREE.TorusGeometry(T + 0.02, 0.035, 6, 14), TEPE, 0, A - 0.03, 0, { x: Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });
@@ -1230,7 +1230,7 @@ function llenoCarbonera(dep, id, colgado = []) {
   const g = new THREE.Group();
   for (const [t, n] of Object.entries(dep || {})) {
     if (!(n > 0)) continue;
-    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.3, 0, CARBONERA.r + 0.32); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(1.6); m.name = 'deposito_' + t; g.add(m);
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.55, 0, CARBONERA.r + 0.25); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(2.2); m.name = 'deposito_' + t; g.add(m);
   }
   if (colgado.some(c => c.listo)) {
     for (let i = 0; i < 2; i++) { const c = modeloDe({ id: `${id}:carbon${i}`, cosa: { tipo: 'carbon', n: 2 } }); c.position.set(-0.2 + i * 0.34, 0.01, CARBONERA.r + 0.36 + i * 0.08); c.rotation.y = az(id, 'c' + i) * 6; c.scale.setScalar(1.9); c.name = 'carbon_hecho'; g.add(c); }
