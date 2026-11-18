@@ -34,6 +34,7 @@ paso "Construir visor del mapa" node construir_mapa.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
 paso "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo" node pruebas/prueba_tramo.mjs
 paso "Construir a la altura del suelo y nivelar" node pruebas/prueba_nivelado.mjs
+paso "El castillo del rey: se pisa, para el paso y se recorre de la calle a la cámara del alcaide" node pruebas/prueba_castillo_rey.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs

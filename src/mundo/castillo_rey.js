@@ -54,10 +54,12 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
   // cada fotograma: carga al acercarse y corta bajo techo. Devuelve los choques (o null si aún no están).
   function paso(pj) {
     if (estado === 'lejos' && Math.hypot(pj.x - dx, pj.z - dz) < CERCA) cargar();
-    if (!choques) return null;
+    if (!choques || sin()) return null;
     const t = choques.techo(pj.x, pj.z, pj.y);
     corte.constant = t === null ? 1e6 : t - 0.05;   // (el plano mira hacia abajo: se ve lo que queda por debajo)
     return choques;
   }
-  return { paso, get choques() { return choques; }, get malla() { return malla; }, get corte() { return corte.constant < 1e5 ? corte.constant : null; }, get estado() { return estado; } };
+  // (window.__mutarCastillo: solo para romper a propósito su prueba: el castillo se ve pero no se pisa ni para el paso)
+  const sin = () => typeof window !== 'undefined' && window.__mutarCastillo;
+  return { paso, get choques() { return sin() ? null : choques; }, get malla() { return malla; }, get corte() { return corte.constant < 1e5 ? corte.constant : null; }, get estado() { return estado; } };
 }

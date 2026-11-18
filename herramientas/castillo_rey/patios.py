@@ -1,0 +1,170 @@
+# Los patios: pozos, abrevadero, herrería, la vida del patio de armas; la poterna del mar con su escalera y su embarcadero.
+from obra import *
+import edificios as ED
+import choques
+
+def en(p, y=None):
+    return F(p[0], p[1], 0.0, h(*p) if y is None else y)
+
+def patios(m, CN, E_CUAD, E_GRAN, E_GUAR, E_COCI):
+    # ---------------- patio de armas
+    pz = (CEN_EXT[0] - 2.0, CEN_EXT[1] + 2.0)
+    pozo(m, F(pz[0], pz[1], ang(A, G), h(*pz)), 0, 0, 1.0, True)
+    g = E_CUAD.f
+    for (u, w) in ((4.5, E_CUAD.Fd + 2.6), (10.5, E_CUAD.Fd + 2.6)):
+        p = g.p2(u, w); abrevadero(m, F(p[0], p[1], g.a, h(*p)), 0, 0, 2.6)
+        poste(m, F(p[0], p[1], g.a, h(*p)), 0, 1.4, 0, 1.3)
+    # herrería, suelta, contra el muro de separación (lado del patio de armas)
+    c = CN['PA-F']
+    ph = c.p2((c.u0 + c.u1) / 2 + 6.0, c.T / 2 + 4.2)
+    ED.herreria(m, ph, round(h(*ph) + 0.1, 2))
+    # leña, carro y toneles delante del granero
+    g = E_GRAN.f
+    p = g.p2(2.5, E_GRAN.Fd + 3.0); carro(m, F(p[0], p[1], g.a, h(*p)), 0, 0, 0.4)
+    for k in range(3):
+        p = g.p2(9.5 + k * 0.75, E_GRAN.Fd + 1.0); tonel(m, F(p[0], p[1], g.a, h(*p)), 0, 0)
+    # la diana de los ballesteros, contra la muralla P–A
+    c = CN['P-A']; p = c.marco_dentro(c.u1 - 2.0).p2(0, 1.2)
+    diana(m, F(p[0], p[1], c.f.a + math.pi, h(*p)), 0, 0)
+    # el cuerpo de guardia: un banco y un brasero delante de la puerta
+    g = E_GUAR.f; p = g.p2(6.0, E_GUAR.Fd + 1.0)
+    banco(m, F(p[0], p[1], g.a, h(*p)), 0, 0, 1.8)
+    # ---------------- patio del alcázar: pozo junto a la cocina, leña
+    pz = (CEN_INT[0] + 3.0, CEN_INT[1] - 4.0)
+    pozo(m, F(pz[0], pz[1], ang(B, C), h(*pz)), 0, 0, 0.9, True)
+    g = E_COCI.f
+    p = g.p2(2.0, E_COCI.Fd + 0.8)
+    for k in range(4): caja(m, F(p[0], p[1], g.a, h(*p)), -1.0 + 0.0, 1.0, k * 0.28, k * 0.28 + 0.26, k * 0.0, 0.7, hexc('#6e4e34'), .8)
+    tonel(m, F(*g.p2(4.0, E_COCI.Fd + 0.7), g.a, h(*g.p2(4.0, E_COCI.Fd + 0.7))), 0, 0)
+
+def _peldanos(m, f, u0, u1, w0, w1, v_alto, v_bajo, col=PIEDRA):
+    """tramo de escalera que baja a lo largo de +u (de v_alto en u0 a v_bajo en u1), macizo hasta el terreno"""
+    n = max(2, int(round((v_alto - v_bajo) / 0.2))); du = (u1 - u0) / n; dv = (v_alto - v_bajo) / n
+    for i in range(n):
+        a = u0 + i * du; b = a + du; top = v_alto - i * dv
+        base = min(h(*f.p2(a, w0)), h(*f.p2(b, w1)), h(*f.p2(a, w1))) - 0.6
+        caja(m, f, a, b + 0.01, min(base, top - 0.3), top, w0, w1, varia(col, .07), .75)
+    # pretil del lado del mar
+    for i in range(n):
+        a = u0 + i * du; top = v_alto - i * dv
+        caja(m, f, a, a + du + 0.01, top, top + 0.8, w1, w1 + 0.3, PIEDRA, .85)
+
+CAMINO_POTERNA = []   # (para las pruebas: el eje de la escalera de la poterna, (x, z, y) en el mundo)
+RELLANO_POTERNA = [] 
+
+def poterna(m, c):
+    """c: la cortina E–F (+w hacia el mar). La puerta en el suelo del patio, un matacán encima y la escalera al embarcadero."""
+    f = F(c.f.o[0], c.f.o[1], c.f.a, 0)
+    up = 6.5
+    v0 = round(max(c.suelo_en(up, -c.T / 2 - 0.5), c.suelo_en(up, c.T / 2 + 0.5)) + 0.1, 2)
+    c.huecos.append({'u': up, 'a': 1.0, 'v0': v0, 'v1': v0 + 2.0, 'arco': 'medio'})
+    T2 = c.T / 2
+    # rellano de fuera, macizo
+    prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(h(*f.p2(up, T2 + 2.5)) - 1.0, v0 - 1.0), v0, PIEDRA)
+    suelo_losas(m, f, up - 1.2, up + 1.3, T2, T2 + 2.5, v0 + 0.01, LOSA, 0.5)
+    # la puerta de la poterna, cerrada, y su matacán en el adarve
+    puerta_tablas(m, f, up - 0.5, up + 0.5, v0, v0 + 2.0, T2 - 0.4, 1.3, 'medio', MADERA)   # (abierta)
+    for k in range(3):
+        u = up - 1.05 + k * 1.05
+        caja(m, f, u - 0.16, u + 0.16, ADARVE - 1.2, ADARVE - 0.6, T2, T2 + 0.45, PIEDRA_CLARA, .85); caja(m, f, u - 0.16, u + 0.16, ADARVE - 0.6, ADARVE, T2, T2 + 0.8, PIEDRA_CLARA, .85)
+    caja(m, f, up - 1.5, up + 1.5, ADARVE - 0.12, ADARVE, T2 - 0.65, T2 + 0.8, PIEDRA, .8)
+    for k in range(2): caja(m, f, up - 0.75 + k * 1.05, up - 0.35 + k * 1.05, ADARVE - 0.13, ADARVE + 0.01, T2 + 0.12, T2 + 0.6, OSCURO, caras='v1')
+    almenado(m, f, up - 1.5, up + 1.5, ADARVE, T2 + 0.25, T2 + 0.8, 1.0, 1.1, 1.4, 0.55, PIEDRA)
+    # la escalera baja por la cara del acantilado: cada peldaño se asienta donde el terreno tiene su altura (va en diagonal)
+    def w_de(u, y, w_min):
+        w = w_min
+        while w < 40 and h(*f.p2(u, w)) > y: w += 0.1
+        return w
+    def tramo(u0, sentido, v_alto, v_bajo, w_min):
+        n = int(round((v_alto - v_bajo) / 0.2)); dv = (v_alto - v_bajo) / n; u = u0; pts = []
+        for i in range(n):
+            top = v_alto - i * dv
+            w = max(w_min, w_de(u + sentido * 0.15, top - 0.15, w_min))
+            ua, ub = (u, u + 0.3) if sentido > 0 else (u - 0.3, u)
+            base = min(h(*f.p2(ua, w + 1.3)), h(*f.p2(ub, w + 1.3))) - 0.5
+            with choques.callar(): caja(m, f, ua, ub, min(base, top - 0.3), top, w, w + 1.3, varia(PIEDRA, .07), .75)
+            choques.solido_caja(f, ua, ub, w, w + 1.3, min(base, top - 0.3), top)
+            pts.append((u, w, top)); CAMINO_POTERNA.append((*f.p2(u + sentido * 0.15, w + 0.65), top)); u += sentido * 0.29; w_min = w   # (no vuelve hacia la muralla: no se cruza con el tramo de arriba)
+        # pretil del lado del mar: tramos inclinados que siguen la escalera
+        for (ua, wa, ta), (ub, wb, tb) in zip(pts, pts[1:]):
+            P_ = lambda uu, ww, yy: f(uu, yy, ww)
+            for (y0_, y1_) in ((ta - 0.4, ta + 0.8),):
+                pass
+            m.quad(f(ua, ta - 0.3, wa + 1.3), f(ub, tb - 0.3, wb + 1.3), f(ub, tb + 0.8, wb + 1.3), f(ua, ta + 0.8, wa + 1.3), esc(PIEDRA, .9))
+            m.quad(f(ua, ta - 0.3, wa + 1.55), f(ub, tb - 0.3, wb + 1.55), f(ub, tb + 0.8, wb + 1.55), f(ua, ta + 0.8, wa + 1.55), esc(PIEDRA, .8))
+            choques._seg(f, ua, wa + 1.4, ub, wb + 1.4, min(ta, tb) - 0.3, max(ta, tb) + 0.8)
+            m.quad(f(ua, ta + 0.8, wa + 1.25), f(ub, tb + 0.8, wb + 1.25), f(ub, tb + 0.8, wb + 1.6), f(ua, ta + 0.8, wa + 1.6), PIEDRA_CLARA)
+        return u, pts
+    u1_, p1 = tramo(up + 1.3, 1, v0, 7.0, T2 + 1.3)
+    w_g = p1[-1][1]
+    CAMINO_POTERNA.append((*f.p2(u1_ + 0.75, w_g + 0.6), 7.0)); CAMINO_POTERNA.append((*f.p2(u1_ + 0.75, w_g + 2.3), 7.0))   # (el rellano del giro)
+    prisma(m, f, [(u1_, w_g - 0.6), (u1_ + 1.5, w_g - 0.6), (u1_ + 1.5, w_g + 3.2), (u1_, w_g + 3.2)], min(h(*f.p2(u1_ + 1.5, w_g + 3.2)), 7.0) - 1.0, 7.0, PIEDRA)
+    u2_, p2 = tramo(u1_ - 0.0, -1, 7.0, 1.0, w_g + 1.7)
+    w_f = p2[-1][1]
+    u_fin = u2_
+    # el muelle: rellano de piedra y pantalán de madera hacia el agua
+    prisma(m, f, [(u_fin - 2.2, w_f - 0.3), (u_fin + 0.3, w_f - 0.3), (u_fin + 0.3, w_f + 3.0), (u_fin - 2.2, w_f + 3.0)], -1.5, 1.0, PIEDRA)
+    RELLANO_POTERNA[:] = [f.p2(up, -T2 - 1.5), f.p2(up, T2 + 1.2), f.p2(u_fin - 1.0, w_f + 1.5), f.p2(u_fin - 1.0, w_f + 9.0)]
+    v_bajo = 1.0
+    fm = F(*f.p2(u_fin - 1.0, w_f + 3.0), f.a + math.pi / 2, 0)    # u hacia el mar
+    choques.suelo(fm, 0, 9.0, -0.9, 0.9, v_bajo)
+    for k in range(int(9 / 0.3)):
+        caja(m, fm, k * 0.3 + 0.01, k * 0.3 + 0.29, v_bajo - 0.12, v_bajo, -0.9, 0.9, varia(TABLA, .1), .75)
+    for k in range(4):
+        for s in (-1, 1): caja(m, fm, 1.5 + k * 2.4 - 0.12, 1.5 + k * 2.4 + 0.12, -2.5, v_bajo + (0.6 if k == 3 else -0.1), s * 0.85 - 0.12, s * 0.85 + 0.12, MADERA)
+    # una barca amarrada
+    fb = fm.sub(6.0, 2.2, 0.05, v_bajo - 1.0)
+    prisma(m, fb, [(-2.2, 0), (-1.6, -0.75), (1.8, -0.75), (2.4, 0), (1.8, 0.75), (-1.6, 0.75)], 0.0, 0.55, hexc('#5c4630'))
+    caja(m, fb, -1.4, 1.6, 0.3, 0.36, -0.6, 0.6, hexc('#8a6a48'))
+
+def _dentro_enc(p, pol, margen):
+    if not dentro(p, pol): return False
+    return all(dist_seg(p, a, b) > margen for a, b in zip(pol, pol[1:] + pol[:1]))
+
+def suelos_patios(m, camino):
+    """patio de armas de tierra apisonada con un camino empedrado de la puerta a la del alcázar; patio del alcázar empedrado.
+       camino: lista de puntos del eje del camino"""
+    TIERRA_P = hexc('#6e6150'); CANTO = hexc('#77716a'); HIERBA_P = hexc('#5b6338')
+    paso = 0.5
+    for pol, empedrado in ((EXTERIOR, False), (INTERIOR, True)):
+        xs = [p[0] for p in pol]; zs = [p[1] for p in pol]
+        x = min(xs)
+        while x < max(xs):
+            z = min(zs)
+            while z < max(zs):
+                c = (x + paso / 2, z + paso / 2)
+                if _dentro_enc(c, pol, T_MURO / 2 - 0.05):
+                    en_camino = min(dist_seg(c, a, b) for a, b in zip(camino, camino[1:])) < 1.8
+                    if empedrado or en_camino:
+                        col = varia(CANTO, 0.14); g = 0.04
+                        q = [(x + g, z + g), (x + paso - g, z + g), (x + paso - g, z + paso - g), (x + g, z + paso - g)]
+                        m.quad(*[(px, h(px, pz) + 0.07, pz) for px, pz in q], col)
+                        m.quad(*[(px, h(px, pz) + 0.035, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], esc(CANTO, .5))
+                    elif (int(x / paso) + int(z / paso)) % 2 == 0:
+                        # tierra apisonada, en losetas de 1 m con matices; algo de hierba junto a los muros
+                        borde = min(dist_seg(c, a, b) for a, b in zip(pol, pol[1:] + pol[:1]))
+                        col = mezcla(varia(TIERRA_P, 0.06), HIERBA_P, 0.55 if borde < 3.0 else 0.1 * az())
+                        q = [(x, z), (x + 2 * paso, z), (x + 2 * paso, z + 2 * paso), (x, z + 2 * paso)] if False else [(x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso)]
+                        m.quad(*[(px, h(px, pz) + 0.05, pz) for px, pz in ((x, z), (x + paso * 2, z), (x + paso * 2, z + paso * 2), (x, z + paso * 2))], col)
+                z += paso
+            x += paso
+
+def camino_explanada(m, pts, ancho=3.6):
+    """el camino de la explanada: empedrado en medio, tierra pisada a los lados"""
+    CANTO = hexc('#7d766a'); TIERRA_P = hexc('#6f6250')
+    xs = [p[0] for p in pts]; zs = [p[1] for p in pts]; paso = 0.5
+    x = min(xs) - ancho
+    while x < max(xs) + ancho:
+        z = min(zs) - ancho
+        while z < max(zs) + ancho:
+            c = (x + paso / 2, z + paso / 2)
+            d = min(dist_seg(c, a, b) for a, b in zip(pts, pts[1:]))
+            ruido = 0.35 * math.sin(c[0] * 1.7 + c[1] * 0.9) + 0.25 * math.sin(c[1] * 2.3 - c[0] * 0.4)
+            if d < ancho / 2 + ruido * 0.4:
+                g = 0.05; col = varia(CANTO, 0.16)
+                m.quad(*[(px, h(px, pz) + 0.08, pz) for px, pz in ((x + g, z + g), (x + paso - g, z + g), (x + paso - g, z + paso - g), (x + g, z + paso - g))], col)
+                m.quad(*[(px, h(px, pz) + 0.04, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], esc(CANTO, .45))
+            elif d < ancho / 2 + 1.3 + ruido:
+                m.quad(*[(px, h(px, pz) + 0.04, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], mezcla(varia(TIERRA_P, 0.08), hexc('#5d6a3a'), 0.25 * az()))
+            z += paso
+        x += paso
