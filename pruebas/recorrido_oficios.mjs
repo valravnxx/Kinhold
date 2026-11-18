@@ -555,7 +555,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   const cortos = () => nEnSuelo('tronco_corto', taller, 4);
   let motivoCortos = '';
   const alTaller = async (o) => {
-    await soltarManos(['lasca_silex']); await J.andar(o.x + 0.5, o.z);
+    await soltarManos(); await J.andar(o.x + 0.5, o.z);   // (con algo al hombro, las manos no llevan nada)
     const c = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
     if (!c.ok) { motivoCortos = `no se lo echa al hombro: ${c.motivo} (al hombro: ${J.inv.lugares.hombro?.tipo || 'nada'})`; return false; }
     await J.andar(taller.x, taller.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
@@ -616,14 +616,14 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   const sitioCub = libreEn(taller, 25, 2) || { x: taller.x, z: taller.z + 4 };
   for (let k = 0; k < 2; k++) {
     const tr = enSuelo('tronco_corto', taller, 4)[0]; if (!tr) break;
-    await soltarManos(['palo_cavador', 'lasca_silex']); await J.andar(tr.x + 0.5, tr.z);
+    await soltarManos(); await J.andar(tr.x + 0.5, tr.z);   // (con algo al hombro, las manos no llevan nada)
     const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
     if (!c.ok) break;
     await J.andar(sitioCub.x + 1, sitioCub.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
   }
   await J.andar(taller.x, taller.z); await soltarManos(['palo_cavador']);
   await cogerSuelo('barro', taller, 4, 2); await J.andar(sitioCub.x + 1, sitioCub.z); await soltarManos(['palo_cavador']);
-  await aLaMano('palo_cavador');
+  await paloCavador(); await J.andar(sitioCub.x + 1, sitioCub.z);
   const cub = await levantar('cubas_curtido', sitioCub.x, sitioCub.z);
   comprobar('cava las cubas de curtido en su tierra: 2 de barro y 2 troncos cortos, con el palo cavador', cub.ok && cub.datos && cub.datos.terminada, cub.motivo || '');
   const cubas = cub.ok && s.objetos.fab.estaciones[cub.id];
