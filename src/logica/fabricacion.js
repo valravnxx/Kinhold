@@ -291,6 +291,12 @@ export const RECETAS = {
   zurron:            r('Zurrón de piel', 'banco', 'zurron', { piel_limpia: 2, cordel: 1 }, 60),
   // (P10, 14 nov) la criba: un aro de vara con el fondo de mimbre tejido. Tiempo, provisional (como la nasa)
   criba:             r('Criba', 'banco', 'criba', { mimbre: 2, vara: 1 }, 45),
+  // los zapatos y el cinto de cuero (oficios, 18 nov; documento de sistemas: zapatos de cuero, 1 cuero e hilo; cinto,
+  // cuero y hebilla): en el banco de tronco. Los zapatos, cosidos con el hilo del huso (la prenda ya se ve puesta: pies);
+  // el cinto, de 2 cueros con la hebilla de madera, tallada de una rama (3 huecos, uno mediano: src/logica/inventario.js).
+  // Tiempos, provisionales (diario y registro): como el zurrón, que también es de cuero
+  zapatos_cuero:     r('Zapatos de cuero', 'banco', 'zapatos_cuero', { cuero: 1, hilo: 1 }, 60),
+  cinto_cuero:       r('Cinto de cuero', 'banco', 'cinto_cuero', { cuero: 2, rama: 1 }, 60),
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -336,6 +342,8 @@ export const PARA = {
   mayal: 'Trillar.',
   huso: 'Llevándolo, hila: 2 fibras dan un ovillo de hilo. No se gasta.',
   hilar: 'Para coser: los zapatos y la ropa.',
+  zapatos_cuero: 'Calzado: se ponen en los pies.',
+  cinto_cuero: 'A la cintura: 3 huecos, uno mediano y dos pequeños.',
   criba_grano: 'Cribar el grano sin limpiar: grano de cebada limpio, el que se siembra.',
   cribar: 'Grano de cebada limpio, el que se siembra.',
   trillar: 'Grano sin limpiar, que se criba, y paja: el tejado de paja, la cama de paja, el almiar.',

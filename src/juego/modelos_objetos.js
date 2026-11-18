@@ -763,6 +763,7 @@ function correaCanto(L, pts, ancho, grueso, color) {
     L.add(cajaR(l + 0.004, ancho, grueso, 0.001), color, (a.x + b.x) / 2, ancho / 2, (a.z + b.z) / 2, { y: -Math.atan2(dz, dx) }, { tex: 'liso' });
   }
 }
+const HEBILLA_MADERA = 0xa58560;   // la madera de la hebilla del cinto de cuero, más clara que la correa
 function cintoDe(clase) {
   return (n, id) => {
     const L = new Lote({ rangoSuelo: 0.04, variacion: 0.008 });   // la correa, de una pieza: sin cambio de color entre tramos
@@ -774,10 +775,16 @@ function cintoDe(clase) {
     const fin = v3(u.x + dx / l * 0.1, 0, u.z + dz / l * 0.1);
     pts.push(fin);
     correaCanto(L, pts, ancho, 0.006, color);
-    // la hebilla de hierro en la punta, un marco alrededor de la correa
+    // la hebilla en la punta, un marco alrededor de la correa: de hierro, salvo la del cinto de cuero, que es de madera
+    // (oficios, 18 nov: tallada de una rama en el banco), más gruesa
     const giro = -Math.atan2(dz, dx);
-    L.add(new THREE.TorusGeometry(ancho * 0.6, 0.004, 4, 4), 'hierro', fin.x, ancho / 2 + 0.002, fin.z, { y: giro + Math.PI / 2, z: Math.PI / 4 }, { escala: v3(1, 1.25, 1), plano: true, sinSuelo: true });
-    L.add(cajaR(0.004, ancho * 1.05, 0.004, 0.001), 'hierro', fin.x, ancho / 2, fin.z, { y: giro }, { sinSuelo: true }); // el clavillo
+    if (clase === 'cuero') {
+      L.add(new THREE.TorusGeometry(ancho * 0.62, 0.0065, 5, 4), HEBILLA_MADERA, fin.x, ancho / 2 + 0.002, fin.z, { y: giro + Math.PI / 2, z: Math.PI / 4 }, { escala: v3(1, 1.25, 0.8), plano: true, sinSuelo: true, tex: 'veta' });
+      L.add(cajaR(0.006, ancho * 1.1, 0.006, 0.002), HEBILLA_MADERA, fin.x, ancho / 2, fin.z, { y: giro }, { sinSuelo: true, tex: 'veta' }); // el pasador
+    } else {
+      L.add(new THREE.TorusGeometry(ancho * 0.6, 0.004, 4, 4), 'hierro', fin.x, ancho / 2 + 0.002, fin.z, { y: giro + Math.PI / 2, z: Math.PI / 4 }, { escala: v3(1, 1.25, 1), plano: true, sinSuelo: true });
+      L.add(cajaR(0.004, ancho * 1.05, 0.004, 0.001), 'hierro', fin.x, ancho / 2, fin.z, { y: giro }, { sinSuelo: true }); // el clavillo
+    }
     if (clase === 'anillas') for (const k of [12, 26]) { // dos anillas de hierro por fuera de la correa, colgando
       const q = pts[k], r = Math.hypot(q.x, q.z);
       L.add(new THREE.TorusGeometry(0.017, 0.0035, 4, 12), 'hierro', q.x * (1 + 0.025 / r), 0.018, q.z * (1 + 0.025 / r), { y: -Math.atan2(q.z, q.x) + Math.PI / 2, x: 0.5 }, { plano: true, sinSuelo: true });
@@ -971,6 +978,44 @@ function hilo(n, id) {
   return mallas(L);
 }
 
+// los zapatos de cuero (oficios, 18 nov): el par, de suela vuelta (el zapato medieval de una pieza cosida del revés y
+// vuelta), bajos, con la boca abierta y una tira con su lazo de cordón; uno de pie y el otro algo girado delante
+function zapatoEn(L, x, z, giro, id, k) {
+  const largo = 0.26, ancho = 0.095;
+  // la horma: un óvalo alargado, más estrecho en el talón y algo en punta, hueco por arriba (la boca)
+  const forma = new THREE.Shape(), N = 18, pts = [];
+  for (let i = 0; i < N; i++) {
+    const a = i / N * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a);
+    const w = ancho / 2 * (c > 0 ? 1 - 0.25 * c * c : 1 - 0.18 * c * c);   // la punta y el talón, más estrechos
+    pts.push(new THREE.Vector2(c * largo / 2 * (c > 0 ? 1.05 : 0.95), sn * w));
+  }
+  forma.setFromPoints(pts);
+  // la suela: la horma algo gruesa
+  const suela = new THREE.ExtrudeGeometry(forma, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.004, bevelSegments: 1 });
+  suela.rotateX(-Math.PI / 2);
+  const ca = Math.cos(giro), sa = Math.sin(giro);
+  L.add(suela, CUERO_OSC, x, 0.002, z, { y: giro }, { tex: 'liso', sinSuelo: true });
+  // el zapato: medio elipsoide alargado (del talón a la punta, la punta algo más baja), y la boca, oscura, abierta
+  // por detrás arriba, con el ribete; la tira del empeine con su lazo de cordón
+  const cuerpo = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+  const p = cuerpo.attributes.position;
+  for (let i = 0; i < p.count; i++) if (p.getX(i) > 0) p.setY(i, p.getY(i) * (1 - 0.35 * p.getX(i)));   // la punta, más baja
+  cuerpo.computeVertexNormals();
+  const en = (d, y) => [x + ca * d, y, z - sa * d];
+  L.add(cuerpo, CUERO, ...en(0.008, 0.012), { y: giro }, { escala: v3(0.128, 0.075, 0.047), tex: 'liso', sinSuelo: true, brillo: 1.06, rayas: moteadoPiel(id + k, 1.3) });
+  L.add(new THREE.CircleGeometry(1, 14), 0x22170f, ...en(-0.042, 0.068), { y: giro, x: -Math.PI / 2 + 0.1 }, { escala: v3(0.058, 0.034, 1), tex: 'liso', sinSuelo: true });
+  L.add(new THREE.TorusGeometry(1, 0.06, 4, 16), CUERO_OSC, ...en(-0.042, 0.068), { y: giro, x: -Math.PI / 2 + 0.1 }, { escala: v3(0.058, 0.034, 0.06), tex: 'liso', sinSuelo: true });
+  const [lx, , lz] = en(0.025, 0);
+  L.add(new THREE.TorusGeometry(0.008, 0.0028, 4, 8), CORDEL, lx - sa * 0.034, 0.068, lz - ca * 0.034, { y: giro }, { tex: 'liso', sinSuelo: true });
+  L.add(tubo([v3(lx - sa * 0.034, 0.066, lz - ca * 0.034), v3(lx - sa * 0.052 + ca * 0.02, 0.045, lz - ca * 0.052 - sa * 0.02), v3(lx - sa * 0.06 + ca * 0.03, 0.006, lz - ca * 0.06 - sa * 0.03)], 0.0022, 3), CORDEL, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+}
+function zapatos(n, id) {
+  const L = lote(0.04), g = az(id, 3) * 0.4;
+  zapatoEn(L, -0.01, -0.06, g, id, 'a');
+  zapatoEn(L, 0.03, 0.07, g + 0.35, id, 'b');
+  return mallas(L);
+}
+
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   estaca: estacas,
@@ -980,5 +1025,5 @@ export const MODELO_OBJETO = {
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, cuero, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   huso, hilo,
-  cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
+  zapatos_cuero: zapatos, cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
