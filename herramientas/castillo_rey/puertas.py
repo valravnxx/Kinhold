@@ -42,7 +42,8 @@ def puerta_principal(m, sentido_norte):
     # ---------------- el paso: muros del paso (con mirillas) y bóveda
     for s in (-1, 1):
         lp = (GW1 - 1.6) - (GW0 + 1.3)
-        hs = [saetera(lp / 2 + 0.5, PF + 1.0, 1.1, 0.1, 0.5), {'u': 0.9, 'a': 0.95, 'v0': PF, 'v1': PF + 1.9, 'arco': 'medio'}]
+        # la puerta de cada cuarto, entre las hojas de los portones abiertos (que tapan lo de junto a cada portón)
+        hs = [saetera(lp / 2 + 1.5, PF + 1.0, 1.1, 0.1, 0.5), {'u': -0.5 - (GW0 + 1.3), 'a': 0.95, 'v0': PF, 'v1': PF + 1.9, 'arco': 'medio'}]
         pared(m, f.p2(s * PASO, GW0 + 1.3), f.p2(s * PASO, GW1 - 1.6), f.p2(0, 0), PF - 0.5, PISO1, 1.0, hs, suelo=PF, fuera=True)
         # rozas del rastrillo en los muros del paso
         caja(m, g0, s * PASO - 0.08, s * PASO + 0.02 if s < 0 else s * PASO + 0.08, PF, PF + 5.0, GW1 - 1.95, GW1 - 1.75, OSCURO)
@@ -148,6 +149,7 @@ def _hojas(m, g, w, v0, ancho, alto, giro, hacia=1):
             m.quad(P(x1, v0, -0.05), P(x0, v0, -0.05), P(x0, v0 + top, -0.05), P(x1, v0 + top, -0.05), esc(c, .8))
         for vv in (v0 + 0.4, v0 + 1.3, v0 + 2.2):
             m.quad(P(0.02, vv, 0.07), P(ancho - 0.1, vv, 0.07), P(ancho - 0.1, vv + 0.08, 0.07), P(0.02, vv + 0.08, 0.07), HIERRO)
+        import choques; choques.seg_mundo(P(0, v0, 0), P(ancho, v0, 0), v0 + g.y0, v0 + alto + g.y0)   # (la hoja abierta para el paso y la cámara)
 
 def _rodillo(m, g, u0, u1, v, r):
     n = 8
@@ -260,6 +262,7 @@ def _hojas_simples(m, g, uc, w, v0, ancho, alto):
             P = lambda x, v: g(uc + s * ancho - s * x * math.cos(1.3), v, w - x * math.sin(1.3))
             c = varia(MADERA_CL, .08)
             m.quad(P(x0, v0), P(x1, v0), P(x1, v0 + alto), P(x0, v0 + alto), c)
+        import choques; choques.seg_mundo(P(0, v0), P(ancho, v0), v0 + g.y0, v0 + alto + g.y0)   # (la hoja abierta)
 
 def _escalera_a_muro(m, g0, s_n, gb, top, T):
     """escalera de piedra pegada al muro de poniente de la barbacana, de sur a norte"""

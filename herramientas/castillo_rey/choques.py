@@ -20,6 +20,10 @@ def _seg(f, ua, wa, ub, wb, y0, y1):
     a = f.p2(ua, wa); b = f.p2(ub, wb)
     COL['muros'].append([_r(a[0]), _r(a[1]), _r(b[0]), _r(b[1]), _r(f.y0 + y0), _r(f.y0 + y1)])
 
+def seg_mundo(a, b, y0, y1):
+    """un segmento que para el paso, con sus puntos en el mundo (x, y, z)"""
+    COL['muros'].append([_r(a[0]), _r(a[2]), _r(b[0]), _r(b[2]), _r(y0), _r(y1)])
+
 def _caja_muro(f, u0, u1, w0, w1, y0, y1):
     _seg(f, u0, w0, u1, w0, y0, y1); _seg(f, u1, w0, u1, w1, y0, y1); _seg(f, u1, w1, u0, w1, y0, y1); _seg(f, u0, w1, u0, w0, y0, y1)
 

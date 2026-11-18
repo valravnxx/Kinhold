@@ -53,7 +53,7 @@ RUTAS['guardia'] = G
 # ---------------- la puerta principal: del paso al cuarto de la guardia, su caracol a la terraza y al adarve
 P_ = []
 g0 = F(GPF.o[0], GPF.o[1], GPF.a, 0)
-pt(P_, g0.p2(0, -1.0), PF, 'en el paso'); pt(P_, g0.p2(PASO - 0.6, GW0 + 2.2), PF); pt(P_, g0.p2(PASO + 1.4, GW0 + 2.2), PF, 'en el cuarto de la guardia')
+pt(P_, g0.p2(0, -1.0), PF, 'en el paso'); pt(P_, g0.p2(PASO - 0.6, -0.5), PF); pt(P_, g0.p2(PASO + 1.4, -0.5), PF, 'en el cuarto de la guardia')
 cuG, cwG = (GU - 1.4 - 1.05), GW0 + 1.3 + 1.05
 espiral(P_, g0, cuG, cwG, 0.95, ARRANQUE_GUARDIA, PF, ADARVE, (4.1, -0.6), [(cuG, cwG + 0.7), (cuG, cwG + 1.8)])
 pt(P_, g0.p2(cuG - 1.2, cwG + 2.0), ADARVE, 'en la terraza de la puerta'); pt(P_, g0.p2(-GU - 2.0, -0.3), ADARVE, 'en el adarve de la cortina')
