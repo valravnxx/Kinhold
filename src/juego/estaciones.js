@@ -448,9 +448,9 @@ function carbonera(id) {
   for (let i = 0; i < 34; i++) {
     const a = (i * 2.399 + az(id, 't' + i)) % (Math.PI * 2), v = 0.12 + (i % 5) * 0.16 + az(id, 'v' + i) * 0.06;
     const [rr, y] = enCupula(v), [r2, y2] = enCupula(Math.min(0.99, v + 0.05)), incl = Math.atan2(y2 - y, rr - r2);
-    const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(incl));
+    const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(-incl));
     const verde = i % 3 === 0;
-    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.25), verde ? TEPE_VERDE : TEPE, Math.cos(a) * rr * 0.99, y + 0.008, Math.sin(a) * rr * 0.99, m, { escala: new THREE.Vector3(1.3, 0.32, 1.1), tex: 'liso' });
+    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.25), verde ? TEPE_VERDE : TEPE, Math.cos(a) * rr * 0.985, y, Math.sin(a) * rr * 0.985, m, { escala: new THREE.Vector3(1.3, 0.26, 1.1), tex: 'liso' });
   }
   // el tiro: un collar de tierra apretada alrededor del hueco, en la cima
   L.add(new THREE.TorusGeometry(T + 0.02, 0.035, 6, 14), TEPE, 0, A - 0.03, 0, { x: Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });
