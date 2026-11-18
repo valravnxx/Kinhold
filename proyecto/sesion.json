@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-18T10:23:09+00:00",
-  "tarea": "Los zapatos y el cinto de cuero: zapatos de cuero (1 cuero y 1 hilo, en el banco de tronco; la prenda ya existe y se ve puesta) y cinto de cuero (2 cueros y 1 rama para la hebilla de madera, en el banco: 3 huecos, uno mediano). Cadena: cuero ← las cubas; hilo ← el huso; rama ← se recoge",
-  "hito": "oficios",
-  "rama": "trabajo/20261118-1023"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261117-0940-remar": {
   "inicio": "2026-11-17T15:17:09+01:00",
