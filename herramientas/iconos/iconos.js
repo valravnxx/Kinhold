@@ -62,7 +62,8 @@ const HACHAS = ['hacha_mano', 'hacha_piedra', 'hacha_hierro'];
 const PROVISIONAL = new Set(['hacha_hierro']); // hoy, el modelo del hacha de mano
 
 const fuentes = {};
-for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t))) {
+// (las prendas no, salvo las que tienen su modelo en el suelo: los zapatos de cuero, que salen del banco)
+for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t) || Object.hasOwn(MODELO_OBJETO, t))) {
   // el agua (la de las cubas de curtido, que se les echa con el cubo): su imagen, la del cubo lleno
   if (t === 'agua') fuentes[t] = { propio: true, hacer: () => delSuelo('cubo_agua', 1) };
   else if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };

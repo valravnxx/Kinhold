@@ -2590,9 +2590,9 @@
     },
     {
      "nombre": "Los zapatos y el cinto de cuero: zapatos de cuero (1 cuero y 1 hilo, en el banco de tronco; la prenda ya existe y se ve puesta) y cinto de cuero (2 cueros y 1 rama para la hebilla de madera, en el banco: 3 huecos, uno mediano). Cadena: cuero ← las cubas; hilo ← el huso; rama ← se recoge",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-18T10:23:09+00:00",
-     "rama": "trabajo/20261118-1023"
+     "fin": "2026-11-18T12:27:36+00:00"
     },
     {
      "nombre": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
@@ -4884,6 +4884,13 @@
      "archivo": "jugar/demo/v232.html",
      "capturas": "capturas/demo-v232",
      "notas": "El huso y el hilo (oficios): el huso, de 1 vara y 1 piedra con las manos, y con él 2 fibras dan 1 ovillo de hilo; el huso cuelga del puño en la mano y va en su bolsa en el cinto"
+    },
+    {
+     "v": "v233",
+     "fecha": "2026-11-18",
+     "archivo": "jugar/demo/v233.html",
+     "capturas": "capturas/demo-v233",
+     "notas": "Los zapatos y el cinto de cuero: en el banco de tronco, los zapatos de cuero (1 cuero y 1 ovillo de hilo) y el cinto de cuero (2 cueros y 1 rama para la hebilla, ahora de madera), con su imagen en el panel y su modelo en el suelo"
     }
    ]
   },

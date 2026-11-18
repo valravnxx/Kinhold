@@ -711,10 +711,16 @@ export function crearLlevado(j) {
         } else {
           const ancho = cinto === 'cinto_armas' ? 0.048 : 0.036;
           L.add(banda(c, ancho, 0.006, 0.004), cinto === 'cinto_armas' ? CUERO_OSC : CUERO, 0, 0, 0, null, { tex: 'liso' });
-          // la hebilla delante (de hierro), y el cabo que sobra cayendo
+          // la hebilla delante, y el cabo que sobra cayendo. La del cinto de cuero es de madera (oficios, 18 nov: tallada
+          // de una rama en el banco), más gruesa; las demás, de hierro
           const p = puntoEn(c, 0, 0.012), q = puntoEn(c, -0.12, 0.012, -0.12);
-          L.add(new THREE.TorusGeometry(ancho * 0.55, 0.005, 4, 4), 'hierro', p.x, p.y, p.z, { z: Math.PI / 4 }, { escala: v3(1, 1.2, 1), plano: true });
-          L.add(cajaR(0.004, ancho * 0.9, 0.006, 0.001), 'hierro', p.x, p.y, p.z + 0.004);
+          if (cinto === 'cinto_cuero') {
+            L.add(new THREE.TorusGeometry(ancho * 0.56, 0.0075, 5, 4), 0xa58560, p.x, p.y, p.z, { z: Math.PI / 4 }, { escala: v3(1, 1.2, 0.8), plano: true, tex: 'veta' });
+            L.add(cajaR(0.006, ancho * 0.95, 0.008, 0.002), 0xa58560, p.x, p.y, p.z + 0.005, null, { tex: 'veta' });
+          } else {
+            L.add(new THREE.TorusGeometry(ancho * 0.55, 0.005, 4, 4), 'hierro', p.x, p.y, p.z, { z: Math.PI / 4 }, { escala: v3(1, 1.2, 1), plano: true });
+            L.add(cajaR(0.004, ancho * 0.9, 0.006, 0.001), 'hierro', p.x, p.y, p.z + 0.004);
+          }
           correa(L, [puntoEn(c, -0.06, 0.012), puntoEn(c, -0.11, 0.016, -0.04), q], ancho * 0.9, 0.006, cinto === 'cinto_armas' ? CUERO_OSC : CUERO);
           if (cinto === 'cinto_anillas') for (const a of [0.9, -0.9]) {
             const r = puntoEn(c, a, 0.012, -0.028);

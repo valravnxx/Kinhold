@@ -7526,5 +7526,23 @@
   "pruebas": "Comprobador de código correcto. Revisor en la nube: lógica, recorrido de jugador, panel de fabricación, panel de inventario, la cama ligada, demo única, el mazo de piedra y despiezar y asar, bien. «Lo que llevas se ve puesto» (cuatro pasadas, por los arreglos del huso del cinto): las comprobaciones nuevas del huso (a_mano4: en la mano, todo a la vista y con su modelo) bien; fallan, igual que en main y sin tocar este cambio, la mano sobre el tronco al hombro (armas y mujer) y, unas veces sí y otras no, el cinturón alrededor de la cintura en otros equipos. Prueba de fabricar con el huso: rota a propósito (MUTAR=7, hilar sin pedir el huso) falla. Prueba de orígenes: sin el huso, falla. Prueba de carriles: la tarea del chat no la retoma el carril (rota a propósito, falla).",
   "capturas": "capturas/demo-v232",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-18T10:23:09+00:00",
+  "fin": "2026-11-18T12:27:36+00:00",
+  "titulo": "Los zapatos y el cinto de cuero (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "Los zapatos de cuero, en el banco de tronco: 1 cuero y 1 ovillo de hilo. Es la prenda de los pies que ya se veía puesta; ahora sale del banco, con el cuero de las cubas y el hilo del huso.",
+   "El cinto de cuero, en el banco: 2 cueros y 1 rama para la hebilla, que ahora es de madera, en el suelo y puesto. Tiene 3 huecos, uno mediano y dos pequeños.",
+   "Los zapatos tienen su modelo en el suelo (el par de suela vuelta, con la tira de cuero al empeine y la costura) y su imagen en el panel; imágenes nuevas, iconos v38.",
+   "La segunda mirada de un agente aparte dijo no la primera vez (la anilla del lazo parecía de latón y los zapatos, babuchas); con la tira de cuero y la costura dijo sí.",
+   "Con esto ya no queda nada de los zapatos ni del cinto en lo pendiente de la prueba de orígenes.",
+   "Provisional: 60 s cada uno en el banco, como el zurrón.",
+   "Demo v233."
+  ],
+  "pruebas": "Comprobador de código correcto. Revisor en la nube: el recorrido de jugador entero, el panel de fabricación, la cama ligada, el acabado de construir, el mazo de piedra y despiezar y asar, bien. La lógica, bien en la segunda pasada: en la primera falló cazar la liebre (prueba del modo arma y el mismo paso del recorrido), que aquí pasa tres veces seguidas y no toca este cambio. La demo única falló solo por las traducciones del registro, ya puestas (no se volvió a pasar en la nube; la prueba de idiomas, bien). «Lo que llevas se ve puesto»: el cinto con su hebilla de madera, bien; falla, igual que en main, la mano sobre el tronco al hombro (armas y mujer). Prueba de fabricar con los zapatos: rota a propósito (MUTAR=8, sin pedir el hilo) falla. Prueba de orígenes e imágenes, bien. No comprobado: el rayado de la correa en la imagen del cinto, que ya estaba en la v37 y la hace parecer de madera.",
+  "capturas": "capturas/demo-v233",
+  "estado": "ok"
  }
 ]
