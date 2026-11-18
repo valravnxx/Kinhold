@@ -148,7 +148,7 @@ export function crearChoquesCastillo(datos, { dx = 0, dz = 0, dy = 0 } = {}) {
     const x = xe + dx, z = ze + dz, y = ye + dy;
     let mejor = null;
     const ver = (v) => { if (v > y + CABEZA && (mejor === null || v < mejor)) mejor = v; };
-    for (const s of superficies(x, z)) ver(s.maciza ? s.base : s.y - 0.15);
+    for (const s of superficies(x, z)) ver(s.maciza ? s.base : s.y - 0.45);   // (un suelo de tablas, por debajo de sus vigas)
     for (const o of cerca(x, z)) if (o.t === 't') { const [u, w] = local(o.m, x, z); if (u >= o.u[0] && u <= o.u[1] && w >= o.w[0] && w <= o.w[1]) ver(o.y); }
     return mejor === null ? null : mejor - dy;
   }

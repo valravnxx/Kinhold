@@ -471,11 +471,11 @@ function actualizarCamara() {
     const x = objetivo.x + Math.sin(cam.yaw) * cp * d, y = objetivo.y + Math.sin(cam.pitch) * d, z = objetivo.z + Math.cos(cam.yaw) * cp * d;
     if (y < decorado.altura(x, z) + 0.4) { dist = Math.max(1.5, cam.dist * (i - 1) / 12); break; }
   }
-  // el castillo del rey: bajo techo se corta a la altura del techo (src/mundo/castillo_rey.js); y sus muros no se meten
-  // entre la cámara y tú (por debajo del corte): la cámara se acerca
-  if (ch) {
+  // el castillo del rey: bajo techo se corta a la altura del techo (src/mundo/castillo_rey.js) y la cámara mira desde
+  // arriba, por encima del corte; si no, sus muros no se meten entre la cámara y tú: la cámara se acerca
+  if (ch && castillo.corte === null) {
     const cx = objetivo.x + Math.sin(cam.yaw) * cp * dist, cy = objetivo.y + Math.sin(cam.pitch) * dist, cz = objetivo.z + Math.cos(cam.yaw) * cp * dist;
-    const f = ch.rayo(objetivo.x, objetivo.y, objetivo.z, cx, cy, cz, castillo.corte ?? Infinity);
+    const f = ch.rayo(objetivo.x, objetivo.y, objetivo.z, cx, cy, cz);
     if (f < 1) dist = Math.max(1.2, dist * f - 0.35);
   }
   camara.position.set(
@@ -3285,7 +3285,8 @@ function paso() {
   // el agua donde estás (valravnx, 30 oct; src/logica/nado.js): a pie, vadeando o nadando, con un solo aguante para
   // correr y nadar; nadando baja más deprisa cuanto más pesa lo que llevas, y sin aguante te ahogas
   const canoaYo = miCanoa();   // (P11d) en la canoa no se nada ni se anda: se rema
-  const ag = mundoJ && pj.k === 0 ? mundoJ.aguaEn(pj.x, pj.z) : null;
+  // (sobre el castillo del rey, en su muelle o su puente, se anda aunque debajo haya agua)
+  const ag = mundoJ && pj.k === 0 && !sobreCastillo(pj.x, pj.z) ? mundoJ.aguaEn(pj.x, pj.z) : null;
   const modo = canoaYo ? 'tierra' : modoAgua(ag ? ag.hondo : null);
   nado.modo = modo; nado.agua = ag;
   if (modo === 'nadar' && combate.activo && !window.__mutarPelea) { combate.guardar(); mostrarAviso(t('armaNadando')); }   // nadando no se lucha

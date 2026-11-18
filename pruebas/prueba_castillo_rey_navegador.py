@@ -26,7 +26,7 @@ ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 # anda la ruta guiando la cámara en cada fotograma; en los puntos de caracol («~»), despacio y más fino
 ANDAR = """([ruta, fotos]) => new Promise((ok) => {
-  const k = window.__kinhold; let i = 0, quieto = 0, ult = null; const log = [];
+  const k = window.__kinhold; let i = 0, quieto = 0, ult = null, n = 0; const log = [];
   dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
   const paso = () => {
     const pj = k.pj, [tx, tz, ey, nombre] = ruta[i];
@@ -41,7 +41,7 @@ ANDAR = """([ruta, fotos]) => new Promise((ok) => {
       k.cam.yaw = Math.atan2(-dx, -dz);
       const p = pj.x.toFixed(2) + ',' + pj.z.toFixed(2);
       quieto = p === ult ? quieto + 1 : 0; ult = p;
-      if (quieto > 40) { dispatchEvent(new KeyboardEvent('keyup', { key: 'w' })); log.push({ i, nombre, atascado: true, y: pj.y, x: pj.x, z: pj.z, d }); ok({ log, i, fin: false, atascado: true }); return; }
+      if (quieto > 40 || ++n > 3000) {   // (parado, o dando vueltas sin llegar) dispatchEvent(new KeyboardEvent('keyup', { key: 'w' })); log.push({ i, nombre, atascado: true, y: pj.y, x: pj.x, z: pj.z, d }); ok({ log, i, fin: false, atascado: true }); return; }
     }
     requestAnimationFrame(paso);
   };

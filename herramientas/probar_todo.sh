@@ -178,6 +178,7 @@ paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
 paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
+paso "Navegador: el castillo del rey se recorre andando" python3 pruebas/prueba_castillo_rey_navegador.py dist/kinhold_demo.html "$C/castillo_rey"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
 paso "Navegador: la canoa" python3 pruebas/prueba_canoa_navegador.py dist/kinhold_demo.html "$C/canoa"
 paso "Navegador: la canoa en el agua" python3 pruebas/prueba_canoa_agua_navegador.py dist/kinhold_demo.html "$C/canoa_agua"

@@ -31,7 +31,7 @@ pt(R, GPF.p2(0, GW1 + 1.0), PF - 0.02, 'en el levadizo'); pt(R, GPF.p2(0, 0), PF
 f_, _r = marco_fuera(B, Fp, CEN_INT); ga = F(P_ALC[0], P_ALC[1], f_.a, 0)
 pt(R, ga.p2(0, 6)); pt(R, ga.p2(0, 0), None, 'en la puerta del alcázar'); pt(R, ga.p2(0, -6), None, 'en el patio del alcázar')
 t = Torre('K', KC, KL, KA, 1, KT); fi = t.cara(t.cara_hacia(CEN_INT))
-pt(R, fi.p2(KL * 0.485, 12.5), None, 'al pie de la escalera del homenaje'); pt(R, fi.p2(KL * 0.485, 2.0), K1, 'en lo alto de la escalera')
+pt(R, fi.p2(KL * 0.485, 12.5), None, 'al pie de la escalera del homenaje'); pt(R, fi.p2(KL * 0.485, 0.9), K1, 'en lo alto de la escalera, en el tramo de madera')
 pt(R, fi.p2(KL * 0.485, -1.5), K1, 'en la puerta del homenaje'); pt(R, fi.p2(KL * 0.485, -3.5), K1, 'en la sala del homenaje')
 cu, cw = KL - KT - 1.0 - 0.1, -KT - 1.0 - 0.1
 espiral(R, fi, cu, cw, 1.0, ARRANQUE, K1, K2, (KL / 2, -KL / 2))
