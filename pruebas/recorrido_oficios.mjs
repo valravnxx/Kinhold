@@ -92,9 +92,18 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     const g = f.ok ? await J.objeto({ tipo: 'recoger_fabricado', x: J.pos.x, z: J.pos.z }) : f;
     return { ok: f.ok && g.ok, motivo: f.motivo || g.motivo, datos: g.datos };
   };
+  // (de cada sitio donde lo lleva, lo que haya en él, hasta cantidad)
   const depositar = async (est, tipo, cantidad = 1) => {
-    const l = J.inv.rutasCon(tipo)[0];
-    return l ? J.objeto({ tipo: 'depositar_estacion', estacion: est.id, de: l, cantidad: Math.min(cantidad, J.inv.cuantos(tipo)), x: J.pos.x, z: J.pos.z }) : { ok: false, motivo: `no lleva ${tipo}` };
+    let q = { ok: false, motivo: `no lleva ${tipo}` }, puestos = 0;
+    for (const l of J.inv.rutasCon(tipo)) {
+      if (puestos >= cantidad) break;
+      const n = Math.min(cantidad - puestos, (J.inv.buscar(l).cosa || { n: 0 }).n || 0);
+      if (n < 1) continue;
+      q = await J.objeto({ tipo: 'depositar_estacion', estacion: est.id, de: l, cantidad: n, x: J.pos.x, z: J.pos.z });
+      if (!q.ok) return q;
+      puestos += n;
+    }
+    return q.ok ? { ...q, datos: { ...(q.datos || {}), dejado: { [tipo]: puestos } } } : q;
   };
   // lo del suelo de al lado de la estación, a ella (de una mano en una mano, hasta n)
   const aEstacion = async (est, tipo, n, de = est, d = 4) => {
