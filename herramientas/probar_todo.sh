@@ -34,6 +34,7 @@ paso "Construir visor del mapa" node construir_mapa.mjs
 paso "Lógica de construcción" node pruebas/prueba_logica.mjs
 paso "Lo de niveles posteriores, escondido: el menú de construir solo enseña lo de este tramo" node pruebas/prueba_tramo.mjs
 paso "Construir a la altura del suelo y nivelar" node pruebas/prueba_nivelado.mjs
+paso "El castillo del rey: se pisa, para el paso y se recorre de la calle a la cámara del alcaide" node pruebas/prueba_castillo_rey.mjs
 paso "Modelos" node pruebas/prueba_modelos.mjs
 paso "Lógica de combate" node pruebas/prueba_combate.mjs
 paso "Acciones con autor" node pruebas/prueba_acciones.mjs
@@ -177,6 +178,7 @@ paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"
 paso "Navegador: velocidad con pocos fotogramas" python3 pruebas/prueba_velocidad_navegador.py dist/kinhold_demo.html "$C/velocidad"
+paso "Navegador: el castillo del rey se recorre andando" python3 pruebas/prueba_castillo_rey_navegador.py dist/kinhold_demo.html "$C/castillo_rey"
 paso "Navegador: tronzar y partir" python3 pruebas/prueba_troceo_navegador.py dist/kinhold_demo.html "$C/troceo"
 paso "Navegador: la canoa" python3 pruebas/prueba_canoa_navegador.py dist/kinhold_demo.html "$C/canoa"
 paso "Navegador: la canoa en el agua" python3 pruebas/prueba_canoa_agua_navegador.py dist/kinhold_demo.html "$C/canoa_agua"

@@ -21,6 +21,7 @@
 //    lo «poco» (sílex, fibra), en una de cada 10 o 20; en los ríos, más (la orilla es estrecha). En el claro, algo de
 //    piedra y de sílex sueltos (SUELTOS_CLARO), menos que en su sitio.
 //  - Nada a menos de 1,2 m del sitio posible de un árbol (para no caer dentro de un tronco).
+import { enZonaCastillo } from './castillo_rey.js';
 import { azarCelda } from './azar.js';
 import { bosqueEn } from './paisaje.js';
 import { CELDA as CELDA_VEG, marismaEn } from './vegetacion.js';
@@ -134,7 +135,9 @@ export function recogidaEn(paisaje, alt, semilla, cuadro) {
 // Los de un trozo de LADO_RECOGIDA m del mundo (i, j).
 export function recogidaTrozo(paisaje, alt, semilla, i, j) {
   const L = LADO_RECOGIDA;
-  return recogidaEn(paisaje, alt, semilla, { x0: i * L, z0: j * L, x1: (i + 1) * L, z1: (j + 1) * L });
+  const r = recogidaEn(paisaje, alt, semilla, { x0: i * L, z0: j * L, x1: (i + 1) * L, z1: (j + 1) * L });
+  // (en la zona del castillo del rey no sale nada que recoger: src/logica/castillo_rey.js)
+  return Array.isArray(r) ? r.filter(e => !enZonaCastillo(e.x, e.z)) : r;
 }
 
 // Comprobación de que cada tipo sale solo en las zonas del documento (las de RECOLECTABLES).
