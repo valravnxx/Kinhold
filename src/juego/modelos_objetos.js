@@ -27,6 +27,8 @@
 //  - carbón vegetal (P10, 17 nov): trozos de leña carbonizada, negros, facetados y agrietados de través.
 //  - lupia de hierro (P10, 17 nov): una masa esponjosa gris negruzca con poros, escoria vidriosa abajo y algo de óxido.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
+//  - huso (oficios, 18 nov): el palo de vara con la tortera de piedra abajo y la husada de hilo encima, tumbado.
+//  - ovillo de hilo (oficios, 18 nov): el hilo pálido de ortiga devanado en una bola, con el cabo suelto.
 //  - hacha de piedra: la cabeza de piedra pulida en el mango de madera, atada con tiras.
 //  - corteza (7 nov): dos tiras de corteza arrancadas, curvadas en canal, la cara de fuera rugosa y la de dentro clara.
 //  - cintos de cuero (7 nov, para el panel de equipo): la correa enrollada de canto, con la hebilla de hierro en la punta
@@ -915,6 +917,60 @@ function granoSucio(n, id) {
   return mallas(L);
 }
 
+// El huso (oficios, 18 nov): el de mano de la época, de los que se dejan colgar girando. Un palo recto de vara pelada
+// (30 cm), más fino en las puntas, con la tortera abajo (una laja de piedra redonda, plana y agujereada, que le da el
+// peso para girar) y, encima de ella, la husada: el hilo ya hilado enrollado en el palo, más gordo en medio. Arriba, la
+// muesca con una vuelta de hilo. husoEn(L, x, y, z, giro) lo pone a lo largo de +Y desde y = 0 (la punta de abajo),
+// girado con giro (Euler YXZ) alrededor de esa punta.
+export const HUSO = { largo: 0.3, r: 0.0055, tortera: 0.03, yTortera: 0.045 };
+export const HILO = 0xc7b893, HILO_OSC = 0xab9b74;
+export function husoEn(L, x, y, z, giro = {}, opc = {}) {
+  const m = giro.isMatrix4 ? giro : new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(giro.x || 0, giro.y || 0, giro.z || 0, 'YXZ'));
+  const pon = (geo, color, py, o = {}) => L.add(geo.clone().translate(0, py, 0), color, x, y, z, m.clone(), { sinSuelo: true, ...opc, ...o });
+  // el palo, en tres tramos: la punta de abajo, el cuerpo y la punta de arriba, afinadas
+  pon(cil(0.0025, HUSO.r, 0.03, 7), 'madera', 0.015, { tex: 'veta' });
+  pon(cil(HUSO.r, HUSO.r, HUSO.largo - 0.07, 7), 'madera', 0.03 + (HUSO.largo - 0.07) / 2, { tex: 'veta' });
+  pon(cil(HUSO.r, 0.0025, 0.04, 7), 'madera', HUSO.largo - 0.02, { tex: 'veta' });
+  // la tortera: una laja redonda, algo irregular, con el canto basto
+  const t = new THREE.CylinderGeometry(HUSO.tortera, HUSO.tortera * 0.94, 0.012, 16), q = t.attributes.position;
+  for (let i = 0; i < q.count; i++) { const a = Math.atan2(q.getZ(i), q.getX(i)), f = 1 + 0.06 * Math.sin(a * 3 + 1) + 0.04 * Math.cos(a * 5); q.setX(i, q.getX(i) * f); q.setZ(i, q.getZ(i) * f); }
+  t.computeVertexNormals();
+  pon(t, 'piedra', HUSO.yTortera, { tex: 'piedra', plano: true });
+  // la husada: el hilo enrollado encima de la tortera, en forma de huso (más gordo en medio)
+  const perfil = []; for (let i = 0; i <= 8; i++) { const u = i / 8; perfil.push(new THREE.Vector2(HUSO.r + 0.016 * Math.sin(u * Math.PI) ** 0.8, u * 0.11)); }
+  pon(new THREE.LatheGeometry(perfil, 14), HILO_OSC, HUSO.yTortera + 0.008, { tex: 'liso', rayas: v => 0.84 + 0.16 * Math.sin((v.x + v.y + v.z) * 1400) });
+  // la vuelta de hilo en la muesca de arriba y el cabo que baja a la husada
+  pon(new THREE.TorusGeometry(HUSO.r + 0.0012, 0.0012, 4, 10).rotateX(Math.PI / 2), HILO, HUSO.largo - 0.035, { tex: 'liso' });
+  const cabo = tubo([v3(HUSO.r, HUSO.largo - 0.035, 0), v3(HUSO.r + 0.004, HUSO.largo - 0.09, 0.002), v3(HUSO.r + 0.012, HUSO.yTortera + 0.1, 0.003)], 0.0009, 3);
+  L.add(cabo, HILO, x, y, z, m.clone(), { sinSuelo: true, tex: 'liso', ...opc });
+}
+function huso(n, id) {
+  const L = lote(0.03);
+  // tumbado: apoyado en el canto de la tortera y en la punta de arriba (algo inclinado)
+  const inc = Math.atan2(HUSO.tortera - 0.003, HUSO.largo - HUSO.yTortera);
+  husoEn(L, 0, HUSO.tortera * Math.cos(inc) + Math.sin(inc) * HUSO.yTortera - 0.002, 0, { z: -(Math.PI / 2 + inc), y: az(id, 3) * 6 });
+  return mallas(L);
+}
+// El ovillo de hilo (oficios, 18 nov): el hilo de fibra de ortiga recién hilado, pálido y algo desigual, devanado en
+// una bola un poco aplastada, con las vueltas cruzadas que se ven por fuera y el cabo suelto. Con más, otro al lado.
+function ovilloEn(L, x, z, r, id, k) {
+  L.add(new THREE.IcosahedronGeometry(r, 3), HILO, x, r * 0.88, z, null, { escala: v3(1, 0.88, 1), tex: 'liso', rayas: v => 0.9 + 0.1 * Math.sin((v.x + v.z) * 700 + v.y * 300) });
+  // las vueltas de fuera, finas y cruzadas en varias direcciones, pegadas a la bola
+  for (let i = 0; i < 18; i++) {
+    const g = new THREE.TorusGeometry(r * 1.02, 0.0011, 3, 32);
+    L.add(g, i % 4 ? 0xd3c6a2 : HILO_OSC, x, r * 0.88, z, { x: az(id, k * 40 + i + 50) * Math.PI, y: i * 0.37 + az(id, k * 40 + i + 70), z: az(id, k * 40 + i + 90) * 1.4 }, { escala: v3(1, 0.88, 1), tex: 'liso', sinSuelo: true });
+  }
+  const a = az(id, k + 7) * 6;
+  L.add(tubo([v3(x + Math.cos(a) * r * 0.9, r * 0.5, z + Math.sin(a) * r * 0.9), v3(x + Math.cos(a) * r * 1.6, 0.006, z + Math.sin(a) * r * 1.5), v3(x + Math.cos(a + 0.4) * r * 2.4, 0.002, z + Math.sin(a + 0.4) * r * 2.3)], 0.0014, 3), HILO, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+}
+function hilo(n, id) {
+  const L = lote(0.03);
+  ovilloEn(L, 0, 0, 0.036, id, 0);
+  if ((n || 1) > 1) ovilloEn(L, 0.075, 0.03, 0.03, id, 1);
+  if ((n || 1) > 3) ovilloEn(L, -0.06, 0.05, 0.032, id, 2);
+  return mallas(L);
+}
+
 // tipo del catálogo → (cuántos, id) → Group, apoyado en el suelo
 export const MODELO_OBJETO = {
   estaca: estacas,
@@ -923,5 +979,6 @@ export const MODELO_OBJETO = {
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, cuero, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
   honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  huso, hilo,
   cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
