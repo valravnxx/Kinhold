@@ -1,0 +1,8 @@
+Textos del juego: 1983; sin traducir (en): 3; con variables distintas: 0
+  FALTA (en)  v233: los zapatos y el cinto de cuero (oficios). En el banco de tronco: los zapatos de cuero, de 1 cuero y 1 ovillo de hilo (la prenda de los pies, que ya se veía puesta), y el cinto de cuero, de 2 cueros y 1 rama para la hebilla, que ahora es de madera (en el suelo y puesto): 3 huecos, uno mediano y dos pequeños. Con su imagen en el panel (iconos v38) y su modelo en el suelo: el par de zapatos de suela vuelta, con la boca abierta y el lazo de cordón.
+  FALTA (en)  v233, provisional: los zapatos y el cinto tardan 60 s cada uno en el banco, como el zurrón.
+  FALTA (en)  Demo única · v233 (Los zapatos y el cinto de cuero)
+Textos del juego: 1983; sin traducir (ru): 3; con variables distintas: 0; sin cirílico: 0
+  FALTA (ru)  v233: los zapatos y el cinto de cuero (oficios). En el banco de tronco: los zapatos de cuero, de 1 cuero y 1 ovillo de hilo (la prenda de los pies, que ya se veía puesta), y el cinto de cuero, de 2 cueros y 1 rama para la hebilla, que ahora es de madera (en el suelo y puesto): 3 huecos, uno mediano y dos pequeños. Con su imagen en el panel (iconos v38) y su modelo en el suelo: el par de zapatos de suela vuelta, con la boca abierta y el lazo de cordón.
+  FALTA (ru)  v233, provisional: los zapatos y el cinto tardan 60 s cada uno en el banco, como el zurrón.
+  FALTA (ru)  Demo única · v233 (Los zapatos y el cinto de cuero)
