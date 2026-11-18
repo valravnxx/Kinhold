@@ -2,9 +2,15 @@
 
 Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir cambios, o responder a lo que te espera en la web. Basta con texto normal. El trabajo automático lo lee al empezar cada hora y lo mueve a "Procesado".
 
+
 ---
 
 ## Procesado
+
+### 18 nov 2026, 20:13 UTC — por el chat, sobre el castillo del rey
+
+«¿Sería jugable en Kinhold? En plan poderlo visitar y no glichearse?» → «haz». El castillo del rey (la maqueta hecha en el chat) entra en el mundo como pieza fija: se pisa (suelos, adarves, escaleras, caracoles, puente), sus muros paran el paso, la cámara no se mete detrás de sus muros y bajo techo corta por plantas; el foso baja el terreno y dentro no crece nada. Lo lleva el chat (tarea en «El aspecto»).
+
 
 ### 18 nov 2026, 16:12 UTC — por una sesión del carril A, aprobación de P11d
 

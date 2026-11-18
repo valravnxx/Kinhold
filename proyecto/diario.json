@@ -7599,5 +7599,22 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 53 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-18T21:14:50+01:00",
+  "fin": "2026-11-19T00:13:10+01:00",
+  "titulo": "El castillo del rey, visitable",
+  "hito": "aspecto",
+  "hecho": [
+   "El castillo del rey de la maqueta del chat entra en el mundo como pieza fija, a unos 260 m al sur de la ciudad del rey; se carga al acercarse (unos 2 MB).",
+   "Se pisa lo que se ve: suelos, adarves, terrazas, escaleras, caracoles, el puente y el muelle de la poterna; sus muros, muebles y portones abiertos paran el paso.",
+   "El foso baja el terreno con marcas de nivelado; en el castillo, el foso y la explanada no crece nada ni sale nada que recoger.",
+   "Bajo techo el castillo se corta por plantas y la cámara mira desde arriba; fuera, sus muros no se meten entre la cámara y el personaje.",
+   "Arreglos del castillo para andarlo: la puerta del homenaje, fuera del hueco del caracol; los caracoles arrancan de cara a su sala; muebles apartados de puertas y caracoles; rastrillos alzados dentro de su cámara.",
+   "Las herramientas de la maqueta, en herramientas/castillo_rey/: de ahí salen la malla y los choques juntos."
+  ],
+  "pruebas": "Lógica: el castillo se recorre entero (cuatro recorridos, 433 puntos). Navegador, aquí y en la nube: los cuatro recorridos andando en el juego (el que ataca, la guardia, la puerta y la poterna); rota a propósito, falla. Nube: lógica, recorrido, velocidad con pocos fotogramas y lo que se recoge, bien. No comprobado: los fotogramas en un móvil de verdad.",
+  "capturas": "capturas/demo-v236",
+  "estado": "ok"
  }
 ]

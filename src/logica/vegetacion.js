@@ -9,6 +9,7 @@
 // solapan dan exactamente lo mismo en lo que comparten.
 //
 // Coordenadas en metros del mundo (x, z). No pone nada en el mar, en la orilla ni en los ríos.
+import { enZonaCastillo } from './castillo_rey.js';
 import { azarCelda } from './azar.js';
 import { bosqueEn } from './paisaje.js';
 import { fbm } from './mapa.js';
@@ -296,7 +297,9 @@ export const LADO_VEG = 32;
 export function vegetacionTrozo(paisaje, alt, semilla, i, j, conHierba = false) {
   const c = { x0: i * LADO_VEG, z0: j * LADO_VEG, x1: (i + 1) * LADO_VEG, z1: (j + 1) * LADO_VEG };
   const v = vegetacionEn(paisaje, alt, semilla, c, conHierba ? c : null);
-  const suyo = (e) => e.x >= c.x0 && e.x < c.x1 && e.z >= c.z0 && e.z < c.z1;
+  // (en la zona del castillo del rey, su foso y su explanada no crece nada: src/logica/castillo_rey.js)
+  const suyo = (e) => e.x >= c.x0 && e.x < c.x1 && e.z >= c.z0 && e.z < c.z1 && !enZonaCastillo(e.x, e.z);
   v.arboles = v.arboles.filter(suyo); v.piedras = v.piedras.filter(suyo);
+  for (const k of Object.keys(v)) if (k !== 'arboles' && k !== 'piedras' && Array.isArray(v[k])) v[k] = v[k].filter(e => !(e && Number.isFinite(e.x) && Number.isFinite(e.z) && enZonaCastillo(e.x, e.z)));
   return v;
 }

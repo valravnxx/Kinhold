@@ -1561,6 +1561,12 @@
      "estado": "hecho",
      "inicio": "2026-11-14T16:49:45+01:00",
      "fin": "2026-11-14T18:08:00+01:00"
+    },
+    {
+     "nombre": "El castillo del rey, visitable: se pisa, para el paso y la cámara corta por plantas",
+     "estado": "hecho",
+     "inicio": "2026-11-18T21:14:50+01:00",
+     "fin": "2026-11-19T00:13:10+01:00"
     }
    ]
   },
@@ -4910,6 +4916,13 @@
      "archivo": "jugar/demo/v235.html",
      "capturas": "capturas/demo-v235",
      "notas": "La carbonera y el carbón"
+    },
+    {
+     "v": "v236",
+     "fecha": "2026-11-18",
+     "archivo": "jugar/demo/v236.html",
+     "capturas": "capturas/demo-v236",
+     "notas": "El castillo del rey, en el mundo y visitable: a unos 260 m al sur de la ciudad del rey. Se pisa todo (suelos, adarves, escaleras, caracoles, puente y muelle), sus muros y muebles paran el paso, el foso está cavado y bajo techo se corta por plantas con la cámara desde arriba."
     }
    ]
   },
