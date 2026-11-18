@@ -55,7 +55,7 @@ def puerta_principal(m, sentido_norte):
     # el empedrado del paso, con la losa del puente levadizo junto a la puerta
     suelo_losas(m, g0, -PASO, PASO, GW0, GW1, PF, LOSA, 0.5)
     # el rastrillo, subido (asoma por la bóveda)
-    rastrillo(m, g0, -PASO + 0.05, PASO - 0.05, PF + 3.4, PF + 5.3, GW1 - 1.85)
+    rastrillo(m, g0, -PASO + 0.05, PASO - 0.05, PISO1 - 0.7, PISO1 + 2.0, GW1 - 1.85)   # (alzado: sube por la ranura a la cámara del torno; abajo asoman las puntas)
     # portones: de fuera abiertos hacia dentro; de dentro abiertos
     for s in (-1, 1):
         u0, u1 = (0, 1.7) if s > 0 else (-1.7, 0)
@@ -293,7 +293,7 @@ def puerta_alcazar(m):
         pared(m, g0.p2(s * L2, -W2), g0.p2(s * L2, W2), g0.p2(0, 0), base, ADARVE, 1.2, (), suelo=pf, cabezas=False)
     suelo_losas(m, g0, -L2, L2, -W2, W2, pf, LOSA, 0.5)
     caja(m, g0, -1.5, 1.5, pf + 4.6, p1, -W2 + 1.2, W2 - 1.4, PIEDRA, .8, caras='v0')
-    rastrillo(m, g0, -1.45, 1.45, pf + 3.2, pf + 4.6, W2 - 1.8)
+    rastrillo(m, g0, -1.45, 1.45, p1 - 0.6, p1 + 1.6, W2 - 1.8)   # (alzado, en la planta de arriba)
     for s in (-1, 1): caja(m, g0, s * 1.5 - (0.06 if s > 0 else 0), s * 1.5 + (0 if s > 0 else 0.06), pf, pf + 4.6, W2 - 1.95, W2 - 1.65, OSCURO)
     _hojas_simples(m, g0, 0, -W2 + 1.4, pf, 1.45, 2.4)
     # planta alta: torno, banco; terraza

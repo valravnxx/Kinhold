@@ -5,8 +5,9 @@
 // escala (float32, 0,01 m), las posiciones (int16 × 3: x y z desde ORIGEN_CASTILLO, y la altura del mundo) y los
 // colores (uint8 × 3), todo comprimido con gzip. Se dibuja con colores por vértice y sombreado plano, como la maqueta.
 //
-// Bajo techo (un suelo, una bóveda o un tejado del castillo a más de 2 m sobre los pies), el castillo se corta a esa
-// altura (el corte por plantas): se ve la planta en la que estás, como en los interiores de lo construido.
+// Bajo techo (un suelo, una bóveda o un tejado del castillo a más de 2 m sobre los pies), el castillo se corta (el
+// corte por plantas) a 2,3 m sobre los pies o más bajo si el techo lo está: se ve la planta en la que estás, como en los
+// interiores de lo construido, y la cámara mira desde arriba.
 import * as THREE from 'three';
 import { crearChoquesCastillo, ORIGEN_CASTILLO } from '../logica/castillo_rey.js';
 
@@ -56,7 +57,9 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
     if (estado === 'lejos' && Math.hypot(pj.x - dx, pj.z - dz) < CERCA) cargar();
     if (!choques || sin()) return null;
     const t = choques.techo(pj.x, pj.z, pj.y);
-    corte.constant = t === null ? 1e6 : t - 0.05;   // (el plano mira hacia abajo: se ve lo que queda por debajo)
+    // (el plano mira hacia abajo: se ve lo que queda por debajo). Bajo techo se corta a 2,3 m sobre los pies como mucho:
+    // los muros bajos dejan ver al personaje desde arriba aunque esté junto a un muro grueso
+    corte.constant = t === null ? 1e6 : Math.min(t - 0.05, pj.y + 2.3);
     return choques;
   }
   // (window.__mutarCastillo: solo para romper a propósito su prueba: el castillo se ve pero no se pisa ni para el paso)
