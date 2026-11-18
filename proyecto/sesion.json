@@ -1,5 +1,10 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-18T13:27:58+00:00",
+  "tarea": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
+  "hito": "oficios",
+  "rama": "trabajo/20261118-1327"
+ },
  "B": null,
  "chat:trabajo/20261117-0940-remar": {
   "inicio": "2026-11-17T15:17:09+01:00",

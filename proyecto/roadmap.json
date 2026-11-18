@@ -2596,7 +2596,9 @@
     },
     {
      "nombre": "La carbonera y el carbón: 10 leñas apiladas y cubiertas de tierra (cavando con el palo cavador o la pala de madera, sin gastar material), encendida con yesca y el taladro de fuego; al cabo de horas reales deja 4 carbones vegetales y se deshace. El carbón es lo que pedirá el hierro (P10). Cadena: leña ← partir un tronco corto con el hacha; yesca ← fibra o corteza; taladro de fuego ← ramas y cordel",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-18T13:27:58+00:00",
+     "rama": "trabajo/20261118-1327"
     },
     {
      "nombre": "Recorrido de jugador de los oficios, sin arcón: cuelga carne en el secadero, raspa la piel de una liebre y hace el zurrón, llena el cubo, descorteza un roble y curte un cuero (con el reloj acelerado), hila, hace los zapatos y el cinto de cuero y saca carbón de la carbonera",
