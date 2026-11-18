@@ -1,0 +1,72 @@
+  OK   PC: la carbonera sin encender, sin humo, con el tiro y los respiraderos apagados y la yesca al pie — {'hay': True, 'humo': False, 'llama': False, 'rojo': False, 'huecos': 6, 'carbon': False, 'yesca': True}
+  OK   PC: la que arde, con humo y el tiro y los respiraderos al rojo, sin llama (arde ahogada) — {'hay': True, 'humo': 10, 'llama': False, 'rojo': True, 'huecos': 6, 'carbon': False, 'yesca': False}
+  OK   PC: la del carbón hecho, sin humo y con el carbón delante — {'hay': True, 'humo': False, 'llama': False, 'rojo': False, 'huecos': 6, 'carbon': True, 'yesca': False}
+  OK   PC: al pasar su hora deja de humear y se ve el carbón — {'hay': True, 'humo': False, 'llama': False, 'rojo': False, 'huecos': 6, 'carbon': True, 'yesca': False}
+  OK   PC: deshecha, no queda nada de ella
+  OK   PC: su pestaña «Carbonera», con el carbón vegetal — Carbonera
+Leña apilada y cubierta de tierra: encendida, arde ahogada horas y deja carbón vegetal · sus recetas gastan lo que se le deja
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secadero
+no hay cerca
+Raspador de pieles
+no hay 
+  OK   PC: la ficha pide la yesca y el taladro de fuego, da 4 y dice lo que tarda (4 h) — Carbón vegetal
+
+Arde más caliente que la leña: lo pide el horno de reducción para el hierro.
+
+En la carbonera
+4 h
+da 4 × Carbón vegetal
+Lo que pide (de lo que está en la estación)
+Yescaen la estación
+1 de 1
+Taladro de fuegohay que llevarlo (no se gasta)
+0/1
+Hace falta llevar: taladro de fuego
+  OK   PC: el panel no se sale de lado
+  OK   PC: sin errores en la página — []
+  OK   móvil: la carbonera sin encender, sin humo, con el tiro y los respiraderos apagados y la yesca al pie — {'hay': True, 'humo': False, 'llama': False, 'rojo': False, 'huecos': 6, 'carbon': False, 'yesca': True}
+  OK   móvil: la que arde, con humo y el tiro y los respiraderos al rojo, sin llama (arde ahogada) — {'hay': True, 'humo': 10, 'llama': False, 'rojo': True, 'huecos': 6, 'carbon': False, 'yesca': False}
+  OK   móvil: la del carbón hecho, sin humo y con el carbón delante — {'hay': True, 'humo': False, 'llama': False, 'rojo': False, 'huecos': 6, 'carbon': True, 'yesca': False}
+  OK   móvil: al pasar su hora deja de humear y se ve el carbón — {'hay': True, 'humo': False, 'llama': False, 'rojo': False, 'huecos': 6, 'carbon': True, 'yesca': False}
+  OK   móvil: deshecha, no queda nada de ella
+  OK   móvil: su pestaña «Carbonera», con el carbón vegetal — Carbonera
+Leña apilada y cubierta de tierra: encendida, arde ahogada horas y deja carbón vegetal · sus recetas gastan lo que se le deja
+Todo
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secadero
+no hay cerca
+Raspador de pieles
+no hay 
+  OK   móvil: la ficha pide la yesca y el taladro de fuego, da 4 y dice lo que tarda (4 h) — Carbón vegetal
+
+Arde más caliente que la leña: lo pide el horno de reducción para el hierro.
+
+En la carbonera
+4 h
+da 4 × Carbón vegetal
+Lo que pide (de lo que está en la estación)
+Yescaen la estación
+1 de 1
+Taladro de fuegohay que llevarlo (no se gasta)
+0/1
+Hace falta llevar: taladro de fuego
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: sin errores en la página — []
+
+TODO CORRECTO
