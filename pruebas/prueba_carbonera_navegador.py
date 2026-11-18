@@ -67,15 +67,15 @@ def recorrido(nav, nombre, pref, vista, movil):
     comprobar(f'{nombre}: la del carbón hecho, sin humo y con el carbón delante', not l['humo'] and not l['rojo'] and l['carbon'], str(l))
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
     D = 1.6 if movil else 1   # (en el móvil, estrecho, más lejos y el jugador más a un lado: no tapa lo mirado)
-    LADO = 1.1 if movil else 1.2
+    LADO = 0.8 if movil else 1.2
     mirar(pg, c, 0, 1.2, 0, 7.0 * D, 0.32)
     pg.wait_for_timeout(1500)
     pg.screenshot(path=f'{SALIDA}/{pref}_carboneras.png', timeout=180000)
     mirar(pg, c, 0, 0.6, 0.25, 3.4 * D, 0.14, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_humo.png', timeout=180000)
-    mirar(pg, c, 3.2, 1.3, -0.2, 2.8 * D, 0.4, LADO)
+    mirar(pg, c, 3.2, 1.25, -0.2, 2.6 * D, 0.45, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_carbon.png', timeout=180000)
-    mirar(pg, c, -2.8, 1.3, 0.2, 2.6 * D, 0.45, LADO)
+    mirar(pg, c, -2.65, 1.1, 0.2, 2.4 * D, 0.5, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_yesca.png', timeout=180000)
     mirar(pg, c, 0, -0.6, 2.6, 3.4 * D, 0.2, LADO)
     pg.screenshot(path=f'{SALIDA}/{pref}_carbonera_detras.png', timeout=180000)

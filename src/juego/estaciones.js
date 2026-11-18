@@ -419,6 +419,8 @@ function humoHorno(id) {
 // palo y las puntas de alguna leña que asoma. Alrededor, la tierra removida de donde se sacó. Sin fuego que se vea:
 // mientras arde, humo blanquecino y espeso por el tiro y los respiraderos al rojo (lo cambia ponerHumo).
 const CARBONERA = { r: 0.82, alto: 0.86, tiro: 0.1 };
+// la brasa que asoma por el tiro y los respiraderos: un rojo apagado, poco brillante, dentro del hueco negro
+const MAT_BRASA_CARB = new THREE.MeshLambertMaterial({ color: 0x5a1c0c, emissive: 0x9a3412, emissiveIntensity: 0.55 });
 const TIERRA_CARB = 0x6b5a47, TEPE = 0x5f4f3c, TEPE_VERDE = 0x5e6442, TIERRA_SUELTA = 0x6a5844;
 function carbonera(id) {
   const { r: R, alto: A, tiro: T } = CARBONERA, g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.3, variacion: 0.16 });
@@ -463,11 +465,14 @@ function carbonera(id) {
   }
   g.add(mallas(W));
   // el tiro arriba y los respiraderos al pie: huecos oscuros (al rojo mientras arde)
-  const tiro = new THREE.Mesh(new THREE.CircleGeometry(T * 0.95, 12), MAT_ARCO); tiro.rotation.x = -Math.PI / 2; tiro.position.y = A - 0.02; tiro.name = 'tiro'; g.add(tiro);
+  const boca = new THREE.Mesh(new THREE.CircleGeometry(T * 0.95, 12), MAT_ARCO); boca.rotation.x = -Math.PI / 2; boca.position.y = A - 0.02; g.add(boca);
+  const tiro = new THREE.Mesh(new THREE.CircleGeometry(T * 0.5, 10), MAT_ARCO); tiro.rotation.x = -Math.PI / 2; tiro.position.y = A - 0.017; tiro.name = 'tiro'; g.add(tiro);
   for (let i = 0; i < 5; i++) {
     const a = i * Math.PI * 2 / 5 + az(id, 'q' + i) * 0.4, ang = 0.16, rr = R * Math.pow(Math.cos(ang), 0.8) * (1 - 0.22 * ang / (Math.PI / 2)) + 0.012, y = -0.05 + (A + 0.02) * Math.pow(Math.sin(ang), 1.15);
-    const h = new THREE.Mesh(new THREE.CircleGeometry(0.06, 8), MAT_ARCO);
-    h.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); h.lookAt(Math.cos(a) * 3, y + 0.5, Math.sin(a) * 3); h.name = 'respiradero'; g.add(h);
+    const h = new THREE.Mesh(new THREE.CircleGeometry(0.05, 8), MAT_ARCO);
+    h.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); h.lookAt(Math.cos(a) * 3, y + 0.5, Math.sin(a) * 3); g.add(h);
+    const b = new THREE.Mesh(new THREE.CircleGeometry(0.024, 7), MAT_ARCO); b.position.copy(h.position).add(new THREE.Vector3(Math.cos(a), 0.15, Math.sin(a)).multiplyScalar(0.003));
+    b.quaternion.copy(h.quaternion); b.name = 'respiradero'; g.add(b);
   }
   g.userData.alzaFuego = A - 0.02;
   return g;
@@ -1230,7 +1235,7 @@ function llenoCarbonera(dep, id, colgado = []) {
   const g = new THREE.Group();
   for (const [t, n] of Object.entries(dep || {})) {
     if (!(n > 0)) continue;
-    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.55, 0, CARBONERA.r + 0.25); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(2.2); m.name = 'deposito_' + t; g.add(m);
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.55, 0, CARBONERA.r + 0.25); m.rotation.y = az(id + t, 3) * 6; m.scale.setScalar(1.3); m.name = 'deposito_' + t; g.add(m);
   }
   if (colgado.some(c => c.listo)) {
     for (let i = 0; i < 2; i++) { const c = modeloDe({ id: `${id}:carbon${i}`, cosa: { tipo: 'carbon', n: 2 } }); c.position.set(-0.2 + i * 0.34, 0.01, CARBONERA.r + 0.36 + i * 0.08); c.rotation.y = az(id, 'c' + i) * 6; c.scale.setScalar(1.9); c.name = 'carbon_hecho'; g.add(c); }
@@ -1339,7 +1344,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     const r = o.getObjectByName('rescoldo'); if (r) r.visible = arde;
     const t = o.getObjectByName('tobera'); if (t) t.material = arde ? MAT_RESCOLDO : MAT_ARCO;
     // la carbonera (oficios): el tiro y los respiraderos al rojo, y humo blanquecino, sin llama
-    o.traverse(m => { if (m.name === 'respiradero' || m.name === 'tiro') m.material = arde ? MAT_RESCOLDO : MAT_ARCO; });
+    o.traverse(m => { if (m.name === 'respiradero' || m.name === 'tiro') m.material = arde ? MAT_BRASA_CARB : MAT_ARCO; });
     if (arde && e.tipo === 'carbonera') { const f = humoCarbonera(), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || CARBONERA.alto; o.add(f); }
     else if (arde) { const f = humoHorno(e.id); f.position.y = HORNO.alto; o.add(f); }
   }
