@@ -40,6 +40,15 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   const enLaMano = (tipo) => MANOS.find(l => J.inv.lugares[l]?.tipo === tipo);
   const soltar = (l) => J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
   const soltarManos = async (salvo = []) => { for (const l of MANOS) if (J.inv.lugares[l] && !salvo.includes(J.inv.lugares[l].tipo)) await soltar(l); };
+  // una mano libre: si las lleva llenas, deja la de lo que no es herramienta (la lasca, el cubo, el huso… se quedan)
+  const HERRAMIENTAS = ['lasca_silex', 'cubo', 'cubo_agua', 'huso', 'taladro_fuego', 'palo_cavador', 'hacha_piedra', 'lanza_endurecida'];
+  const manoLibre = async () => {
+    const libre = MANOS.find(l => !J.inv.lugares[l]);
+    if (libre) return libre;
+    const l = MANOS.find(x => !HERRAMIENTAS.includes(J.inv.lugares[x].tipo)) || 'mano:izq';
+    await soltar(l);
+    return l;
+  };
   // lo encargado por este jugador (en sus manos y en los puestos), ya terminado: no le da nada, solo ahorra la espera
   const adelantar = (receta = null) => { const f = s.objetos.fab; for (const c of [...(f.manos[yo] || []), ...Object.values(f.estaciones).flatMap(e => e.cola || [])]) if (c.autor === yo && (!receta || c.receta === receta)) c.fin = Math.min(c.fin, Date.now() - 1); };
   const visibles = () => s.objetos.sueloVisible(Date.now());
@@ -109,7 +118,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   const aEstacion = async (est, tipo, n, de = est, d = 4) => {
     let puestos = 0;
     for (let k = 0; k < 12 && puestos < n; k++) {
-      if (!J.cuantos(tipo)) { if (MANOS.every(l => J.inv.lugares[l])) await soltarManos(); if (!(await cogerSuelo(tipo, de, d, Math.min(3, n - puestos)))) break; }
+      if (!J.cuantos(tipo)) { const l = await manoLibre(); if (!(await cogerSuelo(tipo, de, d, Math.min(3, n - puestos), l))) break; }
       await J.andar(est.x + 1, est.z);
       const q = await depositar(est, tipo, n - puestos);
       if (!q.ok) return q;
@@ -162,7 +171,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     if (nec().hambre > 60) {
       for (const m of cerca(alrededor(J.pos, 200).filter(p => (p.tipo === 'bayas' || p.tipo === 'setas') && !probados.has(p.id)), J.pos).slice(0, 16)) {
         if (nec().hambre <= 40) break;
-        if (MANOS.every(l => J.inv.lugares[l])) await soltarManos();
+        if (MANOS.every(l => J.inv.lugares[l])) await manoLibre();
         const rb = await recoger(m);
         if (rb.ok) { const tipo = m.tipo === 'bayas' ? 'bayas' : 'setas'; for (let i = 0; i < 6 && J.cuantos(tipo) && nec().hambre > 20; i++) await J.objeto({ tipo: 'comer', objeto: tipo }); }
       }
@@ -513,7 +522,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     if (!J.cuantos('lasca_silex')) await buscar('lasca_silex');
     for (let k = 0; k < 5; k++) {
       const pd = await aEstacion(raspador, 'piel', 1, taller, 6);
-      if (!pd.ok) break;
+      if (!pd.ok) { console.log(`     (no lleva la piel al raspador: ${pd.motivo} · ${enMano()} · pieles en el taller: ${nEnSuelo('piel', taller, 6)})`); break; }
       await J.andar(raspador.x + 1, raspador.z);
       const q = await enEstacion(raspador, 'raspar_piel');
       if (!q.ok) { console.log(`     (no raspa: ${q.motivo})`); break; }
@@ -658,6 +667,8 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       await soltarManos(['cubo', 'cubo_agua']);
       if (enLaMano('cubo')) {
         await J.andar(rio.x, rio.z);
+        // (ya que está en el río, bebe: está lejos de su tierra)
+        for (let i = 0; i < 12 && nec().sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); }
         let ll = await J.objeto({ tipo: 'llenar_cubo' });
         if (!ll.ok) {   // (otra vez, con el cubo bien en la mano)
           const srv = s.objetos.invs.de(yo).lugares;
