@@ -215,15 +215,15 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     return aLaMano('hacha_piedra');
   };
   // talar el árbol joven más cercano a p que nadie ha tocado (fuera de los campos y lejos de las obras) y limpiarlo
-  const talarJoven = async (p) => {
+  const talarJoven = async (p, edad = 'joven') => {
     await soltarManos(['hacha_piedra']);
     if (!(await hachaALaMano())) return { ok: false, motivo: `no encuentra su hacha (en las manos ${enMano()})` };
-    await repararHacha(14);
+    await repararHacha(edad === 'adulto' ? 80 : 14);
     const arboles = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + p.x - 150, z0: O.z + p.z - 150, x1: O.x + p.x + 150, z1: O.z + p.z + 150 }).arboles
       .map(a => ({ x: a.x - O.x, z: a.z - O.z, edad: a.edad })).map(a => ({ ...a, id: idArbol(a.x, a.z) }))
-      .filter(a => a.edad === 'joven' && !s.objetos.tala.estado[a.id] && !campoEn(s.mundo, a.x, a.z) && secoHasta(J.pos, a) && !s.mundo.construcciones.some(c => [...c.piezas.values()].length && dist({ x: c.ox, z: c.oz }, a) < 12));
+      .filter(a => a.edad === edad && !s.objetos.tala.estado[a.id] && !campoEn(s.mundo, a.x, a.z) && secoHasta(J.pos, a) && !s.mundo.construcciones.some(c => [...c.piezas.values()].length && dist({ x: c.ox, z: c.oz }, a) < 12));
     const a = cerca(arboles, p)[0];
-    if (!a) return { ok: false, motivo: 'no hay árboles jóvenes cerca' };
+    if (!a) return { ok: false, motivo: `no hay árboles (${edad}) cerca` };
     await J.andar(a.x + 1, a.z);
     let t, g = 0;
     do { t = await J.objeto({ tipo: 'talar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad }); g++; if (t.ok && t.datos.boca !== undefined) { await J.andar(a.x, a.z + 1); await J.andar(a.x - 1, a.z); } if (t.ok && !t.datos.cae) await pausa(550); } while (t.ok && !t.datos.cae && g < 90);
@@ -517,9 +517,10 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     await J.andar(banco.x + 1, banco.z);
     const d1 = c.ok ? await depositar(banco, 'cordel') : c;
     const d2 = d1.ok ? await aEstacion(banco, 'piel_limpia', 2, taller, 4) : d1;
-    await J.andar(banco.x + 1, banco.z);
+    await J.andar(banco.x + 1, banco.z); await soltarManos();   // (el zurrón, grande: con las dos manos)
     const z = d2.ok ? await enEstacion(banco, 'zurron') : d2;
-    comprobar('en el banco, con 2 pieles limpias y un cordel, se hace el zurrón', z.ok && J.cuantos('zurron') === 1, z.motivo || enMano());
+    if (z.ok && !J.cuantos('zurron')) await cogerSuelo('zurron', banco, 4);
+    comprobar('en el banco, con 2 pieles limpias y un cordel, se hace el zurrón', z.ok && J.cuantos('zurron') === 1, z.motivo || `${enMano()} · ${JSON.stringify(z.datos)}`);
     // se lo pone a la espalda si la tiene libre
     if (z.ok && !J.inv.lugares.espalda) { const lz = enLaMano('zurron'); const p = lz ? await J.objeto({ tipo: 'mover', de: lz, a: 'espalda' }) : { ok: false }; comprobar('se lo echa a la espalda', p.ok && J.inv.lugares.espalda?.tipo === 'zurron', p.motivo || ''); }
     else if (z.ok) { const lz = enLaMano('zurron'); if (lz) { await J.andar(taller.x, taller.z); await soltar(lz); } }
@@ -546,19 +547,47 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   }
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
   comprobar('descorteza robles en pie con la lasca: 6 de corteza de roble', corteza() >= 6, `${robles} robles, ${corteza()} de corteza`);
-  // 2 troncos cortos: los del suelo de su tierra o, si no, tronza uno largo de un árbol adulto (como en la canoa)
+  // troncos cortos (2 para las cubas y 2 para la leña de la carbonera): los del suelo de su tierra y, si no bastan, tala un
+  // árbol adulto y tronza el tronco largo (3 o 4); cada uno, al hombro hasta el taller
   const cortos = () => nEnSuelo('tronco_corto', taller, 4);
-  for (let k = 0; k < 3 && cortos() < 4; k++) {
-    const o = cerca(visibles().filter(x => x.cosa.tipo === 'tronco_corto' && !x.arrastra && s.mundo.dentroDeTierra(x.x, x.z, yo) && dist(x, taller) > 4), taller)[0];
-    if (!o) break;
+  let motivoCortos = '';
+  const alTaller = async (o) => {
     await soltarManos(['lasca_silex']); await J.andar(o.x + 0.5, o.z);
     const c = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
-    if (!c.ok) break;
+    if (!c.ok) { motivoCortos = `no se lo echa al hombro: ${c.motivo} (al hombro: ${J.inv.lugares.hombro?.tipo || 'nada'})`; return false; }
     await J.andar(taller.x, taller.z); await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
+    return true;
+  };
+  for (let k = 0; k < 6 && cortos() < 4; k++) {
+    const o = cerca(visibles().filter(x => x.cosa.tipo === 'tronco_corto' && !x.arrastra && s.mundo.dentroDeTierra(x.x, x.z, yo) && dist(x, taller) > 4), taller)[0];
+    if (!o || !(await alTaller(o))) break;
   }
-  comprobar('tiene troncos cortos en su taller (de los que tronzó)', cortos() >= 2, `${cortos()}`);
+  const deSuTierra = cortos();
+  for (let v = 0; v < 2 && cortos() < 4; v++) {
+    await cuidarse();
+    const t = await talarJoven(taller, 'adulto');
+    if (!t.ok) { motivoCortos = t.motivo; break; }
+    const largo = enSuelo('tronco_largo', t.a, 15)[0];
+    if (!largo) { motivoCortos = 'el adulto no ha dejado tronco largo'; break; }
+    await repararHacha(60);
+    await J.andar(largo.x + 0.6, largo.z);
+    let tz, golpes = 0;
+    do { tz = await J.objeto({ tipo: 'trocear', objeto: largo.id, x: J.pos.x, z: J.pos.z }); golpes++; await pausa(850); } while (tz.ok && enSuelo('tronco_corto', largo, 5).length === 0 && golpes < 90);
+    if (!tz.ok) { motivoCortos = `no lo tronza: ${tz.motivo}`; break; }
+    const hachaEn = { ...J.pos };
+    for (const o of enSuelo('tronco_corto', largo, 6)) if (cortos() < 4 && !(await alTaller(o))) break;
+    await J.andar(hachaEn.x, hachaEn.z); await hachaALaMano(); await J.andar(taller.x, taller.z);
+  }
+  comprobar('lleva 4 troncos cortos a su taller (de su tierra o de tronzar un tronco largo de un adulto)', cortos() >= 4, `${deSuTierra} de su tierra, ${cortos()} en total${motivoCortos ? ' · ' + motivoCortos : ''}`);
   // el palo cavador (de una rama) y 2 de barro de la ribera
-  if (!(await buscar('palo_cavador'))) { await soltarManos(['lasca_silex']); await acopiar(['ramas'], 'rama', 1, taller); await deMano('palo_cavador'); }
+  // (el suyo o, si se le ha roto o no lo encuentra, otro de una rama)
+  const paloCavador = async () => {
+    if (await buscar('palo_cavador')) return true;
+    const aqui = { ...J.pos };
+    await soltarManos(['lasca_silex']); await acopiar(['ramas'], 'rama', 1, aqui); await deMano('palo_cavador');
+    return J.cuantos('palo_cavador') >= 1;
+  };
+  await paloCavador();
   comprobar('lleva su palo cavador', J.cuantos('palo_cavador') >= 1, enMano());
   let rio = null;
   for (let rr = 0; rr < 3000 && !rio; rr += 25) for (let k = 0; k < 96; k++) {
@@ -572,10 +601,11 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   for (let v = 0; v < 2 && nEnSuelo('barro', taller, 4) < 2; v++) {
     await aLaMano('palo_cavador');
     const lo = MANOS.find(l => J.inv.lugares[l] && J.inv.lugares[l].tipo !== 'palo_cavador'); if (lo) await soltar(lo);
-    const lista = alrededor(rio, 200).filter(q => q.tipo === 'barro' && !probados.has(q.id));
-    let ok = false;
-    for (const p of cerca(lista, J.pos).slice(0, 6)) { const q = await recoger(p); if (q.ok) { ok = true; break; } }
-    if (!ok) break;
+    // (la ribera da barro una y otra vez: se cava en el mismo sitio)
+    const p = cerca(alrededor(rio, 200).filter(q => q.tipo === 'barro'), rio)[0];
+    let q = { ok: false, motivo: 'no hay barro en la ribera' };
+    for (let i = 0; i < 3 && p && J.cuantos('barro') < 2; i++) q = await recoger(p);
+    if (!J.cuantos('barro')) { console.log(`     (no cava barro: ${q.motivo})`); break; }
     await J.andar(taller.x, taller.z); await soltarManos(['palo_cavador', 'lasca_silex']);
   }
   comprobar('cava 2 de barro en la ribera con el palo cavador y lo trae', nEnSuelo('barro', taller, 4) >= 2, `${barroAntes} → ${nEnSuelo('barro', taller, 4)}`);
@@ -699,7 +729,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   }
   comprobar('parte troncos cortos con el hacha: 10 leñas junto al sitio de la carbonera', lena() >= 10, `${lena()}`);
   await J.andar(sitioCarb.x + 1, sitioCarb.z); await soltarManos();
-  await buscar('palo_cavador'); await J.andar(sitioCarb.x + 1, sitioCarb.z);
+  await paloCavador(); await J.andar(sitioCarb.x + 1, sitioCarb.z);
   const car = await levantar('carbonera', sitioCarb.x, sitioCarb.z);
   comprobar('levanta la carbonera: 10 leñas cubiertas de tierra, cavando con el palo cavador', car.ok && car.datos && car.datos.terminada, car.motivo || '');
   const carbonera = car.ok && s.objetos.fab.estaciones[car.id];
