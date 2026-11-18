@@ -231,9 +231,23 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
       if (!rp.ok) break;
     }
   };
+  // (si la perdió, por ejemplo junto al río, fuera de su tierra, donde lo soltado desaparece a la hora, se hace otra en
+  // su piedra de tallar: una piedra, una rama y 2 cordeles)
+  let hachasNuevas = 0;
+  const hacerHacha = async () => {
+    const sitio = { x: r2(tallar.x + 1), z: tallar.z };
+    await J.andar(sitio.x, sitio.z); await soltarManos();
+    await acopiar(['piedra'], 'piedra', 1, sitio); await acopiar(['ramas'], 'rama', 1, sitio);
+    for (const t of ['piedra', 'rama']) { await cogerSuelo(t, sitio, 3, 1); await J.andar(sitio.x, sitio.z); const d = await depositar(tallar, t); if (!d.ok) return false; }
+    for (let k = 0; k < 2; k++) { const c = await cordel(); await J.andar(sitio.x, sitio.z); if (!c.ok || !(await depositar(tallar, 'cordel')).ok) return false; }
+    const h = await enEstacion(tallar, 'hacha_piedra');
+    if (h.ok) hachasNuevas++;
+    console.log(`     (no encuentra su hacha: se hace otra en su piedra de tallar${h.ok ? '' : ' · ' + h.motivo})`);
+    return h.ok;
+  };
   const hachaALaMano = async () => {
     if (await aLaMano('hacha_piedra')) return true;
-    await buscar('hacha_piedra');
+    if (!(await buscar('hacha_piedra'))) await hacerHacha();
     return aLaMano('hacha_piedra');
   };
   // talar el árbol joven más cercano a p que nadie ha tocado (fuera de los campos y lejos de las obras) y limpiarlo

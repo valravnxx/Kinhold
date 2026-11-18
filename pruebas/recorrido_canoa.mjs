@@ -140,7 +140,32 @@ export async function canoa({ J, s, T, O, comprobar, pausa, cerca }) {
     if (await aLaMano('hacha_piedra')) return true;
     if (!(await cogerSuelo('hacha_piedra', J.pos, 15)) && !(await cogerSuelo('hacha_piedra', banco, 40))) await cogerSuelo('hacha_piedra', M, 400);
     await pausa(800);
+    if (!J.cuantos('hacha_piedra')) await hacerHacha();
     return aLaMano('hacha_piedra');
+  };
+  // (si la perdió, por ejemplo junto al río al ir a por barro, fuera de su tierra, donde lo soltado desaparece a la hora,
+  // se hace otra en su piedra de tallar: una piedra, una rama y 2 cordeles; 18 nov)
+  const hacerHacha = async () => {
+    const tallar = cerca(suyas('piedra_tallar'), banco)[0];
+    if (!tallar) return false;
+    const volver = { ...J.pos };
+    await J.andar(tallar.x + 1, tallar.z); await soltarManos();
+    await recogerCerca(['piedra'], 1, 'piedra', [150, 400, 900]);
+    await J.andar(tallar.x + 1, tallar.z);
+    let d = await depositar(tallar, 'piedra');
+    if (d.ok) { await soltarManos(); await recogerCerca(['ramas'], 1, 'rama', [100, 300, 700]); await J.andar(tallar.x + 1, tallar.z); d = await depositar(tallar, 'rama'); }
+    for (let k = 0; d.ok && k < 2; k++) {
+      await soltarManos();
+      await recogerCerca(['ortiga', 'hierba_larga'], 3, 'fibra', [250, 500, 900]);
+      const lf = enLaMano('fibra'); if (lf) await soltar(lf);
+      const c = await deMano('cordel');
+      await J.andar(tallar.x + 1, tallar.z);
+      d = c.ok ? await depositar(tallar, 'cordel') : c;
+    }
+    const h = d.ok ? await enEstacion(tallar, 'hacha_piedra') : d;
+    console.log(`     (no encuentra su hacha: se hace otra en su piedra de tallar${h.ok ? '' : ' · ' + h.motivo})`);
+    await J.andar(volver.x, volver.z);
+    return h.ok;
   };
   const repararHacha = async (necesita) => {
     const tallar = cerca(suyas('piedra_tallar'), banco)[0];
