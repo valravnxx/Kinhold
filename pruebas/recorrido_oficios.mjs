@@ -647,13 +647,14 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   if (cubas && !cubas.obra) {
     for (let k = 0; k < 3; k++) {
       // lleno en el río y vaciado en las cubas
-      await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo');
+      // (el cubo, que dejó a sus pies junto a las cubas)
+      if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo'); await aLaMano('cubo'); }
       await soltarManos(['cubo', 'cubo_agua']);
       if (enLaMano('cubo')) { await J.andar(rio.x, rio.z); const ll = await J.objeto({ tipo: 'llenar_cubo' }); if (!ll.ok) { console.log(`     (no llena el cubo: ${ll.motivo})`); break; } }
       await J.andar(cubas.x + 1, cubas.z);
       const lv = await J.objeto({ tipo: 'llenar_estacion', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
       if (k === 0) comprobar('llena el cubo en el río y lo vacía en las cubas', lv.ok && (s.objetos.fab.estaciones[cubas.id].deposito.agua || 0) >= 1, lv.motivo || '');
-      if (!lv.ok) break;
+      if (!lv.ok) { console.log(`     (no vacía el cubo en las cubas: ${lv.motivo} · ${enMano()})`); break; }
       await soltarManos();
       const p1 = await aEstacion(cubas, 'piel_limpia', 1, taller, 4);
       const p2 = p1.ok ? await aEstacion(cubas, 'corteza_roble', 2, taller, 4) : p1;
@@ -748,10 +749,9 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   if (carbonera && !carbonera.obra) {
     // la yesca (de un hongo yesquero o de fibra) dejada en ella, y el taladro de fuego en la mano
     await soltarManos(['palo_cavador']);
-    if (!(await buscar('yesca', fogon ? [[fogon, 20]] : []))) { let n = 0; while (J.cuantos('fibra') < 2 && n++ < 8) { const p = cerca(alrededor(J.pos, 300).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo) && !probados.has(q.id)), J.pos)[0]; if (!p) break; await recoger(p); } await J.andar(sitioCarb.x + 1, sitioCarb.z); await deMano('yesca'); }
-    if (!(await buscar('taladro_fuego', fogon ? [[fogon, 20]] : []))) {
-      await soltarManos(); await acopiar(['ramas'], 'rama', 2, sitioCarb); const c = await cordel(); await J.andar(sitioCarb.x + 1, sitioCarb.z); await soltarManos(); if (c.ok) await deMano('taladro_fuego');
-    }
+    await J.andar(sitioCarb.x + 1, sitioCarb.z); await soltarManos();
+    const ty = await taladroYYesca(1);
+    if (!ty) console.log(`     (sin taladro o sin yesca: ${enMano()})`);
     await J.andar(carbonera.x + 1, carbonera.z);
     const dy = await depositar(carbonera, 'yesca');
     await aLaMano('taladro_fuego');
