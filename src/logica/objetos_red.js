@@ -162,7 +162,7 @@ export class ObjetosServidor {
         suelo = !!r.ok && (this.suelo.objetos.length !== nSuelo || JSON.stringify(this.suelo.objetos.map(o => [o.id, o.cosa.n])) !== antes);
         // las estaciones se vuelven a mandar si se pone una, cambia su obra o lo depositado en alguna (se ve puesto); el
         // trabajo, cada cuarto (y al terminar), para no mandarlas a todos cada medio segundo
-        estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!(a.estacion && (ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.aLaVez || ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.humea))) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
+        estaciones = !!r.ok && (a.tipo !== 'recoger_fabricado' || !!r.deshecha || !!(a.estacion && (ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.aLaVez || ESTACIONES[this.fab.estaciones[a.estacion]?.tipo]?.humea))) && a.tipo !== 'dormir' && (a.tipo !== 'trabajar_estacion' || r.terminada || Math.floor(4 * r.progreso) !== Math.floor(4 * (r.progreso - a.segundos / ESTACIONES[this.fab.estaciones[a.estacion].tipo].trabajo)));
       } else if (a.tipo === 'arcon_al_suelo') {
         r = this.arconPruebas ? ejecutarArconAlSuelo(this.suelo, this.registro, a, ahora, this.enTierras) : this.anotar(a, { ok: false, motivo: 'Aquí no hay arcón.' }, ahora);
         suelo = !!r.ok;

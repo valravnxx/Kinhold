@@ -84,7 +84,8 @@ LLENOS.secadero = { carne_cruda: 2 };
 // el raspador de pieles (P9): con una piel tensada, por raspar
 LLENOS.raspador = { piel: 1 };
 LLENOS.era = { gavilla: 2 };   // la era (P11): con gavillas por trillar
-LLENOS.cubas_curtido = { agua: 1 };   // las cubas de curtido (oficios): con agua y una piel en remojo
+LLENOS.cubas_curtido = { agua: 1 };
+LLENOS.carbonera = { yesca: 1 };   // la carbonera (oficios): con la yesca al pie, por encender   // las cubas de curtido (oficios): con agua y una piel en remojo
 const COLGADOS = { secadero: [{ listo: true }, { listo: true }, { listo: false }], cubas_curtido: [{ listo: false }] };
 const conLleno = (t, o) => { o.traverse(m => { if (m.name === 'bajo_tierra') m.visible = false; });   // (lo que en el mundo queda enterrado, como la explanada de la era)
   if (LLENOS[t]) o.add(modeloDeposito(t, LLENOS[t], 'icono_' + t, COLGADOS[t] || [])); return o; };

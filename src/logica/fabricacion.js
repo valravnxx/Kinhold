@@ -79,6 +79,8 @@ export const COLA_SECADERO = 10;            // lo que se seca a la vez en un sec
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
 export const SECAR_CARNE = 6 * 3600;           // s que tarda la carne en secarse en el secadero (provisional)
 export const REDUCIR = 3600;                // s que tarda una carga del horno de reducción en dar la lupia (provisional)
+export const CARBONEAR = 4 * 3600;          // s que tarda en hacerse el carbón en la carbonera: horas reales (provisional)
+export const CARBONES = 4;                  // los carbones vegetales que deja una carbonera (sus 10 leñas)
 export const COLA_CUBAS = 4;                // las pieles que se curten a la vez en unas cubas (provisional)
 export const CURTIR = 2 * 24 * 3600;        // s que tarda una piel limpia en curtirse en las cubas: dos días reales (provisional)
 export const AGUA_CUBO = 1;                 // el agua que deja en las cubas un cubo lleno vaciado en ellas (unos 10 l)
@@ -95,6 +97,7 @@ export const USOS = {
   trillar: { nombre: 'En la era', estaciones: ['era'] },
   reducir: { nombre: 'En el horno de reducción', estaciones: ['horno_reduccion'] },
   curtir: { nombre: 'En las cubas de curtido', estaciones: ['cubas_curtido'] },
+  carbonear: { nombre: 'En la carbonera', estaciones: ['carbonera'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -157,6 +160,15 @@ export const ESTACIONES = {
   // curten a la vez (aLaVez), cada una con su tiempo, y se ven en remojo para todos. Provisional (diario y registro):
   // 40 s de trabajo para levantarlas.
   cubas_curtido:  { nombre: 'Cubas de curtido', un: 'unas cubas de curtido', uso: 'curtir', coste: { barro: 2, tronco_corto: 2 }, requiere: ['palo_cavador'], donde: 'fuera', trabajo: 40, tierra: true, aLaVez: COLA_CUBAS, llenar: true, hace: 'Curtir pieles limpias con corteza de roble y agua: dan cuero al cabo de días' },
+  // la carbonera (oficios, 18 nov; documento de sistemas: «carbón vegetal — carbonera: leña apilada y cubierta de
+  // tierra — horas»): 10 leñas puestas de pie alrededor de un palo, en un montón redondo, y tapadas con la tierra y el
+  // césped que se cavan a su lado con el palo cavador o la pala de madera (que hay que llevar al levantarla: no se
+  // gastan, ni la tierra tampoco). Se enciende dejando en ella la yesca y llevando el taladro de fuego (el encargo, la
+  // receta carbonear; una sola vez: carga 1); arde ahogada echando humo para todos (humea) y al cabo de CARBONEAR deja
+  // CARBONES carbones vegetales, que recoge quien la encendió; recogidos, la carbonera se deshace (seDeshace: se abre
+  // para sacar el carbón y no queda nada). Fuera y en cualquier sitio, como los carboneros en el bosque. Provisional
+  // (diario y registro): 4 h reales y 40 s de trabajo para levantarla.
+  carbonera:      { nombre: 'Carbonera', un: 'una carbonera', uso: 'carbonear', coste: { lena: 10 }, requiere: ['palo_cavador', 'pala_madera'], donde: 'fuera', trabajo: 40, humea: true, carga: 1, seDeshace: true, guarda: ['yesca'], cabe: 1, hace: 'Leña apilada y cubierta de tierra: encendida, arde ahogada horas y deja carbón vegetal' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'hilo', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -261,6 +273,9 @@ export const RECETAS = {
   // en el horno de reducción (P10, 17 nov): la carga (3 minerales de hierro y 4 carbones, con la yesca para prenderla),
   // encendida con el taladro de fuego (que se lleva y no se gasta), da 1 lupia de hierro al cabo de REDUCIR. Se cuenta por
   // tiempo transcurrido, como el secadero: la cola guarda cuándo termina
+  // en la carbonera (oficios, 18 nov): encenderla, con la yesca dejada en ella y llevando el taladro de fuego (no se
+  // gasta); las 10 leñas ya son la carbonera. Al cabo de CARBONEAR da CARBONES carbones vegetales (y se deshace al recogerlos)
+  carbonear:         { ...r('Carbón vegetal', 'carbonear', 'carbon', { yesca: 1 }, CARBONEAR, CARBONES), requiere: ['taladro_fuego'] },
   reducir:           { ...r('Lupia de hierro', 'reducir', 'lupia', { mineral_hierro: 3, carbon: 4, yesca: 1 }, REDUCIR), requiere: ['taladro_fuego'] },
   // en el banco de tronco
   cuerda:            r('Cuerda', 'banco', 'cuerda', { cordel: 3 }, 30),
@@ -350,6 +365,7 @@ export const PARA = {
   cubo: 'Agua, leche.',
   remo: 'Para remar en la canoa: con él se va bastante más deprisa que corriendo; sin remar, la canoa va a la deriva. Se lleva con las dos manos.',
   carretilla: 'Se empuja: 4 troncos cortos, 40 de leña, 36 piedras o un bloque de piedra, más deprisa que la rastra; aparcada en tus tierras, lo que lleva está protegido.',
+  carbonear: 'Arde más caliente que la leña: lo pide el horno de reducción para el hierro.',
   reducir: 'El hierro en bruto, con su escoria: la fragua lo bate en barra.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
@@ -810,7 +826,7 @@ export class Fabricacion {
       cola = e.cola; max = ESTACIONES[e.tipo].aLaVez || ESTACIONES[e.tipo].carga || COLA_ESTACION; enEst = e;
     }
     const sinTerminar = cola.filter(c => c.fin > ahora);
-    if (sinTerminar.length >= max) return { ok: false, motivo: rc.uso === 'manos' ? 'Ya estás haciendo otra cosa.' : enEst && ESTACIONES[enEst.tipo].humea ? 'El horno ya está encendido con su carga: espera a que termine.' : 'La cola de la estación está llena.' };
+    if (sinTerminar.length >= max) return { ok: false, motivo: rc.uso === 'manos' ? 'Ya estás haciendo otra cosa.' : enEst && enEst.tipo === 'carbonera' ? 'La carbonera ya arde: espera a que se haga el carbón.' : enEst && ESTACIONES[enEst.tipo].humea ? 'El horno ya está encendido con su carga: espera a que termine.' : 'La cola de la estación está llena.' };
     let usado;
     if (enEst) { // con lo depositado en la estación, y nada más
       const f = cuentasEstacion(rc.gasta, enEst.deposito).faltan;
@@ -873,6 +889,9 @@ export class Fabricacion {
       }
     }
     if (!dados.length) return { ok: false, motivo: 'No te cabe: no tienes sitio libre.' };
+    // la carbonera (seDeshace): sacado el carbón, no queda nada de ella
+    const ests = estacion ? this.estaciones[estacion] : null;
+    if (ests && ESTACIONES[ests.tipo].seDeshace && !ests.cola.length) { delete this.estaciones[estacion]; return { ok: true, dados, quedan: sinSitio, deshecha: estacion }; }
     return { ok: true, dados, quedan: sinSitio };
   }
 
@@ -1001,7 +1020,7 @@ export function ejecutarFabricacion(fab, invs, registro, accion, ahora, suelo = 
       : res.gastado ? { estacion: res.estacion, encendida: true, hasta: res.hasta, gastado: { ...res.gastado }, ...(res.avivada ? { avivada: true } : {}) }
       : res.quitada ? { estacion: res.estacion, quitada: true, devuelto: { ...res.devuelto } } : res.desmontada ? { estacion: res.estacion, desmontada: true, devuelto: { ...res.devuelto }, guardado: { ...res.guardado } } : res.entregado ? { estacion: res.estacion, entregado: { ...res.entregado } }
       : res.progreso !== undefined ? { estacion: res.estacion, progreso: +res.progreso.toFixed(3), ...(res.terminada ? { terminada: true } : {}) }
-      : res.dejado ? { estacion: res.estacion, dejado: { ...res.dejado } } : res.cogido ? { estacion: res.estacion, cogido: { ...res.cogido } } : res.id ? { estacion: res.id, ...(res.obra ? { obra: true } : {}) } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]) };
+      : res.dejado ? { estacion: res.estacion, dejado: { ...res.dejado } } : res.cogido ? { estacion: res.estacion, cogido: { ...res.cogido } } : res.id ? { estacion: res.id, ...(res.obra ? { obra: true } : {}) } : res.encargo ? { receta: res.encargo.receta, fin: res.encargo.fin, ...(res.estacion ? { estacion: res.estacion } : {}) } : { dados: res.dados.map(d => d.alSuelo ? [d.objeto, d.cantidad, d.alSuelo] : [d.objeto, d.cantidad]), ...(res.deshecha ? { deshecha: res.deshecha } : {}) };
     if (res.usado && res.usado.estacion) e.resultado.deLaEstacion = { ...res.usado.estacion };
     if (res.usado && Object.keys(res.usado.suelo).length) e.resultado.delSuelo = JSON.parse(JSON.stringify(res.usado.suelo));
   }

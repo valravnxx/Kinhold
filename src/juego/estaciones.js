@@ -23,6 +23,9 @@
 //    costado; con agua, el agua parda de la corteza, y cada piel en remojo, con la punta echada sobre el labio.
 //  - el horno de reducción (P10, 17 nov): la cuba de barro sobre su anillo de piedras, con el arco delante y la tobera
 //    a un lado; mientras reduce, humo espeso y llama por la boca y el arco al rojo (para todos); la lupia hecha, delante.
+//  - la carbonera (oficios, 18 nov): un montón redondo de leña tapado de tierra y de tepes de césped, con el tiro
+//    arriba y los respiraderos al pie; mientras arde, humo blanquecino por el tiro y los respiraderos al rojo, sin
+//    llama (arde ahogada); hecho el carbón, los carbones delante hasta que los saca su dueño (y se deshace).
 //  - las camas (8 nov): el refugio de ramas (tejadillo a un agua sobre un travesaño, con ramaje verde encima y un
 //    lecho seco dentro) y la cama de juncos (un lecho de juncos en capas entre dos varas, atado con cordel y con su
 //    almohada de juncos).
@@ -406,6 +409,70 @@ function humoHorno(id) {
     m.name = 'humo'; m.userData.fase = i / 16; g.add(m);
   }
   g.traverse(m => { if (m.isMesh || m.isSprite) m.castShadow = false; });
+  return g;
+}
+
+// La carbonera (oficios, 18 nov), como las de los carboneros de los bosques: las 10 leñas puestas de pie, apoyadas
+// unas en otras alrededor de un palo, en un montón redondo algo más bajo que la cintura, y tapado con la tierra cavada
+// al lado y con tepes de césped vueltos (la hierba hacia dentro: se ve la tierra y las raíces, con algo de verde en los
+// bordes). Arriba, el tiro (el hueco del palo, que se saca para encenderla); al pie, unos respiraderos abiertos con el
+// palo y las puntas de alguna leña que asoma. Alrededor, la tierra removida de donde se sacó. Sin fuego que se vea:
+// mientras arde, humo blanquecino y espeso por el tiro y los respiraderos al rojo (lo cambia ponerHumo).
+const CARBONERA = { r: 0.82, alto: 0.78, tiro: 0.07 };
+const TIERRA_CARB = 0x4f3e2d, TEPE = 0x5a5233, TEPE_VERDE = 0x5d6435, TIERRA_SUELTA = 0x5c4a36;
+function carbonera(id) {
+  const { r: R, alto: A, tiro: T } = CARBONERA, g = new THREE.Group(), L = new Lote({ rangoSuelo: 0.3, variacion: 0.08 });
+  // la tierra removida alrededor, de donde se cavó: un anillo bajo y desigual que se funde con el prado
+  const anillo = [];
+  for (let i = 0; i <= 6; i++) { const t = i / 6; anillo.push(new THREE.Vector2(R + 0.05 + t * 0.55, 0.05 * Math.sin((1 - t) * Math.PI * 0.5) - 0.015)); }
+  const suelta = new THREE.LatheGeometry(anillo, 30), ps = suelta.attributes.position;
+  for (let i = 0; i < ps.count; i++) { const x = ps.getX(i), z = ps.getZ(i), a = Math.atan2(z, x), k = 1 + (az(id, 's' + Math.round(a * 5)) - 0.5) * 0.12; ps.setX(i, x * k); ps.setZ(i, z * k); ps.setY(i, ps.getY(i) + (az(id, 'y' + Math.round(a * 7)) - 0.5) * 0.02); }
+  suelta.computeVertexNormals();
+  L.add(suelta, TIERRA_SUELTA, 0, 0, 0, null, { tex: 'piedra' });
+  // el montón: una cúpula achatada, de hombros redondos, apretada a paladas (ni lisa ni redonda del todo)
+  const perfil = [];
+  for (let i = 0; i <= 12; i++) { const t = i / 12, a = t * Math.PI / 2; perfil.push(new THREE.Vector2(Math.max(T, R * Math.cos(a) * (1 - 0.06 * t)), -0.03 + A * Math.pow(Math.sin(a), 0.85))); }
+  perfil.push(new THREE.Vector2(T * 0.8, A - 0.06));   // el borde del tiro, hacia dentro
+  const cupula = new THREE.LatheGeometry(perfil, 28), p = cupula.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i), rr = Math.hypot(x, z);
+    if (rr < T * 1.05) continue;
+    const ang = Math.atan2(z, x), k = 1 + (az(id, Math.round(ang * 5) + ':' + Math.round(y * 8)) - 0.5) * 0.1;
+    p.setX(i, x * k); p.setZ(i, z * k); p.setY(i, y + (az(id, 'h' + Math.round(ang * 6) + ':' + Math.round(y * 6)) - 0.5) * 0.04 * (y > 0.05 ? 1 : 0));
+  }
+  cupula.computeVertexNormals();
+  L.add(cupula, TIERRA_CARB, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'piedra' });
+  // los tepes vueltos, pegados a la ladera: losas finas y desiguales, unos con la raíz y otros con su borde de hierba
+  for (let i = 0; i < 22; i++) {
+    const a = (i * 2.399 + az(id, 't' + i)) % (Math.PI * 2), v = 0.18 + (i % 4) * 0.2 + az(id, 'v' + i) * 0.08, ang = v * Math.PI / 2;
+    const rr = R * Math.cos(ang) * 0.99, y = -0.03 + A * Math.pow(Math.sin(ang), 0.85) + 0.005;
+    const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, -a, 0)).multiply(new THREE.Matrix4().makeRotationZ(-(Math.PI / 2 - ang) * 0.95));
+    L.add(piedraIrregular(0.1 + az(id, 'r' + i) * 0.04, 1, id + 'tp' + i, 0.3), i % 3 ? TEPE : TEPE_VERDE, Math.cos(a) * rr, y, Math.sin(a) * rr, m, { escala: new THREE.Vector3(1.25, 0.28, 1.05), tex: 'piedra' });
+  }
+  g.add(mallas(L));
+  // las puntas de leña que asoman al pie, entre la tierra
+  const W = new Lote({ rangoSuelo: 0.15, variacion: 0.08 });
+  for (let i = 0; i < 4; i++) {
+    const a = i * 1.7 + az(id, 'l' + i) + 0.6, rr = R * 0.93;
+    W.add(cil(0.045, 0.05, 0.22, 7), i % 2 ? 'madera' : 'maderaOsc', Math.cos(a) * rr, 0.07, Math.sin(a) * rr, { y: -a, z: Math.PI / 2 - 0.3 }, { sinSuelo: true });
+  }
+  g.add(mallas(W));
+  // el tiro arriba y los respiraderos al pie: huecos oscuros (al rojo mientras arde)
+  const tiro = new THREE.Mesh(new THREE.CircleGeometry(T * 0.85, 10), MAT_ARCO); tiro.rotation.x = -Math.PI / 2; tiro.position.y = A - 0.055; tiro.name = 'tiro'; g.add(tiro);
+  for (let i = 0; i < 5; i++) {
+    const a = i * Math.PI * 2 / 5 + az(id, 'q' + i) * 0.4, ang = 0.32, rr = R * Math.cos(ang) + 0.005, y = -0.03 + A * Math.pow(Math.sin(ang), 0.85);
+    const h = new THREE.Mesh(new THREE.CircleGeometry(0.035, 7), MAT_ARCO);
+    h.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); h.lookAt(Math.cos(a) * 3, y + 3 * Math.tan(Math.PI / 2 - ang) * 0.4, Math.sin(a) * 3); h.name = 'respiradero'; g.add(h);
+  }
+  g.userData.alzaFuego = A - 0.05;
+  return g;
+}
+// El humo de la carbonera: blanquecino y lento, sin llama (la leña arde ahogada bajo la tierra)
+const MAT_HUMO_CARB = () => new THREE.SpriteMaterial({ map: texturaHumo(), color: 0xb3ada4, transparent: true, opacity: 0, depthWrite: false, fog: true });
+function humoCarbonera() {
+  const g = new THREE.Group(); g.name = 'fuego';
+  g.userData.humo = { x: 0, y: -0.12, z: 0 }; g.userData.fuego = { x: 0, y: 0, z: 0 };
+  for (let i = 0; i < 16; i++) { const m = new THREE.Sprite(MAT_HUMO_CARB()); m.name = 'humo'; m.userData.fase = i / 16; g.add(m); }
   return g;
 }
 
@@ -939,7 +1006,7 @@ export const SITIO_DORMIR = { refugio_ramas: { x: 0, z: -0.45, y: 0.06 }, cama_j
 const ASENTAR = { era: true };
 export const MODELO_ESTACION = { piedra_tallar: piedraTallar, hoguera, hogar, banco_tronco: bancoTronco, acopio_troncos: deMeshy('acopio_troncos', acopioTroncos), pila_piedras: pilaPiedras, lenera,
   soporte_varas: soporteVaras, almiar, hoyo_barro: hoyoBarro, cesto, colgadero_mochilas: colgaderoMochilas, colgadero_herramientas: colgaderoHerramientas,
-  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador, era, horno_reduccion: horno, cubas_curtido: cubasCurtido };
+  refugio_ramas: refugioRamas, cama_juncos: camaJuncos, secadero, raspador, era, horno_reduccion: horno, cubas_curtido: cubasCurtido, carbonera };
 
 // Lo guardado en un almacenaje, puesto como se guarda de verdad (cada uno lleno hasta lo que le cabe; nada flota):
 const TRONCO = { tronco_delgado: [2.6, 0.09], tronco_corto: [0.9, 0.14], tronco_largo: [4.5, 0.18] };
@@ -1152,7 +1219,20 @@ function llenoHorno(dep, id, colgado = []) {
   if (hechas) { const l = modeloDe({ id: id + ':lupia', cosa: { tipo: 'lupia', n: hechas } }); l.position.set(0.04, 0, HORNO.abajo + 0.36); l.scale.setScalar(1.15); l.name = 'lupia_hecha'; g.add(l); }
   return g;
 }
-const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador, era: llenoEra, horno_reduccion: llenoHorno, cubas_curtido: llenoCubas };
+// Lo dejado en la carbonera (la yesca, para encenderla), al pie, delante; el carbón ya hecho (de quien la encendió),
+// delante, en el suelo, hasta que lo saca su dueño.
+function llenoCarbonera(dep, id, colgado = []) {
+  const g = new THREE.Group();
+  for (const [t, n] of Object.entries(dep || {})) {
+    if (!(n > 0)) continue;
+    const m = modeloDe({ id: `${id}:${t}`, cosa: { tipo: t, n } }); m.position.set(0.25, 0, CARBONERA.r + 0.22); m.rotation.y = az(id + t, 3) * 6; m.name = 'deposito_' + t; g.add(m);
+  }
+  if (colgado.some(c => c.listo)) {
+    for (let i = 0; i < 2; i++) { const c = modeloDe({ id: `${id}:carbon${i}`, cosa: { tipo: 'carbon', n: 2 } }); c.position.set(-0.18 + i * 0.3, 0, CARBONERA.r + 0.3 + i * 0.06); c.rotation.y = az(id, 'c' + i) * 6; c.scale.setScalar(1.2); c.name = 'carbon_hecho'; g.add(c); }
+  }
+  return g;
+}
+const LLENO = { colgadero_herramientas: llenoHerramientas, colgadero_mochilas: llenoMochilas, acopio_troncos: llenoAcopio, pila_piedras: llenoPila, lenera: llenoLenera, soporte_varas: llenoSoporte, almiar: llenoAlmiar, hoyo_barro: llenoHoyo, cesto: llenoCesto, secadero: llenoSecadero, raspador: llenoRaspador, era: llenoEra, horno_reduccion: llenoHorno, carbonera: llenoCarbonera, cubas_curtido: llenoCubas };
 
 // Dónde se pone lo depositado en cada estación (en su sistema, sin girar): los sitios de encima (y su altura) y, para
 // lo que no cabe, un anillo al pie. Lo grande (troncos) siempre al pie.
@@ -1203,7 +1283,7 @@ const vara = (a, b, r, mat) => {
 };
 // El armazón: cuatro estacas un poco inclinadas hacia dentro alrededor del puesto, con dos vueltas de cordel.
 function armazon(tipo, id) {
-  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95, era: 1.3, horno_reduccion: 0.75, cubas_curtido: 1.15 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : tipo === 'horno_reduccion' ? 1.3 : 0.75;
+  const g = new THREE.Group(), r = { hoguera: 0.78, hogar: 0.82, banco_tronco: 0.72, piedra_tallar: 0.62, acopio_troncos: 1.2, pila_piedras: 0.7, lenera: 1.0, soporte_varas: 0.95, almiar: 0.95, hoyo_barro: 0.7, cesto: 0.45, colgadero_mochilas: 0.75, colgadero_herramientas: 0.65, refugio_ramas: 1.35, cama_juncos: 1.05, secadero: 1.05, raspador: 0.95, era: 1.3, horno_reduccion: 0.75, carbonera: 0.95, cubas_curtido: 1.15 }[tipo] || 0.7, alto = ESTACIONES[tipo] && ESTACIONES[tipo].muro ? 1.7 : tipo === 'horno_reduccion' ? 1.3 : 0.75;
   const pies = [0, 1, 2, 3].map(i => { const a = Math.PI / 4 + i * Math.PI / 2 + (az(id, 50 + i) - 0.5) * 0.15; return [Math.cos(a) * r, Math.sin(a) * r]; });
   pies.forEach(([x, z]) => g.add(vara(new THREE.Vector3(x, -0.05, z), new THREE.Vector3(x * 0.92, alto, z * 0.92), 0.022, MAT_ARMAZON)));
   for (const h of [0.32, 0.62]) for (let i = 0; i < 4; i++) {
@@ -1244,7 +1324,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     const r = o.getObjectByName('ramas'); if (r) r.visible = v.ramas;
     if (v.cual) { const f = modeloFuego(v.cual, e.id), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || 0; o.add(f); }
   }
-  // el horno de reducción (P10): mientras alguna carga no ha terminado (según la hora de este navegador), humo, llama y
+  // el horno de reducción (P10) y la carbonera (oficios): mientras alguna carga no ha terminado (según la hora de este navegador), humo, llama y
   // el arco y la tobera al rojo; si no, nada
   function ponerHumo(o, e) {
     const arde = !e.obra && (e.colgado || []).some(c => Date.now() < c.hasta), firma = arde ? 'ardiendo' : '';
@@ -1253,7 +1333,10 @@ export function crearEstaciones({ raiz, altura, fab }) {
     const viejo = o.getObjectByName('fuego'); if (viejo) o.remove(viejo);
     const r = o.getObjectByName('rescoldo'); if (r) r.visible = arde;
     const t = o.getObjectByName('tobera'); if (t) t.material = arde ? MAT_RESCOLDO : MAT_ARCO;
-    if (arde) { const f = humoHorno(e.id); f.position.y = HORNO.alto; o.add(f); }
+    // la carbonera (oficios): el tiro y los respiraderos al rojo, y humo blanquecino, sin llama
+    o.traverse(m => { if (m.name === 'respiradero' || m.name === 'tiro') m.material = arde ? MAT_RESCOLDO : MAT_ARCO; });
+    if (arde && e.tipo === 'carbonera') { const f = humoCarbonera(), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || CARBONERA.alto; o.add(f); }
+    else if (arde) { const f = humoHorno(e.id); f.position.y = HORNO.alto; o.add(f); }
   }
   // Cada fotograma: el fuego que se apaga solo (al pasar su hora), las llamas y el humo. Devuelve dónde arde cada una
   // (en el mundo) para las luces.
@@ -1267,6 +1350,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
       const f = o.getObjectByName('fuego');
       const brasas = !!f && o.userData.firmaFuego.indexOf('brasas') === 0;
       if (!f || (o.userData.firmaFuego.indexOf('ardiendo') !== 0 && !brasas)) continue;
+      if (o.userData.tipo === 'carbonera') { moverHumo(f, t / 1000); continue; }   // (arde ahogada: sin luz)
       if (o.userData.tipo === 'horno_reduccion') moverHumo(f, t / 1000); else if (!brasas) moverFuego(f, t / 1000);
       vF.set(0, brasas ? 0.5 : 0.9, 0); f.localToWorld(vF); const p = vF.clone(); p.k = brasas ? 0.22 : 1; arden.push(p); // la luz, por encima de las piedras (si no, las quema); las brasas, poca
     }
