@@ -45,6 +45,8 @@ EQUIPOS = {
     'a_mano': {'cintura': C('cinto_anillas', 1, [C('taladro_fuego'), C('palo_cavador'), C('lasca_silex'), C('cordel', 2)]),
                'mano:der': C('hacha_piedra'), 'mano:izq': C('cuerda', 2)},
     'a_mano2': {'cintura': C('cuerda_trenzada', 1, [C('cuerda'), C('lasca_silex')]), 'mano:der': C('palo_cavador'), 'mano:izq': C('lasca_silex')},
+    # el huso y el hilo (oficios, 18 nov): el huso en la mano y otro de pie en el cinto
+    'a_mano4': {'cintura': C('cinto_anillas', 1, [C('huso'), C('cordel', 2), None, None]), 'mano:der': C('huso')},
     'a_mano3': {'cintura': C('cordel', 1, [C('lasca_silex')]), 'mano:der': C('taladro_fuego'), 'mano:izq': C('cordel', 3)},
     'lenero_en_manos': {'cintura': C('cordel', 1, [None]), 'mano:der': C('lenero', 1, [None] * 6)},
     # la rodaja (P11c): de canto delante del cuerpo, cogida por los lados del canto
@@ -53,7 +55,7 @@ EQUIPOS = {
     'remo': {'cintura': C('cordel', 1, [None]), 'mano:der': C('remo')},
 }
 # lo que se fabrica con las manos: ninguno sale con la bolsa o el hatillo de lo que aún no tiene modelo
-A_MANO = ('a_mano', 'a_mano2', 'a_mano3', 'lenero_en_manos')
+A_MANO = ('a_mano', 'a_mano2', 'a_mano3', 'a_mano4', 'lenero_en_manos')
 VISTAS = {'frente': 0.0, 'lado': 1.5708, 'espalda': 3.1416}
 
 MEDIR = '''() => { const K = window.__kinhold, j = K.jugador, H = j.mh.hueso; K.escena.updateMatrixWorld(true);

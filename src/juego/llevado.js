@@ -24,7 +24,7 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA, loteRemo } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA, loteRemo, husoEn } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
@@ -543,7 +543,7 @@ export { espalda as loteEspalda, enMano as loteEnMano };
 // índice, +Z hacia los nudillos, el origen en el puño).
 // lo que se fabrica con las manos y tiene ya su modelo en la mano y en el cinturón (7 nov). __sinModelosManos (solo
 // para comprobar que la prueba falla) los vuelve a dibujar con la bolsa o el hatillo de antes.
-const HECHOS_A_MANO = new Set(['lasca_silex', 'palo_cavador', 'cordel', 'cuerda', 'taladro_fuego', 'lenero']);
+const HECHOS_A_MANO = new Set(['lasca_silex', 'palo_cavador', 'cordel', 'cuerda', 'taladro_fuego', 'lenero', 'huso']);
 const sinModelo = t => globalThis.__sinModelosManos && HECHOS_A_MANO.has(t);
 function enMano(t) {
   const L = nuevoLote();
@@ -562,6 +562,8 @@ function enMano(t) {
   else if (t === 'cordel') madeja(L, 0.045, 0.004, 7, CORDEL);
   else if (t === 'cuerda') madeja(L, 0.075, 0.009, 5, CUERDA);
   else if (t === 'taladro_fuego') arcoTaladro(L, -0.04);
+  // el huso (oficios, 18 nov): cogido por la punta de arriba, como se deja colgar al hilar; la tortera, abajo
+  else if (t === 'huso') husoEn(L, 0, 0, 0.27, { x: -Math.PI / 2 });   // colgando del puño hacia abajo (+Z), cogido por arriba
   else if (t === 'cuchillo') {
     L.add(cil(0.011, 0.013, 0.1, 6), 'tabla', 0, 0, 0, null, { tex: 'veta' });
     L.add(cajaR(0.026, 0.13, 0.004, 0.0015), 0x8e8f8e, 0, 0.11, 0.004, null, { plano: true, brillo: 1.1 });
@@ -735,6 +737,11 @@ export function crearLlevado(j) {
           else if (t === 'cordel') madeja(C, 0.04, 0.004, 6, CORDEL);
           else if (t === 'cuerda') madeja(C, 0.07, 0.009, 5, CUERDA);
           else if (t === 'taladro_fuego') arcoTaladro(C, -0.3);
+          else if (t === 'huso') {   // (oficios) en su bolsa de cuero, asomando la punta de arriba del palo con su vuelta de hilo (suelto en el cinto, el palo se cruzaba con la mano)
+            bolsa(C, 0, 0, 0, 0.9);
+            C.add(cil(0.0055, 0.0045, 0.12, 6), 'madera', 0.006, 0.0, 0.004, { z: -0.12 }, { tex: 'veta' });
+            C.add(new THREE.TorusGeometry(0.0062, 0.0013, 4, 10), 0xc7b893, 0.0015, 0.035, 0.004, { x: Math.PI / 2 }, { tex: 'liso' });
+          }
           else if (CATALOGO[t].herramienta) herramienta(C, t, 0.55);
           else if (CATALOGO[t].tam === 'P') { bolsa(C, 0, 0, 0, 1); C.generico = true; }
           else { hatillo(C, 0, 0, 0, 0.9); C.generico = true; }
@@ -742,7 +749,7 @@ export function crearLlevado(j) {
           const m = new THREE.Matrix4().makeRotationY(a);
           if (t === 'espada') m.multiply(new THREE.Matrix4().makeRotationZ(0.5)).multiply(new THREE.Matrix4().makeTranslation(0, 0.05, 0)); // la punta hacia atrás
           else if (['cordel', 'cuerda'].includes(t)) m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.01, 0)); // cuelga de su atadura
-          else if (CATALOGO[t].herramienta && !['cuchillo', 'lasca_silex', 'palo_cavador', 'taladro_fuego'].includes(t)) m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.05, 0));
+          else if (CATALOGO[t].herramienta && !['cuchillo', 'lasca_silex', 'palo_cavador', 'taladro_fuego', 'huso'].includes(t)) m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(0, -0.05, 0));
           m.setPosition(p);
           grupo.add(pieza(C, 'colgado_' + i, m, pelvis, invRaiz));
         });

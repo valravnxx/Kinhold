@@ -157,7 +157,7 @@ export const ESTACIONES = {
   // curten a la vez (aLaVez), cada una con su tiempo, y se ven en remojo para todos. Provisional (diario y registro):
   // 40 s de trabajo para levantarlas.
   cubas_curtido:  { nombre: 'Cubas de curtido', un: 'unas cubas de curtido', uso: 'curtir', coste: { barro: 2, tronco_corto: 2 }, requiere: ['palo_cavador'], donde: 'fuera', trabajo: 40, tierra: true, aLaVez: COLA_CUBAS, llenar: true, hace: 'Curtir pieles limpias con corteza de roble y agua: dan cuero al cabo de días' },
-  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
+  cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'hilo', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
 export const esAlmacen = tipo => Object.hasOwn(ESTACIONES, tipo) && ESTACIONES[tipo].uso === 'almacen';
@@ -202,6 +202,14 @@ export const RECETAS = {
   fardo:             r('Fardo atado', 'manos', 'fardo', { cordel: 2 }, 15),
   arpon:             r('Arpón', 'manos', 'arpon', { rama: 1, lasca_silex: 1, cordel: 1 }, 30),
   odre:              r('Odre', 'manos', 'odre', { piel: 1, cordel: 1 }, 30),
+  // el huso (oficios, 18 nov; documento de sistemas: «huso — vara + piedra o hueso»): la vara, cortada a un palmo y
+  // medio y aguzada, y la piedra, una laja plana agujereada a golpes (la tortera), encajada abajo. Tiempo, provisional
+  // (diario y registro): como el mazo, algo menos (la piedra es pequeña)
+  huso:              r('Huso', 'manos', 'huso', { vara: 1, piedra: 1 }, 40),
+  // hilar (oficios, 18 nov; documento de sistemas: «hilo — 2 fibra de lino o lana — huso»): con las manos, en cualquier
+  // sitio, llevando el huso (no se gasta); de la fibra cruda que se recoge (el lino y la lana, cuando haya campos y
+  // ovejas). Tiempo, provisional (diario y registro)
+  hilar:             { ...r('Ovillo de hilo', 'manos', 'hilo', { fibra: 2 }, 30), requiere: ['huso'] },
   // despiezar la liebre cazada (9 nov; src/logica/comida.js): con las manos, llevando la lasca de sílex (requiere: no
   // se gasta); da la carne cruda y, además (tambien), la piel. Tiempo, provisional
   despiezar_liebre:  { ...r('Despiezar la liebre', 'manos', 'carne_cruda', { liebre: 1 }, 30), requiere: ['lasca_silex'], tambien: { piel: 1 } },
@@ -326,6 +334,8 @@ export const PARA = {
   azada: 'Preparar casillas de cultivo.',
   hoz_silex: 'Cosechar cereal.',
   mayal: 'Trillar.',
+  huso: 'Llevándolo, hila: 2 fibras dan un ovillo de hilo. No se gasta.',
+  hilar: 'Para coser: los zapatos y la ropa.',
   criba_grano: 'Cribar el grano sin limpiar: grano de cebada limpio, el que se siembra.',
   cribar: 'Grano de cebada limpio, el que se siembra.',
   trillar: 'Grano sin limpiar, que se criba, y paja: el tejado de paja, la cama de paja, el almiar.',

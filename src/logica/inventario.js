@@ -111,6 +111,7 @@ export const CATALOGO = {
   // nabo (se comen crudos o asados al fuego y se estropean pronto: src/logica/comida.js)
   gavilla: R('Gavilla de cebada', 'M'), col: R('Col', 'M'), nabo: R('Nabo', 'P'), col_asada: R('Col asada', 'M'), nabo_asado: R('Nabo asado', 'P'),
   piel: R('Piel', 'M'), piel_limpia: R('Piel limpia', 'M'), cuero: R('Cuero', 'M'), tela: R('Tela', 'M'), paja: R('Haz de paja', 'M'), pescado: R('Pescado', 'M'),
+  hilo: R('Ovillo de hilo', 'P'),   // (oficios, 18 nov) el que sale de hilar la fibra con el huso: para coser
   grano: R('Grano', 'P'), harina: R('Harina', 'P'), agua: R('Agua', 'P'),
   flecha: R('Flecha', 'P'), virote: R('Virote', 'P'), anzuelo: R('Anzuelo y sedal', 'P'),
   // herramientas y armas (herramienta: true → van en la caja de herramientas)
@@ -144,6 +145,9 @@ export const CATALOGO = {
   // mano (no va en el cinto ni en el colgadero de herramientas: no tiene mango)
   criba_grano: { nombre: 'Criba de grano', tam: 'M' },
   cubo: { nombre: 'Cubo de madera', tam: 'M' },
+  // el huso (oficios, 18 nov; documento de sistemas: «huso — vara + piedra o hueso — hilar fibra y lana»): un palo
+  // recto de vara con la tortera de piedra agujereada abajo, que lo hace girar. Se lleva y no se gasta al hilar
+  huso: { nombre: 'Huso', tam: 'P', herramienta: true },
   cubo_agua: { nombre: 'Cubo de agua', tam: 'M' },   // el cubo lleno en el río (P11b, regar el huerto, 14 nov): unos 10 litros
   espada: { nombre: 'Espada', tam: 'M' },
   escudo: { nombre: 'Escudo', tam: 'M' },
