@@ -1005,9 +1005,17 @@ function zapatoEn(L, x, z, giro, id, k) {
   L.add(cuerpo, CUERO, ...en(0.008, 0.012), { y: giro }, { escala: v3(0.128, 0.075, 0.047), tex: 'liso', sinSuelo: true, brillo: 1.06, rayas: moteadoPiel(id + k, 1.3) });
   L.add(new THREE.CircleGeometry(1, 14), 0x22170f, ...en(-0.042, 0.068), { y: giro, x: -Math.PI / 2 + 0.1 }, { escala: v3(0.058, 0.034, 1), tex: 'liso', sinSuelo: true });
   L.add(new THREE.TorusGeometry(1, 0.06, 4, 16), CUERO_OSC, ...en(-0.042, 0.068), { y: giro, x: -Math.PI / 2 + 0.1 }, { escala: v3(0.058, 0.034, 0.06), tex: 'liso', sinSuelo: true });
-  const [lx, , lz] = en(0.025, 0);
-  L.add(new THREE.TorusGeometry(0.008, 0.0028, 4, 8), CORDEL, lx - sa * 0.034, 0.068, lz - ca * 0.034, { y: giro }, { tex: 'liso', sinSuelo: true });
-  L.add(tubo([v3(lx - sa * 0.034, 0.066, lz - ca * 0.034), v3(lx - sa * 0.052 + ca * 0.02, 0.045, lz - ca * 0.052 - sa * 0.02), v3(lx - sa * 0.06 + ca * 0.03, 0.006, lz - ca * 0.06 - sa * 0.03)], 0.0022, 3), CORDEL, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+  // la costura de encima, del empeine a la punta, y la tira de cuero que ciñe el empeine, anudada a un lado con los
+  // dos cabos caídos (todo del cuero oscuro, nada de metal)
+  const alto = d => { const u = (d - 0.008) / 0.128; return 0.012 + 0.075 * Math.sqrt(Math.max(0, 1 - u * u)) * (1 - 0.35 * Math.max(0, u)) + 0.0012; };
+  const costura = []; for (let d = 0.118; d >= 0.0; d -= 0.0118) costura.push(v3(...en(d, alto(d))));
+  L.add(tubo(costura, 0.0016, 3), 0x3a281b, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
+  const dt = 0.012, [tx, , tz] = en(dt, 0);
+  L.add(new THREE.TorusGeometry(1, 0.075, 4, 16, Math.PI), CUERO_OSC, tx, 0.012, tz, { y: giro + Math.PI / 2 }, { escala: v3(0.05, alto(dt) - 0.011, 0.08), tex: 'liso', sinSuelo: true });
+  const lado = (f, y) => v3(tx - sa * 0.05 * f, y, tz - ca * 0.05 * f);
+  const nudo = lado(0.92, 0.05);
+  L.add(new THREE.IcosahedronGeometry(0.0062, 0), CUERO_OSC, nudo.x, nudo.y, nudo.z, null, { tex: 'liso', sinSuelo: true });
+  for (const [k2, ab] of [[1, 0.011], [-1, 0.0]]) L.add(tubo([nudo, lado(1.05, 0.032).add(v3(ca * 0.008 * k2, 0, -sa * 0.008 * k2)), lado(1.18 + ab, 0.006).add(v3(ca * 0.016 * k2, 0, -sa * 0.016 * k2))], 0.0022, 3), CUERO_OSC, 0, 0, 0, null, { tex: 'liso', sinSuelo: true });
 }
 function zapatos(n, id) {
   const L = lote(0.04), g = az(id, 3) * 0.4;
