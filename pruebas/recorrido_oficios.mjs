@@ -231,6 +231,58 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     return { ok: true, a };
   };
 
+  // ── el fuego: el taladro de fuego (2 ramas y un cordel) y la yesca (de un hongo yesquero o de 2 de fibra) ──
+  const fibraAqui = async (n) => {
+    const aqui = { ...J.pos };
+    for (const radio of [250, 500, 900]) {
+      if (J.cuantos('fibra') >= n) break;
+      const lista = alrededor(aqui, radio).filter(q => ['ortiga', 'hierba_larga'].includes(q.tipo));
+      for (let k = 0; k < 40 && J.cuantos('fibra') < n; k++) { const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0]; if (!p) break; if (MANOS.every(l => J.inv.lugares[l]) && !enLaMano('fibra')) await soltarManos(['lasca_silex']); await recoger(p); }
+    }
+    await J.andar(aqui.x, aqui.z);
+    return J.cuantos('fibra') >= n;
+  };
+  const taladroYYesca = async (nYesca) => {
+    const aqui = { ...J.pos };
+    if (!(await buscar('taladro_fuego'))) {
+      await soltarManos();
+      await acopiar(['ramas'], 'rama', 2, aqui);
+      const c = await cordel();
+      await J.andar(aqui.x, aqui.z); await soltarManos();
+      if (c.ok) await deMano('taladro_fuego');
+    }
+    for (let k = 0; k < 4 && J.cuantos('yesca') < nYesca; k++) {
+      const hongo = cerca(alrededor(aqui, 300).filter(q => q.tipo === 'yesquero' && !probados.has(q.id)), J.pos)[0];
+      if (MANOS.every(l => J.inv.lugares[l]) && !enLaMano('yesca')) await soltarManos(['taladro_fuego']);
+      if (hongo && (await recoger(hongo)).ok) continue;
+      await soltarManos(['taladro_fuego', 'yesca']);
+      if (await fibraAqui(2)) { const lf = enLaMano('fibra'); if (lf) await soltar(lf); await deMano('yesca'); }
+    }
+    await J.andar(aqui.x, aqui.z);
+    return J.cuantos('taladro_fuego') >= 1 && J.cuantos('yesca') >= nYesca;
+  };
+  // una lanza endurecida al fuego del hogar de su casa (una rama), encendiéndolo si está apagado
+  const lanzaNueva = async () => {
+    const hogar = cerca(suyas('hogar'), M)[0];
+    if (!hogar) return { ok: false, motivo: 'no tiene hogar' };
+    const H = () => s.objetos.fab.estaciones[hogar.id];
+    await J.andar(hogar.x + 1, hogar.z); await soltarManos(['lasca_silex']);
+    await acopiar(['ramas'], 'rama', 2, { ...J.pos });
+    if (!(H().fuego && H().fuego.hasta > Date.now())) {
+      if (!(await taladroYYesca(1))) return { ok: false, motivo: `sin taladro o sin yesca (${enMano()})` };
+      await J.andar(hogar.x + 1, hogar.z);
+      if (!(H().fuego && H().fuego.combustible > 0)) { await cogerSuelo('rama', J.pos, 4, 1); const e = await J.objeto({ tipo: 'echar_fuego', estacion: hogar.id, objeto: 'rama', x: J.pos.x, z: J.pos.z }); if (!e.ok) return e; }
+      const en = await J.objeto({ tipo: 'encender_fuego', estacion: hogar.id, x: J.pos.x, z: J.pos.z });
+      if (!en.ok) return { ok: false, motivo: `no enciende el hogar: ${en.motivo}` };
+      await soltarManos();
+    }
+    await cogerSuelo('rama', J.pos, 4, 1);
+    await J.andar(hogar.x + 1, hogar.z);
+    const d = await depositar(hogar, 'rama');
+    if (!d.ok) return d;
+    return enEstacion(hogar, 'lanza_endurecida');
+  };
+
   // ── 27a. Cazar: hasta tener 5 pieles (2 para el zurrón y 3 para el cuero) y una carne para el secadero ──
   console.log('27a. Con su lanza, caza liebres hasta tener 5 pieles y las despieza con la lasca');
   const pieles = () => J.cuantos('piel') + nEnSuelo('piel', taller, 4);
@@ -286,6 +338,11 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   await soltarManos();
   await buscar('lasca_silex', fogon ? [[fogon, 20]] : []);
   await buscar('lanza_endurecida', fogon ? [[fogon, 20]] : []);
+  // (la que dejó junto a la hoguera de la orilla, fuera de su tierra, ya no está: lo soltado fuera se pierde a la hora)
+  if (!J.cuantos('lanza_endurecida')) {
+    const r = await lanzaNueva();
+    comprobar('su lanza se perdió junto a la hoguera de la orilla (fuera de su tierra): endurece otra al fuego de su hogar, de una rama', r.ok && J.cuantos('lanza_endurecida') >= 1, r.motivo || enMano());
+  }
   comprobar('tiene su lanza y su lasca de sílex', J.cuantos('lanza_endurecida') >= 1 && J.cuantos('lasca_silex') >= 1, enMano());
   // las manos: la lanza en la derecha; la lasca, en la izquierda
   if (!enLaMano('lanza_endurecida')) await aLaMano('lanza_endurecida');
