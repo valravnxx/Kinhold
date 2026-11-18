@@ -321,7 +321,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
 
   // ── 27b. Dos cuerdas para el secadero y una para el raspador: 27 de fibra, 9 cordeles, en el banco ──
-  console.log('27b. Trenza 3 cuerdas en su banco (9 cordeles de 27 de fibra) y tala árboles jóvenes: 4 troncos delgados y 4 varas');
+  console.log('27b. Trenza cuerdas en su banco (3 cordeles de 9 de fibra cada una) y tala árboles jóvenes: 4 troncos delgados y varas');
   const cuerda = async () => {
     await J.andar(banco.x + 1, banco.z); await soltarManos(['lasca_silex']);
     for (let v = 0; v < 3; v++) {
@@ -333,13 +333,15 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     }
     return enEstacion(banco, 'cuerda');
   };
+  // (2 para el secadero, y otra para el raspador si aún no tiene uno)
+  const nCuerdas = suyas('raspador').length ? 2 : 3;
   let rq = { ok: true };
-  for (let i = 0; i < 3 && rq.ok; i++) {
+  for (let i = 0; i < nCuerdas && rq.ok; i++) {
     await cuidarse();
     rq = await cuerda();
     if (rq.ok) { await J.andar(taller.x, taller.z); const lc = enLaMano('cuerda'); if (lc) await soltar(lc); }
   }
-  comprobar('trenza 3 cuerdas en su banco', rq.ok && nEnSuelo('cuerda', taller, 4) + J.cuantos('cuerda') >= 3, rq.motivo || `${nEnSuelo('cuerda', taller, 4)}`);
+  comprobar(`trenza ${nCuerdas} cuerdas en su banco`, rq.ok && nEnSuelo('cuerda', taller, 4) + J.cuantos('cuerda') >= nCuerdas, rq.motivo || `${nEnSuelo('cuerda', taller, 4)}`);
   // los troncos delgados, de árboles jóvenes, cada uno al hombro hasta el taller; las varas, de dos en dos a la mano
   let jovenes = 0, rt = { ok: true };
   while (rt.ok && (nEnSuelo('tronco_delgado', taller, 4) < 4 || nEnSuelo('vara', taller, 4) < 5) && jovenes < 10) {
@@ -394,13 +396,18 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
 
   // ── 27d. El raspador, las pieles limpias y el zurrón ──
   console.log('27d. Levanta el raspador de pieles (4 varas y una cuerda) y deja limpias las 5 pieles con la lasca; con dos, el zurrón en el banco');
-  const sitioRas = libreEn(taller, 25, 2) || { x: taller.x - 4, z: taller.z };
-  await cogerSuelo('vara', taller, 4, 3); await J.andar(sitioRas.x + 1, sitioRas.z); await soltarManos(['lasca_silex']);
-  await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']); await cogerSuelo('vara', taller, 4, 1); await cogerSuelo('cuerda', taller, 4, 1);
-  await J.andar(sitioRas.x + 1, sitioRas.z); await soltarManos(['lasca_silex']);
-  const ras = await levantar('raspador', sitioRas.x, sitioRas.z);
-  comprobar('levanta el raspador de pieles: 4 varas y una cuerda', ras.ok && ras.datos && ras.datos.terminada, ras.motivo || '');
-  const raspador = ras.ok && s.objetos.fab.estaciones[ras.id];
+  // (el de la granja, si ya tiene uno en su tierra, le vale; si no, lo levanta)
+  let raspador = cerca(suyas('raspador'), taller)[0];
+  if (raspador) comprobar('ya tiene un raspador de pieles (el de la criba de la granja): raspa en él', true);
+  else {
+    const sitioRas = libreEn(taller, 25, 2) || { x: taller.x - 4, z: taller.z };
+    await cogerSuelo('vara', taller, 4, 3); await J.andar(sitioRas.x + 1, sitioRas.z); await soltarManos(['lasca_silex']);
+    await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']); await cogerSuelo('vara', taller, 4, 1); await cogerSuelo('cuerda', taller, 4, 1);
+    await J.andar(sitioRas.x + 1, sitioRas.z); await soltarManos(['lasca_silex']);
+    const ras = await levantar('raspador', sitioRas.x, sitioRas.z);
+    comprobar('levanta el raspador de pieles: 4 varas y una cuerda', ras.ok && ras.datos && ras.datos.terminada, ras.motivo || '');
+    raspador = ras.ok && s.objetos.fab.estaciones[ras.id];
+  }
   let limpias = 0;
   if (raspador && !raspador.obra) {
     if (!J.cuantos('lasca_silex')) await buscar('lasca_silex');
