@@ -32,7 +32,7 @@ const MANOS = ['mano:der', 'mano:izq'];
 // Con MUTAR=1 (solo al seguir desde lo guardado) no se adelantan los días de las cubas: el cuero no sale y debe FALLAR.
 const MUTAR = process.env.MUTAR === '1' && !!process.env.KINHOLD_RECORRIDO_DESDE;
 
-export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, sitioCaza = null }) {
+export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, sitioCaza = null, guardarTrasCaza = null }) {
   const yo = J.bienvenida.autor;
   const r2 = v => Math.round(v * 100) / 100;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -362,10 +362,10 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   await J.andar(taller.x, taller.z); await soltarManos(['lanza_endurecida']);
   const conCarne = () => J.cuantos('carne_cruda') + nEnSuelo('carne_cruda', taller, 4);
   let cazadas = 0, intentos = 0, porque = '';
-  const sitiosCaza = [taller, ...(fogon ? [fogon] : [])];
-  while (pieles() < 5 && intentos < 10) {
+  // por los prados de alrededor de su taller (a 150 m como mucho, por donde vuelve enseguida): en cada salida, a otro
+  const sitiosCaza = [taller, ...Array.from({ length: 8 }, (_, k) => ({ x: r2(taller.x + Math.cos(k * Math.PI / 4) * 120), z: r2(taller.z + Math.sin(k * Math.PI / 4) * 120) })).filter(p => !T.aguaEn(p.x, p.z))];
+  while (pieles() < 5 && intentos < 40) {
     intentos++;
-    // donde haya liebres: por su tierra o, si no ve ninguna, junto a la hoguera de la orilla
     const donde = sitiosCaza[(intentos - 1) % sitiosCaza.length];
     await J.andar(donde.x, donde.z); await pausa(1000 * RELOJ);
     combate({ que: 'arma', sacada: true });
@@ -373,6 +373,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     combate({ que: 'arma', sacada: false });
     if (!r.muerta) { porque = r.motivo; continue; }
     cazadas++;
+    console.log(`     (una liebre, en la salida ${intentos}, a ${Math.round(dist(r.muerta, taller))} m del taller, en ${r.tiros} tiros)`);
     // la coge con la mano libre, la lleva a su taller y la despieza allí con la lasca (que dejó allí): carne y piel
     await J.andar(r.muerta.x, r.muerta.z);
     const libre = MANOS.find(l => !J.inv.lugares[l]) || 'mano:izq';
@@ -388,6 +389,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   }
   comprobar(`caza con la lanza y despieza con la lasca: 5 pieles (y su carne) a sus pies, en su taller`, pieles() >= 5 && conCarne() >= 1, `${cazadas} liebres en ${intentos} salidas; ${pieles()} pieles, ${conCarne()} carnes${porque ? ' · ' + porque : ''}`);
   if (pieles() < 5) return;
+  if (guardarTrasCaza) { await J.andar(taller.x, taller.z); await soltarManos(); await guardarTrasCaza(); }
   // la lanza, a sus pies (luego no la necesita)
   await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
 
@@ -748,7 +750,18 @@ if (process.argv[1] && process.argv[1].endsWith('recorrido_oficios.mjs') && proc
     ws.on('open', async () => { c.bienvenida = await b; c.pos = c.bienvenida.posicion ? { x: c.bienvenida.posicion.x, z: c.bienvenida.posicion.z } : meta.pos; listo(c); });
     ws.on('error', fallo);
   });
-  try { await oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ, sitioCaza: meta.sitioCaza }); }
+  // (KINHOLD_OFICIOS_GUARDAR_CAZA=<carpeta>: guarda el mundo después de cazar y sale; con KINHOLD_RECORRIDO_DESDE=<carpeta>
+  // se sigue desde ahí, sin volver a cazar: ya tiene las pieles)
+  const guardarTrasCaza = process.env.KINHOLD_OFICIOS_GUARDAR_CAZA ? async () => {
+    const destino = process.env.KINHOLD_OFICIOS_GUARDAR_CAZA, ahora = Date.now();
+    J.ws.close(); await pausa(300); await s.cerrar();
+    cpSync(dir, destino, { recursive: true });
+    const { writeFileSync } = await import('fs');
+    writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ...meta, ahora, pos: J.pos }));
+    console.log(`(guardado en ${destino}: después de cazar)`);
+    process.exit(0);
+  } : null;
+  try { await oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ, sitioCaza: meta.sitioCaza, guardarTrasCaza }); }
   catch (e) { comprobar('los oficios llegan al final', false, e && e.stack); }
   J.ws.close(); await s.cerrar();
   console.log(`\n${ok} bien, ${mal} mal`);
