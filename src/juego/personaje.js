@@ -115,6 +115,8 @@ export const MODELOS_HERRAMIENTA = { hacha: modeloHacha, pico: modeloPico };
 export function modeloHachaDe(tipo) {
   // (el mazo de piedra, 8 nov, se lleva y se usa como el hacha: con el mismo gesto, contra la roca)
   if (tipo === 'mazo_piedra' && !globalThis.__sinModelosManos) { const g = deMano(loteMazoPiedra()); g.name = 'mazo_piedra'; return g; }
+  // (el pico de hierro, P10, 19 nov: el de la fragua; se empuña como el hacha)
+  if (tipo === 'pico' && !globalThis.__sinModelosManos) return modeloPico();
   if (tipo !== 'hacha_piedra' || globalThis.__sinModelosManos /* solo para comprobar que la prueba falla */) return modeloHacha();
   const g = deMano(loteHachaPiedra()); g.name = 'hacha_piedra';
   return g;
@@ -123,7 +125,7 @@ export function modeloHachaDe(tipo) {
 // Devuelve { raiz, animar(velocidad, dt, talando), mh }. `recursos`: la carpeta de personajes del taller
 // (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v2. `sexo`: el del personaje elegido.
 // `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
-const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);
+const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra', 'pico']);
 // En la canoa (P11d), sentado con las rodillas juntas: la de sentarse en el suelo va con las piernas cruzadas y las rodillas
 // abiertas (a unos 0,25 m de cada lado), y en el casco, de 0,45 m por dentro, se salían por la borda. Tras la animación, el
 // muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo, y la pierna, hasta que el pie

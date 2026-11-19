@@ -5,7 +5,7 @@
 // Expone window.__iconos = { lista: [{ nombre, propio }], foto(nombre) → dataURL PNG }.
 //  - nombre: el tipo del catálogo (rama, hacha_piedra…) o «est_» + la estación (est_piedra_tallar…).
 //  - propio: false si aún no tiene su modelo y sale con el hatillo de lino de lo del suelo (el panel lo marca
-//    «sin modelo aún»); también el hacha de hierro, que hoy usa el modelo del hacha de mano.
+//    «sin modelo aún»).
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { prepararRenderer } from '../../src/mundo/ambiente.js';
@@ -14,7 +14,7 @@ import { modeloDe } from '../../src/juego/suelo.js';
 import { MODELO_OBJETO, modeloHachaPiedra, modeloMazoPiedra } from '../../src/juego/modelos_objetos.js';
 import { MODELO_ESTACION, modeloDeposito } from '../../src/juego/estaciones.js';
 import { ESTACIONES } from '../../src/logica/fabricacion.js';
-import { modeloHacha } from '../../src/juego/personaje.js';
+import { modeloHacha, modeloPico } from '../../src/juego/personaje.js';
 import { loteEnMano, loteEspalda } from '../../src/juego/llevado.js';
 import { CATALOGO } from '../../src/logica/inventario.js';
 import { PRENDAS } from '../../src/logica/prendas.js';
@@ -42,7 +42,7 @@ const mallas = L => {
 };
 // lo de la mano, tumbado en diagonal y de frente; las herramientas largas (y las hachas: si no, a 60 px eran un palo),
 // encuadradas por la cabeza
-const LARGAS = new Set(['hacha_mano', 'hacha_piedra', 'mazo_piedra', 'hacha_hierro', 'antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
+const LARGAS = new Set(['hacha_mano', 'hacha_piedra', 'mazo_piedra', 'hacha_hierro', 'pico', 'antorcha', 'arpon', 'azada', 'hoz_silex', 'lanza_endurecida', 'pala_madera', 'palo_cavador', 'mayal']);
 const enDiagonal = (o, t) => { const g = new THREE.Group(); o.rotation.z = -Math.PI / 4; g.add(o); g.userData.plano = true; g.userData.larga = LARGAS.has(t); return g; };
 const deMano = t => enDiagonal(mallas(loteEnMano(t)), t);
 // lo de la espalda, con algo dentro para que se vea para qué es
@@ -50,7 +50,7 @@ const DENTRO = { lenero: { lena: 9, tronco_corto: 1 }, cesta_recoleccion: { baya
   correa_escudo: { escudo: 1 }, fardo: { piel: 8 }, caja_herramientas: { cuchillo: 1, azada: 1 } };
 const deEspalda = t => { const g = new THREE.Group(); g.add(mallas(loteEspalda(t, DENTRO[t] || {}).L)); g.rotation.y = 0.5; return g; };
 // lo largo y plano tumbado en el suelo (haces, troncos, la piel, la honda): en diagonal y visto casi desde arriba
-const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'piel_limpia', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca', 'remo']);
+const ARRIBA = new Set(['fibra', 'junco', 'mimbre', 'piel', 'piel_limpia', 'honda', 'tronco_delgado', 'tronco_largo', 'rama', 'estaca', 'remo', 'mango']);
 const desdeArriba = o => { const g = new THREE.Group(); o.updateMatrixWorld(true); const s = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()); o.rotation.y += s.x >= s.z ? Math.PI / 4 : -Math.PI / 4; g.add(o); g.userData.arriba = true; return g; };
 const delSuelo = (t, n = 3) => modeloDe({ id: 'icono_' + t, cosa: { tipo: t, n } });
 
@@ -59,7 +59,7 @@ const SUELO = { liebre: 1, rama: 3, piedra: 4, silex: 3, tronco_corto: 2, tronco
 const MANO = ['mineral_hierro', 'vara', 'tabla', 'cuchillo', 'lasca_silex', 'espada', 'escudo', 'palo_cavador', 'arpon', 'pala_madera', 'azada', 'hoz_silex', 'mayal', 'lanza_endurecida', 'antorcha'];
 const ESPALDA = ['lenero', 'porta_piedras', 'mochila_bastidor', 'zurron', 'fardo', 'cesta_recoleccion', 'cesto_pescador', 'caja_herramientas', 'carcaj', 'correa_escudo'];
 const HACHAS = ['hacha_mano', 'hacha_piedra', 'hacha_hierro'];
-const PROVISIONAL = new Set(['hacha_hierro']); // hoy, el modelo del hacha de mano
+const PROVISIONAL = new Set(); // (19 nov: el hacha de hierro ya es la de la fragua, con el modelo del hacha de hierro del juego)
 
 const fuentes = {};
 // (las prendas no, salvo las que tienen su modelo en el suelo: los zapatos de cuero, que salen del banco)
@@ -67,6 +67,8 @@ for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t) || 
   // el agua (la de las cubas de curtido, que se les echa con el cubo): su imagen, la del cubo lleno
   if (t === 'agua') fuentes[t] = { propio: true, hacer: () => delSuelo('cubo_agua', 1) };
   else if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
+  else if (t === 'clavo') fuentes[t] = { propio: true, hacer: () => delSuelo('clavo', 10) };   // (P10: un puñado, que de tres no se veían)
+  else if (t === 'pico') fuentes[t] = { propio: true, hacer: () => { const p = modeloPico(); p.visible = true; return enDiagonal(p, t); } };   // (P10)
   else if (t === 'mazo_piedra') fuentes[t] = { propio: true, hacer: () => { const m = modeloMazoPiedra(); m.rotation.y = Math.PI / 2; const g = new THREE.Group(); g.add(m); return enDiagonal(g, t); } };   // (de lado: la piedra cruzada)
   else if (Object.hasOwn(MODELO_OBJETO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, 3)) : delSuelo(t, 3) };
   else if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, SUELO[t])) : delSuelo(t, SUELO[t]) };

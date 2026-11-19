@@ -59,6 +59,7 @@ paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pr
 paso "El hierro de pantano: las manchas, la pala y la criba, en la lógica y en el servidor" node pruebas/prueba_hierro_pantano.mjs
 paso "El horno de reducción y la lupia (P10), en la lógica y en el servidor" node pruebas/prueba_horno_reduccion.mjs
 paso "La fragua y la barra de hierro (P10), en la lógica y en el servidor" node pruebas/prueba_fragua.mjs
+paso "Las primeras herramientas de hierro (P10), en la lógica y en el servidor" node pruebas/prueba_herramientas_hierro.mjs
 paso "La carbonera y el carbón (oficios), en la lógica y en el servidor" node pruebas/prueba_carbonera.mjs
 paso "Horizonte de los perfiles altos" node pruebas/prueba_horizonte.mjs
 paso "De dónde sale cada cosa (la casa humilde entera, sin arcón)" node pruebas/prueba_origenes.mjs
@@ -176,6 +177,7 @@ paso "Navegador: el hierro de pantano" python3 pruebas/prueba_hierro_pantano_nav
 paso "Navegador: el horno de reducción" python3 pruebas/prueba_horno_navegador.py dist/kinhold_demo.html "$C/horno"
 paso "Navegador: la carbonera" python3 pruebas/prueba_carbonera_navegador.py dist/kinhold_demo.html "$C/carbonera"
 paso "Navegador: la fragua" python3 pruebas/prueba_fragua_navegador.py dist/kinhold_demo.html "$C/fragua"
+paso "Navegador: las primeras herramientas de hierro" python3 pruebas/prueba_herramientas_hierro_navegador.py dist/kinhold_demo.html "$C/herramientas_hierro"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
 paso "Navegador: recoger del suelo y de las plantas" python3 pruebas/prueba_recoleccion_navegador.py dist/kinhold_demo.html "$C/recoleccion"
 paso "Navegador: tala de los árboles" python3 pruebas/prueba_tala_navegador.py dist/kinhold_demo.html "$C/tala"

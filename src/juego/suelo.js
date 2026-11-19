@@ -15,7 +15,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
-import { modeloHacha } from './personaje.js';
+import { modeloHacha, modeloPico } from './personaje.js';
 import { modeloRastra } from './rastra.js';
 import { modeloCarretilla } from './carretilla.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
@@ -115,6 +115,7 @@ export function modeloDe(o) {
   if (t === 'canoa_a_medias' || t === 'canoa') return modeloCanoa(o, () => troncosConCortes(1, 4.5, 0.18, o.id));   // (P11d) src/juego/canoa.js
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
   if (Object.hasOwn(MODELO_OBJETO, t)) return MODELO_OBJETO[t](n, o.id); // lo de las recetas de P3 (src/juego/modelos_objetos.js)
+  if (t === 'pico') { const h = modeloPico(); h.visible = true; h.rotation.set(0, az(o.id, 3) * 6, Math.PI / 2); h.position.y = 0.022; const g = new THREE.Group(); g.add(h); return g; }   // (P10) el pico, tumbado de lado: la punta y la azuela a ras del suelo (de canto se clavaba en la tierra)
   if (t === 'hacha_mano' || t === 'hacha_hierro' || t === 'hacha_piedra') { const h = modeloHacha(); h.rotation.set(Math.PI / 2, 0, az(o.id, 3) * 6); h.position.y = 0.03; const g = new THREE.Group(); g.add(h); return g; }
   const d = CATALOGO[t];
   return hatillo(d && (d.tam === 'G' || d.huecos), o.id);

@@ -2663,13 +2663,15 @@
     },
     {
      "nombre": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua, el hacha de hierro (1 barra y 1 mango: tala los adultos y trocea más deprisa, como ya sabe la tala), el pico (1 barra y 1 mango) y los clavos (1 barra da 10). Cada herramienta se ve en la mano. Cadena: barra ← la fragua; vara ← talar un árbol joven",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-19T05:23:50+00:00",
-     "rama": "trabajo/20261119-0523"
+     "fin": "2026-11-19T07:21:39+00:00"
     },
     {
      "nombre": "La sierra y las tablas: la sierra de tronzar (2 barras y 2 mangos, en la fragua) tronza el tronco largo más deprisa que el hacha; en el banco de tronco, con la sierra, 1 tronco corto da 4 tablas. La tabla se guarda en el acopio de troncos. Cadena: tronco corto ← tronzar el tronco largo de un árbol adulto; sierra ← la fragua",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-19T08:22:51+00:00",
+     "rama": "trabajo/20261119-0822"
     },
     {
      "nombre": "Las rocas grandes y la cantera: con el pico se rompen las rocas grandes y los afloramientos que el mazo no puede, a golpes que cansan, por el servidor y con su autor; dan bloques de piedra en bruto y piedra suelta, y vuelven a salir en unos meses reales, como las medianas. Cadena: pico ← la fragua",
@@ -4942,6 +4944,13 @@
      "archivo": "jugar/demo/v237.html",
      "capturas": "capturas/demo-v237",
      "notas": "La fragua y la barra de hierro: el fuelle en el banco de tronco (2 cueros y 2 varas); la fragua, un puesto nuevo fuera y en tu tierra (12 piedras, 4 barros y el fuelle), con fuego de carbón; en ella, con la lupia, un carbón y el mazo de piedra de martillo, se bate 1 barra de hierro."
+    },
+    {
+     "v": "v238",
+     "fecha": "2026-11-19",
+     "archivo": "jugar/demo/v238.html",
+     "capturas": "capturas/demo-v238",
+     "notas": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua encendida con el mazo de piedra, el hacha de hierro (1 barra y 1 mango), el pico (1 barra y 1 mango) y los clavos (1 barra da 10); cada una se ve en la mano, en el cinto y en el suelo"
     }
    ]
   },

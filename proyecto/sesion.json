@@ -1,10 +1,5 @@
 {
- "A": {
-  "inicio": "2026-11-19T05:23:50+00:00",
-  "tarea": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua, el hacha de hierro (1 barra y 1 mango: tala los adultos y trocea más deprisa, como ya sabe la tala), el pico (1 barra y 1 mango) y los clavos (1 barra da 10). Cada herramienta se ve en la mano. Cadena: barra ← la fragua; vara ← talar un árbol joven",
-  "hito": "hierro",
-  "rama": "trabajo/20261119-0523"
- },
+ "A": null,
  "B": null,
  "chat:trabajo/20261119-0650-castillo-acabado": {
   "inicio": "06:50",
