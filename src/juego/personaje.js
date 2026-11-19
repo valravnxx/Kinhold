@@ -103,7 +103,9 @@ export function modeloSierra() {
   pts.push([z0, -0.035]);
   const hoja = new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y))), { depth: 0.0025, bevelEnabled: false });
   hoja.translate(0, 0, -0.00125); hoja.rotateY(-Math.PI / 2);   // el perfil va de X a Z
-  L.add(hoja, 'hierro', 0, 0, 0, null, { plano: true });
+  // (la hoja, de hierro gastado y con el brillo del acero: de 'hierro' mate, tendida de canto a la luz, salía casi negra en
+  // el juego; con tex 'acero' (src/mundo/modelos.js, deMano) refleja el cielo como las espadas y no se ve negra a contraluz)
+  L.add(hoja, globalThis.__sierraOscura ? 'hierro' : 0x8f9192, 0, 0, 0, null, { plano: true, ...(globalThis.__sierraOscura ? {} : { tex: 'acero', brillo: 1.1 }) });
   // los dos mangos, derechos, con su pomo abajo, y los remaches que los sujetan a la hoja
   for (const z of [0, LARGO_SIERRA]) {
     L.add(cil(0.016, 0.018, 0.22, 8), 'tabla', 0, 0.02, z, null, { tex: 'veta' });
@@ -199,6 +201,49 @@ function juntarRodillas(j) {
   }
 }
 
+// ¿Trabaja con la sierra? El jugador de este navegador lo dice main.js (j.serrando: tronzando con la sierra en la mano); los
+// demás jugadores en línea, por lo que llevan en la mano (talando con la sierra en ella)
+const serra = (j) => j.tipoHacha === 'sierra' && (j.serrando !== undefined ? !!j.serrando : true);
+// La sierra de tronzar (P10, 19 nov), en la mano: el modelo sale de la mano a lo largo de los nudillos, y con el brazo
+// caído la hoja de 1 m se clavaba en el suelo, y al tronzar barría de lado con el gesto de hachar (lo vieron las capturas
+// de la nube). Se coloca en el mundo en cada fotograma, con el agarre en la palma y el mango derecho:
+//  - quieto o andando, la hoja tendida hacia atrás y algo caída, por fuera de la pierna (como se lleva una sierra);
+//  - serrando, de pie y echado adelante, la hoja hacia delante sobre el tronco, los dientes abajo, y el brazo la lleva y
+//    la trae (unas 1,4 pasadas por segundo), mientras la mano izquierda descansa sobre el muslo. Provisional: la animación
+//    de serrar la hará valravnx.
+export const PASADAS_SIERRA = 1.4;
+function colocarSierra(j, b, f, l, u) {
+  const h = j.mh.hueso, mano = h.hand_r, sierra = j.hacha;
+  const palma = mano.getWorldPosition(new THREE.Vector3()).lerp(b.r.nudillo.getWorldPosition(new THREE.Vector3()), 0.6);
+  const z = j.serrandoAhora ? f.clone().addScaledVector(u, -0.12) : f.clone().multiplyScalar(-0.9).addScaledVector(u, -0.35).addScaledVector(l, -0.12);
+  z.normalize();
+  const y = u.clone().addScaledVector(z, -u.dot(z)).normalize(), x = new THREE.Vector3().crossVectors(y, z);
+  const mundo = new THREE.Matrix4().makeBasis(x, y, z).setPosition(palma);
+  mano.updateMatrixWorld(true);
+  mano.matrixWorld.clone().invert().multiply(mundo).decompose(sierra.position, sierra.quaternion, sierra.scale);
+  const e = new THREE.Vector3(); mano.getWorldScale(e); sierra.scale.set(1 / e.x, 1 / e.y, 1 / e.z);
+  sierra.userData.aDosManos = true;   // (al soltarla, vuelve a como la puso empunar)
+}
+function serrar(j, b, f, l, u) {
+  const h = j.mh.hueso;
+  if (!h.spine_01) return;
+  // echado adelante (girando la espalda sobre el eje de la izquierda) para que el brazo llegue abajo
+  const q = new THREE.Quaternion().setFromAxisAngle(l, 0.5), q2 = new THREE.Quaternion(), q3 = new THREE.Quaternion();
+  h.spine_01.getWorldQuaternion(q2); h.spine_01.parent.getWorldQuaternion(q3);
+  h.spine_01.quaternion.copy(q3.invert().multiply(q.multiply(q2))); h.spine_01.updateMatrixWorld(true);
+  // la mano derecha, a la altura del tronco tumbado (0,36 m arriba) y algo por fuera, va y viene a lo largo de la hoja
+  const pie = j.raiz.getWorldPosition(new THREE.Vector3());
+  const t = (performance.now() / 1000) * PASADAS_SIERRA * Math.PI * 2, ida = Math.sin(t) * 0.17;
+  const objetivo = pie.addScaledVector(u, 0.55).addScaledVector(f, 0.5 + ida).addScaledVector(l, -0.2);
+  const poloR = new THREE.Vector3().addScaledVector(l, -0.7).addScaledVector(u, 0.2).addScaledVector(f, -0.5);
+  nudillosA(b.r, objetivo, poloR);
+  // la izquierda, apoyada en el muslo izquierdo, por encima de la rodilla
+  if (h.thigh_l && h.calf_l) {
+    const m = h.thigh_l.getWorldPosition(new THREE.Vector3()).lerp(h.calf_l.getWorldPosition(new THREE.Vector3()), 0.7).addScaledVector(f, 0.1);
+    nudillosA(b.l, m, new THREE.Vector3().addScaledVector(l, 0.7).addScaledVector(f, -0.3));
+  }
+}
+
 export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], aspecto = undefined, ropa = {}) {
   const raiz = new THREE.Group();
   const j = { raiz, mh: null, error: null, modo: 'quieto' };
@@ -216,7 +261,8 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (velocidad > 0.1) {
       m = velocidad < 1.8 ? 'andar' : 'correr'; ritmo = velocidad / (j.mh.velocidad[m] || 1); // natural, medida al cargar
       ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
-    } else if (talando) m = 'talar';
+    } else if (talando) m = serra(j) ? 'quieto' : 'talar';   // (con la sierra no se hacha: de pie, y el brazo sierra; ver serrar)
+    j.serrandoAhora = m === 'quieto' && talando && serra(j);
     // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
     // arrastrando la rastra (src/juego/rastra.js): inclinado, con las manos atrás en las varas; quieto, la misma postura
     if (j.arrastra && j.mh.acciones.arrastrar) {
@@ -457,6 +503,17 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     }
     if (!j.enCanoa) j.palaRemo = null;
     const antes = colocarBrazos();
+    // la sierra (P10): serrando, el brazo la lleva sobre el tronco; y en la mano, se coloca para que no se clave en el suelo
+    if (j.mh && j.mh.meshy && j.hacha && j.hacha.visible && j.hacha.name === 'sierra' && j.mh.raiz.visible && !globalThis.__sierraSinColocar) {
+      const b = brazos();
+      if (b.r.sup && b.l.sup && b.r.nudillo) {
+        j.raiz.updateMatrixWorld(true);
+        const f = new THREE.Vector3(0, 0, 1).applyQuaternion(j.raiz.getWorldQuaternion(new THREE.Quaternion())).setY(0).normalize();
+        const u = new THREE.Vector3(0, 1, 0), l = new THREE.Vector3().crossVectors(u, f).normalize();
+        if (j.serrandoAhora) serrar(j, b, f, l, u);
+        colocarSierra(j, b, f, l, u);
+      }
+    }
     llevado.paso();
     // el tronco al hombro sigue a la clavícula (no lo mueve el brazo): primero el tronco, luego la mano encima
     if (j.alHombro && j.mh && j.mh.meshy && !globalThis.__sinBrazosMeshy) {

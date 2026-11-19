@@ -9,7 +9,10 @@
 #   - sin errores en la página.
 # Capturas de cerca de cada cosa, en PC y en móvil.
 # Uso: python3 pruebas/prueba_sierra_tablas_navegador.py <html> <carpeta_capturas>
-# Rota a propósito (19 nov): MUTAR=1 dibuja la sierra como el hacha (como sin su modelo): falla.
+#   - (19 nov, tras las capturas) la hoja no se clava en el suelo, quieto ni tronzando; tronzando, no se hacha (el cuerpo no
+#     hace el gesto de talar) y la hoja va hacia delante, tendida y por encima del suelo, y la mano va y viene;
+# Rota a propósito (19 nov): MUTAR=1 dibuja la sierra como el hacha (como sin su modelo): falla. MUTAR=2 deja la sierra
+# como la pone la mano (sin colocarla ni serrar): fallan la hoja en el suelo y la de tronzar.
 import sys, os, re
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
@@ -53,6 +56,17 @@ VER = '''() => { const K = window.__kinhold, j = K.jugador; K.escena.updateMatri
   const ch = h && centro(h), cp = p && centro(p);
   return { empunada: h ? h.name : null, dEmpunada: ch ? +ch.distanceTo(mano).toFixed(3) : null, pieza: !!p, generico: p ? !!p.userData.generico : null, dPieza: cp ? +cp.distanceTo(mano).toFixed(3) : null, cinto }; }'''
 
+# la sierra empuñada: lo más bajo de la hoja sobre el suelo (m), adónde va la hoja (del mango a la otra punta) respecto al
+# delante del cuerpo, lo tendida que va, la animación del cuerpo y dónde está la mano (a lo largo del delante)
+SIERRA = '''() => { const K = window.__kinhold, j = K.jugador, s = j.hacha; K.escena.updateMatrixWorld(true);
+  if (!s || s.name !== 'sierra' || !s.visible) return null;
+  const T = j.raiz.position.clone(), v = T.clone(); let bajo = 1e9;
+  s.traverse(m => { if (!m.isMesh) return; const a = m.geometry.attributes.position; for (let i = 0; i < a.count; i++) bajo = Math.min(bajo, v.fromBufferAttribute(a, i).applyMatrix4(m.matrixWorld).y); });
+  const o = s.localToWorld(T.clone().set(0, 0, 0)), p = s.localToWorld(T.clone().set(0, 0, 1)).sub(o).normalize();
+  const f = T.clone().set(Math.sin(j.raiz.rotation.y), 0, Math.cos(j.raiz.rotation.y));
+  const mano = j.mh.hueso.hand_r.getWorldPosition(T.clone()).sub(j.raiz.position);
+  return { bajo: +(bajo - K.alturaSuelo(j.raiz.position.x, j.raiz.position.z)).toFixed(3), adelante: +p.dot(f).toFixed(2), caida: +p.y.toFixed(2), modo: j.modo, manoAdelante: +mano.dot(f).toFixed(3) }; }'''
+
 def mirarMano(pg, giro, d, a):
     pg.evaluate('''([g, d, a]) => { const K = window.__kinhold; K.cam.dist = d; K.cam.pitch = a; K.cam.yaw = K.jugador.raiz.rotation.y + g; }''', [giro, d, a])
     pg.wait_for_timeout(900)
@@ -65,7 +79,8 @@ def recorrido(nav, nombre, pref, vista, movil):
     ctx = nav.new_context(viewport=vista, device_scale_factor=2 if movil else 1, is_mobile=movil, has_touch=movil, locale='es-ES')
     pg = ctx.new_page(); errores = []
     pg.on('pageerror', lambda e: errores.append(str(e)))
-    if MUTAR: pg.add_init_script('globalThis.__sinModelosManos = true')
+    if MUTAR == '1': pg.add_init_script('globalThis.__sinModelosManos = true')
+    if MUTAR == '2': pg.add_init_script('globalThis.__sierraSinColocar = true')
     pg.goto(BASE)
     pg.wait_for_function(f'{K} && {K}.mundoListo && {K}.jugador.mh', timeout=300000)
     esperar(pg, 3000)
@@ -75,6 +90,9 @@ def recorrido(nav, nombre, pref, vista, movil):
     equipar(pg, {'cintura': C('cordel', 1, [None]), 'mano:der': C('sierra')})
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: la sierra, empuñada en la mano derecha con su modelo', v['empunada'] == 'sierra' and v['dEmpunada'] is not None and v['dEmpunada'] < 0.8, str(v))
+    pg.wait_for_timeout(600)
+    sq = pg.evaluate(SIERRA)
+    comprobar(f'{nombre}: quieto, la hoja de la sierra no toca el suelo (tendida hacia atrás)', sq and sq['bajo'] > 0.15 and sq['adelante'] < -0.5, str(sq))
     for vista_, (g, d, a) in ({'frente': (0.45, 2.4, 0.05), 'lado': (1.3, 2.4, 0.05)} if not movil else {'frente': (0.25, 3.0, 0.05)}).items():
         mirarMano(pg, g, d, a)
         pg.screenshot(path=f'{SALIDA}/{pref}_mano_sierra_{vista_}.png', timeout=180000)
@@ -91,15 +109,27 @@ def recorrido(nav, nombre, pref, vista, movil):
     for vista_, g in ({'lado': -1.4, 'atras': 3.1} if not movil else {'lado': -1.4}).items():
         mirarMano(pg, g, 2.2 * D, 0.1)
         pg.screenshot(path=f'{SALIDA}/{pref}_cinto_sierra_{vista_}.png', timeout=180000)
-    # tronzando un tronco largo con la sierra: la sierra en la mano mientras trabaja, y el tronco se tronza
+    # tronzando un tronco largo con la sierra: la sierra en la mano mientras trabaja (sin que llegue el golpe: así se mira
+    # serrar el rato que haga falta), y luego el tronco se tronza
     equipar(pg, {'cintura': C('cordel', 1, [None]), 'mano:der': C('sierra')})
     t = pg.evaluate(f"""(() => {{ const k = {K}, a = Date.now(), x = k.pj.x + 1.2, z = k.pj.z;
       const o = k.sueloObjetos.suelo.dejar({{ tipo: 'tronco_largo', n: 1 }}, x, z, a, 'vista', false, 0); k.sueloObjetos.refrescar();
-      k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z); k.estado.talando = {{ troceo: o.id, x, z }}; k.estado.golpeEn = 0.45; return o.id; }})()""")
-    for i, ms in enumerate([350, 650]):
+      k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z); k.estado.talando = {{ troceo: o.id, x, z, sierra: true }}; k.estado.golpeEn = 1e9; return o.id; }})()""")
+    vistas = []
+    for i, ms in enumerate([350, 300, 300]):
         pg.wait_for_timeout(ms)
-        mirarMano(pg, 0.9, 2.6 * D, 0.15)
-        pg.screenshot(path=f'{SALIDA}/{pref}_tronzar_sierra_{i + 1}.png', timeout=180000)
+        vistas.append(pg.evaluate(SIERRA))
+        if i < 2:
+            mirarMano(pg, 0.9 if i == 0 else 1.5, 2.6 * D, 0.15)
+            pg.screenshot(path=f'{SALIDA}/{pref}_tronzar_sierra_{i + 1}.png', timeout=180000)
+    ok = all(x and x['modo'] != 'talar' and x['adelante'] > 0.8 and x['bajo'] > 0.1 and abs(x['caida']) < 0.35 for x in vistas)
+    comprobar(f'{nombre}: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida y sin clavarse', ok, str(vistas))
+    manos = []
+    for _ in range(8):
+        pg.wait_for_timeout(110); x = pg.evaluate(SIERRA)
+        if x: manos.append(x['manoAdelante'])
+    va = (max(manos) - min(manos)) if manos else 0
+    comprobar(f'{nombre}: tronzando, la mano va y viene con la sierra', va > 0.05, f'{va:.3f} m')
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: tronzando, la sierra en la mano (no el hacha)', v['empunada'] == 'sierra', str(v))
     # (se para el trabajo del juego, que mientras se miraba ya ha podido tronzarlo, y se tronza otro, golpe a golpe)

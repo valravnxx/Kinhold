@@ -3147,8 +3147,8 @@ function troncoCercano() {
   return sueloObjetos.suelo.cercanos(pj.x, pj.z, Date.now(), ALCANCE_TROCEO - 0.3).find(o => seTrocea(o.cosa.tipo)) || null;
 }
 function empezarTroceo(o, modo = null) {
-  estado.talando = { troceo: o.id, x: o.x, z: o.z, ...(modo ? { modo } : {}) }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
   const conSierra = ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'sierra') && o.cosa.tipo === 'tronco_largo';
+  estado.talando = { troceo: o.id, x: o.x, z: o.z, ...(modo ? { modo } : {}), ...(conSierra ? { sierra: true } : {}) }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
   mostrarAviso(modo === 'rodaja' ? tr('Cortas una rodaja del tronco largo.') : o.cosa.tipo === 'tronco_largo' ? (conSierra ? tr('Tronzas el tronco largo con la sierra.') : tr('Tronzas el tronco largo.')) : tr('Partes el tronco en leña.'));
 }
 function golpeTroceo(id, modo = null) {
@@ -3360,6 +3360,7 @@ function paso() {
   if (rampa && !(estado.obrando && estado.obrando.subir)) quitarRampa(); // se dejó de subir (moverse, reiniciar…)
   moverRampa(dt);
   if (!canoaYo && jugador.sentado && !estado.sentado) jugador.sentado = false;   // (bajado de la canoa)
+  jugador.serrando = !!(estado.talando && estado.talando.sierra);   // (P10: con la sierra se sierra, no se hacha)
   jugador.animar(mag > 0.05 && !canoaYo ? vel : 0, dt, !!estado.talando || !!estado.obrando || !!estado.obrandoPuesto);
   combate.paso(dt, { corriendo: correr && mag > 0.05, velocidad: mag > 0.05 ? vel : 0 });
 
