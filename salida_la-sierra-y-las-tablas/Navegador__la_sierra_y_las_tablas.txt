@@ -1,0 +1,116 @@
+  OK   PC: la sierra, empuñada en la mano derecha con su modelo — {'empunada': 'sierra', 'dEmpunada': 0.57, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   PC: quieto, la hoja de la sierra no toca el suelo (tendida hacia atrás) — {'bajo': 0.411, 'adelante': -0.92, 'caida': -0.36, 'modo': 'quieto', 'manoAdelante': -0.108, 'cabeza': 1.448}
+  OK   PC: la tabla, en la mano derecha con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.258, 'cinto': []}
+  OK   PC: la sierra, en el cinto con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': ['sierra']}
+  OK   PC: en el cinto, la sierra cuelga alta (lo más bajo, a más de 0,7 m del suelo) — 0.827 m
+  OK   PC: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse — [{'bajo': 0.328, 'adelante': 0.99, 'caida': -0.12, 'modo': 'plantar', 'manoAdelante': 0.207, 'cabeza': 1.087}, {'bajo': 0.352, 'adelante': 0.99, 'caida': -0.12, 'modo': 'plantar', 'manoAdelante': 0.238, 'cabeza': 1.085}, {'bajo': 0.301, 'adelante': 0.99, 'caida': -0.12, 'modo': 'plantar', 'manoAdelante': 0.169, 'cabeza': 1.089}]
+  OK   PC: serrando, el cuerpo derecho de rodillas (la cabeza, ni en las rodillas ni echada atrás) — [1.077, 1.085, 1.081, 1.089, 1.081, 1.084, 1.088, 1.077, 1.089, 1.086, 1.08, 1.089]
+  OK   PC: tronzando, la mano va y viene con la sierra (más de 0,15 m: que se lea) — 0.163 m
+  OK   PC: tronzando, la sierra en la mano (no el hacha) — {'empunada': 'sierra', 'dEmpunada': 0.651, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   PC: con la sierra, el tronco largo se tronza en 8 golpes — {'ok': True, 'termina': True, 'hacha': 'sierra', 'golpes': 8, 'motivo': None}
+  OK   PC: la sierra y las tablas se dejan en el suelo — 2
+  OK   PC: en la pestaña «Fragua», la sierra de tronzar — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+4
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+a 3 pasos
+Secadero
+no
+  OK   PC: la ficha de la sierra pide las barras, los mangos y el mazo de piedra — Sierra de tronzar
+
+Tronza el tronco largo más deprisa que el hacha y, en el banco, saca tablas del tronco corto.
+
+En la fragua
+4 min
+Lo que pide (de lo que está en la estación)
+Barra de hierroen la estación
+2 de 2
+Mango de herramientaen la estación
+2 de 2
+Mazo de piedralo llevas (no se gasta)
+1/1
+Hacer · 4 min
+×3
+  OK   PC: el panel no se sale de lado
+  OK   PC: en el banco de tronco, las tablas
+  OK   PC: la ficha de las tablas pide el tronco corto y la sierra — Tablas
+
+Suelos, muros, puertas y muebles de tablas, con clavos.
+
+En el banco de tronco
+2 min
+da 4 × Tabla
+Lo que pide (de lo que está en la estación)
+Tronco cortoen la estación
+1 de 1
+Sierra de tronzarla llevas (no se gasta)
+1/1
+Hacer · 2 min
+×3
+  OK   PC: sin errores en la página — []
+  OK   móvil: la sierra, empuñada en la mano derecha con su modelo — {'empunada': 'sierra', 'dEmpunada': 0.57, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   móvil: quieto, la hoja de la sierra no toca el suelo (tendida hacia atrás) — {'bajo': 0.377, 'adelante': -0.92, 'caida': -0.36, 'modo': 'quieto', 'manoAdelante': -0.078, 'cabeza': 1.438}
+  OK   móvil: la tabla, en la mano derecha con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.258, 'cinto': []}
+  OK   móvil: la sierra, en el cinto con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': ['sierra']}
+  OK   móvil: en el cinto, la sierra cuelga alta (lo más bajo, a más de 0,7 m del suelo) — 0.815 m
+  OK   móvil: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse — [{'bajo': 0.296, 'adelante': 0.99, 'caida': -0.12, 'modo': 'plantar', 'manoAdelante': 0.137, 'cabeza': 1.089}, {'bajo': 0.408, 'adelante': 0.99, 'caida': -0.12, 'modo': 'plantar', 'manoAdelante': 0.3, 'cabeza': 1.078}, {'bajo': 0.409, 'adelante': 0.99, 'caida': -0.12, 'modo': 'plantar', 'manoAdelante': 0.301, 'cabeza': 1.077}]
+  OK   móvil: serrando, el cuerpo derecho de rodillas (la cabeza, ni en las rodillas ni echada atrás) — [1.083, 1.089, 1.084, 1.079, 1.088, 1.088, 1.078, 1.086, 1.089, 1.081, 1.079, 1.089]
+  OK   móvil: tronzando, la mano va y viene con la sierra (más de 0,15 m: que se lea) — 0.159 m
+  OK   móvil: tronzando, la sierra en la mano (no el hacha) — {'empunada': 'sierra', 'dEmpunada': 0.642, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   móvil: con la sierra, el tronco largo se tronza en 8 golpes — {'ok': True, 'termina': True, 'hacha': 'sierra', 'golpes': 8, 'motivo': None}
+  OK   móvil: la sierra y las tablas se dejan en el suelo — 2
+  OK   móvil: en la pestaña «Fragua», la sierra de tronzar — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+4
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+a 3 pasos
+Secadero
+no
+  OK   móvil: la ficha de la sierra pide las barras, los mangos y el mazo de piedra — Sierra de tronzar
+
+Tronza el tronco largo más deprisa que el hacha y, en el banco, saca tablas del tronco corto.
+
+En la fragua
+4 min
+Lo que pide (de lo que está en la estación)
+Barra de hierroen la estación
+2 de 2
+Mango de herramientaen la estación
+2 de 2
+Mazo de piedralo llevas (no se gasta)
+1/1
+Hacer · 4 min
+×3
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: en el banco de tronco, las tablas
+  OK   móvil: la ficha de las tablas pide el tronco corto y la sierra — Tablas
+
+Suelos, muros, puertas y muebles de tablas, con clavos.
+
+En el banco de tronco
+2 min
+da 4 × Tabla
+Lo que pide (de lo que está en la estación)
+Tronco cortoen la estación
+1 de 1
+Sierra de tronzarla llevas (no se gasta)
+1/1
+Hacer · 2 min
+×3
+  OK   móvil: sin errores en la página — []
+
+TODO CORRECTO
