@@ -1,0 +1,33 @@
+La lógica pura
+  OK   junto a la pieza, en su planta, llega
+  OK   a más de 2.3 m, no
+  OK   con holgura, sí
+  OK   desde el suelo llega a la planta de encima
+  OK   pero no a la de dos más arriba
+  OK   desde arriba no llega a lo de abajo (la demo)
+  OK   con una planta de margen hacia abajo (el servidor), sí
+  OK   planta por la altura: en el suelo, 0
+  OK   sobre la planta 1, 1; sobre la 2, 2
+  OK   sin posición, no
+  OK   en el suelo junto a ella, diciendo «desde: 1», no entrega arriba
+  OK   en el suelo, «desde: 0», pasa (la lógica dirá que hay que subirlo)
+  OK   arriba de verdad, «desde: 1», pasa
+  OK   trabajar, subir y desmontar, igual de lejos: no
+  OK   con 3 m de margen por el retraso: a 5 m, sí
+  OK   las demás acciones no se miran aquí
+El servidor de verdad: un navegador tramposo
+  OK   pone su mojón y un cimiento (en obras) — ok, ok
+  OK   sin saber dónde está, no entrega — El servidor aún no sabe dónde estás.
+  OK   a 12 m de la obra no entrega — Estás demasiado lejos: acércate.
+  OK   y la obra sigue sin el material
+  OK   junto a la obra, sí
+  OK   le lleva todo (8 piedra)
+  OK   a 12 m no trabaja — Estás demasiado lejos: acércate.
+  OK   a 4,5 m (con el margen del retraso) trabaja
+  OK   termina el cimiento
+  OK   a 12 m no desmonta — Estás demasiado lejos: acércate.
+  OK   junto a él, sí
+  OK   lo que devuelve (6 piedras): lo que le cabe a lo que lleva y lo demás al suelo a sus pies, nada al arcón — mano 3, suelo 3, arcón 106 → 106
+  OK   lo que no existe lo dice la acción misma — No existe.
+
+29 bien, 0 mal

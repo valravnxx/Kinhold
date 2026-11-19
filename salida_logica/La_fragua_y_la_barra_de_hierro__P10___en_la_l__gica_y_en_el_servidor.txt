@@ -1,0 +1,31 @@
+Lo que dice la tarea
+  OK   el fuelle: 2 cueros y 2 varas, en el banco de tronco — {"nombre":"Fuelle","uso":"banco","da":"fuelle","n":1,"gasta":{"cuero":2,"vara":2},"s":90}
+  OK   la fragua: 12 piedras, 4 barros y el fuelle; fuera y en tu tierra; con fuego; da el forjar — {"nombre":"Fragua","un":"una fragua","uso":"forjar","coste":{"piedra":12,"barro":4,"fuelle":1},"donde":"fuera","trabajo":60,"tierra":true,"fuego":true,"hace":"Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro"}
+  OK   en la fragua, con el mazo de piedra, 1 lupia y 1 carbón dan 1 barra de hierro — {"nombre":"Barra de hierro","uso":"forjar","da":"barra_hierro","n":1,"gasta":{"lupia":1,"carbon":1},"s":120,"requiere":["mazo_piedra"]}
+  OK   fuera de tu tierra, dice por qué — La fragua va en tu tierra (o en la de quien te invita).
+El fuelle en el banco
+  OK   se encarga en el banco
+  OK   y a su hora se recoge el fuelle — {"ok":true,"dados":[{"objeto":"fuelle","cantidad":1,"donde":[["mano:der",1]]}],"quedan":false}
+Levantar la fragua, encenderla con carbón y batir la barra
+  OK   se pone su marco
+  OK   se levanta con sus piedras, barros y el fuelle — {}
+  OK   leña, no: solo arde carbón — A la fragua solo se le echa carbón.
+  OK   ramas, tampoco — A la fragua solo se le echa carbón.
+  OK   sin nada puesto no se enciende, y dice que le eches carbón — No tiene nada que arder: échale carbón.
+  OK   se le echa un carbón
+  OK   apagada, no se bate — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+  OK   con yesca y el taladro, se enciende
+  OK   sin el mazo de piedra, no se bate — Para eso hace falta llevar mazo de piedra.
+  OK   encendida y con el mazo, se bate: gasta la lupia y el carbón dejados — {}
+  OK   y el mazo no se gasta
+  OK   a su hora, 1 barra de hierro — {"ok":true,"dados":[{"objeto":"barra_hierro","cantidad":1,"donde":[["espalda/3",1]]}],"quedan":false}
+Por el servidor, con autor
+  OK   Ana le echa un carbón
+  OK   y la enciende
+  OK   deja en ella 1 lupia
+  OK   deja en ella 1 carbon
+  OK   todos ven su fuego encendido — {"encendida":true,"queda":899,"combustible":0,"cenizas":false}
+  OK   bate la barra
+  OK   y la recoge
+
+25 bien, 0 mal
