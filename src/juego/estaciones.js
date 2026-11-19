@@ -512,7 +512,7 @@ function fuegoFragua(cual, id) {
 // de la cúpula, por donde se mete la leña. La leña puesta para arder se ve en la boca; encendido, el fuego asoma por
 // ella (al rojo por dentro) y sale humo por el respiradero (fuegoHornoCeramico).
 const HORNO_CER = { r: 0.6, base: 0.2, alto: 1.42, tiro: 0.13, boca: 0.2, tunel: 0.34 };
-const ARCILLA_HORNO = 0x93705a, ARCILLA_COCIDA = 0x8a5f48, HOLLIN_CER = 0x3a302a;
+const ARCILLA_HORNO = 0x8c7461, ARCILLA_COCIDA = 0x87634f, HOLLIN_CER = 0x3a302a;
 const perfilCupula = t => HORNO_CER.r * (1 - 0.78 * Math.pow(t, 2.1)) + Math.sin(t * Math.PI) * 0.03;
 function hornoCeramico(id) {
   const { r: R, base: B, alto: A, tiro: T, boca: BO, tunel: TU } = HORNO_CER, L = new Lote({ rangoSuelo: 0.35, variacion: 0.08 });
@@ -528,20 +528,16 @@ function hornoCeramico(id) {
     p.setX(i, x * k); p.setZ(i, z * k);
   }
   cup.computeVertexNormals();
-  L.add(cup, ARCILLA_HORNO, 0, 0, 0, { y: az(id, 1) * 6 }, { tex: 'piedra' });
-  // el hollín del respiradero (anillos de arriba, cada vez más negros) y el de la cara de delante, encima de la boca
-  // (un sector de anillos que sube desde la boca y se aclara), por fuera de lo que se mueve la pared al alisarla
+  // el hollín, horneado en la propia cúpula (sin bordes): negro en el labio del respiradero y aclarándose hacia abajo, y
+  // delante una lengua que sube desde la boca del hogar, ancha abajo y estrecha arriba, que se pierde a media cúpula
+  const tizne = v => {
+    const arriba = Math.min(1, Math.max(0, (v.y - (A - 0.42)) / 0.42)) ** 1.6;
+    const ang = Math.atan2(v.x, v.z), sube = (v.y - 0.12) / 0.75, ancho = 0.62 - 0.32 * Math.min(1, Math.max(0, sube));
+    const lengua = sube < 0 || sube > 1.3 ? 0 : Math.exp(-((ang / ancho) ** 2)) * (1 - Math.min(1, sube / 1.3)) ** 0.8;
+    return 1 - 0.62 * Math.min(1, Math.max(arriba, lengua));
+  };
+  L.add(cup, ARCILLA_HORNO, 0, 0, 0, null, { tex: 'piedra', rayas: tizne });
   const fuera = yy => { const t = Math.min(1, Math.max(0, (yy - B + 0.02) / (A - B))); return perfilCupula(t) * 1.04 + 0.007; };
-  const TIZNE = [0x83654f, 0x775c49, 0x6a5243, 0x5a463b, 0x4a3b33, HOLLIN_CER];
-  TIZNE.forEach((color, k) => {
-    const d0 = 0.3 - k * 0.05, d1 = Math.max(0, d0 - 0.05);
-    const pts = [0, 1, 2].map(q => { const d = d0 + (d1 - d0) * q / 2; return new THREE.Vector2(fuera(A - d) + k * 0.0008, A - d); });
-    L.add(new THREE.LatheGeometry(pts, 28), color, 0, 0, 0, null, { sinSuelo: true, tex: 'piedra' });
-    // delante: de la boca hacia arriba, más ancho y más claro cuanto más sube
-    const y0 = B + 0.32 + (5 - k) * 0.075, y1 = y0 + 0.075, ancho = 0.42 + (5 - k) * 0.07;
-    const pf = [0, 1, 2].map(q => { const yy = y0 + (y1 - y0) * q / 2; return new THREE.Vector2(fuera(yy) + (5 - k) * 0.0008, yy); });
-    L.add(new THREE.LatheGeometry(pf, 10, -ancho / 2, ancho), color, 0, 0, 0, null, { sinSuelo: true, tex: 'piedra' });
-  });
   L.add(new THREE.TorusGeometry(T + 0.005, 0.032, 6, 18), HOLLIN_CER, 0, A + 0.01, 0, { x: Math.PI / 2 }, { sinSuelo: true, brillo: 0.6 });   // el labio, quemado
   L.add(new THREE.CircleGeometry(T - 0.012, 14), 0x15110e, 0, A - 0.15, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });   // lo oscuro de dentro
   // las grietas del fuego: rayas finas y oscuras que bajan por la cúpula (cuarteada al secarse y al cocer)

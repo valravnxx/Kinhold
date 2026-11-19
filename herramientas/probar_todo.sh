@@ -182,6 +182,7 @@ paso "Navegador: la veta de hierro en la roca" python3 pruebas/prueba_veta_hierr
 paso "Navegador: el horno de reducción" python3 pruebas/prueba_horno_navegador.py dist/kinhold_demo.html "$C/horno"
 paso "Navegador: la carbonera" python3 pruebas/prueba_carbonera_navegador.py dist/kinhold_demo.html "$C/carbonera"
 paso "Navegador: la fragua" python3 pruebas/prueba_fragua_navegador.py dist/kinhold_demo.html "$C/fragua"
+paso "Navegador: la arcilla y el horno cerámico" python3 pruebas/prueba_horno_ceramico_navegador.py dist/kinhold_demo.html "$C/horno_ceramico"
 paso "Navegador: las primeras herramientas de hierro" python3 pruebas/prueba_herramientas_hierro_navegador.py dist/kinhold_demo.html "$C/herramientas_hierro"
 paso "Navegador: la sierra y las tablas" python3 pruebas/prueba_sierra_tablas_navegador.py dist/kinhold_demo.html "$C/sierra_tablas"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"
