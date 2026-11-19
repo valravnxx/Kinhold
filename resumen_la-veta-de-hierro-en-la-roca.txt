@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3238 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3600 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5257 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3653 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3232 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3656 KB
+dist/kinhold_trozos.html 3260 KB
+hilo de los trozos 27 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la veta de hierro en la roca
+  OK   móvil: y agotada no se pica
+  OK   móvil: sin errores en la página
+
+FALLAN: móvil: a los 5 golpes suelta 1 mineral de hierro al suelo, junto a la veta, y sigue picando
+!! FALLA: python3 pruebas/prueba_veta_hierro_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/veta_hierro
+
+HAY FALLOS
+tardó 217 s
