@@ -112,7 +112,7 @@ def recorrido(nav, nombre, pref, vista, movil):
     # tronzando un tronco largo con la sierra: la sierra en la mano mientras trabaja (sin que llegue el golpe: así se mira
     # serrar el rato que haga falta), y luego el tronco se tronza
     equipar(pg, {'cintura': C('cordel', 1, [None]), 'mano:der': C('sierra')})
-    t = pg.evaluate(f"""(() => {{ const k = {K}, a = Date.now(), x = k.pj.x + 1.2, z = k.pj.z;
+    t = pg.evaluate(f"""(() => {{ const k = {K}, a = Date.now(), x = k.pj.x, z = k.pj.z + 0.9;
       const o = k.sueloObjetos.suelo.dejar({{ tipo: 'tronco_largo', n: 1 }}, x, z, a, 'vista', false, 0); k.sueloObjetos.refrescar();
       k.pj.rot = Math.atan2(x - k.pj.x, z - k.pj.z); k.estado.talando = {{ troceo: o.id, x, z, sierra: true }}; k.estado.golpeEn = 1e9; return o.id; }})()""")
     vistas = []
@@ -122,8 +122,8 @@ def recorrido(nav, nombre, pref, vista, movil):
         if i < 2:
             mirarMano(pg, 0.9 if i == 0 else 1.5, 2.6 * D, 0.15)
             pg.screenshot(path=f'{SALIDA}/{pref}_tronzar_sierra_{i + 1}.png', timeout=180000)
-    ok = all(x and x['modo'] != 'talar' and x['adelante'] > 0.8 and x['bajo'] > 0.1 and abs(x['caida']) < 0.35 for x in vistas)
-    comprobar(f'{nombre}: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida y sin clavarse', ok, str(vistas))
+    ok = all(x and x['modo'] != 'talar' and x['adelante'] > 0.8 and 0.1 < x['bajo'] < 0.5 and abs(x['caida']) < 0.35 for x in vistas)
+    comprobar(f'{nombre}: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse', ok, str(vistas))
     manos = []
     for _ in range(8):
         pg.wait_for_timeout(110); x = pg.evaluate(SIERRA)

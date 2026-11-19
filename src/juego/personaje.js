@@ -227,14 +227,19 @@ function colocarSierra(j, b, f, l, u) {
 function serrar(j, b, f, l, u) {
   const h = j.mh.hueso;
   if (!h.spine_01) return;
-  // echado adelante (girando la espalda sobre el eje de la izquierda) para que el brazo llegue abajo
-  const q = new THREE.Quaternion().setFromAxisAngle(l, 0.5), q2 = new THREE.Quaternion(), q3 = new THREE.Quaternion();
-  h.spine_01.getWorldQuaternion(q2); h.spine_01.parent.getWorldQuaternion(q3);
-  h.spine_01.quaternion.copy(q3.invert().multiply(q.multiply(q2))); h.spine_01.updateMatrixWorld(true);
+  // echado bien adelante (girando la espalda, en dos tramos, sobre el eje de la izquierda) para que el brazo llegue al
+  // tronco tumbado: con 0,5 rad en un tramo, la mano se quedaba a la altura de la cadera y la hoja, a 0,7 m del suelo
+  const q2 = new THREE.Quaternion(), q3 = new THREE.Quaternion();
+  for (const [hueso, a] of [[h.spine_01, 0.5], [h.spine_02, 0.45]]) {
+    if (!hueso) continue;
+    const q = new THREE.Quaternion().setFromAxisAngle(l, a);
+    hueso.getWorldQuaternion(q2); hueso.parent.getWorldQuaternion(q3);
+    hueso.quaternion.copy(q3.invert().multiply(q.multiply(q2))); hueso.updateMatrixWorld(true);
+  }
   // la mano derecha, a la altura del tronco tumbado (0,36 m arriba) y algo por fuera, va y viene a lo largo de la hoja
   const pie = j.raiz.getWorldPosition(new THREE.Vector3());
   const t = (performance.now() / 1000) * PASADAS_SIERRA * Math.PI * 2, ida = Math.sin(t) * 0.17;
-  const objetivo = pie.addScaledVector(u, 0.55).addScaledVector(f, 0.5 + ida).addScaledVector(l, -0.2);
+  const objetivo = pie.addScaledVector(u, 0.5).addScaledVector(f, 0.45 + ida).addScaledVector(l, -0.18);
   const poloR = new THREE.Vector3().addScaledVector(l, -0.7).addScaledVector(u, 0.2).addScaledVector(f, -0.5);
   nudillosA(b.r, objetivo, poloR);
   // la izquierda, apoyada en el muslo izquierdo, por encima de la rodilla
