@@ -1,0 +1,112 @@
+  OK   PC: la sierra, empuñada en la mano derecha con su modelo — {'empunada': 'sierra', 'dEmpunada': 0.55, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   PC: quieto, la hoja de la sierra no toca el suelo (tendida hacia atrás) — {'bajo': 0.454, 'adelante': -0.92, 'caida': -0.36, 'modo': 'quieto', 'manoAdelante': -0.108}
+  OK   PC: la tabla, en la mano derecha con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.258, 'cinto': []}
+  OK   PC: la sierra, en el cinto con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': ['sierra']}
+  FALLA PC: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse — [{'bajo': 0.7, 'adelante': 0.99, 'caida': -0.12, 'modo': 'quieto', 'manoAdelante': 0.253}, {'bajo': 0.676, 'adelante': 0.99, 'caida': -0.12, 'modo': 'quieto', 'manoAdelante': 0.294}, {'bajo': 0.697, 'adelante': 0.99, 'caida': -0.12, 'modo': 'quieto', 'manoAdelante': 0.264}]
+  OK   PC: tronzando, la mano va y viene con la sierra — 0.133 m
+  OK   PC: tronzando, la sierra en la mano (no el hacha) — {'empunada': 'sierra', 'dEmpunada': 0.57, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   PC: con la sierra, el tronco largo se tronza en 8 golpes — {'ok': True, 'termina': True, 'hacha': 'sierra', 'golpes': 8, 'motivo': None}
+  OK   PC: la sierra y las tablas se dejan en el suelo — 2
+  OK   PC: en la pestaña «Fragua», la sierra de tronzar — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+4
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+a 3 pasos
+Secadero
+no
+  OK   PC: la ficha de la sierra pide las barras, los mangos y el mazo de piedra — Sierra de tronzar
+
+Tronza el tronco largo más deprisa que el hacha y, en el banco, saca tablas del tronco corto.
+
+En la fragua
+4 min
+Lo que pide (de lo que está en la estación)
+Barra de hierroen la estación
+2 de 2
+Mango de herramientaen la estación
+2 de 2
+Mazo de piedralo llevas (no se gasta)
+1/1
+Hacer · 4 min
+×3
+  OK   PC: el panel no se sale de lado
+  OK   PC: en el banco de tronco, las tablas
+  OK   PC: la ficha de las tablas pide el tronco corto y la sierra — Tablas
+
+Suelos, muros, puertas y muebles de tablas, con clavos.
+
+En el banco de tronco
+2 min
+da 4 × Tabla
+Lo que pide (de lo que está en la estación)
+Tronco cortoen la estación
+1 de 1
+Sierra de tronzarla llevas (no se gasta)
+1/1
+Hacer · 2 min
+×3
+  OK   PC: sin errores en la página — []
+  OK   móvil: la sierra, empuñada en la mano derecha con su modelo — {'empunada': 'sierra', 'dEmpunada': 0.55, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   móvil: quieto, la hoja de la sierra no toca el suelo (tendida hacia atrás) — {'bajo': 0.405, 'adelante': -0.92, 'caida': -0.36, 'modo': 'quieto', 'manoAdelante': -0.04}
+  OK   móvil: la tabla, en la mano derecha con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.258, 'cinto': []}
+  OK   móvil: la sierra, en el cinto con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': ['sierra']}
+  FALLA móvil: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse — [{'bajo': 0.675, 'adelante': 0.99, 'caida': -0.12, 'modo': 'quieto', 'manoAdelante': 0.242}, {'bajo': 0.611, 'adelante': 0.99, 'caida': -0.12, 'modo': 'quieto', 'manoAdelante': 0.175}, {'bajo': 0.663, 'adelante': 0.99, 'caida': -0.12, 'modo': 'quieto', 'manoAdelante': 0.226}]
+  OK   móvil: tronzando, la mano va y viene con la sierra — 0.131 m
+  OK   móvil: tronzando, la sierra en la mano (no el hacha) — {'empunada': 'sierra', 'dEmpunada': 0.587, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   móvil: con la sierra, el tronco largo se tronza en 8 golpes — {'ok': True, 'termina': True, 'hacha': 'sierra', 'golpes': 8, 'motivo': None}
+  OK   móvil: la sierra y las tablas se dejan en el suelo — 2
+  OK   móvil: en la pestaña «Fragua», la sierra de tronzar — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+4
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+a 3 pasos
+Secadero
+no
+  OK   móvil: la ficha de la sierra pide las barras, los mangos y el mazo de piedra — Sierra de tronzar
+
+Tronza el tronco largo más deprisa que el hacha y, en el banco, saca tablas del tronco corto.
+
+En la fragua
+4 min
+Lo que pide (de lo que está en la estación)
+Barra de hierroen la estación
+2 de 2
+Mango de herramientaen la estación
+2 de 2
+Mazo de piedralo llevas (no se gasta)
+1/1
+Hacer · 4 min
+×3
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: en el banco de tronco, las tablas
+  OK   móvil: la ficha de las tablas pide el tronco corto y la sierra — Tablas
+
+Suelos, muros, puertas y muebles de tablas, con clavos.
+
+En el banco de tronco
+2 min
+da 4 × Tabla
+Lo que pide (de lo que está en la estación)
+Tronco cortoen la estación
+1 de 1
+Sierra de tronzarla llevas (no se gasta)
+1/1
+Hacer · 2 min
+×3
+  OK   móvil: sin errores en la página — []
+
+2 FALLOS
