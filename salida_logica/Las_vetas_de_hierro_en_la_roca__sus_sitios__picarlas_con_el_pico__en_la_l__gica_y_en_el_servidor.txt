@@ -1,0 +1,40 @@
+Las vetas en el mapa y en el mundo
+  (mapa en 4802 ms)
+  bien  los sitios apuntados en VETAS_HIERRO son los que salen del mapa — [{"x":194370,"z":27594},{"x":203514,"z":26450},{"x":195498,"z":40498},{"x":197514,"z":40498},{"x":211498,"z":39498},{"x":165498,"z":55498},{"x":180498,"z":55498},{"x":182498,"z":55498},{"x":204466,"z":42514},{"x":210482,"z":42498},{"x":178498,"z":60530},{"x":183498,"z":59498},{"x":196434,"z":57418},{"x":174610,"z":70450},{"x":182610,"z":73466},{"x":198386,"z":77562}]
+  bien  una por cada veta pequeña de hierro del mapa en la isla — 16 de 16
+  bien  cada una, dentro de su celda del mapa (a menos de 450 m de su centro)
+  bien  cada una en ladera (pendiente de 0,15 a 0,6) y en seco
+  (la más cercana a la salida común, a 9.5 km; la más lejana, a 34.2 km)
+  bien  sale en su trozo de recogida como un punto «veta_hierro», con su nombre por su sitio — {"id":"veta_hierro:1824980,554980","tipo":"veta_hierro","x":182498,"z":55498,"giro":0.36,"zonas":["veta"]}
+  bien  y nada más que recoger a menos de 3.5 m (tampoco en los trozos de al lado) — 0
+  bien  solo en su trozo (no se repite en el de al lado)
+Picar la veta en la lógica
+  bien  da mineral de hierro, de 30 a 40 veces (la mancha de pantano, de 3 a 5) — [30,40]
+  bien  sin pico, no — Necesitas un pico en la mano para picar la veta.
+  bien  con el pico guardado en el cinto (no en la mano), tampoco — Necesitas un pico en la mano para picar la veta.
+  bien  no se recoge con las manos (se pica) — Necesitas un pico en la mano para picar la veta.
+  bien  ni sale entre lo que se recoge
+  bien  (el pico, ahora en la mano)
+  bien  lejos (a más de 2 m de su borde), no — Está demasiado lejos.
+  bien  con el pico en la mano, los 4 primeros golpes no sueltan nada —  faltan 1
+  bien  dos golpes demasiado seguidos, no — Aún no has terminado el golpe anterior.
+  bien  al 5º golpe suelta 1 mineral de hierro al suelo, junto a la veta y del lado del que pica — [{"tipo":"mineral_hierro","n":1,"x":41.12,"z":4}]
+  bien  y no al inventario
+  bien  picar cansa (menos que un golpe de mazo a una roca)
+  bien  lo que llevan los golpes y lo sacado se guarda — {"vuelve":0,"veces":0,"golpes":7,"sacadas":1}
+  bien  da 35 minerales antes de agotarse (todos al mismo montón) — 35 en 1 montón(es)
+  bien  una veta entera son de 150 a 200 golpes — 175
+  bien  agotada, no da más — La veta está agotada: volverá a dar mineral en unos meses.
+  bien  pero el afloramiento se queda (no se quita: se ve agotado)
+  bien  en unos meses reales (90 días) vuelve a dar
+  bien  con algo al hombro, no — Con algo al hombro no puedes picar la veta.
+  bien  se anota en el registro con su autor y lo que da — {"n":181,"autor":"ana","tipo":"romper","datos":{"punto":"veta_hierro:400,40","x":41.8,"z":4},"ok":true,"ahora":1802898161400,"resultado":{"golpes":1}}
+En el servidor, con el terreno de Whitholm
+  bien  el servidor conoce la veta por su nombre, en su sitio — {"id":"veta_hierro:1824980,554980","tipo":"veta_hierro","x":-2098,"z":9218}
+  bien  y una que no existe, no
+  bien  en el servidor, 5 golpes de pico sueltan 1 mineral a su suelo
+  bien  lo picado sale en lo que se reparte
+  bien  en tierra de otro (sin invitación), no se pica — Es tierra de otro.
+  bien  y se guarda: al volver a abrir el servidor sigue lo picado
+
+33/33 bien
