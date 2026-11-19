@@ -17,6 +17,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex, material } from '../mundo/estilos.js';
 import { cil, copa } from '../mundo/decorado.js';
 import { naturaleza } from '../mundo/naturaleza_meshy.js';
+import { materialRoca } from '../mundo/rocas.js';
 import { Recoleccion, repartirPuntos, RECOLECTABLES, cargarRecoleccion, guardarRecoleccion, ejecutarRecoleccion, VETA } from '../logica/recoleccion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from '../logica/recogida_mundo.js';
 import { alturaMundo } from '../logica/whitholm.js';
@@ -143,6 +144,36 @@ function rocaCortada(sem, ancho, alto, fondo, detalle = 1) {
   }
   g.computeVertexNormals();
   return g;
+}
+
+// (P10) el afloramiento de la veta: una peña y dos rocas más bajas, medio hundidas, con el color en los vértices: gris
+// de roca con manchas de herrumbre (más abajo y en regueros verticales, donde el agua lava el óxido) y la sombra de
+// contacto abajo; la textura y el relieve, los de la roca de los cortados
+function afloramientoGeo() {
+  const piezas = [[1, 2.3, 1.5, 1.8, 0, 0.42, 0, 0.3], [2, 1.2, 0.85, 1.0, 1.3, 0.2, 0.55, 1.9], [3, 0.9, 0.62, 0.8, -1.1, 0.16, 0.7, 4.1]];
+  const geos = piezas.map(([sem, an, al, fo, x, y, z, ry]) => {
+    const g0 = rocaCortada(sem, an, al, fo, 2), g = g0.index ? g0.toNonIndexed() : g0; g.computeVertexNormals();
+    g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, ry, 0)), new THREE.Vector3(1, 1, 1)));
+    const p = g.attributes.position, n = p.count, col = new Float32Array(n * 3), uv = new Float32Array(n * 2), nr = g.attributes.normal;
+    const gris = new THREE.Color(0x8e8a84), oxido = new THREE.Color(0x8a5a42), oscuro = new THREE.Color(0x5e4a40), c = new THREE.Color();
+    for (let i = 0; i < n; i++) {
+      const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i);
+      const mancha = 0.5 + 0.5 * Math.sin(vx * 3.1 + vz * 2.3 + sem) * Math.sin(vz * 2.7 - vy * 1.9);
+      const reguero = Math.max(0, Math.sin((vx * 0.8 + vz * 0.6) * 9 + sem * 2)) ** 3;
+      const abajo = Math.max(0, Math.min(1, 1 - vy / 0.9));
+      const k = Math.min(1, 0.25 + mancha * 0.45 + reguero * 0.35 + abajo * 0.25);
+      c.copy(gris).lerp(oxido, k).lerp(oscuro, Math.max(0, mancha - 0.75) * 1.5);
+      const sombra = 0.62 + 0.38 * Math.min(1, Math.max(0, vy + 0.1) / 0.6) * (0.75 + 0.25 * Math.max(0, nr.getY(i)));
+      col[i * 3] = c.r * sombra; col[i * 3 + 1] = c.g * sombra; col[i * 3 + 2] = c.b * sombra;
+      // (UV por caja: cada cara proyecta la textura desde su eje dominante, como la roca de los cortados)
+      const ax = Math.abs(nr.getX(i)), ay = Math.abs(nr.getY(i)), az = Math.abs(nr.getZ(i));
+      const [u, v] = ay > ax && ay > az ? [vx, vz] : ax > az ? [vz, vy] : [vx, vy];
+      uv[i * 2] = u * 0.45; uv[i * 2 + 1] = v * 0.45;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    return g;
+  });
+  return mergeGeometries(geos);
 }
 
 function calcoGeo(ancho, fondo, y) { const g = new THREE.PlaneGeometry(ancho, fondo, 1, 1); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g; }
@@ -459,24 +490,9 @@ export function modelosRecoleccion() {
   // bajas (las de Meshy, las mismas del mundo, teñidas de óxido; si no han llegado, las de código), medio hundidas en el
   // suelo manchado de óxido (el calco); y lo que se va al agotarla: los terrones de mineral sueltos al pie (hematites
   // negro rojizo y limonita parda amarillenta), con su brillo apagado de metal
-  const ROJIZA = 0xd0a894, ROJIZA_OSC = 0xbc9686;   // (apagado: la roca gris del mundo, teñida de herrumbre parda; nada de naranja)
-  const tenir = (mats, c) => (Array.isArray(mats) ? mats : [mats]).map(m => { const q = m.clone(); q.color = new THREE.Color(c); return q; });
-  const unir = (geo, piezas) => mergeGeometries(piezas.map(([x, y, z, ry, e, rz = 0]) => geo.clone().applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rz, ry, 0)), new THREE.Vector3(e[0], e[1], e[2])))));
-  const penaM = naturaleza('pena'), rocaM = naturaleza('roca');
-  const afloramiento = [{ geo: calcoGeo(4.2, 3.6, 0.04), mat: vetaCalco(), calco: true }];
-  if (penaM && rocaM) {
-    const mp = naturaleza('pena').medida, mr = naturaleza('roca').medida;
-    // (la peña, de unos 2,2 m de ancho y 1,1 de alto; las rocas, de 1,1 y 0,8 m)
-    const ep = [2.2 / (2 * mp[0]), 1.1 / mp[1], 2.2 / (2 * mp[0]) * 0.8], er = (w, h) => [w / (2 * mr[0]), h / mr[1], w / (2 * mr[0])];
-    afloramiento.push({ geo: unir(penaM.cerca.geo, [[0, -0.38, 0, 0.3, ep, 0.12]]), mat: tenir(penaM.cerca.mats, ROJIZA)[0] });
-    afloramiento.push({ geo: unir(rocaM.cerca.geo, [[1.25, -0.24, 0.55, 1.9, er(1.1, 0.7)], [-1.05, -0.2, 0.7, 4.1, er(0.8, 0.5)]]), mat: tenir(rocaM.cerca.mats, ROJIZA_OSC)[0] });
-  } else {
-    afloramiento.push(...geoLote(L => {
-      L.add(rocaCortada(1, 2.2, 1.4, 1.7), ROJIZA, 0, 0.35, 0, { y: 0.3 }, { plano: true, tex: 'piedra' });
-      L.add(rocaCortada(2, 1.1, 0.8, 0.9), ROJIZA_OSC, 1.25, 0.2, 0.55, { y: 1.9 }, { plano: true, tex: 'piedra' });
-      L.add(rocaCortada(3, 0.8, 0.6, 0.7), ROJIZA_OSC, -1.05, 0.15, 0.7, { y: 4.1 }, { plano: true, tex: 'piedra' });
-    }, { rangoSuelo: 0.6 }));
-  }
+  // (segunda mirada, 19 nov: teñida entera parecía un montón de barro) la roca es gris, facetada como la de los cortados
+  // (su textura, con relieve: src/mundo/rocas.js), y el óxido va a manchas y regueros que bajan por sus caras
+  const afloramiento = [{ geo: calcoGeo(4.2, 3.6, 0.04), mat: vetaCalco(), calco: true }, { geo: afloramientoGeo(), mat: materialRoca() }];
   const terrones = geoLote(L => {
     for (let k = 0; k < 22; k++) {
       const a = k * 2.399 + 0.5, r = 1.0 + (k % 5) * 0.15, x = Math.cos(a) * r * 1.1, z = Math.sin(a) * r * 0.9 + 0.1, e = 0.07 + (k % 4) * 0.025;

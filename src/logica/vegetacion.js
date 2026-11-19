@@ -9,6 +9,7 @@
 // solapan dan exactamente lo mismo en lo que comparten.
 //
 // Coordenadas en metros del mundo (x, z). No pone nada en el mar, en la orilla ni en los ríos.
+import { VETAS_HIERRO } from './vetas_hierro.js';
 import { enZonaCastillo, cercaZonaCastillo, sinHierbaCastillo } from './castillo_rey.js';
 import { azarCelda } from './azar.js';
 import { bosqueEn } from './paisaje.js';
@@ -294,6 +295,7 @@ export function vegetacionEn(paisaje, alt, semilla, cuadro, hierba = null) {
 // fotograma). Cada trozo tiene solo lo suyo (sin el borde de la derecha ni el de abajo): los trozos, uno al lado de
 // otro, dan exactamente lo mismo que un cuadro grande. conHierba: también la hierba, las flores y las matas.
 export const LADO_VEG = 32;
+export const SIN_HIERBA_VETA = 2.2;   // (P10) m alrededor de una veta de hierro sin hierba ni matas
 export function vegetacionTrozo(paisaje, alt, semilla, i, j, conHierba = false) {
   const c = { x0: i * LADO_VEG, z0: j * LADO_VEG, x1: (i + 1) * LADO_VEG, z1: (j + 1) * LADO_VEG };
   const v = vegetacionEn(paisaje, alt, semilla, c, conHierba ? c : null);
@@ -305,5 +307,9 @@ export function vegetacionTrozo(paisaje, alt, semilla, i, j, conHierba = false) 
     const fuera = k === 'paredes' ? cercaZonaCastillo : sinHierbaCastillo;   // (la roca de los cortados, tampoco en el acantilado del castillo: su poterna y su muelle)
     v[k] = v[k].filter(e => !(e && Number.isFinite(e.x) && Number.isFinite(e.z) && fuera(e.x, e.z)));
   }
+  // (P10, 19 nov) en el afloramiento de una veta de hierro (src/logica/vetas_hierro.js) no crece hierba, ni flores, ni matas
+  const vetas = VETAS_HIERRO.filter(q => q.x > c.x0 - 3 && q.x < c.x1 + 3 && q.z > c.z0 - 3 && q.z < c.z1 + 3);
+  if (vetas.length) for (const k of Object.keys(v)) if (k !== 'arboles' && k !== 'piedras' && k !== 'paredes' && Array.isArray(v[k]))
+    v[k] = v[k].filter(e => !(e && Number.isFinite(e.x) && vetas.some(q => Math.hypot(e.x - q.x, e.z - q.z) < SIN_HIERBA_VETA)));
   return v;
 }
