@@ -273,9 +273,10 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
             a, b = e[k], e[(k + 1) % n]; c, d = i_[(k + 1) % n], i_[k]
             if k == 0: continue   # el umbral se pone aparte
             l = 0.55 + 0.25 * (k % 2)
-            with con(m, 'piedra'): m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l))
+            with con(m, 'sillar'): m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l + 0.2))
         a, b = e[0], e[1]; c, d = i_[1], i_[0]
-        with con(m, 'piedra'): m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(SILLAR_DOV, 0.82))   # umbral / alféizar
+        es_puerta = abs(b[0] - a[0]) > 1.0
+        with con(m, 'losa' if es_puerta else 'piedra'): m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(LOSA, 0.8) if es_puerta else esc(SILLAR_DOV, 0.82))   # umbral / alféizar
     if tapa:
         with con(m, 'piedra'): m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
     if cabezas:
@@ -381,7 +382,11 @@ def suelo_tablas(m, f, u0, u1, w0, w1, v, col=TABLA, ancho=0.28, grueso=0.12, hu
             trozos = nuevos
         for a, b in trozos:
             c = varia(col, 0.06)
-            with con(m, 'tabla'): caja(m, f, a, b, v - grueso, v, w + 0.008, wb - 0.008, c, 0.6, caras='v1w0w1')
+            with con(m, 'tabla'):
+                caja(m, f, a, b, v - grueso, v, w + 0.008, wb - 0.008, c, 0.6, caras='w0w1')
+                ru = random.uniform(0, 1.7); rv = random.uniform(0, 2)   # cada tabla, su trozo de veta (a lo largo de la tabla)
+                m.quad(f(a, v, w + 0.008), f(a, v, wb - 0.008), f(b, v, wb - 0.008), f(b, v, w + 0.008), c,
+                       uv=[(ru, rv + a), (ru + wb - w, rv + a), (ru + wb - w, rv + b), (ru, rv + b)])
         w = wb
     # vigas por debajo
     u = u0 + 0.4
@@ -496,11 +501,23 @@ def saetera(h_u, v0, alto=1.4, ancho=0.12, derrame=0.9):
 # ---------------- muebles
 def mesa(m, f, u, w, largo=1.8, ancho=0.8, alto=0.76, ang=0.0, col=MADERA_CL):
     g = f.sub(u, w, ang)
-    caja(m, g, -largo / 2, largo / 2, alto - 0.06, alto, -ancho / 2, ancho / 2, varia(col, .08), .8)
-    for s in (-1, 1):   # caballetes
-        caja(m, g, s * (largo / 2 - 0.25) - 0.04, s * (largo / 2 - 0.25) + 0.04, 0, alto - 0.06, -ancho / 2 + 0.05, ancho / 2 - 0.05, MADERA, .7)
-        caja(m, g, s * (largo / 2 - 0.25) - 0.05, s * (largo / 2 - 0.25) + 0.05, 0, 0.08, -ancho / 2, ancho / 2, MADERA, .7)
-    caja(m, g, -largo / 2 + 0.3, largo / 2 - 0.3, 0.25, 0.32, -0.04, 0.04, MADERA, .7)
+    with con(m, 'tabla'):   # el tablero: tres tablas con su junta
+        n = 3
+        for k in range(n):
+            z0 = -ancho / 2 + ancho * k / n + 0.006; z1 = -ancho / 2 + ancho * (k + 1) / n - 0.006
+            caja(m, g, -largo / 2 + 0.01 * (k % 2), largo / 2 - 0.01 * ((k + 1) % 2), alto - 0.05, alto, z0, z1, varia(col, .08), .8)
+    with con(m, 'madera'):
+        caja(m, g, -largo / 2 + 0.12, largo / 2 - 0.12, alto - 0.11, alto - 0.05, -ancho / 2 + 0.06, -ancho / 2 + 0.12, MADERA, .7)   # los travesaños de debajo
+        caja(m, g, -largo / 2 + 0.12, largo / 2 - 0.12, alto - 0.11, alto - 0.05, ancho / 2 - 0.12, ancho / 2 - 0.06, MADERA, .7)
+        for s in (-1, 1):   # caballetes: dos patas abiertas en A, con su pie
+            x = s * (largo / 2 - 0.28)
+            for t in (-1, 1):
+                a = (x - 0.035, -ancho / 2 + 0.1); b = (x + 0.035, -ancho / 2 + 0.1)
+                m.quad(g(x - 0.035, 0.0, t * (ancho / 2 - 0.08)), g(x + 0.035, 0.0, t * (ancho / 2 - 0.08)), g(x + 0.035, alto - 0.11, t * 0.06), g(x - 0.035, alto - 0.11, t * 0.06), esc(MADERA, 0.9))
+                m.quad(g(x + 0.035, 0.0, t * (ancho / 2 - 0.08) + 0.0001), g(x - 0.035, 0.0, t * (ancho / 2 - 0.08) + 0.0001), g(x - 0.035, alto - 0.11, t * 0.06 + 0.0001), g(x + 0.035, alto - 0.11, t * 0.06 + 0.0001), esc(MADERA, 0.7))
+            caja(m, g, x - 0.05, x + 0.05, alto - 0.13, alto - 0.05, -ancho / 2 + 0.05, ancho / 2 - 0.05, MADERA, .7)
+            caja(m, g, x - 0.05, x + 0.05, 0, 0.07, -ancho / 2 + 0.02, ancho / 2 - 0.02, MADERA, .7)
+        caja(m, g, -largo / 2 + 0.3, largo / 2 - 0.3, 0.22, 0.28, -0.035, 0.035, MADERA, .7)
 
 def banco(m, f, u, w, largo=1.6, ang=0.0):
     g = f.sub(u, w, ang)
@@ -567,9 +584,26 @@ def jergon(m, f, u, w, ang=0.0):
 
 def arca(m, f, u, w, ang=0.0, largo=1.1, ancho=0.55, alto=0.6):
     g = f.sub(u, w, ang)
-    caja(m, g, -largo / 2, largo / 2, 0.05, alto, -ancho / 2, ancho / 2, varia(MADERA_CL, .1), .75)
-    for x in (-largo / 2 + 0.1, largo / 2 - 0.14): caja(m, g, x, x + 0.04, 0.05, alto + 0.01, -ancho / 2 - 0.01, ancho / 2 + 0.01, HIERRO)
-    caja(m, g, -0.05, 0.05, alto - 0.2, alto - 0.05, ancho / 2, ancho / 2 + 0.02, HIERRO)
+    c = varia(MADERA_CL, .1)
+    with con(m, 'madera'):
+        for s in (-1, 1): caja(m, g, s * largo / 2 - (0.07 if s > 0 else 0), s * largo / 2 + (0 if s > 0 else 0.07), 0, 0.08, -ancho / 2, ancho / 2, MADERA, .7)   # los pies
+        caja(m, g, -largo / 2, largo / 2, 0.06, alto - 0.14, -ancho / 2, ancho / 2, c, .75)   # la caja
+        caja(m, g, -largo / 2 - 0.015, largo / 2 + 0.015, alto - 0.14, alto - 0.09, -ancho / 2 - 0.015, ancho / 2 + 0.015, esc(c, 0.9), .75)   # la tapa, con su moldura
+        n = 6   # y abombada
+        for k in range(n):
+            a1, a2 = math.pi * k / n, math.pi * (k + 1) / n
+            P = lambda x, a: g(x, alto - 0.09 + 0.09 * math.sin(a), -math.cos(a) * (ancho / 2 + 0.015))
+            m.quad(P(-largo / 2 - 0.015, a1), P(-largo / 2 - 0.015, a2), P(largo / 2 + 0.015, a2), P(largo / 2 + 0.015, a1), esc(c, 0.8 + 0.25 * math.sin((a1 + a2) / 2)))
+        for s in (-1, 1):
+            m.quad(*[g(s * (largo / 2 + 0.015), alto - 0.09 + 0.09 * math.sin(math.pi * k / n), -math.cos(math.pi * k / n) * (ancho / 2 + 0.015)) for k in (0, 2, 4, 6)][::s], esc(c, 0.7))
+    for x in (-largo / 2 + 0.1, 0, largo / 2 - 0.14):   # flejes de hierro que abrazan la tapa
+        caja(m, g, x, x + 0.045, 0.06, alto - 0.09, -ancho / 2 - 0.012, ancho / 2 + 0.012, HIERRO)
+        for k in range(n):
+            a1, a2 = math.pi * k / n, math.pi * (k + 1) / n
+            P = lambda xx, a: g(xx, alto - 0.09 + 0.1 * math.sin(a), -math.cos(a) * (ancho / 2 + 0.025))
+            m.quad(P(x, a1), P(x, a2), P(x + 0.045, a2), P(x + 0.045, a1), HIERRO)
+    caja(m, g, -0.07, 0.07, alto - 0.3, alto - 0.12, ancho / 2, ancho / 2 + 0.02, HIERRO)   # la cerradura
+    for s in (-1, 1): caja(m, g, s * largo / 2 - 0.01 * (1 - s), s * largo / 2 + 0.01 * (1 + s), alto - 0.3, alto - 0.26, -0.1, 0.1, HIERRO)   # las asas
 
 def tonel(m, f, u, w, tumbado=False, r=0.32, alto=0.85, ang=0.0):
     g = f.sub(u, w, ang)
@@ -625,6 +659,7 @@ def armero(m, f, u, w, largo=2.0, ang=0.0):
 def chimenea(m, f, u, ancho=1.8, v_suelo=0.0, alto_campana=2.2, w=0.0, col=PIEDRA_CLARA, fuego=True):
     """hogar y campana contra la pared (cara w, hacia +w)"""
     g = f.sub(u, w)
+    _mc = m.mat; m.mat = 'sillar'
     caja(m, g, -ancho / 2, ancho / 2, v_suelo, v_suelo + 0.15, 0, 0.9, LOSA, .8)
     for s in (-1, 1): caja(m, g, s * ancho / 2 - (0.25 if s > 0 else 0), s * ancho / 2 + (0 if s > 0 else 0.25), v_suelo, v_suelo + 1.3, 0, 0.75, varia(col, .05), .8)
     pts_c = [(-ancho / 2 - 0.1, 0), (ancho / 2 + 0.1, 0), (ancho / 2 + 0.1, 0.85), (-ancho / 2 - 0.1, 0.85)]
@@ -635,6 +670,7 @@ def chimenea(m, f, u, ancho=1.8, v_suelo=0.0, alto_campana=2.2, w=0.0, col=PIEDR
     m.quad(P(-a0, v_suelo + 1.55, 0.85), P(a0, v_suelo + 1.55, 0.85), P(a1, v_suelo + alto_campana + 1.3, 0.3), P(-a1, v_suelo + alto_campana + 1.3, 0.3), esc(col, .9))
     m.quad(P(a0, v_suelo + 1.55, 0.85), P(a0, v_suelo + 1.55, 0), P(a1, v_suelo + alto_campana + 1.3, 0), P(a1, v_suelo + alto_campana + 1.3, 0.3), esc(col, .75))
     m.quad(P(-a0, v_suelo + 1.55, 0), P(-a0, v_suelo + 1.55, 0.85), P(-a1, v_suelo + alto_campana + 1.3, 0.3), P(-a1, v_suelo + alto_campana + 1.3, 0), esc(col, .75))
+    m.mat = _mc
     caja(m, g, -ancho / 2 + 0.25, ancho / 2 - 0.25, v_suelo + 0.15, v_suelo + 1.3, 0, 0.04, OSCURO)   # el fondo ahumado
     if fuego:
         for k in range(3): caja(m, g.sub(0, 0.4, 0.4 + k * 0.5), -0.35, 0.35, v_suelo + 0.15 + k * 0.05, v_suelo + 0.25 + k * 0.05, -0.06, 0.06, MADERA)

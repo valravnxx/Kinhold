@@ -63,7 +63,7 @@ def poterna(m, c):
     prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(min(h(*f.p2(a_, b_)) for a_ in (up - 1.2, up + 1.3) for b_ in (T2, T2 + 2.5)) - 1.5, v0 - 1.0), v0, PIEDRA)
     suelo_losas(m, f, up - 1.2, up + 1.3, T2, T2 + 2.5, v0 + 0.01, LOSA, 0.5)
     # la puerta de la poterna, cerrada, y su matacán en el adarve
-    puerta_tablas(m, f, up - 0.5, up + 0.5, v0, v0 + 2.0, T2 - 0.4, 1.55, 'medio', MADERA)   # (abierta, contra el muro)
+    puerta_tablas(m, f, up - 0.5, up + 0.5, v0, v0 + 2.0, -T2 - 0.07, -(math.pi - 0.06), 'medio', MADERA)   # (abierta hacia dentro, plegada contra la cara del patio)
     for k in range(3):
         u = up - 1.05 + k * 1.05
         caja(m, f, u - 0.16, u + 0.16, ADARVE - 1.2, ADARVE - 0.6, T2, T2 + 0.45, PIEDRA_CLARA, .85); caja(m, f, u - 0.16, u + 0.16, ADARVE - 0.6, ADARVE, T2, T2 + 0.8, PIEDRA_CLARA, .85)

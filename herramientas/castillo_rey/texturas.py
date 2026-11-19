@@ -250,11 +250,16 @@ def madera(nombre='madera', tablas=False):
     rng = np.random.default_rng(52)
     w = rng.standard_normal((H, W))
     fy = np.fft.fftfreq(H)[:, None]; fx = np.fft.fftfreq(W)[None, :]
-    veta = np.real(np.fft.ifft2(np.fft.fft2(w) * np.exp(-((fx * 3) ** 2 + (fy * 28) ** 2))))
-    veta /= veta.std()
-    fina = np.real(np.fft.ifft2(np.fft.fft2(rng.standard_normal((H, W))) * np.exp(-((fx * 1.5) ** 2 + (fy * 30) ** 2)))); fina /= fina.std()
-    alt = veta * 0.0012 + fina * 0.0003
-    l = 0.88 + veta * 0.05 + fina * 0.015 + N1 * 0.05
+    # vetas largas: los anillos cortados a lo largo (líneas casi rectas a lo largo de y, que ondulan despacio)
+    alab = ruido(H, W, 90, 53, 2) * 6 + ruido(H, W, 260, 54, 1) * 26
+    estir = lambda z, sx, sy: np.real(np.fft.ifft2(np.fft.fft2(z) * np.exp(-((fx * sx) ** 2 + (fy * sy) ** 2))))
+    alab = estir(alab, 1, 60) / 1.0
+    fase = (xx + alab) * 2 * math.pi / 19.0
+    anillo = np.abs(np.sin(fase)) ** 4                     # la línea oscura del leño tardío
+    veta = estir(w, 3, 60); veta /= veta.std()
+    fina = estir(rng.standard_normal((H, W)), 1.2, 90); fina /= fina.std()
+    alt = -anillo * 0.0008 + fina * 0.00025
+    l = 0.86 - anillo * 0.09 + veta * 0.035 + fina * 0.025 + N1 * 0.04
     # nudos: óvalos oscuros con las vetas rodeándolos
     for _ in range(6):
         cx, cy = rng.uniform(0, W), rng.uniform(0, H)
@@ -354,7 +359,7 @@ def tierra():
 if __name__ == '__main__':
     pedidas = sys.argv[1:]
     hechas = {'sillar': silleria, 'mamp': mamposteria, 'piedra': piedra_labrada, 'losa': lambda: losas('losa', lado=(0.32, 0.6), junta=0.01),
-              'canto': lambda: losas('canto', 2, 45, canto=True), 'madera': madera, 'tabla': lambda: madera('tabla', True),
+              'canto': lambda: losas('canto', 2, 45, canto=True), 'madera': madera, 'tabla': lambda: madera('tabla', False),
               'teja': teja, 'paja': paja, 'tela': tela, 'tierra': tierra}
     for k, fn in hechas.items():
         if pedidas and k not in pedidas: continue

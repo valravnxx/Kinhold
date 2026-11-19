@@ -144,14 +144,56 @@ MAT = np.array([kit.MATERIALES.index(x) for x in m.M], dtype=np.int32)
 T = Pq.reshape(-1, 3, 3)
 nrm = np.cross(T[:, 1] - T[:, 0], T[:, 2] - T[:, 0]); nrm /= (np.linalg.norm(nrm, axis=1, keepdims=True) + 1e-12)
 tg = np.stack([-nrm[:, 2], np.zeros(len(nrm)), nrm[:, 0]], 1); tl = np.linalg.norm(tg, axis=1, keepdims=True)
-plano = (np.abs(nrm[:, 1]) > 0.9)[:, None] | (tl < 1e-6)
+_suelo = np.isin(MAT.reshape(-1, 3)[:, 0], [kit.MATERIALES.index(x) for x in ('tierra', 'canto', 'losa')])
+plano = (np.abs(nrm[:, 1]) > np.where(_suelo, 0.5, 0.9))[:, None] | (tl < 1e-6)
 tg = np.where(plano, np.array([[1.0, 0, 0]]), tg / np.maximum(tl, 1e-9))
 # el sentido de u, fijo (no según el giro de cada triángulo): si no, dos triángulos de la misma cara con distinto giro
 # llevan la textura en espejo y se ve la costura en diagonal
-ref = np.array([0.8191, 0.0, 0.5736])
-tg = np.where(((tg * ref).sum(1) < 0)[:, None], -tg, tg)
+# (el corte, en el ángulo de cara por el que casi no pasa ningún muro: así ninguna cara queda partida)
+_th = np.arctan2(nrm[:, 2], nrm[:, 0])
+_ar = 0.5 * np.linalg.norm(np.cross(T[:, 1] - T[:, 0], T[:, 2] - T[:, 0]), axis=1) * (~plano[:, 0])
+_hist = np.histogram(np.mod(_th, np.pi), bins=360, range=(0, np.pi), weights=_ar)[0]
+_hist = _hist + np.roll(_hist, 1) + np.roll(_hist, -1) + np.roll(_hist, 2) + np.roll(_hist, -2)
+_thw = (np.argmin(_hist) + 0.5) * np.pi / 360
+tg = np.where(((np.mod(_th - _thw, 2 * np.pi) >= np.pi) & ~plano[:, 0])[:, None], -tg, tg)
 bt = np.array([[0, 1.0, 0]]) - nrm * nrm[:, 1:2]; bl = np.linalg.norm(bt, axis=1, keepdims=True)
 bt = np.where(plano, np.array([[0, 0, 1.0]]), bt / np.maximum(bl, 1e-9))
+# los triángulos muy finos (astillas de la triangulación alrededor de los huecos) tienen la normal poco precisa y, a
+# 80 m del origen, un error de medio grado corre la textura varios centímetros: se ve la costura. Toman el plano del
+# vecino bueno con el que comparten su lado más largo.
+_lados = np.stack([np.linalg.norm(T[:, 1] - T[:, 0], axis=1), np.linalg.norm(T[:, 2] - T[:, 1], axis=1), np.linalg.norm(T[:, 0] - T[:, 2], axis=1)], 1)
+_area = 0.5 * np.linalg.norm(np.cross(T[:, 1] - T[:, 0], T[:, 2] - T[:, 0]), axis=1)
+_cal = _area / (_lados.max(1) ** 2 + 1e-12)
+_clave = lambda p: (round(p[0] * 50), round(p[1] * 50), round(p[2] * 50))
+_por_lado = {}
+for i in range(len(T)):
+    for k in range(3):
+        a_, b_ = _clave(T[i, k]), _clave(T[i, (k + 1) % 3])
+        _por_lado.setdefault((min(a_, b_), max(a_, b_)), []).append(i)
+_malos = np.where(_cal < 0.08)[0]
+for _ in range(3):
+    for i in _malos:
+        mejor_j, mejor_c = -1, _cal[i]
+        for k in range(3):
+            a_, b_ = _clave(T[i, k]), _clave(T[i, (k + 1) % 3])
+            for j in _por_lado.get((min(a_, b_), max(a_, b_)), ()):
+                if j != i and _cal[j] > mejor_c and abs((nrm[i] * nrm[j]).sum()) > 0.995: mejor_j, mejor_c = j, _cal[j]
+        if mejor_j >= 0:
+            tg[i] = tg[mejor_j]; bt[i] = bt[mejor_j]; _cal[i] = _cal[mejor_j]
+if os.environ.get('DIAG'):
+    _uv = lambda i, p: np.array([(p * tg[i]).sum(), (p * bt[i]).sum()])
+    malas = []
+    for (ka, kb), lst in _por_lado.items():
+        if len(lst) != 2: continue
+        i, j = lst
+        if (nrm[i] * nrm[j]).sum() < 0.999 or MAT[i * 3] != MAT[j * 3] or kit.MATERIALES[MAT[i * 3]] not in ('sillar', 'mamp', 'piedra'): continue
+        p = np.array(ka) / 50.0
+        d = np.abs(_uv(i, p) - _uv(j, p)).max()
+        if d > 0.01: malas.append((d, i, j))
+    malas.sort(reverse=True)
+    import collections; print('por material:', collections.Counter(kit.MATERIALES[MAT[i * 3]] for d, i, j in malas))
+    print('costuras >1 cm:', len(malas), 'peores:', [(kit.MATERIALES[MAT[i * 3]], [round(float(x), 1) for x in T[i, 0]], round(d, 3), round(float(_cal[i]), 4), round(float(_cal[j]), 4), [round(float(x), 3) for x in nrm[i]], [round(float(x), 3) for x in nrm[j]]) for d, i, j in malas[:6]])
+print('astillas con el plano del vecino:', int((_cal[_malos] >= 0.08).sum()), 'de', len(_malos))
 tgv = np.repeat(tg, 3, 0); btv = np.repeat(bt, 3, 0)
 UV = np.stack([(Pq * tgv).sum(1), (Pq * btv).sum(1)], 1)
 dadas = np.array([uv is not None for uv in m.UV])
