@@ -1,0 +1,32 @@
+Lo que dice la tarea
+  OK   el mango: 1 vara, en el banco de tronco — {"nombre":"Mango de herramienta","uso":"banco","da":"mango","n":1,"gasta":{"vara":1},"s":45}
+  OK   el hacha de hierro: 1 barra y 1 mango, en la fragua, con el mazo — {"nombre":"Hacha de hierro","uso":"forjar","da":"hacha_hierro","n":1,"gasta":{"barra_hierro":1,"mango":1},"s":180,"requiere":["mazo_piedra"]}
+  OK   el pico: 1 barra y 1 mango, en la fragua, con el mazo — {"nombre":"Pico","uso":"forjar","da":"pico","n":1,"gasta":{"barra_hierro":1,"mango":1},"s":180,"requiere":["mazo_piedra"]}
+  OK   los clavos: 1 barra da 10, en la fragua, con el mazo — {"nombre":"Clavos","uso":"forjar","da":"clavo","n":10,"gasta":{"barra_hierro":1},"s":120,"requiere":["mazo_piedra"]}
+  OK   la fragua es la estación del forjar
+  OK   el hacha de hierro tala con hierro: el adulto en menos golpes que con piedra — {"piedra":56,"hierro":14}
+  OK   y tronza y parte en menos golpes que con piedra
+El mango en el banco
+  OK   se encarga en el banco
+  OK   y otro, con la otra vara
+  OK   a su hora se recogen los 2 mangos — {"ok":true,"dados":[{"objeto":"mango","cantidad":1,"donde":[["mano:der",1]]},{"objeto":"mango","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false}
+En la fragua: el hacha, el pico y los clavos
+  OK   apagada, no se bate — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+  OK   se enciende con su carbón
+  OK   sin el mazo de piedra, no se bate — Para eso hace falta llevar mazo de piedra.
+  OK   encendida y con el mazo, el hacha: gasta la barra y el mango dejados — {}
+  OK   sin barra ni mango dejados, el pico no — Falta en la estación: 1 de Barra de hierro, 1 de Mango de herramienta.
+  OK   con la barra y sin el mango, el pico tampoco — Falta en la estación: 1 de Mango de herramienta.
+  OK   con la barra y el mango, el pico
+  OK   y con otra barra, los clavos
+  OK   a su hora, el hacha de hierro, el pico y 10 clavos — hacha 1, pico 1, clavos 10
+  OK   y el mazo no se gasta
+Por el servidor, con autor
+  OK   Ana le echa carbón y la enciende
+  OK   deja en ella 1 barra_hierro
+  OK   deja en ella 1 mango
+  OK   Bea, que no está al lado, no le bate el pico — El servidor aún no sabe dónde estás.
+  OK   Ana bate el pico
+  OK   y lo recoge
+
+26 bien, 0 mal
