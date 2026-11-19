@@ -28,6 +28,7 @@ srv = servir(sitio)
 BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=construir&sinservidor=1&lang=es'
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
+PASADAS = 1.4   # pasadas de sierra por segundo (src/juego/personaje.js, PASADAS_SIERRA)
 fallos = []
 def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
@@ -133,14 +134,16 @@ def recorrido(nav, nombre, pref, vista, movil):
             pg.screenshot(path=f'{SALIDA}/{pref}_tronzar_sierra_{i + 1}.png', timeout=180000)
     ok = all(x and x['modo'] != 'talar' and x['adelante'] > 0.8 and 0.1 < x['bajo'] < 0.5 and abs(x['caida']) < 0.35 for x in vistas)
     comprobar(f'{nombre}: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse', ok, str(vistas))
-    manos, cabezas = [], []
-    for _ in range(12):
-        pg.wait_for_timeout(90); x = pg.evaluate(SIERRA)
-        if x: manos.append(x['manoAdelante']); cabezas.append(x['cabeza'])
+    # (se mira en momentos fijos de la pasada, de 0,71 s: mirando el reloj, con 2–10 fotogramas por segundo, las muestras
+    # caían en las mismas fases y el vaivén salía a veces de 0,05 m y a veces de 0,3)
+    muestras = pg.evaluate(f'''() => {{ const f = {SIERRA}, j = {K}.jugador, r = [];
+      for (let i = 0; i < 8; i++) {{ globalThis.__tiempoSierra = i / 8 / {PASADAS}; j.animar(0, 0, true); const x = f(); if (x) r.push(x); }}
+      delete globalThis.__tiempoSierra; return r; }}''')
+    manos = [x['manoAdelante'] for x in muestras]; cabezas = [x['cabeza'] for x in muestras]
     # (de rodillas y algo echado adelante, la cabeza entre 0,8 y 1,35 m: ni en las rodillas ni echada atrás)
     comprobar(f'{nombre}: serrando, el cuerpo derecho de rodillas (la cabeza, ni en las rodillas ni echada atrás)', cabezas and all(0.8 < c < 1.35 for c in cabezas + [v['cabeza'] for v in vistas]), str(cabezas))
     va = (max(manos) - min(manos)) if manos else 0
-    comprobar(f'{nombre}: tronzando, la mano va y viene con la sierra (más de 0,15 m: que se lea)', va > 0.15, f'{va:.3f} m')
+    comprobar(f'{nombre}: tronzando, la mano va y viene con la sierra (más de 0,15 m: que se lea)', va > 0.15, f'{va:.3f} m en {len(manos)} momentos de la pasada')
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: tronzando, la sierra en la mano (no el hacha)', v['empunada'] == 'sierra', str(v))
     # (se para el trabajo del juego, que mientras se miraba ya ha podido tronzarlo, y se tronza otro, golpe a golpe)
@@ -164,6 +167,12 @@ def recorrido(nav, nombre, pref, vista, movil):
       o.traverse(m => {{ if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i += 3) {{ v.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); const d = v.y - k.alturaSuelo(v.x, v.z); bajo = Math.min(bajo, d); alto = Math.max(alto, d); }} }});
       return [+bajo.toFixed(3), +alto.toFixed(3)]; }})()''')
     comprobar(f'{nombre}: la sierra en el suelo, asentada (ni hundida ni en el aire)', a and a[0] > -0.02 and a[1] < 0.2, str(a))
+    # las tablas en el suelo, con su modelo (antes, un hatillo de lino): un montón de 1 m de largo y bajo
+    b = pg.evaluate(f'''(() => {{ const k = {K}, o = k.escena.getObjectByName('suelo_tabla'); if (!o) return null; const c = new o.position.constructor();
+      let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9]; o.updateMatrixWorld(true);
+      o.traverse(m => {{ if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i++) {{ c.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld).sub(o.position).applyAxisAngle(c.clone().set(0, 1, 0), -o.rotation.y); const v = [c.x, c.y, c.z]; for (let j = 0; j < 3; j++) {{ mn[j] = Math.min(mn[j], v[j]); mx[j] = Math.max(mx[j], v[j]); }} }} }});
+      return mx.map((x, j) => +(x - mn[j]).toFixed(2)); }})()''')
+    comprobar(f'{nombre}: las tablas en el suelo, con su modelo (1 m de largo, en montón bajo)', b and 0.9 < max(b[0], b[2]) < 1.15 and b[1] < 0.15, str(b))
     pg.evaluate(f'{K}.jugador.raiz.visible = false')
     mirar(pg, c, 0, 0.1, 0.5, 2.4 * D, 1.3, 0)
     pg.screenshot(path=f'{SALIDA}/{pref}_suelo.png', timeout=180000)

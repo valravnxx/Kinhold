@@ -241,7 +241,7 @@ function serrar(j, b, f, l, u) {
   // echado bien adelante (girando la espalda, en dos tramos, sobre el eje de la izquierda) para que el brazo llegue al
   // tronco tumbado: con 0,5 rad en un tramo, la mano se quedaba a la altura de la cadera y la hoja, a 0,7 m del suelo
   const q2 = new THREE.Quaternion(), q3 = new THREE.Quaternion();
-  const t = (performance.now() / 1000) * PASADAS_SIERRA * Math.PI * 2, ida = Math.sin(t);
+  const t = (globalThis.__tiempoSierra ?? performance.now() / 1000) * PASADAS_SIERRA * Math.PI * 2, ida = Math.sin(t);   // (__tiempoSierra: las pruebas miran momentos fijos de la pasada)
   // de rodillas, el cuerpo se echa algo adelante y acompaña cada pasada (adelante al empujar, atrás al tirar): con la
   // espalda quieta y derecha el brazo no llegaba a la punta de la pasada y la mano apenas iba y venía (0,1 m; lo vio la
   // segunda mirada a las capturas: «el brazo cuelga sin vaivén que se lea»)

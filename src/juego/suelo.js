@@ -77,6 +77,20 @@ export function varasEnSuelo(n, id) {
   return mallas(L);
 }
 
+// Tablas (P10, 19 nov): de 1 m × 18 cm × 2,5 cm, planas y apiladas a lo largo de Z, de dos en dos una al lado de otra y
+// capa sobre capa, algo descuadradas (como las del acopio de troncos, src/juego/estaciones.js). Antes salían en el suelo
+// como un hatillo de lino: lo vio la revisión de las capturas.
+export function tablasEnSuelo(n, id) {
+  const L = new Lote({ rangoSuelo: 0.04, variacion: 0.06 });
+  const vis = Math.min(n, 12);
+  for (let i = 0; i < vis; i++) {
+    const capa = i >> 1, lado = i % 2 ? 1 : -1, g = (az(id, i) - 0.5) * 0.12;
+    L.add(new THREE.BoxGeometry(0.18, 0.025, 1.0), 'tabla', lado * 0.095 + (az(id, i + 30) - 0.5) * 0.03, 0.0125 + capa * 0.026, (az(id, i + 60) - 0.5) * 0.06, new THREE.Matrix4().makeRotationY(g), { sinSuelo: true, tex: 'veta' });
+  }
+  const m = mallas(L); m.userData.largo = 1.0; m.rotation.order = 'YXZ';
+  return m;
+}
+
 function hatillo(grande, id) { // un paño de lino con las cuatro puntas atadas arriba: bulto con pliegues y el nudo
   const L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 });
   const s = grande ? 1.6 : 1;
@@ -113,6 +127,7 @@ export function modeloDe(o) {
   if (t === 'tronco_delgado') return troncosConCortes(n, 2.6, 0.09, o.id);
   if (t === 'tronco_largo') return troncosConCortes(n, 4.5, 0.18, o.id);
   if (t === 'canoa_a_medias' || t === 'canoa') return modeloCanoa(o, () => troncosConCortes(1, 4.5, 0.18, o.id));   // (P11d) src/juego/canoa.js
+  if (t === 'tabla') return tablasEnSuelo(n, o.id);
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
   if (Object.hasOwn(MODELO_OBJETO, t)) return MODELO_OBJETO[t](n, o.id); // lo de las recetas de P3 (src/juego/modelos_objetos.js)
   // (P10) la sierra, tumbada de plano en el suelo, con los mangos a los lados
