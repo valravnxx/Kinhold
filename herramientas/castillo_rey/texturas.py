@@ -350,9 +350,9 @@ def tela():
     hilo = suave(np.where(cruce, 0.5 + 0.5 * (xx % 2), 0.5 + 0.5 * (yy % 2)).astype(np.float64), 0.6)
     t = hilo * 0.0004 + (ur + tr) * 0.0003
     N = ruido(H, W, 20, 81, 3); M = ruido(H, W, 40, 83, 2); M = (M - M.mean()) / (M.std() + 1e-9)
-    l = 0.82 + 0.05 * (ur + tr) / 2 + 0.06 * N + 0.08 * M + 0.04 * hilo
+    l = 0.82 + 0.05 * (ur + tr) / 2 + 0.035 * N + 0.03 * M + 0.04 * hilo
     mancha = np.clip(ruido(H, W, 25, 84, 3) - 1.2, 0, 1)
-    l = l * (1 - 0.25 * mancha)
+    l = l * (1 - 0.1 * mancha)
     col = np.stack([l, l * 0.98, l * 0.95], -1) * cavidad(t, 2, 200)[..., None]
     guardar('tela', col * 0.9, t, 0.9)
 

@@ -44,12 +44,15 @@ function desgaste(mat, musgo) {
           float n1 = kh_ruido(vMundo * 1.7), n2 = kh_ruido(vMundo * 0.33), n3 = kh_ruido(vMundo * 4.1);
           // tono a gran escala (manchas de sol y lluvia) y regueros verticales
           diffuseColor.rgb *= 0.9 + 0.2 * n2;
+          // y a escala de muro entero (10–20 m): paños más limpios y más sucios, que rompen la repetición de lejos
+          float n4 = kh_ruido(vMundo * 0.065 + vec3(3.1, 0.0, 7.7));
+          diffuseColor.rgb *= 0.84 + 0.3 * n4;
           float reg = kh_ruido(vec3(vMundo.x * 2.3 + vMundo.z * 1.7, vMundo.y * 0.12, vMundo.z * 2.3 - vMundo.x * 1.1));
           diffuseColor.rgb *= 1.0 - 0.16 * smoothstep(0.62, 0.92, reg) * step(abs(vNorM.y), 0.6);
           // humedad y verdín al pie (hasta ~2 m, a manchas)
-          float pie = smoothstep(2.4, 0.0, vHs + (n1 - 0.5) * 0.9);
-          diffuseColor.rgb *= mix(1.0, 0.66, pie);
-          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.27, 0.31, 0.17), uMusgo * pie * 0.55 * smoothstep(0.3, 0.7, n2 + n3 * 0.3));
+          float pie = smoothstep(3.2, 0.0, vHs + (n1 - 0.5) * 1.4 + (n4 - 0.5) * 1.5);
+          diffuseColor.rgb *= mix(1.0, 0.62, pie);
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.27, 0.31, 0.17), uMusgo * pie * 0.7 * smoothstep(0.25, 0.65, n2 + n3 * 0.3));
           // musgo en lo que mira arriba (albardillas, cornisas, tejados, peldaños de fuera)
           float arriba = smoothstep(0.55, 0.95, vNorM.y) * smoothstep(0.62, 0.92, n2 * 0.6 + n1 * 0.4 + n3 * 0.2);
           diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.35, 0.18) * (0.8 + 0.4 * n3), uMusgo * arriba * 0.5);

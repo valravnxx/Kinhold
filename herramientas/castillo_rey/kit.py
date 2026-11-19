@@ -200,12 +200,12 @@ def _bloque(m, f, pts, w, d, col):
             else: m.tri(A[0], A[i + 1], A[i], col)
         for i in range(n):
             j = (i + 1) % n
-            if orden: m.quad(Z[i], Z[j], A[j], A[i], esc(col, 0.72))
-            else: m.quad(Z[j], Z[i], A[i], A[j], esc(col, 0.72))
+            if orden: m.quad(Z[i], Z[j], A[j], A[i], esc(col, 0.55))
+            else: m.quad(Z[j], Z[i], A[i], A[j], esc(col, 0.55))
 
 def _piedras(m, f, u0, u1, v0, v1, w, huecos, col, tipo, signo, suelo):
     """las piedras labradas de cada hueco sobre la cara w (signo = +1 si mira a +w): jambas, dovelas, dintel, marcos"""
-    d = 0.05 * signo
+    d = 0.03 * signo
     # dovelas y jambas de cada hueco
     for h in huecos:
         if h.get('sin_dovelas'):
@@ -275,7 +275,7 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
             l = 0.55 + 0.25 * (k % 2)
             with con(m, 'sillar'): m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l + 0.2))
         a, b = e[0], e[1]; c, d = i_[1], i_[0]
-        es_puerta = abs(b[0] - a[0]) > 1.0
+        es_puerta = abs(b[0] - a[0]) > 0.8
         with con(m, 'losa' if es_puerta else 'piedra'): m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(LOSA, 0.8) if es_puerta else esc(SILLAR_DOV, 0.82))   # umbral / alféizar
     if tapa:
         with con(m, 'piedra'): m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
@@ -480,11 +480,21 @@ def rastrillo(m, f, u0, u1, v0, v1, w, col=MADERA, alto_bajado=None):
     b = 0.11; n = max(3, int((u1 - u0) / 0.32))
     for i in range(n + 1):
         u = u0 + (u1 - u0) * i / n
-        caja(m, f, u - b / 2, u + b / 2, v0, v1, w - b / 2, w + b / 2, col, 0.85)
-        prisma(m, f, [(u - b / 2, w - b / 2), (u + b / 2, w - b / 2), (u + b / 2, w + b / 2), (u - b / 2, w + b / 2)], v0 - 0.18, v0, HIERRO, tapa=False)
+        with con(m, 'madera'): caja(m, f, u - b / 2, u + b / 2, v0, v1, w - b / 2, w + b / 2, esc(col, 0.8), 0.85)
+        # la punta de hierro: una pirámide que acaba en pico
+        q = [(u - b / 2 - 0.01, w - b / 2 - 0.01), (u + b / 2 + 0.01, w - b / 2 - 0.01), (u + b / 2 + 0.01, w + b / 2 + 0.01), (u - b / 2 - 0.01, w + b / 2 + 0.01)]
+        pico = f(u, v0 - 0.32, w)
+        for k in range(4):
+            (a1, b1), (a2, b2) = q[k], q[(k + 1) % 4]
+            m.tri(f(a2, v0, b2), f(a1, v0, b1), pico, esc(HIERRO, 0.8 + 0.1 * k))
+        caja(m, f, u - b / 2 - 0.012, u + b / 2 + 0.012, v0, v0 + 0.12, w - b / 2 - 0.012, w + b / 2 + 0.012, HIERRO)   # el regatón
     v = v0 + 0.4
     while v < v1 - 0.1:
-        caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.9), 0.85); v += 0.42
+        with con(m, 'madera'): caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.72), 0.85)
+        for i in range(n + 1):   # pletinas de hierro en cada cruce
+            u = u0 + (u1 - u0) * i / n
+            caja(m, f, u - 0.07, u + 0.07, v - 0.02, v + b + 0.02, w - b / 2 - 0.045, w + b / 2 + 0.045, HIERRO)
+        v += 0.42
 
 def ventana(m, f, u, v, ancho, alto, w, postigos=True, col=MADERA_CL, arco=None):
     """postigos abiertos sobre la cara w (hacia +w); el hueco lo hace el muro"""
@@ -902,5 +912,11 @@ def barca(m, f, largo=4.6, manga=1.5, puntal=0.62):
         for s in (-1, 1):
             caja(m, f, -1.6, 1.5, puntal + 0.06, puntal + 0.11, s * 0.35 - 0.04, s * 0.35 + 0.04, MADERA_CL, 0.8)
             caja(m, f, 1.1, 1.7, puntal + 0.04, puntal + 0.12, s * 0.35 - 0.09, s * 0.35 + 0.09, MADERA_CL, 0.8)   # la pala
-        # el agua que tiene dentro
-        m.quad(f(-L2 * 0.7, 0.12, -0.35), f(L2 * 0.7, 0.12, -0.35), f(L2 * 0.7, 0.12, 0.35), f(-L2 * 0.7, 0.12, 0.35), esc(AGUA, 0.8))
+        # el plan: tablas del fondo por encima del agua (si no, el agua del mar se ve dentro del casco)
+        vp = 0.32
+        with con(m, 'tabla'):
+            for i in range(NS):
+                x0, b0, _ = sec(i); x1, b1, _ = sec(i + 1)
+                k0, k1 = 0.86 * b0 - 0.05, 0.86 * b1 - 0.05
+                if k0 <= 0.02 and k1 <= 0.02: continue
+                m.quad(f(x0, vp, -max(k0, 0.0)), f(x0, vp, max(k0, 0.0)), f(x1, vp, max(k1, 0.0)), f(x1, vp, -max(k1, 0.0)), esc(TABLA, 0.75))

@@ -60,7 +60,7 @@ def poterna(m, c):
     c.huecos.append({'u': up, 'a': 1.0, 'v0': v0, 'v1': v0 + 2.0, 'arco': 'medio'})
     T2 = c.T / 2
     # rellano de fuera, macizo
-    prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(min(h(*f.p2(a_, b_)) for a_ in (up - 1.2, up + 1.3) for b_ in (T2, T2 + 2.5)) - 1.5, v0 - 1.0), v0, PIEDRA)
+    with con(m, 'mamp'): prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(min(h(*f.p2(a_, b_)) for a_ in (up - 1.2, up + 1.3) for b_ in (T2, T2 + 2.5)) - 1.5, v0 - 1.0), v0, PIEDRA)
     suelo_losas(m, f, up - 1.2, up + 1.3, T2, T2 + 2.5, v0 + 0.01, LOSA, 0.5)
     # la puerta de la poterna, cerrada, y su matacán en el adarve
     puerta_tablas(m, f, up - 0.5, up + 0.5, v0, v0 + 2.0, -T2 - 0.07, -(math.pi - 0.06), 'medio', MADERA)   # (abierta hacia dentro, plegada contra la cara del patio)
@@ -82,7 +82,11 @@ def poterna(m, c):
             w = max(w_min, w_de(u + sentido * 0.15, top - 0.15, w_min))
             ua, ub = (u, u + 0.3) if sentido > 0 else (u - 0.3, u)
             base = min(h(*f.p2(ua, w + 1.3)), h(*f.p2(ub, w + 1.3))) - 0.5
-            with choques.callar(): caja(m, f, ua, ub, min(base, top - 0.3), top, w, w + 1.3, varia(PIEDRA, .07), .75)
+            with choques.callar():
+                c_ = varia(PIEDRA, .07)
+                with con(m, 'piedra'): caja(m, f, ua, ub, top - 0.2, top, w, w + 1.3, c_, .75, caras='v1u0u1')
+                with con(m, 'mamp', base=min(base, top - 0.3)): caja(m, f, ua, ub, min(base, top - 0.3), top - 0.2, w, w + 1.3, esc(c_, 0.9), .75, caras='u0u1w0w1')
+                with con(m, 'sillar'): caja(m, f, ua, ub, top - 0.2, top, w, w + 1.3, esc(c_, 0.9), .75, caras='w0w1')
             choques.solido_caja(f, ua, ub, w, w + 1.3, min(base, top - 0.3), top)
             pts.append((u, w, top)); CAMINO_POTERNA.append((*f.p2(u + sentido * 0.15, w + 0.65), top)); u += sentido * 0.29; w_min = w   # (no vuelve hacia la muralla: no se cruza con el tramo de arriba)
         # pretil del lado del mar: tramos inclinados que siguen la escalera
@@ -90,20 +94,20 @@ def poterna(m, c):
             P_ = lambda uu, ww, yy: f(uu, yy, ww)
             for (y0_, y1_) in ((ta - 0.4, ta + 0.8),):
                 pass
-            m.quad(f(ua, ta - 0.3, wa + 1.3), f(ub, tb - 0.3, wb + 1.3), f(ub, tb + 0.8, wb + 1.3), f(ua, ta + 0.8, wa + 1.3), esc(PIEDRA, .9))
-            m.quad(f(ua, ta - 0.3, wa + 1.55), f(ub, tb - 0.3, wb + 1.55), f(ub, tb + 0.8, wb + 1.55), f(ua, ta + 0.8, wa + 1.55), esc(PIEDRA, .8))
+            with con(m, 'sillar'): m.quad(f(ua, ta - 0.3, wa + 1.3), f(ub, tb - 0.3, wb + 1.3), f(ub, tb + 0.8, wb + 1.3), f(ua, ta + 0.8, wa + 1.3), esc(PIEDRA, .9))
+            with con(m, 'sillar'): m.quad(f(ua, ta - 0.3, wa + 1.55), f(ub, tb - 0.3, wb + 1.55), f(ub, tb + 0.8, wb + 1.55), f(ua, ta + 0.8, wa + 1.55), esc(PIEDRA, .8))
             choques._seg(f, ua, wa + 1.4, ub, wb + 1.4, min(ta, tb) - 0.3, max(ta, tb) + 0.8)
             m.quad(f(ua, ta + 0.8, wa + 1.25), f(ub, tb + 0.8, wb + 1.25), f(ub, tb + 0.8, wb + 1.6), f(ua, ta + 0.8, wa + 1.6), PIEDRA_CLARA)
         return u, pts
     u1_, p1 = tramo(up + 1.3, 1, v0, 7.0, T2 + 1.3)
     w_g = p1[-1][1]
     CAMINO_POTERNA.append((*f.p2(u1_ + 0.75, w_g + 0.6), 7.0)); CAMINO_POTERNA.append((*f.p2(u1_ + 0.75, w_g + 2.3), 7.0))   # (el rellano del giro)
-    prisma(m, f, [(u1_, w_g - 0.6), (u1_ + 1.5, w_g - 0.6), (u1_ + 1.5, w_g + 3.2), (u1_, w_g + 3.2)], min(h(*f.p2(u1_ + 1.5, w_g + 3.2)), 7.0) - 1.0, 7.0, PIEDRA)
+    with con(m, 'mamp'): prisma(m, f, [(u1_, w_g - 0.6), (u1_ + 1.5, w_g - 0.6), (u1_ + 1.5, w_g + 3.2), (u1_, w_g + 3.2)], min(h(*f.p2(u1_ + 1.5, w_g + 3.2)), 7.0) - 1.0, 7.0, PIEDRA)
     u2_, p2 = tramo(u1_ - 0.0, -1, 7.0, 1.0, w_g + 1.7)
     w_f = p2[-1][1]
     u_fin = u2_
     # el muelle: rellano de piedra y pantalán de madera hacia el agua
-    prisma(m, f, [(u_fin - 2.2, w_f - 0.3), (u_fin + 0.3, w_f - 0.3), (u_fin + 0.3, w_f + 3.0), (u_fin - 2.2, w_f + 3.0)], -1.5, 1.0, PIEDRA)
+    with con(m, 'mamp'): prisma(m, f, [(u_fin - 2.2, w_f - 0.3), (u_fin + 0.3, w_f - 0.3), (u_fin + 0.3, w_f + 3.0), (u_fin - 2.2, w_f + 3.0)], -1.5, 1.0, PIEDRA)
     RELLANO_POTERNA[:] = [f.p2(up, -T2 - 1.5), f.p2(up, T2 + 1.2), f.p2(u_fin - 1.0, w_f + 1.5), f.p2(u_fin - 1.0, w_f + 9.0)]
     v_bajo = 1.0
     fm = F(*f.p2(u_fin - 1.0, w_f + 3.0), f.a + math.pi / 2, 0)    # u hacia el mar
@@ -117,8 +121,14 @@ def poterna(m, c):
     with choques.callar(): barca(m, fb.sub(0, 0, 0.0, -0.25))   # (la quilla, bajo el agua)
     for (u_, w_) in ((0.9, -2.6), (0.9, 2.6)): pass
     # la amarra: de la proa al último poste del pantalán
-    a_ = fb(2.3, 1.55, 0); b_ = fm(1.5 + 3 * 2.4, v_bajo + 0.5, 0.85)
-    m.quad(a_, b_, (b_[0], b_[1] + 0.03, b_[2]), (a_[0], a_[1] + 0.03, a_[2]), hexc('#8a7a5a'))
+    a_ = fb(2.3, 0.7, 0); b_ = fm(1.5 + 3 * 2.4, v_bajo + 0.45, 0.85)
+    n_ = 10
+    for k in range(n_):   # el cabo, combado
+        t0, t1 = k / n_, (k + 1) / n_
+        p0 = [a_[i] + (b_[i] - a_[i]) * t0 for i in range(3)]; p1 = [a_[i] + (b_[i] - a_[i]) * t1 for i in range(3)]
+        p0[1] -= 0.35 * math.sin(math.pi * t0); p1[1] -= 0.35 * math.sin(math.pi * t1)
+        m.quad(tuple(p0), tuple(p1), (p1[0], p1[1] + 0.035, p1[2]), (p0[0], p0[1] + 0.035, p0[2]), hexc('#8a7a5a'))
+        m.quad(tuple(p0), tuple(p1), (p1[0] + 0.025, p1[1] + 0.018, p1[2] + 0.025), (p0[0] + 0.025, p0[1] + 0.018, p0[2] + 0.025), esc(hexc('#8a7a5a'), 0.8))
 
 def _dentro_enc(p, pol, margen):
     if not dentro(p, pol): return False
@@ -166,7 +176,13 @@ def cinta(m, pts, ancho, mat, col, alto, borde=0.35, sem=0, paso=0.4, n_trav=6):
         a = S[max(0, i - 1)]; b = S[min(len(S) - 1, i + 1)]
         dx, dz = b[0] - a[0], b[1] - a[1]; l = math.hypot(dx, dz) or 1
         N.append((-dz / l, dx / l))
-    ruido = lambda t, k: borde * (0.6 * math.sin(t * 0.9 + k * 1.7 + sem) + 0.4 * math.sin(t * 2.3 + k * 0.6 + sem * 2))
+    ruido = lambda t, k: borde * (0.55 * math.sin(t * 0.9 + k * 1.7 + sem) + 0.3 * math.sin(t * 2.3 + k * 0.6 + sem * 2) + 0.2 * math.sin(t * 6.1 + k * 2.9 + sem * 3))
+    # el borde se funde con lo de al lado: la tierra se vuelve verdosa hacia la hierba; el empedrado, terroso
+    junto = hexc('#56603a') if mat == 'tierra' else hexc('#6a5a44')
+    def tono(k):
+        e = min(k, n_trav - k) / max(1, n_trav)
+        f_ = 0.55 if e == 0 else (0.22 if e <= 1 / n_trav + 1e-9 else 0.0)
+        return [col[i] * (1 - f_) + junto[i] * f_ for i in range(3)]
     with con(m, mat):
         for i in range(len(S) - 1):
             filas = []
@@ -179,8 +195,8 @@ def cinta(m, pts, ancho, mat, col, alto, borde=0.35, sem=0, paso=0.4, n_trav=6):
                     fila.append((x, h(x, z) + alto, z))
                 filas.append(fila)
             for k in range(n_trav):
-                c = varia(col, 0.02)
-                m.quad(filas[0][k], filas[1][k], filas[1][k + 1], filas[0][k + 1], c)
+                ca, cb = tono(k), tono(k + 1)
+                m.quad(filas[0][k], filas[1][k], filas[1][k + 1], filas[0][k + 1], ca, ca, cb, cb)
 
 def camino_explanada(m, pts, ancho=3.6):
     """el camino de la explanada: empedrado en medio y tierra pisada a los lados"""
