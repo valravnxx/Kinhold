@@ -454,13 +454,13 @@ function fragua(id) {
   // las dos horquillas de vara del fuelle
   for (const dz of [-0.13, 0.13]) {
     L.add(cil(0.02, 0.025, 0.5, 6), 0x6a5540, X / 2 + 0.52, 0.25, dz, null, { tex: 'veta' });
-    for (const s of [-1, 1]) L.add(cil(0.013, 0.017, 0.12, 5), 0x6a5540, X / 2 + 0.52 + s * 0.03, 0.53, dz, { z: -s * 0.5 }, { sinSuelo: true });
+    for (const s of [-1, 1]) L.add(cil(0.012, 0.016, 0.16, 5), 0x6a5540, X / 2 + 0.52, 0.55, dz + s * 0.04, { x: s * 0.6 }, { sinSuelo: true, tex: 'veta' });   // la horquilla, abierta a los lados
   }
   // el yunque, delante (+z): una piedra grande de cara plana, medio hundida
   const yun = piedraIrregular(0.26, 2, id + 'yunque', 0.14), p = yun.attributes.position;
-  for (let i = 0; i < p.count; i++) if (p.getY(i) > 0.13) p.setY(i, 0.13 + (p.getY(i) - 0.13) * 0.08);   // la cara de batir, plana
+  for (let i = 0; i < p.count; i++) if (p.getY(i) > 0.08) p.setY(i, 0.08 + (p.getY(i) - 0.08) * 0.05);   // la cara de batir, plana y ancha
   yun.computeVertexNormals();
-  L.add(yun, 'piedraOsc', -0.18, 0.2, Z / 2 + 0.55, { y: az(id, 7) * 0.6 }, { escala: new THREE.Vector3(1.25, 1.2, 1), plano: true });
+  L.add(yun, 'piedraOsc', -0.18, 0.25, Z / 2 + 0.55, { y: az(id, 7) * 0.6 }, { escala: new THREE.Vector3(1.25, 1.2, 1), plano: true });
   const o = new THREE.Group();
   o.add(mallas(L));
   // el fuelle de cuero, tumbado en las horquillas, con la boquilla hacia la tobera (-x)
@@ -470,6 +470,39 @@ function fragua(id) {
   const ramas = new THREE.Group(); ramas.add(c); ramas.name = 'ramas'; o.add(ramas);
   o.userData.alzaFuego = A + 0.01;
   return o;
+}
+
+// El fuego de la fragua: el carbón al rojo en la cubeta, con llamas cortas y anaranjadas que asoman entre los trozos
+// (no las de la leña de la hoguera) y un humo tenue; apagada después de arder, un poco de ceniza y cisco negro.
+const MAT_CARBON_ROJO = new THREE.MeshLambertMaterial({ color: 0xb8471a, emissive: 0xc24a14, emissiveIntensity: 0.85 });
+const MAT_CARBON_NEGRO = new THREE.MeshLambertMaterial({ color: 0x2a2522 });
+function fuegoFragua(cual, id) {
+  const g = new THREE.Group(); g.name = 'fuego';
+  g.userData.humo = { x: 0, y: 0.15, z: 0 }; g.userData.fuego = { x: 0, y: 0.15, z: 0 };
+  if (cual === 'ardiendo' || cual === 'brasas') {
+    for (let i = 0; i < 16; i++) {   // los trozos de carbón: los de dentro, al rojo; los del borde, negros
+      const a = i * 2.399 + az(id, 'c' + i), d = Math.sqrt(i / 16) * 0.19, rojo = d < 0.15;
+      const m = new THREE.Mesh(piedraIrregular(0.035 + az(id, 'r' + i) * 0.02, 0, id + 'cf' + i, 0.3), rojo ? MAT_CARBON_ROJO : MAT_CARBON_NEGRO);
+      m.position.set(Math.cos(a) * d, 0.02 + (rojo ? 0.015 : 0), Math.sin(a) * d); m.scale.set(1.3, 0.7, 1); m.name = rojo ? 'llama_brasa' : 'carbon'; g.add(m);
+    }
+  }
+  if (cual === 'ardiendo') {
+    for (let i = 0; i < 5; i++) {   // las llamas, cortas
+      const h = 0.07 + az(id, 'h' + i) * 0.07, r = 0.025 + az(id, 'q' + i) * 0.015, a = i * 1.26 + az(id, 'a' + i), d = i === 4 ? 0 : 0.07;
+      const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), i === 4 ? MAT_NUCLEO_HORNO : MAT_LLAMA_HORNO);
+      m.geometry.translate(0, h / 2, 0); m.position.set(Math.cos(a) * d, 0.03, Math.sin(a) * d); m.name = 'llama'; m.userData.fase = i * 1.9; g.add(m);
+    }
+    for (let i = 0; i < 8; i++) {
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.06, 1), new THREE.MeshBasicMaterial({ color: 0x8f8a84, transparent: true, opacity: 0, depthWrite: false, fog: true }));
+      m.name = 'humo'; m.userData.fase = i / 8; g.add(m);
+    }
+    moverFuego(g, 0);
+  }
+  if (cual === 'cenizas') {
+    const c = new THREE.Mesh(piedraIrregular(0.17, 1, id + 'ceniza', 0.12), MAT_CENIZA); c.scale.set(1, 0.08, 1); c.position.y = 0.01; c.name = 'ceniza'; g.add(c);
+  }
+  g.traverse(m => { if (m.isMesh) m.castShadow = false; });
+  return g;
 }
 
 // La carbonera (oficios, 18 nov), como las de los carboneros de los bosques: las 10 leñas puestas de pie, apoyadas
@@ -1393,7 +1426,8 @@ export function crearEstaciones({ raiz, altura, fab }) {
     o.userData.firmaFuego = firma;
     const viejo = o.getObjectByName('fuego'); if (viejo) o.remove(viejo);
     const r = o.getObjectByName('ramas'); if (r) r.visible = v.ramas;
-    if (v.cual) { const f = modeloFuego(v.cual, e.id), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || 0; if (e.tipo === 'fragua') f.scale.setScalar(0.7); o.add(f); }   // (la fragua: un fuego de carbón, más bajo, en su cubeta)
+    if (e.tipo === 'fragua' && r) r.visible = v.ramas && v.cual !== 'ardiendo';   // (encendida, el carbón es brasa: lo pinta su fuego)
+    if (v.cual) { const f = e.tipo === 'fragua' ? fuegoFragua(v.cual, e.id) : modeloFuego(v.cual, e.id), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || 0; o.add(f); }
   }
   // el horno de reducción (P10) y la carbonera (oficios): mientras alguna carga no ha terminado (según la hora de este navegador), humo, llama y
   // el arco y la tobera al rojo; si no, nada

@@ -688,7 +688,7 @@ function lupia(n, id) {
 
 // El fuelle de la fragua (P10, 19 nov): dos tablas en forma de pera (de las varas, abiertas y aplanadas) con el cuero
 // cosido entre ellas en pliegues de acordeón, la boquilla delante y los dos mangos de vara detrás. Tumbado en el suelo.
-const TABLA_FUELLE = 0x5c4630, BOQUILLA = 0x3f3226;
+const TABLA_FUELLE = 0x6b5238, BOQUILLA = 0x3f3226, CUERO_FUELLE = 0x3d2a1e, CUERO_FUELLE_OSC = 0x2c1e15;
 function formaPera(ancho, largo) {   // la tabla: redonda detrás (en el origen) y estrecha delante (+x)
   const s = new THREE.Shape(), r = ancho / 2, f = 0.045;
   s.moveTo(largo, -f); s.lineTo(0.06, -r); s.absarc(0, 0, r, -Math.PI / 2 + 0.35, Math.PI / 2 - 0.35, true);
@@ -703,10 +703,10 @@ export function loteFuelle(id, L = lote(0.03), giro = null) {
   L.add(tabla.clone(), TABLA_FUELLE, 0, alto, 0, { y: t }, { tex: 'veta', sinSuelo: true });
   // el cuero en acordeón: cinco pliegues, de la tabla de abajo a la de arriba, que entran y salen
   for (let k = 0; k < 5; k++) {
-    const fr = k % 2 ? 0.86 : 1.06, y = 0.03 + k * (alto - 0.03) / 5;
+    const fr = k % 2 ? 0.84 : 1.1, y = 0.03 + k * (alto - 0.03) / 5;
     const f = new THREE.ExtrudeGeometry(formaPera(ancho * fr, largo * 0.92), { depth: (alto - 0.03) / 5 + 0.004, bevelEnabled: false, curveSegments: 10 });
     f.rotateX(-Math.PI / 2);
-    L.add(f, k % 2 ? CUERO_OSC : CUERO, -0.012 * (fr - 1) * 10, y + (alto - 0.03) / 5, 0, { y: t }, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
+    L.add(f, k % 2 ? CUERO_FUELLE_OSC : CUERO_FUELLE, -0.012 * (fr - 1) * 10, y + (alto - 0.03) / 5, 0, { y: t }, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
   }
   // la boquilla, delante, entre las dos tablas
   const c = Math.cos(t), sn = Math.sin(t), en = d => [d * c, -d * sn];
