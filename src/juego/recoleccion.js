@@ -459,7 +459,7 @@ export function modelosRecoleccion() {
   // bajas (las de Meshy, las mismas del mundo, teñidas de óxido; si no han llegado, las de código), medio hundidas en el
   // suelo manchado de óxido (el calco); y lo que se va al agotarla: los terrones de mineral sueltos al pie (hematites
   // negro rojizo y limonita parda amarillenta), con su brillo apagado de metal
-  const ROJIZA = 0xa8826e, ROJIZA_OSC = 0x927060;   // (apagado: la roca gris del mundo, teñida de herrumbre parda; nada de naranja)
+  const ROJIZA = 0xd0a894, ROJIZA_OSC = 0xbc9686;   // (apagado: la roca gris del mundo, teñida de herrumbre parda; nada de naranja)
   const tenir = (mats, c) => (Array.isArray(mats) ? mats : [mats]).map(m => { const q = m.clone(); q.color = new THREE.Color(c); return q; });
   const unir = (geo, piezas) => mergeGeometries(piezas.map(([x, y, z, ry, e, rz = 0]) => geo.clone().applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rz, ry, 0)), new THREE.Vector3(e[0], e[1], e[2])))));
   const penaM = naturaleza('pena'), rocaM = naturaleza('roca');
@@ -468,8 +468,8 @@ export function modelosRecoleccion() {
     const mp = naturaleza('pena').medida, mr = naturaleza('roca').medida;
     // (la peña, de unos 2,2 m de ancho y 1,1 de alto; las rocas, de 1,1 y 0,8 m)
     const ep = [2.2 / (2 * mp[0]), 1.1 / mp[1], 2.2 / (2 * mp[0]) * 0.8], er = (w, h) => [w / (2 * mr[0]), h / mr[1], w / (2 * mr[0])];
-    afloramiento.push({ geo: unir(penaM.cerca.geo, [[0, -0.25, 0, 0.3, ep, 0.12]]), mat: tenir(penaM.cerca.mats, ROJIZA)[0] });
-    afloramiento.push({ geo: unir(rocaM.cerca.geo, [[1.25, -0.12, 0.55, 1.9, er(1.1, 0.6)], [-1.05, -0.1, 0.7, 4.1, er(0.8, 0.45)]]), mat: tenir(rocaM.cerca.mats, ROJIZA_OSC)[0] });
+    afloramiento.push({ geo: unir(penaM.cerca.geo, [[0, -0.38, 0, 0.3, ep, 0.12]]), mat: tenir(penaM.cerca.mats, ROJIZA)[0] });
+    afloramiento.push({ geo: unir(rocaM.cerca.geo, [[1.25, -0.24, 0.55, 1.9, er(1.1, 0.7)], [-1.05, -0.2, 0.7, 4.1, er(0.8, 0.5)]]), mat: tenir(rocaM.cerca.mats, ROJIZA_OSC)[0] });
   } else {
     afloramiento.push(...geoLote(L => {
       L.add(rocaCortada(1, 2.2, 1.4, 1.7), ROJIZA, 0, 0.35, 0, { y: 0.3 }, { plano: true, tex: 'piedra' });
@@ -478,9 +478,9 @@ export function modelosRecoleccion() {
     }, { rangoSuelo: 0.6 }));
   }
   const terrones = geoLote(L => {
-    for (let k = 0; k < 24; k++) {
-      const a = k * 2.399 + 0.5, r = 1.05 + (k % 5) * 0.16, x = Math.cos(a) * r * 1.1, z = Math.sin(a) * r * 0.9 + 0.1, e = 0.12 + (k % 5) * 0.03;
-      L.add(rocaCortada(10 + k, e * 2, e * 1.3, e * 1.7, 0), k % 3 === 2 ? 0x7a6040 : k % 2 ? 0x463432 : 0x56382e, x, e * 0.4, z, { y: a }, { plano: true, tex: 'piedra', brillo: 1.1 });
+    for (let k = 0; k < 22; k++) {
+      const a = k * 2.399 + 0.5, r = 1.0 + (k % 5) * 0.15, x = Math.cos(a) * r * 1.1, z = Math.sin(a) * r * 0.9 + 0.1, e = 0.07 + (k % 4) * 0.025;
+      L.add(rocaCortada(10 + k, e * 2, e * 1.2, e * 1.6, 1), k % 3 === 2 ? 0x8a7052 : k % 2 ? 0x5e4a44 : 0x6c4c40, x, e * 0.25, z, { y: a }, { plano: true, tex: 'piedra', brillo: 1.05 });
     }
   }, { rangoSuelo: 0.1 });
   const veta_hierro = [...afloramiento.map(m => ({ ...m, siempre: true })), ...terrones];
