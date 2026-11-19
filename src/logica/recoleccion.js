@@ -67,7 +67,8 @@
 // Las paredes de los cortados (la roca de los acantilados, src/mundo/rocas.js) son paisaje: no se rompen.
 // Decisiones provisionales (19 nov; el roadmap no fija los números):
 //  - De 1,1 m a 4,4 m (el peñasco más grande del pedregal): de 30 a 80 golpes, de 1 a 4 bloques y de 10 a 30 piedras.
-//  - Los bloques caen a 1/3 de la medida de la roca de su centro, hacia un lado fijo por su nombre; las piedras, en medio.
+//  - Los bloques caen a 1/3 de la medida de la roca (y medio metro) de su centro, al otro lado del que la rompe; las
+//    piedras, en medio.
 import { CATALOGO } from './inventario.js';
 
 const DIA = 24 * 3600 * 1000;
@@ -309,7 +310,8 @@ export class Recoleccion {
     }
     const n = piedrasRoca(p.tam), b = bloquesRoca(p.tam), deja = [{ tipo: 'piedra', n, x: p.x, z: p.z }];
     if (b) {   // (la cantera, 19 nov) los bloques, en su montón a un lado de donde estaba la roca
-      const a = hash(numTexto(id), veces, 19) * Math.PI * 2, d = medidaRoca(p.tam) / 3 + 0.5;
+      // (al otro lado de la roca del que la rompe: no le caen a los pies; si está justo encima, a un lado fijo por su nombre)
+      const lejos = Math.hypot(p.x - x, p.z - z), a = lejos > 0.05 ? Math.atan2(p.z - z, p.x - x) : hash(numTexto(id), veces, 19) * Math.PI * 2, d = medidaRoca(p.tam) / 3 + 0.5;
       deja.push({ tipo: 'bloque_piedra', n: b, x: Math.round((p.x + Math.cos(a) * d) * 100) / 100, z: Math.round((p.z + Math.sin(a) * d) * 100) / 100 });
     }
     this.estado[id] = { vuelve: ahora + (b ? CANTERA.vuelve : ROMPER.vuelve), veces: veces + 1, quitado: true };
