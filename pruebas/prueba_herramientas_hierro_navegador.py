@@ -81,7 +81,7 @@ def recorrido(nav, nombre, pref, vista, movil):
             comprobar(f'{nombre}: {t}, empuñado en la mano derecha con su modelo ({quiere})', v['empunada'] == quiere and v['dEmpunada'] is not None and v['dEmpunada'] < 0.6, str(v))
         else:
             comprobar(f'{nombre}: {t}, en la mano derecha con su modelo (no la bolsa ni el hatillo)', v['pieza'] and v['generico'] is False and v['dPieza'] is not None and v['dPieza'] < 0.35, str(v))
-        for vista_, (g, d, a) in ({'frente': (0.45, 1.3, 0.12), 'lado': (1.3, 1.25, 0.12)} if not movil else {'frente': (0.45, 1.3 * D, 0.12)}).items():
+        for vista_, (g, d, a) in ({'frente': (0.45, 1.9, 0.05), 'lado': (1.3, 1.8, 0.05)} if not movil else {'frente': (0.25, 2.6, 0.05)}).items():
             mirarMano(pg, g, d, a)
             pg.screenshot(path=f'{SALIDA}/{pref}_mano_{t}_{vista_}.png', timeout=180000)
     # el pico colgado del cinto, como el hacha
@@ -89,7 +89,7 @@ def recorrido(nav, nombre, pref, vista, movil):
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: el pico, colgado del cinto con su modelo', v['cinto'] == ['pico'], str(v))
     if not movil:
-        mirarMano(pg, 1.6, 1.4, 0.15)
+        mirarMano(pg, -1.4, 1.5, 0.1)   # (del lado derecho, el del pico)
         pg.screenshot(path=f'{SALIDA}/{pref}_cinto_pico.png', timeout=180000)
     equipar(pg, {'cintura': C('cordel', 1, [None])})
     # en el suelo, de cerca
@@ -99,7 +99,7 @@ def recorrido(nav, nombre, pref, vista, movil):
     comprobar(f'{nombre}: el mango, el pico, los clavos y el hacha se dejan en el suelo', n == 4, str(n))
     # (la cámara sigue al jugador: se le pone en medio de lo dejado y se le esconde mientras se mira el suelo)
     pg.evaluate(f'{K}.jugador.raiz.visible = false')
-    mirar(pg, c, 0, 0.15, 0.5, 1.7 * D, 1.35, 0)
+    mirar(pg, c, 0.1, 0.2, 0.5, 2.2 * D, 1.35, 0)
     pg.screenshot(path=f'{SALIDA}/{pref}_suelo.png', timeout=180000)
     if not movil:
         mirar(pg, c, -0.3, 0.4, 0.5, 0.55, 1.3, 0)
@@ -116,6 +116,7 @@ def recorrido(nav, nombre, pref, vista, movil):
     comprobar(f'{nombre}: en la pestaña «Fragua», el hacha de hierro, el pico y los clavos', all(x in texto for x in ['Hacha de hierro', 'Pico', 'Clavos']), texto[:300])
     pg.wait_for_function("[...document.querySelectorAll('#panelFabricar img')].every(i => i.complete && i.naturalWidth > 0)", timeout=60000)
     pg.wait_for_timeout(600)
+    if movil: pg.evaluate("document.querySelector('#panelFabricar .fab-carta[data-fila=\"hacha_hierro\"]').scrollIntoView({ block: 'center' })"); pg.wait_for_timeout(500)
     pg.screenshot(path=f'{SALIDA}/{pref}_panel_fragua.png', timeout=180000)
     sel = '#panelFabricar .fab-carta[data-fila="hacha_hierro"]'
     pg.tap(sel) if movil else pg.click(sel)

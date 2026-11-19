@@ -560,8 +560,12 @@ function enMano(t) {
   // (P10, 19 nov) el mango de herramienta, cogido por el pomo como el de un hacha; los clavos, un puñado en el puño: las
   // cabezas asoman por el lado del índice y las puntas por el del meñique
   else if (t === 'mango') loteMango(L);
-  // (la caña cruza la palma, junto a los dedos, y las cabezas asoman 3 o 4 cm por el lado del índice: dentro de la mano no se veían)
-  else if (t === 'clavo') for (let i = 0; i < 4; i++) clavoEn(L, (i % 2 - 0.5) * 0.014, 0.1 + (i % 3) * 0.008, 0.035 + (i >> 1) * 0.012, { z: (i - 1.5) * 0.08, x: (i % 2 - 0.5) * 0.12 }, 1, i);
+  // (los clavos, un atadijo de diez, paralelos y atados con una vuelta de cordel, cogido como un palo corto: las cabezas
+  // asoman por el lado del índice y las puntas por el del meñique (sueltos en el puño no se leían: segunda mirada, 19 nov)
+  else if (t === 'clavo') {
+    for (let i = 0; i < 10; i++) { const a = i * 2.399, r = 0.006 * Math.sqrt(i); clavoEn(L, Math.cos(a) * r, 0.075 + (i % 3) * 0.004, 0.05 + Math.sin(a) * r, null, 1.2, i); }
+    L.add(new THREE.TorusGeometry(0.0145, 0.0028, 5, 14), CORDEL, 0, 0.03, 0.05, { x: Math.PI / 2 }, { tex: 'liso' });
+  }
   else if (t === 'lasca_silex') lasca(L, 0, 0.045, 0.012);
   else if (t === 'palo_cavador') paloCavador(L, 0.4);
   else if (t === 'cordel') madeja(L, 0.045, 0.004, 7, CORDEL);
