@@ -99,10 +99,10 @@ def recorrido(nav, nombre, pref, vista, movil):
     comprobar(f'{nombre}: el mango, el pico, los clavos y el hacha se dejan en el suelo', n == 4, str(n))
     # (la cámara sigue al jugador: se le pone en medio de lo dejado y se le esconde mientras se mira el suelo)
     pg.evaluate(f'{K}.jugador.raiz.visible = false')
-    mirar(pg, c, 0, 0.15, 0.5, 2.0 * D, 0.95, 0)
+    mirar(pg, c, 0, 0.15, 0.5, 1.7 * D, 1.35, 0)
     pg.screenshot(path=f'{SALIDA}/{pref}_suelo.png', timeout=180000)
     if not movil:
-        mirar(pg, c, -0.3, 0.4, 0.5, 0.75, 1.0, 0)
+        mirar(pg, c, -0.3, 0.4, 0.5, 0.55, 1.3, 0)
         pg.screenshot(path=f'{SALIDA}/{pref}_suelo_clavos.png', timeout=180000)
     pg.evaluate(f'{K}.jugador.raiz.visible = true')
     # el panel: la fragua y el banco de tronco, puestos al lado
