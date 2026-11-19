@@ -16,27 +16,64 @@ def mezcla(a, b, t): return tuple(a[i] * (1 - t) + b[i] * t for i in range(3))
 def varia(c, f=0.08): r = 1 - f + 2 * f * az(); return esc(c, r)
 
 # ---------------- materiales (la referencia: piedra gris parda, teja parda gastada, madera oscura, revoco ocre)
-PIEDRA = hexc('#77726a'); PIEDRA_CLARA = hexc('#8a857a'); PIEDRA_OSC = hexc('#625d55'); MORTERO = hexc('#55504a')
-MAMPOST = hexc('#716b62'); SILLAR_DOV = hexc('#8c8579')
-MADERA = hexc('#4a3424'); MADERA_CL = hexc('#6e5038'); MADERA_VIEJA = hexc('#5a4a3a'); TABLA = hexc('#7a5a3c'); HIERRO = hexc('#2c2a28')
-TEJA = hexc('#6a4d3b'); PAJA = hexc('#8c7a4e'); MUSGO = hexc('#56653a'); HUMEDAD = hexc('#5b5a46')
-REVOCO = hexc('#cdb48a'); CAL = hexc('#d9cfb8'); TIERRA = hexc('#6f5d45'); BARRO = hexc('#5c4a36'); LOSA = hexc('#7e786c')
+PIEDRA = hexc('#8c8475'); PIEDRA_CLARA = hexc('#9e9686'); PIEDRA_OSC = hexc('#70695d'); MORTERO = hexc('#6a6357')
+MAMPOST = hexc('#877e6e'); SILLAR_DOV = hexc('#8e8678')
+MADERA = hexc('#46372b'); MADERA_CL = hexc('#5f4d3c'); MADERA_VIEJA = hexc('#5a4a3a'); TABLA = hexc('#6b5a48'); HIERRO = hexc('#2c2a28')
+TEJA = hexc('#6e5a4b'); PAJA = hexc('#8c7a4e'); MUSGO = hexc('#56653a'); HUMEDAD = hexc('#5b5a46')
+REVOCO = hexc('#cdb48a'); CAL = hexc('#d9cfb8'); TIERRA = hexc('#6f5d45'); BARRO = hexc('#5c4a36'); LOSA = hexc('#8b8475')
 HENO = hexc('#b5a25c'); TELA_ROJA = hexc('#7a3328'); TELA_AZUL = hexc('#3d4c63'); LANA = hexc('#a99a7c'); OSCURO = hexc('#1a140e')
 AGUA = hexc('#3e5a66'); HOJA = hexc('#4f6533'); FUEGO = hexc('#c2582c'); CENIZA = hexc('#3c3630')
 
+# ---------------- materiales de la malla (cada uno, una textura del juego: texturas.py)
+# Lo que no dice su material lo toma del color: el de la paleta con el matiz más parecido.
+MATERIALES = ['sillar', 'mamp', 'piedra', 'losa', 'canto', 'tierra', 'madera', 'tabla', 'teja', 'paja', 'tela', 'liso', 'fuego']
+def _croma(c):
+    s = sum(c) or 1e-6; return (c[0] / s, c[1] / s, c[2] / s)
+_PAL = []
+def _pal(cols, mat):
+    for c in cols: _PAL.append((_croma(c), sum(c) / 3, mat))
+def mat_de(c):
+    if sum(c) / 3 < 0.09: return 'liso'
+    k = _croma(c); mejor = None
+    for (kc, l, mat) in _PAL:
+        d = (k[0] - kc[0]) ** 2 + (k[1] - kc[1]) ** 2 + (k[2] - kc[2]) ** 2
+        if mejor is None or d < mejor[0]: mejor = (d, mat)
+    return mejor[1]
+
+_pal([PIEDRA, PIEDRA_CLARA, PIEDRA_OSC, MORTERO, MAMPOST, SILLAR_DOV, LOSA, CAL], 'piedra')
+_pal([MADERA, MADERA_CL, MADERA_VIEJA, TABLA], 'madera')
+_pal([TIERRA, BARRO], 'tierra'); _pal([PAJA, HENO], 'paja'); _pal([TELA_ROJA, TELA_AZUL, LANA, REVOCO], 'tela')
+_pal([HIERRO, OSCURO, AGUA, HOJA, MUSGO, HUMEDAD, FUEGO, CENIZA], 'liso')
+
 class Malla:
     def __init__(self):
-        self.P = []; self.C = []
-    def tri(self, a, b, c, ca, cb=None, cc=None):
-        self.P += [a, b, c]; self.C += [ca, cb or ca, cc or ca]
-    def quad(self, a, b, c, d, ca, cb=None, cc=None, cd=None):
+        self.P = []; self.C = []; self.M = []; self.UV = []; self.B = []
+        self.mat = None      # el material de lo que se dibuja ahora (None: el del color)
+        self.base = None     # el suelo bajo lo que se dibuja ahora (altura del mundo; None: el terreno)
+    def _meta(self, k, c, uv):
+        self.M += [self.mat or mat_de(c)] * k; self.B += [self.base] * k
+        self.UV += uv if uv else [None] * k
+    def tri(self, a, b, c, ca, cb=None, cc=None, uv=None):
+        self.P += [a, b, c]; self.C += [ca, cb or ca, cc or ca]; self._meta(3, ca, uv)
+    def quad(self, a, b, c, d, ca, cb=None, cc=None, cd=None, uv=None):
         cb = cb or ca; cc = cc or ca; cd = cd or ca
         self.P += [a, b, c, a, c, d]; self.C += [ca, cb, cc, ca, cc, cd]
+        self._meta(6, ca, [uv[0], uv[1], uv[2], uv[0], uv[2], uv[3]] if uv else None)
     def anade(self, otra):
-        self.P += otra.P; self.C += otra.C
+        self.P += otra.P; self.C += otra.C; self.M += otra.M; self.UV += otra.UV; self.B += otra.B
     def arrays(self):
         return np.array(self.P, dtype=np.float32), np.clip(np.array(self.C, dtype=np.float32), 0, 1)
     def n(self): return len(self.P) // 3
+
+class con:
+    """with con(m, 'tabla', base=…): lo que se dibuja dentro lleva ese material (y ese suelo)"""
+    _NADA = object()
+    def __init__(self, m, mat=None, base=_NADA): self.m = m; self.mat = mat; self.b = base
+    def __enter__(self):
+        self.antes = (self.m.mat, self.m.base)
+        if self.mat is not None: self.m.mat = self.mat
+        if self.b is not con._NADA: self.m.base = self.b
+    def __exit__(self, *e): self.m.mat, self.m.base = self.antes
 
 class F:
     """marco local: origen (x, z) en el mundo, ángulo de u, y0 la altura base; w = u girado 90° (izquierda de u si se mira desde arriba con z hacia abajo)"""
@@ -68,6 +105,8 @@ def caja(m, f, u0, u1, v0, v1, w0, w1, col, sombra=0.78, caras='todas', var=0.0)
 def prisma(m, f, pts, v0, v1, col, tapa=True, base=False, sombra=0.8):
     """pts en (u, w), en cualquier sentido; paredes y tapa"""
     n = len(pts); cb = esc(col, sombra)
+    _m0 = m.mat
+    if m.mat is None and v1 - v0 > 1.6 and mat_de(col) == 'piedra': m.mat = 'sillar'
     area = sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))
     if area < 0: pts = pts[::-1]
     for i in range(n):
@@ -80,6 +119,7 @@ def prisma(m, f, pts, v0, v1, col, tapa=True, base=False, sombra=0.8):
             a, b, c = pts[idx[k]], pts[idx[k + 1]], pts[idx[k + 2]]
             if tapa: m.tri(f(a[0], v1, a[1]), f(c[0], v1, c[1]), f(b[0], v1, b[1]), esc(col, 1.05))
             if base: m.tri(f(a[0], v0, a[1]), f(b[0], v0, b[1]), f(c[0], v0, c[1]), esc(col, .5))
+    m.mat = _m0
 
 def cilindro(m, f, cu, cw, r, v0, v1, col, n=10, tapa=True, r1=None):
     r1 = r if r1 is None else r1
@@ -87,8 +127,16 @@ def cilindro(m, f, cu, cw, r, v0, v1, col, n=10, tapa=True, r1=None):
         a1, a2 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
         p = lambda a, rr, v: f(cu + math.cos(a) * rr, v, cw + math.sin(a) * rr)
         l = 0.75 + 0.25 * (0.5 + 0.5 * math.cos(a1 - 0.8))
-        m.quad(p(a2, r, v0), p(a1, r, v0), p(a1, r1, v1), p(a2, r1, v1), esc(col, l * 0.85), esc(col, l * 0.85), esc(col, l), esc(col, l))
-        if tapa: m.tri(f(cu, v1, cw), p(a2, r1, v1), p(a1, r1, v1), esc(col, 1.05))
+        q4 = [p(a2, r, v0), p(a1, r, v0), p(a1, r1, v1), p(a2, r1, v1)]
+        cc = f(cu, (v0 + v1) / 2, cw); A_, B_, C_ = q4[0], q4[1], q4[2]
+        nx_ = (B_[1] - A_[1]) * (C_[2] - A_[2]) - (B_[2] - A_[2]) * (C_[1] - A_[1]); nz_ = (B_[0] - A_[0]) * (C_[1] - A_[1]) - (B_[1] - A_[1]) * (C_[0] - A_[0])
+        if nx_ * (A_[0] - cc[0]) + nz_ * (A_[2] - cc[2]) < 0: q4 = q4[::-1]
+        m.quad(*q4, esc(col, l * 0.85))
+        if tapa:
+            A_, B_, C_ = f(cu, v1, cw), p(a2, r1, v1), p(a1, r1, v1)
+            ny_ = (B_[2] - A_[2]) * (C_[0] - A_[0]) - (B_[0] - A_[0]) * (C_[2] - A_[2])
+            if ny_ < 0: B_, C_ = C_, B_   # (la tapa mira arriba)
+            m.tri(A_, B_, C_, esc(col, 1.05))
 
 def bola(m, cx, cy, cz, r, ry, col, n=7, filas=4):
     def V(i, j):
@@ -132,6 +180,31 @@ def alto_hueco(h):
     return h['v1']
 
 def _cara_con_huecos(m, f, u0, u1, v0, v1, w, huecos_pts, col, normal_mas):
+    """la cara de un muro con sus huecos. Se parte en columnas por los lados de los huecos (y en franjas de 1,5 m en lo
+       liso) y cada trozo se triangula aparte: así no salen astillas de punta a punta del muro, que dan hilos de luz"""
+    # columnas: los tramos de u que ocupan los huecos (los que se solapan, juntos) y lo que queda entre ellos
+    tramos = sorted([(min(p[0] for p in hp), max(p[0] for p in hp)) for hp in huecos_pts])
+    juntos = []
+    for a, b in tramos:
+        a, b = max(a - 0.05, u0), min(b + 0.05, u1)
+        if juntos and a <= juntos[-1][1] + 0.3: juntos[-1] = (juntos[-1][0], max(juntos[-1][1], b))
+        else: juntos.append((a, b))
+    cortes = [u0]
+    for a, b in juntos:
+        if a - cortes[-1] > 1e-6: cortes.append(a)
+        cortes.append(b)
+    if u1 - cortes[-1] > 1e-6: cortes.append(u1)
+    cortes = sorted(set(round(c, 6) for c in cortes))
+    finos = []
+    for a, b in zip(cortes, cortes[1:]):
+        if any(ja - 1e-6 <= a and b <= jb + 1e-6 for ja, jb in juntos): finos.append((a, b)); continue
+        n = max(1, int(math.ceil((b - a) / 1.5 - 1e-9)))
+        finos += [(a + (b - a) * i / n, a + (b - a) * (i + 1) / n) for i in range(n)]
+    for (ca, cb) in finos:
+        hs = [hp for hp in huecos_pts if ca - 1e-6 <= min(p[0] for p in hp) and max(p[0] for p in hp) <= cb + 1e-6]
+        _trozo_con_huecos(m, f, ca, cb, v0, v1, w, hs, col, normal_mas)
+
+def _trozo_con_huecos(m, f, u0, u1, v0, v1, w, huecos_pts, col, normal_mas):
     outer = [(u0, v0), (u1, v0), (u1, v1), (u0, v1)]
     rings = [outer] + [hp[::-1] for hp in huecos_pts]   # earcut: anillo exterior y huecos
     verts = [p for r in rings for p in r]
@@ -144,62 +217,32 @@ def _cara_con_huecos(m, f, u0, u1, v0, v1, w, huecos_pts, col, normal_mas):
         if normal_mas: m.tri(A, B, C, cola(a), cola(b), cola(c))
         else: m.tri(A, C, B, cola(a), cola(c), cola(b))
 
-def _sillar(m, f, a, b, y, yt, w, d, col, tipo, signo, suelo):
-    hg = y - suelo
-    c = varia(col, 0.09 if tipo == 'silleria' else 0.15)
-    if hg < 0.8: c = mezcla(c, MUSGO if az() < 0.4 else HUMEDAD, 0.38 * (1 - max(0, hg) / 0.8))
-    if az() < 0.05: c = esc(c, 0.82)
-    luz = 0.8 + 0.2 * min(1, max(0, hg) / 2.5)
-    A, B, C, D = f(a, y + 0.02, w + d), f(b, y + 0.02, w + d), f(b, yt, w + d), f(a, yt, w + d)
-    if signo > 0: m.quad(A, B, C, D, esc(c, luz))
-    else: m.quad(B, A, D, C, esc(c, luz))
+def _bloque(m, f, pts, w, d, col):
+    """sillar que sobresale d de la cara w (d con signo: hacia donde mira la cara): cara de delante y cantos"""
+    with con(m, 'piedra'):
+        n = len(pts)
+        A = [f(u, v, w + d) for (u, v) in pts]; Z = [f(u, v, w) for (u, v) in pts]
+        area = sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))
+        orden = (area > 0) == (d > 0)
+        for i in range(1, n - 1):
+            if orden: m.tri(A[0], A[i], A[i + 1], col)
+            else: m.tri(A[0], A[i + 1], A[i], col)
+        for i in range(n):
+            j = (i + 1) % n
+            if orden: m.quad(Z[i], Z[j], A[j], A[i], esc(col, 0.55))
+            else: m.quad(Z[j], Z[i], A[i], A[j], esc(col, 0.55))
 
 def _piedras(m, f, u0, u1, v0, v1, w, huecos, col, tipo, signo, suelo):
-    """hiladas de piedra sobre la cara w (signo = +1 si mira a +w); salta los huecos y pone dovelas y jambas"""
-    d = 0.03 * signo; y = v0; fila = 0
-    cajas_h = [(h['u'] - h['a'] / 2 - (0.32 if h['a'] < 0.3 else 0.04), h['v0'] - (0.27 if h['a'] < 0.3 else 0.04), h['u'] + h['a'] / 2 + (0.32 if h['a'] < 0.3 else 0.04), alto_hueco(h) + (0.27 if h['a'] < 0.3 else 0.04)) for h in huecos]
-    while y < v1 - 0.03:
-        bh = 0.5 if tipo == 'silleria' else 0.2 + az() * 0.22
-        yt = min(v1, y + bh) - 0.035
-        u = u0 - (0.45 if (tipo == 'silleria' and fila % 2) else az() * 0.3)
-        while u < u1:
-            bw = (0.6 + 0.65 * az()) if tipo == 'silleria' else (0.25 + 0.6 * az())
-            a, b = max(u0, u) + 0.035, min(u1, u + bw) - 0.035; u += bw
-            if b - a < 0.07: continue
-            trozos = [(a, b)]
-            for hb in cajas_h:
-                if yt < hb[1] or y + 0.02 > hb[3]: continue
-                tr = []
-                for (x0, x1) in trozos:
-                    if x1 <= hb[0] or x0 >= hb[2]: tr.append((x0, x1)); continue
-                    if hb[0] - x0 > 0.07: tr.append((x0, hb[0] - 0.035))
-                    if x1 - hb[2] > 0.07: tr.append((hb[2] + 0.035, x1))
-                trozos = tr
-            if not trozos: continue
-            if len(trozos) > 1 or trozos[0] != (a, b):
-                for (x0, x1) in trozos:
-                    _sillar(m, f, x0, x1, y, yt, w, d, col, tipo, signo, suelo)
-                continue
-            hg = y - suelo
-            c = varia(col, 0.09 if tipo == 'silleria' else 0.15)
-            if hg < 0.8: c = mezcla(c, MUSGO if az() < 0.4 else HUMEDAD, 0.38 * (1 - max(0, hg) / 0.8))
-            if az() < 0.05: c = esc(c, 0.82)
-            luz = 0.8 + 0.2 * min(1, max(0, hg) / 2.5)
-            A, B, C, D = f(a, y + 0.02, w + d), f(b, y + 0.02, w + d), f(b, yt, w + d), f(a, yt, w + d)
-            if signo > 0: m.quad(A, B, C, D, esc(c, luz))
-            else: m.quad(B, A, D, C, esc(c, luz))
-        y += bh; fila += 1
+    """las piedras labradas de cada hueco sobre la cara w (signo = +1 si mira a +w): jambas, dovelas, dintel, marcos"""
+    d = 0.012 * signo   # (casi enrasadas: la junta la da el canto oscuro; si salen más, de cerca parecen naipes)
     # dovelas y jambas de cada hueco
     for h in huecos:
         if h.get('sin_dovelas'):
-            if h['a'] < 0.3 and not h.get('sin_marco'):   # saetera: dos sillares largos a los lados, dintel y alféizar
+            if h['a'] < 0.3 and h.get('con_marco'):   # saetera (con marco solo si se pide; si no, el hueco y su derrame): dos sillares largos a los lados, dintel y alféizar
                 ux0, ux1 = h['u'] - h['a'] / 2, h['u'] + h['a'] / 2
                 for (a, b, y0_, y1_) in ((ux0 - 0.3, ux0 - 0.01, h['v0'] - 0.25, h['v1'] + 0.25), (ux1 + 0.01, ux1 + 0.3, h['v0'] - 0.25, h['v1'] + 0.25),
                                          (ux0 - 0.01, ux1 + 0.01, h['v1'] + 0.01, h['v1'] + 0.25), (ux0 - 0.01, ux1 + 0.01, h['v0'] - 0.25, h['v0'] - 0.01)):
-                    c = varia(SILLAR_DOV, 0.05)
-                    A, B, C, D = f(a, y0_, w + d * 1.4), f(b, y0_, w + d * 1.4), f(b, y1_, w + d * 1.4), f(a, y1_, w + d * 1.4)
-                    if signo > 0: m.quad(A, B, C, D, c)
-                    else: m.quad(B, A, D, C, c)
+                    _bloque(m, f, [(a, y0_), (b, y0_), (b, y1_), (a, y1_)], w, d, varia(SILLAR_DOV, 0.05))
             continue
         ux0, ux1 = h['u'] - h['a'] / 2, h['u'] + h['a'] / 2
         # jambas: sillares alternos a los lados
@@ -207,11 +250,8 @@ def _piedras(m, f, u0, u1, v0, v1, w, huecos, col, tipo, signo, suelo):
         while yy < h['v1'] - 0.05:
             yt = min(h['v1'], yy + 0.42)
             ext = 0.32 if k % 2 else 0.5
-            for (a, b) in ((ux0 - ext, ux0 - 0.02), (ux1 + 0.02, ux1 + ext)):
-                A, B, C, D = f(a, yy + 0.02, w + d * 1.4), f(b, yy + 0.02, w + d * 1.4), f(b, yt - 0.03, w + d * 1.4), f(a, yt - 0.03, w + d * 1.4)
-                c = varia(SILLAR_DOV, 0.06)
-                if signo > 0: m.quad(A, B, C, D, c)
-                else: m.quad(B, A, D, C, c)
+            for (a, b) in ((ux0 - ext, ux0 - 0.01), (ux1 + 0.01, ux1 + ext)):
+                _bloque(m, f, [(a, yy + 0.01), (b, yy + 0.01), (b, yt - 0.01), (a, yt - 0.01)], w, d, varia(SILLAR_DOV, 0.06))
             yy = yt; k += 1
         # el arco: dovelas en abanico
         cp = contorno(h)[2:-1]
@@ -222,22 +262,29 @@ def _piedras(m, f, u0, u1, v0, v1, w, huecos, col, tipo, signo, suelo):
                 def fuera_(p, r=0.38):
                     dx, dy = p[0] - cu, p[1] - cv + 0.15; L = math.hypot(dx, dy) or 1
                     return (p[0] + dx / L * r, p[1] + dy / L * r)
-                q = [p0, p1, fuera_(p1), fuera_(p0)]
-                c = varia(SILLAR_DOV, 0.06)
-                P4 = [f(q[j][0], q[j][1], w + d * 1.4) for j in range(4)]
-                if signo > 0: m.quad(P4[1], P4[0], P4[3], P4[2], c)
-                else: m.quad(P4[0], P4[1], P4[2], P4[3], c)
+                _bloque(m, f, [p0, p1, fuera_(p1), fuera_(p0)], w, d, varia(SILLAR_DOV, 0.06))
         else:   # dintel de una pieza
-            A, B, C, D = f(ux0 - 0.25, h['v1'] + 0.02, w + d * 1.4), f(ux1 + 0.25, h['v1'] + 0.02, w + d * 1.4), f(ux1 + 0.25, h['v1'] + 0.4, w + d * 1.4), f(ux0 - 0.25, h['v1'] + 0.4, w + d * 1.4)
-            c = varia(SILLAR_DOV, 0.05)
-            if signo > 0: m.quad(A, B, C, D, c)
-            else: m.quad(B, A, D, C, c)
+            _bloque(m, f, [(ux0 - 0.25, h['v1'] + 0.01), (ux1 + 0.25, h['v1'] + 0.01), (ux1 + 0.25, h['v1'] + 0.4), (ux0 - 0.25, h['v1'] + 0.4)], w, d, varia(SILLAR_DOV, 0.05))
+
+def esquinales(m, f, u0, u1, v0, v1, w, k0=0):
+    """los sillares de las esquinas de una cara (en u0 y u1, sobre la cara w que mira a +w), alternando largo y corto"""
+    y = v0; k = k0
+    while y < v1 - 0.1:
+        yt = min(v1, y + 0.42)
+        for (u, s, par) in ((u0, 1, k), (u1, -1, k + 1)):
+            l = 0.62 if par % 2 else 0.36
+            a, b = (u, u + l) if s > 0 else (u - l, u)
+            _bloque(m, f, [(a, y + 0.012), (b, y + 0.012), (b, yt - 0.012), (a, yt - 0.012)], w, 0.035, varia(SILLAR_DOV, 0.06))
+        y = yt; k += 1
 
 def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tapa=True, cabezas=True, suelo=None, piedras_dentro=True, dentro_col=None):
     """muro de u0 a u1, de v0 a v1, de grueso w0..w1 (w1 la cara de fuera). Huecos con derrame opcional:
        h['derrame'] = ancho de más en la cara de dentro (w0); h['v0d'] = umbral por dentro."""
     col = col or (PIEDRA if tipo == 'silleria' else MAMPOST)
-    mort = esc(col, 0.7)
+    mort = col
+    _mat_antes, _base_antes = m.mat, m.base
+    m.mat = 'sillar' if tipo == 'silleria' else 'mamp'
+    m.base = f.y0 + (v0 if suelo is None else suelo)
     H = [dict(h) for h in huecos]
     ext = [contorno(h) for h in H]
     inn = [contorno(h, h.get('derrame', 0.0)) for h in H]
@@ -255,13 +302,16 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
             a, b = e[k], e[(k + 1) % n]; c, d = i_[(k + 1) % n], i_[k]
             if k == 0: continue   # el umbral se pone aparte
             l = 0.55 + 0.25 * (k % 2)
-            m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l))
+            with con(m, 'sillar'): m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l + 0.2))
         a, b = e[0], e[1]; c, d = i_[1], i_[0]
-        m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(SILLAR_DOV, 0.95))   # umbral / alféizar
-    if tapa: m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
+        es_puerta = abs(b[0] - a[0]) > 0.8
+        with con(m, 'losa' if es_puerta else 'piedra'): m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(LOSA, 0.8) if es_puerta else esc(SILLAR_DOV, 0.82))   # umbral / alféizar
+    if tapa:
+        with con(m, 'piedra'): m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
     if cabezas:
         m.quad(f(u0, v0, w0), f(u0, v0, w1), f(u0, v1, w1), f(u0, v1, w0), esc(mort, .85))
         m.quad(f(u1, v0, w1), f(u1, v0, w0), f(u1, v1, w0), f(u1, v1, w1), esc(mort, .85))
+    m.mat, m.base = _mat_antes, _base_antes
 
 def almenado(m, f, u0, u1, v, w0, w1, alto_pretil=0.9, alto_merlon=1.0, paso=2.0, hueco=0.75, col=None, saeteras=True, albardilla=True):
     """pretil corrido y merlones con su albardilla; w1 la cara de fuera"""
@@ -277,10 +327,10 @@ def almenado(m, f, u0, u1, v, w0, w1, alto_pretil=0.9, alto_merlon=1.0, paso=2.0
         if albardilla:   # albardilla a dos aguas
             vt = v + alto_pretil + alto_merlon; wm = (w0 + w1) / 2
             c = varia(PIEDRA_CLARA, 0.04)
-            m.quad(f(a - .04, vt, w1 + .05), f(b + .04, vt, w1 + .05), f(b + .04, vt + .12, wm), f(a - .04, vt + .12, wm), c)
-            m.quad(f(b + .04, vt, w0 - .05), f(a - .04, vt, w0 - .05), f(a - .04, vt + .12, wm), f(b + .04, vt + .12, wm), esc(c, .85))
-            m.tri(f(a - .04, vt, w0 - .05), f(a - .04, vt, w1 + .05), f(a - .04, vt + .12, wm), esc(c, .8))
-            m.tri(f(b + .04, vt, w1 + .05), f(b + .04, vt, w0 - .05), f(b + .04, vt + .12, wm), esc(c, .8))
+            with con(m, 'piedra'): m.quad(f(a - .04, vt, w1 + .05), f(b + .04, vt, w1 + .05), f(b + .04, vt + .12, wm), f(a - .04, vt + .12, wm), c)
+            with con(m, 'piedra'): m.quad(f(b + .04, vt, w0 - .05), f(a - .04, vt, w0 - .05), f(a - .04, vt + .12, wm), f(b + .04, vt + .12, wm), esc(c, .85))
+            with con(m, 'piedra'): m.tri(f(a - .04, vt, w0 - .05), f(a - .04, vt, w1 + .05), f(a - .04, vt + .12, wm), esc(c, .8))
+            with con(m, 'sillar'): m.tri(f(b + .04, vt, w1 + .05), f(b + .04, vt, w0 - .05), f(b + .04, vt + .12, wm), esc(c, .8))
     # la albardilla del pretil en los huecos (cornisa)
     m.quad(f(u0, v + alto_pretil + .02, w1 + .06), f(u1, v + alto_pretil + .02, w1 + .06), f(u1, v + alto_pretil + .02, w0 - .04), f(u0, v + alto_pretil + .02, w0 - .04), esc(PIEDRA_CLARA, .95))
 
@@ -298,18 +348,20 @@ def faldon(m, a0, a1, b0, b1, col, luz=1.0, paja=False, comba=0.06):
         lo = a0 + (a1 - a0) * s; hi = b0 + (b1 - b0) * s; q = lo + (hi - lo) * t
         q = q + np.array([0, -comba * math.sin(math.pi * s) * t, 0]) + nn * off
         return tuple(q)
+    _ma = m.mat; m.mat = 'paja' if paja else 'teja'
     for i in range(n):
         t0, t1 = i / n, (i + 1) / n
         for j in range(mm):
             s0, s1 = j / mm, (j + 1) / mm
-            c = varia(col, 0.05 if paja else 0.1)
-            if not paja:
-                if az() < (0.2 if t0 < 0.25 else 0.05): c = mezcla(c, MUSGO, 0.35 + 0.3 * az())
-                if az() < 0.04: c = esc(c, 0.75)
-            m.quad(P(t0, s0, lip), P(t0, s1, lip), P(t1, s1, 0), P(t1, s0, 0), esc(c, luz * (0.93 + 0.07 * t0)))
-        if lip: m.quad(P(t0, 0), P(t0, 1), P(t0, 1, lip), P(t0, 0, lip), esc(col, 0.45 * luz))
+            c = varia(col, 0.03 if paja else 0.05)
+            if paja: uv = [(s0 * ancho, t0 * largo), (s1 * ancho, t0 * largo), (s1 * ancho, t1 * largo), (s0 * ancho, t1 * largo)]
+            else: uv = [(s0 * ancho, i * 0.25 + 0.002), (s1 * ancho, i * 0.25 + 0.002), (s1 * ancho, (i + 1) * 0.25 - 0.002), (s0 * ancho, (i + 1) * 0.25 - 0.002)]
+            m.quad(P(t0, s0, lip), P(t0, s1, lip), P(t1, s1, 0), P(t1, s0, 0), esc(c, luz * (0.93 + 0.07 * t0)), uv=uv)
+        if lip: m.quad(P(t0, 0), P(t0, 1), P(t0, 1, lip), P(t0, 0, lip), esc(col, 0.45 * luz), uv=[(0, i * 0.25), (ancho, i * 0.25), (ancho, i * 0.25 + 0.01), (0, i * 0.25 + 0.01)])
+    m.mat = 'madera'
     # la cara de abajo
     m.quad(P(0, 1, -0.06), P(0, 0, -0.06), P(1, 0, -0.06), P(1, 1, -0.06), esc(MADERA, 0.8))
+    m.mat = _ma
 
 def tejado_dos_aguas(m, f, u0, u1, w0, w1, v, pend=0.65, alero=0.4, col=TEJA, paja=False, hastial_col=None):
     """cumbrera a lo largo de u, en la mitad de w"""
@@ -323,8 +375,9 @@ def tejado_dos_aguas(m, f, u0, u1, w0, w1, v, pend=0.65, alero=0.4, col=TEJA, pa
     hc = hastial_col or PIEDRA
     for u, s in ((u0, -1), (u1, 1)):
         A, B, C = a(u, w0, v), a(u, w1, v), a(u, wc, vc)
-        if s < 0: m.tri(A, B, C, esc(hc, .85))
-        else: m.tri(B, A, C, esc(hc, .85))
+        with con(m, 'sillar' if mat_de(hc) == 'piedra' else None):
+            if s < 0: m.tri(A, B, C, esc(hc, .85))
+            else: m.tri(B, A, C, esc(hc, .85))
     return vc
 
 def tejado_una_agua(m, f, u0, u1, w_alto, w_bajo, v_alto, v_bajo, alero=0.4, col=TEJA, paja=False, piñones=True, hastial_col=None):
@@ -357,29 +410,23 @@ def suelo_tablas(m, f, u0, u1, w0, w1, v, col=TABLA, ancho=0.28, grueso=0.12, hu
                 if b > hu1: nuevos.append((hu1, b))
             trozos = nuevos
         for a, b in trozos:
-            c = varia(col, 0.1)
-            caja(m, f, a, b, v - grueso, v, w + 0.008, wb - 0.008, c, 0.6, caras='v1w0w1')
+            c = varia(col, 0.06)
+            with con(m, 'tabla'):
+                caja(m, f, a, b, v - grueso, v, w + 0.008, wb - 0.008, c, 0.6, caras='w0w1')
+                ru = random.uniform(0, 1.7); rv = random.uniform(0, 2)   # cada tabla, su trozo de veta (a lo largo de la tabla)
+                m.quad(f(a, v, w + 0.008), f(a, v, wb - 0.008), f(b, v, wb - 0.008), f(b, v, w + 0.008), c,
+                       uv=[(ru, rv + a), (ru + wb - w, rv + a), (ru + wb - w, rv + b), (ru, rv + b)])
         w = wb
     # vigas por debajo
     u = u0 + 0.4
     while u < u1:
-        caja(m, f, u, u + 0.22, v - grueso - 0.28, v - grueso, w0, w1, MADERA, 0.7, caras='w0w1u0u1v0')
+        with con(m, 'madera'): caja(m, f, u, u + 0.22, v - grueso - 0.28, v - grueso, w0, w1, MADERA, 0.7, caras='w0w1u0u1v0')
         u += 1.4
 
 def suelo_losas(m, f, u0, u1, w0, w1, v, col=LOSA, lado=0.6, junta=0.03):
-    m.quad(f(u0, v - 0.01, w0), f(u0, v - 0.01, w1), f(u1, v - 0.01, w1), f(u1, v - 0.01, w0), esc(col, 0.55))
-    u = u0; fila = 0
-    while u < u1 - 0.01:
-        ub = min(u1, u + lado * (0.8 + 0.4 * az()))
-        w = w0 - (lado / 2 if fila % 2 else 0)
-        while w < w1 - 0.01:
-            wb = min(w1, w + lado * (0.8 + 0.5 * az()))
-            a, b = max(w0, w) + junta, wb - junta
-            if b - a > 0.05:
-                c = varia(col, 0.12)
-                m.quad(f(u + junta, v, a), f(u + junta, v, b), f(ub - junta, v, b), f(ub - junta, v, a), c)
-            w = wb
-        u = ub; fila += 1
+    """enlosado: una cara con la textura de losas (las losas, las juntas y el musgo los da la textura)"""
+    with con(m, 'losa'):
+        m.quad(f(u0, v, w0), f(u0, v, w1), f(u1, v, w1), f(u1, v, w0), varia(col, 0.04))
 
 # ---------------- escaleras
 def escalera(m, f, u0, u1, w0, w1, v0, v1, col=PIEDRA, maciza=True, huella=0.29, madera=False):
@@ -390,10 +437,12 @@ def escalera(m, f, u0, u1, w0, w1, v0, v1, col=PIEDRA, maciza=True, huella=0.29,
         base = v0 - 0.4 if maciza else top - (0.08 if madera else 0.25)
         c = varia(col, 0.07)
         if madera:
-            caja(m, f, a, b + 0.02, top - 0.06, top, w0 + 0.1, w1 - 0.1, c, 0.7)
+            with con(m, 'tabla'): caja(m, f, a, b + 0.02, top - 0.06, top, w0 + 0.1, w1 - 0.1, c, 0.7)
         else:
-            caja(m, f, a, b + 0.01, base, top, w0, w1, c, 0.75, caras='v1u0w0w1')
-            m.quad(f(a, top, w1 + .005), f(a + 0.04, top, w1 + .005), f(a + 0.04, top - dh, w1 + .005), f(a, top - dh, w1 + .005), esc(c, .6))
+            with con(m, 'piedra'): caja(m, f, a, b + 0.01, base, top, w0, w1, c, 0.75, caras='v1')
+            with con(m, 'sillar'): caja(m, f, a, b + 0.01, base, top, w0, w1, esc(c, 0.62), 0.75, caras='u0')   # la tabica, en sombra
+            with con(m, 'sillar'): caja(m, f, a, b + 0.01, base, top, w0, w1, esc(c, 0.92), 0.75, caras='w0w1')
+            with con(m, 'piedra'): caja(m, f, a - 0.02, a + 0.03, top - 0.03, top, w0 - 0.01, w1 + 0.01, esc(c, 1.05), 0.9, caras='v1u0')   # el bocel del peldaño
     if madera:   # zancas
         for w in (w0 + 0.05, w1 - 0.15):
             p = [(u0, v0 - 0.1), (u1, v1 - 0.1), (u1, v1 + 0.15), (u0, v0 + 0.15)]
@@ -408,8 +457,8 @@ def caracol(m, f, cu, cw, r, v0, v1, ang0=0.0, sentido=1, col=PIEDRA, muro_r=Non
         a = ang0 + i * da; top = v0 + (i + 1) * dh
         pts = [(cu + 0.16 * math.cos(a), cw + 0.16 * math.sin(a)), (cu + r * math.cos(a), cw + r * math.sin(a)),
                (cu + r * math.cos(a + da), cw + r * math.sin(a + da)), (cu + 0.16 * math.cos(a + da), cw + 0.16 * math.sin(a + da))]
-        prisma(m, f, pts, top - 0.2, top, varia(col, 0.07))
-    cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 0.95), 8)
+        with con(m, 'piedra'): prisma(m, f, pts, top - 0.2, top, esc(varia(col, 0.07), 0.95), sombra=0.6)
+    with con(m, 'sillar'): cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 1.0), 8)
     if muro_r:
         N = 16
         for i in range(N):
@@ -461,11 +510,21 @@ def rastrillo(m, f, u0, u1, v0, v1, w, col=MADERA, alto_bajado=None):
     b = 0.11; n = max(3, int((u1 - u0) / 0.32))
     for i in range(n + 1):
         u = u0 + (u1 - u0) * i / n
-        caja(m, f, u - b / 2, u + b / 2, v0, v1, w - b / 2, w + b / 2, col, 0.85)
-        prisma(m, f, [(u - b / 2, w - b / 2), (u + b / 2, w - b / 2), (u + b / 2, w + b / 2), (u - b / 2, w + b / 2)], v0 - 0.18, v0, HIERRO, tapa=False)
+        with con(m, 'madera'): caja(m, f, u - b / 2, u + b / 2, v0, v1, w - b / 2, w + b / 2, esc(col, 0.55), 0.85)
+        # la punta de hierro: una pirámide que acaba en pico
+        q = [(u - b / 2 - 0.01, w - b / 2 - 0.01), (u + b / 2 + 0.01, w - b / 2 - 0.01), (u + b / 2 + 0.01, w + b / 2 + 0.01), (u - b / 2 - 0.01, w + b / 2 + 0.01)]
+        pico = f(u, v0 - 0.32, w)
+        for k in range(4):
+            (a1, b1), (a2, b2) = q[k], q[(k + 1) % 4]
+            with con(m, 'liso'): m.tri(f(a2, v0, b2), f(a1, v0, b1), pico, esc(HIERRO, 0.8 + 0.1 * k))
+        with con(m, 'liso'): caja(m, f, u - b / 2 - 0.012, u + b / 2 + 0.012, v0, v0 + 0.12, w - b / 2 - 0.012, w + b / 2 + 0.012, HIERRO)   # el regatón
     v = v0 + 0.4
     while v < v1 - 0.1:
-        caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.9), 0.85); v += 0.42
+        with con(m, 'madera'): caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.5), 0.85)
+        for i in range(n + 1):   # pletinas de hierro en cada cruce
+            u = u0 + (u1 - u0) * i / n
+            with con(m, 'liso'): caja(m, f, u - 0.07, u + 0.07, v - 0.02, v + b + 0.02, w - b / 2 - 0.045, w + b / 2 + 0.045, HIERRO)
+        v += 0.42
 
 def ventana(m, f, u, v, ancho, alto, w, postigos=True, col=MADERA_CL, arco=None):
     """postigos abiertos sobre la cara w (hacia +w); el hueco lo hace el muro"""
@@ -482,11 +541,23 @@ def saetera(h_u, v0, alto=1.4, ancho=0.12, derrame=0.9):
 # ---------------- muebles
 def mesa(m, f, u, w, largo=1.8, ancho=0.8, alto=0.76, ang=0.0, col=MADERA_CL):
     g = f.sub(u, w, ang)
-    caja(m, g, -largo / 2, largo / 2, alto - 0.06, alto, -ancho / 2, ancho / 2, varia(col, .08), .8)
-    for s in (-1, 1):   # caballetes
-        caja(m, g, s * (largo / 2 - 0.25) - 0.04, s * (largo / 2 - 0.25) + 0.04, 0, alto - 0.06, -ancho / 2 + 0.05, ancho / 2 - 0.05, MADERA, .7)
-        caja(m, g, s * (largo / 2 - 0.25) - 0.05, s * (largo / 2 - 0.25) + 0.05, 0, 0.08, -ancho / 2, ancho / 2, MADERA, .7)
-    caja(m, g, -largo / 2 + 0.3, largo / 2 - 0.3, 0.25, 0.32, -0.04, 0.04, MADERA, .7)
+    with con(m, 'tabla'):   # el tablero: tres tablas con su junta
+        n = 3
+        for k in range(n):
+            z0 = -ancho / 2 + ancho * k / n + 0.006; z1 = -ancho / 2 + ancho * (k + 1) / n - 0.006
+            caja(m, g, -largo / 2 + 0.01 * (k % 2), largo / 2 - 0.01 * ((k + 1) % 2), alto - 0.05, alto, z0, z1, varia(col, .08), .8)
+    with con(m, 'madera'):
+        caja(m, g, -largo / 2 + 0.12, largo / 2 - 0.12, alto - 0.11, alto - 0.05, -ancho / 2 + 0.06, -ancho / 2 + 0.12, MADERA, .7)   # los travesaños de debajo
+        caja(m, g, -largo / 2 + 0.12, largo / 2 - 0.12, alto - 0.11, alto - 0.05, ancho / 2 - 0.12, ancho / 2 - 0.06, MADERA, .7)
+        for s in (-1, 1):   # caballetes: dos patas abiertas en A, con su pie
+            x = s * (largo / 2 - 0.28)
+            for t in (-1, 1):
+                a = (x - 0.035, -ancho / 2 + 0.1); b = (x + 0.035, -ancho / 2 + 0.1)
+                m.quad(g(x - 0.035, 0.0, t * (ancho / 2 - 0.08)), g(x + 0.035, 0.0, t * (ancho / 2 - 0.08)), g(x + 0.035, alto - 0.11, t * 0.06), g(x - 0.035, alto - 0.11, t * 0.06), esc(MADERA, 0.9))
+                m.quad(g(x + 0.035, 0.0, t * (ancho / 2 - 0.08) + 0.0001), g(x - 0.035, 0.0, t * (ancho / 2 - 0.08) + 0.0001), g(x - 0.035, alto - 0.11, t * 0.06 + 0.0001), g(x + 0.035, alto - 0.11, t * 0.06 + 0.0001), esc(MADERA, 0.7))
+            caja(m, g, x - 0.05, x + 0.05, alto - 0.13, alto - 0.05, -ancho / 2 + 0.05, ancho / 2 - 0.05, MADERA, .7)
+            caja(m, g, x - 0.05, x + 0.05, 0, 0.07, -ancho / 2 + 0.02, ancho / 2 - 0.02, MADERA, .7)
+        caja(m, g, -largo / 2 + 0.3, largo / 2 - 0.3, 0.22, 0.28, -0.035, 0.035, MADERA, .7)
 
 def banco(m, f, u, w, largo=1.6, ang=0.0):
     g = f.sub(u, w, ang)
@@ -504,14 +575,47 @@ def cama(m, f, u, w, ang=0.0, largo=2.0, ancho=1.0, colcha=TELA_ROJA, dosel=Fals
     for su in (-1, 1):
         for sw in (-1, 1): caja(m, g, su * largo / 2 - (0.08 if su > 0 else 0), su * largo / 2 + (0 if su > 0 else 0.08), 0, 0.55 if su < 0 else 0.5, sw * ancho / 2 - (0.08 if sw > 0 else 0), sw * ancho / 2 + (0 if sw > 0 else 0.08), MADERA)
     caja(m, g, -largo / 2 + 0.05, largo / 2 - 0.05, 0.45, 0.6, -ancho / 2 + 0.04, ancho / 2 - 0.04, LANA, .8)
-    caja(m, g, -largo / 2 + 0.6, largo / 2 - 0.02, 0.6, 0.66, -ancho / 2 + 0.02, ancho / 2 - 0.02, colcha, .8)
-    caja(m, g, -largo / 2 + 0.08, -largo / 2 + 0.45, 0.6, 0.7, -ancho / 2 + 0.12, ancho / 2 - 0.12, CAL, .85)
+    with con(m, 'tela'):
+        caja(m, g, -largo / 2 + 0.55, largo / 2 + 0.02, 0.6, 0.67, -ancho / 2 - 0.02, ancho / 2 + 0.02, colcha, .8, caras='v1u0u1')
+        # la colcha cae por los lados, con pliegues
+        for sw in (-1, 1):
+            n = 9
+            for k in range(n):
+                a_ = -largo / 2 + 0.55 + (largo - 0.53) * k / n; b_ = -largo / 2 + 0.55 + (largo - 0.53) * (k + 1) / n
+                o1 = 0.03 * math.sin(k * 1.9); o2 = 0.03 * math.sin((k + 1) * 1.9)
+                P1, P2 = g(a_, 0.67, sw * (ancho / 2 + 0.02)), g(b_, 0.67, sw * (ancho / 2 + 0.02))
+                P3, P4 = g(b_, 0.3 + o2, sw * (ancho / 2 + 0.05 + o2)), g(a_, 0.3 + o1, sw * (ancho / 2 + 0.05 + o1))
+                if sw > 0: m.quad(P2, P1, P4, P3, esc(colcha, 0.85 + 0.1 * (k % 2)))
+                else: m.quad(P1, P2, P3, P4, esc(colcha, 0.85 + 0.1 * (k % 2)))
+        # la vuelta de la sábana y la almohada
+        caja(m, g, -largo / 2 + 0.5, -largo / 2 + 0.62, 0.6, 0.69, -ancho / 2 + 0.01, ancho / 2 - 0.01, CAL, .85, caras='v1u0u1')
+    with con(m, 'tela'): bola(m, *g(-largo / 2 + 0.28, 0.68, 0), 0.22, 0.07, CAL, 8, 3)
     caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.06, 0.55, 1.0, -ancho / 2, ancho / 2, MADERA, .7)
     if dosel:
         for su in (-1, 1):
-            for sw in (-1, 1): caja(m, g, su * (largo / 2) - 0.04, su * (largo / 2) + 0.04, 0, 2.1, sw * ancho / 2 - 0.04, sw * ancho / 2 + 0.04, MADERA)
-        caja(m, g, -largo / 2, largo / 2, 2.1, 2.2, -ancho / 2, ancho / 2, colcha, .8)
-        caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.01, 0.7, 2.1, -ancho / 2, ancho / 2, colcha, .8)
+            for sw in (-1, 1):
+                with con(m, 'madera'): cilindro(m, g, su * (largo / 2 - 0.04), sw * (ancho / 2 - 0.04), 0.035, 0.0, 2.15, MADERA, 6, True)
+        with con(m, 'madera'):   # el bastidor del dosel, de postes a postes
+            caja(m, g, -largo / 2, largo / 2, 2.12, 2.2, -ancho / 2 - 0.02, -ancho / 2 + 0.05, MADERA)
+            caja(m, g, -largo / 2, largo / 2, 2.12, 2.2, ancho / 2 - 0.05, ancho / 2 + 0.02, MADERA)
+            caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.05, 2.12, 2.2, -ancho / 2, ancho / 2, MADERA)
+            caja(m, g, largo / 2 - 0.05, largo / 2 + 0.02, 2.12, 2.2, -ancho / 2, ancho / 2, MADERA)
+        with con(m, 'tela'):
+            # el cielo, fino, y la cenefa que cuelga con pliegues por los cuatro lados
+            m.quad(g(-largo / 2, 2.15, ancho / 2), g(largo / 2, 2.15, ancho / 2), g(largo / 2, 2.15, -ancho / 2), g(-largo / 2, 2.15, -ancho / 2), esc(colcha, 0.95))
+            lados = [((-largo / 2, -ancho / 2), (largo / 2, -ancho / 2)), ((largo / 2, -ancho / 2), (largo / 2, ancho / 2)), ((largo / 2, ancho / 2), (-largo / 2, ancho / 2)), ((-largo / 2, ancho / 2), (-largo / 2, -ancho / 2))]
+            for (p0, p1) in lados:
+                n = 10
+                for k in range(n):
+                    t0, t1 = k / n, (k + 1) / n
+                    ofs = lambda t: 0.035 * math.sin(t * n * math.pi)
+                    q = lambda t: (p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t)
+                    (x0, z0), (x1, z1) = q(t0), q(t1)
+                    m.quad(g(x0, 1.85, z0), g(x1, 1.85, z1), g(x1, 2.15, z1), g(x0, 2.15, z0), esc(colcha, 0.78 + 0.14 * (k % 2)))
+            # la cortina de la cabecera, recogida
+            for k in range(8):
+                z0 = -ancho / 2 + ancho * k / 8; z1 = -ancho / 2 + ancho * (k + 1) / 8
+                m.quad(g(-largo / 2 - 0.01 - 0.03 * (k % 2), 0.7, z0), g(-largo / 2 - 0.01 - 0.03 * ((k + 1) % 2), 0.7, z1), g(-largo / 2 - 0.01 - 0.03 * ((k + 1) % 2), 2.1, z1), g(-largo / 2 - 0.01 - 0.03 * (k % 2), 2.1, z0), esc(colcha, 0.7 + 0.15 * (k % 2)))
 
 def jergon(m, f, u, w, ang=0.0):
     g = f.sub(u, w, ang)
@@ -520,9 +624,26 @@ def jergon(m, f, u, w, ang=0.0):
 
 def arca(m, f, u, w, ang=0.0, largo=1.1, ancho=0.55, alto=0.6):
     g = f.sub(u, w, ang)
-    caja(m, g, -largo / 2, largo / 2, 0.05, alto, -ancho / 2, ancho / 2, varia(MADERA_CL, .1), .75)
-    for x in (-largo / 2 + 0.1, largo / 2 - 0.14): caja(m, g, x, x + 0.04, 0.05, alto + 0.01, -ancho / 2 - 0.01, ancho / 2 + 0.01, HIERRO)
-    caja(m, g, -0.05, 0.05, alto - 0.2, alto - 0.05, ancho / 2, ancho / 2 + 0.02, HIERRO)
+    c = varia(MADERA_CL, .1)
+    with con(m, 'madera'):
+        for s in (-1, 1): caja(m, g, s * largo / 2 - (0.07 if s > 0 else 0), s * largo / 2 + (0 if s > 0 else 0.07), 0, 0.08, -ancho / 2, ancho / 2, MADERA, .7)   # los pies
+        caja(m, g, -largo / 2, largo / 2, 0.06, alto - 0.14, -ancho / 2, ancho / 2, c, .75)   # la caja
+        caja(m, g, -largo / 2 - 0.015, largo / 2 + 0.015, alto - 0.14, alto - 0.09, -ancho / 2 - 0.015, ancho / 2 + 0.015, esc(c, 0.9), .75)   # la tapa, con su moldura
+        n = 6   # y abombada
+        for k in range(n):
+            a1, a2 = math.pi * k / n, math.pi * (k + 1) / n
+            P = lambda x, a: g(x, alto - 0.09 + 0.09 * math.sin(a), -math.cos(a) * (ancho / 2 + 0.015))
+            m.quad(P(-largo / 2 - 0.015, a1), P(-largo / 2 - 0.015, a2), P(largo / 2 + 0.015, a2), P(largo / 2 + 0.015, a1), esc(c, 0.8 + 0.25 * math.sin((a1 + a2) / 2)))
+        for s in (-1, 1):
+            m.quad(*[g(s * (largo / 2 + 0.015), alto - 0.09 + 0.09 * math.sin(math.pi * k / n), -math.cos(math.pi * k / n) * (ancho / 2 + 0.015)) for k in (0, 2, 4, 6)][::s], esc(c, 0.7))
+    for x in (-largo / 2 + 0.1, 0, largo / 2 - 0.14):   # flejes de hierro que abrazan la tapa
+        caja(m, g, x, x + 0.045, 0.06, alto - 0.09, -ancho / 2 - 0.012, ancho / 2 + 0.012, HIERRO)
+        for k in range(n):
+            a1, a2 = math.pi * k / n, math.pi * (k + 1) / n
+            P = lambda xx, a: g(xx, alto - 0.09 + 0.1 * math.sin(a), -math.cos(a) * (ancho / 2 + 0.025))
+            m.quad(P(x, a1), P(x, a2), P(x + 0.045, a2), P(x + 0.045, a1), HIERRO)
+    caja(m, g, -0.07, 0.07, alto - 0.3, alto - 0.12, ancho / 2, ancho / 2 + 0.02, HIERRO)   # la cerradura
+    for s in (-1, 1): caja(m, g, s * largo / 2 - 0.01 * (1 - s), s * largo / 2 + 0.01 * (1 + s), alto - 0.3, alto - 0.26, -0.1, 0.1, HIERRO)   # las asas
 
 def tonel(m, f, u, w, tumbado=False, r=0.32, alto=0.85, ang=0.0):
     g = f.sub(u, w, ang)
@@ -578,6 +699,7 @@ def armero(m, f, u, w, largo=2.0, ang=0.0):
 def chimenea(m, f, u, ancho=1.8, v_suelo=0.0, alto_campana=2.2, w=0.0, col=PIEDRA_CLARA, fuego=True):
     """hogar y campana contra la pared (cara w, hacia +w)"""
     g = f.sub(u, w)
+    _mc = m.mat; m.mat = 'sillar'
     caja(m, g, -ancho / 2, ancho / 2, v_suelo, v_suelo + 0.15, 0, 0.9, LOSA, .8)
     for s in (-1, 1): caja(m, g, s * ancho / 2 - (0.25 if s > 0 else 0), s * ancho / 2 + (0 if s > 0 else 0.25), v_suelo, v_suelo + 1.3, 0, 0.75, varia(col, .05), .8)
     pts_c = [(-ancho / 2 - 0.1, 0), (ancho / 2 + 0.1, 0), (ancho / 2 + 0.1, 0.85), (-ancho / 2 - 0.1, 0.85)]
@@ -588,7 +710,10 @@ def chimenea(m, f, u, ancho=1.8, v_suelo=0.0, alto_campana=2.2, w=0.0, col=PIEDR
     m.quad(P(-a0, v_suelo + 1.55, 0.85), P(a0, v_suelo + 1.55, 0.85), P(a1, v_suelo + alto_campana + 1.3, 0.3), P(-a1, v_suelo + alto_campana + 1.3, 0.3), esc(col, .9))
     m.quad(P(a0, v_suelo + 1.55, 0.85), P(a0, v_suelo + 1.55, 0), P(a1, v_suelo + alto_campana + 1.3, 0), P(a1, v_suelo + alto_campana + 1.3, 0.3), esc(col, .75))
     m.quad(P(-a0, v_suelo + 1.55, 0), P(-a0, v_suelo + 1.55, 0.85), P(-a1, v_suelo + alto_campana + 1.3, 0.3), P(-a1, v_suelo + alto_campana + 1.3, 0), esc(col, .75))
-    caja(m, g, -ancho / 2 + 0.25, ancho / 2 - 0.25, v_suelo + 0.15, v_suelo + 1.3, 0, 0.04, OSCURO)   # el fondo ahumado
+    m.mat = _mc
+    if fuego:   # el fondo, ahumado arriba y encendido por el fuego abajo
+        with con(m, 'fuego'): m.quad(g(-ancho / 2 + 0.25, v_suelo + 0.15, 0.045), g(ancho / 2 - 0.25, v_suelo + 0.15, 0.045), g(ancho / 2 - 0.25, v_suelo + 1.3, 0.045), g(-ancho / 2 + 0.25, v_suelo + 1.3, 0.045), hexc('#a8481c'), hexc('#a8481c'), hexc('#1c120c'), hexc('#1c120c'))
+    else: caja(m, g, -ancho / 2 + 0.25, ancho / 2 - 0.25, v_suelo + 0.15, v_suelo + 1.3, 0, 0.04, OSCURO)   # el fondo ahumado
     if fuego:
         for k in range(3): caja(m, g.sub(0, 0.4, 0.4 + k * 0.5), -0.35, 0.35, v_suelo + 0.15 + k * 0.05, v_suelo + 0.25 + k * 0.05, -0.06, 0.06, MADERA)
         llamas(m, g, 0, v_suelo + 0.18, 0.4, 0.55, 0.5)
@@ -604,13 +729,19 @@ def heno(m, f, u, w, r=0.9):
 
 def llamas(m, f, u, v, w, alto, ancho):
     """lenguas de fuego: planos cruzados en abanico, de la brasa (abajo, amarillo) a la punta (rojo oscuro)"""
-    base_c = hexc('#ffd27a'); medio_c = hexc('#f08a2c'); punta_c = hexc('#a8321a')
-    for k in range(5):
-        a = k * math.pi / 5 + 0.3; r = ancho * (0.55 + 0.45 * ((k * 37) % 5) / 4); hh = alto * (0.6 + 0.4 * ((k * 53) % 5) / 4)
+    base_c = hexc('#ffe2a0'); medio_c = hexc('#ff9a3a'); punta_c = hexc('#c8461e')
+    _mf = m.mat; m.mat = 'fuego'
+    # las brasas: un lecho que brilla debajo
+    for k in range(6):
+        a = k * math.pi / 3; b = (k + 1) * math.pi / 3
+        m.tri(f(u, v + 0.01, w), f(u + math.cos(b) * ancho * 0.4, v + 0.005, w + math.sin(b) * ancho * 0.4), f(u + math.cos(a) * ancho * 0.4, v + 0.005, w + math.sin(a) * ancho * 0.4), hexc('#e07a30'), hexc('#3a1a10'), hexc('#3a1a10'))
+    for k in range(9):
+        a = k * math.pi / 9 + 0.3; r = ancho * (0.55 + 0.45 * ((k * 37) % 5) / 4); hh = alto * (0.6 + 0.4 * ((k * 53) % 5) / 4)
         dx, dw = math.cos(a) * r / 2, math.sin(a) * r / 2
         ox, ow = math.cos(a + 1.7) * r * 0.15, math.sin(a + 1.7) * r * 0.15
         m.tri(f(u - dx + ox, v, w - dw + ow), f(u + dx + ox, v, w + dw + ow), f(u + ox * 0.3, v + hh * 0.55, w + ow * 0.3), base_c, base_c, medio_c)
         m.tri(f(u - dx * 0.6 + ox, v + hh * 0.3, w - dw * 0.6 + ow), f(u + dx * 0.6 + ox, v + hh * 0.3, w + dw * 0.6 + ow), f(u + ox * 1.6, v + hh, w + ow * 1.6), medio_c, medio_c, punta_c)
+    m.mat = _mf
 
 def silla(m, f, u, w, ang=0.0, alta=False, col=MADERA_CL):
     """silla de tijera / sitial: asiento, patas, respaldo con travesaños; alta = sitial con brazos y respaldo alto"""
@@ -632,11 +763,59 @@ def antorcha(m, f, u, v, w):
     llamas(m, f, u, v + 0.4, w + 0.2, 0.32, 0.14)
 
 def tapiz(m, f, u0, u1, v0, v1, w, col):
-    m.quad(f(u0, v0, w + 0.03), f(u1, v0, w + 0.03), f(u1, v1, w + 0.03), f(u0, v1, w + 0.03), col)
-    c2 = esc(col, 1.4)
-    m.quad(f(u0 + .15, v0 + .15, w + 0.035), f(u1 - .15, v0 + .15, w + 0.035), f(u1 - .15, v0 + .3, w + 0.035), f(u0 + .15, v0 + .3, w + 0.035), c2)
-    m.quad(f(u0 + .15, v1 - .3, w + 0.035), f(u1 - .15, v1 - .3, w + 0.035), f(u1 - .15, v1 - .15, w + 0.035), f(u0 + .15, v1 - .15, w + 0.035), c2)
-    caja(m, f, u0 - .1, u1 + .1, v1, v1 + 0.05, w + 0.01, w + 0.06, MADERA)
+    """paño colgado de su vara, con pliegues verticales, cenefa clara arriba y abajo y rombos bordados"""
+    n = max(6, int((u1 - u0) / 0.18))
+    prof = lambda k: w + 0.035 + 0.045 * (k % 2)
+    c2 = esc(col, 1.45); c3 = hexc('#b89a52')
+    with con(m, 'tela'):
+        for k in range(n):
+            a = u0 + (u1 - u0) * k / n; b = u0 + (u1 - u0) * (k + 1) / n
+            l0 = 0.8 if k % 2 else 1.0; l1 = 1.0 if k % 2 else 0.8
+            for (y0, y1, c) in ((v0, v0 + 0.25, c2), (v0 + 0.25, v1 - 0.25, col), (v1 - 0.25, v1, c2)):
+                m.quad(f(a, y0, prof(k)), f(b, y0, prof(k + 1)), f(b, y1, prof(k + 1)), f(a, y1, prof(k)), esc(c, l0), esc(c, l1), esc(c, l1), esc(c, l0))
+        # rombos bordados en el paño
+        filas = max(1, int((v1 - v0 - 0.6) / 0.55)); cols = max(1, int((u1 - u0) / 0.6))
+        for i in range(cols):
+            for j in range(filas):
+                cu = u0 + (u1 - u0) * (i + 0.5) / cols; cv = v0 + 0.3 + (v1 - v0 - 0.6) * (j + 0.5) / filas; r = 0.13
+                ww = w + 0.09
+                m.quad(f(cu, cv - r, ww), f(cu + r * 0.75, cv, ww), f(cu, cv + r, ww), f(cu - r * 0.75, cv, ww), c3)
+    caja(m, f, u0 - .1, u1 + .1, v1, v1 + 0.05, w + 0.01, w + 0.08, MADERA)
+    for s in (u0 - 0.1, u1 + 0.05): caja(m, f, s, s + 0.05, v1 - 0.02, v1 + 0.08, w, w + 0.1, HIERRO)
+
+def alfombra(m, f, u, w, largo, ancho, col, ang=0.0, v=0.0):
+    """estera tejida en el suelo, con cenefa y flecos"""
+    g = f.sub(u, w, ang)
+    with con(m, 'tela'):
+        m.quad(g(-largo / 2, v + 0.012, ancho / 2), g(largo / 2, v + 0.012, ancho / 2), g(largo / 2, v + 0.012, -ancho / 2), g(-largo / 2, v + 0.012, -ancho / 2), col)
+        c2 = esc(col, 1.5)
+        for (a, b, c, d) in ((-largo / 2 + 0.1, largo / 2 - 0.1, ancho / 2 - 0.2, ancho / 2 - 0.1), (-largo / 2 + 0.1, largo / 2 - 0.1, -ancho / 2 + 0.1, -ancho / 2 + 0.2),
+                             (-largo / 2 + 0.1, -largo / 2 + 0.2, -ancho / 2 + 0.1, ancho / 2 - 0.1), (largo / 2 - 0.2, largo / 2 - 0.1, -ancho / 2 + 0.1, ancho / 2 - 0.1)):
+            m.quad(g(a, v + 0.016, d), g(b, v + 0.016, d), g(b, v + 0.016, c), g(a, v + 0.016, c), c2)
+        for s in (-1, 1):   # flecos
+            m.quad(g(s * largo / 2, v + 0.01, ancho / 2), g(s * (largo / 2 + 0.07), v + 0.006, ancho / 2), g(s * (largo / 2 + 0.07), v + 0.006, -ancho / 2), g(s * largo / 2, v + 0.01, -ancho / 2), esc(col, 1.25))
+
+def candelabro(m, f, u, w, v=0.0, alto=1.5):
+    """candelero de pie, de hierro, con tres velas encendidas"""
+    cilindro(m, f, u, w, 0.18, v, v + 0.04, HIERRO, 8)
+    for a in (0, 2.1, 4.2): caja(m, f, u + math.cos(a) * 0.12 - 0.015, u + math.cos(a) * 0.12 + 0.015, v, v + 0.12, w + math.sin(a) * 0.12 - 0.015, w + math.sin(a) * 0.12 + 0.015, HIERRO)
+    cilindro(m, f, u, w, 0.022, v, v + alto, HIERRO, 6)
+    caja(m, f, u - 0.25, u + 0.25, v + alto - 0.02, v + alto + 0.02, w - 0.02, w + 0.02, HIERRO)
+    for du in (-0.24, 0.0, 0.24):
+        cilindro(m, f, u + du, w, 0.045, v + alto + 0.02, v + alto + 0.05, HIERRO, 6)
+        cilindro(m, f, u + du, w, 0.022, v + alto + 0.05, v + alto + 0.2 - abs(du) * 0.2, hexc('#e8dcc0'), 6)
+        llamas(m, f, u + du, v + alto + 0.2 - abs(du) * 0.2, w, 0.07, 0.03)
+
+def vajilla(m, f, u, w, v, largo=1.6):
+    """en la mesa: platos, cuencos, una jarra, una hogaza y un candil"""
+    for k in range(int(largo / 0.45)):
+        x = u - largo / 2 + 0.25 + k * 0.45
+        for s in (-1, 1):
+            cilindro(m, f, x, w + s * 0.22, 0.11, v, v + 0.015, hexc('#8a7f6e'), 8)   # plato de peltre
+            if (k + (s > 0)) % 2: cilindro(m, f, x + 0.1, w + s * 0.12, 0.05, v, v + 0.06, hexc('#7a5a3c'), 7, True, 0.06)   # cuenco
+    cilindro(m, f, u, w, 0.07, v, v + 0.16, hexc('#8a6a48'), 8, True, 0.05); cilindro(m, f, u, w, 0.05, v + 0.16, v + 0.24, hexc('#8a6a48'), 8, True, 0.06)   # jarra
+    bola(m, *f(u + 0.3, v + 0.05, w + 0.02), 0.11, 0.06, hexc('#a07a46'), 7, 3)   # hogaza
+    cilindro(m, f, u - 0.35, w, 0.04, v, v + 0.06, HIERRO, 6); llamas(m, f, u - 0.35, v + 0.06, w, 0.06, 0.03)
 
 def carro(m, f, u, w, ang=0.0):
     g = f.sub(u, w, ang)
@@ -730,3 +909,52 @@ def diana(m, f, u, w):
             m.tri(g(0, 1.3, 0.02 + k * 0.01), g(math.cos(a1) * r, 1.3 + math.sin(a1) * r, 0.02 + k * 0.01), g(math.cos(a2) * r, 1.3 + math.sin(a2) * r, 0.02 + k * 0.01), c)
     caja(m, g, -0.65, 0.65, 0, 2.0, -0.15, 0.0, HENO, .8)
     for s in (-1, 1): caja(m, g, s * 0.5 - .04, s * 0.5 + .04, 0, 1.4, -0.5, -0.4, MADERA)
+
+def barca(m, f, largo=4.6, manga=1.5, puntal=0.62):
+    """barca de remos de tingladillo: casco de tablas solapadas (tracas) que se cierran en proa y popa, bancadas y remos.
+       u a lo largo (proa en +u), w de babor a estribor, v arriba (0: la quilla)"""
+    with con(m, 'madera'):
+        L2 = largo / 2; NS = 16; NT = 5           # secciones a lo largo, tracas por banda
+        def sec(i):
+            x = -L2 + largo * i / NS; t = x / L2
+            b = manga / 2 * max(0.0, 1 - abs(t) ** 2.6) ** 0.55          # media manga
+            alza = 0.18 * max(0, abs(t) - 0.5) ** 2 * 4                  # el arrufo: sube en proa y popa
+            return x, b, alza
+        def punto(i, k, s, dentro=0.0):
+            x, b, alza = sec(i); a = k / NT                              # a: 0 la quilla, 1 la borda
+            ang = a * math.pi / 2
+            w = s * (b - dentro) * math.sin(ang) ** 0.8
+            v = (puntal + alza) * (1 - math.cos(ang)) ** 0.9 + dentro * 0.5
+            return f(x, v, w)
+        for s in (-1, 1):
+            for k in range(NT):
+                c = varia(MADERA_CL, 0.08)
+                for i in range(NS):
+                    A, B, C, D = punto(i, k, s), punto(i + 1, k, s), punto(i + 1, k + 1, s), punto(i, k + 1, s)
+                    if s > 0: m.quad(A, B, C, D, esc(c, 0.8 + 0.06 * k))
+                    else: m.quad(B, A, D, C, esc(c, 0.8 + 0.06 * k))
+                    Ai, Bi, Ci, Di = punto(i, k, s, 0.04), punto(i + 1, k, s, 0.04), punto(i + 1, k + 1, s, 0.04), punto(i, k + 1, s, 0.04)
+                    if s > 0: m.quad(Bi, Ai, Di, Ci, esc(c, 0.62))
+                    else: m.quad(Ai, Bi, Ci, Di, esc(c, 0.62))
+                # el canto de la traca (solape): una línea oscura
+                for i in range(NS):
+                    A, B = punto(i, k + 1, s), punto(i + 1, k + 1, s)
+                    m.quad(A, B, (B[0], B[1] - 0.025, B[2]), (A[0], A[1] - 0.025, A[2]), esc(MADERA, 0.8))
+            # la regala (borda)
+            for i in range(NS):
+                A, B = punto(i, NT, s), punto(i + 1, NT, s)
+                m.quad(A, B, (B[0], B[1] + 0.05, B[2]), (A[0], A[1] + 0.05, A[2]), MADERA)
+        # bancadas y remos
+        for x in (-0.7, 0.6):
+            caja(m, f, x - 0.13, x + 0.13, puntal - 0.2, puntal - 0.15, -manga / 2 + 0.1, manga / 2 - 0.1, TABLA, 0.75)
+        for s in (-1, 1):
+            caja(m, f, -1.6, 1.5, puntal + 0.06, puntal + 0.11, s * 0.35 - 0.04, s * 0.35 + 0.04, MADERA_CL, 0.8)
+            caja(m, f, 1.1, 1.7, puntal + 0.04, puntal + 0.12, s * 0.35 - 0.09, s * 0.35 + 0.09, MADERA_CL, 0.8)   # la pala
+        # el plan: tablas del fondo por encima del agua (si no, el agua del mar se ve dentro del casco)
+        vp = 0.32
+        with con(m, 'tabla'):
+            for i in range(NS):
+                x0, b0, _ = sec(i); x1, b1, _ = sec(i + 1)
+                k0, k1 = 0.86 * b0 - 0.05, 0.86 * b1 - 0.05
+                if k0 <= 0.02 and k1 <= 0.02: continue
+                m.quad(f(x0, vp, -max(k0, 0.0)), f(x0, vp, max(k0, 0.0)), f(x1, vp, max(k1, 0.0)), f(x1, vp, -max(k1, 0.0)), esc(TABLA, 0.75))

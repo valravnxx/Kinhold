@@ -11,7 +11,7 @@ import { crearChoquesCastillo, MARCAS_FOSO, ORIGEN_CASTILLO as O } from '../src/
 const t0 = Date.now();
 const mapa = generarMapa(SEMILLA_MUNDO, { lado: LADO_MUNDO }); const paisaje = crearPaisaje(mapa);
 const suelo = nivelar(alturaMundo(paisaje), MARCAS_FOSO);
-const datos = JSON.parse(fs.readFileSync(new URL('../docs/recursos/mundo/castillo-rey-v1/colision.json', import.meta.url)));
+const datos = JSON.parse(fs.readFileSync(new URL('../docs/recursos/mundo/castillo-rey-v2/colision.json', import.meta.url)));
 const C = crearChoquesCastillo(datos, { dx: -O.x, dz: -O.z });   // quien pregunta va en el mundo
 console.log('mundo listo en', Date.now() - t0, 'ms');
 const RUTAS = JSON.parse(fs.readFileSync(new URL('./datos/recorrido_castillo_rey.json', import.meta.url)));

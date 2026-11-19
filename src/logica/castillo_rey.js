@@ -18,7 +18,7 @@
 //  - El cuerpo, de los pies a 1,75 m, con 0,3 m de radio contra los muros: las puertas del castillo son de 0,9 m o más.
 //  - Lo que tapa por encima de la cabeza (más de 2 m sobre los pies) corta la vista: la cámara corta el castillo ahí.
 
-import { ZONA, FOSO } from './castillo_rey_datos.js';
+import { ZONA, FOSO, SIN_HIERBA, HIERBA_DENTRO } from './castillo_rey_datos.js';
 
 export const ORIGEN_CASTILLO = { x: 217600, z: 52990 };
 export const SUBIR = 0.6, CUERPO = 1.75, RADIO = 0.3, CABEZA = 2.0;
@@ -28,6 +28,34 @@ export const SUBIR = 0.6, CUERPO = 1.75, RADIO = 0.3, CABEZA = 2.0;
 export const ZONA_CASTILLO = ZONA;
 export const MARCAS_FOSO = FOSO.map(([x, z, y, r, borde]) => ({ x, z, y, r, borde }));
 const CAJA_ZONA = ZONA.reduce((c, [x, z]) => ({ x0: Math.min(c.x0, x), z0: Math.min(c.z0, z), x1: Math.max(c.x1, x), z1: Math.max(c.z1, z) }), { x0: Infinity, z0: Infinity, x1: -Infinity, z1: -Infinity });
+
+const dentroDe = (p, x, z) => {
+  let r = false;
+  for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+    const [xi, zi] = p[i], [xj, zj] = p[j];
+    if ((zi > z) !== (zj > z) && x < (xj - xi) * (z - zi) / (zj - zi) + xi) r = !r;
+  }
+  return r;
+};
+// donde no crece la hierba ni las matas (el recinto, el patio de la barbacana y los caminos); en el foso, la explanada y
+// al pie de los muros del patio de armas (HIERBA_DENTRO), sí
+export function sinHierbaCastillo(x, z) {
+  if (!enZonaCastillo(x, z)) return false;
+  if (HIERBA_DENTRO.some(([a, ...huecos]) => dentroDe(a, x, z) && !huecos.some(h => dentroDe(h, x, z)))) return false;
+  return SIN_HIERBA.some(p => dentroDe(p, x, z));
+}
+
+/** cerca de la zona (a menos de `m` metros, mirando en 8 direcciones): para las rocas grandes de los cortados, que no
+ *  tapen el acantilado del castillo ni su embarcadero */
+export function cercaZonaCastillo(x, z, m = 60) {
+  if (x < CAJA_ZONA.x0 - m || x > CAJA_ZONA.x1 + m || z < CAJA_ZONA.z0 - m || z > CAJA_ZONA.z1 + m) return false;
+  if (enZonaCastillo(x, z)) return true;
+  for (let k = 0; k < 8; k++) {
+    const a = k * Math.PI / 4;
+    if (enZonaCastillo(x + Math.cos(a) * m, z + Math.sin(a) * m)) return true;
+  }
+  return false;
+}
 
 export function enZonaCastillo(x, z) {
   if (x < CAJA_ZONA.x0 || x > CAJA_ZONA.x1 || z < CAJA_ZONA.z0 || z > CAJA_ZONA.z1) return false;

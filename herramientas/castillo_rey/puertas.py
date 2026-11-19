@@ -172,7 +172,8 @@ def puente(m):
             t0, t1 = k / n, (k + 1) / n
             p0 = [a[i] + (b[i] - a[i]) * t0 for i in range(3)]; p1 = [a[i] + (b[i] - a[i]) * t1 for i in range(3)]
             p0[1] -= 0.25 * math.sin(math.pi * t0); p1[1] -= 0.25 * math.sin(math.pi * t1)
-            m.quad(tuple(p0), tuple(p1), (p1[0] + 0.04, p1[1] + 0.04, p1[2]), (p0[0] + 0.04, p0[1] + 0.04, p0[2]), HIERRO)
+            m.quad(tuple(p0), tuple(p1), (p1[0] + 0.07, p1[1], p1[2]), (p0[0] + 0.07, p0[1], p0[2]), HIERRO)
+            m.quad(tuple(p0), tuple(p1), (p1[0], p1[1], p1[2] + 0.07), (p0[0], p0[1], p0[2] + 0.07), esc(HIERRO, 1.3))
     # la pila de piedra en el foso
     prisma(m, g0, [(-2.0, w_pila), (2.0, w_pila), (2.0, w_pila + 1.2), (-2.0, w_pila + 1.2)], FOSO_FONDO - 0.3, PF - 0.15, PIEDRA)
     _piedras_prisma(m, g0, -2.0, 2.0, w_pila, w_pila + 1.2, FOSO_FONDO - 0.3, PF - 0.15)

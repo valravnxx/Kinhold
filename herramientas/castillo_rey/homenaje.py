@@ -37,6 +37,7 @@ def homenaje(m, puertas_adarve):
             if not any(abs(u - L * 0.5) < 1.5 for (u, *_r) in t.puertas[i]): hs.append(saetera(L * 0.5, K2 + 1.0, 1.6, 0.13, 1.2))
             hs.append(saetera(L * 0.25, K0 + 2.5, 0.5, 0.15, 0.3))
         muro(m, f, 0, L, base, KTE, -T, 0, hs, 'silleria', PIEDRA, tapa=False, cabezas=False, suelo=FOSO_FONDO)
+        esquinales(m, f, 0, L, base, KTE - 1.6, 0.0, i)
         m.quad(f(0, base, 1.2), f(L, base, 1.2), f(L, base + 3.5, 0), f(0, base + 3.5, 0), esc(PIEDRA_OSC, .85))   # alambor
         # cornisa y matacanes corridos en lo alto, con su parapeto almenado volado
         for k in range(int(L / 1.1)):
@@ -89,14 +90,20 @@ def homenaje(m, puertas_adarve):
     mesa(m, f1, -1.0, -1.1, 2.4, 0.9, 0.76, 0); banco(m, f1, -1.0, -0.4, 2.2); banco(m, f1, -1.0, -1.8, 2.2)
     silla(m, f1, 0.6, -1.1, -math.pi / 2, True)    # el sitial del alcaide, a la cabecera
     arca(m, f1, -1.8, -2.4, 0); armero(m, F(*fi.p2(L / 2 + 0.5, -L + T), fi.a + math.pi, K1), 0, 0, 2.4)
-    tapiz(m, F(*fi.p2(T + 0.0, -L / 2), fi.a - math.pi / 2, 0), -1.6, 1.6, K1 + 2.8, K1 + 4.3, 0, TELA_AZUL) if False else None
+    vajilla(m, f1, -1.0, -1.1, 0.76, 2.0)
+    alfombra(m, f1, -1.0, -1.1, 3.6, 2.4, hexc('#6a3a2a'))
+    candelabro(m, f1, 1.3, -2.3); candelabro(m, f1, -0.5, -2.6)
+    tapiz(m, F(*fi.p2(L / 2, -L + T), fi.a + math.pi, K1), -1.8, 1.8, 1.0, 3.4, 0, TELA_AZUL)
     for (u_, w_) in ((T + 0.05, -T - 1.5), (L - T - 0.05, -L + T + 1.5)): antorcha(m, F(*fi.p2(u_, w_), fi.a + (-math.pi / 2 if u_ < L / 2 else math.pi / 2), 0), 0, K1 + 1.8, 0)
     # ---------------- planta 2: la cámara del alcaide (aquí se aloja el rey cuando viene)
     f2 = F(*fi.p2(L / 2, -L / 2), fi.a, K2)
     chimenea(m, F(*fi.p2(T, -L / 2), fi.a - math.pi / 2, K2), 0, 1.6, 0, 2.4)
     cama(m, f2, 0.8, -2.0, 0, 2.2, 1.5, TELA_ROJA, True)
     arca(m, f2, -1.0, -2.6, 0, 1.2, 0.6, 0.65); arca(m, f2, 2.6, -0.6, math.pi / 2, 1.0, 0.5, 0.6)
-    mesa(m, f2, -0.6, 1.4, 1.4, 0.7); taburete(m, f2, -0.6, 0.8); silla(m, f2, -1.6, 1.4, 0.4)
+    mesa(m, f2, -0.6, 1.4, 1.4, 0.7); taburete(m, f2, -0.6, 0.75); silla(m, f2, -1.95, 1.4, 0.0)
+    vajilla(m, f2, -0.6, 1.4, 0.76, 1.0)
+    alfombra(m, f2, 0.8, -0.5, 2.0, 1.2, hexc('#4a5a6a'))
+    candelabro(m, f2, -0.3, -2.6)
     tapiz(m, F(*fi.p2(L / 2, -L + T), fi.a + math.pi, 0), -1.8, 1.8, K2 + 1.0, K2 + 3.2, 0, TELA_ROJA)
     # la letrina: un nicho en el grueso del muro de fuera, con su asiento de madera
     fo = t.cara((ci + 2) % 4)
@@ -107,6 +114,7 @@ def homenaje(m, puertas_adarve):
     f3 = F(*fi.p2(L / 2, -L / 2), fi.a, K3)
     chimenea(m, F(*fi.p2(T, -L / 2), fi.a - math.pi / 2, K3), 0, 1.4, 0, 2.2)
     cama(m, f3, 0.8, -2.2, 0, 2.0, 1.3, TELA_AZUL); cama(m, f3, -1.6, 1.6, math.pi / 2, 1.8, 0.9, hexc('#5d6a3a'))
+    alfombra(m, f3, 0.0, 0.0, 2.2, 1.4, hexc('#6a5a3a')); candelabro(m, f3, -1.6, -2.5)
     arca(m, f3, 1.6, 1.8, 0); estante(m, F(*fi.p2(L / 2 + 1.0, -L + T), fi.a + math.pi, K3), 0, 0, 1.6, 1.8)
     # ---------------- terraza: caseta del caracol, garitas en las esquinas, brasero de señales, el pendón
     import choques; choques.HUECO_PRISMA[0] = (cu - 1.35, cw)

@@ -71,7 +71,7 @@ import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
 import { crearPozosVista } from './pozos_vista.js';
 import { crearCastilloRey } from '../mundo/castillo_rey.js';
-import { MARCAS_FOSO, enZonaCastillo } from '../logica/castillo_rey.js';
+import { MARCAS_FOSO, sinHierbaCastillo } from '../logica/castillo_rey.js';
 import { pozoCercano, pozoConAgua, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, PIEDRAS_BROCAL, TRAVESANO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
 import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo, vaciarCubo } from '../logica/campos.js';
 
@@ -560,8 +560,8 @@ function despejarDecorado() {
   const ahoraL = Date.now(), labrados = (mundo.campos || []).filter(c => c.cerrado && labradoVivo(c, ahoraL)).map(c => ({ c, r: rejilla(c) }));
   const enLabrado = (x, z) => labrados.some(({ c, r }) => x >= r.x0 - 0.3 && z >= r.z0 - 0.3 && x <= r.x0 + r.w + 0.3 && z <= r.z0 + r.h + 0.3
     && (labradoEn(c, x, z, ahoraL) || labradoEn(c, x + 0.25, z, ahoraL) || labradoEn(c, x - 0.25, z, ahoraL) || labradoEn(c, x, z + 0.25, ahoraL) || labradoEn(c, x, z - 0.25, ahoraL)));
-  // y el castillo del rey, su foso y su explanada (en metros del mundo: src/logica/castillo_rey.js)
-  const enCastillo = mundoJ ? (x, z) => enZonaCastillo(x + mundoJ.salida.x, z + mundoJ.salida.z) : () => false;
+  // y el castillo del rey: su recinto, su barbacana y sus caminos (en el foso y la explanada crece; src/logica/castillo_rey.js)
+  const enCastillo = mundoJ ? (x, z) => sinHierbaCastillo(x + mundoJ.salida.x, z + mundoJ.salida.z) : () => false;
   const ocupado = (x, z) => circ.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r) || (labrados.length > 0 && enLabrado(x, z)) || enCastillo(x, z);
   estado.plantasOcultas = decorado.despejar(ocupado);
   recoleccion.despejar(ocupado); // lo que queda debajo de lo construido no se ve ni se recoge

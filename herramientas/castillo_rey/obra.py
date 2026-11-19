@@ -34,7 +34,7 @@ def construir_cortina(m, c):
     tb = base + talud * 1.6
     m.quad(f0(c.u0, base, T / 2 + talud * 0.5), f0(c.u1, base, T / 2 + talud * 0.5), f0(c.u1, tb, T / 2), f0(c.u0, tb, T / 2), esc(PIEDRA_OSC, .85))
     hs = [dict(hh) for hh in c.huecos]
-    muro(m, f0, c.u0, c.u1, base, top, -T / 2, T / 2, hs, 'silleria', PIEDRA, tapa=False, cabezas=False, suelo=(FOSO_FONDO if c.foso else smin))
+    muro(m, f0, c.u0, c.u1, base, top, -T / 2, T / 2, hs, 'mamposteria', MAMPOST, tapa=False, cabezas=False, suelo=(FOSO_FONDO if c.foso else smin))
     # el adarve: losas; parapeto almenado por fuera, pretil por dentro
     suelo_losas(m, f0, c.u0, c.u1, -T / 2, T / 2 - 0.65, top, LOSA, 0.7)
     almenado(m, f0, c.u0, c.u1, top, T / 2 - 0.65, T / 2, 1.0, 1.1, 2.1, 0.75, PIEDRA)
@@ -98,8 +98,12 @@ def construir_torre(m, t, patio, pisos_extra=(), base_foso=False):
         for (u, v, a_, al) in t.puertas[i]: hs.append({'u': u, 'a': a_, 'v0': v, 'v1': v + al, 'arco': 'medio'})
         if i == cp: hs.append({'u': L * 0.38, 'a': 1.1, 'v0': g0, 'v1': g0 + 1.9, 'arco': 'medio'})       # la puerta del patio
         else:
-            for v in (gm + 0.6, ADARVE + 0.5): hs.append(saetera(L / 2, v, 1.5, 0.12, 1.0))
-        muro(m, f, 0, L, base, gt, -T, 0, hs, 'silleria', PIEDRA, tapa=False, cabezas=False, suelo=(FOSO_FONDO if base_foso else min(h(*p) for p in t.esq)))
+            for v in (gm + 0.6, ADARVE + 0.5):
+                # (no donde ya hay una puerta en esa cara: la saetera quedaría delante de la puerta)
+                if any(abs(u_ - L / 2) < a_ / 2 + 0.6 and v_ - 0.5 < v + 1.5 and v < v_ + al_ + 0.5 for (u_, v_, a_, al_) in t.puertas[i]): continue
+                hs.append(saetera(L / 2, v, 1.5, 0.12, 1.0))
+        muro(m, f, 0, L, base, gt, -T, 0, hs, 'mamposteria', MAMPOST, tapa=False, cabezas=False, suelo=(FOSO_FONDO if base_foso else min(h(*p) for p in t.esq)))
+        esquinales(m, f, 0, L, base, gt, 0.0, i)
         f2 = t.cara(i)
         talud = 1.6 if base_foso else 0.9
         m.quad(f2(0, base, talud * 0.5), f2(L, base, talud * 0.5), f2(L, base + talud * 1.6, 0), f2(0, base + talud * 1.6, 0), esc(PIEDRA_OSC, .85))
@@ -107,7 +111,8 @@ def construir_torre(m, t, patio, pisos_extra=(), base_foso=False):
         # cornisa de canecillos bajo la terraza
         u = 0.3
         while u < L - 0.2:
-            caja(m, f2, u, u + 0.25, gt - 0.45, gt - 0.05, 0, 0.25, PIEDRA_CLARA, .85); u += 0.85
+            with con(m, 'sillar'): caja(m, f2, u, u + 0.25, gt - 0.45, gt - 0.05, 0, 0.25, PIEDRA_CLARA, .85)
+            u += 0.85
         caja(m, f2, 0, L, gt - 0.05, gt + 0.05, 0, 0.3, PIEDRA_CLARA, .9)
     # suelos: tablas en las plantas, losas en la terraza; hueco del caracol
     hueco_c = (cu - r_c - 0.1, cu + r_c + 0.1, cw - r_c - 0.1, cw + r_c + 0.1)
@@ -155,6 +160,7 @@ def pared(m, p, q, centro, v0, v1, grueso, huecos=(), tipo='silleria', col=None,
 def pretil_inclinado(m, f, u0, u1, w0, w1, v_bajo, v_alto, alto=0.9, col=None):
     """pretil de escalera: muro inclinado de u0 (en v_bajo) a u1 (en v_alto), de grueso w0..w1, con albardilla"""
     col = col or PIEDRA
+    _m0 = m.mat; m.mat = 'sillar'
     n = max(1, int((u1 - u0) / 0.9))
     for i in range(n):
         a = u0 + (u1 - u0) * i / n; b = u0 + (u1 - u0) * (i + 1) / n
@@ -170,3 +176,4 @@ def pretil_inclinado(m, f, u0, u1, w0, w1, v_bajo, v_alto, alto=0.9, col=None):
         for w in (w0 - 0.04, w1 + 0.04): m.quad(f(a, ya + alto, w), f(b, yb + alto, w), f(b, yb + alto + 0.08, w), f(a, ya + alto + 0.08, w), esc(PIEDRA_CLARA, .85))
     m.quad(f(u1, v_alto - 0.5, w0), f(u1, v_alto - 0.5, w1), f(u1, v_alto + alto, w1), f(u1, v_alto + alto, w0), esc(col, .8))
     m.quad(f(u0, v_bajo - 0.5, w0), f(u0, v_bajo - 0.5, w1), f(u0, v_bajo + alto, w1), f(u0, v_bajo + alto, w0), esc(col, .8))
+    m.mat = _m0
