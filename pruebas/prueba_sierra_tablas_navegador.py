@@ -102,10 +102,13 @@ def recorrido(nav, nombre, pref, vista, movil):
         pg.screenshot(path=f'{SALIDA}/{pref}_tronzar_sierra_{i + 1}.png', timeout=180000)
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: tronzando, la sierra en la mano (no el hacha)', v['empunada'] == 'sierra', str(v))
-    pg.evaluate(f"{K}.estado.talando = null")   # (se para el trabajo del juego y se dan los golpes que faltan, uno a uno)
+    # (se para el trabajo del juego, que mientras se miraba ya ha podido tronzarlo, y se tronza otro, golpe a golpe)
+    t = pg.evaluate(f"""(() => {{ const k = {K}; k.estado.talando = null; const a = Date.now();
+      const o = k.sueloObjetos.suelo.dejar({{ tipo: 'tronco_largo', n: 1 }}, k.pj.x - 1.2, k.pj.z + 3, a, 'vista', false, 0); k.sueloObjetos.refrescar();
+      k.pj.x -= 1.2; k.pj.z += 1.8; return o.id; }})()""")
     r = None
     for _ in range(12):
-        r = pg.evaluate(f"(() => {{ const k = {K}; k.troceo.ultimoGolpe = {{}}; const r = k.golpeTroceo('{t}'); return r && {{ ok: r.ok, termina: r.termina, hacha: r.hacha, golpes: r.golpes }}; }})()")
+        r = pg.evaluate(f"(() => {{ const k = {K}; k.troceo.ultimoGolpe = {{}}; const r = k.golpeTroceo('{t}'); return r && {{ ok: r.ok, termina: r.termina, hacha: r.hacha, golpes: r.golpes, motivo: r.motivo }}; }})()")
         if not r or not r.get('ok') or r.get('termina'): break
     comprobar(f'{nombre}: con la sierra, el tronco largo se tronza en 8 golpes', r and r.get('termina') and r.get('hacha') == 'sierra' and r.get('golpes') == 8, str(r))
     pg.evaluate(f"{K}.estado.talando = null")
