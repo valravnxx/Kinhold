@@ -2675,9 +2675,10 @@
     },
     {
      "nombre": "Las rocas grandes y la cantera: con el pico se rompen las rocas grandes y los afloramientos que el mazo no puede, a golpes que cansan, por el servidor y con su autor; dan bloques de piedra en bruto y piedra suelta, y vuelven a salir en unos meses reales, como las medianas. Cadena: pico ← la fragua",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-19T17:24:38+00:00",
-     "rama": "trabajo/20261119-1723"
+     "rama": "trabajo/20261119-1723",
+     "fin": "2026-11-19T20:33:46+00:00"
     },
     {
      "nombre": "Las vetas de hierro en la roca: las vetas pequeñas del mapa (una cada 14 km, GDD) se ven en el mundo como un afloramiento de roca rojiza y, con el pico, dan mineral de hierro, mucho más que una mancha de pantano antes de agotarse. Capturas al lado de la referencia. Cadena: pico ← la fragua",
@@ -4967,6 +4968,13 @@
      "archivo": "jugar/demo/v240.html",
      "capturas": "capturas/demo-v240",
      "notas": "v240: la sierra y las tablas (P10, «Hierro y tablas»). En la fragua encendida, llevando el mazo de piedra de martillo (no se gasta) y con 2 barras de hierro y 2 mangos dejados en ella, se bate la sierra de tronzar: una hoja de hierro de 1 m, recta por arriba y con la barriga de dientes abajo, y un mango derecho en cada punta. Llevándola en la mano, el tronco largo se tronza (y se le corta la rodaja) en 8 golpes, menos que los 18 del hacha de hierro; si llevas sierra y hacha, tronza la sierra; partir el tronco corto en leña sigue siendo con el hacha. En el banco de tronco, con un tronco corto dejado en él y llevando la sierra (no se gasta), se sierran 4 tablas. Las tablas se guardan en el acopio de troncos, planas encima de los troncos. La sierra se ve en la mano (agarrada por un mango, con la hoja hacia delante), en el cinto (el mango metido y la hoja hacia atrás) y en el suelo. Lo hace el servidor, con su autor. La sierra sale de la fragua y el tronco corto, de tronzar el tronco largo de un árbol adulto. Su imagen en el panel (iconos v42)."
+    },
+    {
+     "v": "v241",
+     "fecha": "2026-11-19",
+     "archivo": "jugar/demo/v241.html",
+     "capturas": "capturas/demo-v241",
+     "notas": "La cantera: con el pico se rompen las rocas grandes del mundo, que dejan bloques de piedra en bruto y piedra suelta"
     }
    ]
   },

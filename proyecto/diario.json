@@ -7720,5 +7720,22 @@
   "pruebas": "En la nube: la sierra y las tablas, lógica, recorrido (77 min), tronzar y partir, panel de fabricación, panel de inventario, objetos en el suelo, demo única, construir, el hogar, la cama, los colgaderos y la velocidad, todo correcto. Fallan, igual que en main (a53aa42), «lo que llevas se ve puesto» (el tronco al hombro y el cinturón) y «los almacenajes» («desplegado cuenta lo guardado: 40 piedras»): no son de este cambio. La segunda mirada a las capturas de PC y móvil dice sí. Las comprobaciones nuevas de la prueba (cinto alto, cabeza serrando, vaivén, sierra y tablas asentadas) fallaron con lo de antes.",
   "capturas": "capturas/demo-v240",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-19T17:24:38+00:00",
+  "fin": "2026-11-19T20:33:46+00:00",
+  "titulo": "Las rocas grandes y la cantera (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "Con el pico en la mano se rompen las rocas grandes del mundo, las de más de 1,1 m que el mazo no puede, y los peñascos del pedregal al pie de los cortados. Cada golpe va por el servidor, con su autor, y cansa.",
+   "Al último golpe la roca se parte y deja en el suelo un montón de bloques de piedra en bruto, al otro lado del que la rompe, y sus piedras sueltas donde estaba. Vuelve a salir en 3 meses reales, como las medianas.",
+   "Decisión provisional: de 1,1 a 4,4 m, de 30 a 80 golpes, de 1 a 4 bloques y de 10 a 30 piedras. El pico rompe también las medianas, con los mismos golpes que el mazo; con el mazo, una grande dice que hace falta el pico. Las paredes de los cortados son paisaje y no se rompen.",
+   "El bloque de piedra en bruto tiene su modelo en el suelo: una pieza de unos 55 × 35 × 45 cm, de caras torcidas y aristas desconchadas, con la base plana. Es enorme: se carga en la rastra o en la carretilla.",
+   "La cadena del bloque, en la prueba de orígenes: bloque de piedra ← romper una roca grande con el pico ← la fragua. Ya no espera en PENDIENTES.",
+   "Para la lista de valravnx, de antes y no de este cambio: la roca de las capturas sale parda y, rota, da piedras grises; el aro de la acción se ve inclinado bajo la roca; con el pico en reposo, apenas se ve en la mano."
+  ],
+  "pruebas": "Comprobador de código correcto. Prueba de las rocas y la cantera (lógica y servidor) 46/46; rota a propósito (la roca no queda rota, sin mazo, sin bloques), falla. Prueba nueva de la cantera en el navegador (PC y móvil) 24/24, y rota a propósito (la vegetación sin mirar lo roto) falla. En la nube: lógica, la cantera, el mazo y romper rocas, objetos en el suelo, recoger del suelo, bayas y setas, el bosque de lejos y la velocidad, bien. El recorrido de jugador falló una vez en el huso y el hilo (27f, oficios), que no toca este cambio, y salió bien al repetirlo (77,8 min). La segunda mirada a las capturas dijo no al primer bloque (parecía un cubo de hormigón) y sí al rehecho.",
+  "capturas": "capturas/demo-v241",
+  "estado": "ok"
  }
 ]
