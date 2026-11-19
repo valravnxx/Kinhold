@@ -770,7 +770,7 @@ function mangos(n, id) {   // tumbados en el suelo, uno junto a otro (como mucho
 // Los clavos de forja (P10, 19 nov, los de la fragua: una barra da 10): caña cuadrada que se afina hasta la punta y la
 // cabeza batida a martillo en «rosa» (cuatro facetas), negros de la forja con las aristas algo más claras.
 // clavoEn() pone uno: la cabeza en (x, y, z) y la caña hacia `dir` (rotación de +Y a la caña).
-const CLAVO = 0x34322f, CLAVO_CLARO = 0x5a5753;
+const CLAVO = 0x45423e, CLAVO_CLARO = 0x6e6a64;
 export function clavoEn(L, x, y, z, rot = null, s = 1, k = 0) {
   const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot?.x || 0, rot?.y || 0, rot?.z || 0)).setPosition(x, y, z);
   const pon = (g, c, dy, o) => { g.translate(0, dy, 0); L.add(g, c, x, y, z, m.clone(), { plano: true, tex: 'piedra', brillo: 1.1, sinSuelo: true, ...o }); };
@@ -782,8 +782,8 @@ export function clavoEn(L, x, y, z, rot = null, s = 1, k = 0) {
 function clavos(n, id) {   // un puñado: tumbados unos sobre otros, en todas direcciones (como mucho 10)
   const L = lote(0.02), k = Math.min(10, n || 1);
   for (let i = 0; i < k; i++) {
-    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / 10) * 0.022, capa = i < 5 ? 0 : 1;
-    clavoEn(L, Math.cos(a) * d, 0.0045 + capa * 0.007, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, 7 * i + 1) - 0.5) * 0.15, y: az(id, 0) * 6.28 + (i % 2) * Math.PI + (az(id, 7 * i + 3) - 0.5) * 0.7 }, 1, i);
+    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / 10) * 0.028, capa = i < 5 ? 0 : 1;
+    clavoEn(L, Math.cos(a) * d, 0.009 + capa * 0.009, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, 7 * i + 1) - 0.5) * 0.15, y: az(id, 0) * 6.28 + (i % 2) * Math.PI + (az(id, 7 * i + 3) - 0.5) * 0.7 }, 1.2, i);
   }
   return mallas(L);
 }
