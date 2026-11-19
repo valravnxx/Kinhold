@@ -1570,9 +1570,9 @@
     },
     {
      "nombre": "El castillo del rey, con el acabado del juego: piedra, teja y madera con textura y relieve, desgaste, mampostería y caminos",
-     "estado": "en_curso",
-     "inicio": "06:50",
-     "rama": "trabajo/20261119-0650-castillo-acabado"
+     "estado": "hecho",
+     "inicio": "2026-11-19T06:50:00+01:00",
+     "fin": "2026-11-19T17:00:38+01:00"
     }
    ]
   },
@@ -4951,6 +4951,13 @@
      "archivo": "jugar/demo/v238.html",
      "capturas": "capturas/demo-v238",
      "notas": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua encendida con el mazo de piedra, el hacha de hierro (1 barra y 1 mango), el pico (1 barra y 1 mango) y los clavos (1 barra da 10); cada una se ve en la mano, en el cinto y en el suelo"
+    },
+    {
+     "v": "v239",
+     "fecha": "2026-11-19",
+     "archivo": "jugar/demo/v239.html",
+     "capturas": "capturas/demo-v239",
+     "notas": "El castillo del rey, con el acabado del juego: piedra (sillería, mampostería, piedra labrada), enlosados, empedrados, tierra, madera, tejas y telas con textura de color y de relieve hecha por código y desgaste en el juego (manchas, regueros, humedad y verdín al pie de los muros, musgo); muebles con más detalle (mesas de caballete con vajilla, arcas, la cama del alcaide con dosel, tapices, alfombras, candelabros), el rastrillo con puntas de hierro, la barca con su plan y el fuego con brillo propio."
     }
    ]
   },
