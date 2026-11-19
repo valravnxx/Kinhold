@@ -70,7 +70,7 @@ import { CATALOGO } from './inventario.js';
 import { VIDA, seEstropea } from './comida.js';
 import { ALCANCE_COGER } from './suelo.js';
 import { reparacionDe, seRepara, repararCosa, desgasteDe } from './desgaste.js';
-import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO, comeDe, queCome } from './fuego.js';
+import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO, comeDe, queCome, motivoCome } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
 export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que se gasta
@@ -100,6 +100,7 @@ export const USOS = {
   curtir: { nombre: 'En las cubas de curtido', estaciones: ['cubas_curtido'] },
   carbonear: { nombre: 'En la carbonera', estaciones: ['carbonera'] },
   forjar: { nombre: 'En la fragua', estaciones: ['fragua'] },
+  cocer:  { nombre: 'En el horno cerámico', estaciones: ['horno_ceramico'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -179,6 +180,14 @@ export const ESTACIONES = {
   // y, llevando el mazo de piedra de martillo (no se gasta), se bate la barra. Provisional (diario y registro): 60 s de
   // trabajo para levantarla.
   fragua:         { nombre: 'Fragua', un: 'una fragua', uso: 'forjar', coste: { piedra: 12, barro: 4, fuelle: 1 }, donde: 'fuera', trabajo: 60, tierra: true, fuego: true, hace: 'Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro' },
+  // el horno cerámico (P10, 19 nov; documento de sistemas: «horno cerámico — arcilla, piedras — tejas, ladrillos,
+  // vasijas»; tarea: «6 cestas de arcilla y 10 piedras; fuera, en tu tierra; como estación, que se enciende con leña»):
+  // un horno de tiro de los de alfarero, más alto que la cintura: un anillo de piedra seca medio hundido (sus 10
+  // piedras) y encima la cámara de arcilla en cúpula (sus 6 cestas), con el respiradero arriba y, delante y abajo, la
+  // boca del hogar, donde se mete la leña (src/logica/fuego.js: solo come leña). Se enciende con yesca y el taladro de
+  // fuego, como la hoguera. Lo que se cuece en él (las tejas) es la tarea siguiente. Provisional (diario y registro): 60 s
+  // de trabajo para levantarlo.
+  horno_ceramico: { nombre: 'Horno cerámico', un: 'un horno cerámico', uso: 'cocer', coste: { arcilla: 6, piedra: 10 }, donde: 'fuera', trabajo: 60, tierra: true, fuego: true, hace: 'Un horno de alfarero: una cúpula de arcilla sobre piedra, con la boca del hogar abajo; encendido con leña, cuece el barro' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'hilo', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -199,6 +208,7 @@ export const motivoTierra = tipo => {
     : tipo === 'era' ? 'La era va en tu tierra (o en la de quien te invita).'
     : tipo === 'horno_reduccion' ? 'El horno de reducción va en tu tierra (o en la de quien te invita).'
     : tipo === 'fragua' ? 'La fragua va en tu tierra (o en la de quien te invita).'
+    : tipo === 'horno_ceramico' ? 'El horno cerámico va en tu tierra (o en la de quien te invita).'
     : tipo === 'cubas_curtido' ? 'Las cubas de curtido van en tu tierra (o en la de quien te invita).'
     : 'El secadero va en tu tierra (o en la de quien te invita).';
 };
@@ -826,7 +836,7 @@ export class Fabricacion {
   echarFuego(autor, estacion, objeto, pos, inv, ahora) {
     const { e, motivo } = this.fuegoAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
-    if (!comeDe(e.tipo).includes(objeto)) return { ok: false, motivo: e.tipo === 'fragua' ? 'A la fragua solo se le echa carbón.' : 'Al fuego solo se echan ramas o leña.' };
+    if (!comeDe(e.tipo).includes(objeto)) return { ok: false, motivo: motivoCome(e.tipo) };
     const ruta = rutasGastables(inv, objeto)[0];
     if (!ruta) return { ok: false, motivo: objeto === 'lena' ? 'No llevas leña.' : objeto === 'rama' ? 'No llevas ramas.' : 'No llevas carbón.' };
     const r = echar(e.fuego, objeto, ahora, e.tipo);

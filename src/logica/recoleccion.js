@@ -34,7 +34,7 @@
 //  - Lo que pide herramienta (los juncos, un cuchillo: la lasca de sílex vale; el barro, el palo cavador o la pala)
 //    basta con llevarla encima, en la mano o guardada (decisión provisional, 7 nov). «Manos (poco)» del barro no se
 //    hace: sin palo no se cava.
-//  - El barro es «inagotable»: el sitio no se agota (se cava una cesta cada vez, sin espera).
+//  - El barro es «inagotable»: el sitio no se agota (se cava una cesta cada vez, sin espera). La arcilla (P10), igual.
 //  - Lo recogido va a la mano o a los huecos donde quepa (junto a lo mismo primero); si no cabe entero, no se
 //    recoge y el punto sigue ahí.
 //
@@ -78,13 +78,14 @@ export const ALCANCE_RECOGER = 2; // m
 export const HERRAMIENTAS_RECOGER = {
   cuchillo: ['lasca_silex', 'cuchillo'],
   cavar: ['palo_cavador', 'pala_madera'],
+  pala: ['pala_madera'],   // (P10, 19 nov) la arcilla, solo con la pala de madera
   desbrozar: ['hacha_piedra', 'hacha_hierro', 'hacha_mano', 'lasca_silex', 'cuchillo'],
   cribar: ['criba'],   // (y además la pala: «tambien» del hierro de pantano)
   picar: ['pico'],     // (P10, 19 nov) la veta de hierro, con el pico en la mano
 };
 // Con qué se desbroza más deprisa: los golpes que da el navegador antes de mandar la acción (decisión provisional).
 export const GOLPES_DESBROCE = { hacha_hierro: 2, hacha_mano: 2, hacha_piedra: 3, lasca_silex: 6, cuchillo: 5 };
-export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cantera: 'Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.', picar: 'Necesitas un pico en la mano para picar la veta.' };
+export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cantera: 'Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', pala: 'Necesitas una pala de madera para cavar la arcilla.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.', picar: 'Necesitas un pico en la mano para picar la veta.' };
 
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
@@ -98,6 +99,10 @@ export const RECOLECTABLES = {
   // vale) y la cepa se queda: rebrota en una estación (documento de sistemas, apartado 3)
   mimbre:       { nombre: 'Mimbrera', donde: ['rio', 'ribera'], con: 'cuchillo', accion: 'cortar', da: 'mimbre', min: 1, max: 1, vuelve: TIEMPOS.estacion },
   barro:        { nombre: 'Barro de la orilla', donde: ['rio', 'ribera', 'marisma'], con: 'cavar', accion: 'cavar', da: 'barro', min: 1, max: 1, vuelve: 0 },
+  // (P10, 19 nov) la arcilla: el banco de arcilla gris de la ribera, junto a donde sale el barro (más honda y más
+  // limpia que el lodo de la orilla); con la pala de madera (el palo cavador no la saca) se cava 1 cesta de arcilla
+  // cada vez, y es inagotable, como el barro (tarea «La arcilla y el horno cerámico»)
+  arcilla:      { nombre: 'Banco de arcilla', donde: ['rio', 'ribera'], con: 'pala', accion: 'cavar', da: 'arcilla', min: 1, max: 1, vuelve: 0 },
   yesquero:     { nombre: 'Hongos yesqueros', donde: ['bosque'], con: 'manos', accion: 'recoger', da: 'yesca', min: 1, max: 2, vuelve: TIEMPOS.estacion },
   // (P4) lo que se come sin cazar (documento de sistemas, apartado 3: «Bayas, setas, frutos secos — bosque (según
   // estación) — manos — recoger — 3–6 unidades — la siguiente temporada»). El arbusto de las bayas se queda: lo que se

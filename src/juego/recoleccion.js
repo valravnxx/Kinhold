@@ -35,6 +35,8 @@ export function zonasDemo(x, z) {
 
 // ---------- Modelos (estilo v5: texturas por código, color por vértice, sombra de contacto) ----------
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
+// (P10) la arcilla: gris azulada, más oscura y más húmeda en el fondo del corte; la tierra parda de encima
+const ARCILLA_GRIS = 0x8b8c84, ARCILLA_HONDA = 0x6f7570, ARCILLA_AGUA = 0x5e6560, ARCILLA_TIERRA = 0x6a5844;
 const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x51473a;
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
@@ -278,6 +280,38 @@ export function modelosRecoleccion() {
       L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), k % 2 ? BARRO_SECO : BARRO_HUMEDO, Math.cos(a) * r * 1.3, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
     }
   }, { rangoSuelo: 0.05 });
+  // (P10, 19 nov) el banco de arcilla: un corte a pala en la ribera, más cuadrado que el charco del barro (se ven los
+  // golpes rectos de la pala), con la tierra parda de encima apartada en el borde y debajo la arcilla gris azulada,
+  // lisa y húmeda (algo de agua en el fondo), y al lado unos terrones de arcilla sacados a pala, de caras planas
+  const arcilla = geoLote(L => {
+    const corte = (ax, az_, r, y, n, sem) => {   // un hoyo de esquinas redondeadas (más recto que el barro)
+      const s = new THREE.Shape();
+      for (let i = 0; i <= n; i++) {
+        const a = i / n * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), k = 1 / Math.pow(Math.pow(Math.abs(c), 4) + Math.pow(Math.abs(sn), 4), 0.25);
+        const q = r * k * (0.93 + 0.07 * Math.sin(a * 5 + sem));
+        i ? s.lineTo(c * q * ax, sn * q * az_) : s.moveTo(c * q * ax, sn * q * az_);
+      }
+      const g = new THREE.ShapeGeometry(s, 2); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g;
+    };
+    L.add(corte(1.25, 1, 0.62, 0.012, 32, 1), ARCILLA_TIERRA, 0, 0, 0, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
+    L.add(corte(1.2, 0.95, 0.5, 0.018, 28, 2), ARCILLA_GRIS, 0, 0, 0, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
+    L.add(corte(1.15, 0.9, 0.36, 0.022, 24, 3), ARCILLA_HONDA, 0.03, 0, 0.02, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
+    L.add(corte(1.2, 0.8, 0.17, 0.026, 18, 4), ARCILLA_AGUA, 0.08, 0, 0.04, { y: 0.1 }, { tex: 'liso', sinSuelo: true, brillo: 0.92 });
+    // el talud de la pala por el lado de arriba: una cara recta de arcilla, con la tierra parda encima
+    L.add(new THREE.BoxGeometry(0.7, 0.07, 0.06), ARCILLA_GRIS, -0.05, 0.03, -0.47, { y: 0.1, x: -0.35 }, { tex: 'piedra', sinSuelo: true });
+    L.add(new THREE.BoxGeometry(0.74, 0.045, 0.09), ARCILLA_TIERRA, -0.05, 0.06, -0.52, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
+    // la tierra apartada, en terrones pardos por el borde
+    for (let k = 0; k < 6; k++) {
+      const a = k * 1.05 + 0.5, r = 0.62 + (k % 3) * 0.05;
+      L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), ARCILLA_TIERRA, Math.cos(a) * r * 1.25, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.5, 1), plano: true, tex: 'piedra' });
+    }
+    // los terrones de arcilla sacados a pala, a un lado: de caras planas y cantos algo redondeados por el golpe
+    [[0.78, 0.04, 0.25, 0.3, 0.13], [0.9, 0.03, 0.06, -0.4, 0.11], [0.82, 0.1, 0.16, 0.9, 0.1], [0.7, 0.035, 0.42, 1.3, 0.09]].forEach(([x, y, z, g, l], i) => {
+      const b = new THREE.BoxGeometry(l, l * 0.6, l * 0.8, 2, 1, 2), p = b.attributes.position;
+      for (let j = 0; j < p.count; j++) { const kk = 1 + Math.sin(j * 7.1 + i) * 0.05; p.setX(j, p.getX(j) * kk); p.setZ(j, p.getZ(j) * (2 - kk)); }
+      L.add(b, i % 2 ? ARCILLA_GRIS : ARCILLA_HONDA, x, y, z, { y: g, z: (i - 1.5) * 0.06 }, { tex: 'piedra', plano: true });
+    });
+  }, { rangoSuelo: 0.05 });
   // hongos yesqueros (7 nov): un tocón viejo y podrido (40 cm), con la corteza rota y la madera gris a la vista, y en
   // él tres o cuatro yesqueros en repisa: semicírculos gruesos, gris pardo con bandas, el borde claro
   const yesquero = geoLote(L => {
@@ -510,7 +544,7 @@ export function modelosRecoleccion() {
   const arbustoM = naturaleza('arbusto_bayas'), bayasM = arbustoM ? bayasSobre(arbustoM.cerca.geo) : null;
   // el arbusto queda siempre (siempre: true); lo demás se va al recogerlo; (13 nov) la mata de juncos cortada (cortado:
   // true) sale solo mientras no ha vuelto a crecer, en lugar de la entera
-  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('junco_recoger') ? [...M('junco_recoger'), ...M('junco_cortado').map(m => ({ ...m, cortado: true }))] : (M('juncos') || juncos), barro, yesquero, pena,
+  return (cache = { ramas, piedra, silex, ortiga: M('ortigas') || ortiga, hierba_larga: M('hierba_larga') || hierbaLarga, juncos: M('junco_recoger') ? [...M('junco_recoger'), ...M('junco_cortado').map(m => ({ ...m, cortado: true }))] : (M('juncos') || juncos), barro, arcilla, yesquero, pena,
     bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas],
     cebada_silvestre: [...cebadaPlanta.map(m => ({ ...m, siempre: true })), ...cebadaEspigas], habas_silvestres: [...habasPlanta.map(m => ({ ...m, siempre: true })), ...habasVainas],
     col_silvestre: [...colPlanta.map(m => ({ ...m, siempre: true })), ...colFlor], nabo_silvestre: [...naboPlanta.map(m => ({ ...m, siempre: true })), ...naboFlor],
@@ -577,7 +611,7 @@ export function crearRecoleccion({ raiz, altura, obstaculos, almacen, semilla = 
       if (cortado) continue;   // (en el llano de la demo no hay juncos)
       const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
       lista.forEach((p, i) => { o.position.set(p.x, altura(p.x, p.z) - 0.01, p.z); o.rotation.set(0, p.giro, 0); o.scale.setScalar(0.9 + (i % 4) * 0.08); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); grupo.add(im);
+      im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'arcilla'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); grupo.add(im);
       mallas.push({ im, lista, matrices, siempre });
     }
   }
@@ -676,7 +710,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
         // (13 nov, valravnx: los juncos, más grandes: de 1,3 a unos 1,7 m)
         const esc = tipo === 'juncos' ? 1.3 : 1;
         lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); if (tipo === 'hierro_pantano' || tipo === 'veta_hierro') inclinar(o, p); o.scale.setScalar(tipo === 'veta_hierro' ? 1 : esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'hierro_pantano' && !calco; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
+        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'arcilla' && tipo !== 'hierro_pantano' && !calco; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices, siempre, cortado });
       }
     }

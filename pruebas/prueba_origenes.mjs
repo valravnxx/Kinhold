@@ -46,8 +46,6 @@ const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
-  arcilla: ['aún no se cava', 'La arcilla y el horno cerámico'],
-  est_horno_ceramico: ['aún no hay horno cerámico', 'La arcilla y el horno cerámico'],
   teja: ['sale del horno cerámico', 'Las tejas: en el horno cerámico'],
 };
 // Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede

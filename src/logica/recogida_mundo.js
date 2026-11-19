@@ -63,8 +63,12 @@ export const DENSIDAD_RECOGIDA = {
   // (P10, 14 nov) las manchas de hierro de pantano: pocas (decisión provisional: una de cada 16 o 17 celdas de la vega llana
   // y una de cada 25 de la turbera); también después, al final (lo de antes, en su sitio)
   hierro_pantano:   { vega: 0.06, turbera: 0.04 },
+  // (P10, 19 nov) los bancos de arcilla de la orilla y de la ribera, junto a donde sale el barro; pocos (decisión
+  // provisional: en la orilla algo menos que el barro y en la ribera algo más: la arcilla está más honda, tierra
+  // adentro), también después, al final
+  arcilla:          { rio: 0.14, ribera: 0.06 },
 };
-const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre', 'cebada_silvestre', 'habas_silvestres', 'col_silvestre', 'nabo_silvestre', 'hierro_pantano'];
+const DESPUES = ['juncos', 'barro', 'yesquero', 'bayas', 'setas', 'mimbre', 'cebada_silvestre', 'habas_silvestres', 'col_silvestre', 'nabo_silvestre', 'hierro_pantano', 'arcilla'];
 // Piedra y sílex sueltos en la pradera abierta (valravnx, 1 nov: «dentro del realismo, accesibilidad»; tarea «Salida
 // al azar de verdad en línea»): en el claro, algo de piedra y de sílex, menos que donde les toca (decisión provisional:
 // la piedra la séptima parte que en la ladera, el sílex la sexta parte que en la caliza). Se miran después de lo

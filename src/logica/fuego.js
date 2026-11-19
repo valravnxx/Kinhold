@@ -45,6 +45,10 @@ export const COMO = {
   // la fragua (P10, 19 nov; tarea: «se enciende con carbón»): solo arde carbón vegetal, que da el calor de batir el
   // hierro; recién hecha no tiene nada puesto. Provisional (diario y registro): un carbón arde 15 min y caben 1 h por delante
   fragua:  { dura: 1, max: FUEGO_MAX, puestas: 0, brasas: false, come: ['carbon'] },
+  // el horno cerámico (P10, 19 nov; tarea: «se enciende con leña»): la leña se mete por la boca del hogar, debajo de la
+  // cámara; ni ramas (no dan el calor de cocer) ni carbón. Recién hecho no tiene nada puesto. Provisional (diario y
+  // registro): la leña arde lo de siempre (10 min) y caben 2 h por delante (12 leñas: cocer pide fuego largo)
+  horno_ceramico: { dura: 1, max: 2 * FUEGO_MAX, puestas: 0, brasas: false, come: ['lena'] },
 };
 const como = tipo => COMO[tipo] || COMO.hoguera;
 // Lo que se le echa a cada fuego: a la hoguera y al hogar, ramas o leña; a la fragua, carbón.
@@ -52,6 +56,9 @@ export const COME = ['rama', 'lena'];
 export const comeDe = (tipo = 'hoguera') => como(tipo).come || COME;
 const ESO = { rama: 'ramas', lena: 'leña', carbon: 'carbón' };
 export const queCome = (tipo = 'hoguera') => comeDe(tipo).map(t => ESO[t] || t).join(' o ');
+// Por qué no se le puede echar eso (lo que no come).
+const SOLO = { fragua: 'A la fragua solo se le echa carbón.', horno_ceramico: 'Al horno cerámico solo se le echa leña.' };
+export const motivoCome = (tipo = 'hoguera') => SOLO[tipo] || 'Al fuego solo se echan ramas o leña.';
 
 // El fuego de una hoguera (o de un hogar) recién levantado: apagado, con lo que traiga puesto.
 export const fuegoNuevo = (tipo = 'hoguera') => ({ hasta: 0, combustible: como(tipo).puestas, cenizas: false });
@@ -83,11 +90,11 @@ export const vivo = (f, ahora) => !!f && f.hasta > ahora; // con llama o en bras
 // Echarle una cosa (tipo: 'rama' o 'lena'). No gasta nada: eso lo hace quien llama, si sale bien. En brasas, se queda
 // en brasas (arde despacio) hasta que se aviva.
 export function echar(f, tipo, ahora, deTipo = 'hoguera') {
-  if (!Object.hasOwn(ARDE, tipo) || !comeDe(deTipo).includes(tipo)) return { ok: false, motivo: deTipo === 'fragua' ? 'A la fragua solo se le echa carbón.' : 'Al fuego solo se echan ramas o leña.' };
+  if (!Object.hasOwn(ARDE, tipo) || !comeDe(deTipo).includes(tipo)) return { ok: false, motivo: motivoCome(deTipo) };
   asentar(f, ahora);
   const c = como(deTipo), s = ARDE[tipo] * c.dura, arde = f.hasta > ahora, lento = arde && f.brasas ? BRASAS_LENTO : 1;
   const hay = arde ? (f.hasta - ahora) / 1000 / lento : f.combustible;
-  if (hay + s > c.max + 1e-6) return { ok: false, motivo: `Ya tiene ${deTipo === 'fragua' ? 'carbón' : 'leña'} de sobra: espera a que arda.` };
+  if (hay + s > c.max + 1e-6) return { ok: false, motivo: `Ya tiene ${queCome(deTipo) === 'carbón' ? 'carbón' : 'leña'} de sobra: espera a que arda.` };
   if (arde) f.hasta += s * lento * 1000; else f.combustible += s;
   return { ok: true, encendida: arde && !f.brasas, brasas: arde && !!f.brasas, segundos: s };
 }
