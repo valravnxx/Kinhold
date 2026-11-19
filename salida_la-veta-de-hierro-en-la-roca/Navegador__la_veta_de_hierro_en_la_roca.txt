@@ -1,0 +1,26 @@
+  OK   PC: la veta de hierro está en el mundo, a unos 8 m de la salida — {'id': 'veta_hierro:1964340,574180', 'x': 8, 'z': 0}
+  OK   PC: se ve el afloramiento rojizo (y su suelo de óxido) y los terrones de mineral — 3 piezas del afloramiento, 1 de terrones
+  OK   PC: el afloramiento estorba (no se atraviesa)
+  OK   PC: sin pico en la mano, Usar no la pica
+  OK   PC: (el pico en la mano, y se ve) — {'ok': True}
+  OK   PC: con el pico, la veta de al lado es la que se pica — {'id': 'veta_hierro:1964340,574180', 'x': 8, 'z': 0, 'tipo': 'veta_hierro'}
+  OK   PC: Usar se pone a picarla (a golpes, como al talar)
+  OK   PC: a los 5 golpes suelta 1 mineral de hierro al suelo, junto a la veta, y sigue picando — 1
+  OK   PC: el mineral se ve en el suelo
+  OK   PC: agotada, los terrones se van y el afloramiento se queda — 3, 0
+  OK   PC: y agotada no se pica
+  OK   PC: sin errores en la página
+  OK   móvil: la veta de hierro está en el mundo, a unos 8 m de la salida — {'id': 'veta_hierro:1964340,574180', 'x': 8, 'z': 0}
+  OK   móvil: se ve el afloramiento rojizo (y su suelo de óxido) y los terrones de mineral — 3 piezas del afloramiento, 1 de terrones
+  OK   móvil: el afloramiento estorba (no se atraviesa)
+  OK   móvil: sin pico en la mano, Usar no la pica
+  OK   móvil: (el pico en la mano, y se ve) — {'ok': True}
+  OK   móvil: con el pico, la veta de al lado es la que se pica — {'id': 'veta_hierro:1964340,574180', 'x': 8, 'z': 0, 'tipo': 'veta_hierro'}
+  OK   móvil: Usar se pone a picarla (a golpes, como al talar)
+  OK   móvil: a los 5 golpes suelta 1 mineral de hierro al suelo, junto a la veta, y sigue picando — 1
+  OK   móvil: el mineral se ve en el suelo
+  OK   móvil: agotada, los terrones se van y el afloramiento se queda — 3, 0
+  OK   móvil: y agotada no se pica
+  OK   móvil: sin errores en la página
+
+Todo correcto
