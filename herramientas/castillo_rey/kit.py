@@ -711,7 +711,9 @@ def chimenea(m, f, u, ancho=1.8, v_suelo=0.0, alto_campana=2.2, w=0.0, col=PIEDR
     m.quad(P(a0, v_suelo + 1.55, 0.85), P(a0, v_suelo + 1.55, 0), P(a1, v_suelo + alto_campana + 1.3, 0), P(a1, v_suelo + alto_campana + 1.3, 0.3), esc(col, .75))
     m.quad(P(-a0, v_suelo + 1.55, 0), P(-a0, v_suelo + 1.55, 0.85), P(-a1, v_suelo + alto_campana + 1.3, 0.3), P(-a1, v_suelo + alto_campana + 1.3, 0), esc(col, .75))
     m.mat = _mc
-    caja(m, g, -ancho / 2 + 0.25, ancho / 2 - 0.25, v_suelo + 0.15, v_suelo + 1.3, 0, 0.04, OSCURO)   # el fondo ahumado
+    if fuego:   # el fondo, ahumado arriba y encendido por el fuego abajo
+        with con(m, 'fuego'): m.quad(g(-ancho / 2 + 0.25, v_suelo + 0.15, 0.045), g(ancho / 2 - 0.25, v_suelo + 0.15, 0.045), g(ancho / 2 - 0.25, v_suelo + 1.3, 0.045), g(-ancho / 2 + 0.25, v_suelo + 1.3, 0.045), hexc('#a8481c'), hexc('#a8481c'), hexc('#1c120c'), hexc('#1c120c'))
+    else: caja(m, g, -ancho / 2 + 0.25, ancho / 2 - 0.25, v_suelo + 0.15, v_suelo + 1.3, 0, 0.04, OSCURO)   # el fondo ahumado
     if fuego:
         for k in range(3): caja(m, g.sub(0, 0.4, 0.4 + k * 0.5), -0.35, 0.35, v_suelo + 0.15 + k * 0.05, v_suelo + 0.25 + k * 0.05, -0.06, 0.06, MADERA)
         llamas(m, g, 0, v_suelo + 0.18, 0.4, 0.55, 0.5)
@@ -733,8 +735,8 @@ def llamas(m, f, u, v, w, alto, ancho):
     for k in range(6):
         a = k * math.pi / 3; b = (k + 1) * math.pi / 3
         m.tri(f(u, v + 0.01, w), f(u + math.cos(b) * ancho * 0.4, v + 0.005, w + math.sin(b) * ancho * 0.4), f(u + math.cos(a) * ancho * 0.4, v + 0.005, w + math.sin(a) * ancho * 0.4), hexc('#e07a30'), hexc('#3a1a10'), hexc('#3a1a10'))
-    for k in range(5):
-        a = k * math.pi / 5 + 0.3; r = ancho * (0.55 + 0.45 * ((k * 37) % 5) / 4); hh = alto * (0.6 + 0.4 * ((k * 53) % 5) / 4)
+    for k in range(9):
+        a = k * math.pi / 9 + 0.3; r = ancho * (0.55 + 0.45 * ((k * 37) % 5) / 4); hh = alto * (0.6 + 0.4 * ((k * 53) % 5) / 4)
         dx, dw = math.cos(a) * r / 2, math.sin(a) * r / 2
         ox, ow = math.cos(a + 1.7) * r * 0.15, math.sin(a + 1.7) * r * 0.15
         m.tri(f(u - dx + ox, v, w - dw + ow), f(u + dx + ox, v, w + dw + ow), f(u + ox * 0.3, v + hh * 0.55, w + ow * 0.3), base_c, base_c, medio_c)
