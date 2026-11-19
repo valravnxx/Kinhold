@@ -13,10 +13,11 @@
 //      MUTAR=1 → como si los juncos no se pudieran cortar (sin tejado de la casa humilde: tiene que fallar)
 //      MUTAR=2 → como si la tarea de lo pendiente ya estuviera hecha (tiene que fallar)
 //      MUTAR=3 → como si la empalizada siguiera escondida (tiene que fallar)
+//      MUTAR=4 → como si el pico no rompiera las rocas grandes (sin bloques de piedra: tiene que fallar)
 import { readFileSync } from 'fs';
 import { PIEZAS, DECORACION, enEsteTramo } from '../src/logica/piezas.js';
 import { OBJETO_DE_MATERIAL } from '../src/logica/inventario.js';
-import { RECOLECTABLES, HERRAMIENTAS_RECOGER } from '../src/logica/recoleccion.js';
+import { RECOLECTABLES, HERRAMIENTAS_RECOGER, PICOS, MAZOS } from '../src/logica/recoleccion.js';
 import { HACHAS, DA, DESCORTEZAR_CON, SANGRAR_CON, cortezaDe } from '../src/logica/tala.js';
 import { TROCEO, MODOS_TROCEO } from '../src/logica/troceo.js';
 import { RECETAS, ESTACIONES, USOS } from '../src/logica/fabricacion.js';
@@ -45,7 +46,6 @@ const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
-  bloque_piedra: ['sale de romper rocas grandes con el pico', 'Las rocas grandes y la cantera'],
   arcilla: ['aún no se cava', 'La arcilla y el horno cerámico'],
   est_horno_ceramico: ['aún no hay horno cerámico', 'La arcilla y el horno cerámico'],
   teja: ['sale del horno cerámico', 'Las tejas: en el horno cerámico'],
@@ -94,6 +94,10 @@ for (let nuevo = true; nuevo;) {
   // de piedra y el travesaño de varas con su cuerda; de él se saca agua con el cubo
   if (['pala_madera', 'piedra', 'vara', 'cuerda'].every(t => hay.has(t)) && poner('est_pozo', 'cavar, revestir y rematar un pozo')) nuevo = true;
   if (tieneAlguna(SANGRAR_CON) && poner('resina', 'sangrar un pino o un abeto')) nuevo = true;
+  // romper rocas (src/logica/recoleccion.js): las medianas con el mazo dan piedra; las grandes, con el pico (la cantera,
+  // 19 nov), bloques de piedra en bruto y piedra
+  if (tieneAlguna([...MAZOS, ...PICOS]) && poner('piedra', 'romper una roca')) nuevo = true;
+  if (MUTAR !== '4' && tieneAlguna([...PICOS]) && poner('bloque_piedra', 'romper una roca grande con el pico')) nuevo = true;
   // la canoa de un tronco (P11d; src/logica/canoa.js): el tronco largo, vaciado a golpes de hacha y con brasas de una hoguera
   if (hay.has('tronco_largo') && tieneAlguna(Object.keys(HACHAS)) && hay.has('est_hoguera') && poner('canoa', 'vaciar un tronco largo con el hacha y las brasas de la hoguera')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)

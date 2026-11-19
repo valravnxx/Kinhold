@@ -91,6 +91,32 @@ export function tablasEnSuelo(n, id) {
   return m;
 }
 
+// Bloques de piedra en bruto (P10, la cantera, 19 nov): lo que deja una roca grande rota con el pico. Cada uno, una
+// pieza de unos 55 × 35 × 45 cm (unos 80 kg), de caras planas pero desiguales, como sale a golpes de pico y cuña; uno al
+// lado de otro y, de 4 en adelante, encima. Las esquinas se mueven con un azar que sale de su sitio (no del vértice),
+// para que las caras no se abran.
+function bloqueBruto(semilla) {
+  const g = new THREE.BoxGeometry(0.55, 0.35, 0.45, 2, 2, 2), p = g.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    const k = `${semilla}:${Math.round(v.x * 100)},${Math.round(v.y * 100)},${Math.round(v.z * 100)}`;
+    const borde = (Math.abs(v.x) > 0.27) + (Math.abs(v.y) > 0.17) + (Math.abs(v.z) > 0.22);   // (las esquinas, algo romas)
+    const m = borde >= 2 ? 0.86 : 1;
+    p.setXYZ(i, v.x * m + (az(k, 1) - 0.5) * 0.05, v.y * m + (az(k, 2) - 0.5) * 0.04, v.z * m + (az(k, 3) - 0.5) * 0.05);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+export function bloquesEnSuelo(n, id) {
+  const L = new Lote({ rangoSuelo: 0.05, variacion: 0.08 });
+  const vis = Math.min(n, 6), sitios = [[0, 0], [0.62, 0.08], [-0.6, 0.1], [0.3, 0.55], [-0.3, 0.55], [0.05, 0.05]];
+  for (let i = 0; i < vis; i++) {
+    const encima = i === 5, [x, z] = sitios[i];
+    L.add(bloqueBruto(id + i), i % 2 ? 'piedraOsc' : 'piedra', x + (az(id, i + 10) - 0.5) * 0.06, 0.17 + (encima ? 0.34 : 0), z, { y: (az(id, i) - 0.5) * 0.7 }, { plano: true, tex: 'piedra', sinSuelo: encima });
+  }
+  return mallas(L);
+}
+
 function hatillo(grande, id) { // un paño de lino con las cuatro puntas atadas arriba: bulto con pliegues y el nudo
   const L = new Lote({ rangoSuelo: 0.2, variacion: 0.06 });
   const s = grande ? 1.6 : 1;
@@ -128,6 +154,7 @@ export function modeloDe(o) {
   if (t === 'tronco_largo') return troncosConCortes(n, 4.5, 0.18, o.id);
   if (t === 'canoa_a_medias' || t === 'canoa') return modeloCanoa(o, () => troncosConCortes(1, 4.5, 0.18, o.id));   // (P11d) src/juego/canoa.js
   if (t === 'tabla') return tablasEnSuelo(n, o.id);
+  if (t === 'bloque_piedra') return bloquesEnSuelo(n, o.id);   // (P10, la cantera)
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
   if (Object.hasOwn(MODELO_OBJETO, t)) return MODELO_OBJETO[t](n, o.id); // lo de las recetas de P3 (src/juego/modelos_objetos.js)
   // (P10) la sierra, tumbada de plano en el suelo, con los mangos a los lados

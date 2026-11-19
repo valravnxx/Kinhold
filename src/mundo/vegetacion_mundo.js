@@ -16,7 +16,7 @@ import { modelosRocaPared, materialRoca } from './rocas.js';
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from '../logica/vegetacion.js';
 export { TAM_ADULTO };
 import { idArbol } from '../logica/tala.js';
-import { idMata, idRoca, rompible } from '../logica/recoleccion.js';
+import { idMata, idRoca, deCantera } from '../logica/recoleccion.js';
 import { alturaMundo } from '../logica/whitholm.js';
 import { aplicar, marcasEn, caja } from '../logica/nivelado.js';
 
@@ -83,7 +83,7 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
         r: radioTronco(e) * e.tam + 0.1, arbol: true, veg: true, especie: e.especie, modelo: e.especie, escala: e.tam,
         edad: e.edad, giro: e.giro, tono: e.tono, id: idArbol(e.x, e.z), malla: null, instancia: -1, matriz: null }));
       t.piedras = v.piedras.map(esc).filter(e => lejos(e, CLARO)).map(e => ({ ...e, y: e.y - (e.canto ? e.tam * 0.35 : 0.2), ob: e.canto && e.tam < 0.45 ? null : { x: e.x, z: e.z, r: e.tam * 1.1, veg: true, canto: !!e.canto },
-        id: !e.canto && rompible(e.tam) ? idRoca(e.x, e.z) : null }));   // (las medianas se rompen con el mazo: su nombre, por su sitio)   // (los cantos del río, medio hundidos; los pequeños no estorban)
+        id: !e.canto && deCantera(e.tam) ? idRoca(e.x, e.z) : null }));   // (las medianas se rompen con el mazo y las grandes con el pico, 19 nov: su nombre, por su sitio)   // (los cantos del río, medio hundidos; los pequeños no estorban)
       t.paredes = (v.paredes || []).map(esc);   // (13 nov) la roca de los cortados: solo adorno, sin nivelar (en una pared no se obra)
       trozos.set(clave(i, j), t);
       for (const e of [...t.arboles, ...t.piedras]) e.yb = e.y;
