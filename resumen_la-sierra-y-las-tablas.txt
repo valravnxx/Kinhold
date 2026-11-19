@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3212 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3575 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5212 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3628 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3207 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3630 KB
+dist/kinhold_trozos.html 3235 KB
+hilo de los trozos 27 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la sierra y las tablas
+×3
+  OK   móvil: sin errores en la página — []
+
+2 FALLOS
+!! FALLA: python3 pruebas/prueba_sierra_tablas_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/sierra_tablas
+
+HAY FALLOS
+tardó 292 s
