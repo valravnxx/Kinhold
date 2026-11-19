@@ -94,20 +94,16 @@ export function modeloSierra() {
   const z0 = 0.012, z1 = LARGO_SIERRA - 0.012, arriba = 0.045;
   // el perfil de la hoja en el plano ZY: arriba recta; abajo, de la punta al mango, la barriga en dientes
   const pts = [[z0, arriba], [z1, arriba], [z1, -0.035]];
-  const N = 38;
+  // (dientes grandes, de 4 cm: más finos no se leían de lejos ni en el icono)
+  const N = 24;
   for (let i = 1; i < N; i++) {
     const u = i / N, z = z1 - (z1 - z0) * u, barriga = -0.035 - 0.05 * Math.sin(Math.PI * u);
-    pts.push([z, barriga + (i % 2 ? -0.011 : 0)]);
+    pts.push([z, barriga + (i % 2 ? -0.02 : 0)]);
   }
   pts.push([z0, -0.035]);
   const hoja = new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y))), { depth: 0.0025, bevelEnabled: false });
   hoja.translate(0, 0, -0.00125); hoja.rotateY(-Math.PI / 2);   // el perfil va de X a Z
   L.add(hoja, 'hierro', 0, 0, 0, null, { plano: true });
-  // el filo de los dientes, más claro (gastado de serrar): una tira fina a lo largo de la barriga
-  for (let i = 0; i < 6; i++) {
-    const u = (i + 0.5) / 6, z = z1 - (z1 - z0) * u, y = -0.04 - 0.05 * Math.sin(Math.PI * u);
-    L.add(new THREE.BoxGeometry(0.0032, 0.006, (z1 - z0) / 6 + 0.004), 0x9a9b9a, 0, y, z, { x: (i < 3 ? -1 : 1) * 0.05 * Math.cos(Math.PI * u) * 3 }, { plano: true, brillo: 1.15 });
-  }
   // los dos mangos, derechos, con su pomo abajo, y los remaches que los sujetan a la hoja
   for (const z of [0, LARGO_SIERRA]) {
     L.add(cil(0.016, 0.018, 0.22, 8), 'tabla', 0, 0.02, z, null, { tex: 'veta' });

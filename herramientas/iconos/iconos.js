@@ -14,7 +14,7 @@ import { modeloDe } from '../../src/juego/suelo.js';
 import { MODELO_OBJETO, modeloHachaPiedra, modeloMazoPiedra } from '../../src/juego/modelos_objetos.js';
 import { MODELO_ESTACION, modeloDeposito } from '../../src/juego/estaciones.js';
 import { ESTACIONES } from '../../src/logica/fabricacion.js';
-import { modeloHacha, modeloPico } from '../../src/juego/personaje.js';
+import { modeloHacha, modeloPico, modeloSierra } from '../../src/juego/personaje.js';
 import { loteEnMano, loteEspalda } from '../../src/juego/llevado.js';
 import { CATALOGO } from '../../src/logica/inventario.js';
 import { PRENDAS } from '../../src/logica/prendas.js';
@@ -69,6 +69,7 @@ for (const t of Object.keys(CATALOGO).filter(t => !Object.hasOwn(PRENDAS, t) || 
   else if (t === 'hacha_piedra') fuentes[t] = { propio: true, hacer: () => enDiagonal(modeloHachaPiedra(), t) };
   else if (t === 'clavo') fuentes[t] = { propio: true, hacer: () => delSuelo('clavo', 10) };   // (P10: un puñado, que de tres no se veían)
   else if (t === 'pico') fuentes[t] = { propio: true, hacer: () => { const p = modeloPico(); p.visible = true; return enDiagonal(p, t); } };   // (P10)
+  else if (t === 'sierra') fuentes[t] = { propio: true, hacer: () => { const p = modeloSierra(); p.visible = true; p.rotation.y = Math.PI / 2; const g = new THREE.Group(); g.add(p); return enDiagonal(g, t); } };   // (P10: la hoja de cara, en diagonal)
   else if (t === 'mazo_piedra') fuentes[t] = { propio: true, hacer: () => { const m = modeloMazoPiedra(); m.rotation.y = Math.PI / 2; const g = new THREE.Group(); g.add(m); return enDiagonal(g, t); } };   // (de lado: la piedra cruzada)
   else if (Object.hasOwn(MODELO_OBJETO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, 3)) : delSuelo(t, 3) };
   else if (Object.hasOwn(SUELO, t)) fuentes[t] = { propio: true, hacer: () => ARRIBA.has(t) ? desdeArriba(delSuelo(t, SUELO[t])) : delSuelo(t, SUELO[t]) };
