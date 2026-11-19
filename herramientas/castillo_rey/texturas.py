@@ -123,7 +123,7 @@ def silleria():
     cara = por_bloque(ids, 5, lambda r, n: r.normal(0, 0.006, n)) + N1 * 0.004 + N3 * 0.0012
     alt = np.where(borde > 0, 0.02 * perfil + cara, -0.004 + N1 * 0.001)
     # color: piedra (variación de tono por sillar), mortero, líquenes y manchas
-    luz = np.clip(por_bloque(ids, 7, lambda r, n: r.normal(0.97, 0.11, n)), 0.72, 1.15)
+    luz = np.clip(por_bloque(ids, 7, lambda r, n: r.normal(0.97, 0.07, n)), 0.82, 1.1)
     calido = por_bloque(ids, 8, lambda r, n: r.normal(0.0, 1.0, n))
     calido = np.clip(calido, -1.5, 1.5)
     piedra = np.stack([luz * (0.90 + 0.03 * calido), luz * (0.87 + 0.015 * calido), luz * (0.82 - 0.005 * calido)], -1)
@@ -134,11 +134,11 @@ def silleria():
     piedra *= (1 - np.clip(reg - 1.2, 0, 1)[..., None] * 0.18)
     mortero = tinte((0.62, 0.59, 0.53), H, W) * (1 + N3[..., None] * 0.08)
     col = np.where((borde > 0)[..., None], piedra, mortero)
-    col, alt = envejecer(col, alt, borde, 13)
+    col, alt = envejecer(col, alt, borde, 13, 0.5, 1.1)
     liq = np.clip((ruido(H, W, 18, 9, 3) - 1.6) * 3, 0, 1)[..., None]
     col = col * (1 - liq) + liq * np.array([0.86, 0.88, 0.70])
     mancha = np.clip(ruido(H, W, 60, 11, 3) * 0.5 + 0.5, 0, 1)[..., None]
-    col *= 0.9 + 0.12 * mancha
+    col *= 0.96 + 0.05 * mancha
     col *= cavidad(alt, 6, 16)[..., None]
     guardar('sillar', col * 0.95, alt, 1.6)
 
@@ -167,14 +167,14 @@ def mamposteria():
     borde = (seg - mejor) * 0.5 + N2 * 0.06 + N3 * 0.05 - 0.10
     redondeo = np.clip(borde / 0.35, 0, 1)
     alt = np.where(borde > 0, 0.035 * np.sqrt(redondeo) + por_bloque(ids, 25, lambda r, n: r.normal(0, 0.008, n)) + N3 * 0.002, -0.012 + N1 * 0.002)
-    luz = por_bloque(ids, 26, lambda r, n: r.normal(0.97, 0.13, n)); cal = por_bloque(ids, 27, lambda r, n: r.normal(0, 1, n))
-    cal = np.clip(cal, -1.2, 1.5); luz = np.clip(luz, 0.68, 1.15)
+    luz = por_bloque(ids, 26, lambda r, n: r.normal(0.97, 0.07, n)); cal = por_bloque(ids, 27, lambda r, n: r.normal(0, 1, n))
+    cal = np.clip(cal, -1.2, 1.5); luz = np.clip(luz, 0.82, 1.1)
     piedra = np.stack([luz * (0.89 + 0.035 * cal), luz * (0.86 + 0.02 * cal), luz * (0.80 + 0.0 * cal)], -1) * (1 + N3[..., None] * 0.06)
     mortero = tinte((0.58, 0.55, 0.48), H, W) * (1 + N3[..., None] * 0.08)
     col = np.where((borde > 0)[..., None], piedra, mortero)
-    col, alt = envejecer(col, alt, borde * PXM * 0.25, 29)
+    col, alt = envejecer(col, alt, borde * PXM * 0.25, 29, 0.5, 1.1)
     col *= cavidad(alt, 5, 18)[..., None]
-    col *= (0.9 + 0.12 * np.clip(ruido(H, W, 50, 28, 3) * 0.5 + 0.5, 0, 1))[..., None]
+    col *= (0.95 + 0.05 * np.clip(ruido(H, W, 50, 28, 3) * 0.5 + 0.5, 0, 1))[..., None]
     guardar('mamp', col * 0.93, alt, 1.6)
 
 # ---------------------------------------------------------------- piedra labrada suelta (dovelas, peldaños, albardillas)

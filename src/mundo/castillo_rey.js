@@ -96,7 +96,7 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
       for (let i = 0; i < n * 2; i++) uv[i] = uq[i] * 0.01;
       // dos mallas: lo que levanta (echa sombra) y los suelos planos (tierra, cantos, losas), que no la echan: un plano que
       // se sombrea a sí mismo sale con rayas
-      const SUELOS = new Set(['tierra', 'canto', 'losa']);
+      const SUELOS = new Set(['tierra', 'canto', 'losa', 'fuego']);   // (el fuego tampoco echa sombra)
       const carga = new THREE.TextureLoader();
       const tex = (nombre, color, [tu, tv]) => {
         const t = carga.load(base + CARPETA_CASTILLO + 'tex/' + nombre + '.webp');
@@ -105,6 +105,8 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
         return t;
       };
       const material = (nombre) => {
+        // el fuego da luz: no lo apaga la sombra
+        if (nombre === 'fuego') return new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, clippingPlanes: [corte] });
         const d = MATS[nombre] || MATS.liso;
         // (shadowSide: las caras de detrás echan la sombra; si no, las de delante se sombrean a sí mismas en rayas)
         const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide, shadowSide: THREE.BackSide, clippingPlanes: [corte] });
@@ -117,7 +119,7 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
       };
       let ini = 0; const rangos = grupos.map(gr => { const r = { ...gr, ini }; ini += gr.cuenta; return r; });
       // lo liso (hierro, brasas, lo oscuro) no lleva textura que module su color: el suyo va en sRGB, como se pintó
-      for (const r of rangos) if (r.nombre === 'liso') for (let i = r.ini * 3; i < (r.ini + r.cuenta) * 3; i++) colr[i] = Math.pow(colr[i], 2.2);
+      for (const r of rangos) if (r.nombre === 'liso' || r.nombre === 'fuego') for (let i = r.ini * 3; i < (r.ini + r.cuenta) * 3; i++) colr[i] = Math.pow(colr[i], 2.2);
       const hacer = (lista) => {
         const n2 = lista.reduce((t, r) => t + r.cuenta, 0);
         const P = new Float32Array(n2 * 3), C = new Float32Array(n2 * 3), U = new Float32Array(n2 * 2), H = new Uint8Array(n2), N = new Float32Array(n2 * 3);

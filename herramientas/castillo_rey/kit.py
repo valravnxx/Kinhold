@@ -26,7 +26,7 @@ AGUA = hexc('#3e5a66'); HOJA = hexc('#4f6533'); FUEGO = hexc('#c2582c'); CENIZA 
 
 # ---------------- materiales de la malla (cada uno, una textura del juego: texturas.py)
 # Lo que no dice su material lo toma del color: el de la paleta con el matiz más parecido.
-MATERIALES = ['sillar', 'mamp', 'piedra', 'losa', 'canto', 'tierra', 'madera', 'tabla', 'teja', 'paja', 'tela', 'liso']
+MATERIALES = ['sillar', 'mamp', 'piedra', 'losa', 'canto', 'tierra', 'madera', 'tabla', 'teja', 'paja', 'tela', 'liso', 'fuego']
 def _croma(c):
     s = sum(c) or 1e-6; return (c[0] / s, c[1] / s, c[2] / s)
 _PAL = []
@@ -234,7 +234,7 @@ def _bloque(m, f, pts, w, d, col):
 
 def _piedras(m, f, u0, u1, v0, v1, w, huecos, col, tipo, signo, suelo):
     """las piedras labradas de cada hueco sobre la cara w (signo = +1 si mira a +w): jambas, dovelas, dintel, marcos"""
-    d = 0.03 * signo
+    d = 0.012 * signo   # (casi enrasadas: la junta la da el canto oscuro; si salen más, de cerca parecen naipes)
     # dovelas y jambas de cada hueco
     for h in huecos:
         if h.get('sin_dovelas'):
@@ -727,13 +727,19 @@ def heno(m, f, u, w, r=0.9):
 
 def llamas(m, f, u, v, w, alto, ancho):
     """lenguas de fuego: planos cruzados en abanico, de la brasa (abajo, amarillo) a la punta (rojo oscuro)"""
-    base_c = hexc('#ffd27a'); medio_c = hexc('#f08a2c'); punta_c = hexc('#a8321a')
+    base_c = hexc('#ffe2a0'); medio_c = hexc('#ff9a3a'); punta_c = hexc('#c8461e')
+    _mf = m.mat; m.mat = 'fuego'
+    # las brasas: un lecho que brilla debajo
+    for k in range(6):
+        a = k * math.pi / 3; b = (k + 1) * math.pi / 3
+        m.tri(f(u, v + 0.01, w), f(u + math.cos(b) * ancho * 0.4, v + 0.005, w + math.sin(b) * ancho * 0.4), f(u + math.cos(a) * ancho * 0.4, v + 0.005, w + math.sin(a) * ancho * 0.4), hexc('#e07a30'), hexc('#3a1a10'), hexc('#3a1a10'))
     for k in range(5):
         a = k * math.pi / 5 + 0.3; r = ancho * (0.55 + 0.45 * ((k * 37) % 5) / 4); hh = alto * (0.6 + 0.4 * ((k * 53) % 5) / 4)
         dx, dw = math.cos(a) * r / 2, math.sin(a) * r / 2
         ox, ow = math.cos(a + 1.7) * r * 0.15, math.sin(a + 1.7) * r * 0.15
         m.tri(f(u - dx + ox, v, w - dw + ow), f(u + dx + ox, v, w + dw + ow), f(u + ox * 0.3, v + hh * 0.55, w + ow * 0.3), base_c, base_c, medio_c)
         m.tri(f(u - dx * 0.6 + ox, v + hh * 0.3, w - dw * 0.6 + ow), f(u + dx * 0.6 + ox, v + hh * 0.3, w + dw * 0.6 + ow), f(u + ox * 1.6, v + hh, w + ow * 1.6), medio_c, medio_c, punta_c)
+    m.mat = _mf
 
 def silla(m, f, u, w, ang=0.0, alta=False, col=MADERA_CL):
     """silla de tijera / sitial: asiento, patas, respaldo con travesaños; alta = sitial con brazos y respaldo alto"""

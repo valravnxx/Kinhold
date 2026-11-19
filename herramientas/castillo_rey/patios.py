@@ -57,7 +57,7 @@ def poterna(m, c):
     f = F(c.f.o[0], c.f.o[1], c.f.a, 0)
     up = 6.5
     v0 = round(max(c.suelo_en(up, -c.T / 2 - 0.5), c.suelo_en(up, c.T / 2 + 0.5)) + 0.1, 2)
-    c.huecos.append({'u': up, 'a': 1.0, 'v0': v0, 'v1': v0 + 2.0, 'arco': 'medio'})
+    c.huecos.append({'u': up, 'a': 1.0, 'v0': v0, 'v1': v0 + 2.0, 'arco': 'medio', 'sin_dovelas': True})   # (en el talud de la cortina: los sillares de la jamba quedarían despegados)
     T2 = c.T / 2
     # rellano de fuera, macizo
     with con(m, 'mamp'): prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(min(h(*f.p2(a_, b_)) for a_ in (up - 1.2, up + 1.3) for b_ in (T2, T2 + 2.5)) - 1.5, v0 - 1.0), v0, PIEDRA)
@@ -107,7 +107,8 @@ def poterna(m, c):
     w_f = p2[-1][1]
     u_fin = u2_
     # el muelle: rellano de piedra y pantalán de madera hacia el agua
-    with con(m, 'mamp'): prisma(m, f, [(u_fin - 2.2, w_f - 0.3), (u_fin + 0.3, w_f - 0.3), (u_fin + 0.3, w_f + 3.0), (u_fin - 2.2, w_f + 3.0)], -1.5, 1.0, PIEDRA)
+    with con(m, 'mamp'): prisma(m, f, [(u_fin - 2.2, w_f - 0.3), (u_fin + 0.3, w_f - 0.3), (u_fin + 0.3, w_f + 3.0), (u_fin - 2.2, w_f + 3.0)], -1.5, 1.0, PIEDRA, tapa=False)
+    suelo_losas(m, f, u_fin - 2.2, u_fin + 0.3, w_f - 0.3, w_f + 3.0, 1.0, LOSA)
     RELLANO_POTERNA[:] = [f.p2(up, -T2 - 1.5), f.p2(up, T2 + 1.2), f.p2(u_fin - 1.0, w_f + 1.5), f.p2(u_fin - 1.0, w_f + 9.0)]
     v_bajo = 1.0
     fm = F(*f.p2(u_fin - 1.0, w_f + 3.0), f.a + math.pi / 2, 0)    # u hacia el mar
@@ -155,9 +156,11 @@ def suelos_patios(m, camino):
                     elif (int(x / paso) + int(z / paso)) % 2 == 0:
                         # tierra apisonada, en losetas de 1 m con matices; algo de hierba junto a los muros
                         borde = min(dist_seg(c, a, b) for a, b in zip(pol, pol[1:] + pol[:1]))
-                        col = mezcla(varia(TIERRA_P, 0.06), HIERBA_P, 0.55 if borde < 3.0 else 0.1 * az())
+                        col = None
                         q = [(x, z), (x + 2 * paso, z), (x + 2 * paso, z + 2 * paso), (x, z + 2 * paso)] if False else [(x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso)]
-                        with con(m, 'tierra'): m.quad(*[(px, h(px, pz) + 0.05, pz) for px, pz in ((x, z), (x + paso * 2, z), (x + paso * 2, z + paso * 2), (x, z + paso * 2))], col)
+                        esq = ((x, z), (x + paso * 2, z), (x + paso * 2, z + paso * 2), (x, z + paso * 2))
+                        cs = [mezcla(TIERRA_P, HIERBA_P, max(0.0, min(0.6, 0.5 * math.sin(px * 0.37 + pz * 0.23) + 0.3 * math.sin(px * 0.11 - pz * 0.19)))) for px, pz in esq]
+                        with con(m, 'tierra'): m.quad(*[(px, h(px, pz) + 0.05, pz) for px, pz in esq], *cs)
                 z += paso
             x += paso
 
