@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3238 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3600 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5257 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3653 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3232 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3656 KB
+dist/kinhold_trozos.html 3260 KB
+hilo de los trozos 27 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: los avisos de las necesidades
+  OK   móvil: sin errores en la página
+  OK   en inglés, la ficha sale en inglés — ThirstAt the maximum you will tire twice as fast.Drink: at the bank of a river or a lake.
+
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 436 s
