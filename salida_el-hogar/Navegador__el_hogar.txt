@@ -1,0 +1,40 @@
+PC: la casa y su hogar
+  OK   PC: su mojón (para construir la casa)
+  OK   PC: la casa de 3×3 con muros y tejado — {"fallos": [], "n": 30}
+  OK   PC: fuera de la casa, el hogar no se pone (y dice por qué) — {"ok": false, "motivo": "Hogar: solo dentro de la casa.", "x": 2, "z": 0, "giro": null}
+  OK   PC: dentro, en medio de la casa, sí — {"ok": true, "motivo": "", "x": 7, "z": 0.20000000000000018, "giro": null}
+  OK   PC: queda su marco
+  OK   PC: levantado, se dibuja sin fuego y con lo puesto para arder
+  OK   PC: encendido, arde: llamas y humo — {"llamas": 6, "brasas": 0, "humo": 10}
+  OK   PC: y alumbra — {'chimeneas': 0, 'hogueras': 1, 'luces': 2, 'encendidas': 1}
+  OK   PC: encendido, Usar ofrece dejarlo en brasas — ['Usar: Hogar', 'Dejar en brasas: Hogar']
+  OK   PC: en brasas: sin llamas ni humo, con las brasas que asoman — {"llamas": 0, "brasas": 7, "humo": 0}
+  OK   PC: en brasas, Usar ofrece avivarlo (no encenderlo) — ['Usar: Hogar', 'Avivar: Hogar']
+  OK   PC: las brasas calientan, menos que la llama — 0.38141458774368575 < 0.7628291754873715
+  OK   PC: el panel lo da en brasas, con el botón de avivar — En brasas: aguantan 40 min
+Calienta poco y no alumbra; avívalo para que vuelva la llama, sin yesca.
+Avivar (vuelve la llama, sin yesca)
+Echar 1 rama (+4.5 min ·
+  OK   PC: el panel no se sale de lado
+  OK   PC: sin errores en la consola — []
+movil: la casa y su hogar
+  OK   movil: su mojón (para construir la casa)
+  OK   movil: la casa de 3×3 con muros y tejado — {"fallos": [], "n": 30}
+  OK   movil: fuera de la casa, el hogar no se pone (y dice por qué) — {"ok": false, "motivo": "Hogar: solo dentro de la casa.", "x": 2, "z": 0, "giro": null}
+  OK   movil: dentro, en medio de la casa, sí — {"ok": true, "motivo": "", "x": 7, "z": 0.20000000000000018, "giro": null}
+  OK   movil: queda su marco
+  OK   movil: levantado, se dibuja sin fuego y con lo puesto para arder
+  OK   movil: encendido, arde: llamas y humo — {"llamas": 6, "brasas": 0, "humo": 10}
+  OK   movil: y alumbra — {'chimeneas': 0, 'hogueras': 1, 'luces': 2, 'encendidas': 1}
+  OK   movil: encendido, Usar ofrece dejarlo en brasas — ['Usar: Hogar', 'Dejar en brasas: Hogar']
+  OK   movil: en brasas: sin llamas ni humo, con las brasas que asoman — {"llamas": 0, "brasas": 7, "humo": 0}
+  OK   movil: en brasas, Usar ofrece avivarlo (no encenderlo) — ['Usar: Hogar', 'Avivar: Hogar']
+  OK   movil: las brasas calientan, menos que la llama — 0.38141458774368575 < 0.7628291754873715
+  OK   movil: el panel lo da en brasas, con el botón de avivar — En brasas: aguantan 40 min
+Calienta poco y no alumbra; avívalo para que vuelva la llama, sin yesca.
+Avivar (vuelve la llama, sin yesca)
+Echar 1 rama (+4.5 min ·
+  OK   movil: el panel no se sale de lado
+  OK   movil: sin errores en la consola — []
+
+TODO CORRECTO
