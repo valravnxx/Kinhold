@@ -2651,9 +2651,9 @@
     },
     {
      "nombre": "La fragua y la barra de hierro: el fuelle (2 cueros y 2 varas, en el banco de tronco) y la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que se enciende con carbón; en ella, con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro. Cadena: cuero ← las cubas de curtido (P9); lupia ← el horno de reducción; mazo de piedra ← piedra, rama y 2 cordeles, a mano",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-19T01:22:11+00:00",
-     "rama": "trabajo/20261119-0122"
+     "fin": "2026-11-19T05:06:55+00:00"
     },
     {
      "nombre": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua, el hacha de hierro (1 barra y 1 mango: tala los adultos y trocea más deprisa, como ya sabe la tala), el pico (1 barra y 1 mango) y los clavos (1 barra da 10). Cada herramienta se ve en la mano. Cadena: barra ← la fragua; vara ← talar un árbol joven",
@@ -4927,6 +4927,13 @@
      "archivo": "jugar/demo/v236.html",
      "capturas": "capturas/demo-v236",
      "notas": "El castillo del rey, en el mundo y visitable: a unos 260 m al sur de la ciudad del rey. Se pisa todo (suelos, adarves, escaleras, caracoles, puente y muelle), sus muros y muebles paran el paso, el foso está cavado y bajo techo se corta por plantas con la cámara desde arriba."
+    },
+    {
+     "v": "v237",
+     "fecha": "2026-11-19",
+     "archivo": "jugar/demo/v237.html",
+     "capturas": "capturas/demo-v237",
+     "notas": "La fragua y la barra de hierro: el fuelle en el banco de tronco (2 cueros y 2 varas); la fragua, un puesto nuevo fuera y en tu tierra (12 piedras, 4 barros y el fuelle), con fuego de carbón; en ella, con la lupia, un carbón y el mazo de piedra de martillo, se bate 1 barra de hierro."
     }
    ]
   },

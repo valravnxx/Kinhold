@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-19T03:27:23+00:00",
-  "tarea": "La fragua y la barra de hierro: el fuelle (2 cueros y 2 varas, en el banco de tronco) y la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que se enciende con carbón; en ella, con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro. Cadena: cuero ← las cubas de curtido (P9); lupia ← el horno de reducción; mazo de piedra ← piedra, rama y 2 cordeles, a mano",
-  "hito": "hierro",
-  "rama": "trabajo/20261119-0122"
- },
+ "A": null,
  "B": null
 }
