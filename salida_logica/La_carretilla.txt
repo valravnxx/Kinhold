@@ -1,0 +1,47 @@
+La carretilla en el catálogo y en el suelo
+  OK   es enorme: no se lleva encima
+  OK   del arcón de pruebas sale al suelo
+  OK   no desaparece aunque esté fuera de tus tierras
+  OK   fuera de tus tierras no tiene guarda
+  OK   no se coge del suelo con las manos
+  OK   lleva más que la rastra
+Empujarla y aparcarla
+  OK   las acciones de la rastra no valen con la carretilla — Eso es una carretilla.
+  OK   con algo en las manos no se empuja — Para empujarla necesitas las dos manos libres.
+  OK   lejos no se empuja
+  OK   a su lado y con las manos libres, se empuja
+  OK   queda en el registro con su autor y su nombre
+  OK   empujándola no coges nada con las manos — Tienes las manos en la carretilla: apárcala antes.
+  OK   otro no la coge mientras la empujas
+  OK   va delante del que la empuja
+  OK   al aparcarla se queda donde la dejas, delante — {"id":"s1","cosa":{"tipo":"carretilla","n":1,"carga":null},"x":31.4,"z":5,"autor":"ana","soltado":1793516400000,"desaparece":null,"giro":1.57}
+  OK   mirando hacia donde la empujabas — 1.57
+  OK   y ya coges con las manos
+  OK   si el sitio que dice el navegador no cuadra, queda delante de ti
+Lo que lleva y lo que frena
+  OK   se carga lo que llevas en las manos
+  OK   del suelo carga hasta llenarla (4 troncos cortos)
+  OK   llena, ya no cabe más
+  OK   una sola clase de cosa a la vez — La carretilla ya lleva otra cosa: descárgala antes.
+  OK   la leña sí va en la carretilla (no en la rastra)
+  OK   vacía frena menos que la rastra vacía — 0.85
+  OK   llena va más despacio que vacía — 0.65
+  OK   se descarga al suelo, a su lado
+Protegida en tus tierras; fuera, cualquiera coge lo que lleva
+  OK   sacada del arcón en tus tierras, queda a tu guarda
+  OK   en tus tierras, otro no coge lo que lleva — La carretilla está aparcada en las tierras de otro: no puedes tocarla.
+  OK   ni se la lleva — La carretilla está aparcada en las tierras de otro: no puedes tocarla.
+  OK   lo que no ha podido hacer queda en el registro
+  OK   la dueña sí la empuja
+  OK   aparcada fuera de sus tierras, ya no tiene guarda
+  OK   y cualquiera coge lo que lleva
+  OK   quien la aparca en tierras que no son suyas no la protege
+La carretilla en el servidor
+  OK   el arcón de pruebas la deja en el suelo del servidor, a su guarda
+  OK   el servidor no deja a otro llevársela de tus tierras — La carretilla está aparcada en las tierras de otro: no puedes tocarla.
+  OK   la dueña la empuja por el servidor y todos lo ven
+  OK   quien se va aparca la carretilla delante de donde estaba
+  OK   y queda anotado como aparcar
+  OK   al volver a arrancar el servidor siguen donde estaban, y la guarda también
+
+40 bien, 0 mal

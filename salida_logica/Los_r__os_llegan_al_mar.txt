@@ -1,0 +1,15 @@
+31 ríos que acaban en el mar
+  OK   todos los ríos que acaban en el mar llegan al mar por su cauce — 31 de 31
+  OK   con agua seguida, sin tramos secos (más de 9 m) en los últimos 2,5 km — 31 de 31
+19 bocas que medir
+  OK   hay bocas que medir
+  OK   en las bocas de los ríos medianos y grandes, un delta (isletas que asoman del agua) — 2 de 2 bocas
+  OK   la boca se abre en embudo (en la orilla, el río más 30 m y más de dos veces y media, sin ser un lago; a 140 m, menos de la mitad) — 16 de 19
+  OK   el agua del río se funde con la del mar, sin saltos de tono — 19 de 19 (el peor salto en 3 m: 0.07)
+  OK   el agua del río llega a la orilla — 19 de 19
+  OK   a la altura del mar (como mucho 0,3 m por encima) — 19 de 19
+  OK   con el cauce bajo el agua (no la arena) — 19 de 19
+  OK   el cauce sigue en el mar (sin barra que cierre la boca) — 19 de 19
+  OK   la boca se ensancha (estuario) — 19 de 19
+
+11 bien, 0 mal
