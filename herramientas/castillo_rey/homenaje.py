@@ -92,7 +92,7 @@ def homenaje(m, puertas_adarve):
     arca(m, f1, -1.8, -2.4, 0); armero(m, F(*fi.p2(L / 2 + 0.5, -L + T), fi.a + math.pi, K1), 0, 0, 2.4)
     vajilla(m, f1, -1.0, -1.1, 0.76, 2.0)
     alfombra(m, f1, -1.0, -1.1, 3.6, 2.4, hexc('#6a3a2a'))
-    candelabro(m, f1, 1.3, -2.3); candelabro(m, f1, 1.3, 0.1)
+    candelabro(m, f1, 1.3, -2.3); candelabro(m, f1, -0.5, -2.6)
     tapiz(m, F(*fi.p2(L / 2, -L + T), fi.a + math.pi, K1), -1.8, 1.8, 1.0, 3.4, 0, TELA_AZUL)
     for (u_, w_) in ((T + 0.05, -T - 1.5), (L - T - 0.05, -L + T + 1.5)): antorcha(m, F(*fi.p2(u_, w_), fi.a + (-math.pi / 2 if u_ < L / 2 else math.pi / 2), 0), 0, K1 + 1.8, 0)
     # ---------------- planta 2: la cámara del alcaide (aquí se aloja el rey cuando viene)

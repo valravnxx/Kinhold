@@ -98,7 +98,10 @@ def construir_torre(m, t, patio, pisos_extra=(), base_foso=False):
         for (u, v, a_, al) in t.puertas[i]: hs.append({'u': u, 'a': a_, 'v0': v, 'v1': v + al, 'arco': 'medio'})
         if i == cp: hs.append({'u': L * 0.38, 'a': 1.1, 'v0': g0, 'v1': g0 + 1.9, 'arco': 'medio'})       # la puerta del patio
         else:
-            for v in (gm + 0.6, ADARVE + 0.5): hs.append(saetera(L / 2, v, 1.5, 0.12, 1.0))
+            for v in (gm + 0.6, ADARVE + 0.5):
+                # (no donde ya hay una puerta en esa cara: la saetera quedaría delante de la puerta)
+                if any(abs(u_ - L / 2) < a_ / 2 + 0.6 and v_ - 0.5 < v + 1.5 and v < v_ + al_ + 0.5 for (u_, v_, a_, al_) in t.puertas[i]): continue
+                hs.append(saetera(L / 2, v, 1.5, 0.12, 1.0))
         muro(m, f, 0, L, base, gt, -T, 0, hs, 'mamposteria', MAMPOST, tapa=False, cabezas=False, suelo=(FOSO_FONDO if base_foso else min(h(*p) for p in t.esq)))
         esquinales(m, f, 0, L, base, gt, 0.0, i)
         f2 = t.cara(i)

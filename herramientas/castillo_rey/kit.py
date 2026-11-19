@@ -238,7 +238,7 @@ def _piedras(m, f, u0, u1, v0, v1, w, huecos, col, tipo, signo, suelo):
     # dovelas y jambas de cada hueco
     for h in huecos:
         if h.get('sin_dovelas'):
-            if h['a'] < 0.3 and not h.get('sin_marco'):   # saetera: dos sillares largos a los lados, dintel y alféizar
+            if h['a'] < 0.3 and h.get('con_marco'):   # saetera (con marco solo si se pide; si no, el hueco y su derrame): dos sillares largos a los lados, dintel y alféizar
                 ux0, ux1 = h['u'] - h['a'] / 2, h['u'] + h['a'] / 2
                 for (a, b, y0_, y1_) in ((ux0 - 0.3, ux0 - 0.01, h['v0'] - 0.25, h['v1'] + 0.25), (ux1 + 0.01, ux1 + 0.3, h['v0'] - 0.25, h['v1'] + 0.25),
                                          (ux0 - 0.01, ux1 + 0.01, h['v1'] + 0.01, h['v1'] + 0.25), (ux0 - 0.01, ux1 + 0.01, h['v0'] - 0.25, h['v0'] - 0.01)):
@@ -439,7 +439,8 @@ def escalera(m, f, u0, u1, w0, w1, v0, v1, col=PIEDRA, maciza=True, huella=0.29,
         if madera:
             with con(m, 'tabla'): caja(m, f, a, b + 0.02, top - 0.06, top, w0 + 0.1, w1 - 0.1, c, 0.7)
         else:
-            with con(m, 'piedra'): caja(m, f, a, b + 0.01, base, top, w0, w1, c, 0.75, caras='v1u0')
+            with con(m, 'piedra'): caja(m, f, a, b + 0.01, base, top, w0, w1, c, 0.75, caras='v1')
+            with con(m, 'sillar'): caja(m, f, a, b + 0.01, base, top, w0, w1, esc(c, 0.62), 0.75, caras='u0')   # la tabica, en sombra
             with con(m, 'sillar'): caja(m, f, a, b + 0.01, base, top, w0, w1, esc(c, 0.92), 0.75, caras='w0w1')
             with con(m, 'piedra'): caja(m, f, a - 0.02, a + 0.03, top - 0.03, top, w0 - 0.01, w1 + 0.01, esc(c, 1.05), 0.9, caras='v1u0')   # el bocel del peldaño
     if madera:   # zancas
@@ -456,7 +457,7 @@ def caracol(m, f, cu, cw, r, v0, v1, ang0=0.0, sentido=1, col=PIEDRA, muro_r=Non
         a = ang0 + i * da; top = v0 + (i + 1) * dh
         pts = [(cu + 0.16 * math.cos(a), cw + 0.16 * math.sin(a)), (cu + r * math.cos(a), cw + r * math.sin(a)),
                (cu + r * math.cos(a + da), cw + r * math.sin(a + da)), (cu + 0.16 * math.cos(a + da), cw + 0.16 * math.sin(a + da))]
-        with con(m, 'sillar'): prisma(m, f, pts, top - 0.2, top, esc(varia(col, 0.07), 0.86))
+        with con(m, 'piedra'): prisma(m, f, pts, top - 0.2, top, esc(varia(col, 0.07), 0.95), sombra=0.6)
     with con(m, 'sillar'): cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 1.0), 8)
     if muro_r:
         N = 16
