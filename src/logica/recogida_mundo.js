@@ -26,10 +26,12 @@ import { azarCelda } from './azar.js';
 import { bosqueEn } from './paisaje.js';
 import { CELDA as CELDA_VEG, marismaEn } from './vegetacion.js';
 import { RECOLECTABLES } from './recoleccion.js';
+import { VETAS_HIERRO } from './vetas_hierro.js';
 
 export const CELDA_RECOGIDA = 8;
 const CAPA = 4;                           // la capa de azar (los árboles son la 1, la hierba la 2, las piedras la 3)
 export const LADO_RECOGIDA = 32;          // por trozos de 32 m (como lo que crece)
+export const VETA_LIBRE = 3.5;            // (P10) m alrededor de una veta de hierro sin otros puntos de recogida
 // la probabilidad de cada tipo en cada una de sus zonas (por celda); la del bosque se multiplica por su densidad
 export const DENSIDAD_RECOGIDA = {
   ramas:        { bosque: 0.32 },
@@ -137,7 +139,16 @@ export function recogidaTrozo(paisaje, alt, semilla, i, j) {
   const L = LADO_RECOGIDA;
   const r = recogidaEn(paisaje, alt, semilla, { x0: i * L, z0: j * L, x1: (i + 1) * L, z1: (j + 1) * L });
   // (en la zona del castillo del rey no sale nada que recoger: src/logica/castillo_rey.js)
-  return Array.isArray(r) ? r.filter(e => !enZonaCastillo(e.x, e.z)) : r;
+  const l = Array.isArray(r) ? r.filter(e => !enZonaCastillo(e.x, e.z)) : r;
+  // (P10, 19 nov) las vetas pequeñas de hierro (src/logica/vetas_hierro.js): su afloramiento, y nada más a menos de
+  // VETA_LIBRE m (también lo del trozo de al lado)
+  if (!Array.isArray(l)) return l;
+  const cerca = VETAS_HIERRO.filter(v => v.x >= i * L - VETA_LIBRE && v.x < (i + 1) * L + VETA_LIBRE && v.z >= j * L - VETA_LIBRE && v.z < (j + 1) * L + VETA_LIBRE);
+  if (!cerca.length) return l;
+  const m = l.filter(e => !cerca.some(v => Math.hypot(e.x - v.x, e.z - v.z) < VETA_LIBRE));
+  for (const v of cerca) if (v.x >= i * L && v.x < (i + 1) * L && v.z >= j * L && v.z < (j + 1) * L)
+    m.push({ id: idPunto('veta_hierro', v.x, v.z), tipo: 'veta_hierro', x: v.x, z: v.z, giro: ((v.x * 7 + v.z * 13) % 628) / 100, zonas: ['veta'] });
+  return m;
 }
 
 // Comprobación de que cada tipo sale solo en las zonas del documento (las de RECOLECTABLES).

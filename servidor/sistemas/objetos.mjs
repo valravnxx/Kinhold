@@ -111,7 +111,7 @@ export function atenderObjeto(S, c, msg) {
   enviar(ws, { tipo: 'resultado_objeto', id: Number.isSafeInteger(msg.id) ? msg.id : null, ok: !!r.ok, ...(r.ok ? { datos } : { motivo: r.motivo }) });
   enviar(ws, { tipo: 'inventario', inventario: objetos.inventarioDe(autor) });
   if (r.ok) repartirLlevado(autor);
-  if (r.ok) cansar(autor, msg.accion.tipo);   // talar, trocear, fabricar y recoger cansan (src/logica/necesidades.js)
+  if (r.ok) cansar(autor, r.picar ? 'picar' : msg.accion.tipo);   // talar, trocear, fabricar, recoger y picar la veta cansan (src/logica/necesidades.js)
   // dormir en la cama ligada: hasta que se mueva de donde se tumbó (el tic de las necesidades)
   if (r.ok && msg.accion.tipo === 'dormir') { const c = objetos.fab.estaciones[msg.accion.estacion]; if (c) durmiendo.set(autor, { x: c.x, z: c.z, t: reloj() }); }
   // lo talado antes que el suelo: así el navegador esconde lo que deja el árbol hasta que lo ve caer
