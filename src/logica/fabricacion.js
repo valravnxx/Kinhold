@@ -325,10 +325,21 @@ export const RECETAS = {
   // el fuelle (P10, 19 nov; tarea: «2 cueros y 2 varas, en el banco de tronco»): dos tablas de vara con el cuero cosido
   // entre ellas en acordeón y la boquilla de la tobera. Tiempo, provisional (diario y registro): como el zurrón y algo más
   fuelle:            r('Fuelle', 'banco', 'fuelle', { cuero: 2, vara: 2 }, 90),
+  // el mango de herramienta (P10, 19 nov; tarea: «1 vara, en el banco de tronco»): la vara, cortada a 70 cm, desbastada
+  // y alisada. Tiempo, provisional (diario y registro): como la criba
+  mango:             r('Mango de herramienta', 'banco', 'mango', { vara: 1 }, 45),
   // en la fragua (P10, 19 nov; tarea: «con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro»):
   // la lupia, calentada al rojo en el carbón y batida en el yunque hasta sacarle la escoria. Con el fuego encendido; se
   // lleva el mazo (no se gasta). Tiempo, provisional (diario y registro): 2 min de batir
   barra_hierro:      { ...r('Barra de hierro', 'forjar', 'barra_hierro', { lupia: 1, carbon: 1 }, 120), requiere: ['mazo_piedra'] },
+  // las primeras herramientas de hierro (P10, 19 nov; tarea: «el mango (1 vara, en el banco de tronco) y, en la fragua,
+  // el hacha de hierro (1 barra y 1 mango), el pico (1 barra y 1 mango) y los clavos (1 barra da 10)»): en la fragua
+  // encendida, la barra calentada al rojo y batida en el yunque, con el mazo de piedra como martillo (no se gasta), como
+  // la barra; la cabeza, con su ojo, se encaja en el mango. Tiempos, provisionales (diario y registro): el hacha y el
+  // pico, 3 min de batir; los clavos, 2 min (una barra cortada en diez y sus cabezas)
+  hacha_hierro:      { ...r('Hacha de hierro', 'forjar', 'hacha_hierro', { barra_hierro: 1, mango: 1 }, 180), requiere: ['mazo_piedra'] },
+  pico:              { ...r('Pico', 'forjar', 'pico', { barra_hierro: 1, mango: 1 }, 180), requiere: ['mazo_piedra'] },
+  clavos:            { ...r('Clavos', 'forjar', 'clavo', { barra_hierro: 1 }, 120, 10), requiere: ['mazo_piedra'] },
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -386,6 +397,10 @@ export const PARA = {
   reducir: 'El hierro en bruto, con su escoria: la fragua lo bate en barra.',
   fuelle: 'Aviva el fuego de la fragua: lo pide la fragua para levantarla.',
   barra_hierro: 'El hierro batido: herramientas, clavos y herrajes.',
+  mango: 'En la fragua, con una barra de hierro: el hacha de hierro o el pico.',
+  hacha_hierro: 'Tala los árboles adultos y trocea mucho más deprisa que la de piedra.',
+  pico: 'Rompe la roca que el mazo no puede.',
+  clavos: 'Clavan las tablas: suelos, puertas y muebles.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 
