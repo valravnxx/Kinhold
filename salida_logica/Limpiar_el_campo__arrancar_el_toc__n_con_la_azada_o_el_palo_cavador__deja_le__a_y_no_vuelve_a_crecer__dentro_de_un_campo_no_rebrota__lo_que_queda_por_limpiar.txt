@@ -1,0 +1,30 @@
+  OK   en pie, no se arranca — Primero hay que talar el árbol.
+  OK   talado, cae entero
+  OK   caído sin limpiar, no se arranca: primero se limpia — Antes limpia el árbol caído con el hacha.
+  OK   limpio, queda el tocón
+  OK   sin azada ni palo cavador en la mano, no — Necesitas una azada o un palo cavador en la mano para arrancar el tocón.
+  OK   lejos, no — Está demasiado lejos.
+  OK   dentro del campo, pasado su tiempo, sigue el tocón (no vuelve a crecer)
+  OK   con la azada, 6 golpes para el tocón joven — 6 golpes · 
+  OK   deja 2 de leña en el suelo, a su lado — 2
+  OK   arrancado: ni árbol ni tocón, y ya nunca vuelve a crecer
+  OK   arrancado, no se arranca otra vez — Ahí no hay ningún tocón.
+  OK   queda en el registro con su autor y lo que deja
+  OK   el adulto, talado y limpio
+  OK   con el palo cavador, el doble: 28 golpes para el adulto — 28 golpes
+  OK   fuera del campo, su tocón vuelve a ser árbol a su tiempo
+  OK   se guarda y se lee: el arrancado sigue arrancado
+  OK   y lo que lleva arrancado, también — {"golpes":0,"parte":0,"veces":1,"caido":1000000134000,"vuelve":1001814534000,"dir":1.57,"arranca":0.16666666666666666}
+Lo que queda por limpiar en un campo
+  OK   cuenta solo lo de dentro del linde: 1 árbol, 1 caído, 2 tocones, 1 mata y 3 piedras — {"arboles":1,"caidos":1,"tocones":2,"matas":1,"piedras":3,"total":8}
+  OK   un campo abierto no cuenta nada
+  OK   limpio: total 0
+El servidor (ObjetosServidor): con el autor y donde lo tiene
+  OK   el servidor tala el árbol
+  OK   y lo limpia
+  OK   el servidor tiene puesto lo del campo: dentro, no vuelve a crecer
+  OK   si dice estar donde no está, no — No estás ahí.
+  OK   lo arranca con la azada y la leña cae al suelo del servidor — 6 golpes · 
+  OK   se apunta con su autor
+
+26 bien, 0 mal
