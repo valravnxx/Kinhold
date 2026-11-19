@@ -25,6 +25,7 @@ ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 fallos = []
 GIRO = [0.75]
+ALTA = [0]
 def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
     if not c: fallos.append(n)
@@ -62,7 +63,7 @@ def en_mano(pg, tipo):
 
 def ir(pg, v, dist=5.2, pitch=0.42, lado=2.45, giro=None):
     g = GIRO[0] if giro is None else giro
-    pg.evaluate(f'([x, z, d]) => {{ const k = {K}; k.pj.x = x + d; k.pj.z = z; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = -Math.PI / 2; k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = Math.PI / 2 + {g}; }}', [v['x'], v['z'], lado])
+    pg.evaluate(f'([x, z, d]) => {{ const k = {K}; k.pj.x = x + d; k.pj.z = z; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = -Math.PI / 2; k.cam.dist = {dist}; k.cam.pitch = {pitch + ALTA[0]}; k.cam.yaw = Math.PI / 2 + {g}; }}', [v['x'], v['z'], lado])
     esperar(pg)
 
 def recorrido(pg, nombre, pref):
@@ -122,7 +123,8 @@ with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     for nombre, pref, vista, movil in [('PC', 'pc', {'width': 1280, 'height': 800}, False), ('móvil', 'movil', {'width': 390, 'height': 844}, True)]:
         ctx = nav.new_context(viewport=vista, device_scale_factor=1, is_mobile=movil, has_touch=movil)
-        GIRO[0] = 1.0 if movil else 0.75   # (en el móvil, más de lado: si no, el personaje tapa la veta)
+        GIRO[0] = 0.45 if movil else 0.75   # (en el móvil, la veta al centro, y la cámara más alta para ver por encima del personaje)
+        ALTA[0] = 0.25 if movil else 0
         recorrido(ctx.new_page(), nombre, pref)
         ctx.close()
     nav.close()
