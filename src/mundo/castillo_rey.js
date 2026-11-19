@@ -18,7 +18,7 @@ import { crearChoquesCastillo, ORIGEN_CASTILLO } from '../logica/castillo_rey.js
 export const CARPETA_CASTILLO = 'recursos/mundo/castillo-rey-v2/';
 // metros que cubre cada textura (u, v), cuánto relieve y cuánto musgo coge (0: nada)
 const MATS = {
-  sillar: { tam: [4, 2], relieve: 1.2, musgo: 1 }, mamp: { tam: [4, 2], relieve: 1.3, musgo: 1 }, piedra: { tam: [2, 2], relieve: 0.9, musgo: 1 },
+  sillar: { tam: [4, 2], relieve: 1.2, musgo: 1 }, mamp: { tam: [4, 2], relieve: 1.3, musgo: 1 }, piedra: { tam: [2, 2], relieve: 0.9, musgo: 0.55 },
   losa: { tam: [3, 3], relieve: 1.0, musgo: 0.7 }, canto: { tam: [2, 2], relieve: 0.7, musgo: 0.6 }, tierra: { tam: [4, 4], relieve: 0.6, musgo: 0.3 },
   madera: { tam: [2, 2], relieve: 0.7, musgo: 0.2 }, tabla: { tam: [2, 2], relieve: 0.8, musgo: 0 }, teja: { tam: [2, 1], relieve: 1.2, musgo: 0.5 },
   paja: { tam: [1, 1], relieve: 1.0, musgo: 0.2 }, tela: { tam: [0.5, 0.5], relieve: 0.5, musgo: 0 }, liso: { tam: null, relieve: 0, musgo: 0 },
@@ -54,7 +54,7 @@ function desgaste(mat, musgo) {
           float arriba = smoothstep(0.55, 0.95, vNorM.y) * smoothstep(0.62, 0.92, n2 * 0.6 + n1 * 0.4 + n3 * 0.2);
           diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.35, 0.18) * (0.8 + 0.4 * n3), uMusgo * arriba * 0.5);
           // cortado por plantas: lo de dentro de los muros (sus caras de detrás) se ve como la sección, oscuro y liso
-          if (uCortado > 0.5 && !gl_FrontFacing) diffuseColor.rgb = vec3(0.16, 0.145, 0.13);
+          if (uCortado > 0.5 && !gl_FrontFacing) diffuseColor.rgb = vec3(0.26, 0.24, 0.21);
         }`);
   };
   mat.customProgramCacheKey = () => 'castillo_rey_' + musgo;
@@ -90,12 +90,9 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
       const pos = new Float32Array(n * 3), colr = new Float32Array(n * 3), uv = new Float32Array(n * 2);
       for (let i = 0; i < n * 3; i++) { pos[i] = q[i] * esc; colr[i] = c8[i] / 255; }
       for (let i = 0; i < n * 2; i++) uv[i] = uq[i] * 0.01;
-      const g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      g.setAttribute('color', new THREE.BufferAttribute(colr, 3));
-      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-      g.setAttribute('hs', new THREE.BufferAttribute(hs, 1));
-      g.computeVertexNormals(); g.computeBoundingSphere();
+      // dos mallas: lo que levanta (echa sombra) y los suelos planos (tierra, cantos, losas), que no la echan: un plano que
+      // se sombrea a sí mismo sale con rayas
+      const SUELOS = new Set(['tierra', 'canto', 'losa']);
       const carga = new THREE.TextureLoader();
       const tex = (nombre, color, [tu, tv]) => {
         const t = carga.load(base + CARPETA_CASTILLO + 'tex/' + nombre + '.webp');
@@ -103,21 +100,37 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
         if (color) t.colorSpace = THREE.SRGBColorSpace;
         return t;
       };
-      const mats = []; let ini = 0;
-      for (const [k, gr] of grupos.entries()) {
-        const d = MATS[gr.nombre] || MATS.liso;
+      const material = (nombre) => {
+        const d = MATS[nombre] || MATS.liso;
         // (shadowSide: las caras de detrás echan la sombra; si no, las de delante se sombrean a sí mismas en rayas)
         const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide, shadowSide: THREE.BackSide, clippingPlanes: [corte] });
         if (d.tam) {
-          mat.map = tex(gr.nombre, true, d.tam);
-          mat.normalMap = tex(gr.nombre + '_n', false, d.tam); mat.normalScale.set(d.relieve, d.relieve);
+          mat.map = tex(nombre, true, d.tam);
+          mat.normalMap = tex(nombre + '_n', false, d.tam); mat.normalScale.set(d.relieve, d.relieve);
         }
         desgaste(mat, d.musgo);
-        mats.push(mat); g.addGroup(ini, gr.cuenta, k); ini += gr.cuenta;
-      }
-      malla = new THREE.Mesh(g, mats);
-      malla.name = 'castillo_rey'; malla.castShadow = true; malla.receiveShadow = true;
-      malla.position.set(dx, -y0, dz);
+        return mat;
+      };
+      let ini = 0; const rangos = grupos.map(gr => { const r = { ...gr, ini }; ini += gr.cuenta; return r; });
+      const hacer = (lista) => {
+        const n2 = lista.reduce((t, r) => t + r.cuenta, 0);
+        const P = new Float32Array(n2 * 3), C = new Float32Array(n2 * 3), U = new Float32Array(n2 * 2), H = new Uint8Array(n2);
+        const g = new THREE.BufferGeometry(), mats = []; let o2 = 0;
+        for (const [k, r] of lista.entries()) {
+          P.set(pos.subarray(r.ini * 3, (r.ini + r.cuenta) * 3), o2 * 3); C.set(colr.subarray(r.ini * 3, (r.ini + r.cuenta) * 3), o2 * 3);
+          U.set(uv.subarray(r.ini * 2, (r.ini + r.cuenta) * 2), o2 * 2); H.set(hs.subarray(r.ini, r.ini + r.cuenta), o2);
+          g.addGroup(o2, r.cuenta, k); mats.push(material(r.nombre)); o2 += r.cuenta;
+        }
+        g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('color', new THREE.BufferAttribute(C, 3));
+        g.setAttribute('uv', new THREE.BufferAttribute(U, 2)); g.setAttribute('hs', new THREE.BufferAttribute(H, 1));
+        g.computeVertexNormals(); g.computeBoundingSphere();
+        const me = new THREE.Mesh(g, mats); me.position.set(dx, -y0, dz); me.receiveShadow = true;
+        return me;
+      };
+      malla = new THREE.Group(); malla.name = 'castillo_rey';
+      const obra = hacer(rangos.filter(r => !SUELOS.has(r.nombre))); obra.castShadow = true; malla.add(obra);
+      const suelos = rangos.filter(r => SUELOS.has(r.nombre));
+      if (suelos.length) { const ms = hacer(suelos); ms.castShadow = false; malla.add(ms); }
       escena.add(malla);
       choques = crearChoquesCastillo(col, { dx: origen.x - ORIGEN_CASTILLO.x, dz: origen.z - ORIGEN_CASTILLO.z, dy: y0 });
       estado = 'listo';

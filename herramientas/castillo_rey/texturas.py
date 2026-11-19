@@ -60,6 +60,22 @@ def guardar(nombre, col, alt, fuerza=1.0, mapa_normales=True):
         n8 = (normales(alt, fuerza) * 255).round().astype(np.uint8)
         Image.fromarray(n8).save(os.path.join(DEST, nombre + '_n.webp'), quality=92, method=6)
 
+def envejecer(col, alt, borde_px, sem, fuerza=1.0, contraste=1.25):
+    """la piedra de verdad: moteado de 3–5 cm, manchas grandes de suciedad, poros y desconchones, cercos oscuros hacia
+       las juntas (la mugre se queda en los bordes) y más contraste; borde_px: distancia a la junta (px, <0 en la junta)"""
+    H, W = alt.shape
+    m1 = ruido(H, W, 9, sem, 3); m2 = ruido(H, W, 110, sem + 1, 2); m3 = ruido(H, W, 28, sem + 2, 3)
+    poro = np.clip((ruido(H, W, 1.2, sem + 3, 1) - 2.5) * 2, 0, 1)
+    desc = np.clip((ruido(H, W, 6, sem + 4, 2) - 1.9) * 3, 0, 1) * (borde_px > 0)
+    col = col * (1 + (0.075 * m1 + 0.11 * m2 + 0.05 * m3)[..., None] * fuerza)
+    col = col * (1 - 0.2 * poro[..., None]) * (1 - 0.18 * desc[..., None])
+    alt = alt - 0.0012 * poro - 0.0025 * desc + m1 * 0.0006 * fuerza
+    cerco = np.clip(borde_px / (0.05 * PXM), 0, 1)
+    col = col * (0.78 + 0.22 * cerco)[..., None]
+    mu = col.mean((0, 1), keepdims=True)
+    col = mu + (col - mu) * contraste
+    return np.clip(col, 0, 1), alt
+
 def tinte(rgb, n, m):
     return np.broadcast_to(np.array(rgb, dtype=np.float64), (n, m, 3)).copy()
 
@@ -106,7 +122,7 @@ def silleria():
     cara = por_bloque(ids, 5, lambda r, n: r.normal(0, 0.006, n)) + N1 * 0.004 + N3 * 0.0012
     alt = np.where(borde > 0, 0.02 * perfil + cara, -0.004 + N1 * 0.001)
     # color: piedra (variación de tono por sillar), mortero, líquenes y manchas
-    luz = por_bloque(ids, 7, lambda r, n: r.normal(1.0, 0.07, n))
+    luz = np.clip(por_bloque(ids, 7, lambda r, n: r.normal(0.97, 0.11, n)), 0.72, 1.15)
     calido = por_bloque(ids, 8, lambda r, n: r.normal(0.0, 1.0, n))
     calido = np.clip(calido, -1.5, 1.5)
     piedra = np.stack([luz * (0.90 + 0.03 * calido), luz * (0.87 + 0.015 * calido), luz * (0.82 - 0.005 * calido)], -1)
@@ -115,14 +131,15 @@ def silleria():
     reg = np.real(np.fft.ifft2(np.fft.fft2(np.random.default_rng(12).standard_normal((H, W))) * np.exp(-((np.fft.fftfreq(W)[None, :] * 25) ** 2 + (np.fft.fftfreq(H)[:, None] * 300) ** 2))))
     reg /= reg.std()
     piedra *= (1 - np.clip(reg - 1.2, 0, 1)[..., None] * 0.18)
-    mortero = tinte((0.80, 0.77, 0.70), H, W) * (1 + N3[..., None] * 0.06)
+    mortero = tinte((0.62, 0.59, 0.53), H, W) * (1 + N3[..., None] * 0.08)
     col = np.where((borde > 0)[..., None], piedra, mortero)
+    col, alt = envejecer(col, alt, borde, 13)
     liq = np.clip((ruido(H, W, 18, 9, 3) - 1.6) * 3, 0, 1)[..., None]
     col = col * (1 - liq) + liq * np.array([0.86, 0.88, 0.70])
     mancha = np.clip(ruido(H, W, 60, 11, 3) * 0.5 + 0.5, 0, 1)[..., None]
     col *= 0.9 + 0.12 * mancha
     col *= cavidad(alt, 6, 16)[..., None]
-    guardar('sillar', col * 0.97, alt, 1.4)
+    guardar('sillar', col * 0.95, alt, 1.6)
 
 # ---------------------------------------------------------------- mampostería (mampuestos irregulares en hiladas)
 def mamposteria():
@@ -149,11 +166,12 @@ def mamposteria():
     borde = (seg - mejor) * 0.5 + N2 * 0.06 + N3 * 0.05 - 0.10
     redondeo = np.clip(borde / 0.35, 0, 1)
     alt = np.where(borde > 0, 0.035 * np.sqrt(redondeo) + por_bloque(ids, 25, lambda r, n: r.normal(0, 0.008, n)) + N3 * 0.002, -0.012 + N1 * 0.002)
-    luz = por_bloque(ids, 26, lambda r, n: r.normal(1.0, 0.09, n)); cal = por_bloque(ids, 27, lambda r, n: r.normal(0, 1, n))
-    cal = np.clip(cal, -1.2, 1.5); luz = np.clip(luz, 0.82, 1.12)
+    luz = por_bloque(ids, 26, lambda r, n: r.normal(0.97, 0.13, n)); cal = por_bloque(ids, 27, lambda r, n: r.normal(0, 1, n))
+    cal = np.clip(cal, -1.2, 1.5); luz = np.clip(luz, 0.68, 1.15)
     piedra = np.stack([luz * (0.89 + 0.035 * cal), luz * (0.86 + 0.02 * cal), luz * (0.80 + 0.0 * cal)], -1) * (1 + N3[..., None] * 0.06)
-    mortero = tinte((0.78, 0.74, 0.66), H, W) * (1 + N3[..., None] * 0.08)
+    mortero = tinte((0.58, 0.55, 0.48), H, W) * (1 + N3[..., None] * 0.08)
     col = np.where((borde > 0)[..., None], piedra, mortero)
+    col, alt = envejecer(col, alt, borde * PXM * 0.25, 29)
     col *= cavidad(alt, 5, 18)[..., None]
     col *= (0.9 + 0.12 * np.clip(ruido(H, W, 50, 28, 3) * 0.5 + 0.5, 0, 1))[..., None]
     guardar('mamp', col * 0.93, alt, 1.6)
@@ -169,9 +187,10 @@ def piedra_labrada():
     raya = (np.sin((xx + yy * 0.6) * 0.9 + N2 * 3) > 0.92) * 0.0006
     alt += raya
     col *= cavidad(alt, 4, 60)[..., None]
+    col, alt = envejecer(col, alt, np.full((H, W), 99.0), 35, 0.45, 1.05)
     liq = np.clip((ruido(H, W, 16, 34, 3) - 1.7) * 3, 0, 1)[..., None]
-    col = col * (1 - liq) + liq * np.array([0.86, 0.88, 0.70])
-    guardar('piedra', col * 0.97, alt, 1.2)
+    col = col * (1 - liq) + liq * np.array([0.80, 0.83, 0.64])
+    guardar('piedra', col * 0.9, alt, 1.5)
 
 # ---------------------------------------------------------------- enlosado (losas irregulares, 3 × 3 m)
 def losas(nombre='losa', tam=3, sem=41, lado=(0.45, 0.85), junta=0.025, canto=False):
@@ -190,28 +209,35 @@ def losas(nombre='losa', tam=3, sem=41, lado=(0.45, 0.85), junta=0.025, canto=Fa
             while x < tam:
                 ww = rng.uniform(*lado); pts.append((x + ww / 2 + rng.normal(0, 0.05), y + hh / 2 + rng.normal(0, 0.05), ww, hh)); x += ww
             y += hh
-    P = np.array(pts)
+    # las semillas, dentro de la textura y sin dos casi encima (darían manchas de junta)
+    lim = []
+    for (px, py, ww, hh) in pts:
+        px %= tam; py %= tam
+        if all(min(abs(px - qx), tam - abs(px - qx)) ** 2 + min(abs(py - qy), tam - abs(py - qy)) ** 2 > (0.35 * min(ww, hh)) ** 2 for (qx, qy, _, _) in lim):
+            lim.append((px, py, ww, hh))
+    P = np.array(lim)
     yy, xx = np.mgrid[0:H, 0:W] / PXM
     mejor = np.full((H, W), 1e9); seg = np.full((H, W), 1e9); ids = np.zeros((H, W), dtype=np.int32)
     for i, (px, py, ww, hh) in enumerate(P):
         for ox in (-tam, 0, tam):
             for oy in (-tam, 0, tam):
                 if abs(px + ox - tam / 2) > tam / 2 + ww or abs(py + oy - tam / 2) > tam / 2 + hh: continue
-                d = np.hypot(xx - px - ox, yy - py - oy) / (0.5 * (ww + hh) / 2)
+                d = np.hypot(xx - px - ox, yy - py - oy) / (1.0 if not canto else (0.5 * (ww + hh) / 2))
                 nuevo = d < mejor
                 seg = np.where(nuevo, mejor, np.minimum(seg, d)); ids = np.where(nuevo, i, ids); mejor = np.where(nuevo, d, mejor)
     N2 = ruido(H, W, 24, sem + 1, 4); N3 = ruido(H, W, 80, sem + 2, 3)
-    borde = (seg - mejor) * (0.5 if not canto else 0.9) + N2 * 0.04 - (junta * 4)
-    r = np.clip(borde / (0.25 if not canto else 0.6), 0, 1)
+    borde = ((seg - mejor) * 0.5 + N2 * 0.006 - junta) if not canto else ((seg - mejor) * 0.9 + N2 * 0.04 - (junta * 4))
+    r = np.clip(borde / (0.03 if not canto else 0.6), 0, 1)
     alt = np.where(borde > 0, (0.012 if not canto else 0.022) * (np.sqrt(r) if not canto else np.sin(r * math.pi / 2)) + por_bloque(ids, sem + 3, lambda q, n: q.normal(0, 0.004, n)) + N3 * 0.001, -0.01)
-    luz = por_bloque(ids, sem + 4, lambda q, n: q.normal(1.0, 0.08, n)); cal = por_bloque(ids, sem + 5, lambda q, n: q.normal(0, 1, n))
-    cal = np.clip(cal, -1.2, 1.5); luz = np.clip(luz, 0.84, 1.12)
+    luz = por_bloque(ids, sem + 4, lambda q, n: q.normal(0.95, 0.12, n)); cal = por_bloque(ids, sem + 5, lambda q, n: q.normal(0, 1, n))
+    cal = np.clip(cal, -1.2, 1.5); luz = np.clip(luz, 0.7, 1.12)
     piedra = np.stack([luz * (0.90 + 0.035 * cal), luz * (0.87 + 0.02 * cal), luz * (0.81 + 0.0 * cal)], -1) * (1 + N3[..., None] * 0.05)
     if canto: piedra *= (0.88 + 0.12 * r)[..., None]   # redondos: algo más oscuros hacia el borde
-    tierra = tinte((0.74, 0.67, 0.54) if canto else (0.66, 0.59, 0.47), H, W) * (1 + N2[..., None] * 0.1)
-    musgo = np.clip(ruido(H, W, 20, sem + 6, 3) * 0.6 + 0.2, 0, 1)[..., None]
-    junta_col = tierra * (1 - musgo * 0.6) + musgo * 0.6 * np.array([0.42, 0.50, 0.30])
+    tierra = tinte((0.66, 0.60, 0.49) if canto else (0.40, 0.36, 0.30), H, W) * (1 + N2[..., None] * 0.1)
+    musgo = np.clip(ruido(H, W, 20, sem + 6, 3) * 0.6 + (0.2 if canto else -0.1), 0, 1)[..., None]
+    junta_col = tierra * (1 - musgo * 0.6) + musgo * 0.6 * np.array([0.36, 0.42, 0.24])
     col = np.where((borde > 0)[..., None], piedra, junta_col)
+    col, alt = envejecer(col, alt, borde * PXM, sem + 7)
     col *= cavidad(alt, 5, 5 if canto else 18)[..., None]
     guardar(nombre, col * 0.93, alt, 1.4)
 
@@ -227,8 +253,8 @@ def madera(nombre='madera', tablas=False):
     veta = np.real(np.fft.ifft2(np.fft.fft2(w) * np.exp(-((fx * 3) ** 2 + (fy * 28) ** 2))))
     veta /= veta.std()
     fina = np.real(np.fft.ifft2(np.fft.fft2(rng.standard_normal((H, W))) * np.exp(-((fx * 1.5) ** 2 + (fy * 30) ** 2)))); fina /= fina.std()
-    alt = veta * 0.0015 + fina * 0.0006
-    l = 0.88 + veta * 0.06 + fina * 0.035 + N1 * 0.04
+    alt = veta * 0.0012 + fina * 0.0003
+    l = 0.88 + veta * 0.05 + fina * 0.015 + N1 * 0.05
     # nudos: óvalos oscuros con las vetas rodeándolos
     for _ in range(6):
         cx, cy = rng.uniform(0, W), rng.uniform(0, H)
@@ -327,7 +353,7 @@ def tierra():
 
 if __name__ == '__main__':
     pedidas = sys.argv[1:]
-    hechas = {'sillar': silleria, 'mamp': mamposteria, 'piedra': piedra_labrada, 'losa': lambda: losas('losa', lado=(0.32, 0.6)),
+    hechas = {'sillar': silleria, 'mamp': mamposteria, 'piedra': piedra_labrada, 'losa': lambda: losas('losa', lado=(0.32, 0.6), junta=0.01),
               'canto': lambda: losas('canto', 2, 45, canto=True), 'madera': madera, 'tabla': lambda: madera('tabla', True),
               'teja': teja, 'paja': paja, 'tela': tela, 'tierra': tierra}
     for k, fn in hechas.items():

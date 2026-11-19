@@ -127,7 +127,11 @@ def cilindro(m, f, cu, cw, r, v0, v1, col, n=10, tapa=True, r1=None):
         a1, a2 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
         p = lambda a, rr, v: f(cu + math.cos(a) * rr, v, cw + math.sin(a) * rr)
         l = 0.75 + 0.25 * (0.5 + 0.5 * math.cos(a1 - 0.8))
-        m.quad(p(a2, r, v0), p(a1, r, v0), p(a1, r1, v1), p(a2, r1, v1), esc(col, l * 0.85), esc(col, l * 0.85), esc(col, l), esc(col, l))
+        q4 = [p(a2, r, v0), p(a1, r, v0), p(a1, r1, v1), p(a2, r1, v1)]
+        cc = f(cu, (v0 + v1) / 2, cw); A_, B_, C_ = q4[0], q4[1], q4[2]
+        nx_ = (B_[1] - A_[1]) * (C_[2] - A_[2]) - (B_[2] - A_[2]) * (C_[1] - A_[1]); nz_ = (B_[0] - A_[0]) * (C_[1] - A_[1]) - (B_[1] - A_[1]) * (C_[0] - A_[0])
+        if nx_ * (A_[0] - cc[0]) + nz_ * (A_[2] - cc[2]) < 0: q4 = q4[::-1]
+        m.quad(*q4, esc(col, l * 0.85))
         if tapa: m.tri(f(cu, v1, cw), p(a2, r1, v1), p(a1, r1, v1), esc(col, 1.05))
 
 def bola(m, cx, cy, cz, r, ry, col, n=7, filas=4):
@@ -269,9 +273,9 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
             a, b = e[k], e[(k + 1) % n]; c, d = i_[(k + 1) % n], i_[k]
             if k == 0: continue   # el umbral se pone aparte
             l = 0.55 + 0.25 * (k % 2)
-            m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l))
+            with con(m, 'piedra'): m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l))
         a, b = e[0], e[1]; c, d = i_[1], i_[0]
-        m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(SILLAR_DOV, 0.95))   # umbral / alféizar
+        with con(m, 'piedra'): m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(SILLAR_DOV, 0.82))   # umbral / alféizar
     if tapa:
         with con(m, 'piedra'): m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
     if cabezas:
@@ -341,8 +345,9 @@ def tejado_dos_aguas(m, f, u0, u1, w0, w1, v, pend=0.65, alero=0.4, col=TEJA, pa
     hc = hastial_col or PIEDRA
     for u, s in ((u0, -1), (u1, 1)):
         A, B, C = a(u, w0, v), a(u, w1, v), a(u, wc, vc)
-        if s < 0: m.tri(A, B, C, esc(hc, .85))
-        else: m.tri(B, A, C, esc(hc, .85))
+        with con(m, 'sillar' if mat_de(hc) == 'piedra' else None):
+            if s < 0: m.tri(A, B, C, esc(hc, .85))
+            else: m.tri(B, A, C, esc(hc, .85))
     return vc
 
 def tejado_una_agua(m, f, u0, u1, w_alto, w_bajo, v_alto, v_bajo, alero=0.4, col=TEJA, paja=False, piñones=True, hastial_col=None):
@@ -417,8 +422,8 @@ def caracol(m, f, cu, cw, r, v0, v1, ang0=0.0, sentido=1, col=PIEDRA, muro_r=Non
         a = ang0 + i * da; top = v0 + (i + 1) * dh
         pts = [(cu + 0.16 * math.cos(a), cw + 0.16 * math.sin(a)), (cu + r * math.cos(a), cw + r * math.sin(a)),
                (cu + r * math.cos(a + da), cw + r * math.sin(a + da)), (cu + 0.16 * math.cos(a + da), cw + 0.16 * math.sin(a + da))]
-        prisma(m, f, pts, top - 0.2, top, varia(col, 0.07))
-    cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 0.95), 8)
+        with con(m, 'sillar'): prisma(m, f, pts, top - 0.2, top, esc(varia(col, 0.07), 0.86))
+    with con(m, 'piedra'): cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 0.8), 8)
     if muro_r:
         N = 16
         for i in range(N):
@@ -531,9 +536,29 @@ def cama(m, f, u, w, ang=0.0, largo=2.0, ancho=1.0, colcha=TELA_ROJA, dosel=Fals
     caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.06, 0.55, 1.0, -ancho / 2, ancho / 2, MADERA, .7)
     if dosel:
         for su in (-1, 1):
-            for sw in (-1, 1): caja(m, g, su * (largo / 2) - 0.04, su * (largo / 2) + 0.04, 0, 2.1, sw * ancho / 2 - 0.04, sw * ancho / 2 + 0.04, MADERA)
-        caja(m, g, -largo / 2, largo / 2, 2.1, 2.2, -ancho / 2, ancho / 2, colcha, .8)
-        caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.01, 0.7, 2.1, -ancho / 2, ancho / 2, colcha, .8)
+            for sw in (-1, 1):
+                with con(m, 'madera'): cilindro(m, g, su * (largo / 2 - 0.04), sw * (ancho / 2 - 0.04), 0.035, 0.0, 2.15, MADERA, 6, True)
+        with con(m, 'madera'):   # el bastidor del dosel, de postes a postes
+            caja(m, g, -largo / 2, largo / 2, 2.12, 2.2, -ancho / 2 - 0.02, -ancho / 2 + 0.05, MADERA)
+            caja(m, g, -largo / 2, largo / 2, 2.12, 2.2, ancho / 2 - 0.05, ancho / 2 + 0.02, MADERA)
+            caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.05, 2.12, 2.2, -ancho / 2, ancho / 2, MADERA)
+            caja(m, g, largo / 2 - 0.05, largo / 2 + 0.02, 2.12, 2.2, -ancho / 2, ancho / 2, MADERA)
+        with con(m, 'tela'):
+            # el cielo, fino, y la cenefa que cuelga con pliegues por los cuatro lados
+            m.quad(g(-largo / 2, 2.15, ancho / 2), g(largo / 2, 2.15, ancho / 2), g(largo / 2, 2.15, -ancho / 2), g(-largo / 2, 2.15, -ancho / 2), esc(colcha, 0.95))
+            lados = [((-largo / 2, -ancho / 2), (largo / 2, -ancho / 2)), ((largo / 2, -ancho / 2), (largo / 2, ancho / 2)), ((largo / 2, ancho / 2), (-largo / 2, ancho / 2)), ((-largo / 2, ancho / 2), (-largo / 2, -ancho / 2))]
+            for (p0, p1) in lados:
+                n = 10
+                for k in range(n):
+                    t0, t1 = k / n, (k + 1) / n
+                    ofs = lambda t: 0.035 * math.sin(t * n * math.pi)
+                    q = lambda t: (p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t)
+                    (x0, z0), (x1, z1) = q(t0), q(t1)
+                    m.quad(g(x0, 1.85, z0), g(x1, 1.85, z1), g(x1, 2.15, z1), g(x0, 2.15, z0), esc(colcha, 0.78 + 0.14 * (k % 2)))
+            # la cortina de la cabecera, recogida
+            for k in range(8):
+                z0 = -ancho / 2 + ancho * k / 8; z1 = -ancho / 2 + ancho * (k + 1) / 8
+                m.quad(g(-largo / 2 - 0.01 - 0.03 * (k % 2), 0.7, z0), g(-largo / 2 - 0.01 - 0.03 * ((k + 1) % 2), 0.7, z1), g(-largo / 2 - 0.01 - 0.03 * ((k + 1) % 2), 2.1, z1), g(-largo / 2 - 0.01 - 0.03 * (k % 2), 2.1, z0), esc(colcha, 0.7 + 0.15 * (k % 2)))
 
 def jergon(m, f, u, w, ang=0.0):
     g = f.sub(u, w, ang)

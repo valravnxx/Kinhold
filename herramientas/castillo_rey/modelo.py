@@ -146,6 +146,10 @@ nrm = np.cross(T[:, 1] - T[:, 0], T[:, 2] - T[:, 0]); nrm /= (np.linalg.norm(nrm
 tg = np.stack([-nrm[:, 2], np.zeros(len(nrm)), nrm[:, 0]], 1); tl = np.linalg.norm(tg, axis=1, keepdims=True)
 plano = (np.abs(nrm[:, 1]) > 0.9)[:, None] | (tl < 1e-6)
 tg = np.where(plano, np.array([[1.0, 0, 0]]), tg / np.maximum(tl, 1e-9))
+# el sentido de u, fijo (no según el giro de cada triángulo): si no, dos triángulos de la misma cara con distinto giro
+# llevan la textura en espejo y se ve la costura en diagonal
+ref = np.array([0.8191, 0.0, 0.5736])
+tg = np.where(((tg * ref).sum(1) < 0)[:, None], -tg, tg)
 bt = np.array([[0, 1.0, 0]]) - nrm * nrm[:, 1:2]; bl = np.linalg.norm(bt, axis=1, keepdims=True)
 bt = np.where(plano, np.array([[0, 0, 1.0]]), bt / np.maximum(bl, 1e-9))
 tgv = np.repeat(tg, 3, 0); btv = np.repeat(bt, 3, 0)
