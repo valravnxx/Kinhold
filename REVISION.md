@@ -7,6 +7,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 19 nov 2026, 05:47 UTC — por el chat, sobre el castillo del rey
+
+«Te dije acabado a nivel de calidad del resto de Kinhold… no me vuelvas a mostrar este lowpoly cutre de dibujitos planos… haz todo lo que debas, el tiempo que debas». El castillo pasa a texturas con relieve (sillería, mampostería, losas, cantos, teja, madera), desgaste por píxel (humedad al pie, regueros, musgo), sillares de verdad en jambas, dovelas y esquinas, caminos con bordes irregulares y hierba en el foso y al pie de los muros.
+
 ### 18 nov 2026, 20:13 UTC — por el chat, sobre el castillo del rey
 
 «¿Sería jugable en Kinhold? En plan poderlo visitar y no glichearse?» → «haz». El castillo del rey (la maqueta hecha en el chat) entra en el mundo como pieza fija: se pisa (suelos, adarves, escaleras, caracoles, puente), sus muros paran el paso, la cámara no se mete detrás de sus muros y bajo techo corta por plantas; el foso baja el terreno y dentro no crece nada. Lo lleva el chat (tarea en «El aspecto»).

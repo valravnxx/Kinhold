@@ -1567,6 +1567,12 @@
      "estado": "hecho",
      "inicio": "2026-11-18T21:14:50+01:00",
      "fin": "2026-11-19T00:13:10+01:00"
+    },
+    {
+     "nombre": "El castillo del rey, con el acabado del juego: piedra, teja y madera con textura y relieve, desgaste, mampostería y caminos",
+     "estado": "en_curso",
+     "inicio": "06:50",
+     "rama": "trabajo/20261119-0650-castillo-acabado"
     }
    ]
   },
