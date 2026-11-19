@@ -2651,7 +2651,9 @@
     },
     {
      "nombre": "La fragua y la barra de hierro: el fuelle (2 cueros y 2 varas, en el banco de tronco) y la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que se enciende con carbón; en ella, con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro. Cadena: cuero ← las cubas de curtido (P9); lupia ← el horno de reducción; mazo de piedra ← piedra, rama y 2 cordeles, a mano",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-19T01:22:11+00:00",
+     "rama": "trabajo/20261119-0122"
     },
     {
      "nombre": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua, el hacha de hierro (1 barra y 1 mango: tala los adultos y trocea más deprisa, como ya sabe la tala), el pico (1 barra y 1 mango) y los clavos (1 barra da 10). Cada herramienta se ve en la mano. Cadena: barra ← la fragua; vara ← talar un árbol joven",
