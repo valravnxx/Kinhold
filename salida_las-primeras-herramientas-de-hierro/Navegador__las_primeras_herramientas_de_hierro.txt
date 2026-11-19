@@ -1,0 +1,100 @@
+  OK   PC: hacha_hierro, empuñado en la mano derecha con su modelo (hacha) — {'empunada': 'hacha', 'dEmpunada': 0.451, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   PC: pico, empuñado en la mano derecha con su modelo (pico) — {'empunada': 'pico', 'dEmpunada': 0.437, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   PC: mango, en la mano derecha con su modelo (no la bolsa ni el hatillo) — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.23, 'cinto': []}
+  OK   PC: clavo, en la mano derecha con su modelo (no la bolsa ni el hatillo) — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.164, 'cinto': []}
+  OK   PC: el pico, colgado del cinto con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': ['pico']}
+  OK   PC: el mango, el pico, los clavos y el hacha se dejan en el suelo — 4
+  OK   PC: en la pestaña «Fragua», el hacha de hierro, el pico y los clavos — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+3
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+a 3 pasos
+Secadero
+no
+  OK   PC: la ficha del hacha pide la barra, el mango y el mazo de piedra — Hacha de hierro
+
+Tala los árboles adultos y trocea mucho más deprisa que la de piedra.
+
+En la fragua
+3 min
+Lo que pide (de lo que está en la estación)
+Barra de hierroen la estación
+1 de 1
+Mango de herramientaen la estación
+1 de 1
+Mazo de piedralo llevas (no se gasta)
+1/1
+Hacer · 3 min
+×3
+  OK   PC: el panel no se sale de lado
+  OK   PC: en el banco de tronco, el mango de herramienta
+  OK   PC: la ficha del mango pide 1 vara — Mango de herramienta
+
+En la fragua, con una barra de hierro: el hacha de hierro o el pico.
+
+En el banco de tronco
+45 s
+Lo que pide (de lo que está en la estación)
+Varaen la estación
+1 de 1
+Hacer · 45 s
+×3
+  OK   PC: sin errores en la página — []
+  OK   móvil: hacha_hierro, empuñado en la mano derecha con su modelo (hacha) — {'empunada': 'hacha', 'dEmpunada': 0.451, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   móvil: pico, empuñado en la mano derecha con su modelo (pico) — {'empunada': 'pico', 'dEmpunada': 0.437, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': []}
+  OK   móvil: mango, en la mano derecha con su modelo (no la bolsa ni el hatillo) — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.23, 'cinto': []}
+  OK   móvil: clavo, en la mano derecha con su modelo (no la bolsa ni el hatillo) — {'empunada': None, 'dEmpunada': None, 'pieza': True, 'generico': False, 'dPieza': 0.164, 'cinto': []}
+  OK   móvil: el pico, colgado del cinto con su modelo — {'empunada': None, 'dEmpunada': None, 'pieza': False, 'generico': None, 'dPieza': None, 'cinto': ['pico']}
+  OK   móvil: el mango, el pico, los clavos y el hacha se dejan en el suelo — 4
+  OK   móvil: en la pestaña «Fragua», el hacha de hierro, el pico y los clavos — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+3
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+a 3 pasos
+Secadero
+no
+  OK   móvil: la ficha del hacha pide la barra, el mango y el mazo de piedra — Hacha de hierro
+
+Tala los árboles adultos y trocea mucho más deprisa que la de piedra.
+
+En la fragua
+3 min
+Lo que pide (de lo que está en la estación)
+Barra de hierroen la estación
+1 de 1
+Mango de herramientaen la estación
+1 de 1
+Mazo de piedralo llevas (no se gasta)
+1/1
+Hacer · 3 min
+×3
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: en el banco de tronco, el mango de herramienta
+  OK   móvil: la ficha del mango pide 1 vara — Mango de herramienta
+
+En la fragua, con una barra de hierro: el hacha de hierro o el pico.
+
+En el banco de tronco
+45 s
+Lo que pide (de lo que está en la estación)
+Varaen la estación
+1 de 1
+Hacer · 45 s
+×3
+  OK   móvil: sin errores en la página — []
+
+TODO CORRECTO
