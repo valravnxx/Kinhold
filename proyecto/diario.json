@@ -7635,5 +7635,21 @@
   "pruebas": "Recorrido de jugador en la nube: 378 bien y 0 mal (76,5 min), con el paso 27 de los oficios entero. Aquí, los oficios desde lo guardado después de cazar, 28 bien y 0 mal (también sin hacha: se hace otra); con MUTAR=1 falla como debe (sin adelantar los días, no sale el cuero). Solo el grupo del recorrido: es lo único que piden los archivos cambiados.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-19T00:24:34+00:00",
+  "fin": "2026-11-19T00:25:22+00:00",
+  "titulo": "Oficios del asentamiento: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el secadero y la carne seca; el raspador de pieles, la piel limpia y el zurrón; el cubo lleno de agua y la corteza de roble; las cubas de curtido y el cuero; el huso y el hilo; los zapatos y el cinto de cuero; y la carbonera y el carbón. Todo publicado y unido a main (la última, la demo v235).",
+   "El recorrido de jugador, sin arcón, lo hace entero en su paso 27: levanta el secadero y seca la carne, raspa las pieles y se hace el zurrón, descorteza robles, llena el cubo en el río, curte el cuero en las cubas, hila con el huso, cose los zapatos y el cinto y saca carbón de la carbonera (378 de 378 en la nube, en la sesión anterior).",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: las cinco estaciones y todo lo que sale de ellas salen del mundo.",
+   "Lo que queda para la revisión: los números son provisionales (2 días reales por cuero y 4 pieles a la vez en las cubas, 4 h reales la carbonera, 40 s el huso y 30 s cada ovillo, 60 s los zapatos y el cinto); la corteza de roble no hace yesca; la carbonera solo admite la yesca; las estaciones nuevas son de código, con el estilo v5, hasta que valravnx mande sus modelos. La silla y las alforjas esperan a P8 y el horno de barro y el pan a P11. No comprobado: el rayado de la correa en la imagen del cinto, que la hace parecer de madera; en el móvil, las capturas de cerca del carbón y la yesca quedan al borde.",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 51 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
