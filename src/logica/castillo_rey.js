@@ -45,6 +45,18 @@ export function sinHierbaCastillo(x, z) {
   return SIN_HIERBA.some(p => dentroDe(p, x, z));
 }
 
+/** cerca de la zona (a menos de `m` metros, mirando en 8 direcciones): para las rocas grandes de los cortados, que no
+ *  tapen el acantilado del castillo ni su embarcadero */
+export function cercaZonaCastillo(x, z, m = 60) {
+  if (x < CAJA_ZONA.x0 - m || x > CAJA_ZONA.x1 + m || z < CAJA_ZONA.z0 - m || z > CAJA_ZONA.z1 + m) return false;
+  if (enZonaCastillo(x, z)) return true;
+  for (let k = 0; k < 8; k++) {
+    const a = k * Math.PI / 4;
+    if (enZonaCastillo(x + Math.cos(a) * m, z + Math.sin(a) * m)) return true;
+  }
+  return false;
+}
+
 export function enZonaCastillo(x, z) {
   if (x < CAJA_ZONA.x0 || x > CAJA_ZONA.x1 || z < CAJA_ZONA.z0 || z > CAJA_ZONA.z1) return false;
   let r = false; const p = ZONA_CASTILLO;

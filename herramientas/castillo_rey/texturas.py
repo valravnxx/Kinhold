@@ -180,14 +180,20 @@ def mamposteria():
 def piedra_labrada():
     W = H = 2 * PXM
     N1 = ruido(H, W, 8, 31); N2 = ruido(H, W, 30, 32, 4); N3 = ruido(H, W, 90, 33, 3)
-    alt = N1 * 0.003 + N2 * 0.0015 + N3 * 0.0008
-    col = tinte((0.92, 0.89, 0.83), H, W) * (1 + N3[..., None] * 0.05 + N2[..., None] * 0.05)
+    # piezas grandes de cantería (0,5–1,2 m) con junta fina: las dovelas, los peldaños y las albardillas se ven de bloques
+    ids, dist = bloques(H, W, [int(x * PXM) for x in (0.55, 0.7, 0.75)], 36, 0.6 * PXM, 1.2 * PXM)
+    borde = dist + N2 * 1.5 - 0.006 * PXM
+    perfil = np.clip(borde / (0.02 * PXM), 0, 1) ** 0.6
+    alt = N1 * 0.003 + N2 * 0.0015 + N3 * 0.0008 + np.where(borde > 0, 0.006 * perfil, -0.003)
+    luz = np.clip(por_bloque(ids, 37, lambda r, n: r.normal(0.97, 0.08, n)), 0.8, 1.12)
+    col = tinte((0.92, 0.89, 0.83), H, W) * (1 + N3[..., None] * 0.05 + N2[..., None] * 0.05) * luz[..., None]
+    col = np.where((borde > 0)[..., None], col, col * 0.55)
     # golpes de trinchante (rayado fino diagonal)
     yy, xx = np.mgrid[0:H, 0:W]
     raya = (np.sin((xx + yy * 0.6) * 0.9 + N2 * 3) > 0.92) * 0.0006
     alt += raya
     col *= cavidad(alt, 4, 60)[..., None]
-    col, alt = envejecer(col, alt, np.full((H, W), 99.0), 35, 0.45, 1.05)
+    col, alt = envejecer(col, alt, borde, 35, 0.45, 1.1)
     liq = np.clip((ruido(H, W, 16, 34, 3) - 1.7) * 3, 0, 1)[..., None]
     col = col * (1 - liq) + liq * np.array([0.80, 0.83, 0.64])
     guardar('piedra', col * 0.9, alt, 1.5)
@@ -342,19 +348,25 @@ def tierra():
     alt = N1 * 0.002 + N2 * 0.002 + N3 * 0.002
     rng = np.random.default_rng(94); yy, xx = np.mgrid[0:H, 0:W]
     piedras = np.zeros((H, W))
-    for _ in range(700):
-        cx, cy, r = rng.uniform(0, W), rng.uniform(0, H), rng.uniform(1.5, 6)
+    for _ in range(420):
+        cx, cy, r = rng.uniform(0, W), rng.uniform(0, H), rng.uniform(1.2, 4.5)
         d = np.hypot((xx - cx + W / 2) % W - W / 2, (yy - cy + H / 2) % H - H / 2)
         piedras = np.maximum(piedras, np.sqrt(np.clip(1 - (d / r) ** 2, 0, 1)))
     alt += piedras * 0.004
-    l = 0.86 + N0 * 0.07 + N2 * 0.05 + N3 * 0.04
-    col = np.stack([l, l * 0.92, l * 0.80], -1)
-    col = np.where((piedras > 0.05)[..., None], np.stack([l * 1.05, l * 1.03, l * 0.98], -1), col)
+    l = 0.8 + N0 * 0.1 + N2 * 0.07 + N3 * 0.05
+    col = np.stack([l, l * 0.9, l * 0.76], -1)
+    hum = np.clip(ruido(H, W, 140, 96, 2) * 0.8 - 0.2, 0, 1)[..., None]     # manchas de humedad, más oscuras
+    col *= 1 - 0.28 * hum
+    tono = (0.82 + 0.25 * np.clip(ruido(H, W, 2.5, 97, 1) * 0.5 + 0.5, 0, 1))[..., None]
+    col = np.where((piedras > 0.05)[..., None], np.stack([l * 0.95, l * 0.92, l * 0.86], -1) * tono, col)
     # briznas y manchas de hierba seca
     seca = np.clip((ruido(H, W, 30, 95, 3) - 0.8) * 1.5, 0, 1)[..., None]
-    col = col * (1 - seca * 0.5) + seca * 0.5 * np.array([0.80, 0.80, 0.55])
+    col = col * (1 - seca * 0.5) + seca * 0.5 * np.array([0.72, 0.72, 0.48])
+    verde = np.clip((ruido(H, W, 45, 98, 3) - 1.3) * 1.6, 0, 1)[..., None]
+    col = col * (1 - verde * 0.6) + verde * 0.6 * np.array([0.40, 0.48, 0.24])
+    grano = ruido(H, W, 1.6, 99, 2); col *= (1 + 0.07 * grano)[..., None]; alt = alt + grano * 0.0008
     col *= cavidad(alt, 4, 30)[..., None]
-    guardar('tierra', col, alt, 1.0)
+    guardar('tierra', col, alt, 1.3)
 
 if __name__ == '__main__':
     pedidas = sys.argv[1:]

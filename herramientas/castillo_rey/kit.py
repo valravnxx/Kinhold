@@ -715,11 +715,59 @@ def antorcha(m, f, u, v, w):
     llamas(m, f, u, v + 0.4, w + 0.2, 0.32, 0.14)
 
 def tapiz(m, f, u0, u1, v0, v1, w, col):
-    m.quad(f(u0, v0, w + 0.03), f(u1, v0, w + 0.03), f(u1, v1, w + 0.03), f(u0, v1, w + 0.03), col)
-    c2 = esc(col, 1.4)
-    m.quad(f(u0 + .15, v0 + .15, w + 0.035), f(u1 - .15, v0 + .15, w + 0.035), f(u1 - .15, v0 + .3, w + 0.035), f(u0 + .15, v0 + .3, w + 0.035), c2)
-    m.quad(f(u0 + .15, v1 - .3, w + 0.035), f(u1 - .15, v1 - .3, w + 0.035), f(u1 - .15, v1 - .15, w + 0.035), f(u0 + .15, v1 - .15, w + 0.035), c2)
-    caja(m, f, u0 - .1, u1 + .1, v1, v1 + 0.05, w + 0.01, w + 0.06, MADERA)
+    """paño colgado de su vara, con pliegues verticales, cenefa clara arriba y abajo y rombos bordados"""
+    n = max(6, int((u1 - u0) / 0.18))
+    prof = lambda k: w + 0.035 + 0.045 * (k % 2)
+    c2 = esc(col, 1.45); c3 = hexc('#b89a52')
+    with con(m, 'tela'):
+        for k in range(n):
+            a = u0 + (u1 - u0) * k / n; b = u0 + (u1 - u0) * (k + 1) / n
+            l0 = 0.8 if k % 2 else 1.0; l1 = 1.0 if k % 2 else 0.8
+            for (y0, y1, c) in ((v0, v0 + 0.25, c2), (v0 + 0.25, v1 - 0.25, col), (v1 - 0.25, v1, c2)):
+                m.quad(f(a, y0, prof(k)), f(b, y0, prof(k + 1)), f(b, y1, prof(k + 1)), f(a, y1, prof(k)), esc(c, l0), esc(c, l1), esc(c, l1), esc(c, l0))
+        # rombos bordados en el paño
+        filas = max(1, int((v1 - v0 - 0.6) / 0.55)); cols = max(1, int((u1 - u0) / 0.6))
+        for i in range(cols):
+            for j in range(filas):
+                cu = u0 + (u1 - u0) * (i + 0.5) / cols; cv = v0 + 0.3 + (v1 - v0 - 0.6) * (j + 0.5) / filas; r = 0.13
+                ww = w + 0.09
+                m.quad(f(cu, cv - r, ww), f(cu + r * 0.75, cv, ww), f(cu, cv + r, ww), f(cu - r * 0.75, cv, ww), c3)
+    caja(m, f, u0 - .1, u1 + .1, v1, v1 + 0.05, w + 0.01, w + 0.08, MADERA)
+    for s in (u0 - 0.1, u1 + 0.05): caja(m, f, s, s + 0.05, v1 - 0.02, v1 + 0.08, w, w + 0.1, HIERRO)
+
+def alfombra(m, f, u, w, largo, ancho, col, ang=0.0, v=0.0):
+    """estera tejida en el suelo, con cenefa y flecos"""
+    g = f.sub(u, w, ang)
+    with con(m, 'tela'):
+        m.quad(g(-largo / 2, v + 0.012, ancho / 2), g(largo / 2, v + 0.012, ancho / 2), g(largo / 2, v + 0.012, -ancho / 2), g(-largo / 2, v + 0.012, -ancho / 2), col)
+        c2 = esc(col, 1.5)
+        for (a, b, c, d) in ((-largo / 2 + 0.1, largo / 2 - 0.1, ancho / 2 - 0.2, ancho / 2 - 0.1), (-largo / 2 + 0.1, largo / 2 - 0.1, -ancho / 2 + 0.1, -ancho / 2 + 0.2),
+                             (-largo / 2 + 0.1, -largo / 2 + 0.2, -ancho / 2 + 0.1, ancho / 2 - 0.1), (largo / 2 - 0.2, largo / 2 - 0.1, -ancho / 2 + 0.1, ancho / 2 - 0.1)):
+            m.quad(g(a, v + 0.016, d), g(b, v + 0.016, d), g(b, v + 0.016, c), g(a, v + 0.016, c), c2)
+        for s in (-1, 1):   # flecos
+            m.quad(g(s * largo / 2, v + 0.01, ancho / 2), g(s * (largo / 2 + 0.07), v + 0.006, ancho / 2), g(s * (largo / 2 + 0.07), v + 0.006, -ancho / 2), g(s * largo / 2, v + 0.01, -ancho / 2), esc(col, 1.25))
+
+def candelabro(m, f, u, w, v=0.0, alto=1.5):
+    """candelero de pie, de hierro, con tres velas encendidas"""
+    cilindro(m, f, u, w, 0.18, v, v + 0.04, HIERRO, 8)
+    for a in (0, 2.1, 4.2): caja(m, f, u + math.cos(a) * 0.12 - 0.015, u + math.cos(a) * 0.12 + 0.015, v, v + 0.12, w + math.sin(a) * 0.12 - 0.015, w + math.sin(a) * 0.12 + 0.015, HIERRO)
+    cilindro(m, f, u, w, 0.022, v, v + alto, HIERRO, 6)
+    caja(m, f, u - 0.25, u + 0.25, v + alto - 0.02, v + alto + 0.02, w - 0.02, w + 0.02, HIERRO)
+    for du in (-0.24, 0.0, 0.24):
+        cilindro(m, f, u + du, w, 0.045, v + alto + 0.02, v + alto + 0.05, HIERRO, 6)
+        cilindro(m, f, u + du, w, 0.022, v + alto + 0.05, v + alto + 0.2 - abs(du) * 0.2, hexc('#e8dcc0'), 6)
+        llamas(m, f, u + du, v + alto + 0.2 - abs(du) * 0.2, w, 0.07, 0.03)
+
+def vajilla(m, f, u, w, v, largo=1.6):
+    """en la mesa: platos, cuencos, una jarra, una hogaza y un candil"""
+    for k in range(int(largo / 0.45)):
+        x = u - largo / 2 + 0.25 + k * 0.45
+        for s in (-1, 1):
+            cilindro(m, f, x, w + s * 0.22, 0.11, v, v + 0.015, hexc('#8a7f6e'), 8)   # plato de peltre
+            if (k + (s > 0)) % 2: cilindro(m, f, x + 0.1, w + s * 0.12, 0.05, v, v + 0.06, hexc('#7a5a3c'), 7, True, 0.06)   # cuenco
+    cilindro(m, f, u, w, 0.07, v, v + 0.16, hexc('#8a6a48'), 8, True, 0.05); cilindro(m, f, u, w, 0.05, v + 0.16, v + 0.24, hexc('#8a6a48'), 8, True, 0.06)   # jarra
+    bola(m, *f(u + 0.3, v + 0.05, w + 0.02), 0.11, 0.06, hexc('#a07a46'), 7, 3)   # hogaza
+    cilindro(m, f, u - 0.35, w, 0.04, v, v + 0.06, HIERRO, 6); llamas(m, f, u - 0.35, v + 0.06, w, 0.06, 0.03)
 
 def carro(m, f, u, w, ang=0.0):
     g = f.sub(u, w, ang)
