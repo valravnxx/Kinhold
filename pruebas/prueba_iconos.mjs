@@ -42,7 +42,8 @@ for (const n of hace) {
 }
 // las que aún salen con el hatillo: tiene que decirlo el índice (el panel pone «sin modelo aún»)
 const sinModelo = Object.entries(indice).filter(([, v]) => !v.propio).map(([k]) => k);
-ok(sinModelo.includes('hacha_hierro'), 'el hacha de hierro sale como provisional (hoy usa el modelo del hacha de mano)');
+// (19 nov: el hacha de hierro ya sale de la fragua, con el modelo del hacha de hierro del juego; y el pico, con el suyo)
+ok(!sinModelo.includes('hacha_hierro') && !sinModelo.includes('pico'), 'el hacha de hierro y el pico, con su modelo');
 // lo que piden y dan las recetas de P3 ya tiene su modelo (src/juego/modelos_objetos.js): ninguna receta enseña el hatillo
 const deRecetas = new Set(); for (const r of Object.values(RECETAS)) { deRecetas.add(r.da); for (const t of Object.keys(r.gasta)) deRecetas.add(t); }
 for (const t of deRecetas) ok(indice[t] && (MUTAR === '4' && t === 'odre' ? false : indice[t].propio), `«${t}», de las recetas, tiene su modelo`);

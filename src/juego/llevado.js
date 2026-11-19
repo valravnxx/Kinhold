@@ -560,7 +560,8 @@ function enMano(t) {
   // (P10, 19 nov) el mango de herramienta, cogido por el pomo como el de un hacha; los clavos, un puñado en el puño: las
   // cabezas asoman por el lado del índice y las puntas por el del meñique
   else if (t === 'mango') loteMango(L);
-  else if (t === 'clavo') for (let i = 0; i < 4; i++) clavoEn(L, (i % 2 - 0.5) * 0.012, 0.045 + (i % 3) * 0.006, 0.006 + (i >> 1) * 0.011, { z: (i - 1.5) * 0.06, x: (i % 2 - 0.5) * 0.1 }, 1, i);
+  // (la caña cruza la palma, junto a los dedos, y las cabezas asoman 3 o 4 cm por el lado del índice: dentro de la mano no se veían)
+  else if (t === 'clavo') for (let i = 0; i < 4; i++) clavoEn(L, (i % 2 - 0.5) * 0.014, 0.1 + (i % 3) * 0.008, 0.035 + (i >> 1) * 0.012, { z: (i - 1.5) * 0.08, x: (i % 2 - 0.5) * 0.12 }, 1, i);
   else if (t === 'lasca_silex') lasca(L, 0, 0.045, 0.012);
   else if (t === 'palo_cavador') paloCavador(L, 0.4);
   else if (t === 'cordel') madeja(L, 0.045, 0.004, 7, CORDEL);

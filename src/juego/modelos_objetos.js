@@ -774,7 +774,7 @@ const CLAVO = 0x34322f, CLAVO_CLARO = 0x5a5753;
 export function clavoEn(L, x, y, z, rot = null, s = 1, k = 0) {
   const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot?.x || 0, rot?.y || 0, rot?.z || 0)).setPosition(x, y, z);
   const pon = (g, c, dy, o) => { g.translate(0, dy, 0); L.add(g, c, x, y, z, m.clone(), { plano: true, tex: 'piedra', brillo: 1.1, sinSuelo: true, ...o }); };
-  const cana = new THREE.CylinderGeometry(0.0012 * s, 0.0042 * s, 0.075 * s, 4); cana.rotateY(Math.PI / 4);   // cuadrada, que se afina
+  const cana = new THREE.CylinderGeometry(0.0042 * s, 0.0012 * s, 0.075 * s, 4); cana.rotateY(Math.PI / 4);   // cuadrada, que se afina
   pon(cana, k % 3 ? CLAVO : CLAVO_CLARO, -0.0375 * s - 0.003 * s);
   const cab = new THREE.ConeGeometry(0.0068 * s, 0.0045 * s, 4); cab.rotateY(Math.PI / 4);   // la cabeza en rosa: cuatro facetas que suben a un pico romo
   pon(cab, CLAVO_CLARO, 0.0022 * s - 0.003 * s);
@@ -782,8 +782,8 @@ export function clavoEn(L, x, y, z, rot = null, s = 1, k = 0) {
 function clavos(n, id) {   // un puñado: tumbados unos sobre otros, en todas direcciones (como mucho 10)
   const L = lote(0.02), k = Math.min(10, n || 1);
   for (let i = 0; i < k; i++) {
-    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / 10) * 0.045, capa = i < 6 ? 0 : 1;
-    clavoEn(L, Math.cos(a) * d, 0.0045 + capa * 0.007, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, 7 * i + 1) - 0.5) * 0.15, y: i * 2.2 + az(id, 7 * i + 3) * 1.5 }, 1, i);
+    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / 10) * 0.022, capa = i < 5 ? 0 : 1;
+    clavoEn(L, Math.cos(a) * d, 0.0045 + capa * 0.007, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, 7 * i + 1) - 0.5) * 0.15, y: az(id, 0) * 6.28 + (i % 2) * Math.PI + (az(id, 7 * i + 3) - 0.5) * 0.7 }, 1, i);
   }
   return mallas(L);
 }

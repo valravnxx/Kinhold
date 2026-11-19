@@ -97,10 +97,10 @@ def recorrido(nav, nombre, pref, vista, movil):
     pg.evaluate(f"(([x, z]) => {{ const k = {K}, s = k.sueloObjetos.suelo, a = Date.now(); s.dejar({{ tipo: 'mango', n: 3 }}, x - 0.45, z - 0.1, a, 'vista', false); s.dejar({{ tipo: 'pico', n: 1 }}, x + 0.4, z - 0.15, a, 'vista', false); s.dejar({{ tipo: 'clavo', n: 10 }}, x - 0.3, z + 0.4, a, 'vista', false); s.dejar({{ tipo: 'hacha_hierro', n: 1 }}, x + 0.35, z + 0.45, a, 'vista', false); k.sueloObjetos.refrescar(); }})", [c['x'], c['z']])
     n = pg.evaluate(f"{K}.sueloObjetos.suelo.visibles(Date.now()).filter(o => ['mango', 'pico', 'clavo', 'hacha_hierro'].includes(o.cosa.tipo)).length")
     comprobar(f'{nombre}: el mango, el pico, los clavos y el hacha se dejan en el suelo', n == 4, str(n))
-    mirar(pg, c, 0, 0, 0.5, 2.4 * D, 0.95, 0.9)
+    mirar(pg, c, 0, 0.15, 0.5, 2.0 * D, 0.95, 3.2)   # (el jugador, a 3 m: fuera de la vista y del alcance de coger)
     pg.screenshot(path=f'{SALIDA}/{pref}_suelo.png', timeout=180000)
     if not movil:
-        mirar(pg, c, -0.3, 0.4, 0.5, 0.9, 1.1, 0.9)
+        mirar(pg, c, -0.3, 0.4, 0.5, 0.75, 1.0, 3.2)
         pg.screenshot(path=f'{SALIDA}/{pref}_suelo_clavos.png', timeout=180000)
     # el panel: la fragua y el banco de tronco, puestos al lado
     pg.add_style_tag(content='body > :not(canvas) { visibility: visible !important; }')
