@@ -1,0 +1,10 @@
+  OK   lo mismo da lo mismo (dos veces el mismo mundo, las mismas zonas y comarcas) — 5597 de 5597
+  OK   las 8 comarcas aprobadas (A a H), cada una con su tamaño (±15 %) — C 331 km², D 248 km², E 244 km², B 308 km², F 172 km², H 177 km², A 436 km², G 156 km²
+  OK   las comarcas tienen los nombres que eligió valravnx (30 oct) — Breiddal, Motdale, Nordwold, Lindholt, Strandvang, Furulid, Sudholt, Ravnsnes
+  OK   toda la tierra de la isla tiene zona y comarca — 0 de 207100 puntos sin comarca
+  OK   la salida de los jugadores está en una zona con comarca — comarca D, zona 4500156
+  OK   zonas de aproximadamente 1 km² (de media entre 0,8 y 1,5 km², ninguna de más de 3) — 1838 zonas, media 1.17 km², la mayor 2.39 km²
+  OK   la tabla de las comarcas aprobadas casa con las cuencas (más del 85 % de las zonas) — 1658 de 1717
+  OK   los lindes no son una rejilla: la separación entre lindes en una recta varía mucho — media 947 m, desviación 423 m
+
+TODO CORRECTO
