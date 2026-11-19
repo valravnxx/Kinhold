@@ -108,7 +108,8 @@ def construir_torre(m, t, patio, pisos_extra=(), base_foso=False):
         # cornisa de canecillos bajo la terraza
         u = 0.3
         while u < L - 0.2:
-            caja(m, f2, u, u + 0.25, gt - 0.45, gt - 0.05, 0, 0.25, PIEDRA_CLARA, .85); u += 0.85
+            with con(m, 'sillar'): caja(m, f2, u, u + 0.25, gt - 0.45, gt - 0.05, 0, 0.25, PIEDRA_CLARA, .85)
+            u += 0.85
         caja(m, f2, 0, L, gt - 0.05, gt + 0.05, 0, 0.3, PIEDRA_CLARA, .9)
     # suelos: tablas en las plantas, losas en la terraza; hueco del caracol
     hueco_c = (cu - r_c - 0.1, cu + r_c + 0.1, cw - r_c - 0.1, cw + r_c + 0.1)

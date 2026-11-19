@@ -181,7 +181,7 @@ def cinta(m, pts, ancho, mat, col, alto, borde=0.35, sem=0, paso=0.4, n_trav=6):
     junto = hexc('#56603a') if mat == 'tierra' else hexc('#6a5a44')
     def tono(k):
         e = min(k, n_trav - k) / max(1, n_trav)
-        f_ = 0.55 if e == 0 else (0.22 if e <= 1 / n_trav + 1e-9 else 0.0)
+        f_ = 0.3 if e == 0 else (0.1 if e <= 1 / n_trav + 1e-9 else 0.0)
         return [col[i] * (1 - f_) + junto[i] * f_ for i in range(3)]
     with con(m, mat):
         for i in range(len(S) - 1):
@@ -200,5 +200,4 @@ def cinta(m, pts, ancho, mat, col, alto, borde=0.35, sem=0, paso=0.4, n_trav=6):
 
 def camino_explanada(m, pts, ancho=3.6):
     """el camino de la explanada: empedrado en medio y tierra pisada a los lados"""
-    cinta(m, pts, ancho + 2.6, 'tierra', mezcla(hexc('#7a6b56'), hexc('#5d6a3a'), 0.2), 0.04, 0.6, 1)
     cinta(m, pts, ancho, 'canto', hexc('#8a8276'), 0.07, 0.3, 2)

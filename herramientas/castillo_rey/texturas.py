@@ -200,7 +200,7 @@ def piedra_labrada():
     col, alt = envejecer(col, alt, borde, 35, 0.4, 1.0)
     liq = np.clip((ruido(H, W, 16, 34, 3) - 1.7) * 3, 0, 1)[..., None]
     col = col * (1 - liq) + liq * np.array([0.80, 0.83, 0.64])
-    guardar('piedra', col * 0.9, alt, 1.5)
+    guardar('piedra', col * 0.77, alt, 1.5)
 
 # ---------------------------------------------------------------- enlosado (losas irregulares, 3 × 3 m)
 def losas(nombre='losa', tam=3, sem=41, lado=(0.45, 0.85), junta=0.025, canto=False):

@@ -2,8 +2,8 @@
 // el jugador se acerca (a 900 m) y no antes: son unos 2 MB.
 //
 // La malla va en docs/recursos/mundo/castillo-rey-v2/castillo.bin.gz (gzip): «KCR2», el número de vértices (uint32),
-// la escala (float32, 0,01 m), el número de materiales (uint32) y, por cada uno, su nombre (uint8 de largo + letras) y
-// sus vértices (uint32); luego, por vértice y en ese orden: la posición (int16 × 3: x y z desde ORIGEN_CASTILLO, y la
+// la escala (float32, 0,002 m), el número de materiales (uint32) y, por cada uno, su nombre (uint8 de largo + letras) y
+// sus vértices (uint32); luego, por vértice y en ese orden: la posición (int16 × 3, en pasos de la escala: x y z desde ORIGEN_CASTILLO, y la
 // altura del mundo), el color (uint8 × 3), la UV (int16 × 2, en centímetros de pared o de suelo) y la altura sobre su
 // suelo (uint8, en decímetros). Cada material lleva su textura de color y de relieve (tex/, de herramientas/castillo_rey/
 // texturas.py), repetida cada TAM metros, con la luz del estilo v5 (Lambert, color por vértice). Y el desgaste por
@@ -18,7 +18,7 @@ import { crearChoquesCastillo, ORIGEN_CASTILLO } from '../logica/castillo_rey.js
 export const CARPETA_CASTILLO = 'recursos/mundo/castillo-rey-v2/';
 // metros que cubre cada textura (u, v), cuánto relieve y cuánto musgo coge (0: nada)
 const MATS = {
-  sillar: { tam: [3.2, 1.6], relieve: 1.2, musgo: 1 }, mamp: { tam: [5, 2.5], relieve: 1.3, musgo: 1 }, piedra: { tam: [2, 2], relieve: 0.9, musgo: 0.55 },
+  sillar: { tam: [3.2, 1.6], relieve: 1.2, musgo: 1 }, mamp: { tam: [5, 2.5], relieve: 1.3, musgo: 1 }, piedra: { tam: [1, 1], relieve: 1.3, musgo: 0.55 },
   losa: { tam: [3, 3], relieve: 1.0, musgo: 0.7 }, canto: { tam: [2, 2], relieve: 0.7, musgo: 0.6 }, tierra: { tam: [4, 4], relieve: 0.6, musgo: 0.3 },
   madera: { tam: [2, 2], relieve: 0.7, musgo: 0.2 }, tabla: { tam: [2, 2], relieve: 0.8, musgo: 0 }, teja: { tam: [2, 1], relieve: 1.2, musgo: 0.5 },
   paja: { tam: [1, 1], relieve: 1.0, musgo: 0.2 }, tela: { tam: [0.5, 0.5], relieve: 1.0, musgo: 0 }, liso: { tam: null, relieve: 0, musgo: 0 },

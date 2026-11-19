@@ -17,7 +17,7 @@ def varia(c, f=0.08): r = 1 - f + 2 * f * az(); return esc(c, r)
 
 # ---------------- materiales (la referencia: piedra gris parda, teja parda gastada, madera oscura, revoco ocre)
 PIEDRA = hexc('#8c8475'); PIEDRA_CLARA = hexc('#9e9686'); PIEDRA_OSC = hexc('#70695d'); MORTERO = hexc('#6a6357')
-MAMPOST = hexc('#877e6e'); SILLAR_DOV = hexc('#a1988a')
+MAMPOST = hexc('#877e6e'); SILLAR_DOV = hexc('#8e8678')
 MADERA = hexc('#46372b'); MADERA_CL = hexc('#5f4d3c'); MADERA_VIEJA = hexc('#5a4a3a'); TABLA = hexc('#6b5a48'); HIERRO = hexc('#2c2a28')
 TEJA = hexc('#6e5a4b'); PAJA = hexc('#8c7a4e'); MUSGO = hexc('#56653a'); HUMEDAD = hexc('#5b5a46')
 REVOCO = hexc('#cdb48a'); CAL = hexc('#d9cfb8'); TIERRA = hexc('#6f5d45'); BARRO = hexc('#5c4a36'); LOSA = hexc('#8b8475')
@@ -261,6 +261,8 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
     inn = [contorno(h, h.get('derrame', 0.0)) for h in H]
     _cara_con_huecos(m, f, u0, u1, v0, v1, w1, ext, mort, True)
     _cara_con_huecos(m, f, u0, u1, v0, v1, w0, inn, esc(dentro_col or mort, 1.0), False)
+    if abs(w1 - w0) > 0.3:
+        with con(m, 'liso'): _cara_con_huecos(m, f, u0, u1, v0, v1, (w0 + w1) / 2, [contorno(h, h.get('derrame', 0.0) / 2) for h in H], esc(mort, 0.3), True)
     suelo = v0 if suelo is None else suelo
     _piedras(m, f, u0, u1, v0, v1, w1, H, col, tipo, +1, suelo)
     if piedras_dentro:
@@ -486,14 +488,14 @@ def rastrillo(m, f, u0, u1, v0, v1, w, col=MADERA, alto_bajado=None):
         pico = f(u, v0 - 0.32, w)
         for k in range(4):
             (a1, b1), (a2, b2) = q[k], q[(k + 1) % 4]
-            m.tri(f(a2, v0, b2), f(a1, v0, b1), pico, esc(HIERRO, 0.8 + 0.1 * k))
-        caja(m, f, u - b / 2 - 0.012, u + b / 2 + 0.012, v0, v0 + 0.12, w - b / 2 - 0.012, w + b / 2 + 0.012, HIERRO)   # el regatón
+            with con(m, 'liso'): m.tri(f(a2, v0, b2), f(a1, v0, b1), pico, esc(HIERRO, 0.8 + 0.1 * k))
+        with con(m, 'liso'): caja(m, f, u - b / 2 - 0.012, u + b / 2 + 0.012, v0, v0 + 0.12, w - b / 2 - 0.012, w + b / 2 + 0.012, HIERRO)   # el regatón
     v = v0 + 0.4
     while v < v1 - 0.1:
         with con(m, 'madera'): caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.72), 0.85)
         for i in range(n + 1):   # pletinas de hierro en cada cruce
             u = u0 + (u1 - u0) * i / n
-            caja(m, f, u - 0.07, u + 0.07, v - 0.02, v + b + 0.02, w - b / 2 - 0.045, w + b / 2 + 0.045, HIERRO)
+            with con(m, 'liso'): caja(m, f, u - 0.07, u + 0.07, v - 0.02, v + b + 0.02, w - b / 2 - 0.045, w + b / 2 + 0.045, HIERRO)
         v += 0.42
 
 def ventana(m, f, u, v, ancho, alto, w, postigos=True, col=MADERA_CL, arco=None):

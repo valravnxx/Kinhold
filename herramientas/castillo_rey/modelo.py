@@ -136,7 +136,7 @@ import gzip, os, struct
 DEST = os.environ.get('DEST', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'docs', 'recursos', 'mundo', 'castillo-rey-v1'))
 os.makedirs(DEST, exist_ok=True)
 # v2: por material (cada uno, su textura): posición (cm), color, UV (en metros × 100) y la altura sobre su suelo (dm)
-Pq = np.asarray(P, dtype=np.float64).reshape(-1, 3).copy()
+Pq = np.array(m.P, dtype=np.float64).reshape(-1, 3)   # (de las coordenadas en doble precisión: en float32, a 217 km del origen, se pierde 1,5 cm)
 Pq[:, 0] -= ORIGEN[0]; Pq[:, 2] -= ORIGEN[1]
 nv = len(Pq)
 MAT = np.array([kit.MATERIALES.index(x) for x in m.M], dtype=np.int32)
@@ -209,11 +209,15 @@ q = np.round(Pq * 100).astype(np.int32)
 assert np.abs(q).max() < 32767, 'fuera de rango'
 # las astillas que al redondear al centímetro se quedan sin área o se dan la vuelta: fuera (dejaban rendijas de luz
 # a lo largo de las diagonales de la triangulación)
-_Tq = q.reshape(-1, 3, 3).astype(np.float64)
+_Tq = (np.round(Pq * 500).astype(np.int64) / 5.0).reshape(-1, 3, 3)
 _nq = np.cross(_Tq[:, 1] - _Tq[:, 0], _Tq[:, 2] - _Tq[:, 0])
 _aq = np.linalg.norm(_nq, axis=1)
 _dot = (_nq * nrm).sum(1) / np.maximum(_aq, 1e-9)
-_vale = (_aq > 0.5) & (_dot > 0.2)
+_lq = np.stack([np.linalg.norm(_Tq[:, 1] - _Tq[:, 0], axis=1), np.linalg.norm(_Tq[:, 2] - _Tq[:, 1], axis=1), np.linalg.norm(_Tq[:, 0] - _Tq[:, 2], axis=1)], 1).max(1)
+_finas = ((_aq / np.maximum(_lq, 1e-9)) < 6.0) & (_lq > 50) & np.isin(MAT.reshape(-1, 3)[:, 0], [kit.MATERIALES.index(x) for x in ('sillar', 'mamp', 'piedra', 'losa', 'canto', 'tierra')])   # (astillas de los paños: de menos de 6 cm de ancho y más de medio metro de largo)
+# las finas que al redondear se tuercen más de 3° dan otra luz y se ven como un hilo claro: fuera (la rendija que dejan,
+# de un centímetro, la tapa el alma oscura del muro)
+_vale = (_aq > 0.5) & (_dot > 0.2) & ~(_finas & (_dot < 0.9986))
 print('astillas quitadas al redondear:', int((~_vale).sum()))
 orden = orden[_vale[orden // 3]]
 nv = len(orden)
@@ -221,7 +225,9 @@ UVq = np.round(UV * 100)
 UVq = (UVq - np.floor(UVq.reshape(-1, 3, 2).min(1) / 40000 + 0).repeat(3, 0) * 0).astype(np.int64)
 assert np.abs(UVq).max() < 32767, 'UV fuera de rango'
 cuentas = [(nm, int((MAT[orden] == i).sum())) for i, nm in enumerate(kit.MATERIALES) if (MAT[orden] == i).any()]
-cab = b'KCR2' + struct.pack('<If', nv, 0.01) + struct.pack('<I', len(cuentas))
+q = np.round(Pq * 500).astype(np.int32)   # (posiciones en pasos de 2 mm: caben en int16 hasta ±65 m)
+assert np.abs(q).max() < 32767, 'fuera de rango (2 mm)'
+cab = b'KCR2' + struct.pack('<If', nv, 0.002) + struct.pack('<I', len(cuentas))
 for nm, k in cuentas: cab += struct.pack('<B', len(nm)) + nm.encode() + struct.pack('<I', k)
 C8 = (np.clip(np.asarray(Cc).reshape(-1, 3), 0, 1) * 255).round().astype(np.uint8)
 cuerpo = cab + q[orden].astype('<i2').tobytes() + C8[orden].tobytes() + UVq[orden].astype('<i2').tobytes() + HS[orden].tobytes()
