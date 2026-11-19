@@ -7702,5 +7702,23 @@
   "pruebas": "Lógica: el castillo se recorre entero (433 puntos). Nube: lógica, velocidad con pocos fotogramas, el castillo se recorre andando y la demo única, bien. No comprobado: los fotogramas en un móvil de verdad.",
   "capturas": "capturas/demo-v239",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-19T08:22:51+00:00",
+  "fin": "2026-11-19T17:09:53+00:00",
+  "titulo": "La sierra y las tablas (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "En la fragua encendida, con el mazo de piedra de martillo y 2 barras de hierro y 2 mangos dejados en ella, se bate la sierra de tronzar: una hoja de hierro de 1 m con la barriga de dientes abajo y un mango en cada punta. Lo hace el servidor, con su autor.",
+   "Con la sierra en la mano, el tronco largo se tronza en 8 golpes (18 con el hacha de hierro). En el banco de tronco, con un tronco corto y la sierra (no se gasta), salen 4 tablas, que se guardan en el acopio de troncos, planas encima de los troncos.",
+   "Serrando, el personaje se pone de rodillas junto al tronco, con la hoja sobre él; el brazo lleva y trae la sierra y el cuerpo acompaña cada pasada. Está puesto por código hasta que llegue la animación de serrar.",
+   "La mano queda abierta con el mango en la palma, como las demás herramientas, por la decisión de valravnx de dejar las manos abiertas pero con la herramienta donde toca.",
+   "En el cinto, la sierra lleva el mango por fuera de la camisa y la hoja hacia atrás, poco caída: lo más bajo queda a 0,8 m del suelo.",
+   "En el suelo, la sierra y las tablas, con su modelo, se inclinan con el terreno de punta a punta (en cuesta, media hoja quedaba bajo tierra).",
+   "Las notas de la versión salen en la demo v240, porque la v239 es el castillo del rey."
+  ],
+  "pruebas": "En la nube: la sierra y las tablas, lógica, recorrido (77 min), tronzar y partir, panel de fabricación, panel de inventario, objetos en el suelo, demo única, construir, el hogar, la cama, los colgaderos y la velocidad, todo correcto. Fallan, igual que en main (a53aa42), «lo que llevas se ve puesto» (el tronco al hombro y el cinturón) y «los almacenajes» («desplegado cuenta lo guardado: 40 piedras»): no son de este cambio. La segunda mirada a las capturas de PC y móvil dice sí. Las comprobaciones nuevas de la prueba (cinto alto, cabeza serrando, vaivén, sierra y tablas asentadas) fallaron con lo de antes.",
+  "capturas": "capturas/demo-v240",
+  "estado": "ok"
  }
 ]
