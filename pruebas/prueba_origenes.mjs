@@ -98,6 +98,8 @@ for (let nuevo = true; nuevo;) {
   // 19 nov), bloques de piedra en bruto y piedra
   if (tieneAlguna([...MAZOS, ...PICOS]) && poner('piedra', 'romper una roca')) nuevo = true;
   if (MUTAR !== '4' && tieneAlguna([...PICOS]) && poner('bloque_piedra', 'romper una roca grande con el pico')) nuevo = true;
+  // las vetas pequeñas de hierro en la roca (19 nov; src/logica/vetas_hierro.js): con el pico, mineral de hierro
+  if (tieneAlguna([...PICOS]) && poner('mineral_hierro', 'picar una veta de hierro con el pico')) nuevo = true;
   // la canoa de un tronco (P11d; src/logica/canoa.js): el tronco largo, vaciado a golpes de hacha y con brasas de una hoguera
   if (hay.has('tronco_largo') && tieneAlguna(Object.keys(HACHAS)) && hay.has('est_hoguera') && poner('canoa', 'vaciar un tronco largo con el hacha y las brasas de la hoguera')) nuevo = true;
   // la caza (9 nov; en el modo arma, src/logica/arma_mano.js): lanzando la lanza endurecida, la liebre (entera, para despiezarla)
