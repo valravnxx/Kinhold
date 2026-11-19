@@ -2682,9 +2682,10 @@
     },
     {
      "nombre": "Las vetas de hierro en la roca: las vetas pequeñas del mapa (una cada 14 km, GDD) se ven en el mundo como un afloramiento de roca rojiza y, con el pico, dan mineral de hierro, mucho más que una mancha de pantano antes de agotarse. Capturas al lado de la referencia. Cadena: pico ← la fragua",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-19T21:24:13+00:00",
-     "rama": "trabajo/20261119-2124"
+     "rama": "trabajo/20261119-2124",
+     "fin": "2026-11-19T23:07:20+00:00"
     },
     {
      "nombre": "La arcilla y el horno cerámico: en la ribera, junto a donde sale el barro, se cava con la pala de madera 1 cesta de arcilla (inagotable, como el barro); el horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) como estación, que se enciende con leña. Cadena: pala de madera ← el banco de tronco; leña ← partir un tronco corto con el hacha",
@@ -4977,6 +4978,13 @@
      "archivo": "jugar/demo/v241.html",
      "capturas": "capturas/demo-v241",
      "notas": "La cantera: con el pico se rompen las rocas grandes del mundo, que dejan bloques de piedra en bruto y piedra suelta"
+    },
+    {
+     "v": "v242",
+     "fecha": "2026-11-19",
+     "archivo": "jugar/demo/v242.html",
+     "capturas": "capturas/demo-v242",
+     "notas": "Las vetas de hierro en la roca: el afloramiento rojizo de cada veta pequeña del mapa se pica con el pico y suelta mineral de hierro, mucho más que una mancha de pantano"
     }
    ]
   },
