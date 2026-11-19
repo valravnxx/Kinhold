@@ -1,0 +1,33 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3247 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3610 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5280 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3674 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3242 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3680 KB
+dist/kinhold_trozos.html 3294 KB
+hilo de los trozos 38 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: la veta de hierro en la roca
+  OK   móvil: y agotada no se pica
+  OK   móvil: sin errores en la página
+
+Todo correcto
+
+TODO CORRECTO · capturas en /tmp/kinhold_capturas
+tardó 226 s
