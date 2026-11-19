@@ -3518,7 +3518,7 @@ function vestir() {
   // en línea, los demás lo ven igual: se vuelve a mandar el aspecto si ha cambiado lo que se ve
   if (huella !== vestidoVisto) { vestidoVisto = huella; if (enLinea && enLinea.mandarAspecto) enLinea.mandarAspecto(); }
   // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
-  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo] || inventario().lugares[l]?.tipo === 'mazo_piedra');
+  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo] || ['mazo_piedra', 'pico'].includes(inventario().lugares[l]?.tipo));
   // lo demás que llevas (cinturón y lo que cuelga, espalda, hombro y manos) se ve puesto (src/juego/llevado.js); en
   // línea, a los demás se lo cuenta el servidor con tu aspecto, sacado de su inventario
   jugador.ponerLlevado(llevadoDe(inventario().lugares));

@@ -49,7 +49,7 @@ import { estadoFuego } from '../logica/fuego.js';
 import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
-import { modeloHacha } from './personaje.js';
+import { modeloHacha, modeloPico } from './personaje.js';
 import { modeloHachaPiedra, modeloMazoPiedra, mallaPiel, moteadoPiel, moteadoPelo, PIEL_LIMPIA, loteFuelle } from './modelos_objetos.js';
 import { conMeshy, hayMeshy, precargarMeshy } from '../mundo/meshy_objetos.js';
 
@@ -1260,6 +1260,7 @@ function herramientaSuelta(t) {
   if (t === 'hacha_piedra') return modeloHachaPiedra();
   if (t === 'mazo_piedra') return modeloMazoPiedra();
   if (t === 'hacha_mano' || t === 'hacha_hierro') return modeloHacha();
+  if (t === 'pico') { const p = modeloPico(); p.visible = true; return p; }   // (P10)
   return mallas(loteEnMano(t));
 }
 // pone o en x con su lado delgado contra el muro (de canto) y lo sube o lo baja hasta que su punto más alto quede en y

@@ -28,6 +28,8 @@
 //  - lupia de hierro (P10, 17 nov): una masa esponjosa gris negruzca con poros, escoria vidriosa abajo y algo de óxido.
 //  - fuelle (P10, 19 nov): dos tablas en pera con el cuero en acordeón entre ellas, la boquilla y los mangos.
 //  - barra de hierro (P10, 19 nov): una barra cuadrada batida, irregular, con la cascarilla negra de la forja.
+//  - mango de herramienta (P10, 19 nov): la vara desbastada y alisada, más gorda en el pomo y con la punta en cuña.
+//  - clavos (P10, 19 nov): de forja, de caña cuadrada que se afina en punta y cabeza batida en rosa, unos sobre otros.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - huso (oficios, 18 nov): el palo de vara con la tortera de piedra abajo y la husada de hilo encima, tumbado.
 //  - ovillo de hilo (oficios, 18 nov): el hilo pálido de ortiga devanado en una bola, con el cabo suelto.
@@ -739,6 +741,53 @@ function barraHierro(n, id) {
   return mallas(L);
 }
 
+// El mango de herramienta (P10, 19 nov, el del banco de tronco): la vara, cortada a unos 70 cm, desbastada a ocho caras y
+// alisada, de fresno claro con su veta; algo más gorda y redondeada abajo, en el pomo, y arriba la punta rebajada en
+// cuña, donde entrará el ojo de la cabeza de hierro. loteMango() da sus piezas a lo largo de +Y con la mano en el origen
+// (como el hacha), para la mano y para el suelo.
+export const MANGO = { largo: 0.72, r: 0.017 };
+export function loteMango(L = new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 }), m = null) {
+  const add = (g, c, x, y, z, rot, o) => { const q = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot?.x || 0, rot?.y || 0, rot?.z || 0)).setPosition(x, y, z); if (m) q.premultiply(m); const e = q.elements; L.add(g, c, e[12], e[13], e[14], q, o); };
+  const { largo, r } = MANGO, y0 = -0.1;
+  add(cil(r * 0.92, r * 1.12, largo - 0.1, 8), 'tabla', 0, y0 + (largo - 0.1) / 2 + 0.04, 0, null, { tex: 'veta' });          // la caña, más gorda abajo
+  add(new THREE.SphereGeometry(r * 1.35, 8, 6), 'tabla', 0, y0 + 0.02, 0, null, { escala: v3(1, 0.85, 1.25), tex: 'veta' });  // el pomo
+  add(cil(r * 1.05, r * 1.35, 0.03, 8), 'tabla', 0, y0 + 0.05, 0, null, { tex: 'veta' });
+  const cuna = new THREE.CylinderGeometry(r * 0.55, r * 0.92, 0.08, 8); cuna.scale(1, 1, 1.5);                              // la punta en cuña
+  add(cuna, 'tabla', 0, y0 + largo - 0.02, 0, null, { tex: 'veta' });
+  add(new THREE.CircleGeometry(r * 0.55, 8), 'corte', 0, y0 + largo + 0.0201, 0, { x: -Math.PI / 2 }, { escala: v3(1, 1.5, 1) });   // el corte, claro
+  return L;
+}
+function mangos(n, id) {   // tumbados en el suelo, uno junto a otro (como mucho 4)
+  const L = lote(0.02), k = Math.min(4, n || 1);
+  for (let i = 0; i < k; i++) {
+    const t = (az(id, i) - 0.5) * 0.3, m = new THREE.Matrix4().makeTranslation((az(id, i + 4) - 0.5) * 0.08, MANGO.r * 1.3 + (i >= 3 ? 0.03 : 0), (i % 3 - (Math.min(k, 3) - 1) / 2) * 0.055)
+      .multiply(new THREE.Matrix4().makeRotationY(t)).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2)).multiply(new THREE.Matrix4().makeTranslation(0, -0.26, 0));
+    loteMango(L, m);
+  }
+  return mallas(L);
+}
+
+// Los clavos de forja (P10, 19 nov, los de la fragua: una barra da 10): caña cuadrada que se afina hasta la punta y la
+// cabeza batida a martillo en «rosa» (cuatro facetas), negros de la forja con las aristas algo más claras.
+// clavoEn() pone uno: la cabeza en (x, y, z) y la caña hacia `dir` (rotación de +Y a la caña).
+const CLAVO = 0x34322f, CLAVO_CLARO = 0x5a5753;
+export function clavoEn(L, x, y, z, rot = null, s = 1, k = 0) {
+  const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot?.x || 0, rot?.y || 0, rot?.z || 0)).setPosition(x, y, z);
+  const pon = (g, c, dy, o) => { g.translate(0, dy, 0); L.add(g, c, x, y, z, m.clone(), { plano: true, tex: 'piedra', brillo: 1.1, sinSuelo: true, ...o }); };
+  const cana = new THREE.CylinderGeometry(0.0012 * s, 0.0042 * s, 0.075 * s, 4); cana.rotateY(Math.PI / 4);   // cuadrada, que se afina
+  pon(cana, k % 3 ? CLAVO : CLAVO_CLARO, -0.0375 * s - 0.003 * s);
+  const cab = new THREE.ConeGeometry(0.0068 * s, 0.0045 * s, 4); cab.rotateY(Math.PI / 4);   // la cabeza en rosa: cuatro facetas que suben a un pico romo
+  pon(cab, CLAVO_CLARO, 0.0022 * s - 0.003 * s);
+}
+function clavos(n, id) {   // un puñado: tumbados unos sobre otros, en todas direcciones (como mucho 10)
+  const L = lote(0.02), k = Math.min(10, n || 1);
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399 + az(id, i), d = Math.sqrt(i / 10) * 0.045, capa = i < 6 ? 0 : 1;
+    clavoEn(L, Math.cos(a) * d, 0.0045 + capa * 0.007, Math.sin(a) * d, { z: Math.PI / 2 + (az(id, 7 * i + 1) - 0.5) * 0.15, y: i * 2.2 + az(id, 7 * i + 3) * 1.5 }, 1, i);
+  }
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -1086,7 +1135,7 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, cuero, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, fuelle, barra_hierro: barraHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, fuelle, barra_hierro: barraHierro, mango: mangos, clavo: clavos, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   huso, hilo,
   zapatos_cuero: zapatos, cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };
