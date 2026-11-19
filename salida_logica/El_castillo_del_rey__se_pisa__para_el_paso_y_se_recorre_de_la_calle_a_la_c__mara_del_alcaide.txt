@@ -1,0 +1,36 @@
+mundo listo en 3517 ms
+— atacante
+bien #3 ante la puerta de la barbacana y = 15.92  
+bien #4 dentro de la barbacana y = 15.49  
+bien #6 en el puente y = 15.19 (esperada 15.19) 
+bien #7 en el levadizo y = 15.19 (esperada 15.19) 
+bien #8 en el paso de la puerta y = 15.21 (esperada 15.21) 
+bien #9 en el patio de armas y = 15.04  
+bien #11 en la puerta del alcázar y = 15.28  
+bien #12 en el patio del alcázar y = 14.80  
+bien #13 al pie de la escalera del homenaje y = 15.15  
+bien #14 en lo alto de la escalera, en el tramo de madera y = 21.62 (esperada 21.62) 
+bien #15 en la puerta del homenaje y = 21.62 (esperada 21.62) 
+bien #16 en la sala del homenaje y = 21.62 (esperada 21.62) 
+bien #87 saliendo del caracol y = 26.50 (esperada 26.5) 
+bien #88 en la cámara del alcaide y = 26.50 (esperada 26.5) 
+— guardia
+bien #1 en la puerta de la torre y = 16.75  
+bien #2 dentro de la torre y = 16.75  
+bien #143 saliendo del caracol y = 26.50 (esperada 26.5) 
+bien #145 ante la puerta del adarve y = 26.50 (esperada 26.5) 
+bien #146 en el adarve y = 26.50 (esperada 26.5) 
+bien #147 a media cortina y = 26.50 (esperada 26.5) 
+bien #148 ante la torre A y = 26.50 (esperada 26.5) 
+bien #149 dentro de la torre A, en el adarve y = 26.50 (esperada 26.5) 
+— puerta
+bien #2 en el cuarto de la guardia y = 15.21 (esperada 15.21) 
+bien #162 saliendo del caracol y = 26.50 (esperada 26.5) 
+bien #163 saliendo del caracol y = 26.50 (esperada 26.5) 
+bien #164 en la terraza de la puerta y = 26.50 (esperada 26.5) 
+bien #165 en el adarve de la cortina y = 26.50 (esperada 26.5) 
+— poterna
+bien #1 en el rellano de fuera y = 13.74  
+bien #26 en el muelle y = 1.00 (esperada 1) 
+bien #27 al final del pantalán y = 1.00 (esperada 1) 
+✓ Castillo del rey: recorrido entero (433 puntos) sin atascarse ni caerse
