@@ -272,7 +272,8 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
             m.quad(f(a[0], a[1], w1), f(b[0], b[1], w1), f(c[0], c[1], w0), f(d[0], d[1], w0), esc(col, l))
         a, b = e[0], e[1]; c, d = i_[1], i_[0]
         m.quad(f(b[0], b[1], w1), f(a[0], a[1], w1), f(d[0], d[1], w0), f(c[0], c[1], w0), esc(SILLAR_DOV, 0.95))   # umbral / alféizar
-    if tapa: m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
+    if tapa:
+        with con(m, 'piedra'): m.quad(f(u0, v1, w1), f(u1, v1, w1), f(u1, v1, w0), f(u0, v1, w0), esc(col, 1.0))
     if cabezas:
         m.quad(f(u0, v0, w0), f(u0, v0, w1), f(u0, v1, w1), f(u0, v1, w0), esc(mort, .85))
         m.quad(f(u1, v0, w1), f(u1, v0, w0), f(u1, v1, w0), f(u1, v1, w1), esc(mort, .85))
@@ -399,7 +400,9 @@ def escalera(m, f, u0, u1, w0, w1, v0, v1, col=PIEDRA, maciza=True, huella=0.29,
         if madera:
             with con(m, 'tabla'): caja(m, f, a, b + 0.02, top - 0.06, top, w0 + 0.1, w1 - 0.1, c, 0.7)
         else:
-            with con(m, 'piedra'): caja(m, f, a, b + 0.01, base, top, w0, w1, c, 0.75, caras='v1u0w0w1')
+            with con(m, 'piedra'): caja(m, f, a, b + 0.01, base, top, w0, w1, c, 0.75, caras='v1u0')
+            with con(m, 'sillar'): caja(m, f, a, b + 0.01, base, top, w0, w1, esc(c, 0.92), 0.75, caras='w0w1')
+            with con(m, 'piedra'): caja(m, f, a - 0.02, a + 0.03, top - 0.03, top, w0 - 0.01, w1 + 0.01, esc(c, 1.05), 0.9, caras='v1u0')   # el bocel del peldaño
     if madera:   # zancas
         for w in (w0 + 0.05, w1 - 0.15):
             p = [(u0, v0 - 0.1), (u1, v1 - 0.1), (u1, v1 + 0.15), (u0, v0 + 0.15)]
@@ -510,8 +513,21 @@ def cama(m, f, u, w, ang=0.0, largo=2.0, ancho=1.0, colcha=TELA_ROJA, dosel=Fals
     for su in (-1, 1):
         for sw in (-1, 1): caja(m, g, su * largo / 2 - (0.08 if su > 0 else 0), su * largo / 2 + (0 if su > 0 else 0.08), 0, 0.55 if su < 0 else 0.5, sw * ancho / 2 - (0.08 if sw > 0 else 0), sw * ancho / 2 + (0 if sw > 0 else 0.08), MADERA)
     caja(m, g, -largo / 2 + 0.05, largo / 2 - 0.05, 0.45, 0.6, -ancho / 2 + 0.04, ancho / 2 - 0.04, LANA, .8)
-    caja(m, g, -largo / 2 + 0.6, largo / 2 - 0.02, 0.6, 0.66, -ancho / 2 + 0.02, ancho / 2 - 0.02, colcha, .8)
-    caja(m, g, -largo / 2 + 0.08, -largo / 2 + 0.45, 0.6, 0.7, -ancho / 2 + 0.12, ancho / 2 - 0.12, CAL, .85)
+    with con(m, 'tela'):
+        caja(m, g, -largo / 2 + 0.55, largo / 2 + 0.02, 0.6, 0.67, -ancho / 2 - 0.02, ancho / 2 + 0.02, colcha, .8, caras='v1u0u1')
+        # la colcha cae por los lados, con pliegues
+        for sw in (-1, 1):
+            n = 9
+            for k in range(n):
+                a_ = -largo / 2 + 0.55 + (largo - 0.53) * k / n; b_ = -largo / 2 + 0.55 + (largo - 0.53) * (k + 1) / n
+                o1 = 0.03 * math.sin(k * 1.9); o2 = 0.03 * math.sin((k + 1) * 1.9)
+                P1, P2 = g(a_, 0.67, sw * (ancho / 2 + 0.02)), g(b_, 0.67, sw * (ancho / 2 + 0.02))
+                P3, P4 = g(b_, 0.3 + o2, sw * (ancho / 2 + 0.05 + o2)), g(a_, 0.3 + o1, sw * (ancho / 2 + 0.05 + o1))
+                if sw > 0: m.quad(P2, P1, P4, P3, esc(colcha, 0.85 + 0.1 * (k % 2)))
+                else: m.quad(P1, P2, P3, P4, esc(colcha, 0.85 + 0.1 * (k % 2)))
+        # la vuelta de la sábana y la almohada
+        caja(m, g, -largo / 2 + 0.5, -largo / 2 + 0.62, 0.6, 0.69, -ancho / 2 + 0.01, ancho / 2 - 0.01, CAL, .85, caras='v1u0u1')
+    with con(m, 'tela'): bola(m, *g(-largo / 2 + 0.28, 0.68, 0), 0.22, 0.07, CAL, 8, 3)
     caja(m, g, -largo / 2 - 0.02, -largo / 2 + 0.06, 0.55, 1.0, -ancho / 2, ancho / 2, MADERA, .7)
     if dosel:
         for su in (-1, 1):

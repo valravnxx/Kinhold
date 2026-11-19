@@ -60,7 +60,7 @@ def poterna(m, c):
     c.huecos.append({'u': up, 'a': 1.0, 'v0': v0, 'v1': v0 + 2.0, 'arco': 'medio'})
     T2 = c.T / 2
     # rellano de fuera, macizo
-    prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(h(*f.p2(up, T2 + 2.5)) - 1.0, v0 - 1.0), v0, PIEDRA)
+    prisma(m, f, [(up - 1.2, T2), (up + 1.3, T2), (up + 1.3, T2 + 2.5), (up - 1.2, T2 + 2.5)], min(min(h(*f.p2(a_, b_)) for a_ in (up - 1.2, up + 1.3) for b_ in (T2, T2 + 2.5)) - 1.5, v0 - 1.0), v0, PIEDRA)
     suelo_losas(m, f, up - 1.2, up + 1.3, T2, T2 + 2.5, v0 + 0.01, LOSA, 0.5)
     # la puerta de la poterna, cerrada, y su matacán en el adarve
     puerta_tablas(m, f, up - 0.5, up + 0.5, v0, v0 + 2.0, T2 - 0.4, 1.3, 'medio', MADERA)   # (abierta)

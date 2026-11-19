@@ -29,14 +29,16 @@ float kh_h(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x 
 float kh_ruido(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(mix(kh_h(i), kh_h(i + vec3(1,0,0)), f.x), mix(kh_h(i + vec3(0,1,0)), kh_h(i + vec3(1,1,0)), f.x), f.y),
              mix(mix(kh_h(i + vec3(0,0,1)), kh_h(i + vec3(1,0,1)), f.x), mix(kh_h(i + vec3(0,1,1)), kh_h(i + vec3(1,1,1)), f.x), f.y), f.z); }`;
+const CORTADO = { value: 0 };   // 1 mientras el castillo está cortado por plantas
 function desgaste(mat, musgo) {
   mat.onBeforeCompile = (sh) => {
     sh.uniforms.uMusgo = { value: musgo };
+    sh.uniforms.uCortado = CORTADO;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nattribute float hs;\nvarying float vHs;\nvarying vec3 vMundo;\nvarying vec3 vNorM;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvHs = hs / 10.0;\nvMundo = (modelMatrix * vec4(position, 1.0)).xyz;\nvNorM = normalize(mat3(modelMatrix) * normal);');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uMusgo;\nvarying float vHs;\nvarying vec3 vMundo;\nvarying vec3 vNorM;\n' + RUIDO_GLSL)
+      .replace('#include <common>', '#include <common>\nuniform float uMusgo;\nuniform float uCortado;\nvarying float vHs;\nvarying vec3 vMundo;\nvarying vec3 vNorM;\n' + RUIDO_GLSL)
       .replace('#include <map_fragment>', `#include <map_fragment>
         {
           float n1 = kh_ruido(vMundo * 1.7), n2 = kh_ruido(vMundo * 0.33), n3 = kh_ruido(vMundo * 4.1);
@@ -49,8 +51,10 @@ function desgaste(mat, musgo) {
           diffuseColor.rgb *= mix(1.0, 0.66, pie);
           diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.27, 0.31, 0.17), uMusgo * pie * 0.55 * smoothstep(0.3, 0.7, n2 + n3 * 0.3));
           // musgo en lo que mira arriba (albardillas, cornisas, tejados, peldaños de fuera)
-          float arriba = smoothstep(0.55, 0.95, vNorM.y) * smoothstep(0.45, 0.85, n2 * 0.7 + n1 * 0.5);
-          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.35, 0.18) * (0.8 + 0.4 * n3), uMusgo * arriba * 0.6);
+          float arriba = smoothstep(0.55, 0.95, vNorM.y) * smoothstep(0.62, 0.92, n2 * 0.6 + n1 * 0.4 + n3 * 0.2);
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.35, 0.18) * (0.8 + 0.4 * n3), uMusgo * arriba * 0.5);
+          // cortado por plantas: lo de dentro de los muros (sus caras de detrás) se ve como la sección, oscuro y liso
+          if (uCortado > 0.5 && !gl_FrontFacing) diffuseColor.rgb = vec3(0.16, 0.145, 0.13);
         }`);
   };
   mat.customProgramCacheKey = () => 'castillo_rey_' + musgo;
@@ -102,7 +106,8 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
       const mats = []; let ini = 0;
       for (const [k, gr] of grupos.entries()) {
         const d = MATS[gr.nombre] || MATS.liso;
-        const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide, clippingPlanes: [corte] });
+        // (shadowSide: las caras de detrás echan la sombra; si no, las de delante se sombrean a sí mismas en rayas)
+        const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide, shadowSide: THREE.BackSide, clippingPlanes: [corte] });
         if (d.tam) {
           mat.map = tex(gr.nombre, true, d.tam);
           mat.normalMap = tex(gr.nombre + '_n', false, d.tam); mat.normalScale.set(d.relieve, d.relieve);
@@ -129,6 +134,7 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
     // (el plano mira hacia abajo: se ve lo que queda por debajo). Bajo techo se corta a 2,3 m sobre los pies como mucho:
     // los muros bajos dejan ver al personaje desde arriba aunque esté junto a un muro grueso
     corte.constant = t === null ? 1e6 : Math.min(t - 0.05, pj.y + 2.3);
+    CORTADO.value = t === null ? 0 : 1;
     return choques;
   }
   // (window.__mutarCastillo: solo para romper a propósito su prueba: el castillo se ve pero no se pisa ni para el paso)

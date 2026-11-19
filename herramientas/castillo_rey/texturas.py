@@ -121,8 +121,8 @@ def silleria():
     col = col * (1 - liq) + liq * np.array([0.86, 0.88, 0.70])
     mancha = np.clip(ruido(H, W, 60, 11, 3) * 0.5 + 0.5, 0, 1)[..., None]
     col *= 0.9 + 0.12 * mancha
-    col *= cavidad(alt, 6, 25)[..., None]
-    guardar('sillar', col * 0.93, alt, 1.4)
+    col *= cavidad(alt, 6, 16)[..., None]
+    guardar('sillar', col * 0.97, alt, 1.4)
 
 # ---------------------------------------------------------------- mampostería (mampuestos irregulares en hiladas)
 def mamposteria():
@@ -224,11 +224,17 @@ def madera(nombre='madera', tablas=False):
     rng = np.random.default_rng(52)
     w = rng.standard_normal((H, W))
     fy = np.fft.fftfreq(H)[:, None]; fx = np.fft.fftfreq(W)[None, :]
-    veta = np.real(np.fft.ifft2(np.fft.fft2(w) * np.exp(-((fx * 4) ** 2 + (fy * 90) ** 2))))
+    veta = np.real(np.fft.ifft2(np.fft.fft2(w) * np.exp(-((fx * 3) ** 2 + (fy * 28) ** 2))))
     veta /= veta.std()
     fina = np.real(np.fft.ifft2(np.fft.fft2(rng.standard_normal((H, W))) * np.exp(-((fx * 1.5) ** 2 + (fy * 30) ** 2)))); fina /= fina.std()
     alt = veta * 0.0015 + fina * 0.0006
-    l = 0.88 + veta * 0.06 + fina * 0.035 + N1 * 0.03
+    l = 0.88 + veta * 0.06 + fina * 0.035 + N1 * 0.04
+    # nudos: óvalos oscuros con las vetas rodeándolos
+    for _ in range(6):
+        cx, cy = rng.uniform(0, W), rng.uniform(0, H)
+        d = np.hypot(((xx - cx + W / 2) % W - W / 2) * 1.0, ((yy - cy + H / 2) % H - H / 2) * 0.45)
+        l = l - 0.25 * np.exp(-(d / 7) ** 2) + 0.04 * np.sin(d * 0.5) * np.exp(-(d / 30) ** 2)
+        alt = alt - 0.002 * np.exp(-(d / 7) ** 2)
     if tablas:   # juntas entre tablas y clavos
         ancho = int(0.28 * PXM)
         j = (xx % ancho) < 3
@@ -321,7 +327,7 @@ def tierra():
 
 if __name__ == '__main__':
     pedidas = sys.argv[1:]
-    hechas = {'sillar': silleria, 'mamp': mamposteria, 'piedra': piedra_labrada, 'losa': lambda: losas('losa'),
+    hechas = {'sillar': silleria, 'mamp': mamposteria, 'piedra': piedra_labrada, 'losa': lambda: losas('losa', lado=(0.32, 0.6)),
               'canto': lambda: losas('canto', 2, 45, canto=True), 'madera': madera, 'tabla': lambda: madera('tabla', True),
               'teja': teja, 'paja': paja, 'tela': tela, 'tierra': tierra}
     for k, fn in hechas.items():
