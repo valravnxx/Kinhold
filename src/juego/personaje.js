@@ -84,6 +84,40 @@ export function modeloPico() {
   return g;
 }
 
+// La sierra de tronzar (P10, 19 nov) con el estilo v5: una hoja de hierro de 1 m, recta por arriba y con la barriga de
+// los dientes curvada hacia abajo (como las de tronzar de verdad), los dientes triscados en el filo, y un mango de fresno
+// derecho en cada punta, sujeto con dos remaches. Se agarra por uno de los mangos (a lo largo de +Y, la mano en el
+// origen, como el hacha) y la hoja sale hacia delante (+Z, hacia los nudillos), con los dientes abajo.
+export const LARGO_SIERRA = 1.0;
+export function modeloSierra() {
+  const L = new Lote({ variacion: 0.04, rangoSuelo: 0.001, suelo: -100 });
+  const z0 = 0.012, z1 = LARGO_SIERRA - 0.012, arriba = 0.045;
+  // el perfil de la hoja en el plano ZY: arriba recta; abajo, de la punta al mango, la barriga en dientes
+  const pts = [[z0, arriba], [z1, arriba], [z1, -0.035]];
+  const N = 38;
+  for (let i = 1; i < N; i++) {
+    const u = i / N, z = z1 - (z1 - z0) * u, barriga = -0.035 - 0.05 * Math.sin(Math.PI * u);
+    pts.push([z, barriga + (i % 2 ? -0.011 : 0)]);
+  }
+  pts.push([z0, -0.035]);
+  const hoja = new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y))), { depth: 0.0025, bevelEnabled: false });
+  hoja.translate(0, 0, -0.00125); hoja.rotateY(-Math.PI / 2);   // el perfil va de X a Z
+  L.add(hoja, 'hierro', 0, 0, 0, null, { plano: true });
+  // el filo de los dientes, más claro (gastado de serrar): una tira fina a lo largo de la barriga
+  for (let i = 0; i < 6; i++) {
+    const u = (i + 0.5) / 6, z = z1 - (z1 - z0) * u, y = -0.04 - 0.05 * Math.sin(Math.PI * u);
+    L.add(new THREE.BoxGeometry(0.0032, 0.006, (z1 - z0) / 6 + 0.004), 0x9a9b9a, 0, y, z, { x: (i < 3 ? -1 : 1) * 0.05 * Math.cos(Math.PI * u) * 3 }, { plano: true, brillo: 1.15 });
+  }
+  // los dos mangos, derechos, con su pomo abajo, y los remaches que los sujetan a la hoja
+  for (const z of [0, LARGO_SIERRA]) {
+    L.add(cil(0.016, 0.018, 0.22, 8), 'tabla', 0, 0.02, z, null, { tex: 'veta' });
+    L.add(new THREE.SphereGeometry(0.02, 8, 5), 'tabla', 0, -0.09, z, null, { escala: new THREE.Vector3(1, 0.6, 1), tex: 'veta' });
+    for (const y of [0.025, -0.02]) L.add(cil(0.005, 0.005, 0.04, 6), 'hierro', 0, y, z + (z ? -0.02 : 0.02), { z: Math.PI / 2 }, { plano: true });
+  }
+  const g = deMano(L); g.name = 'sierra';
+  return g;
+}
+
 // Pone una herramienta (mango a lo largo de +Y, la mano en el origen) en la mano derecha: el mango atravesado a los
 // dedos (del meñique al índice, la cabeza por el lado del pulgar) y el filo o la punta hacia los nudillos, como se
 // agarra. Se calcula con los huesos, así vale para cualquier cuerpo. Sale escondida.
@@ -117,6 +151,8 @@ export function modeloHachaDe(tipo) {
   if (tipo === 'mazo_piedra' && !globalThis.__sinModelosManos) { const g = deMano(loteMazoPiedra()); g.name = 'mazo_piedra'; return g; }
   // (el pico de hierro, P10, 19 nov: el de la fragua; se empuña como el hacha)
   if (tipo === 'pico' && !globalThis.__sinModelosManos) return modeloPico();
+  // (la sierra de tronzar, P10, 19 nov: se agarra por un mango y se trabaja como el hacha, contra el tronco)
+  if (tipo === 'sierra' && !globalThis.__sinModelosManos) return modeloSierra();
   if (tipo !== 'hacha_piedra' || globalThis.__sinModelosManos /* solo para comprobar que la prueba falla */) return modeloHacha();
   const g = deMano(loteHachaPiedra()); g.name = 'hacha_piedra';
   return g;
@@ -125,7 +161,7 @@ export function modeloHachaDe(tipo) {
 // Devuelve { raiz, animar(velocidad, dt, talando), mh }. `recursos`: la carpeta de personajes del taller
 // (src/mundo/eleccion.js: recursosTaller); los de Meshy están a su lado, en meshy-v2. `sexo`: el del personaje elegido.
 // `capas`, `aspecto` y `ropa` ({ tintes, hechuras }) se guardan para cuando los modelos de Meshy lleven ropa y aspecto.
-const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra', 'pico']);
+const HACHAS_MANO = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra', 'pico', 'sierra']);
 // En la canoa (P11d), sentado con las rodillas juntas: la de sentarse en el suelo va con las piernas cruzadas y las rodillas
 // abiertas (a unos 0,25 m de cada lado), y en el casco, de 0,45 m por dentro, se salían por la borda. Tras la animación, el
 // muslo gira hacia dentro hasta que la rodilla queda a RODILLA_CANOA m del medio del cuerpo, y la pierna, hasta que el pie

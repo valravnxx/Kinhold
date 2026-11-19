@@ -58,7 +58,8 @@
 //    (Usar). Lo guardado es de la tierra: solo su dueño y sus invitados lo tocan (lo mira el servidor). La obra no coge
 //    de ellos sola, ni las recetas: hay que sacar lo que se vaya a usar. Provisional (el documento deja sus costes y lo
 //    que cabe para cuando se hagan): el acopio, 4 varas y 15 s, 12 troncos; la pila, 4 piedras y 10 s, 40 piedras; la
-//    leñera, 4 varas y 6 ramas y 15 s, 30 de leña y ramas. El acopio guarda también el tronco corto (es tronco).
+//    leñera, 4 varas y 6 ramas y 15 s, 30 de leña y ramas. El acopio guarda también el tronco corto (es tronco) y, desde
+//    P10 (19 nov; tarea «La sierra y las tablas»), las tablas.
 //    Los otros cuatro (8 nov), igual de provisionales: el soporte de varas (dos caballetes de varas cruzadas), 4 varas y
 //    10 s, 24 varas, dentro o fuera; el almiar (el montón alrededor de un palo hincado), 2 varas y 10 s, 24 haces de paja
 //    y de juncos, fuera; el hoyo de barro (cavado con el palo cavador, que hay que llevar, y bordeado de piedras), 6
@@ -113,7 +114,7 @@ export const ESTACIONES = {
   piedra_tallar: { nombre: 'Piedra de tallar', un: 'una piedra de tallar', uso: 'tallar', coste: { piedra: 1 }, donde: 'ambos', trabajo: 5, hace: 'Herramientas de piedra y sílex' },
   banco_tronco:  { nombre: 'Banco de trabajo de tronco', un: 'un banco de trabajo de tronco', uso: 'banco', coste: { tronco_corto: 2 }, requiere: ['hacha_piedra', 'lasca_silex'], donde: 'ambos', trabajo: 20, hace: 'Trabajos de madera, mangos, cestería, primeras piezas de construcción' },
   // los almacenajes de la base (uso «almacen»: sin recetas): guarda, lo único que se deja en ellos; cabe, cuánto
-  acopio_troncos: { nombre: 'Acopio de troncos', un: 'un acopio de troncos', uso: 'almacen', coste: { vara: 4 }, donde: 'fuera', trabajo: 15, tierra: true, guarda: ['tronco_delgado', 'tronco_largo', 'tronco_corto'], cabe: 12, hace: 'Guarda los troncos, apilados fuera' },
+  acopio_troncos: { nombre: 'Acopio de troncos', un: 'un acopio de troncos', uso: 'almacen', coste: { vara: 4 }, donde: 'fuera', trabajo: 15, tierra: true, guarda: ['tronco_delgado', 'tronco_largo', 'tronco_corto', 'tabla'], cabe: 12, hace: 'Guarda los troncos y las tablas, apilados fuera' },
   pila_piedras:   { nombre: 'Pila de piedras', un: 'una pila de piedras', uso: 'almacen', coste: { piedra: 4 }, donde: 'fuera', trabajo: 10, tierra: true, guarda: ['piedra'], cabe: 40, hace: 'Guarda la piedra suelta' },
   lenera:         { nombre: 'Leñera', un: 'una leñera', uso: 'almacen', coste: { vara: 4, rama: 6 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['lena', 'rama'], cabe: 30, hace: 'Guarda la leña y las ramas, a cubierto' },
   soporte_varas:  { nombre: 'Soporte de varas', un: 'un soporte de varas', uso: 'almacen', coste: { vara: 4 }, donde: 'ambos', trabajo: 10, tierra: true, guarda: ['vara'], cabe: 24, hace: 'Guarda las varas, tumbadas en dos caballetes' },
@@ -340,6 +341,14 @@ export const RECETAS = {
   hacha_hierro:      { ...r('Hacha de hierro', 'forjar', 'hacha_hierro', { barra_hierro: 1, mango: 1 }, 180), requiere: ['mazo_piedra'] },
   pico:              { ...r('Pico', 'forjar', 'pico', { barra_hierro: 1, mango: 1 }, 180), requiere: ['mazo_piedra'] },
   clavos:            { ...r('Clavos', 'forjar', 'clavo', { barra_hierro: 1 }, 120, 10), requiere: ['mazo_piedra'] },
+  // la sierra de tronzar (P10, 19 nov; tarea: «2 barras y 2 mangos, en la fragua»): las dos barras, batidas y soldadas a la
+  // calda en una hoja larga, con los dientes abiertos a lima y triscados, y un mango en cada punta. Con el mazo de piedra
+  // como martillo (no se gasta), como las demás. Tiempo, provisional (diario y registro): 4 min (es la pieza más larga)
+  sierra:            { ...r('Sierra de tronzar', 'forjar', 'sierra', { barra_hierro: 2, mango: 2 }, 240), requiere: ['mazo_piedra'] },
+  // las tablas (P10, 19 nov; tarea: «en el banco de tronco, con la sierra, 1 tronco corto da 4 tablas»): el tronco corto,
+  // calzado en el banco y serrado a lo largo. Se lleva la sierra (no se gasta). Tiempo, provisional (diario y registro):
+  // 2 min (tres cortes a lo largo). El foso de aserrar, con tablones largos, llega con cavar (nota del hito)
+  tablas:            { ...r('Tablas', 'banco', 'tabla', { tronco_corto: 1 }, 120, 4), requiere: ['sierra'] },
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -401,6 +410,8 @@ export const PARA = {
   hacha_hierro: 'Tala los árboles adultos y trocea mucho más deprisa que la de piedra.',
   pico: 'Rompe la roca que el mazo no puede.',
   clavos: 'Clavan las tablas: suelos, puertas y muebles.',
+  sierra: 'Tronza el tronco largo más deprisa que el hacha y, en el banco, saca tablas del tronco corto.',
+  tablas: 'Suelos, muros, puertas y muebles de tablas, con clavos.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 

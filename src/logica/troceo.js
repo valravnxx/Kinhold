@@ -28,20 +28,34 @@
 //    demasiado fino) y el resto en troncos cortos. Son los mismos cortes que tronzarlo, así que los mismos golpes; da 1
 //    rodaja y 2 o 3 troncos cortos (uno menos que tronzar). La rodaja cae a un lado y los cortos al otro. Si el tronco
 //    ya iba a medias, lo hecho cuenta para lo que se termine (es el mismo serrar). Provisional (diario y registro).
+//  - La sierra de tronzar (P10, 19 nov; tarea: «tronza el tronco largo más deprisa que el hacha»): llevándola en la mano,
+//    el tronco largo se tronza (y se le corta la rodaja) en 8 golpes de sierra, menos que los 18 del hacha de hierro. Si
+//    llevas sierra y hacha, tronza la sierra. Partir sigue siendo con el hacha (la sierra no hiende). Provisional.
 import { hachaEnMano } from './tala.js';
 
 export const ALCANCE_TROCEO = 2.5;      // m, desde el centro del tronco
 export const ENTRE_GOLPES = 800;        // ms
 export const TROCEO = {
-  tronco_largo: { accion: 'tronzar', golpes: { piedra: 54, hierro: 18 }, da: 'tronco_corto', n: [3, 4] },
+  tronco_largo: { accion: 'tronzar', golpes: { piedra: 54, hierro: 18, sierra: 8 }, da: 'tronco_corto', n: [3, 4] },
   tronco_corto: { accion: 'partir', golpes: { piedra: 6, hierro: 3 }, da: 'lena', n: [6, 6] },
 };
 export const seTrocea = tipo => !!TROCEO[tipo];
 // los otros modos de trocear: la rodaja del tronco largo (la rueda de la carretilla)
 export const MODOS_TROCEO = {
-  rodaja: { tronco_largo: { accion: 'rodaja', golpes: { piedra: 54, hierro: 18 }, da: 'rodaja', n: [1, 1], resto: 'tronco_corto', nResto: [2, 3] } },
+  rodaja: { tronco_largo: { accion: 'rodaja', golpes: { piedra: 54, hierro: 18, sierra: 8 }, da: 'rodaja', n: [1, 1], resto: 'tronco_corto', nResto: [2, 3] } },
 };
 export const sacaRodaja = tipo => !!MODOS_TROCEO.rodaja[tipo];
+// La herramienta con la que se trocea con la regla t: la sierra de tronzar en la mano, si la regla sabe serrar (tronzar y
+// la rodaja); si no, el hacha. { ruta, tipo, clase } o null.
+export function herramientaTroceo(inv, t) {
+  if (t && t.golpes && t.golpes.sierra) for (const ruta of ['mano:der', 'mano:izq']) {
+    const c = inv.lugares[ruta];
+    if (c && c.tipo === 'sierra') return { ruta, tipo: 'sierra', clase: 'sierra' };
+  }
+  return hachaEnMano(inv);
+}
+// ¿Lleva en la mano con qué trocear el tronco de tipo «tipo»? (para que el juego enseñe la opción)
+export const puedeTrocear = (inv, tipo, modo = null) => !!herramientaTroceo(inv, reglaDe(tipo, modo));
 const reglaDe = (tipo, modo) => (modo ? (MODOS_TROCEO[modo] || {})[tipo] : TROCEO[tipo]) || null;
 
 function hash(...ns) {
@@ -81,8 +95,8 @@ export class Troceo {
     if (!t) return { ok: false, motivo: modo === 'rodaja' ? 'De eso no se saca una rodaja: hace falta un tronco largo.' : 'Eso no se trocea.' };
     if (o.arrastra) return { ok: false, motivo: 'Ese tronco está atado: que suelten antes la cuerda.' };
     if (Math.hypot(o.x - x, o.z - z) > ALCANCE_TROCEO) return { ok: false, motivo: 'Está demasiado lejos.' };
-    const h = hachaEnMano(inv);
-    if (!h) return { ok: false, motivo: t.accion === 'tronzar' ? 'Necesitas un hacha en la mano para tronzar.' : t.accion === 'rodaja' ? 'Necesitas un hacha en la mano para cortar la rodaja.' : 'Necesitas un hacha en la mano para partir leña.' };
+    const h = herramientaTroceo(inv, t);
+    if (!h) return { ok: false, motivo: t.accion === 'tronzar' ? 'Necesitas un hacha o la sierra en la mano para tronzar.' : t.accion === 'rodaja' ? 'Necesitas un hacha o la sierra en la mano para cortar la rodaja.' : 'Necesitas un hacha en la mano para partir leña.' };
     const ult = this.ultimoGolpe[autor];
     if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
     this.ultimoGolpe[autor] = ahora;

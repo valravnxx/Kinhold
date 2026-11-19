@@ -49,7 +49,7 @@ import { estadoFuego } from '../logica/fuego.js';
 import { moverHumo } from '../mundo/modelos.js';
 import { troncosConCortes, deLista, modeloDe } from './suelo.js';
 import { loteEnMano, loteEspalda } from './llevado.js';
-import { modeloHacha, modeloPico } from './personaje.js';
+import { modeloHacha, modeloPico, modeloSierra } from './personaje.js';
 import { modeloHachaPiedra, modeloMazoPiedra, mallaPiel, moteadoPiel, moteadoPelo, PIEL_LIMPIA, loteFuelle } from './modelos_objetos.js';
 import { conMeshy, hayMeshy, precargarMeshy } from '../mundo/meshy_objetos.js';
 
@@ -1128,6 +1128,14 @@ function llenoAcopio(dep, id) {
     });
     y += rMax * 1.9; i += 4;
   }
+  // (P10, 19 nov) las tablas, encima de los troncos: planas, de cuatro en cuatro una al lado de otra, capa a capa (si no
+  // hay troncos, sobre los durmientes), algo desiguales
+  const tablas = dep.tabla || 0;
+  if (tablas && lista.length) y -= 0.02;
+  for (let k = 0; k < tablas; k++) {
+    const c = k % 4, capa = Math.floor(k / 4), z = (c - 1.5) * 0.2, dx = (az(id, 200 + k) - 0.5) * 0.1, g = (az(id, 300 + k) - 0.5) * 0.05;
+    L.add(new THREE.BoxGeometry(1.0, 0.025, 0.18), 'tabla', dx, y + 0.0125 + capa * 0.026, z, new THREE.Matrix4().makeRotationY(g), { sinSuelo: true, tex: 'veta' });
+  }
   return mallas(L);
 }
 //  - la pila: las piedras en montón sobre su lecho, capa a capa (cada capa, anillos alrededor de una del centro, más
@@ -1261,6 +1269,7 @@ function herramientaSuelta(t) {
   if (t === 'mazo_piedra') return modeloMazoPiedra();
   if (t === 'hacha_mano' || t === 'hacha_hierro') return modeloHacha();
   if (t === 'pico') { const p = modeloPico(); p.visible = true; return p; }   // (P10)
+  if (t === 'sierra') { const p = modeloSierra(); p.visible = true; return p; }   // (P10)
   return mallas(loteEnMano(t));
 }
 // pone o en x con su lado delgado contra el muro (de canto) y lo sube o lo baja hasta que su punto más alto quede en y

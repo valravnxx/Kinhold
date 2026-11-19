@@ -28,7 +28,7 @@ import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIB
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
-const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra', 'pico']);   // (el mazo y el pico (P10), por el cinto como el hacha)
+const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra', 'pico', 'sierra']);   // (el mazo, el pico y la sierra (P10), por el cinto como el hacha)
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -100 });
 const azar = (s) => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -931,6 +931,8 @@ export function crearLlevado(j) {
   function colgarHacha(p, a, t) {
     const g = new THREE.Group(); g.name = 'llevado_hacha_colgada';
     const h = modeloHachaDe(t); h.scale.setScalar(0.8); h.position.set(0, -0.42, 0.0); h.rotation.set(0, Math.PI / 2, -0.12); g.add(h);
+    // (la sierra, P10: el mango metido en el cinturón y la hoja tendida hacia atrás, algo caída, los dientes abajo)
+    if (t === 'sierra') { h.scale.setScalar(1); h.position.set(0, -0.03, 0); h.rotation.set(0.25, Math.PI, 0); }
     g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
     g.matrix.makeRotationY(a).setPosition(p);
     return g;

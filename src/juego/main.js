@@ -59,7 +59,7 @@ import { alturaOla } from '../mapa/agua.js';
 import { NADO, modoAgua, factorVadeo, nuevoAguante, pasoAguante, puedeCorrer } from '../logica/nado.js';
 import { hachaEnMano, HACHAS, edadDeEscala, DESCORTEZAR_CON, SANGRAR_CON, arrancaEnMano } from '../logica/tala.js';
 import { RADIO_MIN as BROCHA_MIN, RADIO_MAX as BROCHA_MAX, BORDE as BORDE_BROCHA } from '../logica/nivelado.js';
-import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, ALCANCE_TROCEO } from '../logica/troceo.js';
+import { Troceo, ejecutarTroceo, cargarTroceo, guardarTroceo, seTrocea, sacaRodaja, puedeTrocear, ALCANCE_TROCEO } from '../logica/troceo.js';
 import { faseDe as faseVaciado, ALCANCE_VACIAR, Vaciado, ejecutarVaciado, Canoas, ejecutarCanoa, velocidadCanoa, remoEnMano, ALCANCE_CANOA, HONDO_FLOTA, ECHAR, HONDO_BAJAR, ADELANTE as ADELANTE_CANOA, nuevaRemada, pasoRemar, faseRemada, PALADA } from '../logica/canoa.js';
 import { Rastras, ejecutarRastra, ejecutarArconAlSuelo, factorRastra, factorTronco, ALCANCE_RASTRA, sitioRastra, VEHICULOS, esVehiculo, vaACuerda } from '../logica/rastra.js';
 import { moverRastras } from './rastra.js';
@@ -1826,7 +1826,7 @@ function accionPrincipal() {
   // la canoa a medias (P11d): Usar sigue con lo que le toca (vaciar a golpes, echar brasas o esperar a que se consuman)
   if (!it && pj.k === 0 && canoaCercana()) { const op = opcionVaciar(canoaCercana()); if (op) return A(op.texto, op.icono, op.pos, op.hacer, { alto: 0.4, prog: op.prog }); }
   // con un hacha en la mano, junto a un tronco tumbado, se tronza (el largo) o se parte (el corto)
-  if (!it && hachaEnMano(inventario()) && troncoCercano()) { const t0 = troncoCercano(); return A(tr('Trocear: {c}', { c: tr(CATALOGO[t0.cosa.tipo].nombre) }), t0.cosa.tipo, t0, () => empezarTroceo(t0), { alto: 0.4 }); }
+  if (!it && troncoCercano() && puedeTrocear(inventario(), troncoCercano().cosa.tipo)) { const t0 = troncoCercano(); return A(tr('Trocear: {c}', { c: tr(CATALOGO[t0.cosa.tipo].nombre) }), t0.cosa.tipo, t0, () => empezarTroceo(t0), { alto: 0.4 }); }
   // arrastrando la rastra, Usar la suelta; junto a una parada, con algo que va en ella en las manos o al hombro, se
   // carga, y si no, se engancha (se descarga y se carga del suelo desde el menú del clic derecho)
   if (!it && pj.k === 0 && miRastra()) { const m = miRastra(); return A(tr(segun(m, 'Soltar la rastra', 'Aparcar la carretilla')), m.cosa.tipo, sitiosRastra[m.id] || yo, soltarRastra, { alto: 0.4 }); }
@@ -1963,9 +1963,9 @@ function opcionesUsar() {
     const tronco = troncoCercano();
     const rq = rocaCercana();
     if (rq) ops.push({ texto: tr('Romper la roca'), pos: rq, alto: 0.6, hacer: () => empezarRotura(rq) });
-    if (tronco && hachaEnMano(inventario())) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
+    if (tronco && puedeTrocear(inventario(), tronco.cosa.tipo)) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     // la rodaja del tronco largo (P11c): la rueda de la carretilla, y el resto en troncos cortos
-    if (tronco && hachaEnMano(inventario()) && sacaRodaja(tronco.cosa.tipo)) ops.push({ texto: tr('Cortar una rodaja (la rueda de la carretilla)'), pos: tronco, hacer: () => empezarTroceo(tronco, 'rodaja') });
+    if (tronco && sacaRodaja(tronco.cosa.tipo) && puedeTrocear(inventario(), tronco.cosa.tipo, 'rodaja')) ops.push({ texto: tr('Cortar una rodaja (la rueda de la carretilla)'), pos: tronco, hacer: () => empezarTroceo(tronco, 'rodaja') });
     // la canoa de un tronco (P11d): del tronco largo, vaciándolo con el hacha y las brasas
     if (tronco && tronco.cosa.tipo === 'tronco_largo' && !tronco.arrastra) ops.push({ texto: tr('Vaciar el tronco para hacer una canoa'), pos: tronco, alto: 0.4, hacer: () => (hachaEnMano(inventario()) ? empezarVaciado(tronco) : mostrarAviso(tr('Necesitas un hacha en la mano para vaciar el tronco.'), true)) });
     const cn = canoaCercana(), opc = cn && opcionVaciar(cn);
@@ -3148,7 +3148,8 @@ function troncoCercano() {
 }
 function empezarTroceo(o, modo = null) {
   estado.talando = { troceo: o.id, x: o.x, z: o.z, ...(modo ? { modo } : {}) }; estado.golpeEn = 0.45; pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
-  mostrarAviso(modo === 'rodaja' ? tr('Cortas una rodaja del tronco largo.') : o.cosa.tipo === 'tronco_largo' ? tr('Tronzas el tronco largo.') : tr('Partes el tronco en leña.'));
+  const conSierra = ['mano:der', 'mano:izq'].some(l => inventario().lugares[l]?.tipo === 'sierra') && o.cosa.tipo === 'tronco_largo';
+  mostrarAviso(modo === 'rodaja' ? tr('Cortas una rodaja del tronco largo.') : o.cosa.tipo === 'tronco_largo' ? (conSierra ? tr('Tronzas el tronco largo con la sierra.') : tr('Tronzas el tronco largo.')) : tr('Partes el tronco en leña.'));
 }
 function golpeTroceo(id, modo = null) {
   estado.golpeEn = RITMO_TALA;
@@ -3518,7 +3519,7 @@ function vestir() {
   // en línea, los demás lo ven igual: se vuelve a mandar el aspecto si ha cambiado lo que se ve
   if (huella !== vestidoVisto) { vestidoVisto = huella; if (enLinea && enLinea.mandarAspecto) enLinea.mandarAspecto(); }
   // el hacha de mano se ve en la mano derecha si la llevas en una mano (lo demás de las manos, con su tarea del hito 2)
-  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo] || ['mazo_piedra', 'pico'].includes(inventario().lugares[l]?.tipo));
+  jugador.hachaEnMano = ['mano:der', 'mano:izq'].some(l => HACHAS[inventario().lugares[l]?.tipo] || ['mazo_piedra', 'pico', 'sierra'].includes(inventario().lugares[l]?.tipo));
   // lo demás que llevas (cinturón y lo que cuelga, espalda, hombro y manos) se ve puesto (src/juego/llevado.js); en
   // línea, a los demás se lo cuenta el servidor con tu aspecto, sacado de su inventario
   jugador.ponerLlevado(llevadoDe(inventario().lugares));
