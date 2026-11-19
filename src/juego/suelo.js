@@ -96,20 +96,22 @@ export function tablasEnSuelo(n, id) {
 // lado de otro y, de 4 en adelante, encima. Las esquinas se mueven con un azar que sale de su sitio (no del vértice),
 // para que las caras no se abran.
 function bloqueBruto(semilla) {
-  const g = new THREE.BoxGeometry(0.55, 0.35, 0.45, 3, 2, 3), p = g.attributes.position, v = new THREE.Vector3();
+  const g = new THREE.BoxGeometry(0.55, 0.35, 0.45, 4, 3, 4), p = g.attributes.position, v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i);
     const k = `${semilla}:${Math.round(v.x * 100)},${Math.round(v.y * 100)},${Math.round(v.z * 100)}`;
     const borde = (Math.abs(v.x) > 0.27) + (Math.abs(v.y) > 0.17) + (Math.abs(v.z) > 0.22);   // (aristas y esquinas, romas y desconchadas)
-    const m = borde === 3 ? 0.78 : borde === 2 ? 0.9 : 1, abajo = v.y < -0.17;
+    const m = borde === 3 ? 0.72 : borde === 2 ? 0.86 : 1, abajo = v.y < -0.17;
     // (la cara de abajo, plana: asienta en el suelo; el resto, con los golpes del pico)
-    p.setXYZ(i, v.x * m + (az(k, 1) - 0.5) * 0.08, abajo ? v.y : v.y * m + (az(k, 2) - 0.5) * 0.07, v.z * m + (az(k, 3) - 0.5) * 0.08);
+    // (y cada cara, algo torcida: un plano de golpe que la inclina, de un azar por bloque)
+    const tx = (az(semilla, 4) - 0.5) * 0.12, tz = (az(semilla, 5) - 0.5) * 0.12;
+    p.setXYZ(i, v.x * m + (az(k, 1) - 0.5) * 0.1 + v.y * tx, abajo ? v.y : v.y * m + (az(k, 2) - 0.5) * 0.08 + v.x * tz * 0.6, v.z * m + (az(k, 3) - 0.5) * 0.1 + v.y * tz);
   }
   g.computeVertexNormals();
   return g;
 }
 export function bloquesEnSuelo(n, id) {
-  const L = new Lote({ rangoSuelo: 0.05, variacion: 0.08 });
+  const L = new Lote({ rangoSuelo: 0.05, variacion: 0.2 });   // (el tono, de un gris cálido que cambia de cara a cara)
   const vis = Math.min(n, 6), sitios = [[0, 0], [0.62, 0.08], [-0.6, 0.1], [0.3, 0.55], [-0.3, 0.55], [0.05, 0.05]];
   for (let i = 0; i < vis; i++) {
     const encima = i === 5, [x, z] = sitios[i];
