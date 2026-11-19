@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-19T23:23:02+00:00",
+  "tarea": "La arcilla y el horno cerámico: en la ribera, junto a donde sale el barro, se cava con la pala de madera 1 cesta de arcilla (inagotable, como el barro); el horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) como estación, que se enciende con leña. Cadena: pala de madera ← el banco de tronco; leña ← partir un tronco corto con el hacha",
+  "hito": "hierro",
+  "rama": "trabajo/20261119-2323"
+ },
  "B": null
 }
