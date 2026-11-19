@@ -158,6 +158,12 @@ def recorrido(nav, nombre, pref, vista, movil):
     pg.evaluate(f"(([x, z]) => {{ const k = {K}, s = k.sueloObjetos.suelo, a = Date.now(); s.dejar({{ tipo: 'sierra', n: 1 }}, x - 0.2, z - 0.3, a, 'vista', false); s.dejar({{ tipo: 'tabla', n: 4 }}, x + 0.1, z + 0.5, a, 'vista', false); k.sueloObjetos.refrescar(); }})", [c['x'], c['z']])
     n = pg.evaluate(f"{K}.sueloObjetos.suelo.visibles(Date.now()).filter(o => ['sierra', 'tabla'].includes(o.cosa.tipo)).length")
     comprobar(f'{nombre}: la sierra y las tablas se dejan en el suelo', n == 2, str(n))
+    # la sierra en el suelo, asentada de punta a punta: ningún trozo bajo tierra ni en el aire (en una cuesta, media hoja se hundía)
+    a = pg.evaluate(f'''(() => {{ const k = {K}; k.escena.updateMatrixWorld(true); const o = k.escena.getObjectByName('suelo_sierra'); if (!o) return null;
+      const v = o.position.clone(); let bajo = 1e9, alto = -1e9;
+      o.traverse(m => {{ if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i += 3) {{ v.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); const d = v.y - k.alturaSuelo(v.x, v.z); bajo = Math.min(bajo, d); alto = Math.max(alto, d); }} }});
+      return [+bajo.toFixed(3), +alto.toFixed(3)]; }})()''')
+    comprobar(f'{nombre}: la sierra en el suelo, asentada (ni hundida ni en el aire)', a and a[0] > -0.02 and a[1] < 0.2, str(a))
     pg.evaluate(f'{K}.jugador.raiz.visible = false')
     mirar(pg, c, 0, 0.1, 0.5, 2.4 * D, 1.3, 0)
     pg.screenshot(path=f'{SALIDA}/{pref}_suelo.png', timeout=180000)

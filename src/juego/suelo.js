@@ -15,7 +15,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex } from '../mundo/estilos.js';
 import { cil } from '../mundo/decorado.js';
 import { modelosRecoleccion } from './recoleccion.js';
-import { modeloHacha, modeloPico, modeloSierra } from './personaje.js';
+import { modeloHacha, modeloPico, modeloSierra, LARGO_SIERRA } from './personaje.js';
 import { modeloRastra } from './rastra.js';
 import { modeloCarretilla } from './carretilla.js';
 import { Suelo, cargarSuelo, guardarSuelo, ejecutarSuelo } from '../logica/suelo.js';
@@ -116,7 +116,9 @@ export function modeloDe(o) {
   if (t === 'lena') return troncosConCortes(Math.ceil(n / 2), 0.45, 0.06, o.id);
   if (Object.hasOwn(MODELO_OBJETO, t)) return MODELO_OBJETO[t](n, o.id); // lo de las recetas de P3 (src/juego/modelos_objetos.js)
   // (P10) la sierra, tumbada de plano en el suelo, con los mangos a los lados
-  if (t === 'sierra') { const h = modeloSierra(); h.visible = true; h.rotation.set(0, az(o.id, 3) * 6, Math.PI / 2); h.position.y = 0.02; const g = new THREE.Group(); g.add(h); return g; }
+  // (de 1 m: centrada y, en refrescar, inclinada con el terreno de punta a punta; en una cuesta, con la punta al ras del
+  // centro, media hoja quedaba bajo tierra: lo vio la segunda mirada a las capturas del móvil)
+  if (t === 'sierra') { const h = modeloSierra(); h.visible = true; h.rotation.set(0, 0, Math.PI / 2); h.position.set(0, 0.02, -LARGO_SIERRA / 2); const g = new THREE.Group(); g.add(h); g.userData.largo = LARGO_SIERRA; g.rotation.order = 'YXZ'; return g; }
   if (t === 'pico') { const h = modeloPico(); h.visible = true; h.rotation.set(0, az(o.id, 3) * 6, Math.PI / 2); h.position.y = 0.022; const g = new THREE.Group(); g.add(h); return g; }   // (P10) el pico, tumbado de lado: la punta y la azuela a ras del suelo (de canto se clavaba en la tierra)
   if (t === 'hacha_mano' || t === 'hacha_hierro' || t === 'hacha_piedra') { const h = modeloHacha(); h.rotation.set(Math.PI / 2, 0, az(o.id, 3) * 6); h.position.y = 0.03; const g = new THREE.Group(); g.add(h); return g; }
   const d = CATALOGO[t];
@@ -135,13 +137,21 @@ export function crearSuelo({ raiz, altura, almacen, enTierras }) {
     for (const [id, v] of vistos) if (!ids.has(id)) { grupo.remove(v.obj); vistos.delete(id); }
     for (const o of hay) {
       const firma = o.cosa.tipo + ':' + o.cosa.n + (o.cosa.carga ? ':' + o.cosa.carga.tipo + o.cosa.carga.n : '') + (o.arrastra ? '@' + o.arrastra : '') + (o.agua ? '~' + (o.rema || '') + '+' + (o.pasajero || '') : '') + (o.cosa.vaciado ? '#' + firmaCanoa(o, ahora) : ''), v = vistos.get(o.id);
-      if (v && v.firma === firma) { if (!o.arrastra && !o.agua && (v.obj.position.x !== o.x || v.obj.position.z !== o.z)) { v.obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); if (Number.isFinite(o.giro)) v.obj.rotation.set(0, o.giro, 0); } continue; }
+      if (v && v.firma === firma) { if (!o.arrastra && !o.agua && (v.obj.position.x !== o.x || v.obj.position.z !== o.z)) { v.obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); if (Number.isFinite(o.giro)) v.obj.rotation.set(0, o.giro, 0); if (v.obj.userData.largo) asentar(v.obj); } continue; }
       if (v) grupo.remove(v.obj);
       const obj = modeloDe(o); obj.position.set(o.x, altura(o.x, o.z) - 0.01, o.z); obj.rotation.y += Number.isFinite(o.giro) ? o.giro : az(o.id, 9) * Math.PI * 2;
+      if (obj.userData.largo) asentar(obj);
       obj.name = 'suelo_' + o.cosa.tipo; obj.userData.id = o.id; obj.userData.arrastra = o.arrastra || null; obj.userData.rema = o.rema || null; obj.userData.agua = !!o.agua;   // (P11d) la canoa a flote: la mueve src/juego/rastra.js
       if (v && v.obj.userData.sigue && o.arrastra) obj.userData.sigue = v.obj.userData.sigue;   // la que arrastras no salta al cargarla
       grupo.add(obj); vistos.set(o.id, { obj, firma });
     }
+  }
+  // lo largo y tumbado (la sierra), a lo largo de su Z: inclinado con el terreno, a la altura media de sus dos puntas
+  function asentar(obj) {
+    const m = obj.userData.largo / 2, dx = Math.sin(obj.rotation.y) * m, dz = Math.cos(obj.rotation.y) * m;
+    const a = altura(obj.position.x - dx, obj.position.z - dz), b = altura(obj.position.x + dx, obj.position.z + dz);
+    obj.rotation.x = -Math.asin(THREE.MathUtils.clamp((b - a) / (2 * m), -0.6, 0.6));
+    obj.position.y = Math.max((a + b) / 2, altura(obj.position.x, obj.position.z)) - 0.005;
   }
   refrescar();
   const guardarlo = () => { if (almacen) guardarSuelo(almacen, suelo); };
