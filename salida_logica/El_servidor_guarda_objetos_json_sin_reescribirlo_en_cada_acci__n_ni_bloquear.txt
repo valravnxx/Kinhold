@@ -1,0 +1,22 @@
+Una acción no escribe el archivo de golpe
+  OK   coge una piedra del arcón de pruebas
+  OK   justo después, objetos.json aún no ha cambiado — 0 escrituras
+Muchas acciones seguidas, pocas escrituras
+  OK   30 acciones más (soltar y coger) salen bien
+  OK   se escribe como mucho una vez cada 400 ms, no en cada acción — 31 acciones en 10 ms, 0 escrituras (tope 2)
+Pasado el plazo, lo guardado es lo del servidor
+  OK   coge una rama
+  OK   objetos.json es lo mismo que tiene el servidor (con la rama)
+  OK   sin el .tmp a medias
+Al cerrar, lo que falte
+  OK   suelta la rama
+  OK   aún no está en el archivo
+  OK   al cerrar se escribe
+  OK   y al volver a arrancar se lee igual
+El servidor de verdad, apagado con SIGTERM antes del plazo
+  OK   arranca
+  OK   coge dos piedras
+  OK   con un plazo de 10 min, aún no se ha escrito
+  OK   al apagarse, lo ha guardado antes de salir — salida 143
+
+15 correctas, 0 fallidas
