@@ -155,14 +155,14 @@ function afloramientoGeo() {
     const g0 = rocaCortada(sem, an, al, fo, 2), g = g0.index ? g0.toNonIndexed() : g0; g.computeVertexNormals();
     g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, ry, 0)), new THREE.Vector3(1, 1, 1)));
     const p = g.attributes.position, n = p.count, col = new Float32Array(n * 3), uv = new Float32Array(n * 2), nr = g.attributes.normal;
-    const gris = new THREE.Color(0x8e8a84), oxido = new THREE.Color(0x8a5a42), oscuro = new THREE.Color(0x5e4a40), c = new THREE.Color();
+    const gris = new THREE.Color(0xb4aea4), oxido = new THREE.Color(0xa06e52), oscuro = new THREE.Color(0x6a5446), c = new THREE.Color();
     for (let i = 0; i < n; i++) {
       const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i);
       const mancha = 0.5 + 0.5 * Math.sin(vx * 3.1 + vz * 2.3 + sem) * Math.sin(vz * 2.7 - vy * 1.9);
       const reguero = Math.max(0, Math.sin((vx * 0.8 + vz * 0.6) * 9 + sem * 2)) ** 3;
       const abajo = Math.max(0, Math.min(1, 1 - vy / 0.9));
-      const k = Math.min(1, 0.25 + mancha * 0.45 + reguero * 0.35 + abajo * 0.25);
-      c.copy(gris).lerp(oxido, k).lerp(oscuro, Math.max(0, mancha - 0.75) * 1.5);
+      const k = Math.min(1, mancha * mancha * 0.7 + reguero * 0.55 + abajo * 0.2);   // (la mitad, más o menos, gris de roca)
+      c.copy(gris).lerp(oxido, k).lerp(oscuro, Math.max(0, mancha - 0.8) * 1.2);
       const sombra = 0.62 + 0.38 * Math.min(1, Math.max(0, vy + 0.1) / 0.6) * (0.75 + 0.25 * Math.max(0, nr.getY(i)));
       col[i * 3] = c.r * sombra; col[i * 3 + 1] = c.g * sombra; col[i * 3 + 2] = c.b * sombra;
       // (UV por caja: cada cara proyecta la textura desde su eje dominante, como la roca de los cortados)
