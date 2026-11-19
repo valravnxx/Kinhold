@@ -25,7 +25,7 @@
 import { CATALOGO } from '../logica/inventario.js';
 import { RECETAS, USOS, ESTACIONES, PARA, ALCANCE_ESTACION, COLA_ESTACION, totalDeposito, estacionesDeUso, conQue, esAlmacen, cabeEn, guardaTipo } from '../logica/fabricacion.js';
 import { CARPETA_ICONOS } from '../logica/iconos.js';
-import { estadoFuego, ARDE, COMO, BRASAS_LENTO, YESCAS, HERRAMIENTA_FUEGO } from '../logica/fuego.js';
+import { estadoFuego, ARDE, COMO, BRASAS_LENTO, YESCAS, HERRAMIENTA_FUEGO, comeDe } from '../logica/fuego.js';
 import { tr } from '../idioma.js';
 
 // de dónde sale cada material (estudio de la interfaz, 7 nov: «en las manos», «en el zurrón»); lo de la espalda, con el
@@ -38,12 +38,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 export const DELANTE = 1.2; // m: dónde se pone una estación, delante de ti
 // las pestañas: todo, con las manos y una por cada uso con estación
 const PESTANAS = ['todo', 'manos', ...Object.keys(USOS).filter(u => u !== 'manos')];
-const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco'), secar: () => tr('Secadero'), raspar: () => tr('Raspador de pieles'), trillar: () => tr('Era'), reducir: () => tr('Horno de reducción'), curtir: () => tr('Cubas de curtido'), carbonear: () => tr('Carbonera') };
+const NOMBRE_PESTANA = { todo: () => tr('Todo'), manos: () => tr('Con las manos'), tallar: () => tr('Piedra de tallar'), fuego: () => tr('Fuego'), banco: () => tr('Banco de tronco'), secar: () => tr('Secadero'), raspar: () => tr('Raspador de pieles'), trillar: () => tr('Era'), reducir: () => tr('Horno de reducción'), curtir: () => tr('Cubas de curtido'), carbonear: () => tr('Carbonera'), forjar: () => tr('Fragua') };
 // cómo se nombra cada estación en una frase («encima de la piedra de tallar»)
 const LA_ESTACION = { piedra_tallar: () => tr('la piedra de tallar'), hoguera: () => tr('la hoguera'), banco_tronco: () => tr('el banco de trabajo de tronco'),
   acopio_troncos: () => tr('el acopio de troncos'), pila_piedras: () => tr('la pila de piedras'), lenera: () => tr('la leñera'),
   soporte_varas: () => tr('el soporte de varas'), almiar: () => tr('el almiar'), hoyo_barro: () => tr('el hoyo de barro'), cesto: () => tr('el cesto'),
-  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas'), secadero: () => tr('el secadero'), raspador: () => tr('el raspador de pieles'), era: () => tr('la era'), horno_reduccion: () => tr('el horno de reducción'), cubas_curtido: () => tr('las cubas de curtido'), carbonera: () => tr('la carbonera') };
+  colgadero_mochilas: () => tr('el colgadero de mochilas'), colgadero_herramientas: () => tr('el colgadero de herramientas'), secadero: () => tr('el secadero'), raspador: () => tr('el raspador de pieles'), era: () => tr('la era'), horno_reduccion: () => tr('el horno de reducción'), cubas_curtido: () => tr('las cubas de curtido'), carbonera: () => tr('la carbonera'), fragua: () => tr('la fragua') };
 const laEstacion = t => LA_ESTACION[t] ? LA_ESTACION[t]() : tr(ESTACIONES[t].nombre).toLowerCase();
 const MANO_SVG = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17V8.5a1.8 1.8 0 0 1 3.6 0V15M13.6 15V6.3a1.8 1.8 0 0 1 3.6 0V15M17.2 15V7.5a1.8 1.8 0 0 1 3.6 0V16M20.8 16v-4a1.8 1.8 0 0 1 3.6 0v7c0 5-3.4 9-8.4 9-3.4 0-5.4-1.6-7-4.2l-3-5a1.9 1.9 0 0 1 3.1-2.1L10 19"/></svg>';
 const TODO_SVG = '<svg viewBox="0 0 32 32" fill="currentColor"><rect x="5" y="5" width="9" height="9" rx="2"/><rect x="18" y="5" width="9" height="9" rx="2"/><rect x="5" y="18" width="9" height="9" rx="2"/><rect x="18" y="18" width="9" height="9" rx="2"/></svg>';
@@ -220,10 +220,10 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
     const st = estadoFuego(e.fuego, ahora()), yesca = YESCAS.reduce((t, y) => t + inv.cuantos(y), 0), taladro = inv.cuantos(HERRAMIENTA_FUEGO) > 0;
     const como = COMO[e.tipo] || COMO.hoguera;
     const estado = st.brasas ? tr('En brasas: aguantan {m} min', { m: minutos(st.queda) }) : st.encendida ? tr('Encendida: le quedan {m} min', { m: minutos(st.queda) }) : st.cenizas ? tr('Apagada: solo quedan las cenizas') : tr('Apagada');
-    const puesto = st.brasas ? tr('Calienta poco y no alumbra; avívalo para que vuelva la llama, sin yesca.') : !st.encendida && st.combustible > 0 ? tr('Tiene puesto para arder {m} min.', { m: minutos(st.combustible) }) : !st.encendida ? tr('No tiene nada que arder: échale ramas o leña.') : tr('Da luz y calor. Échale más para que dure.');
+    const puesto = st.brasas ? tr('Calienta poco y no alumbra; avívalo para que vuelva la llama, sin yesca.') : !st.encendida && st.combustible > 0 ? tr('Tiene puesto para arder {m} min.', { m: minutos(st.combustible) }) : !st.encendida ? (e.tipo === 'fragua' ? tr('No tiene nada que arder: échale carbón.') : tr('No tiene nada que arder: échale ramas o leña.')) : tr('Da luz y calor. Échale más para que dure.');
     const falta = !taladro && !yesca ? tr('Te falta el taladro de fuego y la yesca.') : !taladro ? tr('Te falta el taladro de fuego.') : !yesca ? tr('Te falta la yesca.') : '';
     const puede = !st.encendida && st.combustible > 0 && taladro && yesca;
-    const echar = ['rama', 'lena'].map(t => `<button class="fab-btn2 fab-echar" data-estacion="${esc(e.id)}" data-objeto="${t}"${inv.cuantos(t) ? '' : ' disabled'}>${icono(t)}${esc(tr('Echar 1 {c} (+{m} min · llevas {n})', { c: nombre(t).toLowerCase(), m: ARDE[t] * como.dura / 60, n: inv.cuantos(t) }))}</button>`).join('');
+    const echar = comeDe(e.tipo).map(t => `<button class="fab-btn2 fab-echar" data-estacion="${esc(e.id)}" data-objeto="${t}"${inv.cuantos(t) ? '' : ' disabled'}>${icono(t)}${esc(tr('Echar 1 {c} (+{m} min · llevas {n})', { c: nombre(t).toLowerCase(), m: ARDE[t] * como.dura / 60, n: inv.cuantos(t) }))}</button>`).join('');
     return `<section class="fab-fuego${st.encendida ? ' fab-ardiendo' : ''}"><div class="fab-bt"><b>${esc(estado)}</b><span>${esc(puesto)}</span></div>
       <div class="fab-fuego-acc">${st.brasas ? `<button class="fab-btn fab-encender" data-estacion="${esc(e.id)}">${esc(tr('Avivar (vuelve la llama, sin yesca)'))}</button>`
         : st.encendida ? (como.brasas ? `<button class="fab-btn2 fab-brasas" data-estacion="${esc(e.id)}">${esc(tr('Dejar en brasas (dura {k} veces más, sin llama)', { k: BRASAS_LENTO }))}</button>` : '') : `<button class="fab-btn fab-encender" data-estacion="${esc(e.id)}"${puede ? '' : ' disabled'}>${esc(tr('Encender (gasta 1 yesca; con el taladro de fuego)'))}</button>${falta ? `<small class="fab-gris">${esc(falta)}</small>` : ''}`}${echar}</div></section>`;

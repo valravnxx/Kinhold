@@ -69,7 +69,7 @@ import { CATALOGO } from './inventario.js';
 import { VIDA, seEstropea } from './comida.js';
 import { ALCANCE_COGER } from './suelo.js';
 import { reparacionDe, seRepara, repararCosa, desgasteDe } from './desgaste.js';
-import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO } from './fuego.js';
+import { fuegoNuevo, limpiarFuego, encendida, echar, encender, estadoFuego, dejarEnBrasas, avivar, YESCAS, HERRAMIENTA_FUEGO, comeDe, queCome } from './fuego.js';
 
 export const ALCANCE_ESTACION = 2.5;        // m, del jugador a la estación
 export const ALCANCE_SUELO = ALCANCE_COGER; // m, del jugador a lo del suelo que se gasta
@@ -98,6 +98,7 @@ export const USOS = {
   reducir: { nombre: 'En el horno de reducción', estaciones: ['horno_reduccion'] },
   curtir: { nombre: 'En las cubas de curtido', estaciones: ['cubas_curtido'] },
   carbonear: { nombre: 'En la carbonera', estaciones: ['carbonera'] },
+  forjar: { nombre: 'En la fragua', estaciones: ['fragua'] },
 };
 
 // fuego: tiene fuego que se enciende, arde y se apaga (src/logica/fuego.js); sus recetas lo piden encendido.
@@ -169,6 +170,14 @@ export const ESTACIONES = {
   // para sacar el carbón y no queda nada). Fuera y en cualquier sitio, como los carboneros en el bosque. Provisional
   // (diario y registro): 4 h reales y 40 s de trabajo para levantarla.
   carbonera:      { nombre: 'Carbonera', un: 'una carbonera', uso: 'carbonear', coste: { lena: 10 }, requiere: ['palo_cavador', 'pala_madera'], donde: 'fuera', trabajo: 40, humea: true, carga: 1, seDeshace: true, guarda: ['yesca'], cabe: 1, hace: 'Leña apilada y cubierta de tierra: encendida, arde ahogada horas y deja carbón vegetal' },
+  // la fragua (P10, 19 nov; documento de sistemas: «fragua — piedra, barro, fuelle (cuero) — trabajo del hierro»;
+  // tarea: «la fragua con su yunque de piedra (12 piedras, 4 barros y el fuelle; fuera, en tu tierra) como estación, que
+  // se enciende con carbón»): un hogar de piedra a la altura de la cintura, con su lecho de barro y la tobera del fuelle
+  // de cuero metida por un lado, y al lado el yunque, una piedra grande y plana. Su fuego solo arde carbón (se le echa y
+  // se enciende con yesca y el taladro, como la hoguera: src/logica/fuego.js); con llama, se le deja la lupia y un carbón
+  // y, llevando el mazo de piedra de martillo (no se gasta), se bate la barra. Provisional (diario y registro): 60 s de
+  // trabajo para levantarla.
+  fragua:         { nombre: 'Fragua', un: 'una fragua', uso: 'forjar', coste: { piedra: 12, barro: 4, fuelle: 1 }, donde: 'fuera', trabajo: 60, tierra: true, fuego: true, hace: 'Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro' },
   cesto:          { nombre: 'Cesto', un: 'un cesto', uso: 'almacen', coste: { junco: 3 }, donde: 'ambos', trabajo: 15, tierra: true, guarda: ['silex', 'lasca_silex', 'fibra', 'yesca', 'cordel', 'cuerda', 'resina', 'bayas', 'setas', 'frutos_secos', 'hierbas', 'carne_seca', 'hilo', 'semilla_cebada', 'grano_sucio', 'habas', 'habas_asadas', 'semilla_col', 'semilla_nabo', 'nabo', 'nabo_asado'], guardaTxt: 'lo pequeño (sílex, fibra, cordel, yesca…)', cabe: 30, hace: 'Guarda lo pequeño: sílex, fibra, cordel, yesca, bayas…' },
 };
 // Los almacenajes (sin recetas) y cuánto cabe en lo depositado de cada estación.
@@ -188,6 +197,7 @@ export const motivoTierra = tipo => {
     : e.uso === 'cama' ? 'La cama va en tu tierra (o en la de quien te invita).'
     : tipo === 'era' ? 'La era va en tu tierra (o en la de quien te invita).'
     : tipo === 'horno_reduccion' ? 'El horno de reducción va en tu tierra (o en la de quien te invita).'
+    : tipo === 'fragua' ? 'La fragua va en tu tierra (o en la de quien te invita).'
     : tipo === 'cubas_curtido' ? 'Las cubas de curtido van en tu tierra (o en la de quien te invita).'
     : 'El secadero va en tu tierra (o en la de quien te invita).';
 };
@@ -312,6 +322,13 @@ export const RECETAS = {
   // Tiempos, provisionales (diario y registro): como el zurrón, que también es de cuero
   zapatos_cuero:     r('Zapatos de cuero', 'banco', 'zapatos_cuero', { cuero: 1, hilo: 1 }, 60),
   cinto_cuero:       r('Cinto de cuero', 'banco', 'cinto_cuero', { cuero: 2, rama: 1 }, 60),
+  // el fuelle (P10, 19 nov; tarea: «2 cueros y 2 varas, en el banco de tronco»): dos tablas de vara con el cuero cosido
+  // entre ellas en acordeón y la boquilla de la tobera. Tiempo, provisional (diario y registro): como el zurrón y algo más
+  fuelle:            r('Fuelle', 'banco', 'fuelle', { cuero: 2, vara: 2 }, 90),
+  // en la fragua (P10, 19 nov; tarea: «con el mazo de piedra como martillo, 1 lupia y 1 carbón dan 1 barra de hierro»):
+  // la lupia, calentada al rojo en el carbón y batida en el yunque hasta sacarle la escoria. Con el fuego encendido; se
+  // lleva el mazo (no se gasta). Tiempo, provisional (diario y registro): 2 min de batir
+  barra_hierro:      { ...r('Barra de hierro', 'forjar', 'barra_hierro', { lupia: 1, carbon: 1 }, 120), requiere: ['mazo_piedra'] },
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -367,6 +384,8 @@ export const PARA = {
   carretilla: 'Se empuja: 4 troncos cortos, 40 de leña, 36 piedras o un bloque de piedra, más deprisa que la rastra; aparcada en tus tierras, lo que lleva está protegido.',
   carbonear: 'Arde más caliente que la leña: lo pide el horno de reducción para el hierro.',
   reducir: 'El hierro en bruto, con su escoria: la fragua lo bate en barra.',
+  fuelle: 'Aviva el fuego de la fragua: lo pide la fragua para levantarla.',
+  barra_hierro: 'El hierro batido: herramientas, clavos y herrajes.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 
@@ -768,11 +787,11 @@ export class Fabricacion {
     const st = estadoFuego(e.fuego, ahora);
     if (st.encendida) return { ok: false, motivo: 'Ya está encendida.' };
     if (st.brasas) { const r = avivar(e.fuego, ahora); return r.ok ? { ok: true, estacion: e.id, encendida: true, avivada: true, hasta: r.hasta, gastado: {} } : r; }
-    if (!(st.combustible > 0)) return { ok: false, motivo: 'No tiene nada que arder: échale ramas o leña.' };
+    if (!(st.combustible > 0)) return { ok: false, motivo: `No tiene nada que arder: échale ${queCome(e.tipo)}.` };
     if (!(inv.cuantos(HERRAMIENTA_FUEGO) > 0)) return { ok: false, motivo: 'Para encenderla hace falta llevar el taladro de fuego y yesca.' };
     const ruta = YESCAS.flatMap(t => rutasGastables(inv, t))[0];
     if (!ruta) return { ok: false, motivo: 'Para encenderla hace falta llevar yesca.' };
-    const tipo = inv.buscar(ruta).cosa.tipo, r = encender(e.fuego, ahora);
+    const tipo = inv.buscar(ruta).cosa.tipo, r = encender(e.fuego, ahora, e.tipo);
     if (!r.ok) return r;
     inv.sacar(ruta, 1);
     return { ok: true, estacion: e.id, encendida: true, hasta: r.hasta, gastado: { [tipo]: 1 } };
@@ -781,8 +800,9 @@ export class Fabricacion {
   echarFuego(autor, estacion, objeto, pos, inv, ahora) {
     const { e, motivo } = this.fuegoAlLado(estacion, pos);
     if (!e) return { ok: false, motivo };
+    if (!comeDe(e.tipo).includes(objeto)) return { ok: false, motivo: e.tipo === 'fragua' ? 'A la fragua solo se le echa carbón.' : 'Al fuego solo se echan ramas o leña.' };
     const ruta = rutasGastables(inv, objeto)[0];
-    if (!ruta) return { ok: false, motivo: objeto === 'lena' ? 'No llevas leña.' : objeto === 'rama' ? 'No llevas ramas.' : 'Al fuego solo se echan ramas o leña.' };
+    if (!ruta) return { ok: false, motivo: objeto === 'lena' ? 'No llevas leña.' : objeto === 'rama' ? 'No llevas ramas.' : 'No llevas carbón.' };
     const r = echar(e.fuego, objeto, ahora, e.tipo);
     if (!r.ok) return r;
     inv.sacar(ruta, 1);

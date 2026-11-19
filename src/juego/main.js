@@ -38,7 +38,7 @@ import { svgPrenda } from './iconos_ropa.js';
 import { CARPETA_INTERFAZ, CARPETA_PIEZAS } from '../logica/iconos.js';
 import { crearEstaciones, MODELO_ESTACION, SITIO_DORMIR, ERA } from './estaciones.js';
 import { Fabricacion, ejecutarFabricacion, ESTACIONES, RECETAS, DONDE, MAX_RATO_ESTACION, ALCANCE_ESTACION, esAlmacen, esCama, MOTIVO_MURO, cabeEn, motivoTierra } from '../logica/fabricacion.js';
-import { estadoFuego, calorEn, COMO as COMO_FUEGO } from '../logica/fuego.js';
+import { estadoFuego, calorEn, COMO as COMO_FUEGO, comeDe } from '../logica/fuego.js';
 import { montarMapaRey } from './mapa_rey.js';
 import { montarPanelAdmin } from './panel_admin.js';
 import { crearComarcas, zonasDeEscena } from '../logica/comarcas.js';
@@ -1945,7 +1945,7 @@ function opcionesUsar() {
         if (st.brasas) ops.push({ texto: tr('Avivar: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'encender_fuego' }) });
         else if (!st.encendida) ops.push({ texto: tr('Encender: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'encender_fuego' }) });
         else if (COMO_FUEGO[e.tipo] && COMO_FUEGO[e.tipo].brasas) ops.push({ texto: tr('Dejar en brasas: {e}', { e: tr(ESTACIONES[e.tipo].nombre) }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'brasas_fuego' }) });
-        for (const t of ['rama', 'lena']) if (inv.cuantos(t)) ops.push({ texto: tr('Echar al fuego: 1 {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'echar_fuego', objeto: t }) });
+        for (const t of comeDe(e.tipo)) if (inv.cuantos(t)) ops.push({ texto: tr('Echar al fuego: 1 {c}', { c: tr(CATALOGO[t].nombre).toLowerCase() }), pos: e, alto: 0.6, hacer: () => usarFuego(e, { tipo: 'echar_fuego', objeto: t }) });
       }
     }
   }

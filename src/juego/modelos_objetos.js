@@ -26,6 +26,8 @@
 //  - remo (P11d, 16 nov): de una pieza, a hacha, con la pala de punta redonda y su nervio, la caña y el puño en muleta.
 //  - carbón vegetal (P10, 17 nov): trozos de leña carbonizada, negros, facetados y agrietados de través.
 //  - lupia de hierro (P10, 17 nov): una masa esponjosa gris negruzca con poros, escoria vidriosa abajo y algo de óxido.
+//  - fuelle (P10, 19 nov): dos tablas en pera con el cuero en acordeón entre ellas, la boquilla y los mangos.
+//  - barra de hierro (P10, 19 nov): una barra cuadrada batida, irregular, con la cascarilla negra de la forja.
 //  - criba (P10): el aro de vara doblada y el fondo de mimbre tejido en cuadros, de canto contra el suelo.
 //  - huso (oficios, 18 nov): el palo de vara con la tortera de piedra abajo y la husada de hilo encima, tumbado.
 //  - ovillo de hilo (oficios, 18 nov): el hilo pálido de ortiga devanado en una bola, con el cabo suelto.
@@ -684,6 +686,59 @@ function lupia(n, id) {
   return mallas(L);
 }
 
+// El fuelle de la fragua (P10, 19 nov): dos tablas en forma de pera (de las varas, abiertas y aplanadas) con el cuero
+// cosido entre ellas en pliegues de acordeón, la boquilla delante y los dos mangos de vara detrás. Tumbado en el suelo.
+const TABLA_FUELLE = 0x6b5238, BOQUILLA = 0x3f3226, CUERO_FUELLE = 0x3d2a1e, CUERO_FUELLE_OSC = 0x2c1e15;
+function formaPera(ancho, largo) {   // la tabla: redonda detrás (en el origen) y estrecha delante (+x)
+  const s = new THREE.Shape(), r = ancho / 2, f = 0.045;
+  s.moveTo(largo, -f); s.lineTo(0.06, -r); s.absarc(0, 0, r, -Math.PI / 2 + 0.35, Math.PI / 2 - 0.35, true);
+  s.lineTo(0.06, r); s.lineTo(largo, f); s.lineTo(largo, -f);
+  return s;
+}
+export function loteFuelle(id, L = lote(0.03), giro = null) {
+  const ancho = 0.34, largo = 0.42, grueso = 0.022, alto = 0.13, t = giro ?? az(id, 1) * 0.4 - 0.2;
+  const tabla = new THREE.ExtrudeGeometry(formaPera(ancho, largo), { depth: grueso, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.004, bevelSegments: 1, curveSegments: 10 });
+  tabla.rotateX(-Math.PI / 2);   // tumbada: la cara en el plano XZ
+  L.add(tabla, TABLA_FUELLE, 0, 0.004, 0, { y: t }, { tex: 'veta' });
+  L.add(tabla.clone(), TABLA_FUELLE, 0, alto, 0, { y: t }, { tex: 'veta', sinSuelo: true });
+  // el cuero en acordeón: cinco pliegues, de la tabla de abajo a la de arriba, que entran y salen
+  for (let k = 0; k < 5; k++) {
+    const fr = k % 2 ? 0.84 : 1.1, y = 0.03 + k * (alto - 0.03) / 5;
+    const f = new THREE.ExtrudeGeometry(formaPera(ancho * fr, largo * 0.92), { depth: (alto - 0.03) / 5 + 0.004, bevelEnabled: false, curveSegments: 10 });
+    f.rotateX(-Math.PI / 2);
+    L.add(f, k % 2 ? CUERO_FUELLE_OSC : CUERO_FUELLE, -0.012 * (fr - 1) * 10, y + (alto - 0.03) / 5, 0, { y: t }, { tex: 'liso', sinSuelo: true, brillo: 1.05 });
+  }
+  // la boquilla, delante, entre las dos tablas
+  const c = Math.cos(t), sn = Math.sin(t), en = d => [d * c, -d * sn];
+  const [bx, bz] = en(largo + 0.07);
+  L.add(cil(0.016, 0.034, 0.18, 8), BOQUILLA, bx, alto * 0.55, bz, new THREE.Matrix4().makeRotationY(t).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2)), { tex: 'veta', sinSuelo: true });
+  // los mangos, detrás: uno en cada tabla
+  for (const [y, dy] of [[0.02, 0], [alto + 0.02, 0.01]]) {
+    const [mx, mz] = en(-ancho / 2 - 0.1);
+    L.add(cil(0.013, 0.015, 0.24, 6), 'corteza', mx, y + dy, mz, new THREE.Matrix4().makeRotationY(t).multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2)), { sinSuelo: y > 0.05 });
+  }
+  return L;
+}
+const fuelle = (n, id) => mallas(loteFuelle(id));
+
+// La barra de hierro (P10, 19 nov, la de la fragua): una barra cuadrada batida a martillo, algo irregular, con la
+// cascarilla negra de la forja y las caras más claras donde dio el martillo; si son varias, unas sobre otras.
+const HIERRO_BATIDO = 0x4c4a48, CASCARILLA = 0x2c2a29;
+function barraHierro(n, id) {
+  const L = lote(0.02), k = Math.min(4, n || 1);
+  for (let i = 0; i < k; i++) {
+    const largo = 0.4 + az(id, i) * 0.04, g = new THREE.BoxGeometry(largo, 0.026, 0.026, 7, 1, 1), p = g.attributes.position;
+    for (let j = 0; j < p.count; j++) {   // lo batido: se ensancha y se estrecha a trozos, y las puntas, aplastadas
+      const x = p.getX(j), q = Math.round((x / largo + 0.5) * 6), f = 0.85 + 0.3 * az(id + ':' + i, q);
+      p.setY(j, p.getY(j) * f); p.setZ(j, p.getZ(j) * (2 - f));
+    }
+    g.computeVertexNormals();
+    const capa = i < 3 ? 0 : 1, z = capa ? 0 : (i - (Math.min(k, 3) - 1) / 2) * 0.05;
+    L.add(g, i % 2 ? CASCARILLA : HIERRO_BATIDO, (az(id, i + 5) - 0.5) * 0.04, 0.014 + capa * 0.026, z, { y: (az(id, i + 9) - 0.5) * 0.12 }, { plano: true, tex: 'piedra', brillo: 1.15, sinSuelo: capa > 0 });
+  }
+  return mallas(L);
+}
+
 // El hacha de piedra (revisión del 1 nov: la primera herramienta para talar los jóvenes): la cabeza de piedra pulida,
 // en forma de gota con el filo abajo, encajada en el mango y atada con tiras de cuero cruzadas. Tumbada en el suelo.
 // loteHachaPiedra() da sus piezas (el mango a lo largo de +Y con la mano en el origen y el filo hacia +Z, como el hacha
@@ -1031,7 +1086,7 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, cuero, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, fuelle, barra_hierro: barraHierro, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   huso, hilo,
   zapatos_cuero: zapatos, cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

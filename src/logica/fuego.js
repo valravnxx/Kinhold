@@ -28,7 +28,7 @@
 //  - Mientras arde (con llama o en brasas) no se quita.
 //  e.fuego.brasas: si está en brasas; entonces hasta es la hora a la que se acaban.
 
-export const ARDE = { rama: 180, lena: 600 };   // s de fuego por cada una
+export const ARDE = { rama: 180, lena: 600, carbon: 900 };   // s de fuego por cada una (el carbón, solo en la fragua)
 export const FUEGO_MAX = 3600;                  // s de fuego por delante, como mucho
 export const RAMAS_HOGUERA = 4;                 // las de su coste: quedan puestas
 export const RADIO_CALOR = 4;                   // m
@@ -42,8 +42,16 @@ export const CALOR_BRASAS = 0.5;                // y calienta la mitad
 export const COMO = {
   hoguera: { dura: 1, max: FUEGO_MAX, puestas: RAMAS_HOGUERA * ARDE.rama, brasas: false },
   hogar:   { dura: 1.5, max: 2 * FUEGO_MAX, puestas: 0, brasas: true },
+  // la fragua (P10, 19 nov; tarea: «se enciende con carbón»): solo arde carbón vegetal, que da el calor de batir el
+  // hierro; recién hecha no tiene nada puesto. Provisional (diario y registro): un carbón arde 15 min y caben 1 h por delante
+  fragua:  { dura: 1, max: FUEGO_MAX, puestas: 0, brasas: false, come: ['carbon'] },
 };
 const como = tipo => COMO[tipo] || COMO.hoguera;
+// Lo que se le echa a cada fuego: a la hoguera y al hogar, ramas o leña; a la fragua, carbón.
+export const COME = ['rama', 'lena'];
+export const comeDe = (tipo = 'hoguera') => como(tipo).come || COME;
+const ESO = { rama: 'ramas', lena: 'leña', carbon: 'carbón' };
+export const queCome = (tipo = 'hoguera') => comeDe(tipo).map(t => ESO[t] || t).join(' o ');
 
 // El fuego de una hoguera (o de un hogar) recién levantado: apagado, con lo que traiga puesto.
 export const fuegoNuevo = (tipo = 'hoguera') => ({ hasta: 0, combustible: como(tipo).puestas, cenizas: false });
@@ -75,20 +83,20 @@ export const vivo = (f, ahora) => !!f && f.hasta > ahora; // con llama o en bras
 // Echarle una cosa (tipo: 'rama' o 'lena'). No gasta nada: eso lo hace quien llama, si sale bien. En brasas, se queda
 // en brasas (arde despacio) hasta que se aviva.
 export function echar(f, tipo, ahora, deTipo = 'hoguera') {
-  if (!Object.hasOwn(ARDE, tipo)) return { ok: false, motivo: 'Al fuego solo se echan ramas o leña.' };
+  if (!Object.hasOwn(ARDE, tipo) || !comeDe(deTipo).includes(tipo)) return { ok: false, motivo: deTipo === 'fragua' ? 'A la fragua solo se le echa carbón.' : 'Al fuego solo se echan ramas o leña.' };
   asentar(f, ahora);
   const c = como(deTipo), s = ARDE[tipo] * c.dura, arde = f.hasta > ahora, lento = arde && f.brasas ? BRASAS_LENTO : 1;
   const hay = arde ? (f.hasta - ahora) / 1000 / lento : f.combustible;
-  if (hay + s > c.max + 1e-6) return { ok: false, motivo: 'Ya tiene leña de sobra: espera a que arda.' };
+  if (hay + s > c.max + 1e-6) return { ok: false, motivo: `Ya tiene ${deTipo === 'fragua' ? 'carbón' : 'leña'} de sobra: espera a que arda.` };
   if (arde) f.hasta += s * lento * 1000; else f.combustible += s;
   return { ok: true, encendida: arde && !f.brasas, brasas: arde && !!f.brasas, segundos: s };
 }
 
 // Encenderlo (quien llama gasta la yesca y mira que lleva el taladro). En brasas, mejor avivar().
-export function encender(f, ahora) {
+export function encender(f, ahora, deTipo = 'hoguera') {
   asentar(f, ahora);
   if (f.hasta > ahora) return { ok: false, motivo: f.brasas ? 'Está en brasas: avívalo.' : 'Ya está encendida.' };
-  if (!(f.combustible > 0)) return { ok: false, motivo: 'No tiene nada que arder: échale ramas o leña.' };
+  if (!(f.combustible > 0)) return { ok: false, motivo: `No tiene nada que arder: échale ${queCome(deTipo)}.` };
   f.hasta = ahora + f.combustible * 1000; f.combustible = 0; f.cenizas = false;
   return { ok: true, hasta: f.hasta };
 }

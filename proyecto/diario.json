@@ -7651,5 +7651,22 @@
   "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 51 bien y 0 mal.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-19T01:22:11+00:00",
+  "fin": "2026-11-19T05:06:55+00:00",
+  "titulo": "La fragua y la barra de hierro (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "El fuelle, en el banco de tronco: 2 cueros y 2 varas, dos tablas en pera con el cuero en acordeón.",
+   "La fragua, un puesto nuevo: un hogar de piedra seca a la altura de la cintura con su lecho de barro, la tobera y el fuelle en sus horquillas y un yunque de piedra delante. Cuesta 12 piedras, 4 cestas de barro y el fuelle, y va fuera, en tu tierra.",
+   "Su fuego solo arde carbón: se le echa y se enciende con yesca y el taladro de fuego. Encendida, con la lupia y un carbón dejados en ella y el mazo de piedra de martillo (no se gasta), se bate 1 barra de hierro. Lo hace el servidor, con su autor.",
+   "Provisional: un carbón arde 15 min en la fragua y caben 1 h de fuego; 60 s para levantarla, 90 s para el fuelle y 2 min para la barra; el fuelle pesa 3 kg y la barra, 2 kg.",
+   "La sesión empezó a las 01:22 y se cortó; la retomó otra a las 03:27 desde su rama. Se tradujeron también las notas de v236 (el castillo del rey), que faltaban en inglés y en ruso.",
+   "Imágenes nuevas, iconos v40. Demo v237."
+  ],
+  "pruebas": "Comprobador de código correcto. Revisor en la nube, reducido a lo del cambio (sin la hoguera, los almacenajes, los colgaderos, el hogar, la cama, el inventario, la velocidad, el mazo, despiezar y la demo única, que solo los pide un archivo compartido y no tocan la fragua): la fragua (PC y móvil) bien; el recorrido de jugador 379/379 (la fragua, en lo que aún no hace, hasta su tarea de recorrido del hierro); la lógica falló solo por las notas de v236 sin traducir (arreglado) y el panel de fabricación por «la criba y el grano, soltados al suelo», que no toca el cambio; repetidos los dos, bien. Prueba de la fragua (lógica y servidor) 25/25.",
+  "capturas": "capturas/demo-v237",
+  "estado": "ok"
  }
 ]
