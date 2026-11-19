@@ -179,7 +179,7 @@ for _ in range(3):
             for j in _por_lado.get((min(a_, b_), max(a_, b_)), ()):
                 if j != i and _cal[j] > mejor_c and abs((nrm[i] * nrm[j]).sum()) > 0.995: mejor_j, mejor_c = j, _cal[j]
         if mejor_j >= 0:
-            tg[i] = tg[mejor_j]; bt[i] = bt[mejor_j]; _cal[i] = _cal[mejor_j]
+            tg[i] = tg[mejor_j]; bt[i] = bt[mejor_j]; nrm[i] = nrm[mejor_j]; _cal[i] = _cal[mejor_j]
 if os.environ.get('DIAG'):
     _uv = lambda i, p: np.array([(p * tg[i]).sum(), (p * bt[i]).sum()])
     malas = []
@@ -217,7 +217,7 @@ _lq = np.stack([np.linalg.norm(_Tq[:, 1] - _Tq[:, 0], axis=1), np.linalg.norm(_T
 _finas = ((_aq / np.maximum(_lq, 1e-9)) < 6.0) & (_lq > 50) & np.isin(MAT.reshape(-1, 3)[:, 0], [kit.MATERIALES.index(x) for x in ('sillar', 'mamp', 'piedra', 'losa', 'canto', 'tierra')])   # (astillas de los paños: de menos de 6 cm de ancho y más de medio metro de largo)
 # las finas que al redondear se tuercen más de 3° dan otra luz y se ven como un hilo claro: fuera (la rendija que dejan,
 # de un centímetro, la tapa el alma oscura del muro)
-_vale = (_aq > 0.5) & (_dot > 0.2) & ~(_finas & (_dot < 0.9986))
+_vale = (_aq > 0.5) & (_dot > 0.2)
 print('astillas quitadas al redondear:', int((~_vale).sum()))
 orden = orden[_vale[orden // 3]]
 nv = len(orden)
@@ -230,7 +230,8 @@ assert np.abs(q).max() < 32767, 'fuera de rango (2 mm)'
 cab = b'KCR2' + struct.pack('<If', nv, 0.002) + struct.pack('<I', len(cuentas))
 for nm, k in cuentas: cab += struct.pack('<B', len(nm)) + nm.encode() + struct.pack('<I', k)
 C8 = (np.clip(np.asarray(Cc).reshape(-1, 3), 0, 1) * 255).round().astype(np.uint8)
-cuerpo = cab + q[orden].astype('<i2').tobytes() + C8[orden].tobytes() + UVq[orden].astype('<i2').tobytes() + HS[orden].tobytes()
+N8 = np.clip(np.round(np.repeat(nrm, 3, 0) * 127), -127, 127).astype(np.int8)   # la normal de cada cara, exacta (de las coordenadas en doble)
+cuerpo = cab + q[orden].astype('<i2').tobytes() + C8[orden].tobytes() + UVq[orden].astype('<i2').tobytes() + HS[orden].tobytes() + N8[orden].tobytes()
 DEST = DEST.replace('castillo-rey-v1', 'castillo-rey-v2'); os.makedirs(DEST, exist_ok=True)
 open(os.path.join(DEST, 'castillo.bin.gz'), 'wb').write(gzip.compress(cuerpo, 9, mtime=0))
 print('materiales', dict(cuentas))

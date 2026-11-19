@@ -176,6 +176,31 @@ def alto_hueco(h):
     return h['v1']
 
 def _cara_con_huecos(m, f, u0, u1, v0, v1, w, huecos_pts, col, normal_mas):
+    """la cara de un muro con sus huecos. Se parte en columnas por los lados de los huecos (y en franjas de 1,5 m en lo
+       liso) y cada trozo se triangula aparte: así no salen astillas de punta a punta del muro, que dan hilos de luz"""
+    # columnas: los tramos de u que ocupan los huecos (los que se solapan, juntos) y lo que queda entre ellos
+    tramos = sorted([(min(p[0] for p in hp), max(p[0] for p in hp)) for hp in huecos_pts])
+    juntos = []
+    for a, b in tramos:
+        a, b = max(a - 0.05, u0), min(b + 0.05, u1)
+        if juntos and a <= juntos[-1][1] + 0.3: juntos[-1] = (juntos[-1][0], max(juntos[-1][1], b))
+        else: juntos.append((a, b))
+    cortes = [u0]
+    for a, b in juntos:
+        if a - cortes[-1] > 1e-6: cortes.append(a)
+        cortes.append(b)
+    if u1 - cortes[-1] > 1e-6: cortes.append(u1)
+    cortes = sorted(set(round(c, 6) for c in cortes))
+    finos = []
+    for a, b in zip(cortes, cortes[1:]):
+        if any(ja - 1e-6 <= a and b <= jb + 1e-6 for ja, jb in juntos): finos.append((a, b)); continue
+        n = max(1, int(math.ceil((b - a) / 1.5 - 1e-9)))
+        finos += [(a + (b - a) * i / n, a + (b - a) * (i + 1) / n) for i in range(n)]
+    for (ca, cb) in finos:
+        hs = [hp for hp in huecos_pts if ca - 1e-6 <= min(p[0] for p in hp) and max(p[0] for p in hp) <= cb + 1e-6]
+        _trozo_con_huecos(m, f, ca, cb, v0, v1, w, hs, col, normal_mas)
+
+def _trozo_con_huecos(m, f, u0, u1, v0, v1, w, huecos_pts, col, normal_mas):
     outer = [(u0, v0), (u1, v0), (u1, v1), (u0, v1)]
     rings = [outer] + [hp[::-1] for hp in huecos_pts]   # earcut: anillo exterior y huecos
     verts = [p for r in rings for p in r]
@@ -261,8 +286,6 @@ def muro(m, f, u0, u1, v0, v1, w0, w1, huecos=(), tipo='silleria', col=None, tap
     inn = [contorno(h, h.get('derrame', 0.0)) for h in H]
     _cara_con_huecos(m, f, u0, u1, v0, v1, w1, ext, mort, True)
     _cara_con_huecos(m, f, u0, u1, v0, v1, w0, inn, esc(dentro_col or mort, 1.0), False)
-    if abs(w1 - w0) > 0.3:
-        with con(m, 'liso'): _cara_con_huecos(m, f, u0, u1, v0, v1, (w0 + w1) / 2, [contorno(h, h.get('derrame', 0.0) / 2) for h in H], esc(mort, 0.3), True)
     suelo = v0 if suelo is None else suelo
     _piedras(m, f, u0, u1, v0, v1, w1, H, col, tipo, +1, suelo)
     if piedras_dentro:

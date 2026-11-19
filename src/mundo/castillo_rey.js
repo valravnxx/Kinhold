@@ -4,8 +4,8 @@
 // La malla va en docs/recursos/mundo/castillo-rey-v2/castillo.bin.gz (gzip): «KCR2», el número de vértices (uint32),
 // la escala (float32, 0,002 m), el número de materiales (uint32) y, por cada uno, su nombre (uint8 de largo + letras) y
 // sus vértices (uint32); luego, por vértice y en ese orden: la posición (int16 × 3, en pasos de la escala: x y z desde ORIGEN_CASTILLO, y la
-// altura del mundo), el color (uint8 × 3), la UV (int16 × 2, en centímetros de pared o de suelo) y la altura sobre su
-// suelo (uint8, en decímetros). Cada material lleva su textura de color y de relieve (tex/, de herramientas/castillo_rey/
+// altura del mundo), el color (uint8 × 3), la UV (int16 × 2, en centímetros de pared o de suelo), la altura sobre su
+// suelo (uint8, en decímetros) y la normal de su cara (int8 × 3, ×127). Cada material lleva su textura de color y de relieve (tex/, de herramientas/castillo_rey/
 // texturas.py), repetida cada TAM metros, con la luz del estilo v5 (Lambert, color por vértice). Y el desgaste por
 // píxel: humedad y verdín al pie de los muros (con la altura sobre el suelo), regueros, y musgo en lo que mira arriba.
 //
@@ -89,9 +89,10 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
         grupos.push({ nombre, cuenta: dv.getUint32(o, true) }); o += 4;
       }
       const copia = (bytes) => { const r = buf.slice(o, o + bytes); o += bytes; return r.buffer; };
-      const q = new Int16Array(copia(n * 6)), c8 = new Uint8Array(copia(n * 3)), uq = new Int16Array(copia(n * 4)), hs = new Uint8Array(copia(n));
+      const q = new Int16Array(copia(n * 6)), c8 = new Uint8Array(copia(n * 3)), uq = new Int16Array(copia(n * 4)), hs = new Uint8Array(copia(n)), n8 = new Int8Array(copia(n * 3));
       const pos = new Float32Array(n * 3), colr = new Float32Array(n * 3), uv = new Float32Array(n * 2);
-      for (let i = 0; i < n * 3; i++) { pos[i] = q[i] * esc; colr[i] = c8[i] / 255; }
+      const nor = new Float32Array(n * 3);
+      for (let i = 0; i < n * 3; i++) { pos[i] = q[i] * esc; colr[i] = c8[i] / 255; nor[i] = n8[i] / 127; }
       for (let i = 0; i < n * 2; i++) uv[i] = uq[i] * 0.01;
       // dos mallas: lo que levanta (echa sombra) y los suelos planos (tierra, cantos, losas), que no la echan: un plano que
       // se sombrea a sí mismo sale con rayas
@@ -115,18 +116,21 @@ export function crearCastilloRey({ escena, origen, y0, base = '' }) {
         return mat;
       };
       let ini = 0; const rangos = grupos.map(gr => { const r = { ...gr, ini }; ini += gr.cuenta; return r; });
+      // lo liso (hierro, brasas, lo oscuro) no lleva textura que module su color: el suyo va en sRGB, como se pintó
+      for (const r of rangos) if (r.nombre === 'liso') for (let i = r.ini * 3; i < (r.ini + r.cuenta) * 3; i++) colr[i] = Math.pow(colr[i], 2.2);
       const hacer = (lista) => {
         const n2 = lista.reduce((t, r) => t + r.cuenta, 0);
-        const P = new Float32Array(n2 * 3), C = new Float32Array(n2 * 3), U = new Float32Array(n2 * 2), H = new Uint8Array(n2);
+        const P = new Float32Array(n2 * 3), C = new Float32Array(n2 * 3), U = new Float32Array(n2 * 2), H = new Uint8Array(n2), N = new Float32Array(n2 * 3);
         const g = new THREE.BufferGeometry(), mats = []; let o2 = 0;
         for (const [k, r] of lista.entries()) {
           P.set(pos.subarray(r.ini * 3, (r.ini + r.cuenta) * 3), o2 * 3); C.set(colr.subarray(r.ini * 3, (r.ini + r.cuenta) * 3), o2 * 3);
           U.set(uv.subarray(r.ini * 2, (r.ini + r.cuenta) * 2), o2 * 2); H.set(hs.subarray(r.ini, r.ini + r.cuenta), o2);
+          N.set(nor.subarray(r.ini * 3, (r.ini + r.cuenta) * 3), o2 * 3);
           g.addGroup(o2, r.cuenta, k); mats.push(material(r.nombre)); o2 += r.cuenta;
         }
         g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('color', new THREE.BufferAttribute(C, 3));
         g.setAttribute('uv', new THREE.BufferAttribute(U, 2)); g.setAttribute('hs', new THREE.BufferAttribute(H, 1));
-        g.computeVertexNormals(); g.computeBoundingSphere();
+        g.setAttribute('normal', new THREE.BufferAttribute(N, 3)); g.computeBoundingSphere();
         const me = new THREE.Mesh(g, mats); me.position.set(dx, -y0, dz); me.receiveShadow = true;
         return me;
       };
