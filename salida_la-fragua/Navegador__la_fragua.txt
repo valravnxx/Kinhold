@@ -1,0 +1,69 @@
+  OK   PC: la fragua apagada, sin llama, con el carbón puesto en la cubeta y la lupia y el carbón al pie — {'hay': True, 'llama': False, 'carbon': True, 'carga': True}
+  OK   PC: la encendida, con su fuego sobre el lecho — {'hay': True, 'llama': True, 'carbon': False, 'carga': False}
+  OK   PC: su pestaña «Fragua», con la barra de hierro — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+2
+Con las manos
+en cualquier sitio
+2
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secade
+  OK   PC: a su fuego solo se le echa carbón — ['carbon']
+  OK   PC: la ficha pide la lupia y el carbón y el mazo de piedra — Barra de hierro
+
+El hierro batido: herramientas, clavos y herrajes.
+
+En la fragua
+2 min
+Lo que pide (de lo que está en la estación)
+Lupia de hierroen la estación
+1 de 1
+Carbón vegetalen la estación
+1 de 1
+Mazo de piedrahay que llevarlo (no se gasta)
+0/1
+El fuego está apagado: enciéndelo arriba.
+  OK   PC: el panel no se sale de lado
+  OK   PC: el fuelle y la barra se dejan en el suelo — 2
+  OK   PC: sin errores en la página — []
+  OK   móvil: la fragua apagada, sin llama, con el carbón puesto en la cubeta y la lupia y el carbón al pie — {'hay': True, 'llama': False, 'carbon': True, 'carga': True}
+  OK   móvil: la encendida, con su fuego sobre el lecho — {'hay': True, 'llama': True, 'carbon': False, 'carga': False}
+  OK   móvil: su pestaña «Fragua», con la barra de hierro — Fragua
+Un hogar de piedra con fuelle y un yunque de piedra al lado: con el fuego de carbón encendido, bate la lupia en barra de hierro · sus recetas gastan lo que se le deja
+Todo
+2
+Con las manos
+en cualquier sitio
+2
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secade
+  OK   móvil: a su fuego solo se le echa carbón — ['carbon']
+  OK   móvil: la ficha pide la lupia y el carbón y el mazo de piedra — Barra de hierro
+
+El hierro batido: herramientas, clavos y herrajes.
+
+En la fragua
+2 min
+Lo que pide (de lo que está en la estación)
+Lupia de hierroen la estación
+1 de 1
+Carbón vegetalen la estación
+1 de 1
+Mazo de piedrahay que llevarlo (no se gasta)
+0/1
+El fuego está apagado: enciéndelo arriba.
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: sin errores en la página — []
+
+TODO CORRECTO
