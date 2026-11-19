@@ -1,0 +1,7 @@
+  OK   el castillo del rey se carga al acercarse
+  OK   recorrido «atacante» entero andando, sin atascarse ni caerse —  (377 s)
+  OK   recorrido «guardia» entero andando, sin atascarse ni caerse —  (232 s)
+  OK   recorrido «puerta» entero andando, sin atascarse ni caerse —  (220 s)
+  OK   recorrido «poterna» entero andando, sin atascarse ni caerse —  (80 s)
+  OK   sin errores en la página
+TODO BIEN
