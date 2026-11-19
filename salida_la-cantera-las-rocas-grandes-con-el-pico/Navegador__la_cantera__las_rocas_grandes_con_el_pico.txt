@@ -1,0 +1,26 @@
+  OK   PC: hay una roca grande cerca de la salida — {'id': 'roca:409,-22', 'x': 40.91581130953273, 'z': -2.1606311179712065, 'tam': 0.5104229900054633}
+  OK   PC: junto a ella, se ve en la malla y estorba
+  OK   PC: con el mazo, Usar no la rompe (es grande) — {'ok': True}
+  OK   PC: (el pico en la mano) — {'ok': True}
+  OK   PC: el pico se ve en la mano
+  OK   PC: es la roca que se rompe al lado — {'id': 'roca:409,-22', 'x': 40.91581130953273, 'z': -2.1606311179712065, 'tam': 0.5104229900054633}
+  OK   PC: con el pico, Usar se pone a romperla (a golpes, como al talar)
+  OK   PC: la roca desaparece (ni en la malla ni estorbando)
+  OK   PC: quedan sus cascotes
+  OK   PC: y en el suelo, sus bloques de piedra en bruto (de 1 a 4) y sus piedras (de 10 a 30) — 1 bloques, 10 piedras
+  OK   PC: los bloques se ven en el suelo (su montón) — 1
+  OK   PC: sin errores en la página
+  OK   móvil: hay una roca grande cerca de la salida — {'id': 'roca:409,-22', 'x': 40.91581130953273, 'z': -2.1606311179712065, 'tam': 0.5104229900054633}
+  OK   móvil: junto a ella, se ve en la malla y estorba
+  OK   móvil: con el mazo, Usar no la rompe (es grande) — {'ok': True}
+  OK   móvil: (el pico en la mano) — {'ok': True}
+  OK   móvil: el pico se ve en la mano
+  OK   móvil: es la roca que se rompe al lado — {'id': 'roca:409,-22', 'x': 40.91581130953273, 'z': -2.1606311179712065, 'tam': 0.5104229900054633}
+  OK   móvil: con el pico, Usar se pone a romperla (a golpes, como al talar)
+  OK   móvil: la roca desaparece (ni en la malla ni estorbando)
+  OK   móvil: quedan sus cascotes
+  OK   móvil: y en el suelo, sus bloques de piedra en bruto (de 1 a 4) y sus piedras (de 10 a 30) — 1 bloques, 10 piedras
+  OK   móvil: los bloques se ven en el suelo (su montón) — 1
+  OK   móvil: sin errores en la página
+
+Todo correcto
