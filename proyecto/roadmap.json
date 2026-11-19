@@ -2682,7 +2682,9 @@
     },
     {
      "nombre": "Las vetas de hierro en la roca: las vetas pequeñas del mapa (una cada 14 km, GDD) se ven en el mundo como un afloramiento de roca rojiza y, con el pico, dan mineral de hierro, mucho más que una mancha de pantano antes de agotarse. Capturas al lado de la referencia. Cadena: pico ← la fragua",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-19T21:24:13+00:00",
+     "rama": "trabajo/20261119-2124"
     },
     {
      "nombre": "La arcilla y el horno cerámico: en la ribera, junto a donde sale el barro, se cava con la pala de madera 1 cesta de arcilla (inagotable, como el barro); el horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) como estación, que se enciende con leña. Cadena: pala de madera ← el banco de tronco; leña ← partir un tronco corto con el hacha",
