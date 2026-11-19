@@ -7,10 +7,14 @@
 //     tamaño; vuelve a salir en unos meses reales (3);
 //   - las grandes (de más de 1,1 m) no se rompen con el mazo; con algo al hombro, tampoco;
 //   - lo que llevan dado los golpes se guarda; romper cansa;
-//   - el servidor conoce las rocas del mundo (las mismas que dibuja el navegador, por su nombre, sin los cantos del río
-//     ni las grandes) y rechaza las que no existen.
-// MUTAR=1: la roca no queda rota (se rompe sin fin); MUTAR=2: se rompe sin el mazo. Tienen que FALLAR.
-import { Recoleccion, ejecutarRecoleccion, idRoca, golpesRoca, piedrasRoca, medidaRoca, rompible, ROMPER, RECOLECTABLES } from '../src/logica/recoleccion.js';
+//   - el servidor conoce las rocas del mundo (las mismas que dibuja el navegador, por su nombre, sin los cantos del río)
+//     y rechaza las que no existen.
+// Y la cantera (P10, 19 nov): con el pico en la mano se rompen las grandes (de 1,1 a 4,4 m: de 30 a 80 golpes), que dejan
+// de 1 a 4 bloques de piedra en bruto en su montón y de 10 a 30 piedras, y vuelven en unos meses reales; el pico rompe
+// también las medianas; sin pico, una grande no; en el servidor, con el terreno, igual (con su autor, y cansa).
+// MUTAR=1: la roca no queda rota (se rompe sin fin); MUTAR=2: se rompe sin el mazo; MUTAR=3: la grande no deja
+// bloques. Tienen que FALLAR.
+import { Recoleccion, ejecutarRecoleccion, idRoca, golpesRoca, piedrasRoca, bloquesRoca, medidaRoca, rompible, deCantera, ROMPER, CANTERA } from '../src/logica/recoleccion.js';
 import { RECETAS, ejecutarFabricacion, Fabricacion } from '../src/logica/fabricacion.js';
 import { Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { Suelo } from '../src/logica/suelo.js';
@@ -23,6 +27,7 @@ function comprobar(nombre, cond, detalle = '') {
   total++; if (!cond) fallos++;
   console.log(`${cond ? '  bien' : '  MAL '}  ${nombre}${detalle ? ' — ' + detalle : ''}`);
 }
+if (MUTAR === '3') { const d = Recoleccion.prototype.romper; Recoleccion.prototype.romper = function (...a) { const r = d.apply(this, a); if (r.ok && r.rota) r.deja = r.deja.filter(o => o.tipo !== 'bloque_piedra'); return r; }; }
 if (MUTAR === '1') { const d = Recoleccion.prototype.romper; Recoleccion.prototype.romper = function (...a) { const r = d.apply(this, a); if (r.ok && r.rota) delete this.estado[a[1]]; return r; }; }
 
 const T0 = Date.UTC(2026, 10, 8, 16);
@@ -76,7 +81,7 @@ let n = 0; t += 5000;
 do { t += 1000; r = romper(media, t); n++; } while (r.ok && !r.rota && n < 100);
 comprobar('la mediana pide 30 golpes y deja 25 piedras', r.ok && r.rota && n === 30 && r.cantidad === 25, `${n} golpes, ${r.cantidad}`);
 r = romper(grande, t + 2000);
-comprobar('la grande no se rompe con el mazo (hace falta hierro)', !r.ok && /hierro/.test(r.motivo), r.motivo);
+comprobar('la grande no se rompe con el mazo (hace falta el pico)', !r.ok && /pico/.test(r.motivo), r.motivo);
 r = ejecutarRecoleccion(rec, invs, reg, { autor: yo, tipo: 'recoger', punto: grande.id, x: 30.5, z: 4 }, t);
 comprobar('una roca no se recoge ni sale entre lo que se recoge', !r.ok && !rec.cercanos(30, 4, t, 3).length, r.motivo);
 {
@@ -86,6 +91,38 @@ comprobar('una roca no se recoge ni sale entre lo que se recoge', !r.ok && !rec.
 }
 comprobar('romper cansa (cada golpe, como uno de hacha)', ESFUERZOS.romper >= 1, String(ESFUERZOS.romper));
 comprobar('y queda en el registro con su autor', reg.entradas.some(e => e.tipo === 'romper' && e.autor === yo && e.ok && e.resultado && e.resultado.rota));
+
+console.log('La cantera: las grandes, con el pico');
+comprobar('de 1,1 a 4,4 m, de 30 a 80 golpes, de 1 a 4 bloques y de 10 a 30 piedras', golpesRoca(0.51) === 30 && golpesRoca(2) === 80 && bloquesRoca(0.51) === 1 && bloquesRoca(2) === 4 && piedrasRoca(0.51) === 10 && piedrasRoca(2) === 30 && bloquesRoca(0.5) === 0,
+  `${golpesRoca(0.51)}–${golpesRoca(2)} golpes, ${bloquesRoca(0.51)}–${bloquesRoca(2)} bloques, ${piedrasRoca(0.51)}–${piedrasRoca(2)} piedras`);
+comprobar('el peñasco más grande del pedregal (4,4 m) es de la cantera; más no', deCantera(2) && !deCantera(2.1), `${medidaRoca(2)} m`);
+{
+  const gi = new Inventarios(), j = gi.de('bea'), gs = new Suelo(), gr2 = new RegistroAcciones();
+  const pena = { id: idRoca(50, 4), tipo: 'roca', x: 50, z: 4, tam: 1.2 }, med = { id: idRoca(60, 4), tipo: 'roca', x: 60, z: 4, tam: 0.4 };
+  const grc = new Recoleccion([pena, med]);
+  const dar = (p, ahora, x = p.x + medidaRoca(p.tam) / 2 + 0.6) => ejecutarRecoleccion(grc, gi, gr2, { autor: 'bea', tipo: 'romper', punto: p.id, x, z: p.z }, ahora, gs);
+  let q = dar(pena, T0);
+  comprobar('sin nada en la mano: hace falta el pico', !q.ok && /pico/.test(q.motivo), q.motivo);
+  j.meterDonde('pico', 1, 'mano:der');
+  q = dar(pena, T0, pena.x + medidaRoca(pena.tam) / 2 + ROMPER.medidaMax + 2);
+  comprobar('lejos de su borde, no', !q.ok && /lejos/.test(q.motivo), q.motivo);
+  let k = 0, tt = T0;
+  do { tt += 1000; q = dar(pena, tt); k++; } while (q.ok && !q.rota && k < 200);
+  const bl = gs.objetos.filter(o => o.cosa.tipo === 'bloque_piedra'), pi = gs.objetos.filter(o => o.cosa.tipo === 'piedra');
+  comprobar(`la de ${medidaRoca(pena.tam)} m se rompe con el pico a los golpes que pide (${golpesRoca(pena.tam)})`, q.ok && q.rota && k === golpesRoca(pena.tam) && q.mazo === 'pico', `${q.motivo || ''} ${k} golpes`);
+  comprobar(`y deja ${bloquesRoca(pena.tam)} bloques de piedra en bruto en un montón y ${piedrasRoca(pena.tam)} piedras, en el suelo`,
+    bl.length === 1 && bl[0].cosa.n === bloquesRoca(pena.tam) && bloquesRoca(pena.tam) >= 1 && pi.reduce((s, o) => s + o.cosa.n, 0) === piedrasRoca(pena.tam), `bloques ${bl.map(o => o.cosa.n)} piedras ${pi.map(o => o.cosa.n)}`);
+  comprobar('los bloques, a un lado de donde estaba la roca (cerca, no encima), al otro lado del que la rompe', bl.length === 1 && bl[0].x < pena.x - 0.5 && Math.hypot(bl[0].x - pena.x, bl[0].z - pena.z) > 0.5 && Math.hypot(bl[0].x - pena.x, bl[0].z - pena.z) < medidaRoca(pena.tam), bl[0] ? `a ${Math.hypot(bl[0].x - pena.x, bl[0].z - pena.z).toFixed(2)} m` : '');
+  comprobar('el bloque no va a lo que llevas: es enorme (rastra o carretilla)', j.cuantos('bloque_piedra') === 0 && CATALOGO.bloque_piedra.tam === 'E');
+  comprobar('vuelve a salir en unos meses reales (3)', CANTERA.vuelve === 90 * 24 * 3600 * 1000 && !grc.enPie(pena.id, tt + CANTERA.vuelve - 1000) && grc.enPie(pena.id, tt + CANTERA.vuelve + 1000));
+  comprobar('queda en el registro con su autor y los bloques', gr2.entradas.some(e => e.tipo === 'romper' && e.autor === 'bea' && e.ok && e.resultado && e.resultado.rota && e.resultado.bloques === bloquesRoca(pena.tam)));
+  k = 0;
+  do { tt += 1000; q = dar(med, tt); k++; } while (q.ok && !q.rota && k < 100);
+  comprobar('el pico rompe también las medianas (los mismos golpes, sin bloques)', q.ok && q.rota && k === golpesRoca(med.tam) && !q.bloques, `${q.motivo || ''} ${k}`);
+  const j2 = new Inventarios(); j2.de('bea').meterDonde('mazo_piedra', 1, 'mano:izq');
+  q = new Recoleccion([{ ...pena }]).romper(j2.de('bea'), pena.id, pena.x + 1.5, pena.z, T0, 'bea');
+  comprobar('con el mazo, la grande no (dice que hace falta el pico)', !q.ok && /pico/.test(q.motivo), q.motivo);
+}
 
 console.log('En el servidor, con el terreno de Whitholm');
 const { terrenoWhitholm } = await import('../src/logica/terreno_servidor.js');
@@ -102,7 +139,8 @@ for (let R = 40; (!p1 || !gr) && R < 900; R += 80) {
 comprobar('hay rocas medianas en el mundo', !!p1, p1 ? `a ${Math.hypot(p1.x, p1.z).toFixed(0)} m, ${medidaRoca(p1.tam)} m` : '');
 const t1 = p1 && terreno.punto(idRoca(p1.x, p1.z), p1.x, p1.z);
 comprobar('el servidor la conoce por su nombre, con su tamaño', !!t1 && t1.tipo === 'roca' && Math.abs(t1.tam - p1.tam) < 0.001, JSON.stringify(t1));
-comprobar('las grandes no son de romper', !gr || !terreno.punto(idRoca(gr.x, gr.z), gr.x, gr.z));
+const tg = gr && terreno.punto(idRoca(gr.x, gr.z), gr.x, gr.z);
+comprobar('hay rocas grandes en el mundo, y el servidor las conoce (son de la cantera)', !!tg && tg.tipo === 'roca' && !rompible(tg.tam) && deCantera(tg.tam), gr ? `${medidaRoca(gr.tam)} m` : 'ninguna');
 comprobar('ni los cantos del río', !canto || !terreno.punto(idRoca(canto.x, canto.z), canto.x, canto.z));
 comprobar('y una roca que no existe, no', !terreno.punto(idRoca(p1.x + 0.73, p1.z + 0.41), p1.x + 0.73, p1.z + 0.41));
 const obj = new ObjetosServidor({ terreno, posicion: () => ({ x: p1.x + 0.9, z: p1.z }) });
@@ -116,6 +154,14 @@ r = golpe(t + 1000, idRoca(p1.x + 0.73, p1.z + 0.41), p1.x + 0.73, p1.z + 0.41);
 comprobar('una que no existe, no', !r.ok, r.motivo);
 const vis = obj.recoleccionVisible();
 comprobar('lo roto sale en lo que se reparte (quitado)', vis.estado[idRoca(p1.x, p1.z)] && vis.estado[idRoca(p1.x, p1.z)].quitado === true);
+if (tg) {   // (la cantera, 19 nov) una grande del mundo, con el pico, por el servidor
+  const d = medidaRoca(tg.tam) / 2 + 0.8, o2 = new ObjetosServidor({ terreno, posicion: () => ({ x: tg.x + d, z: tg.z }) });
+  o2.invs.de('leo').meterDonde('pico', 1, 'mano:der');
+  let k = 0, q, tt = T0;
+  do { tt += 600; q = o2.ejecutar({ autor: 'leo', tipo: 'romper', punto: idRoca(tg.x, tg.z), x: tg.x + d, z: tg.z, px: tg.x, pz: tg.z, clase: 'roca', tam: 0.01 }, tt); k++; } while (q.ok && !q.rota && k < 200);
+  comprobar(`en el servidor, una grande (${medidaRoca(tg.tam)} m) se rompe con el pico a los golpes que pide (${golpesRoca(tg.tam)})`, q.ok && q.rota && k === golpesRoca(tg.tam), `${q.motivo || ''} ${k}`);
+  comprobar('y sus bloques y sus piedras caen a su suelo', o2.suelo.objetos.filter(o => o.cosa.tipo === 'bloque_piedra').reduce((s, o) => s + o.cosa.n, 0) === bloquesRoca(tg.tam) && o2.suelo.objetos.filter(o => o.cosa.tipo === 'piedra').reduce((s, o) => s + o.cosa.n, 0) === piedrasRoca(tg.tam));
+}
 const otro = new ObjetosServidor({ terreno, posicion: () => ({ x: p1.x + 0.9, z: p1.z }) }).importar(JSON.parse(JSON.stringify(obj.exportar())));
 comprobar('y se guarda: al volver a abrir el servidor sigue rota', !otro.recoleccion.enPie(idRoca(p1.x, p1.z), t + 1000));
 

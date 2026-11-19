@@ -58,6 +58,17 @@
 //  - «Unos meses reales» son 3 meses (90 días).
 //  - El mazo, en una mano (en cualquiera de las dos), como el hacha; con algo al hombro, no.
 //  - Lo que llevan dado los golpes se queda en la roca hasta que se rompe.
+//
+// Y la cantera (P10, 19 nov; GDD: «cantera — pico de hierro — bloques de piedra en bruto»): con el pico en la mano se
+// rompen las rocas grandes (de más de 1,1 m, las que el mazo no puede) y los peñascos del pedregal al pie de los
+// cortados, a golpes que cansan, por el servidor y con su autor. Al último golpe dejan bloques de piedra en bruto (un
+// montón junto a donde estaba: es enorme, se carga en la rastra o en la carretilla) y piedra suelta, y vuelven a salir
+// en unos meses reales, como las medianas. El pico rompe también las medianas, con los mismos golpes que el mazo.
+// Las paredes de los cortados (la roca de los acantilados, src/mundo/rocas.js) son paisaje: no se rompen.
+// Decisiones provisionales (19 nov; el roadmap no fija los números):
+//  - De 1,1 m a 4,4 m (el peñasco más grande del pedregal): de 30 a 80 golpes, de 1 a 4 bloques y de 10 a 30 piedras.
+//  - Los bloques caen a 1/3 de la medida de la roca (y medio metro) de su centro, al otro lado del que la rompe; las
+//    piedras, en medio.
 import { CATALOGO } from './inventario.js';
 
 const DIA = 24 * 3600 * 1000;
@@ -72,7 +83,7 @@ export const HERRAMIENTAS_RECOGER = {
 };
 // Con qué se desbroza más deprisa: los golpes que da el navegador antes de mandar la acción (decisión provisional).
 export const GOLPES_DESBROCE = { hacha_hierro: 2, hacha_mano: 2, hacha_piedra: 3, lasca_silex: 6, cuchillo: 5 };
-export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.' };
+export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cantera: 'Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.' };
 
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
@@ -112,11 +123,20 @@ export const RECOLECTABLES = {
 // Romper rocas (8 nov): la medida (m) de una roca de tamaño tam en la vegetación, hasta cuál se rompe, y lo que pide.
 export const ROMPER = { medidaMin: 0.66, medidaMax: 1.1, golpes: [8, 30], piedras: [6, 25], vuelve: 90 * DIA };
 export const MAZOS = new Set(['mazo_piedra']);
+// La cantera (19 nov): las grandes, con el pico; hasta cuál, y lo que dan.
+export const CANTERA = { medidaMax: 4.5, medidaTope: 4.4, golpes: [30, 80], piedras: [10, 30], bloques: [1, 4], vuelve: 90 * DIA };
+export const PICOS = new Set(['pico']);
 export const medidaRoca = tam => Math.round(2.2 * tam * 100) / 100;
+// rompible: con el mazo (las medianas); deCantera: con el pico (todas las del mundo, sin los cantos del río)
 export const rompible = tam => Number.isFinite(tam) && tam > 0 && medidaRoca(tam) <= ROMPER.medidaMax + 1e-9;
+export const deCantera = tam => Number.isFinite(tam) && tam > 0 && medidaRoca(tam) <= CANTERA.medidaMax + 1e-9;
+export const rocaGrande = tam => deCantera(tam) && !rompible(tam);
 const parteRoca = tam => Math.min(1, Math.max(0, (medidaRoca(tam) - ROMPER.medidaMin) / (ROMPER.medidaMax - ROMPER.medidaMin)));
-export const golpesRoca = tam => Math.round(ROMPER.golpes[0] + (ROMPER.golpes[1] - ROMPER.golpes[0]) * parteRoca(tam));
-export const piedrasRoca = tam => Math.round(ROMPER.piedras[0] + (ROMPER.piedras[1] - ROMPER.piedras[0]) * parteRoca(tam));
+const parteGrande = tam => Math.min(1, Math.max(0, (medidaRoca(tam) - ROMPER.medidaMax) / (CANTERA.medidaTope - ROMPER.medidaMax)));
+const entre = ([a, b], k) => Math.round(a + (b - a) * k);
+export const golpesRoca = tam => rocaGrande(tam) ? entre(CANTERA.golpes, parteGrande(tam)) : entre(ROMPER.golpes, parteRoca(tam));
+export const piedrasRoca = tam => rocaGrande(tam) ? entre(CANTERA.piedras, parteGrande(tam)) : entre(ROMPER.piedras, parteRoca(tam));
+export const bloquesRoca = tam => rocaGrande(tam) ? entre(CANTERA.bloques, parteGrande(tam)) : 0;
 // El nombre fijo de una roca: su sitio en la escena (el mismo en el navegador y en el servidor con la misma semilla).
 export const idRoca = (x, z) => `roca:${Math.round(x * 10)},${Math.round(z * 10)}`;
 export const ENTRE_GOLPES_ROCA = 800;   // ms entre golpe y golpe del mismo autor (el servidor pide menos: la red los junta)
@@ -125,6 +145,13 @@ export function mazoEnMano(inv) {
   for (const ruta of ['mano:der', 'mano:izq']) { const c = inv.lugares[ruta]; if (c && MAZOS.has(c.tipo)) return { ruta, tipo: c.tipo }; }
   return null;
 }
+// El pico que lleva en las manos (19 nov), igual.
+export function picoEnMano(inv) {
+  for (const ruta of ['mano:der', 'mano:izq']) { const c = inv.lugares[ruta]; if (c && PICOS.has(c.tipo)) return { ruta, tipo: c.tipo }; }
+  return null;
+}
+// Con qué rompe una roca de tamaño tam lo que lleva en las manos: el pico, cualquiera; el mazo, las medianas.
+export const conQueRompe = (inv, tam) => picoEnMano(inv) || (rompible(tam) ? mazoEnMano(inv) : null);
 // Lo que se desbroza (y lo que da: ramas, y una vara con PROB_VARA). Decisión provisional (8 nov): una vara de cada dos
 // o tres matas, y en una estación vuelve a estar.
 export const DESBROZABLES = new Set(['matorral', 'bayas']);
@@ -266,12 +293,12 @@ export class Recoleccion {
   romper(inv, id, x, z, ahora, autor) {
     const p = this.porId.get(id);
     if (!p || p.tipo !== 'roca') return { ok: false, motivo: 'Ahí no hay ninguna roca.' };
-    if (!rompible(p.tam)) return { ok: false, motivo: 'Esa roca es demasiado grande para el mazo: hace falta hierro.' };
+    if (!deCantera(p.tam)) return { ok: false, motivo: 'Eso no es una roca que se pueda romper.' };
     if (!this.enPie(id, ahora)) return { ok: false, motivo: 'Esa roca ya está rota: solo quedan cascotes.' };
     if (Math.hypot(p.x - x, p.z - z) > ALCANCE_RECOGER + medidaRoca(p.tam) / 2) return { ok: false, motivo: 'Está demasiado lejos.' };
     if (inv.hombroCargado()) return { ok: false, motivo: 'Con algo al hombro no puedes romper la roca.' };
-    const m = mazoEnMano(inv);
-    if (!m) return { ok: false, motivo: QUE_PIDE.romper };
+    const m = conQueRompe(inv, p.tam);
+    if (!m) return { ok: false, motivo: rompible(p.tam) ? QUE_PIDE.romper : QUE_PIDE.cantera };
     const ult = this.ultimoGolpe[autor];
     if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
     this.ultimoGolpe[autor] = ahora;
@@ -281,9 +308,14 @@ export class Recoleccion {
       this.estado[id] = { vuelve: 0, veces, golpes };
       return { ok: true, rota: false, golpes, faltan: total - golpes, mazo: m.tipo };
     }
-    const n = piedrasRoca(p.tam);
-    this.estado[id] = { vuelve: ahora + ROMPER.vuelve, veces: veces + 1, quitado: true };
-    return { ok: true, rota: true, golpes, faltan: 0, mazo: m.tipo, objeto: 'piedra', cantidad: n, deja: [{ tipo: 'piedra', n, x: p.x, z: p.z }], vuelve: this.estado[id].vuelve };
+    const n = piedrasRoca(p.tam), b = bloquesRoca(p.tam), deja = [{ tipo: 'piedra', n, x: p.x, z: p.z }];
+    if (b) {   // (la cantera, 19 nov) los bloques, en su montón a un lado de donde estaba la roca
+      // (al otro lado de la roca del que la rompe: no le caen a los pies; si está justo encima, a un lado fijo por su nombre)
+      const lejos = Math.hypot(p.x - x, p.z - z), a = lejos > 0.05 ? Math.atan2(p.z - z, p.x - x) : hash(numTexto(id), veces, 19) * Math.PI * 2, d = medidaRoca(p.tam) / 3 + 0.5;
+      deja.push({ tipo: 'bloque_piedra', n: b, x: Math.round((p.x + Math.cos(a) * d) * 100) / 100, z: Math.round((p.z + Math.sin(a) * d) * 100) / 100 });
+    }
+    this.estado[id] = { vuelve: ahora + (b ? CANTERA.vuelve : ROMPER.vuelve), veces: veces + 1, quitado: true };
+    return { ok: true, rota: true, golpes, faltan: 0, mazo: m.tipo, objeto: 'piedra', cantidad: n, ...(b ? { bloques: b } : {}), deja, vuelve: this.estado[id].vuelve };
   }
   exportar() { return { version: VERSION_RECOLECCION, estado: Object.fromEntries(Object.entries(this.estado).map(([k, v]) => [k, { ...v }])) }; }
   // Lo guardado de puntos que ya no existen se descarta; con { todo: true } se guarda también lo de los puntos que aún
@@ -358,7 +390,7 @@ export function ejecutarRecoleccion(rec, invs, registro, accion, ahora, suelo = 
   }
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
-  if (r.ok) e.resultado = a.tipo === 'romper' ? (r.rota ? { rota: true, objeto: r.objeto, cantidad: r.cantidad } : { golpes: r.golpes })
+  if (r.ok) e.resultado = a.tipo === 'romper' ? (r.rota ? { rota: true, objeto: r.objeto, cantidad: r.cantidad, ...(r.bloques ? { bloques: r.bloques } : {}) } : { golpes: r.golpes })
     : { objeto: r.objeto, cantidad: r.cantidad, ...(r.extra ? { extra: r.extra } : {}), ...(r.quedan !== undefined ? { quedan: r.quedan } : {}) };
   return r;
 }

@@ -22,7 +22,7 @@ import { SALIDA, ISLA, MUNDO_ENTERO, dentroDeIsla, alturaMundo } from './whithol
 import { vegetacionTrozo, LADO_VEG, TAM_ADULTO, CLARO_ARBOLES } from './vegetacion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from './recogida_mundo.js';
 import { idArbol, altoArbol } from './tala.js';
-import { idMata, idRoca, rompible } from './recoleccion.js';
+import { idMata, idRoca, deCantera } from './recoleccion.js';
 import { nivelar as conMarcas, marcasEn } from './nivelado.js';
 import { crearComarcas, zonasDeEscena } from './comarcas.js';
 import { crearZonasRey } from './zonas_rey.js';
@@ -70,13 +70,13 @@ export function crearTerreno({ paisaje, semilla, origen = SALIDA, isla = ISLA, a
     return m;
   });
   // las rocas que se rompen de un trozo (8 nov), como las tiene el navegador: en la escena, sin las del claro de la
-  // salida (3 m alrededor de (0, 2): src/mundo/vegetacion_mundo.js) ni los cantos del río, y solo las medianas
+  // salida (3 m alrededor de (0, 2): src/mundo/vegetacion_mundo.js) ni los cantos del río (las grandes también: la cantera, 19 nov)
   const rocasT = new Map();
   const rocasDe = (i, j) => guardar(rocasT, i + ',' + j, () => {
     const m = new Map();
     for (const e of vegetacionTrozo(paisaje, alt, semilla, i, j).piedras) {
       const x = e.x - O.x, z = e.z - O.z;
-      if (e.canto || !rompible(e.tam) || Math.hypot(x, z - 2) < 3) continue;
+      if (e.canto || !deCantera(e.tam) || Math.hypot(x, z - 2) < 3) continue;
       const id = idRoca(x, z);
       m.set(id, { id, tipo: 'roca', x: r2(x), z: r2(z), tam: Math.round(e.tam * 1000) / 1000 });
     }

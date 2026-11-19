@@ -52,7 +52,7 @@ import { crearSuelo } from './suelo.js';
 import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, tieneCon } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, picoEnMano, conQueRompe, rompible, tieneCon } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -1807,8 +1807,9 @@ function accionPrincipal() {
   }
   // con la azada o el palo cavador en la mano, junto a un tocón, se arranca a golpes (P11, limpiar el campo)
   if (!it && pj.k === 0 && arrancaEnMano(inventario()) && toconCercano()) { const tc = toconCercano(); return A(tr('Arrancar el tocón'), arrancaEnMano(inventario()).tipo, tc, () => empezarArranque(tc), { alto: 0.4, prog: estado.talando && estado.talando.arranque === tc.o ? progresoGolpes(estado.talando) : 0 }); }
-  // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov)
-  if (!it && pj.k === 0 && mazoEnMano(inventario()) && rocaCercana()) { const rq = rocaCercana(); return A(tr('Romper la roca'), mazoEnMano(inventario()).tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
+  // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov); con el pico, también las
+  // grandes (la cantera, 19 nov)
+  if (!it && pj.k === 0 && (mazoEnMano(inventario()) || picoEnMano(inventario())) && rocaCercana()) { const rq = rocaCercana(), con = conQueRompe(inventario(), rq.tam) || mazoEnMano(inventario()) || picoEnMano(inventario()); return A(tr('Romper la roca'), con.tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
   // el tronco largo a cuerda (P11c): tirando de él, Usar junto a una rastra parada lo sube a ella y, si no, suelta la
   // cuerda; con una cuerda en la mano, junto a un tronco largo, Usar lo ata (o ayuda al que ya tira de él)
   if (!it && pj.k === 0 && miTronco()) {
@@ -2738,7 +2739,8 @@ function golpeDesbroce(a) {
 // servidor (cansa); al último, la roca se rompe, deja sus piedras sueltas en el suelo donde estaba y unos cascotes.
 function rocaCercana() {
   if (pj.k !== 0 || !decorado.rocasCerca) return null;
-  const e = decorado.rocasCerca(pj.x, pj.z, 1.2)[0];
+  // (la primera que rompe lo que llevas en la mano; si no, la más cercana, para decir qué hace falta)
+  const l = decorado.rocasCerca(pj.x, pj.z, 1.2), inv = inventario(), e = l.find(q => conQueRompe(inv, q.tam)) || l[0];
   return e ? { id: e.id, x: e.x, z: e.z, tam: e.tam } : null;
 }
 // Labrar (P11, src/logica/campos.js): con la azada en la mano, una pasada voltea un círculo de tierra delante de ti
@@ -3067,7 +3069,7 @@ function textoLimpiar(c) {
   return q ? tr('Campo de {a} m²: queda por limpiar {q}.', { a: c.area, q }) : tr('Campo de {a} m²: limpio.', { a: c.area });
 }
 function empezarRotura(o) {
-  if (!mazoEnMano(inventario())) { mostrarAviso(tr(QUE_PIDE.romper), true); return; }
+  if (!conQueRompe(inventario(), o.tam)) { mostrarAviso(tr(rompible(o.tam) ? QUE_PIDE.romper : QUE_PIDE.cantera), true); return; }
   estado.talando = { rotura: o, x: o.x, z: o.z }; estado.golpeEn = 0.45;
   pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
   mostrarAviso(tr('Rompes la roca.'));
@@ -3081,7 +3083,8 @@ function golpeRotura(a) {
     if (Number.isFinite(r.faltan)) { if (!a.prog) a.prog = { hechos: 0, total: r.faltan + 1 }; a.prog.hechos = a.prog.total - r.faltan; }   // (el aro de la acción)
     if (!r.rota) { mostrarAviso(r.faltan === 1 ? tr('Rompes la roca: falta 1 golpe.') : tr('Rompes la roca: faltan {n} golpes.', { n: r.faltan })); return; }
     estado.talando = null;
-    mostrarAviso(tr('¡La roca se parte! Deja {n} piedras en el suelo.', { n: r.cantidad }));
+    mostrarAviso(r.bloques ? (r.bloques === 1 ? tr('¡La roca se parte! Deja 1 bloque de piedra en bruto y {n} piedras en el suelo.', { n: r.cantidad }) : tr('¡La roca se parte! Deja {b} bloques de piedra en bruto y {n} piedras en el suelo.', { b: r.bloques, n: r.cantidad }))
+      : tr('¡La roca se parte! Deja {n} piedras en el suelo.', { n: r.cantidad }));
   };
   if (objetosRed) { objetosRed.mandar({ tipo: 'romper', punto: o.id, x: pj.x, z: pj.z, px: o.x, pz: o.z, clase: 'roca', tam: o.tam }, fin); return; }
   const r = recoleccion.romper(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z, sueloObjetos.suelo);

@@ -35,6 +35,7 @@ export const TOCA = {
   'las-bayas-y-las-setas': [/^src\/logica\/recoleccion\.js$/],
   'el-bosque-de-lejos-visto-de-cerca': [/^src\/mundo\/(horizonte|vegetacion_mundo|especies|sotobosque)\.js$/, /^src\/logica\/horizonte\.js$/],
   'el-mazo-de-piedra-y-romper-rocas': [/^src\/mundo\/vegetacion_mundo\.js$/, /^src\/juego\/modelos_objetos\.js$/],
+  'la-cantera-las-rocas-grandes-con-el-pico': [/^src\/mundo\/vegetacion_mundo\.js$/, /^src\/juego\/suelo\.js$/],
   'el-mimbre-la-corteza-y-la-resina': [/^src\/juego\/tala\.js$/],
   'recoger-del-suelo-y-de-las-plantas': [/^src\/(logica|juego)\/recoleccion\.js$/],
   'tala-de-los-arboles': [/^src\/(logica|juego)\/tala\.js$/],
