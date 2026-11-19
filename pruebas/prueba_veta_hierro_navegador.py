@@ -122,7 +122,7 @@ with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     for nombre, pref, vista, movil in [('PC', 'pc', {'width': 1280, 'height': 800}, False), ('móvil', 'movil', {'width': 390, 'height': 844}, True)]:
         ctx = nav.new_context(viewport=vista, device_scale_factor=1, is_mobile=movil, has_touch=movil)
-        GIRO[0] = 0.3 if movil else 0.75
+        GIRO[0] = 1.0 if movil else 0.75   # (en el móvil, más de lado: si no, el personaje tapa la veta)
         recorrido(ctx.new_page(), nombre, pref)
         ctx.close()
     nav.close()
