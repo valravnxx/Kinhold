@@ -9,6 +9,7 @@
 #   - sin errores en la página.
 # Capturas de cerca de cada cosa, en PC y en móvil.
 # Uso: python3 pruebas/prueba_sierra_tablas_navegador.py <html> <carpeta_capturas>
+#   - (19 nov, segunda mirada) en el cinto, la sierra cuelga alta; serrando, la mano va y viene más de 0,15 m;
 #   - (19 nov, tras las capturas) la hoja no se clava en el suelo, quieto ni tronzando; tronzando, no se hacha (el cuerpo no
 #     hace el gesto de talar) y la hoja va hacia delante, tendida y por encima del suelo, y la mano va y viene;
 # Rota a propósito (19 nov): MUTAR=1 dibuja la sierra como el hacha (como sin su modelo): falla. MUTAR=2 deja la sierra
@@ -65,7 +66,13 @@ SIERRA = '''() => { const K = window.__kinhold, j = K.jugador, s = j.hacha; K.es
   const o = s.localToWorld(T.clone().set(0, 0, 0)), p = s.localToWorld(T.clone().set(0, 0, 1)).sub(o).normalize();
   const f = T.clone().set(Math.sin(j.raiz.rotation.y), 0, Math.cos(j.raiz.rotation.y));
   const mano = j.mh.hueso.hand_r.getWorldPosition(T.clone()).sub(j.raiz.position);
-  return { bajo: +(bajo - K.alturaSuelo(j.raiz.position.x, j.raiz.position.z)).toFixed(3), adelante: +p.dot(f).toFixed(2), caida: +p.y.toFixed(2), modo: j.modo, manoAdelante: +mano.dot(f).toFixed(3) }; }'''
+  return { bajo: +(bajo - K.alturaSuelo(j.raiz.position.x, j.raiz.position.z)).toFixed(3), adelante: +p.dot(f).toFixed(2), caida: +p.y.toFixed(2), modo: j.modo, manoAdelante: +mano.dot(f).toFixed(3),
+    cabeza: +(j.mh.hueso.Head.getWorldPosition(T.clone()).y - K.alturaSuelo(j.raiz.position.x, j.raiz.position.z)).toFixed(3) }; }'''
+
+# lo más bajo de lo que cuelga del cinto, sobre el suelo (m)
+BAJO_CINTO = '''() => { const K = window.__kinhold, j = K.jugador; K.escena.updateMatrixWorld(true); let bajo = 1e9; const v = j.raiz.position.clone();
+  j.llevado.grupo.children.filter(o => o.name === 'llevado_hacha_colgada').forEach(o => o.traverse(m => { if (!m.isMesh) return; const a = m.geometry.attributes.position; for (let i = 0; i < a.count; i++) bajo = Math.min(bajo, v.fromBufferAttribute(a, i).applyMatrix4(m.matrixWorld).y); }));
+  return +(bajo - K.alturaSuelo(j.raiz.position.x, j.raiz.position.z)).toFixed(3); }'''
 
 def mirarMano(pg, giro, d, a):
     pg.evaluate('''([g, d, a]) => { const K = window.__kinhold; K.cam.dist = d; K.cam.pitch = a; K.cam.yaw = K.jugador.raiz.rotation.y + g; }''', [giro, d, a])
@@ -106,6 +113,8 @@ def recorrido(nav, nombre, pref, vista, movil):
     equipar(pg, {'cintura': C('cinto_cuero', 1, [C('sierra'), None, None])})
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: la sierra, en el cinto con su modelo', v['cinto'] == ['sierra'], str(v))
+    bajo = pg.evaluate(BAJO_CINTO)
+    comprobar(f'{nombre}: en el cinto, la sierra cuelga alta (lo más bajo, a más de 0,7 m del suelo)', bajo > 0.7, f'{bajo} m')
     for vista_, g in ({'lado': -1.4, 'atras': 3.1} if not movil else {'lado': -1.4}).items():
         mirarMano(pg, g, 2.2 * D, 0.1)
         pg.screenshot(path=f'{SALIDA}/{pref}_cinto_sierra_{vista_}.png', timeout=180000)
@@ -124,12 +133,14 @@ def recorrido(nav, nombre, pref, vista, movil):
             pg.screenshot(path=f'{SALIDA}/{pref}_tronzar_sierra_{i + 1}.png', timeout=180000)
     ok = all(x and x['modo'] != 'talar' and x['adelante'] > 0.8 and 0.1 < x['bajo'] < 0.5 and abs(x['caida']) < 0.35 for x in vistas)
     comprobar(f'{nombre}: tronzando, se sierra (sin el gesto de hachar) con la hoja hacia delante, tendida, baja sobre el tronco y sin clavarse', ok, str(vistas))
-    manos = []
-    for _ in range(8):
-        pg.wait_for_timeout(110); x = pg.evaluate(SIERRA)
-        if x: manos.append(x['manoAdelante'])
+    manos, cabezas = [], []
+    for _ in range(12):
+        pg.wait_for_timeout(90); x = pg.evaluate(SIERRA)
+        if x: manos.append(x['manoAdelante']); cabezas.append(x['cabeza'])
+    # (de rodillas y algo echado adelante, la cabeza entre 0,8 y 1,35 m: ni en las rodillas ni echada atrás)
+    comprobar(f'{nombre}: serrando, el cuerpo derecho de rodillas (la cabeza, ni en las rodillas ni echada atrás)', cabezas and all(0.8 < c < 1.35 for c in cabezas + [v['cabeza'] for v in vistas]), str(cabezas))
     va = (max(manos) - min(manos)) if manos else 0
-    comprobar(f'{nombre}: tronzando, la mano va y viene con la sierra', va > 0.05, f'{va:.3f} m')
+    comprobar(f'{nombre}: tronzando, la mano va y viene con la sierra (más de 0,15 m: que se lea)', va > 0.15, f'{va:.3f} m')
     v = pg.evaluate(VER)
     comprobar(f'{nombre}: tronzando, la sierra en la mano (no el hacha)', v['empunada'] == 'sierra', str(v))
     # (se para el trabajo del juego, que mientras se miraba ya ha podido tronzarlo, y se tronza otro, golpe a golpe)

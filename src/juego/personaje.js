@@ -241,16 +241,26 @@ function serrar(j, b, f, l, u) {
   // echado bien adelante (girando la espalda, en dos tramos, sobre el eje de la izquierda) para que el brazo llegue al
   // tronco tumbado: con 0,5 rad en un tramo, la mano se quedaba a la altura de la cadera y la hoja, a 0,7 m del suelo
   const q2 = new THREE.Quaternion(), q3 = new THREE.Quaternion();
-  for (const [hueso, a] of j.modo === CLIP_SERRAR ? [] : [[h.spine_01, 0.5], [h.spine_02, 0.45]]) {   // (agachado, ya va doblado)
+  const t = (performance.now() / 1000) * PASADAS_SIERRA * Math.PI * 2, ida = Math.sin(t);
+  // de rodillas, el cuerpo se echa algo adelante y acompaña cada pasada (adelante al empujar, atrás al tirar): con la
+  // espalda quieta y derecha el brazo no llegaba a la punta de la pasada y la mano apenas iba y venía (0,1 m; lo vio la
+  // segunda mirada a las capturas: «el brazo cuelga sin vaivén que se lea»)
+  const giros = j.modo === CLIP_SERRAR ? [[h.spine_01, 0.22 + 0.1 * ida], [h.spine_02, 0.12 + 0.06 * ida]] : [[h.spine_01, 0.5], [h.spine_02, 0.45]];
+  for (const [hueso, a] of giros) {
     if (!hueso) continue;
+    // (sin acumular: si la animación no ha vuelto a poner el hueso en este fotograma (parada, o lejos y a saltos), sigue
+    // con el giro del anterior, y girarlo otra vez lo doblaba más y más, hasta la cabeza en las rodillas o echada atrás)
+    const d = hueso.userData;
+    if (d.serrarPuesto && hueso.quaternion.equals(d.serrarPuesto)) hueso.quaternion.copy(d.serrarBase);
+    d.serrarBase = hueso.quaternion.clone();
     const q = new THREE.Quaternion().setFromAxisAngle(l, a);
     hueso.getWorldQuaternion(q2); hueso.parent.getWorldQuaternion(q3);
     hueso.quaternion.copy(q3.invert().multiply(q.multiply(q2))); hueso.updateMatrixWorld(true);
+    d.serrarPuesto = hueso.quaternion.clone();
   }
   // la mano derecha, a la altura del tronco tumbado (0,36 m arriba) y algo por fuera, va y viene a lo largo de la hoja
   const pie = j.raiz.getWorldPosition(new THREE.Vector3());
-  const t = (performance.now() / 1000) * PASADAS_SIERRA * Math.PI * 2, ida = Math.sin(t) * 0.17;
-  const objetivo = pie.addScaledVector(u, 0.5).addScaledVector(f, 0.45 + ida).addScaledVector(l, -0.18);
+  const objetivo = pie.addScaledVector(u, 0.5).addScaledVector(f, 0.4 + ida * 0.17).addScaledVector(l, -0.18);
   const poloR = new THREE.Vector3().addScaledVector(l, -0.7).addScaledVector(u, 0.2).addScaledVector(f, -0.5);
   nudillosA(b.r, objetivo, poloR);
   // la izquierda, apoyada en el muslo izquierdo, por encima de la rodilla
