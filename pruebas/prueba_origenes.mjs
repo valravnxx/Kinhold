@@ -45,10 +45,6 @@ const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
-  mango: ['aún no se hace', 'Las primeras herramientas de hierro'],
-  hacha_hierro: ['sale de la fragua', 'Las primeras herramientas de hierro'],
-  pico: ['sale de la fragua', 'Las primeras herramientas de hierro'],
-  clavo: ['sale de la fragua', 'Las primeras herramientas de hierro'],
   sierra: ['sale de la fragua', 'La sierra y las tablas'],
   tabla: ['sale de serrar con la sierra', 'La sierra y las tablas'],
   bloque_piedra: ['sale de romper rocas grandes con el pico', 'Las rocas grandes y la cantera'],

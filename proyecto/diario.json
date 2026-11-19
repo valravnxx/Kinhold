@@ -7668,5 +7668,22 @@
   "pruebas": "Comprobador de código correcto. Revisor en la nube, reducido a lo del cambio (sin la hoguera, los almacenajes, los colgaderos, el hogar, la cama, el inventario, la velocidad, el mazo, despiezar y la demo única, que solo los pide un archivo compartido y no tocan la fragua): la fragua (PC y móvil) bien; el recorrido de jugador 379/379 (la fragua, en lo que aún no hace, hasta su tarea de recorrido del hierro); la lógica falló solo por las notas de v236 sin traducir (arreglado) y el panel de fabricación por «la criba y el grano, soltados al suelo», que no toca el cambio; repetidos los dos, bien. Prueba de la fragua (lógica y servidor) 25/25.",
   "capturas": "capturas/demo-v237",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-19T05:22:44+00:00",
+  "fin": "2026-11-19T07:21:39+00:00",
+  "titulo": "Las primeras herramientas de hierro (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "El mango de herramienta, en el banco de tronco: 1 vara, desbastada y alisada, con el pomo abajo y la punta en cuña.",
+   "En la fragua encendida, con el mazo de piedra de martillo (no se gasta) y lo que piden dejado en ella: el hacha de hierro (1 barra y 1 mango), el pico (1 barra y 1 mango) y los clavos (1 barra da 10). Lo hace el servidor, con su autor. El hacha de hierro tala los adultos y tronza y parte en muchos menos golpes que la de piedra, como ya sabía la tala.",
+   "Cada una se ve: el hacha y el pico empuñados en la mano derecha y colgados del cinto (el pico con su punta curvada y su azuela); el mango, cogido por el pomo; los clavos, en un atadijo de diez con su cordel; y en el suelo, el pico tumbado de lado y los clavos en un puñado.",
+   "Tras la segunda mirada (un agente aparte): los clavos sueltos en el puño no se leían y el pico en el suelo se clavaba de canto en la tierra; arreglados. El hierro sale con el color del hacha de siempre.",
+   "Provisional: 45 s para el mango, 3 min de batir para el hacha y el pico y 2 min para los clavos; el mango pesa 0,6 kg y el pico 2,2 kg. El pico aún no rompe nada: las rocas grandes y la veta llegan con sus tareas.",
+   "Imágenes nuevas, iconos v41. Demo v238."
+  ],
+  "pruebas": "Comprobador de código correcto. Prueba nueva de las herramientas de hierro (lógica y servidor) 26/26; rota a propósito (sin el mango, 1 clavo por barra), falla. Revisor en la nube, sin lo que solo pedía un archivo compartido y no toca el cambio (la hoguera, los almacenajes, los colgaderos, el hogar, la cama, el inventario, la velocidad, el mazo, despiezar, la demo única y el acabado de construir): las herramientas de hierro en el navegador (PC y móvil) bien; objetos en el suelo bien; recorrido de jugador 378/378; la lógica bien al poner al día la prueba de los iconos (el hacha de hierro ya no es provisional); el panel de fabricación falló una vez en «la criba y el grano, soltados al suelo», que no toca el cambio, y bien al repetirlo. «Lo que llevas se ve puesto» falla igual que en main (el cinturón y la mano sobre el tronco al hombro), sin tocar este cambio. Choque anotado: src/juego/main.js lo cambia también la rama del chat del castillo (una línea aquí: el pico cuenta como herramienta en la mano).",
+  "capturas": "capturas/demo-v238",
+  "estado": "ok"
  }
 ]

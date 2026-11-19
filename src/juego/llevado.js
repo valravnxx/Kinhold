@@ -24,11 +24,11 @@ import { CATALOGO } from '../logica/inventario.js';
 import { huellaLlevado } from '../logica/llevado.js';
 import { TRONCO_HOMBRO } from '../personajes/medidas_carga.js';
 import { modeloHachaDe } from './personaje.js'; // (se usa al montar: el ciclo entre los dos módulos no molesta)
-import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA, loteRemo, husoEn } from './modelos_objetos.js';
+import { loteHachaPiedra, piezasArcoTaladro, piezasHuso, estacaEn, cribaEn, CRIBA, loteCriba, cuboEn, CUBO, RODAJA, loteRemo, husoEn, loteMango, clavoEn } from './modelos_objetos.js';
 
 const CUERO = 0x6b4c35, CUERO_OSC = 0x4f3726, PIEL_CRUDA = 0x9a7a56, PIEL_CRUDA_OSC = 0x634632, FIBRA = 0x9c8a60, MIMBRE = 0xa38b5c, PLUMA = 0xc9c3b4;
 const CORDEL = 0xa8946a, CUERDA = 0x96805a, SILEX = 0x5d564e, SILEX_CLARO = 0x7a7064, CORTEZA_SILEX = 0xcfc6b2, TOSTADO = 0x2f2620;
-const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra']);   // (el mazo, por el cinto como el hacha)
+const HACHAS = new Set(['hacha_mano', 'hacha_piedra', 'hacha_hierro', 'mazo_piedra', 'pico']);   // (el mazo y el pico (P10), por el cinto como el hacha)
 const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const nuevoLote = () => new Lote({ variacion: 0.05, rangoSuelo: 0.001, suelo: -100 });
 const azar = (s) => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -557,6 +557,15 @@ function enMano(t) {
     if (t === 'rama') L.add(cil(0.006, 0.01, 0.3, 5), 'corteza', 0.05, 0.35, 0, { z: -0.5 }, { tex: 'corteza' });
   } else if (t === 'lena') astilla(L, 0, 0, 0.02, 0.42, 0.045, {}, 2);
   else if (t === 'tabla') L.add(cajaR(0.18, 1.0, 0.025, 0.006), 'tabla', 0, 0.1, 0.03, null, { tex: 'veta' });
+  // (P10, 19 nov) el mango de herramienta, cogido por el pomo como el de un hacha; los clavos, un puñado en el puño: las
+  // cabezas asoman por el lado del índice y las puntas por el del meñique
+  else if (t === 'mango') loteMango(L);
+  // (los clavos, un atadijo de diez, paralelos y atados con una vuelta de cordel, cogido como un palo corto: las cabezas
+  // asoman por el lado del índice y las puntas por el del meñique (sueltos en el puño no se leían: segunda mirada, 19 nov)
+  else if (t === 'clavo') {
+    for (let i = 0; i < 10; i++) { const a = i * 2.399, r = 0.006 * Math.sqrt(i); clavoEn(L, Math.cos(a) * r, 0.075 + (i % 3) * 0.004, 0.05 + Math.sin(a) * r, null, 1.2, i); }
+    L.add(new THREE.TorusGeometry(0.0145, 0.0028, 5, 14), CORDEL, 0, 0.03, 0.05, { x: Math.PI / 2 }, { tex: 'liso' });
+  }
   else if (t === 'lasca_silex') lasca(L, 0, 0.045, 0.012);
   else if (t === 'palo_cavador') paloCavador(L, 0.4);
   else if (t === 'cordel') madeja(L, 0.045, 0.004, 7, CORDEL);
@@ -912,7 +921,7 @@ export function crearLlevado(j) {
     } else for (const [lado, t] of [['r', l.der], ['l', l.izq]]) {
       if (!t || HACHAS.has(t)) continue;
       // lo largo (herramientas, ramas, varas) por el puño, como el hacha; lo redondo (una piedra), en la palma
-      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo', 'cubo', 'cubo_agua'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
+      const largo = ['rama', 'vara', 'tabla', 'lena', 'espada', 'cuchillo', 'cubo', 'cubo_agua', 'mango'].includes(t) || (CATALOGO[t] && CATALOGO[t].herramienta && t !== 'lasca_silex');
       const b = baseMano(mh, lado, invRaiz, largo ? 1.1 : 0.6); if (!b) continue;
       grupo.add(pieza(enMano(t), 'mano_' + lado, b.m, b.mano, invRaiz));
     }
