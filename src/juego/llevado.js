@@ -932,7 +932,8 @@ export function crearLlevado(j) {
     const g = new THREE.Group(); g.name = 'llevado_hacha_colgada';
     const h = modeloHachaDe(t); h.scale.setScalar(0.8); h.position.set(0, -0.42, 0.0); h.rotation.set(0, Math.PI / 2, -0.12); g.add(h);
     // (la sierra, P10: el mango metido en el cinturón y la hoja tendida hacia atrás, algo caída, los dientes abajo)
-    if (t === 'sierra') { h.scale.setScalar(1); h.position.set(0, -0.03, 0); h.rotation.set(0.25, Math.PI, 0); }
+    if (t === 'sierra') { h.scale.setScalar(1); h.position.set(0, -0.03, 0); h.rotation.set(0.3, -Math.PI / 2, 0, 'YXZ'); }
+    // (con (0,25, π, 0) la hoja atravesaba el cuerpo hacia el otro lado y de lado casi no se veía: medido, −π/2 la lleva atrás)
     g.traverse(o => { if (o.isMesh) o.userData.herramienta = true; });
     g.matrix.makeRotationY(a).setPosition(p);
     return g;

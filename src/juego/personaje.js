@@ -212,12 +212,23 @@ const serra = (j) => j.tipoHacha === 'sierra' && (j.serrando !== undefined ? !!j
 //    la trae (unas 1,4 pasadas por segundo), mientras la mano izquierda descansa sobre el muslo. Provisional: la animación
 //    de serrar la hará valravnx.
 export const PASADAS_SIERRA = 1.4;
+export const SERRAR_AGACHADO = 0.25;   // (el momento de la de agacharse en que se queda, de 0 a 1 de su duración: a 0,2 está lo más doblado, la cabeza a 0,8 m, y se veía tocándose los pies; a 0,25, a 0,95 m)
 function colocarSierra(j, b, f, l, u) {
   const h = j.mh.hueso, mano = h.hand_r, sierra = j.hacha;
-  const palma = mano.getWorldPosition(new THREE.Vector3()).lerp(b.r.nudillo.getWorldPosition(new THREE.Vector3()), 0.6);
+  // el mango, por el agarre marcado en la palma (herramientas/meshy/poner_dedos.mjs) y atravesado a los dedos, del meñique al
+  // índice, como el hacha (empunar): con el mango derecho hacia arriba y en la palma, la mano salía abierta a su lado
+  const palma = h.agarre_r ? h.agarre_r.getWorldPosition(new THREE.Vector3())
+    : mano.getWorldPosition(new THREE.Vector3()).lerp(b.r.nudillo.getWorldPosition(new THREE.Vector3()), 0.6);
   const z = j.serrandoAhora ? f.clone().addScaledVector(u, -0.12) : f.clone().multiplyScalar(-0.9).addScaledVector(u, -0.35).addScaledVector(l, -0.12);
   z.normalize();
-  const y = u.clone().addScaledVector(z, -u.dot(z)).normalize(), x = new THREE.Vector3().crossVectors(y, z);
+  const dedos = h.index_01_r && h.pinky_01_r ? h.index_01_r.getWorldPosition(new THREE.Vector3()).sub(h.pinky_01_r.getWorldPosition(new THREE.Vector3())) : u.clone();
+  dedos.addScaledVector(z, -dedos.dot(z));
+  if (dedos.lengthSq() < 1e-6) dedos.copy(u).addScaledVector(z, -u.dot(z));
+  dedos.normalize();
+  // (los dientes, siempre abajo: si los dedos apuntan hacia abajo, el mango va al revés por la misma mano)
+  if (dedos.dot(u) < 0) dedos.negate();
+  // (y no muy tumbado: el mango, entre los dedos y la vertical, para que la hoja no se ponga de canto)
+  const y = dedos.add(u.clone().addScaledVector(z, -u.dot(z)).normalize()).normalize(), x = new THREE.Vector3().crossVectors(y, z);
   const mundo = new THREE.Matrix4().makeBasis(x, y, z).setPosition(palma);
   mano.updateMatrixWorld(true);
   mano.matrixWorld.clone().invert().multiply(mundo).decompose(sierra.position, sierra.quaternion, sierra.scale);
@@ -230,7 +241,7 @@ function serrar(j, b, f, l, u) {
   // echado bien adelante (girando la espalda, en dos tramos, sobre el eje de la izquierda) para que el brazo llegue al
   // tronco tumbado: con 0,5 rad en un tramo, la mano se quedaba a la altura de la cadera y la hoja, a 0,7 m del suelo
   const q2 = new THREE.Quaternion(), q3 = new THREE.Quaternion();
-  for (const [hueso, a] of [[h.spine_01, 0.5], [h.spine_02, 0.45]]) {
+  for (const [hueso, a] of j.modo === 'agacharse' ? [] : [[h.spine_01, 0.5], [h.spine_02, 0.45]]) {   // (agachado, ya va doblado)
     if (!hueso) continue;
     const q = new THREE.Quaternion().setFromAxisAngle(l, a);
     hueso.getWorldQuaternion(q2); hueso.parent.getWorldQuaternion(q3);
@@ -266,8 +277,9 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     if (velocidad > 0.1) {
       m = velocidad < 1.8 ? 'andar' : 'correr'; ritmo = velocidad / (j.mh.velocidad[m] || 1); // natural, medida al cargar
       ritmo = THREE.MathUtils.clamp(ritmo, 0.6, 1.6);
-    } else if (talando) m = serra(j) ? 'quieto' : 'talar';   // (con la sierra no se hacha: de pie, y el brazo sierra; ver serrar)
-    j.serrandoAhora = m === 'quieto' && talando && serra(j);
+    } else if (talando) m = serra(j) ? (j.mh.acciones.agacharse ? 'agacharse' : 'quieto') : 'talar';   // (con la sierra no se hacha: agachado sobre el tronco, y el brazo sierra; ver serrar)
+    j.serrandoAhora = velocidad <= 0.1 && talando && serra(j);
+    if (j.serrandoAhora && m === 'agacharse') ritmo = 0;   // (la de agacharse, parada en lo más bajo: SERRAR_AGACHADO)
     // con algo grande en las dos manos (src/juego/llevado.js), los brazos lo sujetan delante; quieto, la misma postura
     // arrastrando la rastra (src/juego/rastra.js): inclinado, con las manos atrás en las varas; quieto, la misma postura
     if (j.arrastra && j.mh.acciones.arrastrar) {
@@ -297,7 +309,12 @@ export function crearJugador(recursos, sexo = 'hombre', capas = ['descalzo'], as
     else if (j.sentado && (m === 'quieto' || m === 'cargar' || m === 'hombroQuieto') && velocidad <= 0.1 && j.mh.acciones.sentado) m = 'sentado';
     if (m === 'dormido' || m === 'sentado') ritmo = 1;
     if (m === 'tumbarse' || m === 'levantarse') { ritmo = 1; const a = j.mh.acciones[m]; if (a.loop !== THREE.LoopOnce) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } }
-    if (m !== j.modo) { j.mh.poner(m, 0.2); j.modo = m; }
+    if (m !== j.modo) {
+      j.mh.poner(m, 0.2); j.modo = m;
+      // serrando, la de agacharse se para en lo más bajo (doblado sobre el tronco tumbado, las rodillas dobladas): de pie, el
+      // brazo no llegaba y la hoja quedaba a 0,6–0,7 m del suelo, por encima del tronco (0,36 m)
+      if (j.serrandoAhora && m === 'agacharse') { const a = j.mh.acciones[m]; a.time = a.getClip().duration * SERRAR_AGACHADO; }
+    }
     if (j.hacha) j.hacha.visible = m === 'talar' || !!j.hachaEnMano;   // también si la llevas en la mano (inventario)
     j.mh.acciones[m].timeScale = ritmo;
     // el nivel de detalle; lejos, los huesos se mueven cada pocos fotogramas (con el tiempo de todos), y si no se ve, no
