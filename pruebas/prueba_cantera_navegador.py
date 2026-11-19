@@ -24,6 +24,7 @@ BASE = f'http://127.0.0.1:{srv.server_address[1]}/jugar/demo/prueba.html?modo=co
 ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 K = 'window.__kinhold'
 fallos = []
+GIRO = [0.75]   # (el giro de la cámara: en el móvil, más detrás del personaje, para que la roca y los bloques quepan en lo estrecho)
 def comprobar(n, c, d=''):
     print(('  OK   ' if c else '  FALLA ') + n + (f' — {d}' if d else ''))
     if not c: fallos.append(n)
@@ -56,7 +57,7 @@ def buscar_roca(pg):
 
 def ir(pg, p, dist=4.6, pitch=0.45):
     d = p['tam'] * 1.1 + 0.55
-    pg.evaluate(f'([x, z, d]) => {{ const k = {K}; k.pj.x = x + d; k.pj.z = z; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = -Math.PI / 2; k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = Math.PI / 2 + 0.75; }}', [p['x'], p['z'], d])
+    pg.evaluate(f'([x, z, d]) => {{ const k = {K}; k.pj.x = x + d; k.pj.z = z; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = -Math.PI / 2; k.cam.dist = {dist}; k.cam.pitch = {pitch}; k.cam.yaw = Math.PI / 2 + {GIRO[0]}; }}', [p['x'], p['z'], d])
     esperar(pg)
 
 EN_MALLA = f"""([x, z, nombre]) => {{ const k = {K}; const im = k.decorado.raiz.children.find(c => c.name === nombre); if (!im) return 0;
@@ -113,7 +114,7 @@ def recorrido(pg, nombre, pref):
     # de cerca, el montón de bloques
     b = pg.evaluate(f"([x, z]) => {{ const o = {K}.sueloObjetos.suelo.objetos.find(o => o.cosa.tipo === 'bloque_piedra' && Math.hypot(o.x - x, o.z - z) < 3); return o ? [o.x, o.z] : null; }}", xz)
     if b:
-        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 1.6; k.pj.z = z + 0.4; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = -Math.PI / 2; k.cam.dist = 2.4; k.cam.pitch = 0.5; k.cam.yaw = Math.PI / 2 + 0.6; }}', b)
+        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 1.6; k.pj.z = z + 0.4; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = -Math.PI / 2; k.cam.dist = 2.4; k.cam.pitch = 0.5; k.cam.yaw = Math.PI / 2 + {GIRO[0] - 0.15}; }}', b)
         esperar(pg, 1500)
         pg.screenshot(path=f'{SALIDA}/{pref}_4_bloques_de_cerca.png', timeout=180000)
     comprobar(f'{nombre}: sin errores en la página', not errores, '; '.join(errores[:3]))
@@ -122,6 +123,7 @@ with sync_playwright() as p:
     nav = p.chromium.launch(args=ARGS)
     for nombre, pref, vista, movil in [('PC', 'pc', {'width': 1280, 'height': 800}, False), ('móvil', 'movil', {'width': 390, 'height': 844}, True)]:
         ctx = nav.new_context(viewport=vista, device_scale_factor=1, is_mobile=movil, has_touch=movil)
+        GIRO[0] = 0.3 if movil else 0.75
         recorrido(ctx.new_page(), nombre, pref)
         ctx.close()
     nav.close()
