@@ -167,12 +167,13 @@ def recorrido(nav, nombre, pref, vista, movil):
       o.traverse(m => {{ if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i += 3) {{ v.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); const d = v.y - k.alturaSuelo(v.x, v.z); bajo = Math.min(bajo, d); alto = Math.max(alto, d); }} }});
       return [+bajo.toFixed(3), +alto.toFixed(3)]; }})()''')
     comprobar(f'{nombre}: la sierra en el suelo, asentada (ni hundida ni en el aire)', a and a[0] > -0.02 and a[1] < 0.2, str(a))
-    # las tablas en el suelo, con su modelo (antes, un hatillo de lino): un montón de 1 m de largo y bajo
+    # las tablas en el suelo, con su modelo (antes, un hatillo de lino): un montón de 1 m de largo y bajo, asentado (alturas
+    # sobre el terreno: en cuesta va inclinado)
     b = pg.evaluate(f'''(() => {{ const k = {K}, o = k.escena.getObjectByName('suelo_tabla'); if (!o) return null; const c = new o.position.constructor();
       let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9]; o.updateMatrixWorld(true);
-      o.traverse(m => {{ if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i++) {{ c.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld).sub(o.position).applyAxisAngle(c.clone().set(0, 1, 0), -o.rotation.y); const v = [c.x, c.y, c.z]; for (let j = 0; j < 3; j++) {{ mn[j] = Math.min(mn[j], v[j]); mx[j] = Math.max(mx[j], v[j]); }} }} }});
-      return mx.map((x, j) => +(x - mn[j]).toFixed(2)); }})()''')
-    comprobar(f'{nombre}: las tablas en el suelo, con su modelo (1 m de largo, en montón bajo)', b and 0.9 < max(b[0], b[2]) < 1.15 and b[1] < 0.15, str(b))
+      o.traverse(m => {{ if (!m.isMesh) return; const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i++) {{ c.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); const h = c.y - k.alturaSuelo(c.x, c.z); c.sub(o.position).applyAxisAngle(c.clone().set(0, 1, 0), -o.rotation.y); const v = [c.x, h, c.z]; for (let j = 0; j < 3; j++) {{ mn[j] = Math.min(mn[j], v[j]); mx[j] = Math.max(mx[j], v[j]); }} }} }});
+      return [+(mx[0] - mn[0]).toFixed(2), +mx[1].toFixed(2), +(mx[2] - mn[2]).toFixed(2), +mn[1].toFixed(3)]; }})()''')
+    comprobar(f'{nombre}: las tablas en el suelo, con su modelo (1 m de largo, en montón bajo)', b and 0.9 < max(b[0], b[2]) < 1.15 and b[1] < 0.15 and b[3] > -0.02, str(b))
     pg.evaluate(f'{K}.jugador.raiz.visible = false')
     mirar(pg, c, 0, 0.1, 0.5, 2.4 * D, 1.3, 0)
     pg.screenshot(path=f'{SALIDA}/{pref}_suelo.png', timeout=180000)
