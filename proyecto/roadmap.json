@@ -2675,7 +2675,9 @@
     },
     {
      "nombre": "Las rocas grandes y la cantera: con el pico se rompen las rocas grandes y los afloramientos que el mazo no puede, a golpes que cansan, por el servidor y con su autor; dan bloques de piedra en bruto y piedra suelta, y vuelven a salir en unos meses reales, como las medianas. Cadena: pico ← la fragua",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-19T17:24:38+00:00",
+     "rama": "trabajo/20261119-1723"
     },
     {
      "nombre": "Las vetas de hierro en la roca: las vetas pequeñas del mapa (una cada 14 km, GDD) se ven en el mundo como un afloramiento de roca rojiza y, con el pico, dan mineral de hierro, mucho más que una mancha de pantano antes de agotarse. Capturas al lado de la referencia. Cadena: pico ← la fragua",
