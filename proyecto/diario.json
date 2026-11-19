@@ -7616,5 +7616,24 @@
   "pruebas": "Lógica: el castillo se recorre entero (cuatro recorridos, 433 puntos). Navegador, aquí y en la nube: los cuatro recorridos andando en el juego (el que ataca, la guardia, la puerta y la poterna); rota a propósito, falla. Nube: lógica, recorrido, velocidad con pocos fotogramas y lo que se recoge, bien. No comprobado: los fotogramas en un móvil de verdad.",
   "capturas": "capturas/demo-v236",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-18T16:24:05+00:00",
+  "fin": "2026-11-19T00:14:35+00:00",
+  "titulo": "Oficios: el recorrido de jugador, sin arcón, hace todos los oficios (carril A)",
+  "hito": "oficios",
+  "hecho": [
+   "Paso 27 del recorrido de jugador (pruebas/recorrido_oficios.mjs), el mismo jugador después de la canoa, sin arcón y con lo que recoge: trenza 2 cuerdas en su banco, tala 4 árboles jóvenes y levanta el secadero en su tierra; caza 5 liebres con la lanza y las despieza con la lasca; cuelga una carne y, pasadas las horas, recoge la carne seca.",
+   "En el raspador de pieles (el que ya tenía de la granja) deja limpias las 5 pieles con la lasca; con dos y un cordel se hace el zurrón en el banco y se lo echa a la espalda.",
+   "Descorteza 5 robles en pie (6 de corteza de roble), trae 4 troncos cortos, cava 2 de barro en la ribera, levanta las cubas de curtido, lleva tres veces el cubo lleno del río (a casi 1 km; bebe allí) y, pasados los días, saca 3 cueros.",
+   "Se hace el huso (una vara y una piedra) e hila; en el banco cose los zapatos de cuero y hace el cinto de cuero. Parte 2 troncos cortos con el hacha (12 leñas), levanta la carbonera, la enciende con su yesca y su taladro de fuego y saca los 4 carbones; la carbonera se deshace.",
+   "Lo que salió al jugarlo: la lanza que dejó junto a la hoguera de la orilla ya no está (lo soltado fuera de tu tierra desaparece a la hora), así que endurece otra al fuego de su hogar; la carne cruda se estropea en 3 horas, así que el secadero se levanta antes de cazar; y con sed al máximo tras remar, sin beber se moría por el camino al río.",
+   "En la canoa (paso 26) y en los oficios, si no encuentra su hacha (en la nube se le quedó junto al río al ir a por barro, fuera de su tierra, y desapareció), se hace otra en su piedra de tallar con una piedra, una rama y 2 cordeles.",
+   "Fuera de «todavía no» del recorrido: el secadero, el raspador y el zurrón, y la carbonera y el carbón.",
+   "Decisiones provisionales: lo que tarda horas o días de verdad (secar la carne, curtir, la carbonera) se adelanta como lo que se fabrica, sin darle nada; los puestos, junto a su banco, en su tierra."
+  ],
+  "pruebas": "Recorrido de jugador en la nube: 378 bien y 0 mal (76,5 min), con el paso 27 de los oficios entero. Aquí, los oficios desde lo guardado después de cazar, 28 bien y 0 mal (también sin hacha: se hace otra); con MUTAR=1 falla como debe (sin adelantar los días, no sale el cuero). Solo el grupo del recorrido: es lo único que piden los archivos cambiados.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
