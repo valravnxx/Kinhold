@@ -18,7 +18,7 @@ import { crearChoquesCastillo, ORIGEN_CASTILLO } from '../logica/castillo_rey.js
 export const CARPETA_CASTILLO = 'recursos/mundo/castillo-rey-v2/';
 // metros que cubre cada textura (u, v), cuánto relieve y cuánto musgo coge (0: nada)
 const MATS = {
-  sillar: { tam: [3.2, 1.6], relieve: 1.2, musgo: 1 }, mamp: { tam: [5, 2.5], relieve: 1.3, musgo: 1 }, piedra: { tam: [1, 1], relieve: 1.3, musgo: 0.55 },
+  sillar: { tam: [3.2, 1.6], relieve: 1.2, musgo: 1 }, mamp: { tam: [3.6, 1.8], relieve: 1.3, musgo: 1 }, piedra: { tam: [1, 1], relieve: 1.3, musgo: 0.55 },
   losa: { tam: [3, 3], relieve: 1.0, musgo: 0.7 }, canto: { tam: [2, 2], relieve: 0.7, musgo: 0.6 }, tierra: { tam: [4, 4], relieve: 0.6, musgo: 0.3 },
   madera: { tam: [2, 2], relieve: 0.7, musgo: 0.2 }, tabla: { tam: [2, 2], relieve: 0.8, musgo: 0 }, teja: { tam: [2, 1], relieve: 1.2, musgo: 0.5 },
   paja: { tam: [1, 1], relieve: 1.0, musgo: 0.2 }, tela: { tam: [0.5, 0.5], relieve: 1.0, musgo: 0 }, liso: { tam: null, relieve: 0, musgo: 0 },
@@ -57,7 +57,7 @@ function desgaste(mat, musgo) {
           float arriba = smoothstep(0.55, 0.95, vNorM.y) * smoothstep(0.62, 0.92, n2 * 0.6 + n1 * 0.4 + n3 * 0.2);
           diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.35, 0.18) * (0.8 + 0.4 * n3), uMusgo * arriba * 0.5);
           // cortado por plantas: lo de dentro de los muros (sus caras de detrás) se ve como la sección, oscuro y liso
-          if (uCortado > 0.5 && !gl_FrontFacing) diffuseColor.rgb *= 0.5;
+          if (uCortado > 0.5 && !gl_FrontFacing) diffuseColor.rgb = vec3(0.2, 0.185, 0.165) * (0.9 + 0.2 * n2);   // (lisa: la textura, vista de canto por dentro, sale estirada)
         }`);
   };
   mat.customProgramCacheKey = () => 'castillo_rey_' + musgo;

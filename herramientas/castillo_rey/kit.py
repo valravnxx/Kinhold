@@ -132,7 +132,11 @@ def cilindro(m, f, cu, cw, r, v0, v1, col, n=10, tapa=True, r1=None):
         nx_ = (B_[1] - A_[1]) * (C_[2] - A_[2]) - (B_[2] - A_[2]) * (C_[1] - A_[1]); nz_ = (B_[0] - A_[0]) * (C_[1] - A_[1]) - (B_[1] - A_[1]) * (C_[0] - A_[0])
         if nx_ * (A_[0] - cc[0]) + nz_ * (A_[2] - cc[2]) < 0: q4 = q4[::-1]
         m.quad(*q4, esc(col, l * 0.85))
-        if tapa: m.tri(f(cu, v1, cw), p(a2, r1, v1), p(a1, r1, v1), esc(col, 1.05))
+        if tapa:
+            A_, B_, C_ = f(cu, v1, cw), p(a2, r1, v1), p(a1, r1, v1)
+            ny_ = (B_[2] - A_[2]) * (C_[0] - A_[0]) - (B_[0] - A_[0]) * (C_[2] - A_[2])
+            if ny_ < 0: B_, C_ = C_, B_   # (la tapa mira arriba)
+            m.tri(A_, B_, C_, esc(col, 1.05))
 
 def bola(m, cx, cy, cz, r, ry, col, n=7, filas=4):
     def V(i, j):
@@ -323,9 +327,9 @@ def almenado(m, f, u0, u1, v, w0, w1, alto_pretil=0.9, alto_merlon=1.0, paso=2.0
         if albardilla:   # albardilla a dos aguas
             vt = v + alto_pretil + alto_merlon; wm = (w0 + w1) / 2
             c = varia(PIEDRA_CLARA, 0.04)
-            with con(m, 'sillar'): m.quad(f(a - .04, vt, w1 + .05), f(b + .04, vt, w1 + .05), f(b + .04, vt + .12, wm), f(a - .04, vt + .12, wm), c)
-            with con(m, 'sillar'): m.quad(f(b + .04, vt, w0 - .05), f(a - .04, vt, w0 - .05), f(a - .04, vt + .12, wm), f(b + .04, vt + .12, wm), esc(c, .85))
-            with con(m, 'sillar'): m.tri(f(a - .04, vt, w0 - .05), f(a - .04, vt, w1 + .05), f(a - .04, vt + .12, wm), esc(c, .8))
+            with con(m, 'piedra'): m.quad(f(a - .04, vt, w1 + .05), f(b + .04, vt, w1 + .05), f(b + .04, vt + .12, wm), f(a - .04, vt + .12, wm), c)
+            with con(m, 'piedra'): m.quad(f(b + .04, vt, w0 - .05), f(a - .04, vt, w0 - .05), f(a - .04, vt + .12, wm), f(b + .04, vt + .12, wm), esc(c, .85))
+            with con(m, 'piedra'): m.tri(f(a - .04, vt, w0 - .05), f(a - .04, vt, w1 + .05), f(a - .04, vt + .12, wm), esc(c, .8))
             with con(m, 'sillar'): m.tri(f(b + .04, vt, w1 + .05), f(b + .04, vt, w0 - .05), f(b + .04, vt + .12, wm), esc(c, .8))
     # la albardilla del pretil en los huecos (cornisa)
     m.quad(f(u0, v + alto_pretil + .02, w1 + .06), f(u1, v + alto_pretil + .02, w1 + .06), f(u1, v + alto_pretil + .02, w0 - .04), f(u0, v + alto_pretil + .02, w0 - .04), esc(PIEDRA_CLARA, .95))
@@ -453,7 +457,7 @@ def caracol(m, f, cu, cw, r, v0, v1, ang0=0.0, sentido=1, col=PIEDRA, muro_r=Non
         pts = [(cu + 0.16 * math.cos(a), cw + 0.16 * math.sin(a)), (cu + r * math.cos(a), cw + r * math.sin(a)),
                (cu + r * math.cos(a + da), cw + r * math.sin(a + da)), (cu + 0.16 * math.cos(a + da), cw + 0.16 * math.sin(a + da))]
         with con(m, 'sillar'): prisma(m, f, pts, top - 0.2, top, esc(varia(col, 0.07), 0.86))
-    with con(m, 'piedra'): cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 0.8), 8)
+    with con(m, 'sillar'): cilindro(m, f, cu, cw, 0.17, v0, v1, esc(col, 1.0), 8)
     if muro_r:
         N = 16
         for i in range(N):
@@ -505,7 +509,7 @@ def rastrillo(m, f, u0, u1, v0, v1, w, col=MADERA, alto_bajado=None):
     b = 0.11; n = max(3, int((u1 - u0) / 0.32))
     for i in range(n + 1):
         u = u0 + (u1 - u0) * i / n
-        with con(m, 'madera'): caja(m, f, u - b / 2, u + b / 2, v0, v1, w - b / 2, w + b / 2, esc(col, 0.8), 0.85)
+        with con(m, 'madera'): caja(m, f, u - b / 2, u + b / 2, v0, v1, w - b / 2, w + b / 2, esc(col, 0.55), 0.85)
         # la punta de hierro: una pirámide que acaba en pico
         q = [(u - b / 2 - 0.01, w - b / 2 - 0.01), (u + b / 2 + 0.01, w - b / 2 - 0.01), (u + b / 2 + 0.01, w + b / 2 + 0.01), (u - b / 2 - 0.01, w + b / 2 + 0.01)]
         pico = f(u, v0 - 0.32, w)
@@ -515,7 +519,7 @@ def rastrillo(m, f, u0, u1, v0, v1, w, col=MADERA, alto_bajado=None):
         with con(m, 'liso'): caja(m, f, u - b / 2 - 0.012, u + b / 2 + 0.012, v0, v0 + 0.12, w - b / 2 - 0.012, w + b / 2 + 0.012, HIERRO)   # el regatón
     v = v0 + 0.4
     while v < v1 - 0.1:
-        with con(m, 'madera'): caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.72), 0.85)
+        with con(m, 'madera'): caja(m, f, u0 - 0.05, u1 + 0.05, v, v + b, w - b / 2 - 0.03, w + b / 2 + 0.03, esc(col, 0.5), 0.85)
         for i in range(n + 1):   # pletinas de hierro en cada cruce
             u = u0 + (u1 - u0) * i / n
             with con(m, 'liso'): caja(m, f, u - 0.07, u + 0.07, v - 0.02, v + b + 0.02, w - b / 2 - 0.045, w + b / 2 + 0.045, HIERRO)
