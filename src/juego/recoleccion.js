@@ -136,7 +136,7 @@ function rocaCortada(sem, ancho, alto, fondo, detalle = 1) {
   const g = new THREE.IcosahedronGeometry(1, detalle), p = g.attributes.position, v = new THREE.Vector3();
   let a = sem * 9301 + 49297; const r = () => ((a = (a * 233280 + 1) % 2147483647) / 2147483647);
   const planos = [];
-  for (let k = 0; k < 7; k++) planos.push([new THREE.Vector3(r() - 0.5, (r() - 0.35) * 1.2, r() - 0.5).normalize(), 0.55 + r() * 0.3]);
+  for (let k = 0; k < 9; k++) planos.push([new THREE.Vector3(r() - 0.5, (r() - 0.35) * 1.2, r() - 0.5).normalize(), 0.45 + r() * 0.3]);   // (más cortes: caras planas y aristas, no un canto rodado)
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i);
     for (const [n, o] of planos) { const q = v.dot(n); if (q > o) v.addScaledVector(n, o - q); }
@@ -150,12 +150,13 @@ function rocaCortada(sem, ancho, alto, fondo, detalle = 1) {
 // de roca con manchas de herrumbre (más abajo y en regueros verticales, donde el agua lava el óxido) y la sombra de
 // contacto abajo; la textura y el relieve, los de la roca de los cortados
 function afloramientoGeo() {
-  const piezas = [[1, 2.3, 1.5, 1.8, 0, 0.42, 0, 0.3], [2, 1.2, 0.85, 1.0, 1.3, 0.2, 0.55, 1.9], [3, 0.9, 0.62, 0.8, -1.1, 0.16, 0.7, 4.1]];
-  const geos = piezas.map(([sem, an, al, fo, x, y, z, ry]) => {
+  // (segunda mirada: losas inclinadas, como estratos que asoman, y más hundidas: nada de cantos rodados apoyados)
+  const piezas = [[1, 2.4, 1.5, 1.6, 0, 0.3, 0, 0.3, 0.32], [2, 1.3, 0.9, 0.9, 1.3, 0.08, 0.55, 1.9, -0.28], [3, 1.0, 0.7, 0.7, -1.1, 0.06, 0.7, 4.1, 0.36]];
+  const geos = piezas.map(([sem, an, al, fo, x, y, z, ry, rz]) => {
     const g0 = rocaCortada(sem, an, al, fo, 2), g = g0.index ? g0.toNonIndexed() : g0; g.computeVertexNormals();
-    g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, ry, 0)), new THREE.Vector3(1, 1, 1)));
+    g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rz * 0.5, ry, rz, 'YXZ')), new THREE.Vector3(1, 1, 1)));
     const p = g.attributes.position, n = p.count, col = new Float32Array(n * 3), uv = new Float32Array(n * 2), nr = g.attributes.normal;
-    const gris = new THREE.Color(0xb4aea4), oxido = new THREE.Color(0xa06e52), oscuro = new THREE.Color(0x6a5446), c = new THREE.Color();
+    const gris = new THREE.Color(0xaca696), oxido = new THREE.Color(0x96704c), oscuro = new THREE.Color(0x6a5844), c = new THREE.Color();
     for (let i = 0; i < n; i++) {
       const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i);
       const mancha = 0.5 + 0.5 * Math.sin(vx * 3.1 + vz * 2.3 + sem) * Math.sin(vz * 2.7 - vy * 1.9);
@@ -163,7 +164,7 @@ function afloramientoGeo() {
       const abajo = Math.max(0, Math.min(1, 1 - vy / 0.9));
       const k = Math.min(1, mancha * mancha * 0.7 + reguero * 0.55 + abajo * 0.2);   // (la mitad, más o menos, gris de roca)
       c.copy(gris).lerp(oxido, k).lerp(oscuro, Math.max(0, mancha - 0.8) * 1.2);
-      const sombra = 0.62 + 0.38 * Math.min(1, Math.max(0, vy + 0.1) / 0.6) * (0.75 + 0.25 * Math.max(0, nr.getY(i)));
+      const sombra = 0.8 + 0.2 * Math.min(1, Math.max(0, vy + 0.1) / 0.6) * (0.75 + 0.25 * Math.max(0, nr.getY(i)));
       col[i * 3] = c.r * sombra; col[i * 3 + 1] = c.g * sombra; col[i * 3 + 2] = c.b * sombra;
       // (UV por caja: cada cara proyecta la textura desde su eje dominante, como la roca de los cortados)
       const ax = Math.abs(nr.getX(i)), ay = Math.abs(nr.getY(i)), az = Math.abs(nr.getZ(i));
