@@ -37,6 +37,7 @@ def homenaje(m, puertas_adarve):
             if not any(abs(u - L * 0.5) < 1.5 for (u, *_r) in t.puertas[i]): hs.append(saetera(L * 0.5, K2 + 1.0, 1.6, 0.13, 1.2))
             hs.append(saetera(L * 0.25, K0 + 2.5, 0.5, 0.15, 0.3))
         muro(m, f, 0, L, base, KTE, -T, 0, hs, 'silleria', PIEDRA, tapa=False, cabezas=False, suelo=FOSO_FONDO)
+        esquinales(m, f, 0, L, base, KTE - 1.6, 0.0, i)
         m.quad(f(0, base, 1.2), f(L, base, 1.2), f(L, base + 3.5, 0), f(0, base + 3.5, 0), esc(PIEDRA_OSC, .85))   # alambor
         # cornisa y matacanes corridos en lo alto, con su parapeto almenado volado
         for k in range(int(L / 1.1)):

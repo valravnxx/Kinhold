@@ -114,8 +114,11 @@ def poterna(m, c):
         for s in (-1, 1): caja(m, fm, 1.5 + k * 2.4 - 0.12, 1.5 + k * 2.4 + 0.12, -2.5, v_bajo + (0.6 if k == 3 else -0.1), s * 0.85 - 0.12, s * 0.85 + 0.12, MADERA)
     # una barca amarrada
     fb = fm.sub(6.0, 2.2, 0.05, v_bajo - 1.0)
-    prisma(m, fb, [(-2.2, 0), (-1.6, -0.75), (1.8, -0.75), (2.4, 0), (1.8, 0.75), (-1.6, 0.75)], 0.0, 0.55, hexc('#5c4630'))
-    caja(m, fb, -1.4, 1.6, 0.3, 0.36, -0.6, 0.6, hexc('#8a6a48'))
+    with choques.callar(): barca(m, fb.sub(0, 0, 0.0, -0.25))   # (la quilla, bajo el agua)
+    for (u_, w_) in ((0.9, -2.6), (0.9, 2.6)): pass
+    # la amarra: de la proa al último poste del pantalán
+    a_ = fb(2.3, 1.55, 0); b_ = fm(1.5 + 3 * 2.4, v_bajo + 0.5, 0.85)
+    m.quad(a_, b_, (b_[0], b_[1] + 0.03, b_[2]), (a_[0], a_[1] + 0.03, a_[2]), hexc('#8a7a5a'))
 
 def _dentro_enc(p, pol, margen):
     if not dentro(p, pol): return False
@@ -124,7 +127,7 @@ def _dentro_enc(p, pol, margen):
 def suelos_patios(m, camino):
     """patio de armas de tierra apisonada con un camino empedrado de la puerta a la del alcázar; patio del alcázar empedrado.
        camino: lista de puntos del eje del camino"""
-    TIERRA_P = hexc('#6e6150'); CANTO = hexc('#77716a'); HIERBA_P = hexc('#5b6338')
+    TIERRA_P = hexc('#7a6b56'); CANTO = hexc('#8a8276'); HIERBA_P = hexc('#5b6338')
     paso = 0.5
     for pol, empedrado in ((EXTERIOR, False), (INTERIOR, True)):
         xs = [p[0] for p in pol]; zs = [p[1] for p in pol]
@@ -134,37 +137,52 @@ def suelos_patios(m, camino):
             while z < max(zs):
                 c = (x + paso / 2, z + paso / 2)
                 if _dentro_enc(c, pol, T_MURO / 2 - 0.05):
-                    en_camino = min(dist_seg(c, a, b) for a, b in zip(camino, camino[1:])) < 1.8
+                    en_camino = False   # (el camino va encima, en cinta: cinta())
                     if empedrado or en_camino:
-                        col = varia(CANTO, 0.14); g = 0.04
-                        q = [(x + g, z + g), (x + paso - g, z + g), (x + paso - g, z + paso - g), (x + g, z + paso - g)]
-                        m.quad(*[(px, h(px, pz) + 0.07, pz) for px, pz in q], col)
-                        m.quad(*[(px, h(px, pz) + 0.035, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], esc(CANTO, .5))
+                        borde = min(dist_seg(c, a, b) for a, b in zip(pol, pol[1:] + pol[:1]))
+                        col = mezcla(varia(CANTO, 0.03), hexc('#5b6338'), 0.35 if borde < 2.2 else 0.0)
+                        with con(m, 'losa'): m.quad(*[(px, h(px, pz) + 0.06, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], col)   # (el patio del alcázar, enlosado)
                     elif (int(x / paso) + int(z / paso)) % 2 == 0:
                         # tierra apisonada, en losetas de 1 m con matices; algo de hierba junto a los muros
                         borde = min(dist_seg(c, a, b) for a, b in zip(pol, pol[1:] + pol[:1]))
                         col = mezcla(varia(TIERRA_P, 0.06), HIERBA_P, 0.55 if borde < 3.0 else 0.1 * az())
                         q = [(x, z), (x + 2 * paso, z), (x + 2 * paso, z + 2 * paso), (x, z + 2 * paso)] if False else [(x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso)]
-                        m.quad(*[(px, h(px, pz) + 0.05, pz) for px, pz in ((x, z), (x + paso * 2, z), (x + paso * 2, z + paso * 2), (x, z + paso * 2))], col)
+                        with con(m, 'tierra'): m.quad(*[(px, h(px, pz) + 0.05, pz) for px, pz in ((x, z), (x + paso * 2, z), (x + paso * 2, z + paso * 2), (x, z + paso * 2))], col)
                 z += paso
             x += paso
 
+def cinta(m, pts, ancho, mat, col, alto, borde=0.35, sem=0, paso=0.4, n_trav=6):
+    """una franja que sigue la polilínea pts (en el mundo), pegada al terreno (a 'alto' sobre él), con los bordes
+       irregulares (ruido de ±borde); para caminos (empedrado encima de una de tierra más ancha)"""
+    # muestreo a lo largo
+    S = [pts[0]]; L = 0.0; largos = [0.0]
+    for p, q in zip(pts, pts[1:]):
+        d = math.dist(p, q); n = max(1, int(d / paso))
+        for k in range(1, n + 1):
+            S.append((p[0] + (q[0] - p[0]) * k / n, p[1] + (q[1] - p[1]) * k / n)); L += d / n; largos.append(L)
+    # normales (suavizadas en los codos)
+    N = []
+    for i in range(len(S)):
+        a = S[max(0, i - 1)]; b = S[min(len(S) - 1, i + 1)]
+        dx, dz = b[0] - a[0], b[1] - a[1]; l = math.hypot(dx, dz) or 1
+        N.append((-dz / l, dx / l))
+    ruido = lambda t, k: borde * (0.6 * math.sin(t * 0.9 + k * 1.7 + sem) + 0.4 * math.sin(t * 2.3 + k * 0.6 + sem * 2))
+    with con(m, mat):
+        for i in range(len(S) - 1):
+            filas = []
+            for j in (i, i + 1):
+                wl = ancho / 2 + ruido(largos[j], 0); wr = ancho / 2 + ruido(largos[j], 5)
+                fila = []
+                for k in range(n_trav + 1):
+                    t = -wl + (wl + wr) * k / n_trav
+                    x, z = S[j][0] + N[j][0] * t, S[j][1] + N[j][1] * t
+                    fila.append((x, h(x, z) + alto, z))
+                filas.append(fila)
+            for k in range(n_trav):
+                c = varia(col, 0.02)
+                m.quad(filas[0][k], filas[1][k], filas[1][k + 1], filas[0][k + 1], c)
+
 def camino_explanada(m, pts, ancho=3.6):
-    """el camino de la explanada: empedrado en medio, tierra pisada a los lados"""
-    CANTO = hexc('#7d766a'); TIERRA_P = hexc('#6f6250')
-    xs = [p[0] for p in pts]; zs = [p[1] for p in pts]; paso = 0.5
-    x = min(xs) - ancho
-    while x < max(xs) + ancho:
-        z = min(zs) - ancho
-        while z < max(zs) + ancho:
-            c = (x + paso / 2, z + paso / 2)
-            d = min(dist_seg(c, a, b) for a, b in zip(pts, pts[1:]))
-            ruido = 0.35 * math.sin(c[0] * 1.7 + c[1] * 0.9) + 0.25 * math.sin(c[1] * 2.3 - c[0] * 0.4)
-            if d < ancho / 2 + ruido * 0.4:
-                g = 0.05; col = varia(CANTO, 0.16)
-                m.quad(*[(px, h(px, pz) + 0.08, pz) for px, pz in ((x + g, z + g), (x + paso - g, z + g), (x + paso - g, z + paso - g), (x + g, z + paso - g))], col)
-                m.quad(*[(px, h(px, pz) + 0.04, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], esc(CANTO, .45))
-            elif d < ancho / 2 + 1.3 + ruido:
-                m.quad(*[(px, h(px, pz) + 0.04, pz) for px, pz in ((x, z), (x + paso, z), (x + paso, z + paso), (x, z + paso))], mezcla(varia(TIERRA_P, 0.08), hexc('#5d6a3a'), 0.25 * az()))
-            z += paso
-        x += paso
+    """el camino de la explanada: empedrado en medio y tierra pisada a los lados"""
+    cinta(m, pts, ancho + 2.6, 'tierra', mezcla(hexc('#7a6b56'), hexc('#5d6a3a'), 0.2), 0.04, 0.6, 1)
+    cinta(m, pts, ancho, 'canto', hexc('#8a8276'), 0.07, 0.3, 2)

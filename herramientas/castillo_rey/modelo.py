@@ -76,12 +76,14 @@ from puertas import GPF as _G
 _fa, _r = marco_fuera(B, Fp, CEN_INT); _ga = F(P_ALC[0], P_ALC[1], _fa.a, 0)
 camino = [_G.p2(0, -5.5), _G.p2(0, -12.0), _ga.p2(0, 7.0), _ga.p2(0, 4.2)]
 patios.suelos_patios(m, camino)
+patios.cinta(m, camino, 3.2, 'canto', hexc('#8a8276'), 0.075, 0.25, 3)
 from puertas import BU as _BU, BW0 as _BW0, BW1 as _BW1
 _calle = (217465 + 79.0, 53060 - 57.0)
 patios.camino_explanada(m, [_calle, _G.p2(_BU * 0.6, _BW1 + 9.5), _G.p2(-_BU - 4.0, _BW1 + 4.5), _G.p2(-_BU - 4.0, _BW1 - 4.5), _G.p2(-_BU + 1.6, _BW1 - 4.5)])
 patios.camino_explanada(m, [_G.p2(-_BU + 1.6, _BW1 - 4.5), _G.p2(-2.0, _BW0 + 4.0), _G.p2(0, _BW0 + 1.6)], 3.0)
 print('suelos', m.n())
 import numpy as np
+import kit
 P, Cc = m.arrays()
 np.save('/tmp/castillo_P.npy', P); np.save('/tmp/castillo_C.npy', Cc)
 
@@ -112,19 +114,64 @@ barb = Polygon([_G2.p2(u, w) for u, w in ((-_bu - 14, _bw0 - 1), (_bu + 6, _bw0 
 zona = rec.buffer(FS.D_CTRA + 3.0).union(barb).simplify(1.0)
 d = json.load(open('/tmp/castillo_colision.json'))
 d['foso'] = marcas; d['zona'] = [[round(x, 1), round(z, 1)] for x, z in zona.exterior.coords][:-1]
+# donde no crece la hierba (el recinto, el patio de la barbacana y los caminos): en el foso y la explanada, sí
+from shapely.geometry import LineString
+_sinh = Polygon(RECINTO).buffer(T_MURO / 2 + 0.4).union(Polygon([_G2.p2(u, w) for u, w in ((-_bu, _bw0), (_bu, _bw0), (_bu, _bw1), (-_bu, _bw1))]).buffer(0.3))
+_sinh = _sinh.union(LineString([_calle, _G.p2(_BU * 0.6, _BW1 + 9.5), _G.p2(-_BU - 4.0, _BW1 + 4.5), _G.p2(-_BU - 4.0, _BW1 - 4.5), _G.p2(-_BU + 1.6, _BW1 - 4.5)]).buffer(3.2))
+_sinh = _sinh.union(LineString([_G.p2(-_BU + 1.6, _BW1 - 4.5), _G.p2(-2.0, _BW0 + 4.0), _G.p2(0, _BW0 + 1.6)]).buffer(2.6)).simplify(0.4)
+d['sin_hierba'] = [[[round(x, 1), round(z, 1)] for x, z in g.exterior.coords][:-1] for g in getattr(_sinh, 'geoms', [_sinh])]
+_pa = Polygon(EXTERIOR)
+_franja = _pa.buffer(-T_MURO / 2 - 0.1).difference(_pa.buffer(-T_MURO / 2 - 2.6))
+for E_ in (E_CUAD, E_GRAN, E_GUAR):
+    _franja = _franja.difference(Polygon([E_.P(0, 0), E_.P(E_.L, 0), E_.P(E_.L, E_.Fd), E_.P(0, E_.Fd)]).buffer(1.2))
+_franja = _franja.difference(LineString(camino).buffer(2.4))
+for tw in TW.values(): _franja = _franja.difference(Polygon(esquinas(tw.c, tw.lado, tw.a)).buffer(1.0))
+from puertas import GPF as _GP, GU as _GU, GW0 as _GW0, GW1 as _GW1
+_franja = _franja.difference(Polygon([_GP.p2(-_GU, _GW0), _GP.p2(_GU, _GW0), _GP.p2(_GU, _GW1), _GP.p2(-_GU, _GW1)]).buffer(2.0)).simplify(0.3)
+d['hierba_dentro'] = [[[[round(x, 1), round(z, 1)] for x, z in g.exterior.coords][:-1]] + [[[round(x, 1), round(z, 1)] for x, z in r.coords][:-1] for r in g.interiors] for g in getattr(_franja, 'geoms', [_franja]) if g.area > 1.0]
 json.dump(d, open('/tmp/castillo_colision.json', 'w'), separators=(',', ':'))
 print('marcas del foso', len(marcas), 'zona', len(d['zona']))
 # ---------------- para el juego: la malla (cuantizada a 1 cm, comprimida) y los choques
 import gzip, os, struct
 DEST = os.environ.get('DEST', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'docs', 'recursos', 'mundo', 'castillo-rey-v1'))
 os.makedirs(DEST, exist_ok=True)
+# v2: por material (cada uno, su textura): posición (cm), color, UV (en metros × 100) y la altura sobre su suelo (dm)
 Pq = np.asarray(P, dtype=np.float64).reshape(-1, 3).copy()
 Pq[:, 0] -= ORIGEN[0]; Pq[:, 2] -= ORIGEN[1]
+nv = len(Pq)
+MAT = np.array([kit.MATERIALES.index(x) for x in m.M], dtype=np.int32)
+# UV: las dadas (teja, paja) o proyectadas en el plano de cada triángulo (u en horizontal a lo largo de la cara, v hacia arriba)
+T = Pq.reshape(-1, 3, 3)
+nrm = np.cross(T[:, 1] - T[:, 0], T[:, 2] - T[:, 0]); nrm /= (np.linalg.norm(nrm, axis=1, keepdims=True) + 1e-12)
+tg = np.stack([-nrm[:, 2], np.zeros(len(nrm)), nrm[:, 0]], 1); tl = np.linalg.norm(tg, axis=1, keepdims=True)
+plano = (np.abs(nrm[:, 1]) > 0.9)[:, None] | (tl < 1e-6)
+tg = np.where(plano, np.array([[1.0, 0, 0]]), tg / np.maximum(tl, 1e-9))
+bt = np.array([[0, 1.0, 0]]) - nrm * nrm[:, 1:2]; bl = np.linalg.norm(bt, axis=1, keepdims=True)
+bt = np.where(plano, np.array([[0, 0, 1.0]]), bt / np.maximum(bl, 1e-9))
+tgv = np.repeat(tg, 3, 0); btv = np.repeat(bt, 3, 0)
+UV = np.stack([(Pq * tgv).sum(1), (Pq * btv).sum(1)], 1)
+dadas = np.array([uv is not None for uv in m.UV])
+if dadas.any(): UV[dadas] = np.array([uv for uv in m.UV if uv is not None], dtype=np.float64)
+# la altura sobre su suelo: el de su muro o, si no, el terreno
+base = np.array([b if b is not None else np.nan for b in m.B], dtype=np.float64)
+sin = np.isnan(base)
+if sin.any():
+    base[sin] = [h(x, z) for x, z in zip(P[sin, 0].astype(np.float64), P[sin, 2].astype(np.float64))]
+HS = np.clip((P[:, 1] - base) * 10, 0, 255).round().astype(np.uint8)
+orden = np.argsort(MAT, kind='stable')
 q = np.round(Pq * 100).astype(np.int32)
 assert np.abs(q).max() < 32767, 'fuera de rango'
-cab = b'KCR1' + struct.pack('<If', len(Pq), 0.01)
-cuerpo = cab + q.astype('<i2').tobytes() + (np.clip(np.asarray(Cc).reshape(-1, 3), 0, 1) * 255).round().astype(np.uint8).tobytes()
+UVq = np.round(UV * 100)
+UVq = (UVq - np.floor(UVq.reshape(-1, 3, 2).min(1) / 40000 + 0).repeat(3, 0) * 0).astype(np.int64)
+assert np.abs(UVq).max() < 32767, 'UV fuera de rango'
+cuentas = [(nm, int((MAT == i).sum())) for i, nm in enumerate(kit.MATERIALES) if (MAT == i).any()]
+cab = b'KCR2' + struct.pack('<If', nv, 0.01) + struct.pack('<I', len(cuentas))
+for nm, k in cuentas: cab += struct.pack('<B', len(nm)) + nm.encode() + struct.pack('<I', k)
+C8 = (np.clip(np.asarray(Cc).reshape(-1, 3), 0, 1) * 255).round().astype(np.uint8)
+cuerpo = cab + q[orden].astype('<i2').tobytes() + C8[orden].tobytes() + UVq[orden].astype('<i2').tobytes() + HS[orden].tobytes()
+DEST = DEST.replace('castillo-rey-v1', 'castillo-rey-v2'); os.makedirs(DEST, exist_ok=True)
 open(os.path.join(DEST, 'castillo.bin.gz'), 'wb').write(gzip.compress(cuerpo, 9, mtime=0))
+print('materiales', dict(cuentas))
 open(os.path.join(DEST, 'colision.json'), 'w').write(open('/tmp/castillo_colision.json').read())
 print('para el juego:', len(Pq), 'vértices,', os.path.getsize(os.path.join(DEST, 'castillo.bin.gz')) // 1024, 'KB la malla,', os.path.getsize(os.path.join(DEST, 'colision.json')) // 1024, 'KB los choques')
 
@@ -133,4 +180,8 @@ open(DATOS_JS, 'w').write("// Kinhold — datos fijos del castillo del rey (los 
     "// ZONA: el castillo, su foso, la barbacana y la explanada, en el mundo (ahí no crece nada ni sale nada que recoger).\n"
     "// FOSO: marcas de nivelado (src/logica/nivelado.js) en el mundo: [x, z, y del fondo, radio, borde].\n"
     f"export const ZONA = {json.dumps(d['zona'], separators=(',', ':'))};\n"
-    f"export const FOSO = {json.dumps(d['foso'], separators=(',', ':'))};\n")
+    f"export const FOSO = {json.dumps(d['foso'], separators=(',', ':'))};\n"
+    "// SIN_HIERBA: polígonos (en el mundo) donde no crece la hierba ni las matas: el recinto, la barbacana y los caminos.\n"
+    f"export const SIN_HIERBA = {json.dumps(d['sin_hierba'], separators=(',', ':'))};\n"
+    "// HIERBA_DENTRO: dentro del recinto, al pie de los muros del patio de armas, sí crece: polígonos [anillo, ...huecos].\n"
+    f"export const HIERBA_DENTRO = {json.dumps(d['hierba_dentro'], separators=(',', ':'))};\n")

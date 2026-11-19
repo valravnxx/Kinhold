@@ -34,7 +34,7 @@ def construir_cortina(m, c):
     tb = base + talud * 1.6
     m.quad(f0(c.u0, base, T / 2 + talud * 0.5), f0(c.u1, base, T / 2 + talud * 0.5), f0(c.u1, tb, T / 2), f0(c.u0, tb, T / 2), esc(PIEDRA_OSC, .85))
     hs = [dict(hh) for hh in c.huecos]
-    muro(m, f0, c.u0, c.u1, base, top, -T / 2, T / 2, hs, 'silleria', PIEDRA, tapa=False, cabezas=False, suelo=(FOSO_FONDO if c.foso else smin))
+    muro(m, f0, c.u0, c.u1, base, top, -T / 2, T / 2, hs, 'mamposteria', MAMPOST, tapa=False, cabezas=False, suelo=(FOSO_FONDO if c.foso else smin))
     # el adarve: losas; parapeto almenado por fuera, pretil por dentro
     suelo_losas(m, f0, c.u0, c.u1, -T / 2, T / 2 - 0.65, top, LOSA, 0.7)
     almenado(m, f0, c.u0, c.u1, top, T / 2 - 0.65, T / 2, 1.0, 1.1, 2.1, 0.75, PIEDRA)
@@ -99,7 +99,8 @@ def construir_torre(m, t, patio, pisos_extra=(), base_foso=False):
         if i == cp: hs.append({'u': L * 0.38, 'a': 1.1, 'v0': g0, 'v1': g0 + 1.9, 'arco': 'medio'})       # la puerta del patio
         else:
             for v in (gm + 0.6, ADARVE + 0.5): hs.append(saetera(L / 2, v, 1.5, 0.12, 1.0))
-        muro(m, f, 0, L, base, gt, -T, 0, hs, 'silleria', PIEDRA, tapa=False, cabezas=False, suelo=(FOSO_FONDO if base_foso else min(h(*p) for p in t.esq)))
+        muro(m, f, 0, L, base, gt, -T, 0, hs, 'mamposteria', MAMPOST, tapa=False, cabezas=False, suelo=(FOSO_FONDO if base_foso else min(h(*p) for p in t.esq)))
+        esquinales(m, f, 0, L, base, gt, 0.0, i)
         f2 = t.cara(i)
         talud = 1.6 if base_foso else 0.9
         m.quad(f2(0, base, talud * 0.5), f2(L, base, talud * 0.5), f2(L, base + talud * 1.6, 0), f2(0, base + talud * 1.6, 0), esc(PIEDRA_OSC, .85))
@@ -155,6 +156,7 @@ def pared(m, p, q, centro, v0, v1, grueso, huecos=(), tipo='silleria', col=None,
 def pretil_inclinado(m, f, u0, u1, w0, w1, v_bajo, v_alto, alto=0.9, col=None):
     """pretil de escalera: muro inclinado de u0 (en v_bajo) a u1 (en v_alto), de grueso w0..w1, con albardilla"""
     col = col or PIEDRA
+    _m0 = m.mat; m.mat = 'sillar'
     n = max(1, int((u1 - u0) / 0.9))
     for i in range(n):
         a = u0 + (u1 - u0) * i / n; b = u0 + (u1 - u0) * (i + 1) / n
@@ -170,3 +172,4 @@ def pretil_inclinado(m, f, u0, u1, w0, w1, v_bajo, v_alto, alto=0.9, col=None):
         for w in (w0 - 0.04, w1 + 0.04): m.quad(f(a, ya + alto, w), f(b, yb + alto, w), f(b, yb + alto + 0.08, w), f(a, ya + alto + 0.08, w), esc(PIEDRA_CLARA, .85))
     m.quad(f(u1, v_alto - 0.5, w0), f(u1, v_alto - 0.5, w1), f(u1, v_alto + alto, w1), f(u1, v_alto + alto, w0), esc(col, .8))
     m.quad(f(u0, v_bajo - 0.5, w0), f(u0, v_bajo - 0.5, w1), f(u0, v_bajo + alto, w1), f(u0, v_bajo + alto, w0), esc(col, .8))
+    m.mat = _m0
