@@ -422,7 +422,7 @@ function humoHorno(id) {
 // de cara plana, medio hundida en el suelo. El carbón puesto para arder se ve en la cubeta; encendida, el fuego de la
 // hoguera (src/juego/estaciones.js, modeloFuego) arde encima del lecho.
 const FRAGUA = { ancho: 0.95, fondo: 0.72, alto: 0.72 };
-const BARRO_FRAGUA = 0x6b5848;
+const BARRO_FRAGUA = 0x7d6a58;   // (el barro seco del horno de reducción)
 function fragua(id) {
   const { ancho: X, fondo: Z, alto: A } = FRAGUA, L = new Lote({ rangoSuelo: 0.3, variacion: 0.08 });
   L.add(new THREE.BoxGeometry(X - 0.1, A - 0.06, Z - 0.1), 'piedraOsc', 0, (A - 0.06) / 2, 0, null, { tex: 'piedra' });   // el relleno, que no se vea por los huecos
@@ -441,7 +441,7 @@ function fragua(id) {
     }
   }
   // el lecho de barro de arriba, con el borde redondeado, y la cubeta del fuego en medio, quemada
-  const lecho = new THREE.BoxGeometry(X + 0.03, 0.08, Z + 0.03, 6, 1, 5), pl = lecho.attributes.position;   // pisado a mano: ni plano ni recto
+  const lecho = new THREE.BoxGeometry(X - 0.04, 0.06, Z - 0.04, 6, 1, 5), pl = lecho.attributes.position;   // pisado a mano: ni plano ni recto
   for (let i = 0; i < pl.count; i++) { const k = Math.round(pl.getX(i) * 40) + ':' + Math.round(pl.getZ(i) * 40); pl.setY(i, pl.getY(i) + (pl.getY(i) > 0 ? (az(id, 'l' + k) - 0.5) * 0.025 : 0)); pl.setX(i, pl.getX(i) * (1 + (az(id, 'x' + k) - 0.5) * 0.05)); pl.setZ(i, pl.getZ(i) * (1 + (az(id, 'z' + k) - 0.5) * 0.05)); }
   lecho.computeVertexNormals();
   L.add(lecho, BARRO_FRAGUA, 0, A - 0.03, 0, null, { tex: 'piedra', sinSuelo: true });
@@ -453,8 +453,8 @@ function fragua(id) {
   L.add(new THREE.TorusGeometry(0.05, 0.012, 5, 12), 'tejaOsc', X / 2 + 0.16, A - 0.19, 0, { y: Math.PI / 2 }, { sinSuelo: true });
   // las dos horquillas de vara del fuelle
   for (const dz of [-0.13, 0.13]) {
-    L.add(cil(0.018, 0.022, 0.5, 6), 'corteza', X / 2 + 0.52, 0.25, dz, null, {});
-    for (const s of [-1, 1]) L.add(cil(0.012, 0.016, 0.12, 5), 'corteza', X / 2 + 0.52 + s * 0.03, 0.53, dz, { z: -s * 0.5 }, { sinSuelo: true });
+    L.add(cil(0.02, 0.025, 0.5, 6), 0x6a5540, X / 2 + 0.52, 0.25, dz, null, { tex: 'veta' });
+    for (const s of [-1, 1]) L.add(cil(0.013, 0.017, 0.12, 5), 0x6a5540, X / 2 + 0.52 + s * 0.03, 0.53, dz, { z: -s * 0.5 }, { sinSuelo: true });
   }
   // el yunque, delante (+z): una piedra grande de cara plana, medio hundida
   const yun = piedraIrregular(0.26, 2, id + 'yunque', 0.14), p = yun.attributes.position;
@@ -1393,7 +1393,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
     o.userData.firmaFuego = firma;
     const viejo = o.getObjectByName('fuego'); if (viejo) o.remove(viejo);
     const r = o.getObjectByName('ramas'); if (r) r.visible = v.ramas;
-    if (v.cual) { const f = modeloFuego(v.cual, e.id), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || 0; o.add(f); }
+    if (v.cual) { const f = modeloFuego(v.cual, e.id), m = o.getObjectByName('modelo'); f.position.y = (m && m.userData.alzaFuego) || 0; if (e.tipo === 'fragua') f.scale.setScalar(0.7); o.add(f); }   // (la fragua: un fuego de carbón, más bajo, en su cubeta)
   }
   // el horno de reducción (P10) y la carbonera (oficios): mientras alguna carga no ha terminado (según la hora de este navegador), humo, llama y
   // el arco y la tobera al rojo; si no, nada
