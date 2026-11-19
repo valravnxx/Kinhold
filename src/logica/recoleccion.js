@@ -80,10 +80,11 @@ export const HERRAMIENTAS_RECOGER = {
   cavar: ['palo_cavador', 'pala_madera'],
   desbrozar: ['hacha_piedra', 'hacha_hierro', 'hacha_mano', 'lasca_silex', 'cuchillo'],
   cribar: ['criba'],   // (y además la pala: «tambien» del hierro de pantano)
+  picar: ['pico'],     // (P10, 19 nov) la veta de hierro, con el pico en la mano
 };
 // Con qué se desbroza más deprisa: los golpes que da el navegador antes de mandar la acción (decisión provisional).
 export const GOLPES_DESBROCE = { hacha_hierro: 2, hacha_mano: 2, hacha_piedra: 3, lasca_silex: 6, cuchillo: 5 };
-export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cantera: 'Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.' };
+export const QUE_PIDE = { romper: 'Necesitas un mazo de piedra en la mano para romper la roca.', cantera: 'Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.', cuchillo: 'Necesitas un cuchillo o una lasca de sílex para cortarlos.', cavar: 'Necesitas un palo cavador o una pala para cavar el barro.', desbrozar: 'Necesitas un hacha o una lasca de sílex para desbrozarlo.', cribar: 'Necesitas una pala de madera y una criba para sacar el mineral.', picar: 'Necesitas un pico en la mano para picar la veta.' };
 
 // Qué se recoge en cada tipo de punto. donde: zonas del terreno en las que sale. da: tipo del catálogo y cuánto.
 export const RECOLECTABLES = {
@@ -115,6 +116,10 @@ export const RECOLECTABLES = {
   // (P10, 14 nov) el hierro de pantano: la mancha de tierra encharcada con agua rojiza; con la pala de madera y la criba
   // (las dos encima), cada pasada da 1 mineral de hierro; de 3 a 5 pasadas y se agota unos meses reales
   hierro_pantano: { nombre: 'Tierra encharcada de agua rojiza', donde: ['vega', 'turbera'], con: 'cribar', tambien: ['pala_madera'], accion: 'cribar', da: 'mineral_hierro', min: 1, max: 1, pasadas: [3, 5], vuelve: 90 * DIA, alSuelo: true },
+  // (P10, 19 nov) las vetas pequeñas de hierro (src/logica/vetas_hierro.js): un afloramiento de roca rojiza que se
+  // queda; con el pico en la mano, cada VETA.golpes golpes sueltan 1 mineral de hierro (al suelo, junto a la veta), y
+  // da de 30 a 40 antes de agotarse (la mancha de pantano, de 3 a 5); vuelve a dar en unos meses reales
+  veta_hierro:  { nombre: 'Veta de hierro', donde: ['veta'], con: 'picar', accion: 'picar', da: 'mineral_hierro', min: 1, max: 1, pasadas: [30, 40], vuelve: 90 * DIA, alSuelo: true, soloPicar: true },
   // los matorrales de la vegetación: no se recogen, se desbrozan (no salen en recogida_mundo: donde vacío)
   matorral:     { nombre: 'Matorral', donde: [], con: 'desbrozar', accion: 'desbrozar', da: 'rama', min: 2, max: 4, vuelve: TIEMPOS.estacion, soloDesbroce: true },
   // las rocas medianas de la vegetación: no se recogen, se rompen con el mazo (ROMPER; no salen en recogida_mundo)
@@ -126,6 +131,9 @@ export const MAZOS = new Set(['mazo_piedra']);
 // La cantera (19 nov): las grandes, con el pico; hasta cuál, y lo que dan.
 export const CANTERA = { medidaMax: 4.5, medidaTope: 4.4, golpes: [30, 80], piedras: [10, 30], bloques: [1, 4], vuelve: 90 * DIA };
 export const PICOS = new Set(['pico']);
+// La veta de hierro (19 nov): golpes de pico por cada mineral y lo que mide el afloramiento (se pica desde su borde).
+// Decisión provisional: 5 golpes por mineral (una veta entera, de 150 a 200 golpes).
+export const VETA = { golpes: 5, radio: 1.4 };
 export const medidaRoca = tam => Math.round(2.2 * tam * 100) / 100;
 // rompible: con el mazo (las medianas); deCantera: con el pico (todas las del mundo, sin los cantos del río)
 export const rompible = tam => Number.isFinite(tam) && tam > 0 && medidaRoca(tam) <= ROMPER.medidaMax + 1e-9;
@@ -241,7 +249,7 @@ export class Recoleccion {
   faltaPara(id, ahora) { const e = this.estado[id]; return e ? Math.max(0, e.vuelve - ahora) : 0; }
   // Los puntos que hay ahora a menos de «dist» m de (x, z), del más cercano al más lejano.
   cercanos(x, z, ahora, dist = ALCANCE_RECOGER) {
-    return this.puntos.filter(p => !RECOLECTABLES[p.tipo].soloDesbroce && !RECOLECTABLES[p.tipo].soloRomper && this.disponible(p.id, ahora) && Math.hypot(p.x - x, p.z - z) <= dist)
+    return this.puntos.filter(p => !RECOLECTABLES[p.tipo].soloDesbroce && !RECOLECTABLES[p.tipo].soloRomper && !RECOLECTABLES[p.tipo].soloPicar && this.disponible(p.id, ahora) && Math.hypot(p.x - x, p.z - z) <= dist)
       .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
   }
   // Recoger el punto id estando en (x, z): lo recogido va al inventario inv por huecos (o a la ruta «a» si se da y cabe).
@@ -254,6 +262,7 @@ export class Recoleccion {
     const d = RECOLECTABLES[p.tipo], veces = (this.estado[id] && this.estado[id].veces) || 0;
     if (d.soloDesbroce) return { ok: false, motivo: 'Eso no se recoge: se desbroza con un hacha.' };
     if (d.soloRomper) return { ok: false, motivo: 'Eso no se recoge: se rompe con un mazo.' };
+    if (d.soloPicar) return { ok: false, motivo: QUE_PIDE.picar };
     if (!tieneCon(inv, p.tipo)) return { ok: false, motivo: QUE_PIDE[d.con] };
     const n = cantidadDe(p, veces);
     // (lo que se deja en el suelo, junto al punto: lo pone allí ejecutarRecoleccion)
@@ -292,6 +301,7 @@ export class Recoleccion {
   // Un golpe de mazo a la roca id estando en (x, z). Al último, devuelve lo que deja en el suelo (deja: [{ tipo, n, x, z }]).
   romper(inv, id, x, z, ahora, autor) {
     const p = this.porId.get(id);
+    if (p && p.tipo === 'veta_hierro') return this.picar(inv, p, x, z, ahora, autor);
     if (!p || p.tipo !== 'roca') return { ok: false, motivo: 'Ahí no hay ninguna roca.' };
     if (!deCantera(p.tam)) return { ok: false, motivo: 'Eso no es una roca que se pueda romper.' };
     if (!this.enPie(id, ahora)) return { ok: false, motivo: 'Esa roca ya está rota: solo quedan cascotes.' };
@@ -316,6 +326,35 @@ export class Recoleccion {
     }
     this.estado[id] = { vuelve: ahora + (b ? CANTERA.vuelve : ROMPER.vuelve), veces: veces + 1, quitado: true };
     return { ok: true, rota: true, golpes, faltan: 0, mazo: m.tipo, objeto: 'piedra', cantidad: n, ...(b ? { bloques: b } : {}), deja, vuelve: this.estado[id].vuelve };
+  }
+  // Lo que llevan los golpes de pico hacia el siguiente mineral de la veta id (de 0 a 1).
+  progresoVeta(id) { const e = this.estado[id]; return e && e.vuelve === 0 && e.golpes ? (e.golpes % VETA.golpes) / VETA.golpes : 0; }
+  // Un golpe de pico a la veta de hierro p estando en (x, z) (P10, 19 nov). Cada VETA.golpes golpes suelta 1 mineral,
+  // que deja en el suelo junto a la veta (deja); con el último de los que da, se agota hasta que vuelve.
+  picar(inv, p, x, z, ahora, autor) {
+    const id = p.id, d = RECOLECTABLES[p.tipo];
+    if (!this.disponible(id, ahora)) return { ok: false, motivo: 'La veta está agotada: volverá a dar mineral en unos meses.' };
+    if (Math.hypot(p.x - x, p.z - z) > ALCANCE_RECOGER + VETA.radio) return { ok: false, motivo: 'Está demasiado lejos.' };
+    if (inv.hombroCargado()) return { ok: false, motivo: 'Con algo al hombro no puedes picar la veta.' };
+    const m = picoEnMano(inv);
+    if (!m) return { ok: false, motivo: QUE_PIDE.picar };
+    const ult = this.ultimoGolpe[autor];
+    if (ult !== undefined && ahora - ult < this.entre) return { ok: false, motivo: 'Aún no has terminado el golpe anterior.' };
+    this.ultimoGolpe[autor] = ahora;
+    const antes = this.estado[id] || {}, veces = antes.veces || 0, sacadasAntes = antes.sacadas || 0;
+    const golpes = (antes.vuelve === 0 && antes.golpes ? antes.golpes : 0) + 1, total = pasadasDe(p, veces);
+    if (golpes % VETA.golpes) {
+      this.estado[id] = { vuelve: 0, veces, golpes, ...(sacadasAntes ? { sacadas: sacadasAntes } : {}) };
+      return { ok: true, picar: true, golpes, faltan: VETA.golpes - golpes % VETA.golpes, quedan: total - sacadasAntes, mazo: m.tipo };
+    }
+    // (el mineral, al pie de la veta: del lado del que pica, para que lo tenga a mano)
+    const n = cantidadDe(p, veces * 100 + sacadasAntes), lejos = Math.hypot(x - p.x, z - p.z);
+    const a = lejos > 0.05 ? Math.atan2(z - p.z, x - p.x) : 0, r = VETA.radio * 0.8;
+    const deja = [{ tipo: d.da, n, x: Math.round((p.x + Math.cos(a) * r) * 100) / 100, z: Math.round((p.z + Math.sin(a) * r) * 100) / 100 }];
+    const sacadas = sacadasAntes + 1;
+    if (sacadas < total) this.estado[id] = { vuelve: 0, veces, golpes, sacadas };
+    else this.estado[id] = { vuelve: ahora + d.vuelve, veces: veces + 1 };
+    return { ok: true, picar: true, golpes, faltan: 0, objeto: d.da, cantidad: n, donde: 'suelo', deja, quedan: total - sacadas, mazo: m.tipo, vuelve: this.estado[id].vuelve };
   }
   exportar() { return { version: VERSION_RECOLECCION, estado: Object.fromEntries(Object.entries(this.estado).map(([k, v]) => [k, { ...v }])) }; }
   // Lo guardado de puntos que ya no existen se descarta; con { todo: true } se guarda también lo de los puntos que aún
@@ -375,6 +414,7 @@ export function ejecutarRecoleccion(rec, invs, registro, accion, ahora, suelo = 
   else if (a.tipo === 'romper') {
     r = rec.romper(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.autor);
     if (r.ok && r.rota) r.objetos = r.deja.map(o => suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false).id);
+    else if (r.ok && r.deja) r.objetos = r.deja.map(o => alMonton(suelo, o, ahora, a.autor));   // (el mineral de la veta, 19 nov)
   }
   else if (a.tipo === 'desbrozar') {
     r = rec.desbrozar(invs.de(a.autor), a.punto, a.x, a.z, ahora);
@@ -382,17 +422,21 @@ export function ejecutarRecoleccion(rec, invs, registro, accion, ahora, suelo = 
   } else {
     r = rec.recoger(invs.de(a.autor), a.punto, a.x, a.z, ahora, a.a);
     // (el mineral de la mancha, junto a ella: al montoncito que ya haya allí, o uno nuevo)
-    if (r.ok && r.deja) r.objetos = r.deja.map(o => {
-      const m = suelo.visibles(ahora).find(q => q.cosa.tipo === o.tipo && Math.hypot(q.x - o.x, q.z - o.z) < 0.5);
-      if (m) { m.cosa.n += o.n; return m.id; }
-      return suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, a.autor, false).id;
-    });
+    if (r.ok && r.deja) r.objetos = r.deja.map(o => alMonton(suelo, o, ahora, a.autor));
   }
   const e = registro.anotar(accion || {}, r);
   e.ahora = ahora;
-  if (r.ok) e.resultado = a.tipo === 'romper' ? (r.rota ? { rota: true, objeto: r.objeto, cantidad: r.cantidad, ...(r.bloques ? { bloques: r.bloques } : {}) } : { golpes: r.golpes })
+  if (r.ok) e.resultado = r.picar ? (r.deja ? { objeto: r.objeto, cantidad: r.cantidad, quedan: r.quedan } : { golpes: r.golpes })
+    : a.tipo === 'romper' ? (r.rota ? { rota: true, objeto: r.objeto, cantidad: r.cantidad, ...(r.bloques ? { bloques: r.bloques } : {}) } : { golpes: r.golpes })
     : { objeto: r.objeto, cantidad: r.cantidad, ...(r.extra ? { extra: r.extra } : {}), ...(r.quedan !== undefined ? { quedan: r.quedan } : {}) };
   return r;
+}
+
+// Lo que se deja junto a un punto (el mineral de la mancha o de la veta): al montoncito que ya haya allí, o uno nuevo.
+function alMonton(suelo, o, ahora, autor) {
+  const m = suelo.visibles(ahora).find(q => q.cosa.tipo === o.tipo && Math.hypot(q.x - o.x, q.z - o.z) < 0.5);
+  if (m) { m.cosa.n += o.n; return m.id; }
+  return suelo.dejar({ tipo: o.tipo, n: o.n }, o.x, o.z, ahora, autor, false).id;
 }
 
 // Nombre de lo que da un punto (para los avisos).

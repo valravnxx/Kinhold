@@ -57,6 +57,7 @@ paso "Desbrozar matorrales y arbustos, en la lógica y en el servidor" node prue
 paso "El mazo de piedra y romper rocas, en la lógica y en el servidor" node pruebas/prueba_rocas.mjs
 paso "El mimbre, la corteza y la resina, en la lógica y en el servidor" node pruebas/prueba_materiales_arbol_ribera.mjs
 paso "El hierro de pantano: las manchas, la pala y la criba, en la lógica y en el servidor" node pruebas/prueba_hierro_pantano.mjs
+paso "Las vetas de hierro en la roca: sus sitios, picarlas con el pico, en la lógica y en el servidor" node pruebas/prueba_vetas_hierro.mjs
 paso "El horno de reducción y la lupia (P10), en la lógica y en el servidor" node pruebas/prueba_horno_reduccion.mjs
 paso "La fragua y la barra de hierro (P10), en la lógica y en el servidor" node pruebas/prueba_fragua.mjs
 paso "Las primeras herramientas de hierro (P10), en la lógica y en el servidor" node pruebas/prueba_herramientas_hierro.mjs
@@ -176,6 +177,7 @@ paso "Navegador: el mazo de piedra y romper rocas" python3 pruebas/prueba_rocas_
 paso "Navegador: la cantera, las rocas grandes con el pico" python3 pruebas/prueba_cantera_navegador.py dist/kinhold_demo.html "$C/cantera"
 paso "Navegador: el mimbre, la corteza y la resina" python3 pruebas/prueba_materiales_navegador.py dist/kinhold_demo.html "$C/materiales"
 paso "Navegador: el hierro de pantano" python3 pruebas/prueba_hierro_pantano_navegador.py dist/kinhold_demo.html "$C/hierro_pantano"
+paso "Navegador: la veta de hierro en la roca" python3 pruebas/prueba_veta_hierro_navegador.py dist/kinhold_demo.html "$C/veta_hierro"
 paso "Navegador: el horno de reducción" python3 pruebas/prueba_horno_navegador.py dist/kinhold_demo.html "$C/horno"
 paso "Navegador: la carbonera" python3 pruebas/prueba_carbonera_navegador.py dist/kinhold_demo.html "$C/carbonera"
 paso "Navegador: la fragua" python3 pruebas/prueba_fragua_navegador.py dist/kinhold_demo.html "$C/fragua"

@@ -17,7 +17,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { Lote, materialTex, material } from '../mundo/estilos.js';
 import { cil, copa } from '../mundo/decorado.js';
 import { naturaleza } from '../mundo/naturaleza_meshy.js';
-import { Recoleccion, repartirPuntos, RECOLECTABLES, cargarRecoleccion, guardarRecoleccion, ejecutarRecoleccion } from '../logica/recoleccion.js';
+import { materialRoca } from '../mundo/rocas.js';
+import { Recoleccion, repartirPuntos, RECOLECTABLES, cargarRecoleccion, guardarRecoleccion, ejecutarRecoleccion, VETA } from '../logica/recoleccion.js';
 import { recogidaTrozo, LADO_RECOGIDA } from '../logica/recogida_mundo.js';
 import { alturaMundo } from '../logica/whitholm.js';
 
@@ -102,6 +103,80 @@ function manchaCalco(capa) {
   const comun = { map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: capa === 'agua' ? -4 : -2, polygonOffsetUnits: capa === 'agua' ? -4 : -2 };
   return (calcos[capa] = capa === 'agua' ? new THREE.MeshPhongMaterial({ ...comun, shininess: 90, specular: 0x7c8a96 }) : new THREE.MeshLambertMaterial(comun));
 }
+// (P10, 19 nov) la veta de hierro: el suelo manchado de óxido al pie del afloramiento (la señal de la veta: la tierra y la
+// grava rojizas que se lava de la roca), pintado por código como la mancha de pantano: tierra pardo rojiza moteada, la
+// grava suelta, regueros de óxido que bajan de la roca y el borde que se deshace en la hierba.
+let calcoVeta = null;
+function vetaCalco() {
+  if (calcoVeta) return calcoVeta;
+  const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const cx = cv.getContext('2d'), img = cx.createImageData(N, N), d = img.data;
+  const n1 = ruidoValor(3.1), n2 = ruidoValor(7.7), n3 = ruidoValor(12.9);
+  const mezcla = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+  const paso = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const u = i / (N - 1) * 2 - 1, v = j / (N - 1) * 2 - 1, k = (j * N + i) * 4;
+    const rr = Math.hypot(u, v * 1.1) + (n1(u * 3 + 2, v * 3 + 7) - 0.5) * 0.55;
+    const mot = n2(u * 10, v * 10), grava = n3(u * 40, v * 40), reguero = paso(0.6, 0.85, n1(u * 2.2 + 9, v * 9)) * paso(0.9, 0.2, rr);
+    const ox = paso(0.95, 0.3, rr);   // de fuera adentro, más óxido
+    // tierra parda (fuera) → pardo rojizo de óxido (dentro); la grava, piedrecitas claras y oscuras; los regueros, rojo
+    // de herrumbre más vivo; todo apagado, como la tierra del estilo v5
+    let R = mezcla(0x66, 0x6e, ox) + (mot - 0.5) * 26 + reguero * 14, G = mezcla(0x58, 0x4c, ox) + (mot - 0.5) * 20 - reguero * 4, B = mezcla(0x40, 0x38, ox) + (mot - 0.5) * 14 - reguero * 4;
+    if (grava > 0.74) { const c = grava > 0.86 ? 26 : -24; R += c; G += c; B += c; }
+    const A = paso(1.0, 0.55, rr) * (0.8 + 0.2 * paso(0.3, 0.6, n2(u * 4 + 1, v * 4)));
+    d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
+  }
+  cx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return (calcoVeta = new THREE.MeshLambertMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+}
+// (P10) un trozo de roca del afloramiento: una esfera facetada, aplastada y cortada con planos (rompe en caras planas con
+// aristas, como la roca de los cortados, src/mundo/rocas.js), de semilla fija
+function rocaCortada(sem, ancho, alto, fondo, detalle = 1) {
+  const g = new THREE.IcosahedronGeometry(1, detalle), p = g.attributes.position, v = new THREE.Vector3();
+  let a = sem * 9301 + 49297; const r = () => ((a = (a * 233280 + 1) % 2147483647) / 2147483647);
+  const planos = [];
+  for (let k = 0; k < 9; k++) planos.push([new THREE.Vector3(r() - 0.5, (r() - 0.35) * 1.2, r() - 0.5).normalize(), 0.45 + r() * 0.3]);   // (más cortes: caras planas y aristas, no un canto rodado)
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    for (const [n, o] of planos) { const q = v.dot(n); if (q > o) v.addScaledVector(n, o - q); }
+    p.setXYZ(i, v.x * ancho / 2, v.y * alto / 2, v.z * fondo / 2);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+// (P10) el afloramiento de la veta: una peña y dos rocas más bajas, medio hundidas, con el color en los vértices: gris
+// de roca con manchas de herrumbre (más abajo y en regueros verticales, donde el agua lava el óxido) y la sombra de
+// contacto abajo; la textura y el relieve, los de la roca de los cortados
+function afloramientoGeo() {
+  // (segunda mirada: losas inclinadas, como estratos que asoman, y más hundidas: nada de cantos rodados apoyados)
+  const piezas = [[1, 2.4, 1.5, 1.6, 0, 0.3, 0, 0.3, 0.32], [2, 1.3, 0.9, 0.9, 1.3, 0.08, 0.55, 1.9, -0.28], [3, 1.0, 0.7, 0.7, -1.1, 0.06, 0.7, 4.1, 0.36]];
+  const geos = piezas.map(([sem, an, al, fo, x, y, z, ry, rz]) => {
+    const g0 = rocaCortada(sem, an, al, fo, 2), g = g0.index ? g0.toNonIndexed() : g0; g.computeVertexNormals();
+    g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rz * 0.5, ry, rz, 'YXZ')), new THREE.Vector3(1, 1, 1)));
+    const p = g.attributes.position, n = p.count, col = new Float32Array(n * 3), uv = new Float32Array(n * 2), nr = g.attributes.normal;
+    const gris = new THREE.Color(0xaca696), oxido = new THREE.Color(0x96704c), oscuro = new THREE.Color(0x6a5844), c = new THREE.Color();
+    for (let i = 0; i < n; i++) {
+      const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i);
+      const mancha = 0.5 + 0.5 * Math.sin(vx * 3.1 + vz * 2.3 + sem) * Math.sin(vz * 2.7 - vy * 1.9);
+      const reguero = Math.max(0, Math.sin((vx * 0.8 + vz * 0.6) * 9 + sem * 2)) ** 3;
+      const abajo = Math.max(0, Math.min(1, 1 - vy / 0.9));
+      const k = Math.min(1, mancha * mancha * 0.7 + reguero * 0.55 + abajo * 0.2);   // (la mitad, más o menos, gris de roca)
+      c.copy(gris).lerp(oxido, k).lerp(oscuro, Math.max(0, mancha - 0.8) * 1.2);
+      const sombra = 0.8 + 0.2 * Math.min(1, Math.max(0, vy + 0.1) / 0.6) * (0.75 + 0.25 * Math.max(0, nr.getY(i)));
+      col[i * 3] = c.r * sombra; col[i * 3 + 1] = c.g * sombra; col[i * 3 + 2] = c.b * sombra;
+      // (UV por caja: cada cara proyecta la textura desde su eje dominante, como la roca de los cortados)
+      const ax = Math.abs(nr.getX(i)), ay = Math.abs(nr.getY(i)), az = Math.abs(nr.getZ(i));
+      const [u, v] = ay > ax && ay > az ? [vx, vz] : ax > az ? [vz, vy] : [vx, vy];
+      uv[i * 2] = u * 0.45; uv[i * 2 + 1] = v * 0.45;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    return g;
+  });
+  return mergeGeometries(geos);
+}
+
 function calcoGeo(ancho, fondo, y) { const g = new THREE.PlaneGeometry(ancho, fondo, 1, 1); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g; }
 
 function geoLote(fn, opc = {}) { // un modelo por tipo de textura: [{ geo, mat }]
@@ -412,6 +487,21 @@ export function modelosRecoleccion() {
   }, { doble: true, rangoSuelo: 0.05 });
   const manchaAgua = [{ geo: calcoGeo(2.9, 2.3, 0.045), mat: manchaCalco('agua') }];
 
+  // (P10, 19 nov) la veta de hierro: un afloramiento de roca rojiza que se queda (siempre): una peña y dos rocas más
+  // bajas (las de Meshy, las mismas del mundo, teñidas de óxido; si no han llegado, las de código), medio hundidas en el
+  // suelo manchado de óxido (el calco); y lo que se va al agotarla: los terrones de mineral sueltos al pie (hematites
+  // negro rojizo y limonita parda amarillenta), con su brillo apagado de metal
+  // (segunda mirada, 19 nov: teñida entera parecía un montón de barro) la roca es gris, facetada como la de los cortados
+  // (su textura, con relieve: src/mundo/rocas.js), y el óxido va a manchas y regueros que bajan por sus caras
+  const afloramiento = [{ geo: calcoGeo(4.2, 3.6, 0.04), mat: vetaCalco(), calco: true }, { geo: afloramientoGeo(), mat: materialRoca() }];
+  const terrones = geoLote(L => {
+    for (let k = 0; k < 22; k++) {
+      const a = k * 2.399 + 0.5, r = 1.0 + (k % 5) * 0.15, x = Math.cos(a) * r * 1.1, z = Math.sin(a) * r * 0.9 + 0.1, e = 0.07 + (k % 4) * 0.025;
+      L.add(rocaCortada(10 + k, e * 2, e * 1.2, e * 1.6, 1), k % 3 === 2 ? 0x8a7052 : k % 2 ? 0x5e4a44 : 0x6c4c40, x, e * 0.25, z, { y: a }, { plano: true, tex: 'piedra', brillo: 1.05 });
+    }
+  }, { rangoSuelo: 0.1 });
+  const veta_hierro = [...afloramiento.map(m => ({ ...m, siempre: true })), ...terrones];
+
   // peña de caliza del afloramiento (decorado, no se recoge)
   const pena = geoLote(L => L.add(new THREE.IcosahedronGeometry(1, 1), CALIZA_COLOR, 0, 0.35, 0, null, { escala: new THREE.Vector3(1.4, 0.8, 1.05), plano: true, tex: 'piedra' }), { rangoSuelo: 0.8 });
   // (11 nov) las plantas de Meshy, si han llegado (src/mundo/naturaleza_meshy.js): ortigas, juncos, la hierba larga (con sus
@@ -424,7 +514,7 @@ export function modelosRecoleccion() {
     bayas: [...(M('arbusto_bayas') || arbusto).map(m => ({ ...m, siempre: true })), ...(bayasM || bayas)], setas, mimbre: [...cepa.map(m => ({ ...m, siempre: true })), ...varas],
     cebada_silvestre: [...cebadaPlanta.map(m => ({ ...m, siempre: true })), ...cebadaEspigas], habas_silvestres: [...habasPlanta.map(m => ({ ...m, siempre: true })), ...habasVainas],
     col_silvestre: [...colPlanta.map(m => ({ ...m, siempre: true })), ...colFlor], nabo_silvestre: [...naboPlanta.map(m => ({ ...m, siempre: true })), ...naboFlor],
-    hierro_pantano: [...manchaSuelo, ...manchaJuncia].map(m => ({ ...m, siempre: true })).concat(manchaAgua) });
+    hierro_pantano: [...manchaSuelo, ...manchaJuncia].map(m => ({ ...m, siempre: true })).concat(manchaAgua), veta_hierro });
 }
 
 // Las bayas sobre el arbusto de Meshy: racimos de tres en la cara de fuera de la mata (lo que mira hacia fuera y no
@@ -543,7 +633,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
   const trozos = new Map(), clave = (i, j) => i + ',' + j;   // clave → los ids de sus puntos
   let mallas = [], ocupado = () => false, centro = null, cambio = false, ultimo = 0;
   const cuenta = { trozos: 0, puntos: 0, pendientes: 0, msMax: 0 };
-  const tapado = (p) => obstaculos.some(q => !q.arbol && (q.x - p.x) ** 2 + (q.z - p.z) ** 2 < (q.r + 0.3) ** 2);
+  const tapado = (p) => p.tipo !== 'veta_hierro' && obstaculos.some(q => !q.arbol && (q.x - p.x) ** 2 + (q.z - p.z) ** 2 < (q.r + 0.3) ** 2);
   // (siempre: lo que queda aunque se haya recogido, como el arbusto de las bayas, mientras no se desbroce)
   const visible = (p, ahora, siempre) => (siempre ? rec.enPie(p.id, ahora) : rec.disponible(p.id, ahora)) && !ocupado(p.x, p.z) && !p.tapado;
 
@@ -576,14 +666,17 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     for (const { im } of mallas) { grupo.remove(im); im.dispose(); }
     mallas = [];
     for (const p of rec.puntos) { p.tapado = tapado(p); p.y = altura(p.x, p.z); }
+    // (P10) el afloramiento de la veta de hierro no se atraviesa: un obstáculo por veta (los de antes, fuera)
+    for (let k = obstaculos.length - 1; k >= 0; k--) if (obstaculos[k].vetaHierro) obstaculos.splice(k, 1);
+    for (const p of rec.puntos) if (p.tipo === 'veta_hierro') obstaculos.push({ x: p.x, z: p.z, r: 1.05, vetaHierro: true });
     for (const tipo of Object.keys(RECOLECTABLES)) {
       const lista = rec.puntos.filter(p => p.tipo === tipo); if (!lista.length) continue;
-      for (const { geo, mat, siempre, cortado } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
+      for (const { geo, mat, siempre, cortado, calco } of mods[tipo] || []) {   // (el matorral no tiene: lo dibuja la vegetación)
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         // (13 nov, valravnx: los juncos, más grandes: de 1,3 a unos 1,7 m)
         const esc = tipo === 'juncos' ? 1.3 : 1;
-        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); if (tipo === 'hierro_pantano') inclinar(o, p); o.scale.setScalar(esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
-        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'hierro_pantano'; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
+        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); if (tipo === 'hierro_pantano' || tipo === 'veta_hierro') inclinar(o, p); o.scale.setScalar(tipo === 'veta_hierro' ? 1 : esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
+        im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'hierro_pantano' && !calco; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices, siempre, cortado });
       }
     }
@@ -638,6 +731,21 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     // golpe de mazo aquí, con sus piedras al suelo de la página; la roca se da a conocer
     rocaEnPie: (id, ahora = Date.now()) => rec.enPie(id, ahora),
     progresoRoca: (id) => rec.progresoRoca(id),
+    // (P10, 19 nov) las vetas de hierro a menos de d m de su borde (del afloramiento), de la más cercana a la más lejana;
+    // lo que llevan los golpes hacia el siguiente mineral, y si está agotada
+    vetasCerca(x, z, d = 1.2) {
+      return rec.puntos.filter(p => p.tipo === 'veta_hierro' && Math.hypot(p.x - x, p.z - z) - VETA.radio <= d)
+        .sort((a, b) => Math.hypot(a.x - x, a.z - z) - Math.hypot(b.x - x, b.z - z));
+    },
+    progresoVeta: (id) => rec.progresoVeta(id),
+    vetaAgotada: (id, ahora = Date.now()) => !rec.disponible(id, ahora),
+    // sin servidor (las pruebas): un golpe de pico a la veta aquí, con el mineral al suelo de la página
+    picar(invs, registro, autor, veta, x, z, suelo, ahora = Date.now()) {
+      const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'romper', punto: veta.id, x, z }, ahora, suelo);
+      if (r.ok && almacen) guardarRecoleccion(almacen, rec, CLAVE_RECOLECCION_MUNDO);
+      if (r.ok && r.quedan === 0) refrescar(ahora);
+      return r;
+    },
     romper(invs, registro, autor, roca, x, z, suelo, ahora = Date.now()) {
       rec.anadir([{ id: roca.id, tipo: 'roca', x: roca.x, z: roca.z, tam: roca.tam }]);
       const r = ejecutarRecoleccion(rec, invs, registro, { autor, tipo: 'romper', punto: roca.id, x, z }, ahora, suelo);

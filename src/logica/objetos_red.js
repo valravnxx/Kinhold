@@ -75,7 +75,7 @@ import { RegistroAcciones } from './acciones.js';
 import { Tala, ejecutarTala, idArbol, DA, ALCANCE_TALA } from './tala.js';
 import { Troceo, ejecutarTroceo } from './troceo.js';
 import { Vaciado, ejecutarVaciado, Canoas, ejecutarCanoa, TIPOS_CANOA } from './canoa.js';
-import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER, idRoca, medidaRoca } from './recoleccion.js';
+import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, ALCANCE_RECOGER, idRoca, medidaRoca, VETA } from './recoleccion.js';
 import { Rastras, ejecutarRastra, TIPOS_RASTRA, ejecutarArconAlSuelo } from './rastra.js';
 import { agrupar, desagrupar, estadoEnTrozos, trozoDe } from './trozos_red.js';
 import { Fabricacion, ejecutarFabricacion, TIPOS_FABRICACION, OBRA_ESTACION, DEL_FUEGO, DE_LA_CAMA, ESTACIONES } from './fabricacion.js';
@@ -147,7 +147,10 @@ export class ObjetosServidor {
         r = ejecutarVaciado(this.vaciado, this.invs, this.registro, { ...a, x: p.x, z: p.z }, ahora, this.fab.estaciones);
         suelo = !!(r.ok && (r.termina || r.paso === 'brasas' || r.golpes % 5 === 1));   // (se ve: cada 5 golpes, al echar brasas y al acabar cada paso)
       } else if (a.tipo === 'recoger' || a.tipo === 'desbrozar' || a.tipo === 'romper') {
-        const fallo = this.conocerPunto(a, p);
+        let fallo = this.conocerPunto(a, p);
+        // (P10, 19 nov) la veta de hierro en tierra de otro la pican solo su dueño y sus invitados (GDD, apartado 8)
+        const pv = !fallo && this.recoleccion.porId.get(a.punto);
+        if (pv && pv.tipo === 'veta_hierro') { const t = this.puedeTocar(a.autor, pv.x, pv.z); if (!t.ok) fallo = t.motivo; }
         r = fallo ? this.anotar(a, { ok: false, motivo: fallo }, ahora) : ejecutarRecoleccion(this.recoleccion, this.invs, this.registro, a, ahora, this.suelo);
         suelo = !!(r.ok && (a.tipo === 'desbrozar' || r.rota || r.deja));   // (y el mineral de la mancha de hierro de pantano)
       } else if (DE_FABRICAR.has(a.tipo)) {
@@ -212,13 +215,13 @@ export class ObjetosServidor {
     if (this.terreno) {
       const t = this.terreno.punto(a.punto, num(a.px) ? a.px : a.x, num(a.pz) ? a.pz : a.z);
       if (!t) return 'Ahí no hay nada que recoger.';
-      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_RECOGER + (t.tipo === 'roca' ? Math.max(1, medidaRoca(t.tam) / 2) : 0) + TOLERANCIA) return 'Está demasiado lejos.';   // (las grandes de la cantera, 19 nov: desde su borde)
+      if (Math.hypot(t.x - p.x, t.z - p.z) > ALCANCE_RECOGER + (t.tipo === 'roca' ? Math.max(1, medidaRoca(t.tam) / 2) : t.tipo === 'veta_hierro' ? VETA.radio : 0) + TOLERANCIA) return 'Está demasiado lejos.';   // (las grandes de la cantera, 19 nov: desde su borde)
       const q = { ...t }; this.recoleccion.puntos.push(q); this.recoleccion.porId.set(q.id, q);
       return null;
     }
     if (!txt(a.punto) || !num(a.px) || !num(a.pz) || !Object.hasOwn(RECOLECTABLES, a.clase) || !a.punto.startsWith(a.clase + ':')) return 'Datos no válidos.';
     if (a.clase === 'roca' && (!num(a.tam) || a.tam <= 0 || a.tam > 3 || idRoca(a.px, a.pz) !== a.punto)) return 'Datos no válidos.';
-    if (Math.hypot(a.px - p.x, a.pz - p.z) > ALCANCE_RECOGER + (a.clase === 'roca' ? Math.max(1, medidaRoca(a.tam) / 2) : 0) + TOLERANCIA) return 'Está demasiado lejos.';
+    if (Math.hypot(a.px - p.x, a.pz - p.z) > ALCANCE_RECOGER + (a.clase === 'roca' ? Math.max(1, medidaRoca(a.tam) / 2) : a.clase === 'veta_hierro' ? VETA.radio : 0) + TOLERANCIA) return 'Está demasiado lejos.';
     const q = { id: a.punto, tipo: a.clase, x: Math.round(a.px * 100) / 100, z: Math.round(a.pz * 100) / 100, ...(a.clase === 'roca' ? { tam: Math.round(a.tam * 1000) / 1000 } : {}) };
     this.recoleccion.puntos.push(q); this.recoleccion.porId.set(q.id, q);
     return null;

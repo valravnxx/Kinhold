@@ -141,7 +141,7 @@ export function crearHierbaDensa({ mundoJ, raiz }) {
       if (h <= corte) continue;                                  // (donde el suelo deja de ser hierba, cada vez menos matas)
       const x = xm - O.x, z = zm - O.z;
       if (ocupado && ocupado(x, z)) continue;
-      if (est.length && est.some(e => (e.x - x) ** 2 + (e.z - z) ** 2 < 0.2)) continue;
+      if (est.length && est.some(e => (e.x - x) ** 2 + (e.z - z) ** 2 < (e.tipo === 'veta_hierro' ? 4.8 : 0.2))) continue;   // (P10: el afloramiento de la veta de hierro, unos 2,2 m)
       o.position.set(x, y - y0 - 0.02, z); o.rotation.set(0, giro, 0); const an = (0.8 + 0.5 * h) * (banda ? 1.4 : 1); o.scale.set(tam * an, tam * (0.6 + 0.4 * h), tam * an); o.updateMatrix();
       o.matrix.toArray(M, n * 16);
       K[n * 3] = c[0] * tono * 0.74; K[n * 3 + 1] = c[1] * tono * 0.8; K[n * 3 + 2] = c[2] * tono * 0.68; n++;   // (0,9: la textura del suelo lo oscurece otro tanto)

@@ -52,7 +52,7 @@ import { crearSuelo } from './suelo.js';
 import { ALCANCE_COGER } from '../logica/suelo.js';
 import { crearMundoJuego } from '../mundo/mundo_juego.js';
 import { SALIDA, elegirSalida, esSitioDeSalida, SALIDAS, SALIDAS_INICIO } from '../logica/whitholm.js';
-import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, picoEnMano, conQueRompe, rompible, tieneCon } from '../logica/recoleccion.js';
+import { nombreDe, RECOLECTABLES, conQueDesbroza, GOLPES_DESBROCE, QUE_PIDE, mazoEnMano, picoEnMano, conQueRompe, rompible, tieneCon, VETA } from '../logica/recoleccion.js';
 import { crearCombateMundo } from './combate_mundo.js';
 import { crearTala } from './tala.js';
 import { alturaOla } from '../mapa/agua.js';
@@ -1807,6 +1807,8 @@ function accionPrincipal() {
   }
   // con la azada o el palo cavador en la mano, junto a un tocón, se arranca a golpes (P11, limpiar el campo)
   if (!it && pj.k === 0 && arrancaEnMano(inventario()) && toconCercano()) { const tc = toconCercano(); return A(tr('Arrancar el tocón'), arrancaEnMano(inventario()).tipo, tc, () => empezarArranque(tc), { alto: 0.4, prog: estado.talando && estado.talando.arranque === tc.o ? progresoGolpes(estado.talando) : 0 }); }
+  // con el pico en la mano, junto a una veta de hierro, se pica (P10, 19 nov): cada VETA.golpes golpes, 1 mineral al suelo
+  if (!it && pj.k === 0 && picoEnMano(inventario()) && vetaCercana()) { const vq = vetaCercana(); return A(recoleccion.vetaAgotada(vq.id) ? tr('Veta de hierro agotada') : tr('Picar la veta de hierro'), 'pico', vq, () => empezarPicado(vq), { alto: 1.2, prog: estado.talando && estado.talando.picado && estado.talando.picado.id === vq.id ? progresoGolpes(estado.talando) : recoleccion.progresoVeta(vq.id) }); }
   // con el mazo de piedra en la mano, junto a una roca mediana, se rompe a golpes (8 nov); con el pico, también las
   // grandes (la cantera, 19 nov)
   if (!it && pj.k === 0 && (mazoEnMano(inventario()) || picoEnMano(inventario())) && rocaCercana()) { const rq = rocaCercana(), con = conQueRompe(inventario(), rq.tam) || mazoEnMano(inventario()) || picoEnMano(inventario()); return A(tr('Romper la roca'), con.tipo, rq, () => empezarRotura(rq), { alto: 0.7, prog: estado.talando && estado.talando.rotura && estado.talando.rotura.id === rq.id ? progresoGolpes(estado.talando) : 0 }); }
@@ -1964,6 +1966,8 @@ function opcionesUsar() {
     const tronco = troncoCercano();
     const rq = rocaCercana();
     if (rq) ops.push({ texto: tr('Romper la roca'), pos: rq, alto: 0.6, hacer: () => empezarRotura(rq) });
+    const vq = picoEnMano(inventario()) && vetaCercana();
+    if (vq) ops.push({ texto: tr('Picar la veta de hierro'), pos: vq, alto: 1.2, hacer: () => empezarPicado(vq) });
     if (tronco && puedeTrocear(inventario(), tronco.cosa.tipo)) ops.push({ texto: tr('Trocear: {c}', { c: tr(CATALOGO[tronco.cosa.tipo].nombre) }), pos: tronco, hacer: () => empezarTroceo(tronco) });
     // la rodaja del tronco largo (P11c): la rueda de la carretilla, y el resto en troncos cortos
     if (tronco && sacaRodaja(tronco.cosa.tipo) && puedeTrocear(inventario(), tronco.cosa.tipo, 'rodaja')) ops.push({ texto: tr('Cortar una rodaja (la rueda de la carretilla)'), pos: tronco, hacer: () => empezarTroceo(tronco, 'rodaja') });
@@ -2631,6 +2635,7 @@ function golpeTala() {
   if (a.vaciado) { golpeVaciado(a); return; }
   if (a.desbroce) { golpeDesbroce(a); return; }
   if (a.rotura) { golpeRotura(a); return; }
+  if (a.picado) { golpePicado(a); return; }
   if (a.arranque) { golpeArranque(a); return; }
   if (a.labranza) { golpeLabranza(a); return; }
   if (a.siembra) { golpeSiembra(a); return; }
@@ -3089,6 +3094,40 @@ function golpeRotura(a) {
   if (objetosRed) { objetosRed.mandar({ tipo: 'romper', punto: o.id, x: pj.x, z: pj.z, px: o.x, pz: o.z, clase: 'roca', tam: o.tam }, fin); return; }
   const r = recoleccion.romper(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z, sueloObjetos.suelo);
   if (r.ok && r.rota) { sueloObjetos.guardar(); sueloObjetos.refrescar(); if (decorado.rehacer) decorado.rehacer(); }
+  fin(r);
+}
+
+// La veta de hierro (P10, 19 nov; src/logica/recoleccion.js, picar): la más cercana a menos de 1,2 m de su afloramiento,
+// en la planta baja. Con el pico en la mano se pica a golpes, por el servidor y con su autor; cada VETA.golpes golpes
+// suelta 1 mineral de hierro al pie de la veta, del lado del que pica, hasta que se agota.
+function vetaCercana() {
+  if (pj.k !== 0 || !recoleccion.vetasCerca) return null;
+  const e = recoleccion.vetasCerca(pj.x, pj.z, 1.2)[0];
+  return e ? { id: e.id, x: e.x, z: e.z, tipo: e.tipo } : null;
+}
+function empezarPicado(o) {
+  if (!picoEnMano(inventario())) { mostrarAviso(tr(QUE_PIDE.picar), true); return; }
+  if (recoleccion.vetaAgotada(o.id)) { mostrarAviso(tr('La veta está agotada: volverá a dar mineral en unos meses.'), true); return; }
+  estado.talando = { picado: o, x: o.x, z: o.z, prog: { hechos: Math.round(recoleccion.progresoVeta(o.id) * VETA.golpes), total: VETA.golpes } }; estado.golpeEn = 0.45;
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  mostrarAviso(tr('Picas la veta de hierro.'));
+}
+function golpePicado(a) {
+  estado.golpeEn = RITMO_TALA;
+  const o = a.picado;
+  pj.rot = Math.atan2(o.x - pj.x, o.z - pj.z);
+  const fin = (r) => {
+    if (estado.talando !== a) return;   // ya ha dejado de picar
+    if (!r.ok) { estado.talando = null; mostrarAviso(tr(r.motivo), true); return; }
+    a.prog.hechos = Number.isFinite(r.faltan) ? VETA.golpes - r.faltan : a.prog.hechos;   // (el aro de la acción: hacia el siguiente mineral)
+    if (!r.deja) return;
+    a.prog.hechos = 0;
+    if (r.quedan === 0) { estado.talando = null; mostrarAviso(tr('Sueltas 1 mineral de hierro: la veta se ha agotado. Volverá a dar en unos meses.')); return; }
+    mostrarAviso(r.quedan === 1 ? tr('Sueltas 1 mineral de hierro: a la veta le queda 1.') : tr('Sueltas 1 mineral de hierro: a la veta le quedan {n}.', { n: r.quedan }));
+  };
+  if (objetosRed) { objetosRed.mandar({ tipo: 'romper', punto: o.id, x: pj.x, z: pj.z, px: o.x, pz: o.z, clase: 'veta_hierro' }, fin); return; }
+  const r = recoleccion.picar(inventarios, registroAcciones, AUTOR_LOCAL, o, pj.x, pj.z, sueloObjetos.suelo);
+  if (r.ok && r.deja) { sueloObjetos.guardar(); sueloObjetos.refrescar(); }
   fin(r);
 }
 
@@ -3941,7 +3980,7 @@ window.__kinhold = {
   beber, aguaAlLado, comer, accionPrincipal, despiezar, liebreAlLado,
   desbrozableCercano, empezarDesbroce,   // desbrozar (8 nov)
   get accionVista() { const accionVista = accionV.vista(); return accionVista && { texto: accionVista.texto, sub: accionVista.sub, apagada: !!accionVista.apagada, x: accionVista.pos.x, z: accionVista.pos.z }; }, aroAccion,   // la acción a la vista (8 nov)
-  rocaCercana, empezarRotura,   // romper rocas (8 nov)
+  rocaCercana, empezarRotura, vetaCercana, empezarPicado,   // romper rocas (8 nov) y picar la veta de hierro (19 nov)
   usarArbol,   // la corteza y la resina (8 nov)
   pintarTodoInventario,   // (pruebas: lo que llevas, otra vez en el panel y puesto, tras cambiarlo a mano)
   ponerNecesidades(n) { necesidades = validarNecesidades(n); avisosNec.pintar(necesidades); },   // el chat de texto (src/juego/charla.js)
