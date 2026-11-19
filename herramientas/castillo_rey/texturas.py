@@ -14,6 +14,7 @@ from PIL import Image
 AQUI = os.path.dirname(os.path.abspath(__file__))
 DEST = os.environ.get('DEST_TEX', os.path.join(AQUI, '..', '..', 'docs', 'recursos', 'mundo', 'castillo-rey-v2', 'tex'))
 PXM = 256    # píxeles por metro
+JUNTAS_LABRADA = False
 
 def ruido(n, m, escala, sem, oct=5, pers=0.55):
     """ruido fractal periódico (n × m), por FFT: suma de octavas de ruido filtrado; media 0, desviación ≈ 1"""
@@ -188,12 +189,15 @@ def piedra_labrada():
     luz = np.clip(por_bloque(ids, 37, lambda r, n: r.normal(0.97, 0.08, n)), 0.8, 1.12)
     col = tinte((0.92, 0.89, 0.83), H, W) * (1 + N3[..., None] * 0.05 + N2[..., None] * 0.05) * luz[..., None]
     col = np.where((borde > 0)[..., None], col, col * 0.55)
+    if not JUNTAS_LABRADA:   # (las piezas sueltas: dovelas, jambas, peldaños; cada una es ya una piedra, sin juntas dentro)
+        alt = N1 * 0.003 + N2 * 0.0015 + N3 * 0.0008; borde = np.full((H, W), 99.0)
+        col = tinte((0.92, 0.89, 0.83), H, W) * (1 + N3[..., None] * 0.06 + N2[..., None] * 0.07)
     # golpes de trinchante (rayado fino diagonal)
     yy, xx = np.mgrid[0:H, 0:W]
     raya = (np.sin((xx + yy * 0.6) * 0.9 + N2 * 3) > 0.92) * 0.0006
     alt += raya
     col *= cavidad(alt, 4, 60)[..., None]
-    col, alt = envejecer(col, alt, borde, 35, 0.45, 1.1)
+    col, alt = envejecer(col, alt, borde, 35, 0.4, 1.0)
     liq = np.clip((ruido(H, W, 16, 34, 3) - 1.7) * 3, 0, 1)[..., None]
     col = col * (1 - liq) + liq * np.array([0.80, 0.83, 0.64])
     guardar('piedra', col * 0.9, alt, 1.5)
@@ -335,12 +339,22 @@ def paja():
     guardar('paja', col, alt, 1.4)
 
 def tela():
-    W = H = PXM // 2
+    W = H = PXM // 2          # 0,5 m
     yy, xx = np.mgrid[0:H, 0:W]
-    t = (np.sin(xx * 1.6) * np.sin(yy * 1.6)) * 0.0004
-    N = ruido(H, W, 30, 81, 3)
-    l = 0.88 + np.sin(xx * 1.6) * 0.03 + np.sin(yy * 1.6) * 0.03 + N * 0.03
-    guardar('tela', np.stack([l, l, l], -1), t, 0.6)
+    fy = np.fft.fftfreq(H)[:, None]; fx = np.fft.fftfreq(W)[None, :]
+    rng = np.random.default_rng(82)
+    # hilos de urdimbre y trama (≈4 mm), con su grosor irregular (el hilado a mano)
+    ur = np.real(np.fft.ifft2(np.fft.fft2(rng.standard_normal((H, W))) * np.exp(-((fx * 1) ** 2 + (fy * 40) ** 2)))); ur /= ur.std()
+    tr = np.real(np.fft.ifft2(np.fft.fft2(rng.standard_normal((H, W))) * np.exp(-((fx * 40) ** 2 + (fy * 1) ** 2)))); tr /= tr.std()
+    cruce = ((xx // 2 + yy // 2) % 2)
+    hilo = suave(np.where(cruce, 0.5 + 0.5 * (xx % 2), 0.5 + 0.5 * (yy % 2)).astype(np.float64), 0.6)
+    t = hilo * 0.0004 + (ur + tr) * 0.0003
+    N = ruido(H, W, 20, 81, 3); M = ruido(H, W, 40, 83, 2); M = (M - M.mean()) / (M.std() + 1e-9)
+    l = 0.82 + 0.05 * (ur + tr) / 2 + 0.06 * N + 0.08 * M + 0.04 * hilo
+    mancha = np.clip(ruido(H, W, 25, 84, 3) - 1.2, 0, 1)
+    l = l * (1 - 0.25 * mancha)
+    col = np.stack([l, l * 0.98, l * 0.95], -1) * cavidad(t, 2, 200)[..., None]
+    guardar('tela', col * 0.9, t, 0.9)
 
 def tierra():
     W = H = 4 * PXM

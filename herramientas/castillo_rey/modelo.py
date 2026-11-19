@@ -207,10 +207,20 @@ HS = np.clip((P[:, 1] - base) * 10, 0, 255).round().astype(np.uint8)
 orden = np.argsort(MAT, kind='stable')
 q = np.round(Pq * 100).astype(np.int32)
 assert np.abs(q).max() < 32767, 'fuera de rango'
+# las astillas que al redondear al centímetro se quedan sin área o se dan la vuelta: fuera (dejaban rendijas de luz
+# a lo largo de las diagonales de la triangulación)
+_Tq = q.reshape(-1, 3, 3).astype(np.float64)
+_nq = np.cross(_Tq[:, 1] - _Tq[:, 0], _Tq[:, 2] - _Tq[:, 0])
+_aq = np.linalg.norm(_nq, axis=1)
+_dot = (_nq * nrm).sum(1) / np.maximum(_aq, 1e-9)
+_vale = (_aq > 0.5) & (_dot > 0.2)
+print('astillas quitadas al redondear:', int((~_vale).sum()))
+orden = orden[_vale[orden // 3]]
+nv = len(orden)
 UVq = np.round(UV * 100)
 UVq = (UVq - np.floor(UVq.reshape(-1, 3, 2).min(1) / 40000 + 0).repeat(3, 0) * 0).astype(np.int64)
 assert np.abs(UVq).max() < 32767, 'UV fuera de rango'
-cuentas = [(nm, int((MAT == i).sum())) for i, nm in enumerate(kit.MATERIALES) if (MAT == i).any()]
+cuentas = [(nm, int((MAT[orden] == i).sum())) for i, nm in enumerate(kit.MATERIALES) if (MAT[orden] == i).any()]
 cab = b'KCR2' + struct.pack('<If', nv, 0.01) + struct.pack('<I', len(cuentas))
 for nm, k in cuentas: cab += struct.pack('<B', len(nm)) + nm.encode() + struct.pack('<I', k)
 C8 = (np.clip(np.asarray(Cc).reshape(-1, 3), 0, 1) * 255).round().astype(np.uint8)

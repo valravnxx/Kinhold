@@ -298,10 +298,10 @@ def almenado(m, f, u0, u1, v, w0, w1, alto_pretil=0.9, alto_merlon=1.0, paso=2.0
         if albardilla:   # albardilla a dos aguas
             vt = v + alto_pretil + alto_merlon; wm = (w0 + w1) / 2
             c = varia(PIEDRA_CLARA, 0.04)
-            m.quad(f(a - .04, vt, w1 + .05), f(b + .04, vt, w1 + .05), f(b + .04, vt + .12, wm), f(a - .04, vt + .12, wm), c)
-            m.quad(f(b + .04, vt, w0 - .05), f(a - .04, vt, w0 - .05), f(a - .04, vt + .12, wm), f(b + .04, vt + .12, wm), esc(c, .85))
-            m.tri(f(a - .04, vt, w0 - .05), f(a - .04, vt, w1 + .05), f(a - .04, vt + .12, wm), esc(c, .8))
-            m.tri(f(b + .04, vt, w1 + .05), f(b + .04, vt, w0 - .05), f(b + .04, vt + .12, wm), esc(c, .8))
+            with con(m, 'sillar'): m.quad(f(a - .04, vt, w1 + .05), f(b + .04, vt, w1 + .05), f(b + .04, vt + .12, wm), f(a - .04, vt + .12, wm), c)
+            with con(m, 'sillar'): m.quad(f(b + .04, vt, w0 - .05), f(a - .04, vt, w0 - .05), f(a - .04, vt + .12, wm), f(b + .04, vt + .12, wm), esc(c, .85))
+            with con(m, 'sillar'): m.tri(f(a - .04, vt, w0 - .05), f(a - .04, vt, w1 + .05), f(a - .04, vt + .12, wm), esc(c, .8))
+            with con(m, 'sillar'): m.tri(f(b + .04, vt, w1 + .05), f(b + .04, vt, w0 - .05), f(b + .04, vt + .12, wm), esc(c, .8))
     # la albardilla del pretil en los huecos (cornisa)
     m.quad(f(u0, v + alto_pretil + .02, w1 + .06), f(u1, v + alto_pretil + .02, w1 + .06), f(u1, v + alto_pretil + .02, w0 - .04), f(u0, v + alto_pretil + .02, w0 - .04), esc(PIEDRA_CLARA, .95))
 

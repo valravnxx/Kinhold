@@ -21,7 +21,7 @@ const MATS = {
   sillar: { tam: [3.2, 1.6], relieve: 1.2, musgo: 1 }, mamp: { tam: [5, 2.5], relieve: 1.3, musgo: 1 }, piedra: { tam: [2, 2], relieve: 0.9, musgo: 0.55 },
   losa: { tam: [3, 3], relieve: 1.0, musgo: 0.7 }, canto: { tam: [2, 2], relieve: 0.7, musgo: 0.6 }, tierra: { tam: [4, 4], relieve: 0.6, musgo: 0.3 },
   madera: { tam: [2, 2], relieve: 0.7, musgo: 0.2 }, tabla: { tam: [2, 2], relieve: 0.8, musgo: 0 }, teja: { tam: [2, 1], relieve: 1.2, musgo: 0.5 },
-  paja: { tam: [1, 1], relieve: 1.0, musgo: 0.2 }, tela: { tam: [0.5, 0.5], relieve: 0.5, musgo: 0 }, liso: { tam: null, relieve: 0, musgo: 0 },
+  paja: { tam: [1, 1], relieve: 1.0, musgo: 0.2 }, tela: { tam: [0.5, 0.5], relieve: 1.0, musgo: 0 }, liso: { tam: null, relieve: 0, musgo: 0 },
 };
 // el desgaste, en el sombreador de cada material (ruido de valor 3D en el mundo)
 const RUIDO_GLSL = `
