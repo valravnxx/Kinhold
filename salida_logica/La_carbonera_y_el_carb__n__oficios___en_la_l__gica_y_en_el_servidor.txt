@@ -1,0 +1,36 @@
+Lo que dice la tarea
+  OK   la carbonera: 10 leñas, cavando con el palo cavador o la pala de madera; fuera; da el carbonear — {"nombre":"Carbonera","un":"una carbonera","uso":"carbonear","coste":{"lena":10},"requiere":["palo_cavador","pala_madera"],"donde":"fuera","trabajo":40,"humea":true,"carga":1,"seDeshace":true,"guarda":["yesca"],"cabe":1,"hace":"Leña apilada y cubierta de tierra: encendida, arde ahogada horas y deja carbón vegetal"}
+  OK   encendida con la yesca y el taladro de fuego, da 4 carbones vegetales — {"nombre":"Carbón vegetal","uso":"carbonear","da":"carbon","n":4,"gasta":{"yesca":1},"s":14400,"requiere":["taladro_fuego"]}
+  OK   tarda horas reales (4 h, provisional), echa humo y se enciende una vez
+  OK   el carbón vegetal está en el catálogo
+  OK   la leña sale de partir un tronco corto con el hacha — {"accion":"partir","golpes":{"piedra":6,"hierro":3},"da":"lena","n":[6,6]}
+  OK   el palo cavador y la pala de madera se hacen
+Levantarla, encenderla y sacar el carbón
+  OK   se pone su marco en cualquier sitio de fuera
+  OK   bajo techo, no
+  OK   se le llevan las 10 leñas del suelo de al lado — {}
+  OK   sin palo cavador ni pala, no se tapa de tierra — Para levantarla hace falta llevar palo cavador o pala de madera.
+  OK   con la pala de madera, se levanta; la pala no se gasta — {}
+  OK   sin yesca dejada en ella, no se enciende — Falta en la estación: 1 de Yesca.
+  OK   solo cabe una yesca — [{"ok":false,"motivo":"Carbonera: solo caben 1 más."},{"ok":true,"estacion":"carbonera:1","dejado":{"yesca":1}}]
+  OK   y nada más que la yesca
+  OK   sin el taladro de fuego, no se enciende — Para eso hace falta llevar taladro de fuego.
+  OK   con la yesca y el taladro, se enciende; el taladro no se gasta
+  OK   ya encendida, no se vuelve a encender — La carbonera ya arde: espera a que se haga el carbón.
+  OK   mientras arde no se desmonta — Tiene encargos a medias: espera a que terminen y recógelos.
+  OK   antes de su hora no hay carbón — Aún no está terminado.
+  OK   a su hora, otro no se lo lleva — Aquí no tienes nada.
+  OK   a su hora, quien la encendió saca 4 carbones vegetales — {"ok":true,"dados":[{"objeto":"carbon","cantidad":4,"donde":[["espalda/2",4]]}],"quedan":false,"deshecha":"carbonera:1"}
+  OK   y la carbonera se deshace: no queda nada de ella — []
+  OK   sin carbonera, no (ni con las manos) — Hace falta una carbonera a tu lado.
+Por el servidor, con autor; el humo, para todos; deshecha, para todos
+  OK   Ana deja la yesca en la carbonera
+  OK   apagada, no se ve que arda — {"id":"carbonera:1","tipo":"carbonera","x":0,"z":0,"autor":"ana","deposito":{"yesca":1},"colgado":[]}
+  OK   y la enciende
+  OK   todos ven que arde (lo que le queda), sin saber de quién es — [{"receta":"carbonear","queda":14399}]
+  OK   Bea no se lleva el carbón de Ana — Aquí no tienes nada.
+  OK   Ana saca sus 4 carbones
+  OK   y la carbonera deshecha ya no la ve nadie
+  OK   el registro dice quién la deshizo — {"dados":[["carbon",4]],"deshecha":"carbonera:1"}
+
+31 bien, 0 mal
