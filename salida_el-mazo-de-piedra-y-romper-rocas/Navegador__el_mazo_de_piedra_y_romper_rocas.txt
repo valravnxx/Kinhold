@@ -1,0 +1,26 @@
+  OK   PC: hay rocas medianas cerca de la salida — {'id': 'roca:-269,545', 'x': -26.89968919736566, 'z': 54.458123842301575, 'tam': 0.4667603872250765}
+  OK   PC: junto a una, se ve en la malla y estorba
+  OK   PC: sin el mazo, Usar no la rompe
+  OK   PC: es la roca que se rompe al lado — {'id': 'roca:-269,545', 'x': -26.89968919736566, 'z': 54.458123842301575, 'tam': 0.4667603872250765}
+  OK   PC: (el mazo de piedra en la mano) — {'ok': True}
+  OK   PC: el mazo se ve en la mano
+  OK   PC: con el mazo, Usar se pone a romperla (a golpes, como al talar)
+  OK   PC: la roca desaparece (ni en la malla ni estorbando)
+  OK   PC: quedan sus cascotes
+  OK   PC: y donde estaba, sus piedras sueltas (de 6 a 25) — 22 piedras
+  OK   PC: al recargar la página sigue rota
+  OK   PC: sin errores en la página
+  OK   móvil: hay rocas medianas cerca de la salida — {'id': 'roca:-269,545', 'x': -26.89968919736566, 'z': 54.458123842301575, 'tam': 0.4667603872250765}
+  OK   móvil: junto a una, se ve en la malla y estorba
+  OK   móvil: sin el mazo, Usar no la rompe
+  OK   móvil: es la roca que se rompe al lado — {'id': 'roca:-269,545', 'x': -26.89968919736566, 'z': 54.458123842301575, 'tam': 0.4667603872250765}
+  OK   móvil: (el mazo de piedra en la mano) — {'ok': True}
+  OK   móvil: el mazo se ve en la mano
+  OK   móvil: con el mazo, Usar se pone a romperla (a golpes, como al talar)
+  OK   móvil: la roca desaparece (ni en la malla ni estorbando)
+  OK   móvil: quedan sus cascotes
+  OK   móvil: y donde estaba, sus piedras sueltas (de 6 a 25) — 22 piedras
+  OK   móvil: al recargar la página sigue rota
+  OK   móvil: sin errores en la página
+
+Todo correcto
