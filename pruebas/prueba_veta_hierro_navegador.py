@@ -95,12 +95,18 @@ def recorrido(pg, nombre, pref):
     pg.screenshot(path=f'{SALIDA}/{pref}_3_picando.png', timeout=180000)
     try: pg.wait_for_function(f'{K}.sueloObjetos.suelo.objetos.some(o => o.cosa.tipo === "mineral_hierro")', timeout=900000)
     except Exception: pass
-    esperar(pg, 1500)
-    n = pg.evaluate(EN_SUELO, xz)
-    comprobar(f'{nombre}: a los 5 golpes suelta 1 mineral de hierro al suelo, junto a la veta, y sigue picando', n == 1 and pg.evaluate(PICANDO), str(n))
-    comprobar(f'{nombre}: el mineral se ve en el suelo', pg.evaluate(MINERAL_SE_VE, xz) == 1)
+    n, sigue = pg.evaluate(EN_SUELO, xz), pg.evaluate(PICANDO)
     pg.evaluate(f"(() => {{ const k = {K}; k.estado.talando = null; }})()")
+    comprobar(f'{nombre}: a los 5 golpes suelta 1 mineral de hierro al suelo, junto a la veta, y sigue picando', n == 1 and sigue, str(n))
+    esperar(pg, 1500)
+    comprobar(f'{nombre}: el mineral se ve en el suelo', pg.evaluate(MINERAL_SE_VE, xz) == 1)
     pg.screenshot(path=f'{SALIDA}/{pref}_4_mineral_suelto.png', timeout=180000)
+    # de cerca, el mineral al pie de la veta, visto de lado
+    m = pg.evaluate(f"([x, z]) => {{ const o = {K}.sueloObjetos.suelo.objetos.find(o => o.cosa.tipo === 'mineral_hierro'); return o ? [o.x, o.z] : null; }}", xz)
+    if m:
+        pg.evaluate(f'([x, z]) => {{ const k = {K}; k.pj.x = x + 0.6; k.pj.z = z + 1.6; k.pj.y = k.alturaSuelo(k.pj.x, k.pj.z); k.pj.rot = Math.PI; k.cam.dist = 2.8; k.cam.pitch = 0.5; k.cam.yaw = Math.PI * 0.15; }}', m)
+        esperar(pg, 1500)
+        pg.screenshot(path=f'{SALIDA}/{pref}_4b_mineral_de_cerca.png', timeout=180000)
     # agotarla: lo que le queda, de una vez (las pasadas, de 30 a 40, tardarían demasiado sin tarjeta gráfica)
     pg.evaluate(f"""(id) => {{ const k = {K}, r = k.recoleccion.rec; r.estado[id] = {{ vuelve: Date.now() + 90 * 864e5, veces: 1 }}; k.recoleccion.refrescar(); }}""", v['id'])
     esperar(pg, 1000)
