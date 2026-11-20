@@ -31,7 +31,7 @@ const MANOS = ['mano:der', 'mano:izq'];
 // Con MUTAR=1 (solo al seguir desde lo guardado) las manchas de la vega no dan mineral: debe FALLAR.
 const MUTAR = process.env.MUTAR === '1' && !!process.env.KINHOLD_RECORRIDO_DESDE;
 
-export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, guardar = null, tallerGuardado = null }) {
+export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, guardar = null, tallerGuardado = null, desde = null }) {
   const yo = J.bienvenida.autor;
   const r2 = v => Math.round(v * 100) / 100;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -231,6 +231,8 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   const taller = tallerGuardado || libreEn(banco, 40) || { x: r2(banco.x - 2), z: r2(banco.z + 2) };
   // (para trabajar en un paso sin repetir los de antes: KINHOLD_HIERRO_GUARDAR=<paso>:<carpeta>, solo al seguir desde lo guardado)
   const punto = async (paso) => { if (guardar) await guardar(paso, { taller }); };
+  // (al seguir desde lo guardado antes de un paso, lo de los pasos de antes ya está hecho: no se repite)
+  const ya = (paso) => !!desde && paso <= desde;
   await J.andar(taller.x, taller.z); await soltarManos();
 
   // ── herramientas: el hacha, la lasca, el palo cavador ──
@@ -418,7 +420,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   await soltarManos();
   for (const t of ['pala_madera', 'criba']) if (!(await aLaMano(t, J.pos, 6))) await aLaMano(t, taller, 6);
   if (!enLaMano('pala_madera') || !enLaMano('criba')) motivoCriba = `sin la pala o la criba en las manos (${enMano()})`;
-  for (const m of manchas.slice(0, 12)) {
+  for (const m of manchas.slice(0, ya('28c') ? 0 : 12)) {
     if (motivoCriba || mineral() + cribado() >= 3 * LUPIAS) break;
     await cuidarse();
     let rc;
@@ -429,7 +431,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   // las herramientas, aquí en el suelo mientras acarrea
   const herramientasEn = { ...J.pos };
   await soltarManos();
-  for (let v = 0; v < 12 && cribado() > 0; v++) {
+  for (let v = 0; v < (ya('28c') ? 0 : 12) && cribado() > 0; v++) {
     for (const l of MANOS) {
       const m = manchas.find(x => nEnSuelo('mineral_hierro', x, 4) > 0);
       if (!m) break;
@@ -443,8 +445,8 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   await J.andar(herramientasEn.x, herramientasEn.z);
   for (const t of ['pala_madera', 'criba']) await aLaMano(t, herramientasEn, 6);
   await J.andar(taller.x, taller.z); await soltarManos();
-  comprobar(`criba con la pala y la criba: ${3 * LUPIAS} de mineral de hierro en su taller`, mineral() >= 3 * LUPIAS, `${pasadas} pasadas, ${mineral()} de mineral${motivoCriba ? ' · ' + motivoCriba : ''}`);
-  if (mineral() < 3 * LUPIAS) return;
+  comprobar(`criba con la pala y la criba: ${3 * LUPIAS} de mineral de hierro en su taller`, ya('28c') || mineral() >= 3 * LUPIAS, `${pasadas} pasadas, ${mineral()} de mineral${motivoCriba ? ' · ' + motivoCriba : ''}`);
+  if (!ya('28c') && mineral() < 3 * LUPIAS) return;
 
   await punto('28c');
   // ── 28c. El carbón ──
@@ -502,13 +504,13 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
     return true;
   };
   // (el de los oficios, que quedó junto a su carbonera: a su taller)
-  for (const o of cerca(visibles().filter(x => x.cosa.tipo === 'carbon' && s.mundo.dentroDeTierra(x.x, x.z, yo) && dist(x, taller) > 5), taller).slice(0, 3)) {
+  for (const o of cerca(visibles().filter(x => x.cosa.tipo === 'carbon' && s.mundo.dentroDeTierra(x.x, x.z, yo) && dist(x, taller) > 5), taller).slice(0, ya('28d') ? 0 : 3)) {
     await soltarManos(); await J.andar(o.x + 0.3, o.z); await J.objeto({ tipo: 'coger_suelo', objeto: o.id, x: J.pos.x, z: J.pos.z }); await J.andar(taller.x, taller.z); await soltarManos();
   }
   const carbonAntes = carbon();
-  for (let k = 0; k < 12 && carbon() < CARBON; k++) if (!(await unaCarbonera())) break;
-  comprobar(`hace carbón en carboneras: ${CARBON} en su taller`, carbon() >= CARBON, `${carbonAntes} de los oficios, ${carboneras} carboneras, ${carbon()} en total${motivoCarbon ? ' · ' + motivoCarbon : ''}`);
-  if (carbon() < CARBON) return;
+  for (let k = 0; k < (ya('28d') ? 0 : 12) && carbon() < CARBON; k++) if (!(await unaCarbonera())) break;
+  comprobar(`hace carbón en carboneras: ${CARBON} en su taller`, ya('28d') || carbon() >= CARBON, `${carbonAntes} de los oficios, ${carboneras} carboneras, ${carbon()} en total${motivoCarbon ? ' · ' + motivoCarbon : ''}`);
+  if (!ya('28d') && carbon() < CARBON) return;
 
   await punto('28d');
   // ── 28d. El horno de reducción y las lupias ──
@@ -544,20 +546,19 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   };
   const sitioHorno = libreEn(taller, 40) || { x: taller.x + 5, z: taller.z };
   await J.andar(sitioHorno.x, sitioHorno.z); await soltarManos();
-  let motivoHorno = await deLaRibera('barro', 'barro', 20, sitioHorno, 'pala_madera');
+  let motivoHorno = ya('28e') ? '' : await deLaRibera('barro', 'barro', 20, sitioHorno, 'pala_madera');
   comprobar('cava 20 de barro en la ribera con la pala y lo lleva al sitio del horno', !motivoHorno, motivoHorno);
-  const aPiedras = await acopiar(['piedra'], 'piedra', 10, sitioHorno);
+  const aPiedras = ya('28e') || await acopiar(['piedra'], 'piedra', 10, sitioHorno);
   comprobar('junta 10 piedras en el sitio del horno', aPiedras, `${nEnSuelo('piedra', sitioHorno, 3)}`);
   // 4 carbones de su taller
-  await J.andar(taller.x, taller.z); await soltarManos(); await cogerSuelo('carbon', taller, 5, 4);
-  await J.andar(sitioHorno.x, sitioHorno.z);
-  const hr = await levantar('horno_reduccion', sitioHorno.x, sitioHorno.z);
+  if (!ya('28e')) { await J.andar(taller.x, taller.z); await soltarManos(); await cogerSuelo('carbon', taller, 5, 4); await J.andar(sitioHorno.x, sitioHorno.z); }
+  const hr = ya('28e') ? { ok: true, datos: { terminada: true } } : await levantar('horno_reduccion', sitioHorno.x, sitioHorno.z);
   comprobar('levanta el horno de reducción: 20 de barro, 10 piedras y 4 carbones', hr.ok && hr.datos && hr.datos.terminada, hr.motivo || '');
   const horno = hr.ok && s.objetos.fab.estaciones[hr.id];
-  if (!horno || horno.obra) return;
+  if (!ya('28e') && (!horno || horno.obra)) return;
   const lupias = () => nEnSuelo('lupia', taller, 5) + J.cuantos('lupia');
   let motivoLupia = '';
-  for (let k = 0; k < LUPIAS + 2 && lupias() < LUPIAS; k++) {
+  for (let k = 0; k < (ya('28e') ? 0 : LUPIAS + 2) && lupias() < LUPIAS; k++) {
     await cuidarse();
     await J.andar(taller.x, taller.z); await soltarManos();
     if (!(await taladroYYesca(1))) { motivoLupia = `sin taladro o sin yesca (${enMano()})`; break; }
@@ -578,8 +579,8 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
     if (!g.ok) { motivoLupia = `no saca la lupia: ${g.motivo}`; break; }
     await J.andar(taller.x, taller.z); await soltarManos();
   }
-  comprobar(`carga el horno ${LUPIAS} veces, lo enciende con el taladro y, pasado el rato, saca ${LUPIAS} lupias`, lupias() >= LUPIAS, `${lupias()}${motivoLupia ? ' · ' + motivoLupia : ''}`);
-  if (lupias() < LUPIAS) return;
+  comprobar(`carga el horno ${LUPIAS} veces, lo enciende con el taladro y, pasado el rato, saca ${LUPIAS} lupias`, ya('28e') || lupias() >= LUPIAS, `${lupias()}${motivoLupia ? ' · ' + motivoLupia : ''}`);
+  if (!ya('28e') && lupias() < LUPIAS) return;
 
   // traer a su taller lo suyo de ese tipo que esté en el suelo de su tierra (lo que dejó en los oficios)
   const alTaller = async (tipo, n) => {
@@ -596,78 +597,82 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   await punto('28e');
   // ── 28e. El cuero del fuelle y el fuelle ──
   console.log('28e. Curte en sus cubas las 2 pieles limpias que guardó (corteza de roble y agua del río con el cubo): 2 cueros; con 2 varas, en el banco, el fuelle');
-  await cuidarse();
-  const cueros = () => nEnSuelo('cuero', taller, 5) + J.cuantos('cuero');
-  const cubas = cerca(suyas('cubas_curtido'), taller)[0];
-  comprobar('tiene sus cubas de curtido (de los oficios) y las 2 pieles limpias que guardó', !!cubas && (await alTaller('piel_limpia', 2)), `${nEnSuelo('piel_limpia', taller, 5)} pieles limpias`);
-  if (!cubas) return;
-  // la corteza: 2 por piel, de robles en pie que nadie ha descortezado
-  await J.andar(taller.x, taller.z); await soltarManos(); await buscar('lasca_silex');
-  const corteza = () => nEnSuelo('corteza_roble', taller, 5) + J.cuantos('corteza_roble');
-  let robles = 0, motivoCorteza = '';
-  for (const radio of [150, 400, 900]) {
-    if (corteza() >= 4) break;
-    const v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + taller.x - radio, z0: O.z + taller.z - radio, x1: O.x + taller.x + radio, z1: O.z + taller.z + radio });
-    const lista = v.arboles.map(e => ({ x: r2(e.x - O.x), z: r2(e.z - O.z), edad: e.edad, especie: e.especie })).filter(e => e.especie === 'roble').map(e => ({ ...e, id: idArbol(e.x, e.z) }))
-      .filter(e => !s.objetos.tala.estado[e.id] && secoHasta(taller, e));
-    for (const a of cerca(lista, taller).slice(0, 16)) {
-      if (corteza() >= 4) break;
-      if (MANOS.every(l => J.inv.lugares[l])) { await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']); }
-      await J.andar(a.x + 1, a.z);
-      const r = await J.objeto({ tipo: 'descortezar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad, especie: a.especie });
-      if (r.ok) robles++; else motivoCorteza = r.motivo;
-    }
-  }
-  await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
-  comprobar('descorteza robles en pie con la lasca: 4 de corteza de roble', corteza() >= 4, `${robles} robles${motivoCorteza ? ' · ' + motivoCorteza : ''}`);
-  let curtiendo = 0;
-  for (let k = 0; k < 2; k++) {
-    if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo', [[rio, 30], [cubas, 10]]); await aLaMano('cubo'); }
-    await soltarManos(['cubo', 'cubo_agua']);
+  if (!ya('28f')) {
     await cuidarse();
-    if (enLaMano('cubo')) {
-      await J.andar(rio.x, rio.z);
-      for (let i = 0; i < 12 && nec().sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); }
-      let ll = await J.objeto({ tipo: 'llenar_cubo' });
-      if (!ll.ok) { await pausa(500); await aLaMano('cubo', J.pos, 5); ll = await J.objeto({ tipo: 'llenar_cubo' }); }
-      if (!ll.ok) { console.log(`     (no llena el cubo: ${ll.motivo})`); break; }
+    const cueros = () => nEnSuelo('cuero', taller, 5) + J.cuantos('cuero');
+    const cubas = cerca(suyas('cubas_curtido'), taller)[0];
+    comprobar('tiene sus cubas de curtido (de los oficios) y las 2 pieles limpias que guardó', !!cubas && (await alTaller('piel_limpia', 2)), `${nEnSuelo('piel_limpia', taller, 5)} pieles limpias`);
+    if (!cubas) return;
+    // la corteza: 2 por piel, de robles en pie que nadie ha descortezado
+    await J.andar(taller.x, taller.z); await soltarManos(); await buscar('lasca_silex');
+    const corteza = () => nEnSuelo('corteza_roble', taller, 5) + J.cuantos('corteza_roble');
+    let robles = 0, motivoCorteza = '';
+    for (const radio of [150, 400, 900]) {
+      if (corteza() >= 4) break;
+      const v = vegetacionEn(T.paisaje, T.alt, T.semilla, { x0: O.x + taller.x - radio, z0: O.z + taller.z - radio, x1: O.x + taller.x + radio, z1: O.z + taller.z + radio });
+      const lista = v.arboles.map(e => ({ x: r2(e.x - O.x), z: r2(e.z - O.z), edad: e.edad, especie: e.especie })).filter(e => e.especie === 'roble').map(e => ({ ...e, id: idArbol(e.x, e.z) }))
+        .filter(e => !s.objetos.tala.estado[e.id] && secoHasta(taller, e));
+      for (const a of cerca(lista, taller).slice(0, 16)) {
+        if (corteza() >= 4) break;
+        if (MANOS.every(l => J.inv.lugares[l])) { await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']); }
+        await J.andar(a.x + 1, a.z);
+        const r = await J.objeto({ tipo: 'descortezar', arbol: a.id, x: J.pos.x, z: J.pos.z, ax: a.x, az: a.z, edad: a.edad, especie: a.especie });
+        if (r.ok) robles++; else motivoCorteza = r.motivo;
+      }
     }
-    await J.andar(cubas.x + 1, cubas.z);
-    const lv = await J.objeto({ tipo: 'llenar_estacion', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
-    if (!lv.ok) { console.log(`     (no vacía el cubo en las cubas: ${lv.motivo} · ${enMano()})`); break; }
-    await soltarManos();
-    const p1 = await aEstacion(cubas, 'piel_limpia', 1, taller, 5);
-    const p2 = p1.ok ? await aEstacion(cubas, 'corteza_roble', 2, taller, 5) : p1;
-    await J.andar(cubas.x + 1, cubas.z);
-    const f = p2.ok ? await J.objeto({ tipo: 'fabricar', receta: 'curtir', estacion: cubas.id, x: J.pos.x, z: J.pos.z }) : p2;
-    if (!f.ok) { console.log(`     (no la pone a curtir: ${f.motivo})`); break; }
-    curtiendo++;
+    await J.andar(taller.x, taller.z); await soltarManos(['lasca_silex']);
+    comprobar('descorteza robles en pie con la lasca: 4 de corteza de roble', corteza() >= 4, `${robles} robles${motivoCorteza ? ' · ' + motivoCorteza : ''}`);
+    let curtiendo = 0;
+    for (let k = 0; k < 2; k++) {
+      if (!(await aLaMano(J.cuantos('cubo_agua') ? 'cubo_agua' : 'cubo', J.pos, 5))) { await buscar('cubo', [[rio, 30], [cubas, 10]]); await aLaMano('cubo'); }
+      await soltarManos(['cubo', 'cubo_agua']);
+      await cuidarse();
+      if (enLaMano('cubo')) {
+        await J.andar(rio.x, rio.z);
+        for (let i = 0; i < 12 && nec().sed > 10; i++) { await J.objeto({ tipo: 'beber', x: J.pos.x, z: J.pos.z }); await pausa(1600); }
+        let ll = await J.objeto({ tipo: 'llenar_cubo' });
+        if (!ll.ok) { await pausa(500); await aLaMano('cubo', J.pos, 5); ll = await J.objeto({ tipo: 'llenar_cubo' }); }
+        if (!ll.ok) { console.log(`     (no llena el cubo: ${ll.motivo})`); break; }
+      }
+      await J.andar(cubas.x + 1, cubas.z);
+      const lv = await J.objeto({ tipo: 'llenar_estacion', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
+      if (!lv.ok) { console.log(`     (no vacía el cubo en las cubas: ${lv.motivo} · ${enMano()})`); break; }
+      await soltarManos();
+      const p1 = await aEstacion(cubas, 'piel_limpia', 1, taller, 5);
+      const p2 = p1.ok ? await aEstacion(cubas, 'corteza_roble', 2, taller, 5) : p1;
+      await J.andar(cubas.x + 1, cubas.z);
+      const f = p2.ok ? await J.objeto({ tipo: 'fabricar', receta: 'curtir', estacion: cubas.id, x: J.pos.x, z: J.pos.z }) : p2;
+      if (!f.ok) { console.log(`     (no la pone a curtir: ${f.motivo})`); break; }
+      curtiendo++;
+    }
+    await J.andar(cubas.x + 1, cubas.z); await soltarManos();
+    adelantar('curtir');
+    for (let k = 0; k < 2; k++) await J.objeto({ tipo: 'recoger_fabricado', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
+    await J.andar(taller.x, taller.z); await soltarManos();
+    if (nEnSuelo('cuero', cubas, 3)) { await cogerSuelo('cuero', cubas, 3); await J.andar(taller.x, taller.z); await soltarManos(); }
+    comprobar('pone a curtir las 2 pieles con su corteza y su agua y, pasados los días, saca 2 cueros', curtiendo === 2 && cueros() >= 2, `${curtiendo} a curtir, ${cueros()} cueros`);
+    // 2 varas: de su taller o de un árbol joven
+    if (nEnSuelo('vara', taller, 5) < 2) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 2); await J.andar(taller.x, taller.z); await soltarManos(); } }
+    let fu = await aEstacion(banco, 'cuero', 2, taller, 5);
+    if (fu.ok) fu = await aEstacion(banco, 'vara', 2, taller, 5);
+    await J.andar(banco.x + 1, banco.z);
+    if (fu.ok) fu = await enEstacion(banco, 'fuelle');
+    comprobar('en el banco, con 2 cueros y 2 varas, el fuelle', fu.ok && J.cuantos('fuelle') === 1, fu.motivo || enMano());
+    if (!fu.ok) return;
   }
-  await J.andar(cubas.x + 1, cubas.z); await soltarManos();
-  adelantar('curtir');
-  for (let k = 0; k < 2; k++) await J.objeto({ tipo: 'recoger_fabricado', estacion: cubas.id, x: J.pos.x, z: J.pos.z });
-  await J.andar(taller.x, taller.z); await soltarManos();
-  if (nEnSuelo('cuero', cubas, 3)) { await cogerSuelo('cuero', cubas, 3); await J.andar(taller.x, taller.z); await soltarManos(); }
-  comprobar('pone a curtir las 2 pieles con su corteza y su agua y, pasados los días, saca 2 cueros', curtiendo === 2 && cueros() >= 2, `${curtiendo} a curtir, ${cueros()} cueros`);
-  // 2 varas: de su taller o de un árbol joven
-  if (nEnSuelo('vara', taller, 5) < 2) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 2); await J.andar(taller.x, taller.z); await soltarManos(); } }
-  let fu = await aEstacion(banco, 'cuero', 2, taller, 5);
-  if (fu.ok) fu = await aEstacion(banco, 'vara', 2, taller, 5);
-  await J.andar(banco.x + 1, banco.z);
-  if (fu.ok) fu = await enEstacion(banco, 'fuelle');
-  comprobar('en el banco, con 2 cueros y 2 varas, el fuelle', fu.ok && J.cuantos('fuelle') === 1, fu.motivo || enMano());
-  if (!fu.ok) return;
 
   await punto('28f');
   // ── 28f. La fragua y las barras ──
   console.log(`28f. Levanta la fragua en su tierra (12 piedras, 4 de barro y el fuelle), la enciende con carbón, su yesca y su taladro y, con el mazo de piedra, bate ${LUPIAS} barras de hierro (una lupia y un carbón cada una)`);
-  const sitioFragua = libreEn(taller, 40) || { x: taller.x, z: taller.z + 5 };
+  // (al seguir desde más adelante, la fragua ya está: la suya, la más cercana a su taller)
+  const fraguaYa = ya('28g') && cerca(suyas('fragua'), taller)[0];
+  const sitioFragua = fraguaYa || libreEn(taller, 40) || { x: taller.x, z: taller.z + 5 };
   await J.andar(sitioFragua.x, sitioFragua.z); await soltarManos(['fuelle']);
-  motivoHorno = await deLaRibera('barro', 'barro', 4, sitioFragua, 'pala_madera');
-  const pf = await acopiar(['piedra'], 'piedra', 12, sitioFragua);
+  motivoHorno = fraguaYa ? '' : await deLaRibera('barro', 'barro', 4, sitioFragua, 'pala_madera');
+  const pf = !!fraguaYa || await acopiar(['piedra'], 'piedra', 12, sitioFragua);
   comprobar('lleva al sitio de la fragua 4 de barro de la ribera y 12 piedras', !motivoHorno && pf, `${motivoHorno} · ${nEnSuelo('piedra', sitioFragua, 3)} piedras`);
-  await aLaMano('fuelle', taller, 6); await J.andar(sitioFragua.x, sitioFragua.z);
-  const fr = await levantar('fragua', sitioFragua.x, sitioFragua.z);
+  if (!fraguaYa) { await aLaMano('fuelle', taller, 6); await J.andar(sitioFragua.x, sitioFragua.z); }
+  const fr = fraguaYa ? { ok: true, id: fraguaYa.id, datos: { terminada: true } } : await levantar('fragua', sitioFragua.x, sitioFragua.z);
   comprobar('levanta la fragua: 12 piedras, 4 de barro y el fuelle', fr.ok && fr.datos && fr.datos.terminada, fr.motivo || '');
   const fragua = fr.ok && s.objetos.fab.estaciones[fr.id];
   if (!fragua || fragua.obra) return;
@@ -706,9 +711,9 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
     return q;
   };
   let motivoBarra = '';
-  for (let k = 0; k < LUPIAS + 2 && barras() < LUPIAS; k++) { await cuidarse(); const q = await forjar('barra_hierro', { lupia: 1, carbon: 1 }); if (!q.ok) { motivoBarra = q.motivo; break; } }
-  comprobar(`con el fuego encendido y el mazo de piedra, bate ${LUPIAS} barras de hierro (una lupia y un carbón cada una)`, barras() >= LUPIAS, `${barras()}${motivoBarra ? ' · ' + motivoBarra : ''}`);
-  if (barras() < LUPIAS) return;
+  for (let k = 0; k < (ya('28g') ? 0 : LUPIAS + 2) && barras() < LUPIAS; k++) { await cuidarse(); const q = await forjar('barra_hierro', { lupia: 1, carbon: 1 }); if (!q.ok) { motivoBarra = q.motivo; break; } }
+  comprobar(`con el fuego encendido y el mazo de piedra, bate ${LUPIAS} barras de hierro (una lupia y un carbón cada una)`, ya('28g') || barras() >= LUPIAS, `${barras()}${motivoBarra ? ' · ' + motivoBarra : ''}`);
+  if (!ya('28g') && barras() < LUPIAS) return;
 
   await punto('28g');
   // ── 28g. Los mangos, el hacha de hierro, el pico, la sierra y los clavos ──
@@ -984,11 +989,11 @@ if (process.argv[1] && process.argv[1].endsWith('recorrido_hierro.mjs') && proce
     J.ws.close(); await pausa(300); await s.cerrar();
     cpSync(dir, destino, { recursive: true });
     const { writeFileSync } = await import('fs');
-    writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ...meta, ficha, ahora, pos, ...extra }));
+    writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ...meta, ficha, ahora, pos, paso, ...extra }));
     console.log(`(guardado en ${destino}: antes del paso ${paso})`);
     process.exit(0);
   };
-  try { await hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ, guardar, tallerGuardado: meta.taller || null }); }
+  try { await hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ, guardar, tallerGuardado: meta.taller || null, desde: meta.paso || null }); }
   catch (e) { comprobar('el hierro llega al final', false, e && e.stack); }
   J.ws.close(); await s.cerrar();
   console.log(`\n${ok} bien, ${mal} mal`);
