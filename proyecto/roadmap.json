@@ -2701,7 +2701,9 @@
     },
     {
      "nombre": "Las piezas de nivel 2 a la vista: la tabla, el clavo, la barra de hierro y la teja dejan de estar escondidas (src/logica/piezas.js, MATERIALES_POSTERIORES; la paja sigue hasta la era de P11) y el tramo pasa al nivel 2: suelo, muros (liso, con puerta y con ventana) y escalera de tablas, tejados y remates de tablillas y de teja, puerta de tablas, contraventana, trampilla, chimenea, muro de entramado, empalizada con su puerta, adarve, polea, polipasto y los muebles de tablas (mesa, banco, arcón, estantería y barril). Cada una en captura de cerca al lado de la referencia y de la v5; lo que no esté a la altura, en la lista para valravnx",
-     "estado": "pendiente"
+     "estado": "en_curso",
+     "inicio": "2026-11-20T11:23:29+00:00",
+     "rama": "trabajo/20261120-1123"
     },
     {
      "nombre": "Recorrido de jugador del hierro, sin arcón: criba hierro de pantano, construye el horno de reducción y saca una lupia, hace el fuelle, la fragua y una barra, el hacha, el pico, la sierra y clavos; sierra tablas, rompe una roca grande, cava arcilla, cuece tejas y pone un suelo de tablas y un tejado de teja (con el reloj acelerado)",
