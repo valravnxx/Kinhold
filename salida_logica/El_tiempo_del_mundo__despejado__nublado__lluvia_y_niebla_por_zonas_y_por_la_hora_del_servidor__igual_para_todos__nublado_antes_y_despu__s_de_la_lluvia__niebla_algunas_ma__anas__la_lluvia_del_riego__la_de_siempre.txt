@@ -1,0 +1,26 @@
+La lluvia, la de siempre
+  OK   llueve justo donde y cuando llovía (y tiempoEn lo dice igual) — 4000/4000
+Igual para todos, por zonas grandes
+  OK   el mismo sitio y la misma hora dan el mismo tiempo
+  OK   dentro de una misma zona de 1 km hace el mismo tiempo — 500/500
+  OK   a 6 km no siempre hace el mismo tiempo — 127 de 500
+Nublado antes y después de la lluvia
+  OK   antes de cada rato de lluvia, nublado — 916/916
+  OK   las nubes crecen hacia la lluvia (sin saltos) — 916/916
+  OK   lloviendo, todo cubierto
+  OK   después de cada rato, aún nublado — 912/912
+  OK   los cuatro tiempos salen — despejado 78.4 %, nublado 3.5 %, lluvia 12.2 %, niebla 5.8 %
+  OK   lo más del tiempo, despejado
+La niebla, algunas mañanas
+  OK   unas 2 mañanas de cada 10 con niebla (entre 1 y 3) — 192/1200
+  OK   a las 6:30 la niebla es espesa — 192/192
+  OK   se levanta a media mañana (a las 10 ya no hay) — 192/192
+  OK   nunca por la tarde ni de noche — 0
+  OK   nunca a la vez que la lluvia
+  OK   la hora es la del mundo (src/logica/cielo.js) — 7.000
+El tiempo fijo de las pruebas
+  OK   seco: despejado siempre
+  OK   lluvia, nublado y niebla: siempre ese
+  OK   con niebla fija no llueve (el huerto no se riega solo)
+
+19 bien, 0 mal
