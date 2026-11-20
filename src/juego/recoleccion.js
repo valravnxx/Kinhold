@@ -36,7 +36,7 @@ export function zonasDemo(x, z) {
 // ---------- Modelos (estilo v5: texturas por código, color por vértice, sombra de contacto) ----------
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
 // (P10) la arcilla: gris azulada, más oscura y más húmeda en el fondo del corte; la tierra parda de encima
-const ARCILLA_GRIS = 0x8b8c84, ARCILLA_HONDA = 0x6f7570, ARCILLA_AGUA = 0x5e6560, ARCILLA_TIERRA = 0x6a5844;
+const ARCILLA_GRIS = 0x666b67, ARCILLA_HONDA = 0x555c58, ARCILLA_TIERRA = 0x5c4a39;
 const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x51473a;
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
@@ -131,6 +131,40 @@ function vetaCalco() {
   cx.putImageData(img, 0, 0);
   const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   return (calcoVeta = new THREE.MeshLambertMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+}
+// (P10, 19 nov) el banco de arcilla: el hoyo cavado a pala pintado por código en un calco, como la mancha de pantano:
+// fuera, la tierra parda removida que se deshace en la hierba; dentro, la arcilla gris azulada, lisa y moteada, más
+// oscura y húmeda en el fondo (con algún brillo de agua), las marcas rectas de la pala y, por el lado de arriba, el
+// corte de la pared, en sombra.
+let calcoArcilla = null;
+function arcillaCalco() {
+  if (calcoArcilla) return calcoArcilla;
+  const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const cx = cv.getContext('2d'), img = cx.createImageData(N, N), d = img.data;
+  const n1 = ruidoValor(2.3), n2 = ruidoValor(6.1), n3 = ruidoValor(11.7);
+  const mezcla = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+  const paso = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const u = i / (N - 1) * 2 - 1, v = j / (N - 1) * 2 - 1, k = (j * N + i) * 4;
+    const rr = Math.hypot(u, v * 1.15) + (n1(u * 3 + 5, v * 3 + 1) - 0.5) * 0.4;
+    const mot = n2(u * 8, v * 8), grumo = n3(u * 30, v * 30);
+    const tierra = paso(1.0, 0.7, rr), arc = paso(0.66, 0.5, rr), hondo = paso(0.42, 0.12, rr + (n2(u * 4 + 3, v * 4) - 0.5) * 0.2);
+    // el corte de la pared, por arriba (v < 0): una media luna en sombra entre la tierra y la arcilla
+    const corte = paso(0.5, 0.66, rr) * paso(0.74, 0.62, rr) * paso(0.0, -0.45, v);
+    // las marcas de la pala: rayas rectas algo inclinadas, solo en la arcilla
+    const raya = arc * (1 - hondo * 0.6) * paso(0.9, 0.98, Math.abs(Math.sin((u * 0.35 + v) * 11 + n1(u * 2, v * 2) * 5))) * paso(0.35, 0.6, n3(u * 2 + 4, v * 6));
+    const brillo = hondo * paso(0.7, 0.9, n3(u * 3 + 7, v * 5 + 2)) * 0.5;
+    // tierra parda moteada → arcilla gris azulada → el fondo más oscuro y húmedo
+    let R = mezcla(mezcla(0x5c, 0x63, arc), 0x47, hondo), G = mezcla(mezcla(0x4b, 0x66, arc), 0x4d, hondo), B = mezcla(mezcla(0x3a, 0x62, arc), 0x4b, hondo);
+    const m = (mot - 0.5) * (arc ? 18 : 26); R += m; G += m; B += m * 0.8;
+    if (!arc && grumo > 0.7) { R -= 14; G -= 12; B -= 10; }   // terroncitos de la tierra removida
+    R = R * (1 - corte * 0.45 - raya * 0.1) + brillo * 50; G = G * (1 - corte * 0.45 - raya * 0.1) + brillo * 56; B = B * (1 - corte * 0.4 - raya * 0.09) + brillo * 62;
+    const A = tierra * (0.82 + 0.18 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
+    d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
+  }
+  cx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return (calcoArcilla = new THREE.MeshLambertMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
 }
 // (P10) un trozo de roca del afloramiento: una esfera facetada, aplastada y cortada con planos (rompe en caras planas con
 // aristas, como la roca de los cortados, src/mundo/rocas.js), de semilla fija
@@ -280,38 +314,18 @@ export function modelosRecoleccion() {
       L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), k % 2 ? BARRO_SECO : BARRO_HUMEDO, Math.cos(a) * r * 1.3, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
     }
   }, { rangoSuelo: 0.05 });
-  // (P10, 19 nov) el banco de arcilla: un corte a pala en la ribera, más cuadrado que el charco del barro (se ven los
-  // golpes rectos de la pala), con la tierra parda de encima apartada en el borde y debajo la arcilla gris azulada,
-  // lisa y húmeda (algo de agua en el fondo), y al lado unos terrones de arcilla sacados a pala, de caras planas
-  const arcilla = geoLote(L => {
-    const corte = (ax, az_, r, y, n, sem) => {   // un hoyo de esquinas redondeadas (más recto que el barro)
-      const s = new THREE.Shape();
-      for (let i = 0; i <= n; i++) {
-        const a = i / n * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), k = 1 / Math.pow(Math.pow(Math.abs(c), 4) + Math.pow(Math.abs(sn), 4), 0.25);
-        const q = r * k * (0.93 + 0.07 * Math.sin(a * 5 + sem));
-        i ? s.lineTo(c * q * ax, sn * q * az_) : s.moveTo(c * q * ax, sn * q * az_);
-      }
-      const g = new THREE.ShapeGeometry(s, 2); g.rotateX(-Math.PI / 2); g.translate(0, y, 0); return g;
-    };
-    L.add(corte(1.25, 1, 0.62, 0.012, 32, 1), ARCILLA_TIERRA, 0, 0, 0, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
-    L.add(corte(1.2, 0.95, 0.5, 0.018, 28, 2), ARCILLA_GRIS, 0, 0, 0, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
-    L.add(corte(1.15, 0.9, 0.36, 0.022, 24, 3), ARCILLA_HONDA, 0.03, 0, 0.02, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
-    L.add(corte(1.2, 0.8, 0.17, 0.026, 18, 4), ARCILLA_AGUA, 0.08, 0, 0.04, { y: 0.1 }, { tex: 'liso', sinSuelo: true, brillo: 0.92 });
-    // el talud de la pala por el lado de arriba: una cara recta de arcilla, con la tierra parda encima
-    L.add(new THREE.BoxGeometry(0.7, 0.07, 0.06), ARCILLA_GRIS, -0.05, 0.03, -0.47, { y: 0.1, x: -0.35 }, { tex: 'piedra', sinSuelo: true });
-    L.add(new THREE.BoxGeometry(0.74, 0.045, 0.09), ARCILLA_TIERRA, -0.05, 0.06, -0.52, { y: 0.1 }, { tex: 'piedra', sinSuelo: true });
-    // la tierra apartada, en terrones pardos por el borde
-    for (let k = 0; k < 6; k++) {
-      const a = k * 1.05 + 0.5, r = 0.62 + (k % 3) * 0.05;
-      L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), ARCILLA_TIERRA, Math.cos(a) * r * 1.25, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.5, 1), plano: true, tex: 'piedra' });
-    }
-    // los terrones de arcilla sacados a pala, a un lado: de caras planas y cantos algo redondeados por el golpe
-    [[0.78, 0.04, 0.25, 0.3, 0.13], [0.9, 0.03, 0.06, -0.4, 0.11], [0.82, 0.1, 0.16, 0.9, 0.1], [0.7, 0.035, 0.42, 1.3, 0.09]].forEach(([x, y, z, g, l], i) => {
-      const b = new THREE.BoxGeometry(l, l * 0.6, l * 0.8, 2, 1, 2), p = b.attributes.position;
-      for (let j = 0; j < p.count; j++) { const kk = 1 + Math.sin(j * 7.1 + i) * 0.05; p.setX(j, p.getX(j) * kk); p.setZ(j, p.getZ(j) * (2 - kk)); }
-      L.add(b, i % 2 ? ARCILLA_GRIS : ARCILLA_HONDA, x, y, z, { y: g, z: (i - 1.5) * 0.06 }, { tex: 'piedra', plano: true });
+  // (P10, 19 nov) el banco de arcilla: el hoyo cavado a pala (el calco, arcillaCalco) y al borde unos terrones de arcilla
+  // sacados a pala, gris azulados y de caras planas, y unos de tierra parda apartada
+  const arcillaTerrones = geoLote(L => {
+    [[0.78, 0.04, 0.3, 0.3, 0.1, 1], [0.9, 0.035, 0.08, -0.4, 0.085, 0], [0.7, 0.09, 0.2, 0.9, 0.075, 1], [0.58, 0.035, 0.5, 1.3, 0.07, 0], [-0.8, 0.03, -0.25, 2.1, 0.07, 1]].forEach(([x, y, z, gi, r, gris], i) => {
+      L.add(new THREE.IcosahedronGeometry(r, 0), gris ? ARCILLA_GRIS : ARCILLA_HONDA, x, y, z, { y: gi, z: (i - 1.5) * 0.08 }, { escala: new THREE.Vector3(1.5, 0.65, 1.15), plano: true, tex: 'piedra' });
     });
+    for (let k = 0; k < 6; k++) {
+      const a = k * 1.1 + 2.2, r = 0.72 + (k % 3) * 0.05;
+      L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), ARCILLA_TIERRA, Math.cos(a) * r * 1.15, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
+    }
   }, { rangoSuelo: 0.05 });
+  const arcilla = [{ geo: calcoGeo(1.9, 1.65, 0.03), mat: arcillaCalco(), calco: true }, ...arcillaTerrones];
   // hongos yesqueros (7 nov): un tocón viejo y podrido (40 cm), con la corteza rota y la madera gris a la vista, y en
   // él tres o cuatro yesqueros en repisa: semicírculos gruesos, gris pardo con bandas, el borde claro
   const yesquero = geoLote(L => {
@@ -709,7 +723,7 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
         const im = new THREE.InstancedMesh(geo, mat, lista.length), matrices = [];
         // (13 nov, valravnx: los juncos, más grandes: de 1,3 a unos 1,7 m)
         const esc = tipo === 'juncos' ? 1.3 : 1;
-        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); if (tipo === 'hierro_pantano' || tipo === 'veta_hierro') inclinar(o, p); o.scale.setScalar(tipo === 'veta_hierro' ? 1 : esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
+        lista.forEach((p, i) => { o.position.set(p.x, p.y - 0.01, p.z); o.rotation.set(0, p.giro, 0); if (tipo === 'hierro_pantano' || tipo === 'veta_hierro' || tipo === 'arcilla') inclinar(o, p); o.scale.setScalar(tipo === 'veta_hierro' ? 1 : esc * (0.9 + (i % 4) * 0.08)); o.updateMatrix(); matrices.push(o.matrix.clone()); im.setMatrixAt(i, o.matrix); });
         im.castShadow = tipo !== 'hierba_larga' && tipo !== 'barro' && tipo !== 'arcilla' && tipo !== 'hierro_pantano' && !calco; im.receiveShadow = true; im.name = 'recoger_' + tipo + (siempre ? '_planta' : cortado ? '_cortado' : ''); im.frustumCulled = false; grupo.add(im);
         mallas.push({ im, lista, matrices, siempre, cortado });
       }
