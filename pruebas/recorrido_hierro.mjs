@@ -134,19 +134,19 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   const suyas = (tipo) => Object.values(s.objetos.fab.estaciones).filter(e => e.autor === yo && e.tipo === tipo && !e.obra);
   // levantar un puesto: el marco, lo que pide (lo lleva o está a sus pies) y el trabajo
   // lo de su coste que esté por el suelo de alrededor (hasta 10 m), junto a donde se pone (entregar coge lo que hay a 2 m)
-  const juntar = async (tipos, p) => {
-    for (const t of tipos) for (let v = 0; v < 12; v++) {
+  const juntar = async (pide, p) => {
+    for (const [t, n] of Object.entries(pide)) for (let v = 0; v < 12 && nEnSuelo(t, p, 1.2) + J.cuantos(t) < n; v++) {
       const o = cerca(visibles().filter(x => x.cosa.tipo === t && !x.arrastra && dist(x, p) > 1.2 && dist(x, p) < 10), p)[0];
       if (!o) break;
       const l = MANOS.find(m => !J.inv.lugares[m]) || (await manoLibre());
       await J.andar(o.x + 0.3, o.z);
-      const q = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(o.cosa.n, 3), a: l, x: J.pos.x, z: J.pos.z });
+      const q = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(o.cosa.n, 3, n - nEnSuelo(t, p, 1.2) - J.cuantos(t)), a: l, x: J.pos.x, z: J.pos.z });
       if (!q.ok) { console.log(`     (no coge ${t} para juntarlo: ${q.motivo})`); break; }
       await J.andar(p.x, p.z); await soltar(l);
     }
   };
   const levantar = async (estacion, x, z) => {
-    if (ESTACIONES[estacion]) await juntar(Object.keys(ESTACIONES[estacion].coste).filter(t => t !== 'fuelle'), { x: r2(x + 1), z });
+    if (ESTACIONES[estacion]) await juntar(Object.fromEntries(Object.entries(ESTACIONES[estacion].coste).filter(([t]) => t !== 'fuelle')), { x: r2(x + 1), z });
     await J.andar(x + 1, z);
     const rc = await J.objeto({ tipo: 'colocar_estacion', estacion, x, z });
     if (!rc.ok) return rc;
@@ -514,19 +514,32 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   // ── 28d. El horno de reducción y las lupias ──
   console.log(`28d. Levanta el horno de reducción en su tierra (20 de barro de la ribera, 10 piedras y 4 carbones) y lo carga ${LUPIAS} veces (3 de mineral, 4 carbones y la yesca, encendido con el taladro): ${LUPIAS} lupias`);
   // traer n de lo que da la ribera (barro con la pala) hasta sitio, de 3 en 3 en la mano libre
+  // traer n de lo que da la ribera (barro o arcilla, con la pala) hasta sitio: cava lo que falta y lo deja en un monton en
+  // la orilla, deja allí la pala y lo acarrea con las dos manos, de 3 en 3 en cada una; al final vuelve a por la pala
   const deLaRibera = async (clase, da, n, sitio, herr) => {
     const total = () => nEnSuelo(da, sitio, 4) + J.cuantos(da);
     const p = cerca(alrededor(rio, 300).filter(q => q.tipo === clase), rio)[0];
     if (!p) return `no hay ${clase} en la ribera`;
     let motivo = '';
-    for (let v = 0; v < 2 * n && total() < n; v++) {
-      await cuidarse();
-      await soltarManos([herr]);
-      if (!(await aLaMano(herr, taller, 6))) return `sin ${herr} (${enMano()})`;
-      for (let i = 0; i < 3 && total() < n; i++) { const q = await recoger(p); if (!q.ok) { motivo = q.motivo; break; } }
-      await J.andar(sitio.x, sitio.z); await soltarManos([herr]);
-      if (motivo) break;
+    await cuidarse();
+    await soltarManos([herr]);
+    if (!(await aLaMano(herr, J.pos, 6)) && !(await aLaMano(herr, taller, 6))) return `sin ${herr} (${enMano()})`;
+    const orilla = { x: r2(p.x + 0.4), z: p.z };
+    const monton = () => nEnSuelo(da, orilla, 3);
+    const falta = n - total();
+    for (let k = 0; k < falta + 3 && monton() + J.cuantos(da) < falta; k++) {
+      const q = await recoger(p);
+      if (!q.ok) { motivo = q.motivo; break; }
+      const l = enLaMano(da); if (l && J.inv.lugares[l].n >= 3) await soltar(l);
     }
+    { const l = enLaMano(da); if (l) await soltar(l); }
+    await soltarManos();   // (la pala, aquí, en la orilla)
+    for (let v = 0; v < 12 && monton() > 0 && total() < n; v++) {
+      for (const l of MANOS) { const o = enSuelo(da, orilla, 3)[0]; if (!o) break; await J.andar(o.x + 0.3, o.z); await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(3, o.cosa.n), a: l, x: J.pos.x, z: J.pos.z }); }
+      await J.andar(sitio.x, sitio.z); await soltarManos(); await cuidarse();
+      if (monton() > 0 && total() < n) await J.andar(orilla.x, orilla.z);
+    }
+    await J.andar(orilla.x, orilla.z); await aLaMano(herr, orilla, 4); await J.andar(sitio.x, sitio.z);
     return total() >= n ? '' : `${total()} de ${n} ${da}${motivo ? ': ' + motivo : ''}`;
   };
   const sitioHorno = libreEn(taller, 40) || { x: taller.x + 5, z: taller.z };
