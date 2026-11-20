@@ -1826,6 +1826,16 @@ try {
     // raspador, la piel limpia y el zurrón, el cubo lleno y la corteza de roble, las cubas y el cuero, el huso y el hilo,
     // los zapatos y el cinto de cuero, y la carbonera y el carbón)
     await oficios({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ, sitioCaza });
+    // (como los de antes, aquí, antes del hierro: KINHOLD_RECORRIDO_GUARDAR_HIERRO=<carpeta>, y pruebas/recorrido_hierro.mjs
+    // con KINHOLD_RECORRIDO_DESDE=<carpeta> sigue desde ahí)
+    if (process.env.KINHOLD_RECORRIDO_GUARDAR_HIERRO) {
+      const destino = process.env.KINHOLD_RECORRIDO_GUARDAR_HIERRO, ahora = Date.now();
+      J2.ws.close(); await pausa(300); await s.cerrar(); s = null;
+      cpSync(dir, destino, { recursive: true });
+      writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ficha: J2.bienvenida.ficha || J.bienvenida.ficha, yo: J2.bienvenida.autor, pos: J2.pos, ahora, base, sitioCaza }));
+      console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes del hierro)`);
+      J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
+    }
     J2.ws.close();
   }
 
