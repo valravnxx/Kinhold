@@ -63,7 +63,7 @@ def de_cerca(pg, c, dx, dz, yaw, dist, pitch, movil):
     # (20 nov, la segunda mirada) un primer plano del horno: en PC, el jugador a 1,5 m a un lado (fuera del anillo de
     # piedras); en el móvil, estrecho, detrás del horno según la cámara (a un lado salía el horno cortado y el jugador
     # pisaba las piedras del pie)
-    if movil: mirar(pg, c, dx - math.sin(yaw) * 1.6, dz - math.cos(yaw) * 1.6, yaw, dist * 1.25, pitch + 0.15, 0)
+    if movil: mirar(pg, c, dx - math.sin(yaw) * 1.4, dz - math.cos(yaw) * 1.4, yaw, dist * 2.2, pitch + 0.05, 0)   # (la cámara, a unos 4 m del horno)
     else: mirar(pg, c, dx, dz, yaw, dist, pitch, 1.5)
 
 def tener(pg, tipo):
