@@ -35,8 +35,8 @@ export function zonasDemo(x, z) {
 
 // ---------- Modelos (estilo v5: texturas por código, color por vértice, sombra de contacto) ----------
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
-// (P10) la arcilla: gris azulada, más oscura y más húmeda en el fondo del corte; la tierra parda de encima
-const ARCILLA_GRIS = 0x666b67, ARCILLA_HONDA = 0x555c58, ARCILLA_TIERRA = 0x5c4a39, ARCILLA_PARED = 0x6b6358;
+// (P10) la arcilla: gris parda, más oscura y más húmeda en el fondo del corte; la tierra parda de encima
+const ARCILLA_GRIS = 0x6f6a5e, ARCILLA_HONDA = 0x5f5a50, ARCILLA_TIERRA = 0x5c4a39, ARCILLA_PARED = 0x6b6358;
 const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x51473a;
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
@@ -161,7 +161,7 @@ function arcillaCalco() {
     const m = (mot - 0.5) * (arc ? 22 : 30); R += m; G += m; B += m * 0.8;
     if (grumo > 0.68) { const g = arc ? 9 : 16; R -= g; G -= g * 0.9; B -= g * 0.8; }   // terroncitos y grumos
     R = R * (1 - corte * 0.3 - raya * 0.07); G = G * (1 - corte * 0.3 - raya * 0.07); B = B * (1 - corte * 0.27 - raya * 0.06);   // (20 nov: sin bandas oscuras en el fondo)
-    const A = tierra * (0.7 + 0.3 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
+    const A = Math.max(arc, tierra * (0.7 + 0.3 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5))));   // (20 nov: la arcilla, opaca: la hierba de debajo no se transparenta)
     d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
   }
   cx.putImageData(img, 0, 0);
