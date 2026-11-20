@@ -24,6 +24,7 @@ import { hayAguaCerca } from '../src/logica/necesidades.js';
 import { campoEn } from '../src/logica/campos.js';
 import { VIDA as VIDA_DESGASTE } from '../src/logica/desgaste.js';
 import { PIEZAS } from '../src/logica/piezas.js';
+import { ESTACIONES } from '../src/logica/fabricacion.js';
 import { centroMundo } from '../src/logica/construccion.js';
 
 const MANOS = ['mano:der', 'mano:izq'];
@@ -137,8 +138,18 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
     const rc = await J.objeto({ tipo: 'colocar_estacion', estacion, x, z });
     if (!rc.ok) return rc;
     const id = rc.datos.estacion || rc.datos.id;
-    const re = await J.objeto({ tipo: 'entregar_estacion', estacion: id, x: J.pos.x, z: J.pos.z });
-    if (!re.ok) return { ...re, id };
+    let re = await J.objeto({ tipo: 'entregar_estacion', estacion: id, x: J.pos.x, z: J.pos.z });
+    // (lo que se le quedó algo lejos en el suelo: a las manos, de lo que le falta, y otra vez)
+    for (let v = 0; v < 8 && !re.ok && s.objetos.fab.estaciones[id]?.obra; v++) {
+      const e = s.objetos.fab.estaciones[id], falta = Object.entries(ESTACIONES[e.tipo].coste).filter(([t, n]) => n > (e.obra.entregado[t] || 0) && !J.cuantos(t));
+      if (!falta.length) break;
+      await soltarManos(['pala_madera', 'palo_cavador', 'fuelle']);
+      for (const [t, n] of falta) if (MANOS.some(l => !J.inv.lugares[l])) await cogerSuelo(t, { x, z }, 8, n - (e.obra.entregado[t] || 0));
+      if (!falta.some(([t]) => J.cuantos(t))) break;
+      await J.andar(x + 1, z);
+      re = await J.objeto({ tipo: 'entregar_estacion', estacion: id, x: J.pos.x, z: J.pos.z });
+    }
+    if (!re.ok && s.objetos.fab.estaciones[id]?.obra && Object.entries(ESTACIONES[s.objetos.fab.estaciones[id].tipo].coste).some(([t, n]) => n > (s.objetos.fab.estaciones[id].obra.entregado[t] || 0))) return { ...re, id };
     let rt = { ok: true, datos: {} };
     for (let i = 0; i < 20 && rt.ok && !rt.datos.terminada; i++) rt = await J.objeto({ tipo: 'trabajar_estacion', estacion: id, segundos: 5, x: J.pos.x, z: J.pos.z });
     return { ...rt, id };
