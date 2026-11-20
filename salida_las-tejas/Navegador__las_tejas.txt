@@ -1,0 +1,77 @@
+PC
+  OK   PC: en la pestaña «Horno cerámico», las tejas — Horno cerámico
+Un horno de alfarero: una cúpula de arcilla sobre piedra, con la boca del hogar abajo; encendido con leña, cuece el barro · sus recetas gastan lo que se le deja
+Todo
+1
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secade
+  OK   PC: se pueden hacer ya (el horno encendido y la arcilla dejada en él)
+  OK   PC: la ficha: 2 cestas de arcilla, 10 tejas, 30 min — Tejas
+
+El tejado de teja y su remate: no se pudre y arde poco.
+
+En el horno cerámico
+30 min
+da 10 × Teja
+Lo que pide (de lo que está en la estación)
+Cesta de arcillaen la estación
+2 de 2
+Hacer · 30 min
+×3
+  OK   PC: el panel no se sale de lado
+  OK   PC: «Hacer» las mete a cocer: se gasta la arcilla del horno y entran en su cola con media hora — {"cola": [{"receta": "tejas", "dura": 1800000}], "arcilla": 0}
+  OK   PC: pasada la media hora, «Recoger» da 10 tejas — recoger=True tejas=10
+  OK   PC: las tejas y la arcilla se dejan en el suelo — 3
+  OK   PC: su mojón (para construir la casa)
+  OK   PC: en «Tejados», tejado de teja a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de teja (esquina)']
+  OK   PC:   y cuesta 10 tejas y 1 tronco — 10 teja · tienes 110 1 tronco delgado · tienes 120
+  OK   PC: en «Tejados», remate de teja (esquina) a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de teja (esquina)']
+  OK   PC:   y cuesta 5 tejas y 1 tronco — 5 teja · tienes 110 1 tronco delgado · tienes 120
+  OK   PC: la casa de 3 × 2 con el tejado de teja (4 tramos) y 2 remates de teja — {"fallos": [], "n": 22, "teja": 4, "remate": 2}
+  OK   PC: sin errores en la página — []
+movil
+  OK   movil: en la pestaña «Horno cerámico», las tejas — Horno cerámico
+Un horno de alfarero: una cúpula de arcilla sobre piedra, con la boca del hogar abajo; encendido con leña, cuece el barro · sus recetas gastan lo que se le deja
+Todo
+1
+Con las manos
+en cualquier sitio
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secade
+  OK   movil: se pueden hacer ya (el horno encendido y la arcilla dejada en él)
+  OK   movil: la ficha: 2 cestas de arcilla, 10 tejas, 30 min — Tejas
+
+El tejado de teja y su remate: no se pudre y arde poco.
+
+En el horno cerámico
+30 min
+da 10 × Teja
+Lo que pide (de lo que está en la estación)
+Cesta de arcillaen la estación
+2 de 2
+Hacer · 30 min
+×3
+  OK   movil: el panel no se sale de lado
+  OK   movil: «Hacer» las mete a cocer: se gasta la arcilla del horno y entran en su cola con media hora — {"cola": [{"receta": "tejas", "dura": 1800000}], "arcilla": 0}
+  OK   movil: pasada la media hora, «Recoger» da 10 tejas — recoger=True tejas=10
+  OK   movil: su mojón (para construir la casa)
+  OK   movil: en «Tejados», tejado de teja a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de teja (esquina)']
+  OK   movil:   y cuesta 10 tejas y 1 tronco — 10 teja · tienes 110 1 tronco delgado · tienes 120
+  OK   movil: en «Tejados», remate de teja (esquina) a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de teja (esquina)']
+  OK   movil:   y cuesta 5 tejas y 1 tronco — 5 teja · tienes 110 1 tronco delgado · tienes 120
+  OK   movil: la casa de 3 × 2 con el tejado de teja (4 tramos) y 2 remates de teja — {"fallos": [], "n": 22, "teja": 4, "remate": 2}
+  OK   movil: sin errores en la página — []
+
+TODO CORRECTO
