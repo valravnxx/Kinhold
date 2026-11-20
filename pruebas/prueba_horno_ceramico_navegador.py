@@ -12,7 +12,7 @@
 # Uso: python3 pruebas/prueba_horno_ceramico_navegador.py <html> <carpeta_capturas>
 # Rota a propósito (19 nov): MUTAR=1 deja apagado el horno encendido: falla. (20 nov) MUTAR=choque quita el choque del
 # horno: falla «no se atraviesa».
-import sys, os
+import sys, os, math
 from playwright.sync_api import sync_playwright
 from sitio_prueba import montar_sitio, servir
 
@@ -59,6 +59,13 @@ def mirar(pg, c, dx, dz, yaw, dist, pitch, lado=1.2):
     pg.evaluate(f"([x, z, yaw, d, p]) => {{ const k = {K}, px = x + Math.cos(yaw) * {lado}, pz = z - Math.sin(yaw) * {lado}; k.pj.x = px; k.pj.z = pz; k.pj.y = k.alturaSuelo(px, pz); k.pj.rot = Math.atan2(x - px, z - pz); k.cam.yaw = yaw; k.cam.dist = d; k.cam.pitch = p; }}", [c['x'] + dx, c['z'] + dz, yaw, dist, pitch])
     pg.wait_for_timeout(2500)
 
+def de_cerca(pg, c, dx, dz, yaw, dist, pitch, movil):
+    # (20 nov, la segunda mirada) un primer plano del horno: en PC, el jugador a 1,5 m a un lado (fuera del anillo de
+    # piedras); en el móvil, estrecho, detrás del horno según la cámara (a un lado salía el horno cortado y el jugador
+    # pisaba las piedras del pie)
+    if movil: mirar(pg, c, dx - math.sin(yaw) * 1.6, dz - math.cos(yaw) * 1.6, yaw, dist * 1.25, pitch + 0.15, 0)
+    else: mirar(pg, c, dx, dz, yaw, dist, pitch, 1.5)
+
 def tener(pg, tipo):
     return pg.evaluate(f"(() => {{ const i = {K}.inventario; i.sacar('mano:der'); const r = i.coger('{tipo}', 1, 'mano:der'); {K}.pintarTodoInventario(); return r; }})()")
 
@@ -101,28 +108,28 @@ def recorrido(nav, nombre, pref, vista, movil):
         comprobar(f'{nombre}: el horno no se atraviesa (el jugador se queda fuera del anillo de piedras)', dist >= 0.95, f'{dist:.2f} m del centro')
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
     D = 1.25 if movil else 1   # (en el móvil, estrecho, algo más lejos para que quepan, y el jugador más cerca de lo mirado)
-    LADO = 0.55 if movil else 1.2
-    # (20 nov) el banco, en el centro: el jugador detrás de él según la cámara (1,5 m más allá), y el hoyo delante
-    import math
-    mirar(pg, b, -math.sin(0.4) * 1.5, -math.cos(0.4) * 1.5, 0.4, 6.5 * D, 0.8, 0)
+    # (20 nov) el banco, en el centro: el jugador detrás de él según la cámara, y el hoyo delante
+    if movil: mirar(pg, b, -math.sin(0.4) * 1.5, -math.cos(0.4) * 1.5, 0.4, 6.5 * D, 0.8, 0)
+    else: mirar(pg, b, -math.sin(0.4) * 1.3, -math.cos(0.4) * 1.3, 0.4, 9, 0.9, 0)   # (en PC, más alta y más lejos: el banco entero, no pegado al borde)
     pg.screenshot(path=f'{SALIDA}/{pref}_banco_arcilla.png', timeout=180000)
     mirar(pg, c, 0, 1.6, 0, 7.5 * D, 0.3)
     pg.screenshot(path=f'{SALIDA}/{pref}_hornos.png', timeout=180000)
-    mirar(pg, c, 1.8, 0.4, 0.35, 3.6 * D, 0.22, LADO)
+    de_cerca(pg, c, 1.8, 0.4, 0.35, 3.6, 0.22, movil)
     pg.screenshot(path=f'{SALIDA}/{pref}_horno_fuego.png', timeout=180000)
-    mirar(pg, c, -1.8, 0.7, 0.3, 2.6 * D, 0.32, LADO)
+    de_cerca(pg, c, -1.8, 0.7, 0.3, 2.6, 0.32, movil)
     pg.screenshot(path=f'{SALIDA}/{pref}_horno_boca_apagado.png', timeout=180000)
-    mirar(pg, c, 1.8, 0.7, 0.3, 2.6 * D, 0.32, LADO)
+    de_cerca(pg, c, 1.8, 0.7, 0.3, 2.6, 0.32, movil)
     pg.screenshot(path=f'{SALIDA}/{pref}_horno_boca_fuego.png', timeout=180000)
-    mirar(pg, c, -1.8, 0.4, -0.3, 3.4 * D, 0.3, LADO)
+    de_cerca(pg, c, -1.8, 0.4, -0.3, 3.4, 0.3, movil)
     pg.screenshot(path=f'{SALIDA}/{pref}_horno_apagado.png', timeout=180000)
-    mirar(pg, c, 1.8, -0.3, 3.0, 3.6 * D, 0.35, LADO)
+    de_cerca(pg, c, 1.8, -0.3, 3.0, 3.6, 0.35, movil)
     pg.screenshot(path=f'{SALIDA}/{pref}_horno_detras.png', timeout=180000)
     # el panel: su pestaña y su fuego (solo leña)
     pg.add_style_tag(content='body > :not(canvas) { visibility: visible !important; }')
     pg.evaluate(f"(() => {{ const k = {K}, inv = k.inventario; if (inv) {{ inv.meterDonde('lena', 2); inv.meterDonde('rama', 2); }} const e = k.fabCliente.estaciones['horno_ceramico:apagado']; k.pj.x = e.x + 0.3; k.pj.z = e.z + 1.5; }})()")
     pg.evaluate(f"{K}.panelFabricar.abrirEstacion('horno_ceramico:apagado')"); pg.wait_for_timeout(1200)
     texto = pg.evaluate("document.getElementById('panelFabricar').innerText")
+    comprobar(f'{nombre}: el panel dice «Apagado» (el horno, en masculino)', 'Apagado' in texto and 'Apagada' not in texto, texto[:200])
     comprobar(f'{nombre}: su pestaña «Horno cerámico», con su fuego apagado y la leña puesta', pg.evaluate("!!document.querySelector('#panelFabricar .fab-pest.fab-sel[data-pestana=\"cocer\"]')") and 'Horno cerámico' in texto and 'Tiene puesto para arder 30 min' in texto, texto[:400])
     echar = pg.evaluate("[...document.querySelectorAll('#panelFabricar .fab-echar')].map(b => b.dataset.objeto)")
     comprobar(f'{nombre}: a su fuego solo se le echa leña', echar == ['lena'], str(echar))

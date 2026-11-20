@@ -219,7 +219,9 @@ export function montarPanelFabricar({ panel, boton, fab, inventario, suelo, posi
   function pintarFuego(e, inv) {
     const st = estadoFuego(e.fuego, ahora()), yesca = YESCAS.reduce((t, y) => t + inv.cuantos(y), 0), taladro = inv.cuantos(HERRAMIENTA_FUEGO) > 0;
     const como = COMO[e.tipo] || COMO.hoguera;
-    const estado = st.brasas ? tr('En brasas: aguantan {m} min', { m: minutos(st.queda) }) : st.encendida ? tr('Encendida: le quedan {m} min', { m: minutos(st.queda) }) : st.cenizas ? tr('Apagada: solo quedan las cenizas') : tr('Apagada');
+    // (20 nov) el horno y el hogar, en masculino («Apagado»); la hoguera y la fragua, en femenino
+    const masc = /^(horno|hogar)/.test(e.tipo);
+    const estado = st.brasas ? tr('En brasas: aguantan {m} min', { m: minutos(st.queda) }) : st.encendida ? tr(masc ? 'Encendido: le quedan {m} min' : 'Encendida: le quedan {m} min', { m: minutos(st.queda) }) : st.cenizas ? tr(masc ? 'Apagado: solo quedan las cenizas' : 'Apagada: solo quedan las cenizas') : tr(masc ? 'Apagado' : 'Apagada');
     const puesto = st.brasas ? tr('Calienta poco y no alumbra; avívalo para que vuelva la llama, sin yesca.') : !st.encendida && st.combustible > 0 ? tr('Tiene puesto para arder {m} min.', { m: minutos(st.combustible) }) : !st.encendida ? (e.tipo === 'fragua' ? tr('No tiene nada que arder: échale carbón.') : e.tipo === 'horno_ceramico' ? tr('No tiene nada que arder: échale leña.') : tr('No tiene nada que arder: échale ramas o leña.')) : tr('Da luz y calor. Échale más para que dure.');
     const falta = !taladro && !yesca ? tr('Te falta el taladro de fuego y la yesca.') : !taladro ? tr('Te falta el taladro de fuego.') : !yesca ? tr('Te falta la yesca.') : '';
     const puede = !st.encendida && st.combustible > 0 && taladro && yesca;
