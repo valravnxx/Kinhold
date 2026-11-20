@@ -586,7 +586,7 @@ function hornoCeramico(id) {
   const fondo = new THREE.Mesh(new THREE.ShapeGeometry(formaBoca(BO), 10), MAT_ARCO); fondo.position.z = zf - TUNEL_FONDO + 0.012; o.add(fondo);
   const brasa = new THREE.Mesh(new THREE.ShapeGeometry(formaBoca(BO * 0.9), 10), MAT_RESCOLDO); brasa.position.z = zf - TUNEL_FONDO + 0.016; brasa.name = 'rescoldo'; brasa.visible = false; o.add(brasa);
   // la leña puesta para arder, metida en la boca y asomando un poco (se esconde si no tiene nada puesto)
-  const lena = modeloDe({ id: id + ':lena', cosa: { tipo: 'lena', n: 4 } }); lena.position.set(0, 0.01, zf - 0.17); lena.rotation.y = Math.PI / 2 + 0.06; lena.scale.setScalar(0.72);
+  const lena = modeloDe({ id: id + ':lena', cosa: { tipo: 'lena', n: 4 } }); lena.position.set(0, 0.01, zf - 0.1); lena.rotation.y = Math.PI / 2 + 0.06; lena.scale.setScalar(0.74);
   const ramas = new THREE.Group(); ramas.add(lena); ramas.name = 'ramas'; o.add(ramas);
   o.userData.alzaFuego = 0;
   return o;

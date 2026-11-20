@@ -329,8 +329,8 @@ export function modelosRecoleccion() {
     }
     borde.computeVertexNormals();
     // la pared de dentro (mira hacia el centro), del gris de la arcilla cortada y en sombra; el caballón, de tierra parda
-    const dentro = v => { const r = Math.hypot(v.x, v.z / 0.87); return r < 0.7 ? 0.62 + 0.38 * Math.max(0, Math.min(1, (r - 0.59) / 0.11)) * 0.3 : 1; };
-    L.add(borde, ARCILLA_TIERRA, 0, 0, 0, null, { escala: new THREE.Vector3(1, 1, 0.87), tex: 'piedra', sinSuelo: true, rayas: dentro });
+    const dentro = v => { const r = Math.hypot(v.x, v.z / 0.87), mota = 0.9 + 0.1 * Math.sin(v.x * 23 + v.z * 17) * Math.sin(v.x * 9 - v.z * 31); return (r < 0.7 ? 0.62 + 0.11 * Math.max(0, Math.min(1, (r - 0.59) / 0.11)) : 1.12) * mota; };
+    L.add(borde, 0x66523f, 0, 0, 0, null, { escala: new THREE.Vector3(1, 1, 0.87), tex: 'piedra', sinSuelo: true, rayas: dentro });
     const pared = new THREE.LatheGeometry([[0.66, 0.1], [0.615, 0.03], [0.583, -0.035]].map(([r, y]) => new THREE.Vector2(r, y)), 40), pp = pared.attributes.position;
     for (let i = 0; i < pp.count; i++) {   // (la misma forma que el borde, un pelo por dentro: el gris del corte)
       const x = pp.getX(i), y = pp.getY(i), z = pp.getZ(i), a = Math.atan2(z, x);

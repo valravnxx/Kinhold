@@ -589,6 +589,8 @@ body.construyendo #pomo{left:25px;top:25px}
   .fab-pest{grid-template-columns:1fr;justify-items:center;text-align:center;padding:4px 3px;width:68px;flex:none;gap:2px}
   .fab-pest b{font-size:11px}
   .fab-centro{padding:10px 12px}
+  /* (20 nov) en el móvil, lo que sigue debajo se deshace del todo en el borde (no se ve una línea cortada a medias) */
+  body.hub-abierto #panelFabricar .fab-centro{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent);padding-bottom:40px}
   .fab-cartas{grid-template-columns:repeat(3,minmax(0,1fr))}
   .fab-carta .fab-ic{height:80px}.fab-falta-n{top:66px}.fab-necesita{top:54px}
   .fab-sec-dep{grid-template-columns:1fr;gap:8px}
