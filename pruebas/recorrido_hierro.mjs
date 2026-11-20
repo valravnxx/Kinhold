@@ -381,14 +381,18 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   // ── 28b. El hierro de pantano ──
   console.log(`28b. Con la pala y la criba criba las manchas de agua rojiza de la vega hasta juntar ${3 * LUPIAS} de mineral de hierro en su taller`);
   const mineral = () => nEnSuelo('mineral_hierro', taller, 5) + J.cuantos('mineral_hierro');
-  const manchas = cerca(alrededor(taller, 2500).filter(p => p.tipo === 'hierro_pantano'), taller);
+  // (las manchas, en la vega del río: se buscan alrededor de la ribera, cada vez más lejos, hasta tener unas cuantas)
+  let manchas = [];
+  for (const radio of [200, 400]) { manchas = cerca(alrededor(rio, radio).filter(p => p.tipo === 'hierro_pantano'), taller); if (manchas.length >= 8) break; }
   comprobar('hay manchas de hierro de pantano en la vega', manchas.length > 0, manchas.length ? `${manchas.length}; la más cercana a ${Math.round(dist(manchas[0], taller))} m` : '');
   let pasadas = 0, motivoCriba = '';
   for (const m of manchas.slice(0, 12)) {
     if (mineral() >= 3 * LUPIAS) break;
     await cuidarse();
-    await soltarManos(); await aLaMano('pala_madera', taller, 6); await aLaMano('criba', taller, 6);
-    if (!enLaMano('pala_madera') || !enLaMano('criba')) { motivoCriba = `sin la pala o la criba en las manos (${enMano()})`; break; }
+    const aqui = { ...J.pos };
+    await soltarManos();
+    for (const t of ['pala_madera', 'criba']) if (!(await aLaMano(t, aqui, 6))) await aLaMano(t, taller, 6);
+    if (!enLaMano('pala_madera') || !enLaMano('criba')) { motivoCriba = `sin la pala o la criba en las manos (${enMano()}; cerca: ${visibles().filter(o => ['pala_madera', 'criba'].includes(o.cosa.tipo)).map(o => `${o.cosa.tipo} a ${Math.round(dist(o, J.pos))} m`).join(', ') || 'nada'}; lleva: ${['pala_madera', 'criba'].map(t => J.cuantos(t)).join('/')})`; break; }
     let rc;
     do { rc = MUTAR ? { ok: false, motivo: 'MUTAR' } : await recoger(m); if (rc.ok) pasadas++; } while (rc.ok);
     if (!/agot|nada|vuelve/i.test(rc.motivo || '')) motivoCriba = rc.motivo;
