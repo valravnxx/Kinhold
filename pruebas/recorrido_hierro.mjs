@@ -31,7 +31,7 @@ const MANOS = ['mano:der', 'mano:izq'];
 // Con MUTAR=1 (solo al seguir desde lo guardado) las manchas de la vega no dan mineral: debe FALLAR.
 const MUTAR = process.env.MUTAR === '1' && !!process.env.KINHOLD_RECORRIDO_DESDE;
 
-export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 }) {
+export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, guardar = null, tallerGuardado = null }) {
   const yo = J.bienvenida.autor;
   const r2 = v => Math.round(v * 100) / 100;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -40,7 +40,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   const soltar = (l) => J.objeto({ tipo: 'soltar_suelo', de: l, x: J.pos.x, z: J.pos.z });
   const soltarManos = async (salvo = []) => { for (const l of MANOS) if (J.inv.lugares[l] && !salvo.includes(J.inv.lugares[l].tipo)) await soltar(l); };
   // una mano libre: si las lleva llenas, deja la de lo que no es herramienta (la lasca, el cubo, el huso… se quedan)
-  const HERRAMIENTAS = ['lasca_silex', 'cubo', 'cubo_agua', 'huso', 'taladro_fuego', 'palo_cavador', 'hacha_piedra', 'lanza_endurecida'];
+  const HERRAMIENTAS = ['lasca_silex', 'cubo', 'cubo_agua', 'huso', 'taladro_fuego', 'palo_cavador', 'hacha_piedra', 'lanza_endurecida', 'pala_madera', 'criba', 'mazo_piedra', 'hacha_hierro', 'pico', 'sierra'];
   const manoLibre = async () => {
     const libre = MANOS.find(l => !J.inv.lugares[l]);
     if (libre) return libre;
@@ -133,7 +133,20 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   };
   const suyas = (tipo) => Object.values(s.objetos.fab.estaciones).filter(e => e.autor === yo && e.tipo === tipo && !e.obra);
   // levantar un puesto: el marco, lo que pide (lo lleva o está a sus pies) y el trabajo
+  // lo de su coste que esté por el suelo de alrededor (hasta 10 m), junto a donde se pone (entregar coge lo que hay a 2 m)
+  const juntar = async (tipos, p) => {
+    for (const t of tipos) for (let v = 0; v < 12; v++) {
+      const o = cerca(visibles().filter(x => x.cosa.tipo === t && !x.arrastra && dist(x, p) > 1.2 && dist(x, p) < 10), p)[0];
+      if (!o) break;
+      const l = MANOS.find(m => !J.inv.lugares[m]) || (await manoLibre());
+      await J.andar(o.x + 0.3, o.z);
+      const q = await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(o.cosa.n, 3), a: l, x: J.pos.x, z: J.pos.z });
+      if (!q.ok) { console.log(`     (no coge ${t} para juntarlo: ${q.motivo})`); break; }
+      await J.andar(p.x, p.z); await soltar(l);
+    }
+  };
   const levantar = async (estacion, x, z) => {
+    if (ESTACIONES[estacion]) await juntar(Object.keys(ESTACIONES[estacion].coste).filter(t => t !== 'fuelle'), { x: r2(x + 1), z });
     await J.andar(x + 1, z);
     const rc = await J.objeto({ tipo: 'colocar_estacion', estacion, x, z });
     if (!rc.ok) return rc;
@@ -215,7 +228,9 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   };
 
   await cuidarse();
-  const taller = libreEn(banco, 40) || { x: r2(banco.x - 2), z: r2(banco.z + 2) };
+  const taller = tallerGuardado || libreEn(banco, 40) || { x: r2(banco.x - 2), z: r2(banco.z + 2) };
+  // (para trabajar en un paso sin repetir los de antes: KINHOLD_HIERRO_GUARDAR=<paso>:<carpeta>, solo al seguir desde lo guardado)
+  const punto = async (paso) => { if (guardar) await guardar(paso, { taller }); };
   await J.andar(taller.x, taller.z); await soltarManos();
 
   // ── herramientas: el hacha, la lasca, el palo cavador ──
@@ -431,6 +446,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   comprobar(`criba con la pala y la criba: ${3 * LUPIAS} de mineral de hierro en su taller`, mineral() >= 3 * LUPIAS, `${pasadas} pasadas, ${mineral()} de mineral${motivoCriba ? ' · ' + motivoCriba : ''}`);
   if (mineral() < 3 * LUPIAS) return;
 
+  await punto('28c');
   // ── 28c. El carbón ──
   // (lo que hace falta: 4 para el horno de reducción y 4 en cada carga; 1 en cada barra; y alguno para el fuego de la
   // fragua)
@@ -467,7 +483,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
     await aLaMano('pala_madera', taller, 6); await J.andar(sitio.x + 1, sitio.z);
     const car = await levantar('carbonera', sitio.x, sitio.z);
     const est = car.ok && s.objetos.fab.estaciones[car.id];
-    if (!est || est.obra) { motivoCarbon = `no levanta la carbonera: ${car.motivo}`; return false; }
+    if (!est || est.obra) { motivoCarbon = `no levanta la carbonera: ${car.motivo} (leña a 2/4/8 m: ${nEnSuelo('lena', sitio, 2)}/${lena()}/${nEnSuelo('lena', sitio, 8)}; lleva ${J.cuantos('lena')}; ${enMano()})`; return false; }
     await soltarManos(); await J.andar(sitio.x + 1, sitio.z);
     if (!(await taladroYYesca(1))) { motivoCarbon = `sin taladro o sin yesca (${enMano()})`; return false; }
     await J.andar(est.x + 1, est.z);
@@ -494,6 +510,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   comprobar(`hace carbón en carboneras: ${CARBON} en su taller`, carbon() >= CARBON, `${carbonAntes} de los oficios, ${carboneras} carboneras, ${carbon()} en total${motivoCarbon ? ' · ' + motivoCarbon : ''}`);
   if (carbon() < CARBON) return;
 
+  await punto('28d');
   // ── 28d. El horno de reducción y las lupias ──
   console.log(`28d. Levanta el horno de reducción en su tierra (20 de barro de la ribera, 10 piedras y 4 carbones) y lo carga ${LUPIAS} veces (3 de mineral, 4 carbones y la yesca, encendido con el taladro): ${LUPIAS} lupias`);
   // traer n de lo que da la ribera (barro con la pala) hasta sitio, de 3 en 3 en la mano libre
@@ -563,6 +580,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
     return nEnSuelo(tipo, taller, 5) + J.cuantos(tipo) >= n;
   };
 
+  await punto('28e');
   // ── 28e. El cuero del fuelle y el fuelle ──
   console.log('28e. Curte en sus cubas las 2 pieles limpias que guardó (corteza de roble y agua del río con el cubo): 2 cueros; con 2 varas, en el banco, el fuelle');
   await cuidarse();
@@ -627,6 +645,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   comprobar('en el banco, con 2 cueros y 2 varas, el fuelle', fu.ok && J.cuantos('fuelle') === 1, fu.motivo || enMano());
   if (!fu.ok) return;
 
+  await punto('28f');
   // ── 28f. La fragua y las barras ──
   console.log(`28f. Levanta la fragua en su tierra (12 piedras, 4 de barro y el fuelle), la enciende con carbón, su yesca y su taladro y, con el mazo de piedra, bate ${LUPIAS} barras de hierro (una lupia y un carbón cada una)`);
   const sitioFragua = libreEn(taller, 40) || { x: taller.x, z: taller.z + 5 };
@@ -678,6 +697,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   comprobar(`con el fuego encendido y el mazo de piedra, bate ${LUPIAS} barras de hierro (una lupia y un carbón cada una)`, barras() >= LUPIAS, `${barras()}${motivoBarra ? ' · ' + motivoBarra : ''}`);
   if (barras() < LUPIAS) return;
 
+  await punto('28g');
   // ── 28g. Los mangos, el hacha de hierro, el pico, la sierra y los clavos ──
   console.log('28g. En el banco, 4 mangos de 4 varas; en la fragua, el hacha de hierro, el pico, la sierra de tronzar y 10 clavos');
   if (nEnSuelo('vara', taller, 5) < 4) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 3); await J.andar(taller.x, taller.z); await soltarManos(); } }
@@ -698,6 +718,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
     comprobar(`en la fragua, con el mazo: ${receta === 'clavos' ? '10 clavos' : receta === 'sierra' ? 'la sierra de tronzar' : receta === 'pico' ? 'el pico' : 'el hacha de hierro'} (${Object.entries(gasta).map(([t, m]) => `${m} ${t}`).join(', ')})`, q.ok && tiene >= n, q.motivo || `${tiene}`);
   }
 
+  await punto('28h');
   // ── 28h. Talar con el hacha de hierro, tronzar con la sierra y serrar las tablas ──
   console.log('28h. Con el hacha de hierro tala un árbol adulto; con la sierra tronza el tronco largo y, en el banco, sierra un tronco corto: 4 tablas');
   await cuidarse();
@@ -740,6 +761,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   comprobar('lleva un tronco corto al hombro al banco y, con la sierra, lo sierra en 4 tablas', tb.ok && tablas() >= 4, tb.motivo || `${tablas()}`);
   await J.andar(taller.x, taller.z); await soltarManos();
 
+  await punto('28i');
   // ── 28i. La roca grande, con el pico ──
   console.log('28i. Con el pico rompe una roca grande, de las que el mazo no puede: deja sus bloques de piedra en bruto y sus piedras');
   await cuidarse();
@@ -759,6 +781,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   comprobar('rompe una roca grande con el pico, golpe a golpe por el servidor, y deja sus bloques de piedra en bruto', rr.ok && rr.datos?.rota && gR === golpesRoca(grande.tam) && bloques === bloquesRoca(grande.tam), `${grande ? medidaRoca(grande.tam) + ' m, ' : ''}${gR} golpes, ${bloques} bloques${rr.ok ? '' : ' · ' + rr.motivo}`);
   await J.andar(taller.x, taller.z); await soltarManos();
 
+  await punto('28j');
   // ── 28j. La arcilla, el horno cerámico y las tejas ──
   console.log('28j. Con la pala cava 8 cestas de arcilla en la ribera; levanta el horno cerámico (6 de arcilla y 10 piedras), lo enciende con leña y cuece 2 de arcilla: 10 tejas');
   const sitioCer = libreEn(taller, 40) || { x: taller.x - 5, z: taller.z };
@@ -809,6 +832,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   const tejas = () => nEnSuelo('teja', hornoC, 4) + nEnSuelo('teja', taller, 5) + J.cuantos('teja');
   comprobar('cuece 2 cestas de arcilla en el horno encendido y, pasado el rato, saca 10 tejas', te.ok && tejas() >= 10, te.motivo || `${tejas()}`);
 
+  await punto('28k');
   // ── 28k. El suelo de tablas y el tejado de teja, en su casa ──
   console.log('28k. En su casa: un suelo de tablas en lo alto (4 tablas y 4 clavos) y un tejado de teja (10 tejas y un tronco delgado), con su marco, lo que piden y el trabajo');
   const C = { x: r2(M.x + 10), z: r2(M.z - 10) };   // (el sitio de su casa humilde, el paso 16)
@@ -940,7 +964,18 @@ if (process.argv[1] && process.argv[1].endsWith('recorrido_hierro.mjs') && proce
     ws.on('open', async () => { c.bienvenida = await b; c.pos = c.bienvenida.posicion ? { x: c.bienvenida.posicion.x, z: c.bienvenida.posicion.z } : meta.pos; listo(c); });
     ws.on('error', fallo);
   });
-  try { await hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ }); }
+  const [pasoGuardar, destino] = (process.env.KINHOLD_HIERRO_GUARDAR || '').split(':');
+  const guardar = async (paso, extra) => {
+    if (paso !== pasoGuardar) return;
+    const ahora = Date.now(), pos = J.pos, ficha = J.bienvenida.ficha || meta.ficha;
+    J.ws.close(); await pausa(300); await s.cerrar();
+    cpSync(dir, destino, { recursive: true });
+    const { writeFileSync } = await import('fs');
+    writeFileSync(join(destino, 'jugador.json'), JSON.stringify({ ...meta, ficha, ahora, pos, ...extra }));
+    console.log(`(guardado en ${destino}: antes del paso ${paso})`);
+    process.exit(0);
+  };
+  try { await hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ, guardar, tallerGuardado: meta.taller || null }); }
   catch (e) { comprobar('el hierro llega al final', false, e && e.stack); }
   J.ws.close(); await s.cerrar();
   console.log(`\n${ok} bien, ${mal} mal`);
