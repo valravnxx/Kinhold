@@ -1,0 +1,92 @@
+PC
+  OK   PC: su mojón
+  OK   PC: en «base», Suelo de tablas a la vista, con su imagen cargada — ['Cimiento de piedra', 'Cimiento de troncos', 'Suelo de troncos', 'Suelo de tablas']
+  OK   PC:   y su coste pide tabla, clavo — 4 tabla · tienes 80 4 clavo · tienes 120
+  OK   PC: en «estructura», Chimenea a la vista, con su imagen cargada — ['Poste', 'Viga', 'Chimenea']
+  OK   PC:   y su coste pide piedra, barro — 10 piedra · tienes 117 4 barro · tienes 80
+  OK   PC: en «muro», Muro de tablas a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas c
+  OK   PC:   y su coste pide tabla, clavo — 6 tabla · tienes 80 6 clavo · tienes 120
+  OK   PC: en «muro», Muro de tablas con puerta a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas c
+  OK   PC:   y su coste pide tabla, clavo — 4 tabla · tienes 80 4 clavo · tienes 120
+  OK   PC: en «muro», Muro de tablas con ventana a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas c
+  OK   PC:   y su coste pide tabla, clavo — 5 tabla · tienes 80 5 clavo · tienes 120
+  OK   PC: en «tejado», Tejado de tablillas a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de tablillas', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de tablillas (esquina)', 'Remate de teja (esquina)']
+  OK   PC:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   PC: en «tejado», Remate de tablillas (esquina) a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de tablillas', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de tablillas (esquina)', 'Remate de teja (esquina)']
+  OK   PC:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   PC: en «acceso», Escalera de tablas a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   PC:   y su coste pide tabla, clavo — 6 tabla · tienes 80 6 clavo · tienes 120
+  OK   PC: en «acceso», Puerta de tablas a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   PC:   y su coste pide tabla, clavo, hierro — 4 tabla · tienes 80 4 clavo · tienes 120 1 hierro · tienes 20
+  OK   PC: en «acceso», Contraventana a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   PC:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   PC: en «acceso», Trampilla a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   PC:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   PC: en «acceso», Polea a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   PC:   y su coste pide tabla, cuerda, hierro — 1 tabla · tienes 80 2 cuerda · tienes 40 1 hierro · tienes 20
+  OK   PC: en «acceso», Polipasto con torno a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   PC:   y su coste pide tabla, cuerda, hierro — 1 tronco delgado · tienes 120 2 tabla · tienes 80 4 cuerda · tienes 40 3 hierro · tienes 20
+  OK   PC: en «exterior», Adarve a la vista, con su imagen cargada — ['Cerca de varas', 'Portillo de varas', 'Empalizada', 'Adarve', 'Puerta de empalizada']
+  OK   PC:   y su coste pide tabla, clavo, tronco — 4 tabla · tienes 80 4 clavo · tienes 120 2 tronco delgado · tienes 120
+  OK   PC: en «deco», Mesa a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   PC:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   PC: en «deco», Banco a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   PC:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   PC: en «deco», Arcón a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   PC:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   PC: en «deco», Estantería a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   PC:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   PC: en «deco», Barril a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   PC:   y su coste pide tabla, hierro — 3 tabla · tienes 80 1 hierro · tienes 20
+  OK   PC: en «deco», Cama de madera a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   PC:   y su coste pide tabla, clavo, paja — 4 tabla · tienes 80 4 clavo · tienes 120 2 paja · tienes 80
+  OK   PC: la casa de tablas, el armazón con su suelo, la empalizada con el adarve y el cimiento de los muebles, levantados — {"fallos": [], "falta": []}
+  OK   PC: los seis muebles de tablas, puestos — ['mesa', 'banco', 'arcon', 'estanteria', 'barril', 'cama_madera']
+  OK   PC: sin errores en la página — []
+movil
+  OK   movil: su mojón
+  OK   movil: en «base», Suelo de tablas a la vista, con su imagen cargada — ['Cimiento de piedra', 'Cimiento de troncos', 'Suelo de troncos', 'Suelo de tablas']
+  OK   movil:   y su coste pide tabla, clavo — 4 tabla · tienes 80 4 clavo · tienes 120
+  OK   movil: en «estructura», Chimenea a la vista, con su imagen cargada — ['Poste', 'Viga', 'Chimenea']
+  OK   movil:   y su coste pide piedra, barro — 10 piedra · tienes 117 4 barro · tienes 80
+  OK   movil: en «muro», Muro de tablas a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas c
+  OK   movil:   y su coste pide tabla, clavo — 6 tabla · tienes 80 6 clavo · tienes 120
+  OK   movil: en «muro», Muro de tablas con puerta a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas c
+  OK   movil:   y su coste pide tabla, clavo — 4 tabla · tienes 80 4 clavo · tienes 120
+  OK   movil: en «muro», Muro de tablas con ventana a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas c
+  OK   movil:   y su coste pide tabla, clavo — 5 tabla · tienes 80 5 clavo · tienes 120
+  OK   movil: en «tejado», Tejado de tablillas a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de tablillas', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de tablillas (esquina)', 'Remate de teja (esquina)']
+  OK   movil:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   movil: en «tejado», Remate de tablillas (esquina) a la vista, con su imagen cargada — ['Tejado de paja', 'Tejado de juncos', 'Tejado de tablillas', 'Tejado de teja', 'Remate de paja (esquina)', 'Remate de juncos (esquina)', 'Remate de tablillas (esquina)', 'Remate de teja (esquina)']
+  OK   movil:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   movil: en «acceso», Escalera de tablas a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   movil:   y su coste pide tabla, clavo — 6 tabla · tienes 80 6 clavo · tienes 120
+  OK   movil: en «acceso», Puerta de tablas a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   movil:   y su coste pide tabla, clavo, hierro — 4 tabla · tienes 80 4 clavo · tienes 120 1 hierro · tienes 20
+  OK   movil: en «acceso», Contraventana a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   movil:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   movil: en «acceso», Trampilla a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   movil:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   movil: en «acceso», Polea a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   movil:   y su coste pide tabla, cuerda, hierro — 1 tabla · tienes 80 2 cuerda · tienes 40 1 hierro · tienes 20
+  OK   movil: en «acceso», Polipasto con torno a la vista, con su imagen cargada — ['Escalera de mano', 'Escalera de tablas', 'Andamio', 'Polea', 'Polipasto con torno', 'Puerta de varas', 'Puerta de tablas', 'Contraventana', 'Trampilla']
+  OK   movil:   y su coste pide tabla, cuerda, hierro — 1 tronco delgado · tienes 120 2 tabla · tienes 80 4 cuerda · tienes 40 3 hierro · tienes 20
+  OK   movil: en «exterior», Adarve a la vista, con su imagen cargada — ['Cerca de varas', 'Portillo de varas', 'Empalizada', 'Adarve', 'Puerta de empalizada']
+  OK   movil:   y su coste pide tabla, clavo, tronco — 4 tabla · tienes 80 4 clavo · tienes 120 2 tronco delgado · tienes 120
+  OK   movil: en «deco», Mesa a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   movil:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   movil: en «deco», Banco a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   movil:   y su coste pide tabla, clavo — 2 tabla · tienes 80 2 clavo · tienes 120
+  OK   movil: en «deco», Arcón a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   movil:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   movil: en «deco», Estantería a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   movil:   y su coste pide tabla, clavo — 3 tabla · tienes 80 4 clavo · tienes 120
+  OK   movil: en «deco», Barril a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   movil:   y su coste pide tabla, hierro — 3 tabla · tienes 80 1 hierro · tienes 20
+  OK   movil: en «deco», Cama de madera a la vista, con su imagen cargada — ['Cama de paja', 'Cama de madera', 'Mesa', 'Banco', 'Taburete', 'Arcón', 'Barril', 'Estantería', 'Antorcha de pie', 'Alfombra de piel', 'Estandarte']
+  OK   movil:   y su coste pide tabla, clavo, paja — 4 tabla · tienes 80 4 clavo · tienes 120 2 paja · tienes 80
+  OK   movil: la casa de tablas, el armazón con su suelo, la empalizada con el adarve y el cimiento de los muebles, levantados — {"fallos": [], "falta": []}
+  OK   movil: los seis muebles de tablas, puestos — ['mesa', 'banco', 'arcon', 'estanteria', 'barril', 'cama_madera']
+  OK   movil: sin errores en la página — []
+
+TODO CORRECTO
