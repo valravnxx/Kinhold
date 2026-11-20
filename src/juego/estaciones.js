@@ -512,7 +512,7 @@ function fuegoFragua(cual, id) {
 // de la cúpula, por donde se mete la leña. La leña puesta para arder se ve en la boca; encendido, el fuego asoma por
 // ella (al rojo por dentro) y sale humo por el respiradero (fuegoHornoCeramico).
 const HORNO_CER = { r: 0.62, base: 0.2, alto: 1.2, tiro: 0.13, boca: 0.2, tunel: 0.34 };
-const ARCILLA_HORNO = 0x8c7461, ARCILLA_COCIDA = 0x87634f, HOLLIN_CER = 0x3a302a;
+const ARCILLA_HORNO = 0x8c7461, HOLLIN_CER = 0x3a302a;
 // (20 nov, la segunda mirada: la boca, metida en la cúpula, no pegada delante) la boca del hogar es un arco abierto en
 // la propia cúpula, al pie: de lados rectos hasta BOCA_LADO y medio punto encima, de ancho 2·boca; detrás, el túnel del
 // hogar se mete TUNEL_FONDO dentro del horno, tiznado y negro al fondo.
@@ -566,16 +566,17 @@ function hornoCeramico(id) {
   L.add(new THREE.CircleGeometry(T - 0.012, 14), 0x15110e, 0, A - 0.15, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });   // lo oscuro de dentro
   // el anillo de piedra seca del pie, medio hundido, abierto delante para la boca
   for (let i = 0; i < 10; i++) {
-    const a = Math.PI / 2 + 0.5 + i * (2 * Math.PI - 1.0) / 9 + (az(id, 10 + i) - 0.5) * 0.08, d = R + 0.06;
+    const a = Math.PI / 2 + 0.64 + i * (2 * Math.PI - 1.28) / 9 + (az(id, 10 + i) - 0.5) * 0.08, d = R + 0.06;
     L.add(piedraIrregular(0.13 + az(id, 20 + i) * 0.04, 1, id + 'p' + i, 0.25), i % 3 ? 'piedra' : 'piedraOsc', Math.cos(a) * d, 0.08, Math.sin(a) * d, { y: -a + az(id, 30 + i) * 0.4 }, { escala: new THREE.Vector3(0.8, 0.85, 1.75), plano: true });
   }
-  // el reborde del arco: la arcilla de la boca, más gruesa y cocida (más roja) del fuego, tapando el corte de la cúpula
+  // el reborde del arco: la arcilla de la boca, algo más gruesa y tiznada del fuego (como la cara de encima), tapando el
+  // corte de la cúpula
   const zf = R + 0.025, arco = new THREE.CurvePath();
   arco.add(new THREE.LineCurve3(new THREE.Vector3(BO + 0.03, -0.02, 0), new THREE.Vector3(BO + 0.03, BOCA_LADO, 0)));
   arco.add(new THREE.EllipseCurve(0, BOCA_LADO, BO + 0.03, BO + 0.03, 0, Math.PI, false));
   arco.add(new THREE.LineCurve3(new THREE.Vector3(-BO - 0.03, BOCA_LADO, 0), new THREE.Vector3(-BO - 0.03, -0.02, 0)));
   const pts = arco.getSpacedPoints(40).map(v => new THREE.Vector3(v.x, v.y, v.z || 0));
-  L.add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.045, 7, false), ARCILLA_COCIDA, 0, 0, zf, null, { tex: 'piedra', escala: new THREE.Vector3(1, 1, 0.75), rayas: v => v.y > 0.3 ? 0.62 : 1 });
+  L.add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.042, 7, false), ARCILLA_HORNO, 0, 0, zf - 0.008, null, { tex: 'piedra', escala: new THREE.Vector3(1, 1, 0.45), rayas: v => 0.55 + 0.25 * Math.min(1, Math.max(0, (0.3 - v.y) / 0.3)) });
   // la ceniza vieja que se saca por la boca, desparramada delante
   L.add(piedraIrregular(0.2, 1, id + 'cv', 0.15), 0x6d655d, 0.04, 0.0, zf + 0.16, { y: az(id, 5) }, { escala: new THREE.Vector3(1.2, 0.06, 0.7), sinSuelo: true, tex: 'piedra' });
   const o = new THREE.Group();
