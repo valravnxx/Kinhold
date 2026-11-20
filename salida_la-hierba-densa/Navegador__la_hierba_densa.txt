@@ -1,0 +1,24 @@
+La hierba densa (pc, pc-1)
+  OK   con un perfil que la lleva, miles de matas alrededor del jugador — 1102 matas en 12 celdas, 9918 triángulos
+  OK   y no más de las que dice su perfil (radio y matas por metro) — 1102 de 80425
+  OK   las briznas sueltas de antes ya no se dibujan — 0
+  OK   las matas, del color del suelo: verdes y ninguna negra — 1347 verdes de 1347, 0 negras
+  OK   cada mata, al pie del suelo (a menos de 6 cm) — la peor, a 2.0 cm (425 miradas)
+  OK   al andar 60 m, la hierba va detrás: hay celdas donde estás y se han soltado las de atrás — 27 celdas contigo, 0 atrás
+  OK   el móvil básico no lleva hierba densa y vuelven las briznas sueltas — 0 matas, 6392 briznas
+  OK   al volver a su perfil, otra vez la hierba densa — 616 matas
+  OK   donde se ha construido no queda hierba, y alrededor sí — 0 matas dentro, 752 fuera
+  OK   sin errores en la página
+La hierba densa (movil, movil-2)
+  OK   con un perfil que la lleva, miles de matas alrededor del jugador — 1132 matas en 14 celdas, 10188 triángulos
+  OK   y no más de las que dice su perfil (radio y matas por metro) — 1132 de 69728
+  OK   las briznas sueltas de antes ya no se dibujan — 0
+  OK   las matas, del color del suelo: verdes y ninguna negra — 1457 verdes de 1457, 0 negras
+  OK   cada mata, al pie del suelo (a menos de 6 cm) — la peor, a 2.0 cm (419 miradas)
+  OK   al andar 60 m, la hierba va detrás: hay celdas donde estás y se han soltado las de atrás — 20 celdas contigo, 0 atrás
+  OK   el móvil básico no lleva hierba densa y vuelven las briznas sueltas — 0 matas, 3309 briznas
+  OK   al volver a su perfil, otra vez la hierba densa — 883 matas
+  OK   donde se ha construido no queda hierba, y alrededor sí — 0 matas dentro, 704 fuera
+  OK   sin errores en la página
+
+Todo bien
