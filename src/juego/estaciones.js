@@ -1580,7 +1580,7 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (o.userData.tipo === 'carbonera') { moverHumo(f, t / 1000); continue; }   // (arde ahogada: sin luz)
       if (o.userData.tipo === 'horno_reduccion' || o.userData.tipo === 'horno_ceramico') moverHumo(f, t / 1000); else if (!brasas) moverFuego(f, t / 1000);
       if (o.userData.tipo === 'horno_ceramico') vF.set(0, 0.22, HORNO_CER.r - 0.12); else   // (la luz, dentro del túnel del hogar: alumbra la boca y lo de delante, no la cúpula)
-      vF.set(0, brasas ? 0.5 : 0.9, 0); f.localToWorld(vF); const p = vF.clone(); p.k = brasas ? 0.22 : o.userData.tipo === 'horno_ceramico' ? 0.4 : 1; arden.push(p); // la luz, por encima de las piedras (si no, las quema); las brasas, poca
+      vF.set(0, brasas ? 0.5 : 0.9, 0); f.localToWorld(vF); const p = vF.clone(); p.k = brasas ? 0.22 : o.userData.tipo === 'horno_ceramico' ? 0.4 : 1; if (o.userData.tipo === 'horno_ceramico') p.alcance = 2.2; arden.push(p); // la luz, por encima de las piedras (si no, las quema); las brasas, poca
     }
     return arden;
   }

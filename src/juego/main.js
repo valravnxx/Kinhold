@@ -2622,7 +2622,7 @@ function moverFuegos() {
   lucesFuego.forEach((l, i) => {
     const c = cerca[i];
     if (!c || c.d > 25) { l.intensity = 0; return; }
-    l.position.copy(c.p);
+    l.position.copy(c.p); l.distance = c.p.alcance ?? 9;   // (20 nov: la del horno cerámico, corta: sin sombras, atravesaba la cúpula y teñía a quien estaba detrás)
     l.intensity = 7 * (c.p.k ?? 1) * (0.86 + 0.08 * Math.sin(t * 9.1 + i) + 0.06 * Math.sin(t * 23.7 + i * 2));
   });
 }
