@@ -1,0 +1,70 @@
+  OK   PC: el banco de arcilla del río del norte está en su sitio — {'id': 'arcilla:1846170,454744', 'x': -2.96, 'z': 0.37}
+  OK   PC: y se ve
+  OK   PC: junto al banco, Usar dice «Cavar: Banco de arcilla» — {'texto': 'Cavar: Banco de arcilla', 'sub': None, 'apagada': False, 'x': -2.96, 'z': 0.37}
+  OK   PC: sin la pala de madera, no cava
+  OK   PC: con la pala de madera, una cesta de arcilla
+  OK   PC: y el banco sigue ahí (inagotable)
+  OK   PC: el horno apagado, sin llama, con la leña puesta en la boca — {'hay': True, 'llama': False, 'humo': False, 'lena': True, 'rojo': False}
+  OK   PC: el encendido, con fuego en la boca, al rojo por dentro y humo — {'hay': True, 'llama': True, 'humo': True, 'lena': True, 'rojo': True}
+  OK   PC: el horno no se atraviesa (el jugador se queda fuera del anillo de piedras) — 1.06 m del centro
+  OK   PC: su pestaña «Horno cerámico», con su fuego apagado y la leña puesta — Horno cerámico
+Un horno de alfarero: una cúpula de arcilla sobre piedra, con la boca del hogar abajo; encendido con leña, cuece el barro · sus recetas gastan lo que se le deja
+Todo
+2
+Con las manos
+en cualquier sitio
+2
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secadero
+no hay cerca
+Raspador de pieles
+no hay cerca
+Era
+no hay cerca
+Horno de reducción
+no hay cerca
+C
+  OK   PC: a su fuego solo se le echa leña — ['lena']
+  OK   PC: el panel no se sale de lado
+  OK   PC: sin errores en la página — []
+  OK   móvil: el banco de arcilla del río del norte está en su sitio — {'id': 'arcilla:1846170,454744', 'x': -2.96, 'z': 0.37}
+  OK   móvil: y se ve
+  OK   móvil: junto al banco, Usar dice «Cavar: Banco de arcilla» — {'texto': 'Cavar: Banco de arcilla', 'sub': None, 'apagada': False, 'x': -2.96, 'z': 0.37}
+  OK   móvil: sin la pala de madera, no cava
+  OK   móvil: con la pala de madera, una cesta de arcilla
+  OK   móvil: y el banco sigue ahí (inagotable)
+  OK   móvil: el horno apagado, sin llama, con la leña puesta en la boca — {'hay': True, 'llama': False, 'humo': False, 'lena': True, 'rojo': False}
+  OK   móvil: el encendido, con fuego en la boca, al rojo por dentro y humo — {'hay': True, 'llama': True, 'humo': True, 'lena': True, 'rojo': True}
+  OK   móvil: el horno no se atraviesa (el jugador se queda fuera del anillo de piedras) — 1.06 m del centro
+  OK   móvil: su pestaña «Horno cerámico», con su fuego apagado y la leña puesta — Horno cerámico
+Un horno de alfarero: una cúpula de arcilla sobre piedra, con la boca del hogar abajo; encendido con leña, cuece el barro · sus recetas gastan lo que se le deja
+Todo
+2
+Con las manos
+en cualquier sitio
+2
+Fuego
+no hay cerca
+Piedra de tallar
+no hay cerca
+Banco de tronco
+no hay cerca
+Secadero
+no hay cerca
+Raspador de pieles
+no hay cerca
+Era
+no hay cerca
+Horno de reducción
+no hay cerca
+C
+  OK   móvil: a su fuego solo se le echa leña — ['lena']
+  OK   móvil: el panel no se sale de lado
+  OK   móvil: sin errores en la página — []
+
+TODO CORRECTO
