@@ -1,0 +1,65 @@
+  OK   a la vista, de nivel 2: Suelo de tablas
+  OK   a la vista, de nivel 2: Muro de tablas
+  OK   a la vista, de nivel 2: Muro de tablas con puerta
+  OK   a la vista, de nivel 2: Muro de tablas con ventana
+  OK   a la vista, de nivel 2: Escalera de tablas
+  OK   a la vista, de nivel 2: Tejado de tablillas
+  OK   a la vista, de nivel 2: Remate de tablillas (esquina)
+  OK   a la vista, de nivel 2: Puerta de tablas
+  OK   a la vista, de nivel 2: Contraventana
+  OK   a la vista, de nivel 2: Trampilla
+  OK   a la vista, de nivel 2: Chimenea
+  OK   a la vista, de nivel 2: Adarve
+  OK   a la vista, de nivel 2: Polea
+  OK   a la vista, de nivel 2: Polipasto con torno
+  OK   mueble de tablas a la vista: Cama de madera
+  OK   mueble de tablas a la vista: Mesa
+  OK   mueble de tablas a la vista: Banco
+  OK   mueble de tablas a la vista: Arcón
+  OK   mueble de tablas a la vista: Barril
+  OK   mueble de tablas a la vista: Estantería
+  OK   lo de nivel 3 sigue escondido
+  OK   a la vista: Mojón
+  OK   a la vista: Cimiento de piedra
+  OK   a la vista: Cimiento de troncos
+  OK   a la vista: Suelo de troncos
+  OK   a la vista: Poste
+  OK   a la vista: Viga
+  OK   a la vista: Muro de zarzo y barro
+  OK   a la vista: Muro de zarzo y barro con puerta
+  OK   a la vista: Muro de zarzo y barro con ventana
+  OK   a la vista: Muro de troncos
+  OK   a la vista: Muro de troncos con puerta
+  OK   a la vista: Muro de troncos con ventana
+  OK   a la vista: Medio muro
+  OK   a la vista: Tejado de juncos
+  OK   a la vista: Remate de juncos (esquina)
+  OK   a la vista: Escalera de mano
+  OK   a la vista: Andamio
+  OK   a la vista: Puerta de varas
+  OK   a la vista: Cerca de varas
+  OK   a la vista: Portillo de varas
+  OK   mueble a la vista: Taburete
+  OK   mueble a la vista: Estandarte
+  OK   a la vista, con la paja de la era: Tejado de paja
+  OK   a la vista, con la paja de la era: Remate de paja (esquina)
+  OK   a la vista, con las tejas del horno cerámico: Tejado de teja
+  OK   a la vista, con las tejas del horno cerámico: Remate de teja (esquina)
+  OK   mueble a la vista, con la paja de la era: Cama de paja
+  OK   mueble a la vista, con la paja de la era: Antorcha de pie
+  OK   mueble a la vista, con la paja de la era: Alfombra de piel
+  OK   a la vista, de nivel 2 pero destapada: Empalizada
+  OK   a la vista, de nivel 2 pero destapada: Puerta de empalizada (sin hierro)
+  OK   a la vista, de nivel 2 pero destapado: Muro de entramado
+  OK   a la vista, de nivel 2 pero destapado: Muro de entramado con puerta
+  OK   a la vista, de nivel 2 pero destapado: Muro de entramado con ventana
+  OK   la pestaña «tierra» tiene algo
+  OK   la pestaña «base» tiene algo
+  OK   la pestaña «estructura» tiene algo
+  OK   la pestaña «muro» tiene algo
+  OK   la pestaña «tejado» tiene algo
+  OK   la pestaña «acceso» tiene algo
+  OK   la pestaña «exterior» tiene algo
+  OK   la pestaña de muebles tiene algo
+
+63 correctas, 0 fallos
