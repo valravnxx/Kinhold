@@ -512,7 +512,7 @@ function fuegoFragua(cual, id) {
 // de la cúpula, por donde se mete la leña. La leña puesta para arder se ve en la boca; encendido, el fuego asoma por
 // ella (al rojo por dentro) y sale humo por el respiradero (fuegoHornoCeramico).
 const HORNO_CER = { r: 0.62, base: 0.2, alto: 1.2, tiro: 0.13, boca: 0.2, tunel: 0.34 };
-const ARCILLA_HORNO = 0x8c7461, HOLLIN_CER = 0x3a302a;
+const ARCILLA_HORNO = 0xa38867, HOLLIN_CER = 0x3a302a;   // (20 nov, la segunda mirada: ocre terroso, más claro; antes salía marrón chocolate)
 // (20 nov, la segunda mirada: la boca, metida en la cúpula, no pegada delante) la boca del hogar es un arco abierto en
 // la propia cúpula, al pie: de lados rectos hasta BOCA_LADO y medio punto encima, de ancho 2·boca; detrás, el túnel del
 // hogar se mete TUNEL_FONDO dentro del horno, tiznado y negro al fondo.
