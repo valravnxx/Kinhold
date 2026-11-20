@@ -57,7 +57,7 @@ export function crearAccionVista({ escena, camara, renderer, estado, pj, menuUsa
     if (!a) { etq.hidden = true; lista.hidden = true; aroAccion.visible = false; return; }
     const y0 = a.y ?? sueloEn(a.pos.x, a.pos.z);
     // el aro, en el suelo bajo la cosa (algo más grande para un árbol, una obra o una estación)
-    const r = a.icono === 'g_construir' ? RADIO_ARO.obra : (a.alto || 0) >= 3 ? RADIO_ARO.arbol : String(a.icono).startsWith('est_') ? RADIO_ARO.est : (a.alto || 0) <= 0.4 ? 0.42 : 0.6;
+    const r = a.aro ? a.aro : a.icono === 'g_construir' ? RADIO_ARO.obra : (a.alto || 0) >= 3 ? RADIO_ARO.arbol : String(a.icono).startsWith('est_') ? RADIO_ARO.est : (a.alto || 0) <= 0.4 ? 0.42 : 0.6;
     aroAccion.visible = !(a.pos.x === pj.x && a.pos.z === pj.z); // (lo que va contigo, como comer, no lleva aro)
     aroAccion.position.set(a.pos.x, y0 + 0.04, a.pos.z); aroAccion.scale.setScalar(r / 0.5);
     // la etiqueta, sobre la cosa (si está delante de la cámara)

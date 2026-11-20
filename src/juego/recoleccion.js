@@ -36,7 +36,7 @@ export function zonasDemo(x, z) {
 // ---------- Modelos (estilo v5: texturas por código, color por vértice, sombra de contacto) ----------
 const PIEL_SILEX = 0xcfc6b0, NUCLEO_SILEX = 0x3e3b3c, CALIZA_COLOR = 0xbcb4a0, ORTIGA = 0x4a6436, ORTIGA_OSC = 0x3d5530;
 // (P10) la arcilla: gris azulada, más oscura y más húmeda en el fondo del corte; la tierra parda de encima
-const ARCILLA_GRIS = 0x666b67, ARCILLA_HONDA = 0x555c58, ARCILLA_TIERRA = 0x5c4a39;
+const ARCILLA_GRIS = 0x666b67, ARCILLA_HONDA = 0x555c58, ARCILLA_TIERRA = 0x5c4a39, ARCILLA_PARED = 0x6b6358;
 const JUNCO = 0x7a8c4e, JUNCO_OSC = 0x687a43, JUNCO_FLOR = 0x7a6040, BARRO_SECO = 0x6e5a44, BARRO_HUMEDO = 0x4e3f31, BARRO_AGUA = 0x51473a;
 const TOCON = 0x8a7660, TOCON_PODRIDO = 0x9c8c74, YESQUERO = 0x8c7b63, YESQUERO_BORDE = 0xc9bca3;
 // (P4) las bayas: maduras rojas y negro morado, alguna aún verde rojiza; las cañas, pardo rojizo. Las setas: sombrero
@@ -160,7 +160,7 @@ function arcillaCalco() {
     let R = mezcla(mezcla(0x5a, 0x6c, arc), 0x58, hondo), G = mezcla(mezcla(0x49, 0x67, arc), 0x53, hondo), B = mezcla(mezcla(0x38, 0x5c, arc), 0x49, hondo);
     const m = (mot - 0.5) * (arc ? 22 : 30); R += m; G += m; B += m * 0.8;
     if (grumo > 0.68) { const g = arc ? 9 : 16; R -= g; G -= g * 0.9; B -= g * 0.8; }   // terroncitos y grumos
-    R = R * (1 - corte * 0.45 - raya * 0.14); G = G * (1 - corte * 0.45 - raya * 0.14); B = B * (1 - corte * 0.4 - raya * 0.12);
+    R = R * (1 - corte * 0.3 - raya * 0.07); G = G * (1 - corte * 0.3 - raya * 0.07); B = B * (1 - corte * 0.27 - raya * 0.06);   // (20 nov: sin bandas oscuras en el fondo)
     const A = tierra * (0.7 + 0.3 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
     d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
   }
@@ -340,7 +340,7 @@ export function modelosRecoleccion() {
       pp.setXYZ(i, x * k, y > 0 ? y * Math.max(0.35, alto) : y, z * k);
     }
     pared.computeVertexNormals();
-    L.add(pared, ARCILLA_HONDA, 0, 0, 0, null, { escala: new THREE.Vector3(1, 1, 0.87), tex: 'piedra', sinSuelo: true, rayas: v => 0.55 + 0.45 * Math.max(0, Math.min(1, (v.y + 0.03) / 0.14)) });
+    L.add(pared, ARCILLA_PARED, 0, 0, 0, null, { escala: new THREE.Vector3(1, 1, 0.87), tex: 'piedra', sinSuelo: true, rayas: v => 0.74 + 0.26 * Math.max(0, Math.min(1, (v.y + 0.03) / 0.14)) });   // (20 nov: gris pardo como el fondo, no gris azulado oscuro)
     [[0.78, 0.04, 0.3, 0.3, 0.1, 1], [0.9, 0.035, 0.08, -0.4, 0.085, 0], [0.7, 0.09, 0.2, 0.9, 0.075, 1], [0.58, 0.035, 0.5, 1.3, 0.07, 0], [-0.8, 0.03, -0.25, 2.1, 0.07, 1]].forEach(([x, y, z, gi, r, gris], i) => {
       L.add(new THREE.IcosahedronGeometry(r, 0), gris ? ARCILLA_GRIS : ARCILLA_HONDA, x, y + 0.07, z, { y: gi, z: (i - 1.5) * 0.08 }, { escala: new THREE.Vector3(1.5, 0.65, 1.15), plano: true, tex: 'piedra' });
     });
@@ -754,7 +754,11 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     }
     cuenta.trozos = trozos.size; cuenta.puntos = rec.puntos.length;
     refrescar();
+    // (P10, 20 nov) si cambian los bancos de arcilla a la vista, la vegetación rehace su hierba (dentro del hoyo no crece)
+    const hoyos = rec.puntos.filter(p => p.tipo === 'arcilla').map(p => p.id).join();
+    if (hoyos !== hoyosAntes) { hoyosAntes = hoyos; if (api.alCambiarHoyos) api.alCambiarHoyos(); }
   }
+  let hoyosAntes = '';
   function refrescar(ahora = Date.now()) {
     for (const { im, lista, matrices, siempre, cortado } of mallas) {
       lista.forEach((p, i) => im.setMatrixAt(i, (cortado ? rec.enPie(p.id, ahora) && !rec.disponible(p.id, ahora) && !ocupado(p.x, p.z) && !p.tapado : visible(p, ahora, siempre)) ? matrices[i] : CERO));
@@ -777,8 +781,8 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
     return ms;
   }
   const cercanos = (x, z, dist = 1.6, ahora = Date.now()) => rec.cercanos(x, z, ahora, dist).filter(p => !ocupado(p.x, p.z) && !p.tapado);
-  return {
-    rec, grupo, cuenta, paso, refrescar,
+  const api = {
+    rec, grupo, cuenta, paso, refrescar, alCambiarHoyos: null,
     get puntos() { return rec.puntos; },
     get listo() { return !!centro && !cuenta.pendientes; },
     // donde se construye no se recoge (queda debajo), y las alturas de nuevo (el suelo nivelado)
@@ -837,4 +841,5 @@ export function crearRecoleccionMundo({ raiz, mundoJ, semilla, altura, obstaculo
       return r;
     },
   };
+  return api;
 }

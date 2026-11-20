@@ -366,6 +366,7 @@ const obstaculos = decorado.obstaculos; // {x,z,r}
 const recoleccion = mundoJ ? crearRecoleccionMundo({ raiz: escena, mundoJ, semilla: MUNDO.mapa.semilla + (window.__mutarRecogida ? 1 + Math.floor(Math.random() * 1e6) : 0), altura: decorado.altura, obstaculos, almacen })
   : crearRecoleccion({ raiz: escena, altura: decorado.altura, obstaculos, almacen });
 if (hierbaDensa) hierbaDensa.estorbos = () => recoleccion.puntos || [];   // (a su lado no se pone hierba, que los taparía)
+if (mundoJ) { decorado.estorbos = () => recoleccion.puntos || []; recoleccion.alCambiarHoyos = () => decorado.rehacer(); }   // (P10, 20 nov: ni hierba ni matas dentro del hoyo de la arcilla)
 // lo que se suelta cae al suelo, a tus pies; fuera de tus tierras desaparece pasada 1 hora real (src/juego/suelo.js)
 const sueloObjetos = crearSuelo({ raiz: escena, altura: decorado.altura, almacen, enTierras: (autor, x, z) => !!mundo.tierraDe(x, z) });
 // los árboles se talan a golpes de hacha, caen, dejan tocón y vuelven a crecer (src/juego/tala.js)
@@ -1869,7 +1870,8 @@ function accionPrincipal() {
     const so = sueloObjetos.cercanos(pj.x, pj.z).find(o => !esVehiculo(o.cosa.tipo) && o.cosa.tipo !== 'canoa' && o.cosa.tipo !== 'canoa_a_medias'); // lo que hay en el suelo, antes que lo que se recoge (la canoa no se coge: se ata)
     if (so) return A(tr('Coger del suelo: {n} × {c}', { n: so.cosa.n, c: tr(CATALOGO[so.cosa.tipo].nombre) }), so.cosa.tipo, so, () => cogerDelSuelo(so), { alto: 0.3 });
     const rc = recoleccion.cercano(pj.x, pj.z);
-    if (rc) return A(verboRecoger(rc), ICONO_RECOGER(rc), rc, () => recoger(rc), { alto: 0.6 });
+    // (20 nov) el banco de arcilla es un hoyo ancho: su aro va por fuera del caballón (dentro se veía en la pared del corte)
+    if (rc) return A(verboRecoger(rc), ICONO_RECOGER(rc), rc, () => recoger(rc), { alto: 0.6, aro: rc.tipo === 'arcilla' ? 1.1 : undefined });
     // junto a un matorral o un arbusto de bayas (ya sin bayas), con un hacha o una lasca encima, se desbroza (8 nov)
     const db = desbrozableCercano(), con = conQueDesbroza(inventario());
     if (db && con) return A(tr('Desbrozar: {c}', { c: tr(RECOLECTABLES[db.tipo].nombre).toLowerCase() }), con, db, () => empezarDesbroce(db), { alto: 0.8, prog: estado.talando && estado.talando.desbroce && estado.talando.desbroce.id === db.id ? estado.talando.dados / estado.talando.golpes : 0 });

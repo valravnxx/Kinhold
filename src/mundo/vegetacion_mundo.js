@@ -169,15 +169,19 @@ export function crearVegetacionMundo({ mundoJ, semilla, medidas = MEDIDAS_VEGETA
     const dist = (e) => Math.hypot(e.x - P.x, e.z - P.z), enCuadro = (e) => Math.abs(e.x - P.x) <= C && Math.abs(e.z - P.z) <= C;
     const H = medidas.hierba;
     let arboles = [], piedras = [], hierba = [], flores = [], matas = [], cascotes = [], soto = [], paredes = [];
+    // (P10, 20 nov) dentro del hoyo de un banco de arcilla no crece nada: ni hierba, ni flores, ni matas, ni sotobosque
+    // (api.estorbos: lo que se recoge, src/juego/recoleccion.js; 1,3 m, como la hierba densa)
+    const hoyos = (api.estorbos ? api.estorbos() : []).filter(p => p.tipo === 'arcilla' && dist(p) <= H + 3);
+    const libre = (e) => !hoyos.length || !hoyos.some(p => (p.x - e.x) ** 2 + (p.z - e.z) ** 2 < (1.3 + 0.4 * (e.tam || 0)) ** 2);
     for (const t of trozos.values()) {
       for (const a of t.arboles) if (enCuadro(a)) arboles.push(a);
       for (const e of t.paredes || []) if (dist(e) <= R_PARED) paredes.push(e);
       for (const e of t.piedras) if (enCuadro(e)) { if (!e.id || api.rocaEnPie(e.id)) piedras.push(e); else cascotes.push(...cascotesDe(e)); }
       if (t.hierba) {
-        for (const e of t.hierba.hierba) if (dist(e) <= H) hierba.push(e);
-        for (const e of t.hierba.flores) if (dist(e) <= H) flores.push(e);
-        for (const e of t.hierba.matas) if (dist(e) <= H && api.mataEnPie(e.id)) matas.push(e);
-        for (const e of t.hierba.soto) if (dist(e) <= H) soto.push(e);
+        for (const e of t.hierba.hierba) if (dist(e) <= H && libre(e)) hierba.push(e);
+        for (const e of t.hierba.flores) if (dist(e) <= H && libre(e)) flores.push(e);
+        for (const e of t.hierba.matas) if (dist(e) <= H && api.mataEnPie(e.id) && libre(e)) matas.push(e);
+        for (const e of t.hierba.soto) if (dist(e) <= H && libre(e)) soto.push(e);
       }
     }
     // árboles: si hay más de los que aguanta el aparato, se quitan los más lejanos (no al azar: lo de cerca no cambia)

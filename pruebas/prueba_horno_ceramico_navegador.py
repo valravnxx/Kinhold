@@ -102,7 +102,9 @@ def recorrido(nav, nombre, pref, vista, movil):
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
     D = 1.25 if movil else 1   # (en el móvil, estrecho, algo más lejos para que quepan, y el jugador más cerca de lo mirado)
     LADO = 0.55 if movil else 1.2
-    mirar(pg, b, 0, 0, 0.4, 3.2 * D, 0.65, LADO)
+    # (20 nov) el banco, en el centro: el jugador detrás de él según la cámara (1,8 m más allá), y el hoyo delante
+    import math
+    mirar(pg, b, -math.sin(0.4) * 1.8, -math.cos(0.4) * 1.8, 0.4, 4.6 * D, 0.62, 0)
     pg.screenshot(path=f'{SALIDA}/{pref}_banco_arcilla.png', timeout=180000)
     mirar(pg, c, 0, 1.6, 0, 7.5 * D, 0.3)
     pg.screenshot(path=f'{SALIDA}/{pref}_hornos.png', timeout=180000)
