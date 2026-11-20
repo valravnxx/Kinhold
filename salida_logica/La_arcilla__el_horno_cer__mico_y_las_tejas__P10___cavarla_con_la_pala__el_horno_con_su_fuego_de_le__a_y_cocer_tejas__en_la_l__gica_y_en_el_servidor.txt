@@ -1,0 +1,49 @@
+Lo que dice la tarea
+  OK   la arcilla: en la orilla y la ribera, se cava, da 1 cesta de arcilla, inagotable — {"nombre":"Banco de arcilla","donde":["rio","ribera"],"con":"pala","accion":"cavar","da":"arcilla","min":1,"max":1,"vuelve":0}
+  OK   se cava con la pala de madera (no con el palo cavador) — ["pala_madera"]
+  OK   el horno cerámico: 6 cestas de arcilla y 10 piedras; fuera y en tu tierra; con fuego; da el cocer — {"nombre":"Horno cerámico","un":"un horno cerámico","uso":"cocer","coste":{"arcilla":6,"piedra":10},"donde":"fuera","trabajo":60,"tierra":true,"fuego":true,"hace":"Un horno de alfarero: una cúpula de arcilla sobre piedra, con la boca del hogar abajo; encendido con leña, cuece el barro"}
+  OK   su fuego come leña — {"dura":1,"max":7200,"puestas":0,"brasas":false,"come":["lena"]}
+  OK   fuera de tu tierra, dice por qué — El horno cerámico va en tu tierra (o en la de quien te invita).
+Los bancos de arcilla en el mundo de verdad
+  (600 m alrededor del río del norte: 1 bancos de arcilla y 7 sitios de barro)
+  OK   hay al menos un banco de arcilla en el río más cercano a la salida (es inagotable: con uno basta) — 1
+  OK   cada uno en la orilla o la ribera
+  OK   junto a donde sale el barro (a menos de 60 m de un sitio de barro) — 1 de 1
+  OK   menos que el barro — 1 < 7
+  OK   los mismos para todos (de la semilla del mundo)
+  OK   el servidor la conoce
+  OK   sin la pala, el servidor dice que no — Necesitas una pala de madera para cavar la arcilla.
+  OK   con la pala de madera, Lu cava dos cestas de arcilla seguidas
+Cavar la arcilla
+  OK   sin nada, no: dice que hace falta la pala de madera — Necesitas una pala de madera para cavar la arcilla.
+  OK   con el palo cavador, tampoco — Necesitas una pala de madera para cavar la arcilla.
+  OK   con la pala de madera, 1 cesta de arcilla — {"ok":true,"objeto":"arcilla","cantidad":1,"donde":[["espalda/0",1]],"vuelve":1795129200000}
+  OK   y otra enseguida: no se agota
+  OK   queda en el registro con su autor — null
+Levantar el horno cerámico y encenderlo con leña
+  OK   se pone su marco
+  OK   se levanta con sus 6 cestas de arcilla y sus 10 piedras — {}
+  OK   ramas, no: solo arde leña — Al horno cerámico solo se le echa leña.
+  OK   carbón, tampoco — Al horno cerámico solo se le echa leña.
+  OK   sin nada puesto no se enciende, y dice que le eches leña — No tiene nada que arder: échale leña.
+  OK   le caben 12 leñas (2 h de fuego), y la 13.ª ya no — 12
+  OK   con yesca y el taladro, se enciende y arde 2 h
+Por el servidor, con autor
+  OK   Ana no puede echarle una rama — Al horno cerámico solo se le echa leña.
+  OK   le echa una leña
+  OK   y lo enciende
+  OK   todos ven su fuego encendido — {"encendida":true,"queda":599,"combustible":0,"cenizas":false}
+Las tejas
+  OK   la receta: en el horno cerámico, 2 cestas de arcilla dan 10 tejas — {"nombre":"Tejas","uso":"cocer","da":"teja","n":10,"gasta":{"arcilla":2},"s":1800}
+  OK   tarda un rato real: media hora (COCER) — 1800 s
+  OK   el tejado de teja (10 tejas y 1 tronco) y su remate (5 tejas y 1 tronco) salen en el menú de construir
+  OK   lo demás de tablas, clavos o hierro sigue escondido (es la tarea siguiente)
+  OK   Ana deja sus 2 cestas de arcilla en el horno
+  OK   con el horno apagado, no se cuece: dice que lo encienda — El fuego está apagado: enciéndelo con yesca y el taladro de fuego.
+  OK   le echa leña y lo enciende
+  OK   encendido, mete la arcilla a cocer: se gasta la de la estación
+  OK   un minuto antes de la media hora, aún no están — Aún no está terminado.
+  OK   Bo, que pasaba por allí, no se las lleva — Aquí no tienes nada.
+  OK   pasada la media hora (aunque nadie juegue), Ana recoge sus 10 tejas — 10
+
+40 bien, 0 mal
