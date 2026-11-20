@@ -3,7 +3,9 @@
 // madera y una criba (2 mimbres de la ribera y una vara, en el banco) criba hierro de pantano en las manchas de agua
 // rojiza de la vega; hace carbón en carboneras; levanta el horno de reducción y saca lupias; hace el fuelle (2 cueros), la
 // fragua y barras de hierro; en ella, el hacha, el pico, la sierra y los clavos; sierra tablas, rompe una roca grande con
-// el pico, cava arcilla, levanta el horno cerámico, cuece tejas y pone un suelo de tablas y un tejado de teja.
+// el pico, cava arcilla, levanta el horno cerámico, cuece tejas y pone un suelo de tablas y un tejado de teja: levanta un
+// andamio junto a su casa (8 varas y 2 cuerdas), sube por él a mano lo ligero (tablas, clavos y tejas, con el zurrón a la
+// espalda) y trabaja desde arriba; el tronco delgado, pesado, lo rueda solo hasta lo alto por dos varas con una cuerda.
 // Cadena: mineral de hierro ← mancha de la vega (pala de madera ← tronco corto; criba ← 2 mimbres y una vara); carbón ←
 // carbonera (10 leñas ← 2 troncos cortos); lupia ← horno de reducción (20 barros, 10 piedras, 4 carbones) con 3 minerales
 // y 4 carbones; fuelle ← 2 cueros (cubas) y 2 varas; fragua ← 12 piedras, 4 barros y el fuelle; barra ← lupia y carbón
