@@ -253,10 +253,13 @@ function muroTablas(opc = {}) {
   for (let t = 0; t < n; t++) {
     const x = -MODULO / 2 + w / 2 + t * w;
     const color = ruido(t * 3.7 + 1) > 0.5 ? 'tabla' : 'madera';
+    // (20 nov) las tablas se solapan un poco, una adelante y otra atrás, como clavadas a tope: antes quedaba una
+    // rendija entre cada dos por la que se veía la luz de detrás como una raya blanca
+    const z = (t % 2 ? 1 : -1) * P.grosorTabla * 0.22;
     if (opc.puerta && Math.abs(x) < P.anchoPuerta / 2) {
       const h = ALTURA - P.altoPuerta;
-      L.add(cajaR(w * 0.95, h, P.grosorTabla, 0.012), color, x, P.altoPuerta + h / 2, 0);
-    } else L.add(cajaR(w * 0.95, ALTURA, P.grosorTabla, 0.012), color, x, ALTURA / 2, 0);
+      L.add(cajaR(w * 1.04, h, P.grosorTabla, 0.012), color, x, P.altoPuerta + h / 2, z);
+    } else L.add(cajaR(w * 1.04, ALTURA, P.grosorTabla, 0.012), color, x, ALTURA / 2, z);
   }
   const c = 'maderaOsc';
   if (opc.puerta) {
@@ -275,10 +278,12 @@ function muroTablas(opc = {}) {
 function muroTablasVentana() {
   const L = loteMuro();
   const n = 8, w = MODULO / n, a = P.anchoVentana / 2, gr = P.grosorTabla;
-  const tabla = (x0, x1, y0, y1, color) => { if (x1 - x0 > 0.01 && y1 - y0 > 0.01) L.add(cajaR((x1 - x0) * 0.95, y1 - y0, gr, 0.012), color, (x0 + x1) / 2, (y0 + y1) / 2, 0); };
+  let z = 0;   // (20 nov) solapadas, una adelante y otra atrás, sin rendijas (como en muroTablas)
+  const tabla = (x0, x1, y0, y1, color) => { if (x1 - x0 > 0.01 && y1 - y0 > 0.01) L.add(cajaR((x1 - x0) * 1.04, y1 - y0, gr, 0.012), color, (x0 + x1) / 2, (y0 + y1) / 2, z); };
   for (let t = 0; t < n; t++) {
     const x0 = -MODULO / 2 + t * w, x1 = x0 + w;
     const color = ruido(t * 3.7 + 1) > 0.5 ? 'tabla' : 'madera';
+    z = (t % 2 ? 1 : -1) * gr * 0.22;
     if (x1 <= -a || x0 >= a) { tabla(x0, x1, 0, ALTURA, color); continue; }
     tabla(Math.max(x0, -a), Math.min(x1, a), 0, P.bajoVentana, color);
     tabla(Math.max(x0, -a), Math.min(x1, a), P.altoVentana, ALTURA, color);

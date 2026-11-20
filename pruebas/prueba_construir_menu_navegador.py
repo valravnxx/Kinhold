@@ -96,7 +96,13 @@ with sync_playwright() as p:
         # la empalizada (P11c): ya no se esconde; en «Exterior», con su imagen y sus 6 troncos (delgados); se levanta
         # clavada en el suelo, con las puntas afiladas. MUTAR=2: escondida otra vez (tiene que fallar)
         pg.click('#pestanas button[data-cat="exterior"]'); pg.wait_for_timeout(2000)
-        ext = ev("[...document.querySelectorAll('#piezas button.pieza')].map(b => { const i = b.querySelector('img.pz-img'); return [b.querySelector('b').textContent, !!i && i.complete && i.naturalWidth > 0, [...b.querySelectorAll('.cc')].map(c => c.title).join(' ')]; })")
+        vistos = {}   # (las de fuera se cargan al deslizar: poco a poco, que cada una pase por la vista; desde P10 hay 5)
+        for paso in range(0, 7):
+            ev(f"(() => {{ const e = document.getElementById('piezas'); e.scrollLeft = e.scrollWidth * {paso} / 6; }})()"); pg.wait_for_timeout(600)
+            for e in ev("[...document.querySelectorAll('#piezas button.pieza')].map(b => { const i = b.querySelector('img.pz-img'); return [b.querySelector('b').textContent, !!i && i.complete && i.naturalWidth > 0, [...b.querySelectorAll('.cc')].map(c => c.title).join(' ')]; })"):
+                if e[1] or e[0] not in vistos: vistos[e[0]] = e
+        ext = list(vistos.values())
+        ev("document.getElementById('piezas').scrollLeft = 0")
         emp = [e for e in ext if e[0] == 'Empalizada']
         if os.environ.get('MUTAR') == '2': emp = []
         comprobar('en «Exterior», la empalizada a la vista, con su imagen cargada', bool(emp) and emp[0][1], str([e[0] for e in ext]))

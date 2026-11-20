@@ -64,8 +64,13 @@ const ESENCIAL = {
 // Las piezas de construir que cada hito vivo deja a la vista en el menú, con todo su coste saliendo del mundo.
 const PIEZAS_ESENCIALES = {
   'casa-fuerte': ['empalizada', 'empalizada_puerta', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana'],   // (P11c)
-  hierro: ['tejado_teja', 'remate_teja'],   // (P10: con las tejas del horno cerámico)
+  hierro: ['tejado_teja', 'remate_teja',   // (P10: con las tejas del horno cerámico)
+    // (P10, «Las piezas de nivel 2 a la vista»: con las tablas, los clavos y las barras de hierro)
+    'suelo_tabla', 'muro_tabla', 'muro_tabla_puerta', 'muro_tabla_ventana', 'escalera_tabla', 'tejado_tablilla', 'remate_tablilla',
+    'puerta_tabla', 'contraventana', 'trampilla', 'hogar', 'adarve', 'polea', 'polipasto'],
 };
+// Los muebles de tablas que deja a la vista (P10): con todo su coste saliendo del mundo.
+const MUEBLES_ESENCIALES = { hierro: ['mesa', 'banco', 'arcon', 'estanteria', 'barril', 'cama_madera'] };
 if (MUTAR === '3') delete PIEZAS.empalizada.destapada;
 
 // ---- lo que se puede tener, partiendo de nada ----
@@ -175,6 +180,15 @@ for (const [id, lista] of Object.entries(PIEZAS_ESENCIALES)) {
     const d = PIEZAS[k], sin = d ? sePuede(d.coste) : [];
     ok(`${id}: la pieza «${k}» se enseña en el menú y se hace con lo que sale del mundo`, !!d && enEsteTramo(d) && !sin.length,
       !d ? 'no existe' : !enEsteTramo(d) ? 'escondida' : sin.length ? `sin ${sin.join(', ')}` : Object.keys(d.coste).map(m => `${m}: ${como[OBJETO_DE_MATERIAL[m] || m]}`).join('; '));
+  }
+}
+for (const [id, lista] of Object.entries(MUEBLES_ESENCIALES)) {
+  const hito = roadmap.hitos.find(x => x.id === id);
+  if (!hito || hito.estado === 'congelado' || hito.estado === 'hecho') continue;
+  for (const k of lista) {
+    const d = DECORACION[k], sin = d ? sePuede(d.coste) : [];
+    ok(`${id}: el mueble «${k}» se enseña en el menú y se hace con lo que sale del mundo`, !!d && enEsteTramo(d) && !sin.length,
+      !d ? 'no existe' : !enEsteTramo(d) ? 'escondido' : sin.length ? `sin ${sin.join(', ')}` : Object.keys(d.coste).map(m => `${m}: ${como[OBJETO_DE_MATERIAL[m] || m]}`).join('; '));
   }
 }
 // ---- 4. nada sobra en PENDIENTES ----

@@ -149,7 +149,7 @@ console.log('Las tejas');
   comprobar('tarda un rato real: media hora (COCER)', R.s === COCER && COCER === 1800, `${R.s} s`);
   comprobar('el tejado de teja (10 tejas y 1 tronco) y su remate (5 tejas y 1 tronco) salen en el menú de construir',
     enEsteTramo(PIEZAS.tejado_teja) && enEsteTramo(PIEZAS.remate_teja) && igual(PIEZAS.tejado_teja.coste, { teja: 10, tronco: 1 }) && igual(PIEZAS.remate_teja.coste, { teja: 5, tronco: 1 }));
-  comprobar('lo demás de tablas, clavos o hierro sigue escondido (es la tarea siguiente)', !enEsteTramo({ nivel: 2, coste: { tabla: 1 } }) && !enEsteTramo({ nivel: 2, coste: { clavo: 1 } }));
+  comprobar('lo de tablas y clavos, también a la vista (P10, «Las piezas de nivel 2 a la vista»)', enEsteTramo({ nivel: 2, coste: { tabla: 1 } }) && enEsteTramo({ nivel: 2, coste: { clavo: 1 } }));
 
   const pos = { ana: { x: 1, z: 0 }, bo: { x: 1.2, z: 0.3 } };
   const o = new ObjetosServidor({ posicion: a => pos[a] || null });
