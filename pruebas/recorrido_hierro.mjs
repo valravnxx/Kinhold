@@ -688,12 +688,13 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   // encenderla: carbón al fuego, la yesca y el taladro
   const encenderFragua = async () => {
     if (F().fuego && F().fuego.hasta > Date.now()) return { ok: true };
-    await J.andar(taller.x, taller.z); await soltarManos(['mazo_piedra']);
-    if (!(await taladroYYesca(1))) return { ok: false, motivo: `sin taladro o sin yesca (${enMano()})` };
-    await soltarManos(['taladro_fuego', 'yesca']); await cogerSuelo('carbon', taller, 5, 2);
+    // (primero el carbón, con las manos libres; luego el taladro y la yesca)
+    await J.andar(taller.x, taller.z); await soltarManos(); await cogerSuelo('carbon', taller, 5, 2);
     await J.andar(fragua.x + 1, fragua.z);
-    for (let i = 0; i < 2; i++) { const e = await J.objeto({ tipo: 'echar_fuego', estacion: fragua.id, objeto: 'carbon', x: J.pos.x, z: J.pos.z }); if (!e.ok) return e; }
-    await aLaMano('taladro_fuego');
+    for (let i = 0; i < 2; i++) { const e = await J.objeto({ tipo: 'echar_fuego', estacion: fragua.id, objeto: 'carbon', x: J.pos.x, z: J.pos.z }); if (!e.ok) return { ok: false, motivo: `${e.motivo} (${enMano()})` }; }
+    await J.andar(taller.x, taller.z); await soltarManos();
+    if (!(await taladroYYesca(1))) return { ok: false, motivo: `sin taladro o sin yesca (${enMano()})` };
+    await J.andar(fragua.x + 1, fragua.z); await aLaMano('taladro_fuego');
     return J.objeto({ tipo: 'encender_fuego', estacion: fragua.id, x: J.pos.x, z: J.pos.z });
   };
   let en = await encenderFragua();
