@@ -133,8 +133,8 @@ function vetaCalco() {
   return (calcoVeta = new THREE.MeshLambertMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
 }
 // (P10, 19 nov) el banco de arcilla: el hoyo cavado a pala pintado por código en un calco, como la mancha de pantano:
-// fuera, la tierra parda removida que se deshace en la hierba; dentro, la arcilla gris azulada, lisa y moteada, más
-// oscura y húmeda en el fondo (con algún brillo de agua), las marcas rectas de la pala y, por el lado de arriba, el
+// fuera, la tierra parda removida que se deshace en la hierba; dentro, la arcilla gris parda y mate, lisa y moteada, más
+// oscura y húmeda en el fondo, las marcas rectas de la pala y, por el lado de arriba, el
 // corte de la pared, en sombra.
 let calcoArcilla = null;
 function arcillaCalco() {
@@ -148,18 +148,20 @@ function arcillaCalco() {
     const u = i / (N - 1) * 2 - 1, v = j / (N - 1) * 2 - 1, k = (j * N + i) * 4;
     const rr = Math.hypot(u, v * 1.15) + (n1(u * 3 + 5, v * 3 + 1) - 0.5) * 0.4;
     const mot = n2(u * 8, v * 8), grumo = n3(u * 30, v * 30);
-    const tierra = paso(1.0, 0.7, rr), arc = paso(0.66, 0.5, rr), hondo = paso(0.42, 0.12, rr + (n2(u * 4 + 3, v * 4) - 0.5) * 0.2);
-    // el corte de la pared, por arriba (v < 0): una media luna en sombra entre la tierra y la arcilla
-    const corte = paso(0.5, 0.66, rr) * paso(0.74, 0.62, rr) * paso(0.0, -0.45, v);
+    // (20 nov) el calco es más ancho que el caballón: la tierra parda removida se ve por fuera de él y se deshace en la
+    // hierba (antes el caballón tapaba ese borde y quedaba una mancha parda de borde duro). La arcilla, por dentro del
+    // caballón (rr < 0,45), gris parda y mate, no azulada ni con brillos (parecía agua turbia).
+    const tierra = paso(1.0, 0.62, rr), arc = paso(0.47, 0.36, rr), hondo = paso(0.3, 0.06, rr + (n2(u * 4 + 3, v * 4) - 0.5) * 0.16);
+    // la sombra del corte, por arriba (v < 0), al pie de la pared
+    const corte = paso(0.3, 0.42, rr) * paso(0.48, 0.4, rr) * paso(0.0, -0.45, v);
     // las marcas de la pala: rayas rectas algo inclinadas, solo en la arcilla
-    const raya = arc * (1 - hondo * 0.6) * paso(0.9, 0.98, Math.abs(Math.sin((u * 0.35 + v) * 11 + n1(u * 2, v * 2) * 5))) * paso(0.35, 0.6, n3(u * 2 + 4, v * 6));
-    const brillo = hondo * paso(0.7, 0.9, n3(u * 3 + 7, v * 5 + 2)) * 0.5;
-    // tierra parda moteada → arcilla gris azulada → el fondo más oscuro y húmedo
-    let R = mezcla(mezcla(0x5c, 0x63, arc), 0x47, hondo), G = mezcla(mezcla(0x4b, 0x66, arc), 0x4d, hondo), B = mezcla(mezcla(0x3a, 0x62, arc), 0x4b, hondo);
-    const m = (mot - 0.5) * (arc ? 18 : 26); R += m; G += m; B += m * 0.8;
-    if (!arc && grumo > 0.7) { R -= 14; G -= 12; B -= 10; }   // terroncitos de la tierra removida
-    R = R * (1 - corte * 0.45 - raya * 0.1) + brillo * 50; G = G * (1 - corte * 0.45 - raya * 0.1) + brillo * 56; B = B * (1 - corte * 0.4 - raya * 0.09) + brillo * 62;
-    const A = tierra * (0.82 + 0.18 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
+    const raya = arc * (1 - hondo * 0.5) * paso(0.86, 0.97, Math.abs(Math.sin((u * 0.35 + v) * 17 + n1(u * 2, v * 2) * 5))) * paso(0.3, 0.55, n3(u * 2 + 4, v * 6));
+    // tierra parda moteada → arcilla gris parda → el fondo, algo más oscuro y pardo (húmedo, no charco)
+    let R = mezcla(mezcla(0x5a, 0x6c, arc), 0x58, hondo), G = mezcla(mezcla(0x49, 0x67, arc), 0x53, hondo), B = mezcla(mezcla(0x38, 0x5c, arc), 0x49, hondo);
+    const m = (mot - 0.5) * (arc ? 22 : 30); R += m; G += m; B += m * 0.8;
+    if (grumo > 0.68) { const g = arc ? 9 : 16; R -= g; G -= g * 0.9; B -= g * 0.8; }   // terroncitos y grumos
+    R = R * (1 - corte * 0.45 - raya * 0.14); G = G * (1 - corte * 0.45 - raya * 0.14); B = B * (1 - corte * 0.4 - raya * 0.12);
+    const A = tierra * (0.7 + 0.3 * paso(0.3, 0.6, n2(u * 5 + 2, v * 5)));
     d[k] = Math.max(0, Math.min(255, R)); d[k + 1] = Math.max(0, Math.min(255, G)); d[k + 2] = Math.max(0, Math.min(255, B)); d[k + 3] = Math.max(0, Math.min(255, A * 255));
   }
   cx.putImageData(img, 0, 0);
@@ -347,7 +349,7 @@ export function modelosRecoleccion() {
       L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), ARCILLA_TIERRA, Math.cos(a) * r * 1.15, 0.08, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
     }
   }, { rangoSuelo: 0.05 });
-  const arcilla = [{ geo: calcoGeo(1.9, 1.65, 0.03), mat: arcillaCalco(), calco: true }, ...arcillaTerrones];
+  const arcilla = [{ geo: calcoGeo(2.7, 2.35, 0.03), mat: arcillaCalco(), calco: true }, ...arcillaTerrones];
   // hongos yesqueros (7 nov): un tocón viejo y podrido (40 cm), con la corteza rota y la madera gris a la vista, y en
   // él tres o cuatro yesqueros en repisa: semicírculos gruesos, gris pardo con bandas, el borde claro
   const yesquero = geoLote(L => {

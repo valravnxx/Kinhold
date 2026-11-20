@@ -564,9 +564,10 @@ function hornoCeramico(id) {
   L.add(cup, ARCILLA_HORNO, 0, 0, 0, null, { tex: 'piedra', rayas: tizne });
   L.add(new THREE.TorusGeometry(T + 0.005, 0.032, 6, 18), HOLLIN_CER, 0, A + 0.01, 0, { x: Math.PI / 2 }, { sinSuelo: true, brillo: 0.6 });   // el labio, quemado
   L.add(new THREE.CircleGeometry(T - 0.012, 14), 0x15110e, 0, A - 0.15, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });   // lo oscuro de dentro
-  // el anillo de piedra seca del pie, medio hundido, abierto delante para la boca
+  // el anillo de piedra seca del pie, medio hundido, abierto delante para la boca (20 nov: el hueco, más ancho; desde
+  // la izquierda, las dos piedras de los lados de la boca se veían delante de ella)
   for (let i = 0; i < 10; i++) {
-    const a = Math.PI / 2 + 0.64 + i * (2 * Math.PI - 1.28) / 9 + (az(id, 10 + i) - 0.5) * 0.08, d = R + 0.06;
+    const a = Math.PI / 2 + 0.86 + i * (2 * Math.PI - 1.72) / 9 + (az(id, 10 + i) - 0.5) * 0.08, d = R + 0.06;
     L.add(piedraIrregular(0.13 + az(id, 20 + i) * 0.04, 1, id + 'p' + i, 0.25), i % 3 ? 'piedra' : 'piedraOsc', Math.cos(a) * d, 0.08, Math.sin(a) * d, { y: -a + az(id, 30 + i) * 0.4 }, { escala: new THREE.Vector3(0.8, 0.85, 1.75), plano: true });
   }
   // el reborde del arco: la arcilla de la boca, algo más gruesa y tiznada del fuego (como la cara de encima), tapando el
