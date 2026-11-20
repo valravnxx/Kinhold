@@ -140,7 +140,7 @@ def recorrido(nav, nombre, vista, movil):
         puestos = ev(f"{K}.mundo.decoracion.map(d => d.tipo)")
     comprobar(f'{nombre}: los seis muebles de tablas, puestos', sorted(puestos) == sorted(t for t, _, _ in MUEBLES), str(puestos))
     pg.add_style_tag(content='body > :not(canvas) { visibility: hidden !important; }')
-    D = 1.3 if movil else 1
+    D = 1.9 if movil else 1   # (en el móvil, de pie, el cuadro es estrecho: más lejos)
     # con la cámara libre (la del admin), mirando a cada cosa desde (yaw, pitch, dist); el jugador, lejos (no tapa nada)
     vistas = [
         ('casa_tablas', 3.0, 1.6, 2.0, 3.55, 0.28, 10.5),     # de frente: la puerta, la ventana con su contraventana y el tejado de tablillas
@@ -151,8 +151,9 @@ def recorrido(nav, nombre, vista, movil):
         ('armazon_arriba', 2.0, 2.6, 12.0, 0.3, 0.95, 6.0),   # desde arriba: el suelo de tablas y la trampilla
         ('polipasto', 3.0, 1.6, 14.0, 0.2, 0.18, 4.5),        # el polipasto, en la viga de detrás
         ('adarve', 15.0, 1.6, 1.0, 0.2, 0.3, 8.5),            # la empalizada con su puerta y el adarve, por dentro
-        ('muebles', 11.0, 0.6, 10.2, 0.1, 0.55, 6.5),         # los muebles de tablas
-        ('muebles_cerca', 11.0, 0.6, 10.4, 0.0, 0.35, 3.6),
+        ('adarve_lado', 13.0, 1.5, 1.0, -1.6, 0.2, 5.5),       # de lado: el adarve arrimado a la empalizada
+        ('muebles', 11.0, 0.6, 10.2, 3.24, 0.55, 6.5),         # los muebles de tablas
+        ('muebles_cerca', 11.0, 0.6, 10.2, 3.14, 0.32, 4.0),
     ]
     import math
     ev(f"(() => {{ const k = {K}; k.cambiarModo('mover'); Object.assign(k.pj, {{ x: -25, z: -25 }}); }})()")
