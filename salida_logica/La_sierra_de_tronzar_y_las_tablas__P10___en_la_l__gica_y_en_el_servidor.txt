@@ -1,0 +1,31 @@
+Lo que dice la tarea
+  OK   la sierra de tronzar: 2 barras y 2 mangos, en la fragua, con el mazo — {"nombre":"Sierra de tronzar","uso":"forjar","da":"sierra","n":1,"gasta":{"barra_hierro":2,"mango":2},"s":240,"requiere":["mazo_piedra"]}
+  OK   las tablas: 1 tronco corto da 4, en el banco de tronco, con la sierra — {"nombre":"Tablas","uso":"banco","da":"tabla","n":4,"gasta":{"tronco_corto":1},"s":120,"requiere":["sierra"]}
+  OK   el acopio de troncos guarda las tablas
+La sierra en la fragua
+  OK   la fragua se enciende
+  OK   con un mango solo, no — Falta en la estación: 1 de Mango de herramienta.
+  OK   con 2 barras y 2 mangos, se bate
+  OK   a su hora, la sierra; el mazo no se gasta — {"ok":true,"dados":[{"objeto":"sierra","cantidad":1,"donde":[["espalda/0",1]]}],"quedan":false}
+Tronzar con la sierra
+  OK   con la sierra en la mano se puede tronzar el largo, pero no partir el corto
+  OK   la sierra tronza el tronco largo — {"ok":true,"termina":true,"golpes":8,"faltan":0,"accion":"tronzar","tipo":"tronco_largo","hacha":"sierra","da":{"tipo":"tronco_corto","n":4},"objeto":"s3","queda":0}
+  OK   en menos golpes que el hacha de hierro — sierra 8, hacha de hierro 18
+  OK   y corta la rodaja — {"ok":true,"termina":true,"golpes":8,"faltan":0,"accion":"rodaja","tipo":"tronco_largo","hacha":"sierra","da":{"tipo":"rodaja","n":1},"objeto":"s3","queda":0,"resto":{"tipo":"tronco_corto","n":3},"objetoResto":"s4"}
+  OK   partir el corto, con la sierra sola no — Necesitas un hacha en la mano para partir leña.
+  OK   con la sierra y el hacha, tronza la sierra — 8 golpes, sierra
+Las tablas en el banco
+  OK   se deja el tronco corto en el banco
+  OK   sin la sierra, no se sierra — Para eso hace falta llevar sierra de tronzar.
+  OK   con la sierra, se sierra
+  OK   a su hora, 4 tablas; la sierra no se gasta — tablas 4
+  OK   las tablas se guardan en el acopio de troncos
+  OK   y se vuelven a sacar
+Por el servidor, con autor
+  OK   Ana deja el tronco corto en el banco
+  OK   Bea, que no está al lado, no le sierra las tablas — El servidor aún no sabe dónde estás.
+  OK   Ana sierra las tablas
+  OK   y las recoge
+  OK   Ana tronza un tronco largo con la sierra — 8 golpes; 
+
+24 bien, 0 mal

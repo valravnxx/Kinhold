@@ -1,0 +1,31 @@
+Lo que dice la tarea
+  OK   el horno: 20 barros, 10 piedras y 4 carbones; fuera y en tu tierra; da el reducir — {"nombre":"Horno de reducción","un":"un horno de reducción","uso":"reducir","coste":{"barro":20,"piedra":10,"carbon":4},"donde":"fuera","trabajo":60,"tierra":true,"humea":true,"carga":1,"hace":"Un horno de cuba de barro: cargado con mineral de hierro y carbón y encendido, al cabo de un rato deja una lupia de hierro"}
+  OK   la carga: 3 minerales de hierro y 4 carbones (con la yesca), encendida con el taladro de fuego, da 1 lupia — {"nombre":"Lupia de hierro","uso":"reducir","da":"lupia","n":1,"gasta":{"mineral_hierro":3,"carbon":4,"yesca":1},"s":3600,"requiere":["taladro_fuego"]}
+  OK   tarda un rato real (1 h, provisional) y echa humo mientras
+  OK   el carbón y la lupia están en el catálogo
+  OK   fuera de tu tierra, dice por qué — El horno de reducción va en tu tierra (o en la de quien te invita).
+Levantar el horno, cargarlo y encenderlo
+  OK   se pone su marco
+  OK   se levanta con sus barros, piedras y carbones — {}
+  OK   con 3 carbones (falta uno), no se enciende — Falta en la estación: 1 de Carbón vegetal.
+  OK   sin el taladro de fuego, no se enciende — Para eso hace falta llevar taladro de fuego.
+  OK   cargado y con el taladro, se enciende: gasta la carga entera — {}
+  OK   y el taladro no se gasta
+  OK   una carga cada vez: mientras reduce, otra no — El horno ya está encendido con su carga: espera a que termine.
+  OK   mientras reduce no se desmonta — Tiene encargos a medias: espera a que terminen y recógelos.
+  OK   antes de su hora no hay lupia — Aún no está terminado.
+  OK   a su hora, otro no se la lleva — Aquí no tienes nada.
+  OK   a su hora, quien lo encendió recoge 1 lupia de hierro — {"ok":true,"dados":[{"objeto":"lupia","cantidad":1,"donde":[["mano:izq",1]]}],"quedan":false}
+  OK   y ya se puede encender otra carga
+  OK   sin horno, no (ni con las manos) — Hace falta un horno de reducción a tu lado.
+Por el servidor, con autor; el humo, para todos
+  OK   Ana carga el horno: 3 mineral_hierro
+  OK   Ana carga el horno: 4 carbon
+  OK   Ana carga el horno: 1 yesca
+  OK   apagado, no se ve que reduzca — {"id":"horno_reduccion:1","tipo":"horno_reduccion","x":0,"z":0,"autor":"ana","deposito":{"mineral_hierro":3,"carbon":4,"yesca":1},"colgado":[]}
+  OK   y lo enciende
+  OK   todos ven que reduce (lo que le queda), sin saber de quién es — [{"receta":"reducir","queda":3599}]
+  OK   Bea no se lleva la lupia de Ana — Aquí no tienes nada.
+  OK   Ana recoge su lupia
+
+26 bien, 0 mal
