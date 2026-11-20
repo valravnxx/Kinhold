@@ -46,7 +46,7 @@ const PENDIENTES = {
   // P9, Oficios del asentamiento (planificado el 13 nov): lo que deja hecho, en ESENCIAL; cada tarea, al hacerlo, lo quita de aquí
   // P11, la granja básica (planificada el 13 nov, con el estudio diseno/estudios/granja.html)
   // P10, Hierro y tablas (planificado el 13 nov): el primer mineral, el de pantano (el pico ya pide hierro)
-  teja: ['sale del horno cerámico', 'Las tejas: en el horno cerámico'],
+  // (20 nov: la teja sale del horno cerámico, de cocer arcilla)
 };
 // Lo que cada hito vivo tiene que dejar hecho (la cadena de cada cosa, al planificarlo; CLAUDE.md, paso 4): se puede
 // tener partiendo de nada, o espera en PENDIENTES con su tarea viva. Antes de pasar el hito a revisión (paso 9), nada
@@ -64,6 +64,7 @@ const ESENCIAL = {
 // Las piezas de construir que cada hito vivo deja a la vista en el menú, con todo su coste saliendo del mundo.
 const PIEZAS_ESENCIALES = {
   'casa-fuerte': ['empalizada', 'empalizada_puerta', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana'],   // (P11c)
+  hierro: ['tejado_teja', 'remate_teja'],   // (P10: con las tejas del horno cerámico)
 };
 if (MUTAR === '3') delete PIEZAS.empalizada.destapada;
 

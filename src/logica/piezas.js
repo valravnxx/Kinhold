@@ -82,7 +82,7 @@ export const PIEZAS = {
   // Sistemas: «Tejado de teja — N2, 10 tejas + vigas, 200 kg; no se pudre ni arde fácil; pesa». Las vigas de debajo
   // (los pares que sostienen las tejas) van como 1 tronco (provisional). Lo de pudrirse y arder queda anotado para
   // cuando haya mantenimiento y fuego; hoy solo cambia el peso que cargan los muros.
-  tejado_teja:        { nombre: 'Tejado de teja', hueco: 'r', nivel: 2, peso: 200, cap: 500, coste: { teja: 10, tronco: 1 }, noSePudre: true, ardePoco: true, cat: 'tejado' },
+  tejado_teja:        { nombre: 'Tejado de teja', hueco: 'r', nivel: 2, peso: 200, cap: 500, coste: { teja: 10, tronco: 1 }, noSePudre: true, ardePoco: true, destapada: true, cat: 'tejado' },
   // Sistemas: «Remate de tejado — N1, materiales: igual, 40 kg; cumbrera y esquinas». La cumbrera ya la pone sola el
   // tejado; el remate es la pieza de la esquina, donde se juntan dos caídas en ángulo recto (limatesa en la esquina de
   // fuera, limahoya en el rincón de un tejado en L: la forma sale sola de los tramos de al lado). «Igual» se lee como
@@ -91,7 +91,7 @@ export const PIEZAS = {
   remate_paja:        { nombre: 'Remate de paja (esquina)', hueco: 'r', nivel: 1, peso: 40, cap: 400, coste: { vara: 1, paja: 2 }, esquina: true, cat: 'tejado' },
   remate_juncos:      { nombre: 'Remate de juncos (esquina)', hueco: 'r', nivel: 1, peso: 40, cap: 400, coste: { vara: 1, junco: 2 }, esquina: true, cat: 'tejado' },
   remate_tablilla:    { nombre: 'Remate de tablillas (esquina)', hueco: 'r', nivel: 2, peso: 50, cap: 500, coste: { tabla: 2, clavo: 2 }, esquina: true, cat: 'tejado' },
-  remate_teja:        { nombre: 'Remate de teja (esquina)', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { teja: 5, tronco: 1 }, esquina: true, noSePudre: true, ardePoco: true, cat: 'tejado' },
+  remate_teja:        { nombre: 'Remate de teja (esquina)', hueco: 'r', nivel: 2, peso: 100, cap: 500, coste: { teja: 5, tronco: 1 }, esquina: true, noSePudre: true, ardePoco: true, destapada: true, cat: 'tejado' },
   // El hastial ya se dibuja solo con el tejado; la pieza queda oculta para no romper partidas guardadas.
   hastial:            { nombre: 'Hastial (remate)', hueco: 'g', nivel: 1, peso: 100, cap: 0, coste: { tronco: 2 }, cat: 'oculto' },
 
@@ -162,7 +162,8 @@ export const DECORACION = {
 // La paja estuvo igual del 7 al 13 nov (salía del cereal, que no había); desde «La era y trillar» (P11) sale de trillar
 // las gavillas en la era, y lo que la pide (el tejado y el remate de paja, la cama de paja, la antorcha de pie y la
 // alfombra) se enseña (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
-export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro', 'teja'];   // (13 nov: la paja ya sale de trillar en la era, P11)
+// (20 nov, P10: la teja sale del horno cerámico, y el tejado y el remate de teja se destapan)
+export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro'];   // (13 nov: la paja ya sale de trillar en la era, P11)
 export const NIVEL_TRAMO = 1;
 // Lo de nivel 2 que ya sale de lo que hay (P11c, «La casa más fuerte»: valravnx, 14 nov) lleva «destapada» y se enseña.
 export function enEsteTramo(def) {
