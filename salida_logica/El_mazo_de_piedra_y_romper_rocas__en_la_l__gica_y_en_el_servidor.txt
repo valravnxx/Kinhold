@@ -1,0 +1,52 @@
+El mazo de piedra
+  bien  está en el catálogo, como herramienta
+  bien  se hace con las manos con 1 piedra, 1 rama y 2 cordel — {"nombre":"Mazo de piedra","uso":"manos","da":"mazo_piedra","n":1,"gasta":{"piedra":1,"rama":1,"cordel":2},"s":45}
+  bien  y se hace de verdad, con lo del suelo a tu lado —  
+Romper rocas en la lógica
+  bien  el nombre de la roca sale de su sitio — roca:100,40
+  bien  las medianas (hasta 1,1 m) se rompen y las grandes no — 0.66 1.1 1.76 m
+  bien  más golpes y más piedras cuanto más grande: de 8 a 30 golpes y de 6 a 25 piedras — 8–30, 6–25
+  bien  sin el mazo en la mano no se rompe — Necesitas un mazo de piedra en la mano para romper la roca.
+  bien  lejos no — Está demasiado lejos.
+  bien  un golpe es una acción, y no dos seguidos sin terminar el gesto —  faltan 7; Aún no has terminado el golpe anterior.
+  bien  lo que lleva dado se ve — 0.125
+  bien  y se guarda (a medias)
+  bien  al octavo golpe la pequeña se rompe y deja 6 piedras en el suelo donde estaba —  piedras 6
+  bien  las piedras no van a lo que llevas (se cogen del suelo)
+  bien  la roca queda rota (no en pie)
+  bien  no se vuelve a romper hasta que vuelve a salir — Esa roca ya está rota: solo quedan cascotes.
+  bien  vuelve a salir en unos meses reales (3)
+  bien  la mediana pide 30 golpes y deja 25 piedras — 30 golpes, 25
+  bien  la grande no se rompe con el mazo (hace falta el pico) — Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.
+  bien  una roca no se recoge ni sale entre lo que se recoge — Eso no se recoge: se rompe con un mazo.
+  bien  con algo al hombro no se rompe — Con algo al hombro no puedes romper la roca.
+  bien  romper cansa (cada golpe, como uno de hacha) — 1.5
+  bien  y queda en el registro con su autor
+La cantera: las grandes, con el pico
+  bien  de 1,1 a 4,4 m, de 30 a 80 golpes, de 1 a 4 bloques y de 10 a 30 piedras — 30–80 golpes, 1–4 bloques, 10–30 piedras
+  bien  el peñasco más grande del pedregal (4,4 m) es de la cantera; más no — 4.4 m
+  bien  sin nada en la mano: hace falta el pico — Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.
+  bien  lejos de su borde, no — Está demasiado lejos.
+  bien  la de 2.64 m se rompe con el pico a los golpes que pide (53) —  53 golpes
+  bien  y deja 2 bloques de piedra en bruto en un montón y 19 piedras, en el suelo — bloques 2 piedras 19
+  bien  los bloques, a un lado de donde estaba la roca (cerca, no encima), al otro lado del que la rompe — a 1.38 m
+  bien  el bloque no va a lo que llevas: es enorme (rastra o carretilla)
+  bien  vuelve a salir en unos meses reales (3)
+  bien  queda en el registro con su autor y los bloques
+  bien  el pico rompe también las medianas (los mismos golpes, sin bloques) —  19
+  bien  con el mazo, la grande no (dice que hace falta el pico) — Esa roca es demasiado grande para el mazo: necesitas un pico en la mano.
+En el servidor, con el terreno de Whitholm
+  bien  hay rocas medianas en el mundo — a 19 m, 1 m
+  bien  el servidor la conoce por su nombre, con su tamaño — {"id":"roca:-164,-95","tipo":"roca","x":-16.44,"z":-9.47,"tam":0.453}
+  bien  hay rocas grandes en el mundo, y el servidor las conoce (son de la cantera) — 1.11 m
+  bien  ni los cantos del río
+  bien  y una roca que no existe, no
+  bien  en el servidor se rompe a golpes (los que pide su tamaño, no los que diga el navegador) —  25 golpes
+  bien  y sus piedras caen a su suelo
+  bien  una que no existe, no — Ahí no hay nada que recoger.
+  bien  lo roto sale en lo que se reparte (quitado)
+  bien  en el servidor, una grande (1.11 m) se rompe con el pico a los golpes que pide (30) —  30
+  bien  y sus bloques y sus piedras caen a su suelo
+  bien  y se guarda: al volver a abrir el servidor sigue rota
+
+46/46 bien
