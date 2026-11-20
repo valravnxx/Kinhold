@@ -1,4 +1,9 @@
 {
- "A": null,
+ "A": {
+  "inicio": "2026-11-20T13:27:02+00:00",
+  "tarea": "Recorrido de jugador del hierro, sin arcón: criba hierro de pantano, construye el horno de reducción y saca una lupia, hace el fuelle, la fragua y una barra, el hacha, el pico, la sierra y clavos; sierra tablas, rompe una roca grande, cava arcilla, cuece tejas y pone un suelo de tablas y un tejado de teja (con el reloj acelerado)",
+  "hito": "hierro",
+  "rama": "trabajo/20261120-1327"
+ },
  "B": null
 }
