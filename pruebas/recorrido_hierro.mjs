@@ -117,7 +117,8 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   const aEstacion = async (est, tipo, n, de = est, d = 4) => {
     let puestos = 0;
     for (let k = 0; k < 12 && puestos < n; k++) {
-      if (!J.cuantos(tipo)) { const l = await manoLibre(); if (!(await cogerSuelo(tipo, de, d, Math.min(3, n - puestos), l))) break; }
+      // (lo que no se apila en una mano, como los mangos, va de uno en uno: con uno cogido, a la estación)
+      if (!J.cuantos(tipo)) { const l = await manoLibre(); if (!(await cogerSuelo(tipo, de, d, Math.min(3, n - puestos), l)) && !J.cuantos(tipo)) break; }
       await J.andar(est.x + 1, est.z);
       const q = await depositar(est, tipo, n - puestos);
       if (!q.ok) return q;
@@ -719,10 +720,9 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   await punto('28g');
   // ── 28g. Los mangos, el hacha de hierro, el pico, la sierra y los clavos ──
   console.log('28g. En el banco, 4 mangos de 4 varas; en la fragua, el hacha de hierro, el pico, la sierra de tronzar y 10 clavos');
-  if (nEnSuelo('vara', taller, 5) < 4) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 3); await J.andar(taller.x, taller.z); await soltarManos(); } }
-  if (nEnSuelo('vara', taller, 5) < 4) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 3); await J.andar(taller.x, taller.z); await soltarManos(); } }
-  let mangos = 0;
-  for (let k = 0; k < 4; k++) {
+  for (let v = 0; v < (ya('28h') ? 0 : 2) && nEnSuelo('vara', taller, 5) < 4; v++) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 3); await J.andar(taller.x, taller.z); await soltarManos(); } }
+  let mangos = ya('28h') ? 4 : 0;
+  for (let k = mangos; k < 4; k++) {
     let d = await aEstacion(banco, 'vara', 1, taller, 5);
     await J.andar(banco.x + 1, banco.z);
     if (d.ok) d = await enEstacion(banco, 'mango');
@@ -732,7 +732,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   comprobar('en el banco, de 4 varas, 4 mangos', mangos === 4, `${mangos}`);
   for (const [receta, gasta, da, n] of [['hacha_hierro', { barra_hierro: 1, mango: 1 }, 'hacha_hierro', 1], ['pico', { barra_hierro: 1, mango: 1 }, 'pico', 1], ['sierra', { barra_hierro: 2, mango: 2 }, 'sierra', 1], ['clavos', { barra_hierro: 1 }, 'clavo', 10]]) {
     await cuidarse();
-    const q = await forjar(receta, gasta);
+    const q = ya('28h') ? { ok: true } : await forjar(receta, gasta);
     const tiene = J.cuantos(da) + nEnSuelo(da, taller, 5);
     comprobar(`en la fragua, con el mazo: ${receta === 'clavos' ? '10 clavos' : receta === 'sierra' ? 'la sierra de tronzar' : receta === 'pico' ? 'el pico' : 'el hacha de hierro'} (${Object.entries(gasta).map(([t, m]) => `${m} ${t}`).join(', ')})`, q.ok && tiene >= n, q.motivo || `${tiene}`);
   }
