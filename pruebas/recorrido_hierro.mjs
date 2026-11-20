@@ -148,7 +148,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   const banco = M && cerca(suyas('banco_tronco'), M)[0];
   const tallar = M && cerca(suyas('piedra_tallar'), M)[0];
   console.log('28. El hierro (P10): la criba y el hierro de pantano; el carbón; el horno de reducción y las lupias; el fuelle, la fragua y las barras; el hacha, el pico, la sierra y los clavos; las tablas; la roca grande; la arcilla, el horno cerámico y las tejas; el suelo de tablas y el tejado de teja');
-  comprobar('28. tiene su tierra, su banco de tronco y su piedra de tallar', !!M && !!banco && !!tallar, JSON.stringify({ M, banco: banco && [banco.x, banco.z] }));
+  comprobar('28. tiene su tierra, su banco de tronco y su piedra de tallar', !!M && !!banco && !!tallar, JSON.stringify({ yo, M, banco: banco && [banco.x, banco.z] }));
   if (!M || !banco || !tallar) return;
   const nec = () => s.necesidades.get(yo) || { sed: 0, hambre: 0 };
   const aguaCerca = (desde) => {
@@ -361,7 +361,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
     if (!(await buscar('vara'))) { const t = await talarJoven(taller); if (t.ok) { await soltarManos(); await cogerSuelo('vara', t.a, 6, 1); } }
     await J.andar(taller.x, taller.z); await soltarManos();
     // los mimbres: en la ribera, cortados con la lasca
-    await aLaMano('lasca_silex'); await J.andar(rio.x, rio.z);
+    await buscar('lasca_silex'); await aLaMano('lasca_silex'); await J.andar(rio.x, rio.z);
     const mimbreras = cerca(alrededor(rio, 400).filter(p => p.tipo === 'mimbre'), rio);
     let motivoMimbre = mimbreras.length ? '' : 'no hay mimbreras cerca del río';
     for (const p of mimbreras) {
