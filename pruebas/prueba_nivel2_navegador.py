@@ -75,7 +75,7 @@ ESCENA = f"""(() => {{
   for (let i = 0; i <= 2; i++) for (let j = 0; j < 2; j++) pon(C, 'viga', i, j, 0, 1);
   pon(C, 'suelo_tabla', 1, 0, 1); pon(C, 'suelo_tabla', 1, 1, 1); pon(C, 'suelo_tabla', 0, 1, 1);
   pon(C, 'escalera_tabla', 0, 0, 0, 0, 0); pon(C, 'trampilla', 0, 0, 1);
-  pon(C, 'polea', 0, 0, 0, 0); pon(C, 'polipasto', 1, 2, 0, 0);
+  pon(C, 'polea', 1, 0, 0, 0); pon(C, 'polipasto', 1, 2, 0, 0);   // (la polea, en la viga de al lado de la escalera, no encima)
   // E: la empalizada con su puerta y el adarve detrás
   const E = casa(12, 0);
   for (let i = 0; i < 3; i++) pon(E, i === 1 ? 'empalizada_puerta' : 'empalizada', i, 0, 0, 0);
