@@ -764,7 +764,7 @@ function arcilla(n, id) {
 // canal y cobija del tejado de teja (src/mundo/modelos.js), algo más estrecha en una punta que en la otra, como las de
 // verdad, moldeadas sobre el muslo. En el suelo, apiladas boca abajo una dentro de otra, en una o dos pilas de cinco
 // (como mucho 10), cada una con su tono, como las recién sacadas del horno.
-const TEJA_SUELTA = { largo: 0.42, r0: 0.085, r1: 0.068, grosor: 0.014 };
+const TEJA_SUELTA = { largo: 0.42, r0: 0.088, r1: 0.062, grosor: 0.014 };
 function tejaSuelta() {
   const { largo, r0, grosor } = TEJA_SUELTA, f = new THREE.Shape(), ri = r0 - grosor;
   f.moveTo(r0, 0); f.absarc(0, 0, r0, 0, Math.PI, false); f.lineTo(-ri, 0); f.absarc(0, 0, ri, Math.PI, 0, true); f.closePath();

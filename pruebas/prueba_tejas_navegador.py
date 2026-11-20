@@ -137,7 +137,7 @@ def recorrido(nav, nombre, vista, movil):
         e = tj.get(n)
         comprobar(f'{nombre}: en «Tejados», {n.lower()} a la vista, con su imagen cargada', bool(e) and e[1], str(list(tj)))
         comprobar(f'{nombre}:   y cuesta {coste}s y 1 tronco', bool(e) and e[2].startswith(coste) and '1 tronco' in e[2], e[2] if e else '')
-    ev("(() => { const e = document.getElementById('piezas'); e.scrollLeft = e.scrollWidth; })()"); pg.wait_for_timeout(1200)
+    ev("(() => { const b = [...document.querySelectorAll('#piezas button.pieza')].find(b => b.querySelector('b').textContent === 'Tejado de teja'); if (b) b.scrollIntoView({ inline: 'start', block: 'nearest' }); })()"); pg.wait_for_timeout(1500)
     pg.screenshot(path=f'{SALIDA}/{nombre}_menu_tejados.png', timeout=180000)
     # ---- la casa con su tejado de teja ----
     r = ev(CASA)
