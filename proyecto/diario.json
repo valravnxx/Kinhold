@@ -7789,5 +7789,22 @@
   "pruebas": "Comprobador de código correcto. Prueba de la lógica del horno y las tejas 40/40 (lógica y servidor), y rota a propósito (las tejas al momento), falla. Prueba nueva de navegador de las tejas (PC y móvil), bien, y rota a propósito (recoger antes de la media hora), falla. En la nube: lógica, el recorrido de jugador (76 min), construcción, construir con el acabado nuevo, las tejas, el panel de fabricación, el mazo y romper rocas, despiezar y asar y la demo única, bien. Fallaron una vez la lógica, construcción y la demo única porque sus pruebas aún daban la teja por escondida y faltaban las traducciones de las notas; corregido, salen bien. Sin «la cama ligada» (de fabricación solo cambia una receta nueva). La segunda mirada a las capturas dijo no (una vara clara en la limatesa del remate de teja y la carta del menú cortada en el móvil); arreglado, y lo demás que vio, en la lista para valravnx.",
   "capturas": "capturas/demo-v244",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-20T11:23:29+00:00",
+  "fin": "2026-11-20T12:25:06+00:00",
+  "titulo": "Las piezas de nivel 2 a la vista (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "Ya no queda ningún material escondido: la tabla sale de serrar en el banco de tronco, y el clavo y la barra de hierro, de la fragua. El tramo pasa al nivel 2, y en Construir se enseña todo lo de nivel 2: el suelo, los muros (liso, con puerta y con ventana) y la escalera de tablas, el tejado y el remate de tablillas, la puerta de tablas, la contraventana, la trampilla, la chimenea, el adarve, la polea y el polipasto con torno. En Decoración, la mesa, el banco, el arcón, la estantería, el barril y la cama de madera.",
+   "Cada una con su imagen en el menú (sacadas otra vez de sus modelos, en una carpeta nueva) y su coste en iconos.",
+   "El muro de tablas dejaba una rendija entre cada dos tablas por la que se veía la luz de detrás como una raya blanca. Ahora las tablas se solapan un poco, una adelante y otra atrás.",
+   "La cadena, en la prueba de orígenes: lo de nivel 2 queda entre lo que el hito tiene que dejar hecho, y cada pieza y cada mueble se puede hacer con lo que sale del mundo, sin arcón (tabla ← serrar un tronco corto con la sierra; clavo y barra de hierro ← la fragua; teja ← el horno cerámico).",
+   "Prueba nueva de navegador: en el menú, cada pieza y mueble de nivel 2 con su imagen y su coste; luego, levantados y de cerca, en PC y en móvil, una casa de tablas con puerta, contraventanas, chimenea y tejado de tablillas con sus remates, un armazón con el suelo de tablas arriba, la escalera, la trampilla, la polea y el polipasto, la empalizada con el adarve y los muebles.",
+   "Para la lista de valravnx (la segunda mirada dijo sí): los muros de tablas son casi negros y del mismo tono, y a la sombra se pierde el dibujo de las tablas; el humo de la chimenea son bolas grises superpuestas; la cama de madera parece de dos tramos (un travesaño a media cama); la estantería, vista por detrás, es un bloque oscuro sin detalle; en la puerta de tablas asoman dos rendijas finas abajo; los costes del menú, pequeños y de poco contraste. Y el conjunto, madera oscura sobre un prado liso, sigue lejos de la referencia de maqueta (eso es del hito del aspecto)."
+  ],
+  "pruebas": "Comprobador de código correcto. Prueba de orígenes 60/60 y rota a propósito (el tramo otra vez en el nivel 1), falla. Prueba del tramo 63/63 y rota a propósito (todo escondido), falla. Prueba nueva de navegador de las piezas de nivel 2 (PC y móvil), bien; su rotura (MUTAR=1, una pieza que no existe) no se pasó en el navegador. En la nube: lógica, construir con el acabado nuevo y las piezas de nivel 2, bien. Construir con el acabado nuevo falló una vez (la pestaña Exterior ya tiene 5 piezas y la última no se cargaba sin deslizar); corregida la prueba, bien. Construcción falló solo en una comprobación vieja que esperaba la polea y el polipasto escondidos en el móvil (la lista que sacó ya los enseñaba); se dio la vuelta a esa comprobación. El panel de fabricación falló en una espera (el aviso «Reparado: hacha de piedra…» llegó justo después de los 5 s; no es de este cambio, que solo cambia la carpeta de las imágenes de las piezas). Sin esperar al recorrido de jugador: no usa nada de lo que cambia (lo que se enseña en el menú). La segunda mirada a las capturas dijo sí; la cuerda de la polea cruzaba la escalera por cómo se montó la escena, y se cambió de viga.",
+  "capturas": "capturas/demo-v245",
+  "estado": "ok"
  }
 ]
