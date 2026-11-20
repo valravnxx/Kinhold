@@ -21,7 +21,7 @@
 //
 // Cómo se amplía (CLAUDE.md, «Recorrido de jugador»): cada tarea de juego añade aquí su parte, como un paso más del
 // mismo jugador, y no se publica si no sale. Y cazar (9 nov): con la lanza que hace en la hoguera, en el modo arma,
-// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la casa más fuerte (P11c, 16 nov), en pruebas/recorrido_casa_fuerte.mjs: el paso 25, detrás de la granja. Y la canoa (P11d, 16 nov), en pruebas/recorrido_canoa.mjs: el paso 26. Y los oficios (P9, 18 nov), en pruebas/recorrido_oficios.mjs: el paso 27, el último (el secadero y la carne seca, el raspador y el zurrón, el cubo, la corteza, las cubas y el cuero, el huso y el hilo, los zapatos y el cinto, y la carbonera). Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
+// caza una liebre lanzándosela apuntando. Y el pozo (P11b, 15 nov), en pruebas/recorrido_pozo.mjs: el paso 23. Y la casa más fuerte (P11c, 16 nov), en pruebas/recorrido_casa_fuerte.mjs: el paso 25, detrás de la granja. Y la canoa (P11d, 16 nov), en pruebas/recorrido_canoa.mjs: el paso 26. Y los oficios (P9, 18 nov), en pruebas/recorrido_oficios.mjs: el paso 27 (el secadero y la carne seca, el raspador y el zurrón, el cubo, la corteza, las cubas y el cuero, el huso y el hilo, los zapatos y el cinto, y la carbonera). Y el hierro (P10, 20 nov), en pruebas/recorrido_hierro.mjs: el paso 28, el último. Y la granja (P11, 14 nov), con el riego del huerto con el agua del pozo (P11b), en pruebas/recorrido_granja.mjs: el paso 22, detrás del pozo. Lo que un jugador aún no puede hacer va en TODAVIA_NO con el porqué y la
 // tarea que lo trae: el recorrido comprueba que de verdad no se puede (así, cuando llegue, falla y obliga a pasarlo a
 // los pasos de verdad) y lo dice en la salida, para que no se olvide.
 //
@@ -57,6 +57,7 @@ import { pozo } from './recorrido_pozo.mjs';
 import { casaFuerte } from './recorrido_casa_fuerte.mjs';
 import { canoa } from './recorrido_canoa.mjs';
 import { oficios } from './recorrido_oficios.mjs';
+import { hierro } from './recorrido_hierro.mjs';
 import { cpSync, writeFileSync } from 'fs';
 
 const MUTAR = process.env.MUTAR === '1';
@@ -81,14 +82,7 @@ function comprobar(nombre, cond, detalle = '') {
 
 // Lo que un jugador nuevo aún no puede hacer sin el arcón, con el porqué y lo que lo trae.
 const TODAVIA_NO = {   // (8 nov) lo que el recorrido no hace, con el porqué
-  'el horno de reducción y la lupia': 'piden carbón (4 para levantar el horno y 4 en cada carga), de dos carboneras de 4 h reales: lo hará entero la tarea «Recorrido de jugador del hierro» (P10); cargarlo, encenderlo y recoger la lupia, por el servidor y con su autor, lo prueba pruebas/prueba_horno_reduccion.mjs',
-  'la fragua y la barra de hierro': 'el fuelle pide 2 cueros (dos días reales en las cubas de curtido) y la barra, la lupia del horno de reducción (carbón de la carbonera): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); el fuelle, la fragua con su fuego de carbón y batir la barra con el mazo, por el servidor y con su autor, lo prueba pruebas/prueba_fragua.mjs',
-  'la sierra y las tablas': 'la sierra pide 2 barras de la fragua (y estas, la lupia y el cuero de días reales): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); batir la sierra, tronzar con ella y serrar las tablas en el banco, por el servidor y con su autor, lo prueba pruebas/prueba_sierra_tablas.mjs',
-  'las rocas grandes y la cantera': 'el pico pide la barra de la fragua (y esta, la lupia y el cuero de días reales): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); romper una roca grande del mundo con el pico, por el servidor y con su autor, y que deje sus bloques de piedra en bruto y sus piedras, lo prueba pruebas/prueba_rocas.mjs',
-  'las vetas de hierro en la roca': 'el pico pide la barra de la fragua (y esta, la lupia y el cuero de días reales), y la veta más cercana a la salida común está a unos 9,5 km: lo hará entero la tarea «Recorrido de jugador del hierro» (P10); picar una veta del mundo con el pico, por el servidor y con su autor, y que suelte su mineral de hierro al pie, lo prueba pruebas/prueba_vetas_hierro.mjs',
-  'la arcilla y el horno cerámico': 'el banco de arcilla más cercano está en la ribera del río del norte, a unos 800 m, y pide la pala de madera (otro tronco corto en el banco); el horno, 6 cestas de arcilla y 10 piedras: lo hará entero la tarea «Recorrido de jugador del hierro» (P10); cavar un banco de arcilla del mundo con la pala, por el servidor y con su autor, y el horno con su fuego de leña, lo prueba pruebas/prueba_horno_ceramico.mjs',
-  'las primeras herramientas de hierro': 'el mango sale de una vara en el banco de tronco, pero el hacha de hierro, el pico y los clavos piden la barra de la fragua (y esta, la lupia y el cuero de días reales): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); el mango en el banco y batir el hacha, el pico y los clavos en la fragua, por el servidor y con su autor, lo prueba pruebas/prueba_herramientas_hierro.mjs',
-  'el hierro de pantano': 'la mancha más cercana está en la vega del río del norte, a unos 800 m, y pide la pala de madera (otro tronco corto en el banco) y la criba (otro haz de mimbre y una vara): lo hará entero la tarea «Recorrido de jugador del hierro» (P10); cribar, por el servidor y con su autor, lo prueba pruebas/prueba_hierro_pantano.mjs',
+  'las vetas de hierro en la roca': 'el pico ya lo bate en la fragua (paso 28), pero la veta más cercana a la salida común está a unos 9,5 km, y el hierro lo saca de las manchas de la vega: picar una veta del mundo con el pico, por el servidor y con su autor, y que suelte su mineral de hierro al pie, lo prueba pruebas/prueba_vetas_hierro.mjs',
   'la resina': 'los pinos y los abetos más cercanos están a unos 4 km de la salida (cerca solo hay robles, hayas y fresnos): el recorrido no anda hasta allí; sangrarlos y coger su resina, por el servidor, lo prueba pruebas/prueba_materiales_arbol_ribera.mjs',
 };   // (antes, nada (hasta el 7 nov: llevar el tronco delgado al hombro; ya es el paso 10; los juncos, el barro y la yesca, desde el 7 nov en el paso 11)
 
@@ -1836,6 +1830,10 @@ try {
       console.log(`(guardado en ${destino}: el mundo y la ficha del jugador antes del hierro)`);
       J.ws.close(); rmSync(dir, { recursive: true, force: true }); process.exit(0);
     }
+    // P10, el hierro (20 nov): pruebas/recorrido_hierro.mjs (la criba y el hierro de pantano, el carbón, el horno de
+    // reducción y las lupias, el cuero del fuelle, la fragua y las barras, el hacha de hierro, el pico, la sierra y los
+    // clavos, las tablas, la roca grande, la arcilla, el horno cerámico y las tejas, y el suelo de tablas y el tejado de teja)
+    await hierro({ J: J2, s, T, O, comprobar, pausa, cerca, RELOJ });
     J2.ws.close();
   }
 
