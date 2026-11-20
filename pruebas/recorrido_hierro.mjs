@@ -385,30 +385,37 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8 })
   let manchas = [];
   for (const radio of [200, 400]) { manchas = cerca(alrededor(rio, radio).filter(p => p.tipo === 'hierro_pantano'), taller); if (manchas.length >= 8) break; }
   comprobar('hay manchas de hierro de pantano en la vega', manchas.length > 0, manchas.length ? `${manchas.length}; la más cercana a ${Math.round(dist(manchas[0], taller))} m` : '');
+  // (primero criba unas cuantas manchas seguidas, que están juntas en la vega, y el mineral queda al pie de cada una; luego
+  // lo lleva a su taller, de 3 en 3 en cada mano, y al final vuelve a por la pala y la criba)
   let pasadas = 0, motivoCriba = '';
+  const cribado = () => manchas.reduce((t, m) => t + nEnSuelo('mineral_hierro', m, 4), 0);
+  await soltarManos();
+  for (const t of ['pala_madera', 'criba']) if (!(await aLaMano(t, J.pos, 6))) await aLaMano(t, taller, 6);
+  if (!enLaMano('pala_madera') || !enLaMano('criba')) motivoCriba = `sin la pala o la criba en las manos (${enMano()})`;
   for (const m of manchas.slice(0, 12)) {
-    if (mineral() >= 3 * LUPIAS) break;
+    if (motivoCriba || mineral() + cribado() >= 3 * LUPIAS) break;
     await cuidarse();
-    const aqui = { ...J.pos };
-    await soltarManos();
-    for (const t of ['pala_madera', 'criba']) if (!(await aLaMano(t, aqui, 6))) await aLaMano(t, taller, 6);
-    if (!enLaMano('pala_madera') || !enLaMano('criba')) { motivoCriba = `sin la pala o la criba en las manos (${enMano()}; cerca: ${visibles().filter(o => ['pala_madera', 'criba'].includes(o.cosa.tipo)).map(o => `${o.cosa.tipo} a ${Math.round(dist(o, J.pos))} m`).join(', ') || 'nada'}; lleva: ${['pala_madera', 'criba'].map(t => J.cuantos(t)).join('/')})`; break; }
     let rc;
     do { rc = MUTAR ? { ok: false, motivo: 'MUTAR' } : await recoger(m); if (rc.ok) pasadas++; } while (rc.ok);
-    if (!/agot|nada|vuelve/i.test(rc.motivo || '')) motivoCriba = rc.motivo;
-    // el mineral queda al pie de la mancha: deja la criba, lo coge y vuelve a por ella
-    const ahi = enSuelo('mineral_hierro', m, 4);
-    if (!ahi.length) continue;
-    const lc = enLaMano('criba'); await soltar(lc);
-    const criba = enSuelo('criba', J.pos, 2)[0];
-    for (let v = 0; v < 3 && enSuelo('mineral_hierro', m, 4).length; v++) {
-      const o = enSuelo('mineral_hierro', m, 4)[0];
-      await J.andar(o.x + 0.3, o.z); await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(3, o.cosa.n), a: lc, x: J.pos.x, z: J.pos.z });
-      await J.andar(taller.x, taller.z); const lm = enLaMano('mineral_hierro'); if (lm) await soltar(lm);
-    }
-    if (criba) { await J.andar(criba.x + 0.3, criba.z); await J.objeto({ tipo: 'coger_suelo', objeto: criba.id, a: lc, x: J.pos.x, z: J.pos.z }); }
-    await J.andar(taller.x, taller.z);
+    if (!/agot|recogido|vuelve/i.test(rc.motivo || '')) console.log(`     (la mancha no da más: ${rc.motivo})`);
+    if (!enLaMano('pala_madera') || !enLaMano('criba')) { const aqui = { ...J.pos }; for (const t of ['pala_madera', 'criba']) await aLaMano(t, aqui, 6); }
   }
+  // las herramientas, aquí en el suelo mientras acarrea
+  const herramientasEn = { ...J.pos };
+  await soltarManos();
+  for (let v = 0; v < 12 && cribado() > 0; v++) {
+    for (const l of MANOS) {
+      const m = manchas.find(x => nEnSuelo('mineral_hierro', x, 4) > 0);
+      if (!m) break;
+      const o = enSuelo('mineral_hierro', m, 4)[0];
+      await J.andar(o.x + 0.3, o.z);
+      await J.objeto({ tipo: 'coger_suelo', objeto: o.id, cantidad: Math.min(3, o.cosa.n), a: l, x: J.pos.x, z: J.pos.z });
+    }
+    await cuidarse();
+    await J.andar(taller.x, taller.z); await soltarManos();
+  }
+  await J.andar(herramientasEn.x, herramientasEn.z);
+  for (const t of ['pala_madera', 'criba']) await aLaMano(t, herramientasEn, 6);
   await J.andar(taller.x, taller.z); await soltarManos();
   comprobar(`criba con la pala y la criba: ${3 * LUPIAS} de mineral de hierro en su taller`, mineral() >= 3 * LUPIAS, `${pasadas} pasadas, ${mineral()} de mineral${motivoCriba ? ' · ' + motivoCriba : ''}`);
   if (mineral() < 3 * LUPIAS) return;
