@@ -1196,7 +1196,7 @@ with sync_playwright() as p:
     modo0 = mv.evaluate(f"{K}.estado.modo")
     mv.evaluate(f"{K}.cambiarModo('construir')"); mv.click('#pestanas button[data-cat="acceso"]'); mv.wait_for_timeout(500)
     mvis = mv.evaluate("[...document.querySelectorAll('#piezas button.pieza b')].map(b => b.textContent)")
-    comprobar('móvil: el menú de construir no enseña la polea ni el polipasto', mvis and 'Polea' not in mvis and 'Polipasto con torno' not in mvis, ', '.join(mvis))
+    comprobar('móvil: el menú de construir enseña la polea y el polipasto (nivel 2, desde P10)', mvis and 'Polea' in mvis and 'Polipasto con torno' in mvis, ', '.join(mvis))
     mv.screenshot(path=f'{SALIDA}/06a_movil_menu_construir.png')
     mv.evaluate(f"{K}.cambiarModo('{modo0}')"); mv.wait_for_timeout(300)
     mv.evaluate(f"{K}.pj.x=10.2; {K}.pj.z=-15; {K}.pj.k=0; {K}.cam.yaw=Math.PI-0.6; {K}.cam.pitch=0.5; {K}.cam.dist=11")
