@@ -23,9 +23,9 @@ import { idRoca, rompible, deCantera, medidaRoca, golpesRoca, bloquesRoca } from
 import { hayAguaCerca } from '../src/logica/necesidades.js';
 import { campoEn } from '../src/logica/campos.js';
 import { VIDA as VIDA_DESGASTE } from '../src/logica/desgaste.js';
-import { PIEZAS } from '../src/logica/piezas.js';
 import { ESTACIONES } from '../src/logica/fabricacion.js';
-import { centroMundo } from '../src/logica/construccion.js';
+import { centroMundo, clave as claveDe } from '../src/logica/construccion.js';
+import { PIEZAS, ALTURA } from '../src/logica/piezas.js';
 
 const MANOS = ['mano:der', 'mano:izq'];
 // Con MUTAR=1 (solo al seguir desde lo guardado) las manchas de la vega no dan mineral: debe FALLAR.
@@ -807,54 +807,58 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   await punto('28j');
   // ── 28j. La arcilla, el horno cerámico y las tejas ──
   console.log('28j. Con la pala cava 8 cestas de arcilla en la ribera; levanta el horno cerámico (6 de arcilla y 10 piedras), lo enciende con leña y cuece 2 de arcilla: 10 tejas');
-  const sitioCer = libreEn(taller, 40) || { x: taller.x - 5, z: taller.z };
-  let mc = await deLaRibera('arcilla', 'arcilla', 8, sitioCer, 'pala_madera');
-  comprobar('cava 8 cestas de arcilla en la ribera con la pala de madera y las lleva al sitio del horno', !mc, mc);
-  const pc = await acopiar(['piedra'], 'piedra', 10, sitioCer);
-  // (6 de arcilla al horno; las otras 2 se quedan aparte, para las tejas)
-  await J.andar(sitioCer.x, sitioCer.z); await soltarManos(); await cogerSuelo('arcilla', sitioCer, 3, 2, 'mano:der');
-  await J.andar(taller.x, taller.z); await soltarManos();
-  await J.andar(sitioCer.x, sitioCer.z);
-  const hc = pc ? await levantar('horno_ceramico', sitioCer.x, sitioCer.z) : { ok: false, motivo: 'sin las 10 piedras' };
-  comprobar('levanta el horno cerámico: 6 de arcilla y 10 piedras', hc.ok && hc.datos && hc.datos.terminada, hc.motivo || '');
-  const hornoC = hc.ok && s.objetos.fab.estaciones[hc.id];
-  if (!hornoC || hornoC.obra) return;
-  // leña: parte un tronco corto con el hacha
-  await J.andar(taller.x, taller.z); await soltarManos();
-  if (nEnSuelo('lena', taller, 5) < 2) {
-    let tr = cerca(cortosEnTierra(), taller)[0];
-    if (!tr && (await masCortos())) tr = cerca(cortosEnTierra(), taller)[0];
-    if (tr) {
-      await soltarManos(); await J.andar(tr.x + 0.5, tr.z);
-      const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
-      if (c.ok) {
-        await J.andar(taller.x + 2, taller.z); const sq = await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
-        await hachaALaMano();
-        const o = sq.ok && visibles().find(x => x.id === sq.datos.objeto);
-        if (o) { await J.andar(o.x + 0.6, o.z); let t2, g = 0; do { t2 = await J.objeto({ tipo: 'trocear', objeto: o.id, x: J.pos.x, z: J.pos.z }); g++; await pausa(850); } while (t2.ok && visibles().some(x => x.id === o.id) && g < 30); }
-        await soltarManos(); if (o) { await cogerSuelo('lena', o, 4, 3); await J.andar(taller.x, taller.z); await soltarManos(); }
+  // (al seguir desde más adelante, el horno ya está: el suyo, el más cercano a su taller)
+  let hornoC = ya('28k') ? cerca(suyas('horno_ceramico'), taller)[0] : null;
+  if (!ya('28k')) {
+    const sitioCer = libreEn(taller, 40) || { x: taller.x - 5, z: taller.z };
+    let mc = await deLaRibera('arcilla', 'arcilla', 8, sitioCer, 'pala_madera');
+    comprobar('cava 8 cestas de arcilla en la ribera con la pala de madera y las lleva al sitio del horno', !mc, mc);
+    const pc = await acopiar(['piedra'], 'piedra', 10, sitioCer);
+    // (6 de arcilla al horno; las otras 2 se quedan aparte, para las tejas)
+    await J.andar(sitioCer.x, sitioCer.z); await soltarManos(); await cogerSuelo('arcilla', sitioCer, 3, 2, 'mano:der');
+    await J.andar(taller.x, taller.z); await soltarManos();
+    await J.andar(sitioCer.x, sitioCer.z);
+    const hc = pc ? await levantar('horno_ceramico', sitioCer.x, sitioCer.z) : { ok: false, motivo: 'sin las 10 piedras' };
+    comprobar('levanta el horno cerámico: 6 de arcilla y 10 piedras', hc.ok && hc.datos && hc.datos.terminada, hc.motivo || '');
+    hornoC = hc.ok && s.objetos.fab.estaciones[hc.id];
+    if (!hornoC || hornoC.obra) return;
+    // leña: parte un tronco corto con el hacha
+    await J.andar(taller.x, taller.z); await soltarManos();
+    if (nEnSuelo('lena', taller, 5) < 2) {
+      let tr = cerca(cortosEnTierra(), taller)[0];
+      if (!tr && (await masCortos())) tr = cerca(cortosEnTierra(), taller)[0];
+      if (tr) {
+        await soltarManos(); await J.andar(tr.x + 0.5, tr.z);
+        const c = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+        if (c.ok) {
+          await J.andar(taller.x + 2, taller.z); const sq = await J.objeto({ tipo: 'soltar_suelo', de: 'hombro', x: J.pos.x, z: J.pos.z });
+          await hachaALaMano();
+          const o = sq.ok && visibles().find(x => x.id === sq.datos.objeto);
+          if (o) { await J.andar(o.x + 0.6, o.z); let t2, g = 0; do { t2 = await J.objeto({ tipo: 'trocear', objeto: o.id, x: J.pos.x, z: J.pos.z }); g++; await pausa(850); } while (t2.ok && visibles().some(x => x.id === o.id) && g < 30); }
+          await soltarManos(); if (o) { await cogerSuelo('lena', o, 4, 3); await J.andar(taller.x, taller.z); await soltarManos(); }
+        }
       }
     }
+    // (como en la fragua: primero la leña, con las manos libres; luego el taladro y la yesca)
+    await J.andar(taller.x, taller.z); await soltarManos(); await cogerSuelo('lena', taller, 5, 2);
+    await J.andar(hornoC.x + 1, hornoC.z);
+    let ec = { ok: true };
+    for (let i = 0; i < 2 && ec.ok; i++) { ec = await J.objeto({ tipo: 'echar_fuego', estacion: hornoC.id, objeto: 'lena', x: J.pos.x, z: J.pos.z }); if (!ec.ok) ec = { ok: false, motivo: `${ec.motivo} (${enMano()})` }; }
+    if (ec.ok) { await J.andar(taller.x, taller.z); await soltarManos(); if (!(await taladroYYesca(1))) ec = { ok: false, motivo: `sin taladro o sin yesca (${enMano()})` }; }
+    if (ec.ok) { await J.andar(hornoC.x + 1, hornoC.z); await aLaMano('taladro_fuego'); ec = await J.objeto({ tipo: 'encender_fuego', estacion: hornoC.id, x: J.pos.x, z: J.pos.z }); }
+    comprobar('parte un tronco corto en leña, la echa al horno cerámico y lo enciende con su yesca y su taladro', ec.ok, ec.motivo || '');
+    await soltarManos();
+    let te = await aEstacion(hornoC, 'arcilla', 2, taller, 5);
+    await J.andar(hornoC.x + 1, hornoC.z);
+    if (te.ok) {
+      const f = await J.objeto({ tipo: 'fabricar', receta: 'tejas', estacion: hornoC.id, x: J.pos.x, z: J.pos.z });
+      const g0 = f.ok ? await J.objeto({ tipo: 'recoger_fabricado', estacion: hornoC.id, x: J.pos.x, z: J.pos.z }) : f;
+      adelantar('tejas');
+      te = !f.ok ? f : g0.ok ? { ok: false, motivo: 'da las tejas antes de tiempo' } : await J.objeto({ tipo: 'recoger_fabricado', estacion: hornoC.id, x: J.pos.x, z: J.pos.z });
+    }
+    const tejas = () => nEnSuelo('teja', hornoC, 4) + nEnSuelo('teja', taller, 5) + J.cuantos('teja');
+    comprobar('cuece 2 cestas de arcilla en el horno encendido y, pasado el rato, saca 10 tejas', te.ok && tejas() >= 10, te.motivo || `${tejas()}`);
   }
-  // (como en la fragua: primero la leña, con las manos libres; luego el taladro y la yesca)
-  await J.andar(taller.x, taller.z); await soltarManos(); await cogerSuelo('lena', taller, 5, 2);
-  await J.andar(hornoC.x + 1, hornoC.z);
-  let ec = { ok: true };
-  for (let i = 0; i < 2 && ec.ok; i++) { ec = await J.objeto({ tipo: 'echar_fuego', estacion: hornoC.id, objeto: 'lena', x: J.pos.x, z: J.pos.z }); if (!ec.ok) ec = { ok: false, motivo: `${ec.motivo} (${enMano()})` }; }
-  if (ec.ok) { await J.andar(taller.x, taller.z); await soltarManos(); if (!(await taladroYYesca(1))) ec = { ok: false, motivo: `sin taladro o sin yesca (${enMano()})` }; }
-  if (ec.ok) { await J.andar(hornoC.x + 1, hornoC.z); await aLaMano('taladro_fuego'); ec = await J.objeto({ tipo: 'encender_fuego', estacion: hornoC.id, x: J.pos.x, z: J.pos.z }); }
-  comprobar('parte un tronco corto en leña, la echa al horno cerámico y lo enciende con su yesca y su taladro', ec.ok, ec.motivo || '');
-  await soltarManos();
-  let te = await aEstacion(hornoC, 'arcilla', 2, taller, 5);
-  await J.andar(hornoC.x + 1, hornoC.z);
-  if (te.ok) {
-    const f = await J.objeto({ tipo: 'fabricar', receta: 'tejas', estacion: hornoC.id, x: J.pos.x, z: J.pos.z });
-    const g0 = f.ok ? await J.objeto({ tipo: 'recoger_fabricado', estacion: hornoC.id, x: J.pos.x, z: J.pos.z }) : f;
-    adelantar('tejas');
-    te = !f.ok ? f : g0.ok ? { ok: false, motivo: 'da las tejas antes de tiempo' } : await J.objeto({ tipo: 'recoger_fabricado', estacion: hornoC.id, x: J.pos.x, z: J.pos.z });
-  }
-  const tejas = () => nEnSuelo('teja', hornoC, 4) + nEnSuelo('teja', taller, 5) + J.cuantos('teja');
-  comprobar('cuece 2 cestas de arcilla en el horno encendido y, pasado el rato, saca 10 tejas', te.ok && tejas() >= 10, te.motivo || `${tejas()}`);
 
   await punto('28k');
   // ── 28k. El suelo de tablas y el tejado de teja, en su casa ──
@@ -879,26 +883,79 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   const terminada = pz => !!casa.piezas.get(pz.clave) && !obra(pz);
   const falta = (pz, m) => (PIEZAS[pz.tipo].coste[m] || 0) - ((obra(pz)?.entregado?.[m]) || 0);
   const alLado = async (pz) => { await J.andar(r2(pz.x + 0.8), pz.z); };
-  const entregar = async (pz, m, n) => { await alLado(pz); return J.accion({ tipo: 'entregar', construccion: casa.id, clave: pz.clave, material: m, cantidad: n }); };
-  const trabajar = async (pz) => {
-    await alLado(pz);
+  const entregar = async (pz, m, n, desde) => { if (desde === undefined) await alLado(pz); return J.accion({ tipo: 'entregar', construccion: casa.id, clave: pz.clave, material: m, cantidad: n, ...(desde !== undefined ? { desde } : {}) }); };
+  const trabajar = async (pz, quieto = false) => {
+    if (!quieto) await alLado(pz);
     let t = { ok: true }, n = 0;
     for (; n < 400 && t.ok && obra(pz); n++) t = await J.accion({ tipo: 'trabajar', construccion: casa.id, clave: pz.clave, segundos: 5 });
     return { ok: terminada(pz), motivo: t.motivo, n };
   };
   const marco = async (pz) => { await alLado(pz); return J.accion({ tipo: 'colocar', pieza: pz.tipo, x: pz.x, z: pz.z, k: pz.k, rot: 0, dir: 0, y: T.suelo(pz.x, pz.z) }); };
-  // de lo que hay en el suelo junto a donde, a la obra: en las manos, de lo que quepa cada vez
-  const llevar = async (pz, tipo, material, donde) => {
-    let q = { ok: true };
-    for (let v = 0; v < 8 && q.ok && falta(pz, material) > 0; v++) {
-      await J.andar(taller.x, taller.z); await soltarManos();
-      if (!J.cuantos(tipo)) await cogerSuelo(tipo, donde, 5, falta(pz, material), 'mano:der');
-      if (!J.cuantos(tipo)) await cogerSuelo(tipo, donde, 5, falta(pz, material), 'mano:izq');
-      if (!J.cuantos(tipo)) return { ok: false, motivo: `no encuentra ${tipo}` };
-      q = await entregar(pz, material, Math.min(J.cuantos(tipo), falta(pz, material)));
+  // el andamio, junto a su casa (8 varas y 2 cuerdas), como para el tejado de juncos (el paso 16): lo de la planta de
+  // arriba se sube a mano por él (lo ligero: las tablas, los clavos, las tejas) y desde arriba se trabaja
+  const cuerda = async () => {
+    await J.andar(banco.x + 1, banco.z); await soltarManos();
+    for (let v = 0; v < 3; v++) {
+      const q = await cordel();
+      if (!q.ok) return q;
+      await J.andar(banco.x + 1, banco.z);
+      const d = await depositar(banco, 'cordel');
+      if (!d.ok) return d;
     }
-    return q.ok && falta(pz, material) <= 0 ? { ok: true } : q;
+    return enEstacion(banco, 'cuerda');
   };
+  let andamio = null, qa = { ok: false, motivo: 'no cabe junto a su casa' };
+  for (const [dx, dz] of [[2, 0], [-2, 0], [0, 2], [0, -2], [4, 0], [-4, 0]]) {
+    const pa = { tipo: 'andamio', x: r2(C.x + dx), z: r2(C.z + dz), k: 0 };
+    await J.andar(r2(pa.x + 0.8), pa.z);
+    qa = await J.accion({ tipo: 'colocar', pieza: 'andamio', x: pa.x, z: pa.z, k: 0, rot: 0, dir: 0, y: T.suelo(pa.x, pa.z) });
+    if (!qa.ok) continue;
+    const cand = s.mundo.candidata('andamio', pa.x, pa.z, 0, 0, 0, T.suelo(pa.x, pa.z)).pieza;
+    pa.clave = claveDe(cand.hueco, cand.i, cand.j, cand.k, cand.d);
+    andamio = pa; break;
+  }
+  comprobar('pone el marco de un andamio junto a su casa', !!andamio && !!obra(andamio), qa.motivo || '');
+  if (!andamio) return;
+  await cuidarse();
+  for (let i = 0; i < 2 && falta(andamio, 'cuerda') > 0; i++) {
+    const c = await cuerda();
+    if (!c.ok) { qa = c; break; }
+    qa = await entregar(andamio, 'cuerda', 1);
+  }
+  // las varas: de los árboles jóvenes que tala, de 6 en 6 en la mano
+  for (let v = 0; v < 8 && falta(andamio, 'vara') > 0; v++) {
+    await cuidarse();
+    const t = await talarJoven(C);
+    if (!t.ok) { qa = t; break; }
+    await soltarManos(); await cogerSuelo('vara', t.a, 6, Math.min(6, falta(andamio, 'vara')), 'mano:der');
+    if (J.cuantos('vara')) qa = await entregar(andamio, 'vara', Math.min(J.cuantos('vara'), falta(andamio, 'vara')));
+    await J.andar(t.a.x + 1, t.a.z); await hachaALaMano(); await soltarManos();
+  }
+  const ta0 = falta(andamio, 'vara') <= 0 && falta(andamio, 'cuerda') <= 0 ? await trabajar(andamio) : { ok: false, motivo: qa.motivo || `faltan ${falta(andamio, 'vara')} varas y ${falta(andamio, 'cuerda')} cuerdas` };
+  comprobar('le lleva 2 cuerdas que trenza en el banco y 8 varas de árboles jóvenes, y lo levanta', ta0.ok, ta0.motivo || '');
+  if (!ta0.ok) return;
+  // subir y bajar por el andamio: de pie en lo alto, en la planta 1 de su casa
+  const arriba = (casa.oy || 0) + ALTURA + 0.05;
+  const porElAndamio = async (sube) => {
+    await J.andar(andamio.x, andamio.z);
+    const y0 = T.suelo(andamio.x, andamio.z);
+    for (let h = 0; h <= 10; h++) { const f = sube ? h / 10 : 1 - h / 10; J.ws.send(JSON.stringify({ tipo: 'estado', x: andamio.x, y: y0 + (arriba - y0) * f, z: andamio.z, giro: 0, anim: 'andar' })); await pausa(120); }
+    if (!sube) J.estar(andamio.x, andamio.z);
+    await pausa(300);
+  };
+  // lo ligero, en las manos, hasta lo alto: se lo da a la obra desde arriba
+  const subirleLo = async (pz, cosas) => {
+    await J.andar(taller.x, taller.z); await soltarManos();
+    for (const [tipo, donde, l] of cosas) { if (!J.cuantos(tipo)) await cogerSuelo(tipo, donde, 5, falta(pz, tipo), l); }
+    for (const [tipo] of cosas) if (J.cuantos(tipo) < falta(pz, tipo)) return { ok: false, motivo: `no encuentra ${falta(pz, tipo)} de ${tipo} (${enMano()})` };
+    const abajo = await entregar(pz, cosas[0][0], 1);
+    if (abajo.ok || !/andamio/.test(abajo.motivo || '')) return { ok: false, motivo: `desde el suelo: ${abajo.motivo || 'se lo da'}` };
+    await porElAndamio(true);
+    let q = { ok: true };
+    for (const [tipo] of cosas) if (q.ok) q = await entregar(pz, tipo, falta(pz, tipo), 1);
+    return q;
+  };
+
   // el suelo de tablas: arriba, sobre los muros de su casa
   await cuidarse();
   await J.andar(taller.x, taller.z); await soltarManos();
@@ -908,10 +965,10 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   if (hs.length) {
     const st = hs[0];
     let q = await marco(st);
-    if (q.ok) q = await llevar(st, 'tabla', 'tabla', taller);
-    if (q.ok) q = await llevar(st, 'clavo', 'clavo', taller);
-    if (q.ok) q = await trabajar(st);
-    comprobar('pone el suelo de tablas: el marco, 4 tablas y 4 clavos, y el trabajo', q.ok && terminada(st), q.motivo || '');
+    if (q.ok) q = await subirleLo(st, [['tabla', taller, 'mano:der'], ['clavo', taller, 'mano:izq']]);
+    if (q.ok) q = await trabajar(st, true);   // (desde lo alto del andamio)
+    await porElAndamio(false);
+    comprobar('pone el suelo de tablas: el marco y, subido al andamio, 4 tablas y 4 clavos y el trabajo', q.ok && terminada(st), q.motivo || '');
   }
   // el tejado de teja: donde quepa en lo alto de su casa; si no cabe, en el sitio del de juncos, que desmonta
   await J.andar(taller.x, taller.z); await soltarManos();
@@ -928,21 +985,30 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
   if (ht.length) {
     const tt = ht[0];
     let q = await marco(tt);
-    if (q.ok) q = await llevar(tt, 'teja', 'teja', taller);
-    // el tronco delgado: de un árbol joven, al hombro
+    // las tejas, de pocas en pocas a mano, subidas por el andamio
+    if (q.ok) { q = await subirleLo(tt, [['teja', taller, 'mano:der']]); await porElAndamio(false); }
+    // el tronco delgado, pesado: no se sube a mano; solo, se rueda por dos varas con una cuerda (que no se gastan)
+    let rodado = 0;
     if (q.ok && falta(tt, 'tronco') > 0) {
-      const t = await talarJoven(taller);
+      const t = await talarJoven(C);
       const tr = t.ok && enSuelo('tronco_delgado', t.a, 5)[0];
       if (!tr) q = { ok: false, motivo: t.motivo || 'el joven no ha dejado tronco' };
       else {
-        await soltarManos(); await J.andar(tr.x + 0.6, tr.z);
-        q = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
-        if (q.ok) q = await entregar(tt, 'tronco', 1);
-        await J.andar(t.a.x + 1, t.a.z); await hachaALaMano();
+        await soltarManos(); await cogerSuelo('vara', t.a, 6, 2, 'mano:der');
+        if (J.cuantos('vara') < 2) { await J.andar(taller.x, taller.z); await cogerSuelo('vara', taller, 5, 2, 'mano:der'); }
+        const c = await cuerda(); if (!c.ok) q = c;
+        if (q.ok) {
+          await J.andar(tr.x + 0.6, tr.z);
+          q = await J.objeto({ tipo: 'coger_suelo', objeto: tr.id, cantidad: 1, a: 'hombro', x: J.pos.x, z: J.pos.z });
+          if (q.ok) { const a = await entregar(tt, 'tronco', 1); if (a.ok || !a.subir) q = { ok: false, motivo: `a mano: ${a.motivo || 'se lo da'}` }; }
+          await alLado(tt);
+          for (let n = 0; n < 200 && q.ok && falta(tt, 'tronco') > 0; n++) { q = await J.accion({ tipo: 'subir', construccion: casa.id, clave: tt.clave, material: 'tronco', segundos: 5, metodo: 'varas' }); rodado++; }
+        }
       }
     }
-    if (q.ok) q = await trabajar(tt);
-    comprobar('pone el tejado de teja: el marco, 10 tejas y un tronco delgado, y el trabajo', q.ok && terminada(tt), q.motivo || '');
+    comprobar('rueda el tronco delgado hasta lo alto por dos varas con una cuerda, solo', q.ok && falta(tt, 'tronco') <= 0, q.motivo || `${rodado} ratos`);
+    if (q.ok) { await porElAndamio(true); q = await trabajar(tt, true); await porElAndamio(false); }
+    comprobar('pone el tejado de teja: el marco, 10 tejas subidas al andamio, el tronco rodado y el trabajo desde arriba', q.ok && terminada(tt), q.motivo || '');
   }
 
   await soltarManos();

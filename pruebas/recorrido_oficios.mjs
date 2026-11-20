@@ -508,6 +508,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     await J.andar(taller.x, taller.z);
     await soltar(libre);
     const cg = await cogerSuelo('lasca_silex', taller, 4, 1, libre);
+    if (cg) await J.andar(taller.x, taller.z);   // (de vuelta junto a la liebre: la lasca puede estar a unos pasos)
     const dl = cg ? await deMano('despiezar_liebre') : { ok: false, motivo: 'sin la lasca' };
     if (!dl.ok) { porque = `no la despieza: ${dl.motivo}`; break; }
     // lo que no le cabe en las manos cae a sus pies: deja también lo demás (salvo la lanza)
