@@ -751,6 +751,8 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     }
     await J.andar(taller.x, taller.z);
     const hi = await deMano('hilar');
+    // (con la fibra que sobra en una mano y el huso en la otra, el hilo cae a sus pies: suelta la fibra y lo coge)
+    if (hi.ok && !J.cuantos('hilo') && nEnSuelo('hilo', J.pos, 3)) { const lf = enLaMano('fibra'); if (lf) await soltar(lf); await cogerSuelo('hilo', J.pos, 3); }
     comprobar('llevando el huso, hila 2 de fibra: un ovillo de hilo (el huso no se gasta)', hi.ok && J.cuantos('hilo') === 1 && J.cuantos('huso') === 1, hi.motivo || '');
   }
 
