@@ -741,6 +741,51 @@ function barraHierro(n, id) {
   return mallas(L);
 }
 
+// La arcilla (P10, 20 nov: la cesta que se cava en el banco de arcilla, y la que se mete en el horno cerámico): unos
+// pellas de arcilla húmeda, gris parda como la del banco (src/juego/recoleccion.js), lisas y blandas, con los cantos
+// redondeados de la pala y del amasado, una sobre otra (como mucho 6).
+const ARCILLA = 0x6f6a5e, ARCILLA_HUMEDA = 0x5f5a50;
+function arcilla(n, id) {
+  const L = lote(0.04), k = Math.min(6, 2 + (n || 1));
+  for (let i = 0; i < k; i++) {
+    const a = i * 2.399 + az(id, i), capa = i < 4 ? 0 : 1, d = capa ? 0.03 : 0.035 + (i ? 0.06 : 0);
+    const r = 0.06 + az(id, i + 30) * 0.02, g = new THREE.IcosahedronGeometry(r, 2), p = g.attributes.position;
+    for (let j = 0; j < p.count; j++) {   // blanda: ondulada suave, aplastada abajo por su peso
+      const x = p.getX(j), y = p.getY(j), z = p.getZ(j), f = 1 + 0.12 * Math.sin(x * 40 + i) * Math.cos(z * 34 + i * 2);
+      p.setXYZ(j, x * f, (y < 0 ? y * 0.45 : y * 0.8) * f, z * f);
+    }
+    g.computeVertexNormals();
+    L.add(g, i % 2 ? ARCILLA_HUMEDA : ARCILLA, Math.cos(a) * d, r * 0.36 + capa * 0.05, Math.sin(a) * d, { y: az(id, i + 60) * 6 }, { escala: new THREE.Vector3(1.25, 1, 1), tex: 'piedra', brillo: 0.95 + az(id, i + 70) * 0.15, sinSuelo: capa > 0 });
+  }
+  return mallas(L);
+}
+
+// Las tejas (P10, 20 nov, las del horno cerámico: 2 cestas de arcilla dan 10): teja curva de barro cocido, la misma de
+// canal y cobija del tejado de teja (src/mundo/modelos.js), algo más estrecha en una punta que en la otra, como las de
+// verdad, moldeadas sobre el muslo. En el suelo, apiladas boca abajo una dentro de otra, en una o dos pilas de cinco
+// (como mucho 10), cada una con su tono, como las recién sacadas del horno.
+const TEJA_SUELTA = { largo: 0.42, r0: 0.088, r1: 0.062, grosor: 0.014 };
+function tejaSuelta() {
+  const { largo, r0, grosor } = TEJA_SUELTA, f = new THREE.Shape(), ri = r0 - grosor;
+  f.moveTo(r0, 0); f.absarc(0, 0, r0, 0, Math.PI, false); f.lineTo(-ri, 0); f.absarc(0, 0, ri, Math.PI, 0, true); f.closePath();
+  const g = new THREE.ExtrudeGeometry(f, { depth: largo, bevelEnabled: false, curveSegments: 5 });
+  g.translate(0, 0, -largo / 2);
+  const p = g.attributes.position;   // se estrecha hacia una punta (la de arriba en el tejado)
+  for (let j = 0; j < p.count; j++) { const k = 1 - (p.getZ(j) / largo + 0.5) * (1 - TEJA_SUELTA.r1 / r0); p.setX(j, p.getX(j) * k); p.setY(j, p.getY(j) * k); }
+  g.computeVertexNormals();
+  return g;
+}
+function tejas(n, id) {
+  const L = lote(0.03), k = Math.min(10, n || 1), pilas = k > 5 ? 2 : 1, g = tejaSuelta();
+  for (let i = 0; i < k; i++) {
+    const pila = pilas > 1 ? i % 2 : 0, h = Math.floor(pilas > 1 ? i / 2 : i);
+    const x = pilas > 1 ? (pila ? 0.11 : -0.11) : 0, gi = az(id, 'p' + pila) * 0.3 - 0.15 + (pila ? Math.PI : 0);
+    L.add(g, az(id, i) > 0.45 ? 'teja' : 'tejaOsc', x + (az(id, i + 20) - 0.5) * 0.008, 0.002 + h * 0.019, (az(id, i + 40) - 0.5) * 0.012,
+      { y: gi + (az(id, i + 60) - 0.5) * 0.06 }, { tex: 'piedra', brillo: 0.85 + az(id, i + 80) * 0.3, sinSuelo: h > 0 });
+  }
+  return mallas(L);
+}
+
 // El mango de herramienta (P10, 19 nov, el del banco de tronco): la vara, cortada a unos 70 cm, desbastada a ocho caras y
 // alisada, de fresno claro con su veta; algo más gorda y redondeada abajo, en el pomo, y arriba la punta rebajada en
 // cuña, donde entrará el ojo de la cabeza de hierro. loteMango() da sus piezas a lo largo de +Y con la mano en el origen
@@ -1135,7 +1180,7 @@ export const MODELO_OBJETO = {
   semilla_cebada: cebada, grano_sucio: granoSucio, criba_grano: cribaGrano, habas: habas(false), habas_asadas: habas(true), semilla_col: semillas(0x7a4a32), semilla_nabo: semillas(0x2e2622),
   gavilla, col: col(false), col_asada: col(true), nabo: nabo(false), nabo_asado: nabo(true),
   fibra, junco: juncos, mimbre, piel, piel_limpia: pielLimpia, cuero, resina, corteza, corteza_roble: cortezaRoble, yesca, bayas, setas, cordel, cuerda, cuerda_trenzada: cinturonCuerda,
-  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, fuelle, barra_hierro: barraHierro, mango: mangos, clavo: clavos, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
+  honda, odre, nasa, trampa_lazo: trampaLazo, cubo, criba, rodaja, remo, mineral_hierro: mineralHierro, carbon, lupia, fuelle, barra_hierro: barraHierro, teja: tejas, arcilla, mango: mangos, clavo: clavos, hacha_piedra: hachaPiedraSuelo, mazo_piedra: mazoPiedraSuelo, taladro_fuego: taladroFuego, cubo_agua: cuboAgua,
   huso, hilo,
   zapatos_cuero: zapatos, cinto_cuero: cintoDe('cuero'), cinto_anillas: cintoDe('anillas'), cinto_armas: cintoDe('armas'), saco, bandolera,
 };

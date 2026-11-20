@@ -1,9 +1,4 @@
 {
- "A": {
-  "inicio": "2026-11-20T09:23:48+00:00",
-  "tarea": "Las tejas: en el horno cerámico encendido, 2 cestas de arcilla dan 10 tejas al cabo de un rato real (por tiempo transcurrido, en el servidor). Con ellas, el tejado y el remate de teja. Cadena: arcilla y horno cerámico ← la tarea anterior; leña ← partir un tronco corto",
-  "hito": "hierro",
-  "rama": "trabajo/20261120-0923"
- },
+ "A": null,
  "B": null
 }

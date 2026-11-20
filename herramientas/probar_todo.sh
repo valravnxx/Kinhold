@@ -60,7 +60,7 @@ paso "El hierro de pantano: las manchas, la pala y la criba, en la lógica y en 
 paso "Las vetas de hierro en la roca: sus sitios, picarlas con el pico, en la lógica y en el servidor" node pruebas/prueba_vetas_hierro.mjs
 paso "El horno de reducción y la lupia (P10), en la lógica y en el servidor" node pruebas/prueba_horno_reduccion.mjs
 paso "La fragua y la barra de hierro (P10), en la lógica y en el servidor" node pruebas/prueba_fragua.mjs
-paso "La arcilla y el horno cerámico (P10): cavarla con la pala, el horno con su fuego de leña, en la lógica y en el servidor" node pruebas/prueba_horno_ceramico.mjs
+paso "La arcilla, el horno cerámico y las tejas (P10): cavarla con la pala, el horno con su fuego de leña y cocer tejas, en la lógica y en el servidor" node pruebas/prueba_horno_ceramico.mjs
 paso "Las primeras herramientas de hierro (P10), en la lógica y en el servidor" node pruebas/prueba_herramientas_hierro.mjs
 paso "La sierra de tronzar y las tablas (P10), en la lógica y en el servidor" node pruebas/prueba_sierra_tablas.mjs
 paso "La carbonera y el carbón (oficios), en la lógica y en el servidor" node pruebas/prueba_carbonera.mjs
@@ -183,6 +183,7 @@ paso "Navegador: el horno de reducción" python3 pruebas/prueba_horno_navegador.
 paso "Navegador: la carbonera" python3 pruebas/prueba_carbonera_navegador.py dist/kinhold_demo.html "$C/carbonera"
 paso "Navegador: la fragua" python3 pruebas/prueba_fragua_navegador.py dist/kinhold_demo.html "$C/fragua"
 paso "Navegador: la arcilla y el horno cerámico" python3 pruebas/prueba_horno_ceramico_navegador.py dist/kinhold_demo.html "$C/horno_ceramico"
+paso "Navegador: las tejas" python3 pruebas/prueba_tejas_navegador.py dist/kinhold_demo.html "$C/tejas"
 paso "Navegador: las primeras herramientas de hierro" python3 pruebas/prueba_herramientas_hierro_navegador.py dist/kinhold_demo.html "$C/herramientas_hierro"
 paso "Navegador: la sierra y las tablas" python3 pruebas/prueba_sierra_tablas_navegador.py dist/kinhold_demo.html "$C/sierra_tablas"
 paso "Navegador: el bosque de lejos visto de cerca" python3 pruebas/prueba_dosel_cerca_navegador.py dist/kinhold_demo.html "$C/dosel_cerca"

@@ -7771,5 +7771,23 @@
   "pruebas": "Comprobador de código correcto. Revisor en la nube (commit d68bf21): lógica, el recorrido de jugador, construcción, la hierba densa, las bayas y las setas, la acción a la vista, el mazo, la cantera, la arcilla y el horno (PC y móvil), el bosque de lejos, recoger del suelo, la velocidad, el castillo, el panel de fabricación, la hoguera, los colgaderos, el hogar, la cama, la demo única, lo que se recoge en el mundo y construir a la altura del suelo, bien. Fallan los almacenajes de la base, igual que en main (no es de este cambio). Después, solo lo que tocaban los últimos arreglos: la arcilla y el horno (con la comprobación nueva de «Apagado»), el hogar y la hoguera, bien. Prueba del horno rota a propósito (MUTAR=choque: se atraviesa), falla. La segunda mirada a las capturas dijo no dos veces (el panel decía «Apagada»; en el móvil el horno salía cortado y el jugador pisaba las piedras; luego, el jugador teñido por el fuego) y sí a la tercera. Para la lista de valravnx: de muy cerca, el fuego de la boca es un interior naranja con llamas cónicas; en el móvil el fondo del banco tiene una franja algo más clara.",
   "capturas": "capturas/demo-v243",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-20T09:23:48+00:00",
+  "fin": "2026-11-20T11:17:53+00:00",
+  "titulo": "Las tejas (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "En el horno cerámico encendido, con 2 cestas de arcilla dejadas en él, sale «Tejas» en su pestaña del panel de fabricar. Hacer las mete a cocer y, al cabo de media hora real, quien las metió recoge 10 tejas. El tiempo se cuenta por la hora en el servidor, aunque nadie juegue, como en el horno de reducción. Con el horno apagado no se puede: dice que se encienda.",
+   "Las tejas son curvas, de barro cocido, y algo más estrechas en una punta. En el suelo se ven apiladas boca abajo, una dentro de otra, en una o dos pilas. La arcilla, que hasta ahora salía como un hatillo, tiene su modelo: unas pellas gris pardas, como las del banco. Las dos tienen su imagen en el panel.",
+   "Con las tejas, el tejado de teja (10 tejas y 1 tronco delgado) y el remate de teja (5 tejas y 1 tronco) salen ya en Construir, pestaña Tejados, con su imagen. Lo demás de nivel 2 (tablas, clavos, hierro) sigue escondido hasta la tarea siguiente.",
+   "La limatesa del remate de teja llevaba una cama de barro que asomaba a los lados de las cobijas como una vara clara y salía por la punta del alero. Ahora es más estrecha y no llega a la punta.",
+   "Decisión provisional: una hornada de tejas tarda media hora. El horno tiene que estar encendido al meterlas, no todo el rato, y en su cola caben 3 hornadas, una detrás de otra.",
+   "La cadena, en la prueba de orígenes: teja ← cocer 2 cestas de arcilla en el horno cerámico encendido ← cavar un banco de arcilla con la pala de madera; leña ← partir un tronco corto. El tejado y el remate de teja quedan entre lo que el hito tiene que dejar hecho, y la teja sale de la lista de pendientes.",
+   "Para la lista de valravnx (la segunda mirada): la teja de los tejados es terracota limpia y algo viva frente a la tejuela gastada de la referencia. El caballete y la limatesa se ven como una banda lisa. En el móvil, con la ficha de la receta abierta, no se ve «En marcha». Y el panel dice «falta 2 cesta de arcilla» sin plural. Nada de eso es nuevo de esta tarea; lo de las piezas de nivel 2 se repasa entero en la tarea siguiente."
+  ],
+  "pruebas": "Comprobador de código correcto. Prueba de la lógica del horno y las tejas 40/40 (lógica y servidor), y rota a propósito (las tejas al momento), falla. Prueba nueva de navegador de las tejas (PC y móvil), bien, y rota a propósito (recoger antes de la media hora), falla. En la nube: lógica, el recorrido de jugador (76 min), construcción, construir con el acabado nuevo, las tejas, el panel de fabricación, el mazo y romper rocas, despiezar y asar y la demo única, bien. Fallaron una vez la lógica, construcción y la demo única porque sus pruebas aún daban la teja por escondida y faltaban las traducciones de las notas; corregido, salen bien. Sin «la cama ligada» (de fabricación solo cambia una receta nueva). La segunda mirada a las capturas dijo no (una vara clara en la limatesa del remate de teja y la carta del menú cortada en el móvil); arreglado, y lo demás que vio, en la lista para valravnx.",
+  "capturas": "capturas/demo-v244",
+  "estado": "ok"
  }
 ]

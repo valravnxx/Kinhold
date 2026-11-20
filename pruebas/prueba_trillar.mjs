@@ -91,7 +91,7 @@ console.log('La paja, ya a la vista');
   comprobar('el tejado de paja se enseña (en este tramo)', enEsteTramo(PIEZAS.tejado_paja) && enEsteTramo(PIEZAS.remate_paja));
   comprobar('la cama de paja también', enEsteTramo(DECORACION.cama_paja));
   comprobar('la paja va al almiar', guardaTipo('almiar', 'paja'));
-  comprobar('lo de después sigue escondido (la teja, lo de tablas)', !enEsteTramo(PIEZAS.tejado_teja || { coste: { teja: 1 } }) && !enEsteTramo(DECORACION.cama_madera));
+  comprobar('lo de después sigue escondido (lo de tablas)', !enEsteTramo(PIEZAS.tejado_tablilla) && !enEsteTramo(DECORACION.cama_madera));   // (20 nov: la teja ya sale del horno cerámico)
 }
 
 console.log('Por el servidor, con su autor');

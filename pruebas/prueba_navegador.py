@@ -49,7 +49,7 @@ with sync_playwright() as p:
 
     print('PC: el menú de construir solo enseña lo de este tramo (lo de paja, desde la era: 13 nov; la empalizada, desde P11c)')
     ev(f"{K}.cambiarModo('construir')")
-    guardadas = ['Tejado de teja', 'Chimenea', 'Adarve', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
+    guardadas = ['Tejado de tablillas', 'Chimenea', 'Adarve', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
                  'Cama de madera', 'Mesa', 'Banco', 'Arcón', 'Barril', 'Estantería', 'Muro de tablas']
     vistas = []
     for cat in ['tierra', 'base', 'estructura', 'muro', 'tejado', 'acceso', 'exterior', 'deco']:

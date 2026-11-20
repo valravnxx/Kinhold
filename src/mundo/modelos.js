@@ -771,7 +771,9 @@ function remateTejado(tipo, ctx = {}) {
       // limatesa: cobijas grandes asentadas en barro, montadas de abajo arriba, como el caballete de la cumbrera
       // las tejas del tejado, medidas en vertical sobre la diagonal (más tendida que el tejado), llegan a esta altura
       const yC = (base + T.rCanal + T.rCobija + 0.01) / Math.cos(ang);
-      const cb = en(0.5, yC - 0.06), cama = cajaR(largo, 0.1, 0.22, 0.03);
+      // (20 nov: más estrecha y sin llegar a la punta del alero: asomaba como una vara clara a los lados de las cobijas y
+      // con su canto al aire en la esquina)
+      const cb = en(0.5 + 0.06 / largo, yC - 0.07), cama = cajaR(largo - 0.12, 0.08, 0.15, 0.02);
       L.add(cama, 'barro', cb.x, cb.y, cb.z, giro, { sinSuelo: true, brillo: 0.85 });
       const rc = 0.12, lc = 0.42, pc = 0.36, caballete = mediaCana(rc, 0.02, lc, false); caballete.rotateY(Math.PI / 2);
       const n = Math.max(1, Math.ceil((largo - lc) / pc) + 1);

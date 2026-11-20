@@ -80,6 +80,7 @@ export const COLA_SECADERO = 10;            // lo que se seca a la vez en un sec
 export const DEPOSITO_MAX = 20;             // unidades depositadas por estación, en total
 export const SECAR_CARNE = 6 * 3600;           // s que tarda la carne en secarse en el secadero (provisional)
 export const REDUCIR = 3600;                // s que tarda una carga del horno de reducción en dar la lupia (provisional)
+export const COCER = 1800;                  // s que tarda una hornada de tejas en el horno cerámico (provisional)
 export const CARBONEAR = 4 * 3600;          // s que tarda en hacerse el carbón en la carbonera: horas reales (provisional)
 export const CARBONES = 4;                  // los carbones vegetales que deja una carbonera (sus 10 leñas)
 export const COLA_CUBAS = 4;                // las pieles que se curten a la vez en unas cubas (provisional)
@@ -359,6 +360,11 @@ export const RECETAS = {
   // calzado en el banco y serrado a lo largo. Se lleva la sierra (no se gasta). Tiempo, provisional (diario y registro):
   // 2 min (tres cortes a lo largo). El foso de aserrar, con tablones largos, llega con cavar (nota del hito)
   tablas:            { ...r('Tablas', 'banco', 'tabla', { tronco_corto: 1 }, 120, 4), requiere: ['sierra'] },
+  // las tejas (P10, 20 nov; tarea: «en el horno cerámico encendido, 2 cestas de arcilla dan 10 tejas al cabo de un rato
+  // real, por tiempo transcurrido, en el servidor»): la arcilla, amasada y moldeada en curva sobre el muslo, se cuece en
+  // el horno encendido (con leña). Se cuenta por tiempo transcurrido, como el horno de reducción: la cola guarda cuándo
+  // termina y las recoge quien las metió. Tiempo, provisional (diario y registro): COCER, media hora
+  tejas:             r('Tejas', 'cocer', 'teja', { arcilla: 2 }, COCER, 10),
 };
 
 // Para qué sirve lo que da cada receta (el panel lo enseña en su ficha): sale de la columna «para qué» del documento de
@@ -422,6 +428,7 @@ export const PARA = {
   clavos: 'Clavan las tablas: suelos, puertas y muebles.',
   sierra: 'Tronza el tronco largo más deprisa que el hacha y, en el banco, saca tablas del tronco corto.',
   tablas: 'Suelos, muros, puertas y muebles de tablas, con clavos.',
+  tejas: 'El tejado de teja y su remate: no se pudre y arde poco.',
   criba: 'Con la pala de madera, saca el mineral de hierro de la tierra encharcada de agua rojiza.',
 };
 

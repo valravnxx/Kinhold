@@ -7,12 +7,17 @@
 //   - con la pala de madera se cava 1 cesta de arcilla; con el palo cavador, no; y es inagotable, como el barro;
 //   - el horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) se levanta como los demás puestos;
 //   - su fuego solo arde leña (ni ramas ni carbón), y se enciende con yesca y el taladro de fuego;
-//   - por el servidor, con su autor: le echa leña, lo enciende y todos lo ven encendido.
+//   - por el servidor, con su autor: le echa leña, lo enciende y todos lo ven encendido;
+//   - las tejas (20 nov): en el horno encendido, 2 cestas de arcilla dan 10 tejas al cabo de COCER (media hora real,
+//     por tiempo transcurrido), por el servidor y con su autor; apagado, no; antes de tiempo no se recogen; con ellas,
+//     el tejado y el remate de teja salen en el menú de construir.
 // MUTAR=1: la arcilla se cava con el palo cavador: tiene que FALLAR.
 // MUTAR=2: al horno cerámico se le pueden echar ramas: tiene que FALLAR.
+// MUTAR=3: las tejas salen al momento (sin esperar el rato del horno): tiene que FALLAR.
 import { Recoleccion, ejecutarRecoleccion, RECOLECTABLES, HERRAMIENTAS_RECOGER, QUE_PIDE } from '../src/logica/recoleccion.js';
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
-import { Fabricacion, ESTACIONES, USOS, MAX_RATO_ESTACION, motivoTierra } from '../src/logica/fabricacion.js';
+import { Fabricacion, ESTACIONES, USOS, MAX_RATO_ESTACION, motivoTierra, RECETAS, COCER } from '../src/logica/fabricacion.js';
+import { PIEZAS, enEsteTramo } from '../src/logica/piezas.js';
 import { Inventario, Inventarios, CATALOGO } from '../src/logica/inventario.js';
 import { COMO, ARDE } from '../src/logica/fuego.js';
 import { Suelo } from '../src/logica/suelo.js';
@@ -28,6 +33,7 @@ function comprobar(nombre, cond, detalle = '') {
 const igual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 if (MUTAR === '1') HERRAMIENTAS_RECOGER.pala.push('palo_cavador');
 if (MUTAR === '2') COMO.horno_ceramico.come = ['lena', 'rama'];
+if (MUTAR === '3') RECETAS.tejas.s = 0;
 const T0 = Date.UTC(2026, 10, 19, 23, 0, 0);
 
 console.log('Lo que dice la tarea');
@@ -134,6 +140,41 @@ console.log('Por el servidor, con autor');
   comprobar('y lo enciende', r.ok, r.motivo);
   const vista = o.estacionesVisibles(null, T + 1000).find(e => e.id === id);
   comprobar('todos ven su fuego encendido', vista && vista.fuego && vista.fuego.encendida, JSON.stringify(vista && vista.fuego));
+}
+
+console.log('Las tejas');
+{
+  const R = RECETAS.tejas;
+  comprobar('la receta: en el horno cerámico, 2 cestas de arcilla dan 10 tejas', R && R.uso === 'cocer' && igual(R.gasta, { arcilla: 2 }) && R.da === 'teja' && R.n === 10, JSON.stringify(R));
+  comprobar('tarda un rato real: media hora (COCER)', R.s === COCER && COCER === 1800, `${R.s} s`);
+  comprobar('el tejado de teja (10 tejas y 1 tronco) y su remate (5 tejas y 1 tronco) salen en el menú de construir',
+    enEsteTramo(PIEZAS.tejado_teja) && enEsteTramo(PIEZAS.remate_teja) && igual(PIEZAS.tejado_teja.coste, { teja: 10, tronco: 1 }) && igual(PIEZAS.remate_teja.coste, { teja: 5, tronco: 1 }));
+  comprobar('lo demás de tablas, clavos o hierro sigue escondido (es la tarea siguiente)', !enEsteTramo({ nivel: 2, coste: { tabla: 1 } }) && !enEsteTramo({ nivel: 2, coste: { clavo: 1 } }));
+
+  const pos = { ana: { x: 1, z: 0 }, bo: { x: 1.2, z: 0.3 } };
+  const o = new ObjetosServidor({ posicion: a => pos[a] || null });
+  const id = o.fab.colocar('ana', 'horno_ceramico', 0, 0).id; delete o.fab.estaciones[id].obra;   // ya levantado
+  o.fab.estaciones[id].fuego = { hasta: 0, combustible: 0, cenizas: false };
+  const ana = o.invs.de('ana'), bo = o.invs.de('bo'), T = Date.now();
+  ana.lugares.espalda = { tipo: 'mochila_bastidor', n: 1, dentro: Array(8).fill(null) };
+  bo.lugares.espalda = { tipo: 'mochila_bastidor', n: 1, dentro: Array(8).fill(null) };
+  for (const [t, n] of [['arcilla', 2], ['lena', 3], ['yesca', 1], ['taladro_fuego', 1]]) ana.meterDonde(t, n);
+  const ruta = (inv, t) => { for (const [k, v] of Object.entries(inv.lugares)) { if (v && v.tipo === t) return k; if (v && v.dentro) { const i = v.dentro.findIndex(c => c && c.tipo === t); if (i >= 0) return `${k}/${i}`; } } return null; };
+  let r = o.ejecutar({ autor: 'ana', tipo: 'depositar_estacion', estacion: id, de: ruta(ana, 'arcilla'), x: 1, z: 0 }, T);
+  comprobar('Ana deja sus 2 cestas de arcilla en el horno', r.ok && o.fab.estaciones[id].deposito.arcilla === 2, r.motivo);
+  r = o.ejecutar({ autor: 'ana', tipo: 'fabricar', receta: 'tejas', estacion: id, x: 1, z: 0 }, T);
+  comprobar('con el horno apagado, no se cuece: dice que lo encienda', !r.ok && /apagado/.test(r.motivo || '') && o.fab.estaciones[id].deposito.arcilla === 2, r.motivo);
+  for (let i = 0; i < 3; i++) o.ejecutar({ autor: 'ana', tipo: 'echar_fuego', estacion: id, objeto: 'lena', x: 1, z: 0 }, T);
+  r = o.ejecutar({ autor: 'ana', tipo: 'encender_fuego', estacion: id, x: 1, z: 0 }, T);
+  comprobar('le echa leña y lo enciende', r.ok, r.motivo);
+  r = o.ejecutar({ autor: 'ana', tipo: 'fabricar', receta: 'tejas', estacion: id, x: 1, z: 0 }, T + 1000);
+  comprobar('encendido, mete la arcilla a cocer: se gasta la de la estación', r.ok && !o.fab.estaciones[id].deposito.arcilla, r.motivo);
+  r = o.ejecutar({ autor: 'ana', tipo: 'recoger_fabricado', estacion: id, x: 1, z: 0 }, T + 1000 + (COCER - 60) * 1000);
+  comprobar('un minuto antes de la media hora, aún no están', !r.ok && /Aún no/.test(r.motivo || '') && !ana.cuantos('teja'), r.motivo);
+  r = o.ejecutar({ autor: 'bo', tipo: 'recoger_fabricado', estacion: id, x: 1.2, z: 0.3 }, T + 1000 + COCER * 1000);
+  comprobar('Bo, que pasaba por allí, no se las lleva', !r.ok && !bo.cuantos('teja'), r.motivo);
+  r = o.ejecutar({ autor: 'ana', tipo: 'recoger_fabricado', estacion: id, x: 1, z: 0 }, T + 1000 + COCER * 1000);
+  comprobar('pasada la media hora (aunque nadie juegue), Ana recoge sus 10 tejas', r.ok && ana.cuantos('teja') === 10, r.motivo || `${ana.cuantos('teja')}`);
 }
 
 console.log(`\n${ok} bien, ${mal} mal`);
