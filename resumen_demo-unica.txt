@@ -1,0 +1,34 @@
+
+== Construir pruebas de estilo
+dist/kinhold_estilo.html 3263 KB
+
+== Construir personaje
+dist/kinhold_personaje.html 3626 KB
+
+== Construir demo única
+dist/kinhold_demo.html 5309 KB
+
+== Construir posprocesado y perfiles gráficos
+dist/kinhold_posprocesado.html 3690 KB
+
+== Construir prueba de cavar
+dist/kinhold_mina.html 3257 KB
+
+== Construir visor del mapa
+dist/kinhold_mapa.html 3697 KB
+dist/kinhold_trozos.html 3309 KB
+hilo de los trozos 39 KB
+
+== Construir a la altura del suelo y nivelar
+
+31 correctas, 0 fallidas
+
+== Navegador: demo única
+  FALLA menú en ru: todo traducido — Demo única · v244 (Las tejas); v244: las tejas (P10, «Hierro y tablas»). En el horno cerámico encendido, con 2 cestas de arcilla dejadas en él, «Tejas» en su pestaña del panel de fabricar: Hacer las mete a cocer y, al cabo de media hora real (contada por la hora, en el servidor, aunque nadie juegue), quien las metió recoge 10 tejas. Las tejas son de barro cocido, curvas y algo más estrechas en una punta, y en el suelo se ven apiladas boca abajo una dentro de otra; la arcilla, en pellas gris pardas. Con ellas, el tejado de teja (10 tejas y 1 tronco delgado) y el remate de teja (5 tejas y 1 tronco) salen ya en Construir, pestaña Tejados, con su imagen. Lo demás de nivel 2 (tablas, clavos, hierro) llega en la tarea siguiente.; v244, provisional: una hornada de tejas tarda media hora (30 min); el horno tiene que estar encendido al meterlas, no todo el rato; caben 3 hornadas en su cola, una detrás de otra.
+  OK   menú en ru: nada tapado
+
+FALLAN 2: menú en en: todo traducido, menú en ru: todo traducido
+!! FALLA: python3 pruebas/prueba_demo_navegador.py dist/kinhold_demo.html /tmp/kinhold_capturas/demo
+
+HAY FALLOS
+tardó 452 s
