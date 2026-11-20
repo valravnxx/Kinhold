@@ -1,0 +1,69 @@
+PC
+  OK   sin mojón, construir se abre en la pestaña Tierra con el mojón
+  OK   arriba: Poner, Quitar, Terminar, la planta y Deshacer — [True, True, True, True, True]
+  OK   la barra de arriba cabe en la pantalla, en la mitad de arriba — [314.5, 14, 965.5, 60]
+  OK   nada de lo de abajo queda tapado por la barra de las piezas — []
+  OK   mojón puesto
+  OK   cada muro con su imagen cargada — []
+  OK   y su coste en iconos
+  OK   sin varas, los muros de zarzo marcan en rojo lo que falta — [True, True, True]
+  OK   marco puesto y Deshacer encendido — piezas=1
+  OK   Deshacer quita el marco puesto — piezas=0
+  OK   y lo dice («Deshecho: …») — Deshecho: cimiento de piedra.
+  OK   y luego ya no hay nada que deshacer
+  OK   X: de poner a quitar
+  OK   quitando, sin los huecos de las manos de abajo
+  OK   X otra vez: vuelve a poner
+  OK   en «Exterior», la empalizada a la vista, con su imagen cargada — ['Cerca de varas', 'Portillo de varas', 'Empalizada', 'Adarve', 'Puerta de empalizada']
+  OK   y cuesta 6 troncos — 6 tronco delgado · tienes 120
+  OK   el portón de empalizada (sin hierro) a la vista, con su imagen cargada — ['Cerca de varas', 'Portillo de varas', 'Empalizada', 'Adarve', 'Puerta de empalizada']
+  OK   y cuesta 4 troncos y 2 cuerdas, sin hierro — 4 tronco delgado · tienes 120 2 cuerda · tienes 40
+  OK   tres tramos de empalizada, su portón y una cerca puestos — piezas=5
+  OK   y la empalizada, levantada — tramos=3
+  OK   el portón, levantado — {'c': 3, 'k': 'e:-1,0,0,0', 'obra': False}
+  OK   a su lado, la acción a la vista es abrir el portón — Abrir: Puerta de empalizada
+  OK   el portón se abre con Usar — Abrir: Puerta de empalizada
+  OK   y se vuelve a cerrar
+  OK   en «Muro», muro de entramado a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas con puerta', 'Muro de tablas con ventana', 'Medio muro']
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 2 vara · tienes 116 3 barro · tienes 80
+  OK   en «Muro», muro de entramado con puerta a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas con puerta', 'Muro de tablas con ventana', 'Medio muro']
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 1 vara · tienes 116 2 barro · tienes 80
+  OK   en «Muro», muro de entramado con ventana a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas con puerta', 'Muro de tablas con ventana', 'Medio muro']
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 2 vara · tienes 116 2 barro · tienes 80
+  OK   los cuatro muros de entramado (liso, con puerta y con ventana), levantados — ['muro_entramado', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana']
+  OK   sin errores en la página
+móvil
+  OK   sin mojón, construir se abre en la pestaña Tierra con el mojón
+  OK   arriba: Poner, Quitar, Terminar, la planta y Deshacer — [True, True, True, True, True]
+  OK   la barra de arriba cabe en la pantalla, en la mitad de arriba — [78, 120, 382, 204]
+  OK   nada de lo de abajo queda tapado por la barra de las piezas — []
+  OK   mojón puesto
+  OK   cada muro con su imagen cargada — []
+  OK   y su coste en iconos
+  OK   sin varas, los muros de zarzo marcan en rojo lo que falta — [True, True, True]
+  OK   marco puesto y Deshacer encendido — piezas=1
+  OK   Deshacer quita el marco puesto — piezas=0
+  OK   y lo dice («Deshecho: …») — Deshecho: cimiento de piedra.
+  OK   y luego ya no hay nada que deshacer
+  OK   Quitar: a quitar
+  OK   quitando, sin los huecos de las manos de abajo
+  OK   Poner: vuelve a poner
+  OK   en «Exterior», la empalizada a la vista, con su imagen cargada — ['Cerca de varas', 'Portillo de varas', 'Empalizada', 'Adarve', 'Puerta de empalizada']
+  OK   y cuesta 6 troncos — 6 tronco delgado · tienes 120
+  OK   el portón de empalizada (sin hierro) a la vista, con su imagen cargada — ['Cerca de varas', 'Portillo de varas', 'Empalizada', 'Adarve', 'Puerta de empalizada']
+  OK   y cuesta 4 troncos y 2 cuerdas, sin hierro — 4 tronco delgado · tienes 120 2 cuerda · tienes 40
+  OK   tres tramos de empalizada, su portón y una cerca puestos — piezas=5
+  OK   y la empalizada, levantada — tramos=3
+  OK   el portón, levantado — {'c': 3, 'k': 'e:-1,0,0,0', 'obra': False}
+  OK   a su lado, la acción a la vista es abrir el portón — Abrir: Puerta de empalizada
+  OK   el portón se abre con Usar — Abrir: Puerta de empalizada
+  OK   y se vuelve a cerrar
+  OK   en «Muro», muro de entramado a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas con puerta', 'Muro de tablas con ventana', 'Medio muro']
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 2 vara · tienes 116 3 barro · tienes 80
+  OK   en «Muro», muro de entramado con puerta a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas con puerta', 'Muro de tablas con ventana', 'Medio muro']
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 1 vara · tienes 116 2 barro · tienes 80
+  OK   en «Muro», muro de entramado con ventana a la vista, con su imagen cargada — ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana', 'Muro de troncos', 'Muro de troncos con puerta', 'Muro de troncos con ventana', 'Muro de entramado', 'Muro de entramado con puerta', 'Muro de entramado con ventana', 'Muro de tablas', 'Muro de tablas con puerta', 'Muro de tablas con ventana', 'Medio muro']
+  OK     y su coste: troncos, varas y barro, sin hierro ni tablas — 2 tronco delgado · tienes 98 2 vara · tienes 116 2 barro · tienes 80
+  OK   los cuatro muros de entramado (liso, con puerta y con ventana), levantados — ['muro_entramado', 'muro_entramado', 'muro_entramado_puerta', 'muro_entramado_ventana']
+  OK   sin errores en la página
+TODO CORRECTO
