@@ -7754,5 +7754,22 @@
   "pruebas": "Comprobador de código correcto. Vetas de hierro (lógica y servidor) 33/33; rota a propósito (la veta no se agota; se pica sin el pico en la mano), falla. Prueba nueva de navegador de la veta (PC y móvil), bien; rota a propósito (la veta no se encuentra al lado), falla. En la nube: lógica, la veta, recoger del suelo, la hierba densa, los avisos de las necesidades, las bayas y las setas, la velocidad y lo que se recoge en el mundo, bien. Sin el recorrido de jugador (solo cambia su lista de lo que aún no hace, y la veta más cercana está a 9,5 km de su camino) ni la demo única (solo las notas de la versión). La segunda mirada a las capturas dijo no dos veces (parecía un montón de barro naranja; luego cantos rodados con el borde oscuro) y sí a la tercera.",
   "capturas": "capturas/demo-v242",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-20T06:22:02+00:00",
+  "fin": "2026-11-20T08:30:41+00:00",
+  "titulo": "La arcilla y el horno cerámico (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "En la orilla y la ribera de los ríos, junto a donde sale el barro, hay bancos de arcilla: un hoyo cavado a pala, con la arcilla gris parda y mate en el fondo, la pared del corte en sombra, la tierra echada alrededor en un caballón que se deshace en la hierba y unos terrones sacados al borde. Dentro del hoyo no crece nada. El más cercano a la salida común está en la ribera del río del norte, a unos 800 m.",
+   "Con la pala de madera encima (el palo cavador no la saca), Usar a su lado cava 1 cesta de arcilla, por el servidor y con su autor. El banco no se agota, como el barro.",
+   "El horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) se levanta desde Construir, en «Puestos de trabajo»: un anillo de piedra seca y encima una cúpula de arcilla ocre alisada a mano, con el respiradero arriba y, abierta al pie de la cúpula, la boca del hogar, tiznados de hollín. No se atraviesa.",
+   "Su fuego solo come leña (ni ramas ni carbón), que se ve metida en la boca; se enciende con yesca y el taladro de fuego. Encendido, las llamas arden dentro de la boca, al rojo por dentro, y sale humo por el respiradero, para todos. En el panel de fabricar tiene su pestaña «Horno cerámico», que dice «Apagado» y «Encendido» (el hogar, también). Lo que se cuece en él (las tejas) es la tarea siguiente.",
+   "Decisión provisional: los bancos de arcilla, en el 14 % de las celdas de la orilla y el 6 % de las de la ribera que quedan libres (detrás de todo lo demás, para no mover lo que ya salía); en el horno, la leña arde 10 min y le caben 2 h por delante (12 leñas); 60 s de trabajo para levantarlo.",
+   "La cadena en la prueba de orígenes: arcilla ← cavar un banco de arcilla con la pala de madera ← el banco de tronco; el horno cerámico ← arcilla y piedra. El recorrido de jugador lo deja para «Recorrido de jugador del hierro» (el banco más cercano está a 800 m y la pala pide otro tronco corto)."
+  ],
+  "pruebas": "Comprobador de código correcto. Revisor en la nube (commit d68bf21): lógica, el recorrido de jugador, construcción, la hierba densa, las bayas y las setas, la acción a la vista, el mazo, la cantera, la arcilla y el horno (PC y móvil), el bosque de lejos, recoger del suelo, la velocidad, el castillo, el panel de fabricación, la hoguera, los colgaderos, el hogar, la cama, la demo única, lo que se recoge en el mundo y construir a la altura del suelo, bien. Fallan los almacenajes de la base, igual que en main (no es de este cambio). Después, solo lo que tocaban los últimos arreglos: la arcilla y el horno (con la comprobación nueva de «Apagado»), el hogar y la hoguera, bien. Prueba del horno rota a propósito (MUTAR=choque: se atraviesa), falla. La segunda mirada a las capturas dijo no dos veces (el panel decía «Apagada»; en el móvil el horno salía cortado y el jugador pisaba las piedras; luego, el jugador teñido por el fuego) y sí a la tercera. Para la lista de valravnx: de muy cerca, el fuego de la boca es un interior naranja con llamas cónicas; en el móvil el fondo del banco tiene una franja algo más clara.",
+  "capturas": "capturas/demo-v243",
+  "estado": "ok"
  }
 ]

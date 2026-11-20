@@ -2689,9 +2689,9 @@
     },
     {
      "nombre": "La arcilla y el horno cerámico: en la ribera, junto a donde sale el barro, se cava con la pala de madera 1 cesta de arcilla (inagotable, como el barro); el horno cerámico (6 cestas de arcilla y 10 piedras; fuera, en tu tierra) como estación, que se enciende con leña. Cadena: pala de madera ← el banco de tronco; leña ← partir un tronco corto con el hacha",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-19T23:23:02+00:00",
-     "rama": "trabajo/20261119-2323"
+     "fin": "2026-11-20T08:30:41+00:00"
     },
     {
      "nombre": "Las tejas: en el horno cerámico encendido, 2 cestas de arcilla dan 10 tejas al cabo de un rato real (por tiempo transcurrido, en el servidor). Con ellas, el tejado y el remate de teja. Cadena: arcilla y horno cerámico ← la tarea anterior; leña ← partir un tronco corto",
@@ -4987,6 +4987,13 @@
      "archivo": "jugar/demo/v242.html",
      "capturas": "capturas/demo-v242",
      "notas": "Las vetas de hierro en la roca: el afloramiento rojizo de cada veta pequeña del mapa se pica con el pico y suelta mineral de hierro, mucho más que una mancha de pantano"
+    },
+    {
+     "v": "v243",
+     "fecha": "2026-11-20",
+     "archivo": "jugar/demo/v243.html",
+     "capturas": "capturas/demo-v243",
+     "notas": "La arcilla y el horno cerámico: en la orilla de los ríos se cava arcilla con la pala de madera, y con ella y piedra se levanta el horno cerámico, que se enciende con leña"
     }
    ]
   },
