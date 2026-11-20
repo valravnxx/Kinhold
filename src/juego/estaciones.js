@@ -513,6 +513,11 @@ function fuegoFragua(cual, id) {
 // ella (al rojo por dentro) y sale humo por el respiradero (fuegoHornoCeramico).
 const HORNO_CER = { r: 0.62, base: 0.2, alto: 1.2, tiro: 0.13, boca: 0.2, tunel: 0.34 };
 const ARCILLA_HORNO = 0x8c7461, ARCILLA_COCIDA = 0x87634f, HOLLIN_CER = 0x3a302a;
+// (20 nov, la segunda mirada: la boca, metida en la cúpula, no pegada delante) la boca del hogar es un arco abierto en
+// la propia cúpula, al pie: de lados rectos hasta BOCA_LADO y medio punto encima, de ancho 2·boca; detrás, el túnel del
+// hogar se mete TUNEL_FONDO dentro del horno, tiznado y negro al fondo.
+const BOCA_LADO = 0.2, TUNEL_FONDO = 0.42;
+const enBoca = (x, y, holgura = 0) => { const w = HORNO_CER.boca + holgura; return Math.abs(x) < w && y < BOCA_LADO + Math.sqrt(Math.max(0, w * w - x * x)); };
 // el perfil: la cámara, de pared casi recta y algo cerrada hacia arriba, y encima la cúpula baja hasta el respiradero
 // (t: 0 abajo, 1 arriba; la cúpula empieza en CUPULA)
 const CUPULA = 0.62;
@@ -521,67 +526,85 @@ const perfilCupula = t => {
   if (t < CUPULA) return R * (1 - 0.1 * t / CUPULA + Math.sin(t / CUPULA * Math.PI) * 0.02);
   const s = (t - CUPULA) / (1 - CUPULA); return T + (R * 0.9 - T) * Math.sqrt(Math.max(0, 1 - s * s));
 };
+// la silueta del arco de la boca (en x, y), para el túnel, su fondo y su reborde
+function formaBoca(w = HORNO_CER.boca) {
+  const f = new THREE.Shape(); f.moveTo(-w, 0); f.lineTo(w, 0); f.lineTo(w, BOCA_LADO); f.absarc(0, BOCA_LADO, w, 0, Math.PI, false); f.lineTo(-w, 0); return f;
+}
+const MAT_TUNEL = new THREE.MeshLambertMaterial({ color: 0x2c231d, side: THREE.BackSide });   // por dentro del túnel: tiznado
+const MAT_NADA = new THREE.MeshBasicMaterial({ visible: false });
 function hornoCeramico(id) {
-  const { r: R, base: B, alto: A, tiro: T, boca: BO, tunel: TU } = HORNO_CER, L = new Lote({ rangoSuelo: 0.35, variacion: 0.08 });
-  // la cúpula: el perfil de fuera, el labio del respiradero y la pared de dentro hasta un palmo
-  const y = t => B - 0.02 + (A - B) * t, perfil = [];
+  const { r: R, base: B, alto: A, tiro: T, boca: BO } = HORNO_CER, L = new Lote({ rangoSuelo: 0.35, variacion: 0.08 });
+  // la cúpula: el pie (hasta el suelo, entre las piedras), el perfil de fuera, el labio del respiradero y la pared de
+  // dentro hasta un palmo
+  const y = t => B - 0.02 + (A - B) * t, perfil = [new THREE.Vector2(R + 0.03, -0.03), new THREE.Vector2(R + 0.01, 0.08)];
   for (let i = 0; i <= 20; i++) { const t = i / 20; perfil.push(new THREE.Vector2(perfilCupula(t), y(t))); }
   perfil.push(new THREE.Vector2(T + 0.01, A + 0.015), new THREE.Vector2(T - 0.015, A - 0.2));
-  const cup = new THREE.LatheGeometry(perfil, 32), p = cup.attributes.position, sem = az(id, 1) * 6;
+  const cupI = new THREE.LatheGeometry(perfil, 72), p = cupI.attributes.position, sem = az(id, 1) * 6;
   for (let i = 0; i < p.count; i++) {   // alisada a mano: ni redonda ni lisa (los golpes de la palma, en anillos)
     const x = p.getX(i), yy = p.getY(i), z = p.getZ(i), r = Math.hypot(x, z);
     if (r < 0.05 || yy > A) continue;
     const ang = Math.atan2(z, x), k = 1 + Math.sin(ang * 3 + yy * 5 + sem) * 0.018 + Math.sin(ang * 7 - yy * 11 + sem * 2) * 0.01 + Math.sin(ang * 13 + yy * 23) * 0.004;
     p.setX(i, x * k); p.setZ(i, z * k);
   }
-  cup.computeVertexNormals();
+  // el hueco de la boca: fuera los triángulos de la cara de delante (+z) que caen dentro del arco
+  const cupN = cupI.toNonIndexed(), q = cupN.attributes.position, quedan = [];
+  for (let t = 0; t < q.count; t += 3) {
+    let cx = 0, cy = 0, cz = 0; for (let k = 0; k < 3; k++) { cx += q.getX(t + k) / 3; cy += q.getY(t + k) / 3; cz += q.getZ(t + k) / 3; }
+    if (cz > 0.3 && enBoca(cx, cy, -0.01)) continue;
+    for (let k = 0; k < 3; k++) quedan.push(q.getX(t + k), q.getY(t + k), q.getZ(t + k));
+  }
+  const cup = new THREE.BufferGeometry(); cup.setAttribute('position', new THREE.Float32BufferAttribute(quedan, 3)); cup.computeVertexNormals();
   // el hollín, horneado en la propia cúpula (sin bordes): negro en el labio del respiradero y aclarándose hacia abajo, y
-  // delante, encima de la boca del hogar
+  // delante, subiendo desde el arco de la boca
   const tizne = v => {
     const arriba = Math.min(1, Math.max(0, (v.y - (A - 0.4)) / 0.4)) ** 1.5;
-    const ang = Math.atan2(v.x, v.z), boca = v.y > 0.55 ? 0 : Math.exp(-((ang / 0.38) ** 2)) * Math.min(1, Math.max(0, (0.55 - v.y) / 0.3));
-    return 1 - 0.6 * Math.min(1, Math.max(arriba, boca * 0.8));
+    const sobre = v.z > 0 ? Math.exp(-((v.x / 0.24) ** 2)) * Math.min(1, Math.max(0, (0.85 - v.y) / 0.45)) : 0;
+    return 1 - 0.6 * Math.min(1, Math.max(arriba, sobre * 0.85));
   };
   L.add(cup, ARCILLA_HORNO, 0, 0, 0, null, { tex: 'piedra', rayas: tizne });
   L.add(new THREE.TorusGeometry(T + 0.005, 0.032, 6, 18), HOLLIN_CER, 0, A + 0.01, 0, { x: Math.PI / 2 }, { sinSuelo: true, brillo: 0.6 });   // el labio, quemado
   L.add(new THREE.CircleGeometry(T - 0.012, 14), 0x15110e, 0, A - 0.15, 0, { x: -Math.PI / 2 }, { sinSuelo: true, tex: 'liso' });   // lo oscuro de dentro
-  // el anillo de piedra seca de la base, medio hundido, abierto delante para la boca
+  // el anillo de piedra seca del pie, medio hundido, abierto delante para la boca
   for (let i = 0; i < 10; i++) {
-    const a = Math.PI / 2 + 0.42 + i * (2 * Math.PI - 0.84) / 9 + (az(id, 10 + i) - 0.5) * 0.08, d = R + 0.03;
+    const a = Math.PI / 2 + 0.5 + i * (2 * Math.PI - 1.0) / 9 + (az(id, 10 + i) - 0.5) * 0.08, d = R + 0.06;
     L.add(piedraIrregular(0.13 + az(id, 20 + i) * 0.04, 1, id + 'p' + i, 0.25), i % 3 ? 'piedra' : 'piedraOsc', Math.cos(a) * d, 0.08, Math.sin(a) * d, { y: -a + az(id, 30 + i) * 0.4 }, { escala: new THREE.Vector3(0.8, 0.85, 1.75), plano: true });
   }
-  // la boca del hogar, delante (+z): una bóveda corta de arcilla cocida (más roja, del fuego) que sale de la cúpula
-  const boveda = new THREE.CylinderGeometry(BO + 0.05, BO + 0.06, TU, 14, 1, true, -Math.PI / 2, Math.PI);
-  L.add(boveda, ARCILLA_COCIDA, 0, 0, R + TU / 2 - 0.12, { x: Math.PI / 2 }, { tex: 'piedra' });
-  L.add(new THREE.TorusGeometry(BO + 0.055, 0.035, 6, 14, Math.PI), ARCILLA_COCIDA, 0, 0, R + TU - 0.12, null, { tex: 'piedra', escala: new THREE.Vector3(1, 1, 0.8) });   // el reborde de la boca
-  L.add(new THREE.TorusGeometry(BO + 0.058, 0.02, 5, 14, Math.PI), HOLLIN_CER, 0, 0.01, R + TU - 0.1, null, { sinSuelo: true, escala: new THREE.Vector3(1, 1, 0.6) });   // tiznado por arriba
+  // el reborde del arco: la arcilla de la boca, más gruesa y cocida (más roja) del fuego, tapando el corte de la cúpula
+  const zf = R + 0.025, arco = new THREE.CurvePath();
+  arco.add(new THREE.LineCurve3(new THREE.Vector3(BO + 0.03, -0.02, 0), new THREE.Vector3(BO + 0.03, BOCA_LADO, 0)));
+  arco.add(new THREE.EllipseCurve(0, BOCA_LADO, BO + 0.03, BO + 0.03, 0, Math.PI, false));
+  arco.add(new THREE.LineCurve3(new THREE.Vector3(-BO - 0.03, BOCA_LADO, 0), new THREE.Vector3(-BO - 0.03, -0.02, 0)));
+  const pts = arco.getSpacedPoints(40).map(v => new THREE.Vector3(v.x, v.y, v.z || 0));
+  L.add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.045, 7, false), ARCILLA_COCIDA, 0, 0, zf, null, { tex: 'piedra', escala: new THREE.Vector3(1, 1, 0.75), rayas: v => v.y > 0.3 ? 0.62 : 1 });
   // la ceniza vieja que se saca por la boca, desparramada delante
-  L.add(piedraIrregular(0.2, 1, id + 'cv', 0.15), 0x6d655d, 0.04, 0.0, R + TU + 0.06, { y: az(id, 5) }, { escala: new THREE.Vector3(1.3, 0.06, 0.8), sinSuelo: true, tex: 'piedra' });
+  L.add(piedraIrregular(0.2, 1, id + 'cv', 0.15), 0x6d655d, 0.04, 0.0, zf + 0.16, { y: az(id, 5) }, { escala: new THREE.Vector3(1.2, 0.06, 0.7), sinSuelo: true, tex: 'piedra' });
   const o = new THREE.Group();
   o.add(mallas(L));
-  // lo negro de dentro de la boca (dos fondos, uno detrás de otro: el túnel se ve hondo), y el rojo cuando arde
-  const hueco = new THREE.Mesh(new THREE.CircleGeometry(BO + 0.04, 14, 0, Math.PI), MAT_ARCO); hueco.position.set(0, 0.005, R + TU - 0.135); o.add(hueco);
-  const brasa = new THREE.Mesh(new THREE.CircleGeometry(BO * 0.75, 12, 0, Math.PI), MAT_RESCOLDO); brasa.position.set(0, 0.005, R + TU - 0.3); brasa.name = 'rescoldo'; brasa.visible = false; o.add(brasa);
-  // la leña puesta para arder, metida en la boca (se esconde si no tiene nada puesto)
-  const lena = modeloDe({ id: id + ':lena', cosa: { tipo: 'lena', n: 4 } }); lena.position.set(0, 0.01, R + TU - 0.06); lena.rotation.y = Math.PI / 2 + 0.1; lena.scale.setScalar(0.78);   // (asoma por la boca: se ve)
+  // el túnel del hogar, metido en el horno: sus paredes por dentro (tiznadas) y el fondo negro; al rojo cuando arde
+  const tunel = new THREE.ExtrudeGeometry(formaBoca(BO - 0.005), { depth: TUNEL_FONDO, bevelEnabled: false, curveSegments: 10 });
+  const mt = new THREE.Mesh(tunel, [MAT_NADA, MAT_TUNEL]); mt.position.z = zf + 0.01 - TUNEL_FONDO; mt.receiveShadow = true; o.add(mt);
+  const fondo = new THREE.Mesh(new THREE.ShapeGeometry(formaBoca(BO), 10), MAT_ARCO); fondo.position.z = zf - TUNEL_FONDO + 0.012; o.add(fondo);
+  const brasa = new THREE.Mesh(new THREE.ShapeGeometry(formaBoca(BO * 0.9), 10), MAT_RESCOLDO); brasa.position.z = zf - TUNEL_FONDO + 0.016; brasa.name = 'rescoldo'; brasa.visible = false; o.add(brasa);
+  // la leña puesta para arder, metida en la boca y asomando un poco (se esconde si no tiene nada puesto)
+  const lena = modeloDe({ id: id + ':lena', cosa: { tipo: 'lena', n: 4 } }); lena.position.set(0, 0.01, zf - 0.17); lena.rotation.y = Math.PI / 2 + 0.06; lena.scale.setScalar(0.72);
   const ramas = new THREE.Group(); ramas.add(lena); ramas.name = 'ramas'; o.add(ramas);
   o.userData.alzaFuego = 0;
   return o;
 }
-// El fuego del horno cerámico: llamas cortas que lamen la boca del hogar (entre la leña) y humo por el respiradero de
-// arriba; en cenizas, un poco de ceniza en la boca.
-const MAT_LLAMA_BOCA = new THREE.MeshBasicMaterial({ color: 0xe0642a, transparent: true, opacity: 0.8, depthWrite: false });
+// El fuego del horno cerámico: dentro del túnel, el lecho de brasas y llamas de verdad (las de la hoguera, más cortas y
+// echadas hacia dentro por el tiro), que asoman por el arco; y humo por el respiradero de arriba. En cenizas, ceniza en
+// la boca. Su luz (main: la de las estaciones), dentro del túnel: alumbra la boca y el suelo de delante, no la cúpula.
 function fuegoHornoCeramico(cual, id) {
-  const { r: R, alto: A, tunel: TU } = HORNO_CER, g = new THREE.Group(); g.name = 'fuego';
-  const zb = R + TU - 0.2;
+  const { r: R, alto: A } = HORNO_CER, g = new THREE.Group(); g.name = 'fuego';
+  const zb = R + 0.025 - 0.2;
   g.userData.humo = { x: 0, y: A - 0.1, z: 0 }; g.userData.fuego = { x: 0, y: 0.15, z: zb };
   if (cual === 'ardiendo') {
-    for (let i = 0; i < 4; i++) {   // las lenguas que lamen la boca desde dentro, echadas hacia fuera por el tiro
-      const h = 0.22 + az(id, 'h' + i) * 0.1, r = 0.06 + az(id, 'q' + i) * 0.02, x = (i - 1.5) * 0.075;
-      const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 7), i === 1 || i === 2 ? MAT_LLAMA_HORNO : MAT_LLAMA_BOCA);
-      m.geometry.translate(0, h / 2, 0); m.position.set(x, 0.04, zb + 0.12 + az(id, 'z' + i) * 0.05); m.rotation.x = 0.7; m.name = 'llama'; m.userData.fase = i * 1.9; g.add(m);
-    }
-    const lecho = new THREE.Mesh(new THREE.CircleGeometry(0.15, 12), MAT_RESCOLDO); lecho.rotation.x = -Math.PI / 2; lecho.position.set(0, 0.015, zb); lecho.scale.set(1.2, 0.8, 1); lecho.name = 'llama_brasa'; g.add(lecho);   // las brasas del fondo
+    const lecho = new THREE.Mesh(piedraIrregular(0.17, 1, id + 'lecho', 0.12), MAT_BRASA); lecho.scale.set(1, 0.14, 1.3); lecho.position.set(0, 0.02, zb - 0.02); lecho.name = 'llama_brasa'; g.add(lecho);
+    const llamas = [[-0.07, 0.03, 0.27, 0.07], [0.06, -0.04, 0.32, 0.075], [0.03, 0.07, 0.22, 0.06], [-0.04, -0.08, 0.24, 0.06], [0, 0, 0.17, 0.05]];
+    llamas.forEach(([x, z, h, r], i) => {
+      const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), i === llamas.length - 1 ? MAT_NUCLEO : MAT_LLAMA);
+      m.geometry.translate(0, h / 2, 0); m.position.set(x, 0.05, zb + z); m.name = 'llama'; m.userData.fase = i * 1.7; g.add(m);
+    });
     for (let i = 0; i < 14; i++) { const m = new THREE.Sprite(MAT_HUMO_HORNO()); m.name = 'humo'; m.userData.fase = i / 14; g.add(m); }
   }
   if (cual === 'cenizas') {
@@ -1554,8 +1577,8 @@ export function crearEstaciones({ raiz, altura, fab }) {
       if (!f || (o.userData.firmaFuego.indexOf('ardiendo') !== 0 && !brasas)) continue;
       if (o.userData.tipo === 'carbonera') { moverHumo(f, t / 1000); continue; }   // (arde ahogada: sin luz)
       if (o.userData.tipo === 'horno_reduccion' || o.userData.tipo === 'horno_ceramico') moverHumo(f, t / 1000); else if (!brasas) moverFuego(f, t / 1000);
-      if (o.userData.tipo === 'horno_ceramico') vF.set(0, 0.3, HORNO_CER.r + HORNO_CER.tunel + 0.6); else   // (la luz, delante de la boca del hogar, y menos: el fuego está dentro)
-      vF.set(0, brasas ? 0.5 : 0.9, 0); f.localToWorld(vF); const p = vF.clone(); p.k = brasas ? 0.22 : o.userData.tipo === 'horno_ceramico' ? 0.25 : 1; arden.push(p); // la luz, por encima de las piedras (si no, las quema); las brasas, poca
+      if (o.userData.tipo === 'horno_ceramico') vF.set(0, 0.22, HORNO_CER.r - 0.12); else   // (la luz, dentro del túnel del hogar: alumbra la boca y lo de delante, no la cúpula)
+      vF.set(0, brasas ? 0.5 : 0.9, 0); f.localToWorld(vF); const p = vF.clone(); p.k = brasas ? 0.22 : o.userData.tipo === 'horno_ceramico' ? 0.4 : 1; arden.push(p); // la luz, por encima de las piedras (si no, las quema); las brasas, poca
     }
     return arden;
   }

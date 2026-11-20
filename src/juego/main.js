@@ -2569,7 +2569,9 @@ function dentroDeCasilla(c, p) {
   return Math.floor(l.lx / MODULO) === p.i && Math.floor(l.lz / MODULO) === p.j;
 }
 // ---------------- Movimiento y colisiones (src/juego/movimiento.js) ----------------
-const { resolverColision, andarHasta, alturaSuelo: alturaSueloMov } = crearMovimiento({ mundo: () => mundo, pj, obstaculos, altosCanon, mundoJ, decorado });
+// (20 nov) el horno cerámico no se atraviesa: su cúpula y el anillo de piedras del pie (un círculo de su radio)
+const solidosFab = () => window.__sinChoqueHorno ? [] : Object.values(fabCliente.estaciones || {}).filter(e => e.tipo === 'horno_ceramico' && !e.obra).map(e => ({ x: e.x, z: e.z, r: 0.74 }));
+const { resolverColision, andarHasta, alturaSuelo: alturaSueloMov } = crearMovimiento({ mundo: () => mundo, pj, obstaculos, altosCanon, mundoJ, decorado, solidos: solidosFab });
 // el suelo bajo los pies: el de lo construido o el terreno, y encima, el del castillo del rey si está más alto y se llega
 function alturaSuelo() {
   const b = alturaSueloMov(), ch = castillo && castillo.choques;
@@ -3968,7 +3970,7 @@ function tomarPara(p) {
 // acceso para pruebas automáticas
 window.__kinhold = {
   tiempoV,   // el tiempo que hace, a la vista (P11b: la lluvia y el cielo cubierto)
-  get mundo() { return mundo; }, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, hierbaDensa, combate, cielo, ambiente,
+  get mundo() { return mundo; }, resolverColision, get yo() { return yoAutor(); }, get miMojon() { return miMojon(); }, estado, pj, cam, camara, escena, renderer, graficos, jugador, obstaculos, talaV, decorado, hierbaDensa, combate, cielo, ambiente,
   // el mundo de verdad (en la demo): el terreno, la altura del suelo, si ya están los trozos de alrededor y cuánto
   // tarda el terreno en cada fotograma (ms, desde que está listo)
   get charla() { return charla; },

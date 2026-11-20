@@ -12,13 +12,14 @@ const oyDe = (c) => c.oy || 0;
 
 // mundo: () => el mundo de ahora (cambia al deshacer o al conectarse); pj: la posición del jugador (se le cambia la
 // planta, pj.k); obstaculos: lo del suelo que choca ({x, z, r}); altosCanon: hasta dónde sube cada cañón de chimenea;
-// mundoJ: el mundo grande (o null); decorado: con la altura del terreno.
-export function crearMovimiento({ mundo, pj, obstaculos, altosCanon, mundoJ, decorado }) {
+// mundoJ: el mundo grande (o null); decorado: con la altura del terreno; solidos: () => los puestos hechos que chocan
+// ({x, z, r}, a ras de suelo).
+export function crearMovimiento({ mundo, pj, obstaculos, altosCanon, mundoJ, decorado, solidos = () => [] }) {
   function segmentosBloqueo(k) {
     const segs = []; // [x1,z1,x2,z2]
     // las matas escondidas bajo lo construido no chocan; y lo del suelo (árboles, rocas, matas) solo choca a ras de
     // suelo: desde un adarve o una planta de arriba se pasa por encima (una roca bajo el adarve paraba al que andaba por él)
-    const circulos = k === 0 ? obstaculos.filter(o => !o.oculto) : [];
+    const circulos = k === 0 ? [...obstaculos.filter(o => !o.oculto), ...solidos()] : [];   // (solidos: lo hecho que no se atraviesa, como el horno cerámico)
     for (const c of mundo().construcciones) {
       for (const [key, p] of c.piezas) {
         // chimenea: en la planta baja no se entra en el hogar; más arriba, su cañón no se atraviesa

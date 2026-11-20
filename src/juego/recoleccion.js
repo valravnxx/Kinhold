@@ -317,12 +317,34 @@ export function modelosRecoleccion() {
   // (P10, 19 nov) el banco de arcilla: el hoyo cavado a pala (el calco, arcillaCalco) y al borde unos terrones de arcilla
   // sacados a pala, gris azulados y de caras planas, y unos de tierra parda apartada
   const arcillaTerrones = geoLote(L => {
+    // (20 nov, la segunda mirada: «que se lea como hoyo») el borde del hoyo: la tierra sacada a pala hace un caballón
+    // alrededor (parda por fuera, que se deshace en la hierba), y por dentro, la pared del corte, que baja en sombra hasta
+    // el fondo de arcilla (el calco). Ovalado como el calco, y desigual: más alto por donde se echó la tierra.
+    const perfil = [[1.02, -0.05], [0.9, 0.035], [0.8, 0.1], [0.72, 0.13], [0.665, 0.105], [0.62, 0.03], [0.585, -0.04]].map(([r, y]) => new THREE.Vector2(r, y));
+    const borde = new THREE.LatheGeometry(perfil, 40), bp = borde.attributes.position;
+    for (let i = 0; i < bp.count; i++) {
+      const x = bp.getX(i), y = bp.getY(i), z = bp.getZ(i), a = Math.atan2(z, x);
+      const alto = 1 + 0.45 * Math.sin(a + 0.6) + 0.18 * Math.sin(a * 3 + 1.3), k = 1 + 0.05 * Math.sin(a * 5 + 0.4) + 0.03 * Math.sin(a * 9);
+      bp.setXYZ(i, x * k, y > 0 ? y * Math.max(0.35, alto) : y, z * k);
+    }
+    borde.computeVertexNormals();
+    // la pared de dentro (mira hacia el centro), del gris de la arcilla cortada y en sombra; el caballón, de tierra parda
+    const dentro = v => { const r = Math.hypot(v.x, v.z / 0.87); return r < 0.7 ? 0.62 + 0.38 * Math.max(0, Math.min(1, (r - 0.59) / 0.11)) * 0.3 : 1; };
+    L.add(borde, ARCILLA_TIERRA, 0, 0, 0, null, { escala: new THREE.Vector3(1, 1, 0.87), tex: 'piedra', sinSuelo: true, rayas: dentro });
+    const pared = new THREE.LatheGeometry([[0.66, 0.1], [0.615, 0.03], [0.583, -0.035]].map(([r, y]) => new THREE.Vector2(r, y)), 40), pp = pared.attributes.position;
+    for (let i = 0; i < pp.count; i++) {   // (la misma forma que el borde, un pelo por dentro: el gris del corte)
+      const x = pp.getX(i), y = pp.getY(i), z = pp.getZ(i), a = Math.atan2(z, x);
+      const alto = 1 + 0.45 * Math.sin(a + 0.6) + 0.18 * Math.sin(a * 3 + 1.3), k = (1 + 0.05 * Math.sin(a * 5 + 0.4) + 0.03 * Math.sin(a * 9)) * 0.985;
+      pp.setXYZ(i, x * k, y > 0 ? y * Math.max(0.35, alto) : y, z * k);
+    }
+    pared.computeVertexNormals();
+    L.add(pared, ARCILLA_HONDA, 0, 0, 0, null, { escala: new THREE.Vector3(1, 1, 0.87), tex: 'piedra', sinSuelo: true, rayas: v => 0.55 + 0.45 * Math.max(0, Math.min(1, (v.y + 0.03) / 0.14)) });
     [[0.78, 0.04, 0.3, 0.3, 0.1, 1], [0.9, 0.035, 0.08, -0.4, 0.085, 0], [0.7, 0.09, 0.2, 0.9, 0.075, 1], [0.58, 0.035, 0.5, 1.3, 0.07, 0], [-0.8, 0.03, -0.25, 2.1, 0.07, 1]].forEach(([x, y, z, gi, r, gris], i) => {
-      L.add(new THREE.IcosahedronGeometry(r, 0), gris ? ARCILLA_GRIS : ARCILLA_HONDA, x, y, z, { y: gi, z: (i - 1.5) * 0.08 }, { escala: new THREE.Vector3(1.5, 0.65, 1.15), plano: true, tex: 'piedra' });
+      L.add(new THREE.IcosahedronGeometry(r, 0), gris ? ARCILLA_GRIS : ARCILLA_HONDA, x, y + 0.07, z, { y: gi, z: (i - 1.5) * 0.08 }, { escala: new THREE.Vector3(1.5, 0.65, 1.15), plano: true, tex: 'piedra' });
     });
     for (let k = 0; k < 6; k++) {
       const a = k * 1.1 + 2.2, r = 0.72 + (k % 3) * 0.05;
-      L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), ARCILLA_TIERRA, Math.cos(a) * r * 1.15, 0.02, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
+      L.add(new THREE.IcosahedronGeometry(0.05 + (k % 2) * 0.02, 0), ARCILLA_TIERRA, Math.cos(a) * r * 1.15, 0.08, Math.sin(a) * r, { y: k }, { escala: new THREE.Vector3(1.3, 0.55, 1), plano: true, tex: 'piedra' });
     }
   }, { rangoSuelo: 0.05 });
   const arcilla = [{ geo: calcoGeo(1.9, 1.65, 0.03), mat: arcillaCalco(), calco: true }, ...arcillaTerrones];
