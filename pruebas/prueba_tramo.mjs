@@ -1,18 +1,22 @@
 // Lo de niveles posteriores, escondido (roadmap, hito «Jugar entre dos sin trampas»): el menú de construir solo enseña
-// lo de este tramo. Ejecutar: node pruebas/prueba_tramo.mjs. Con MUTAR=1 se deja pasar todo: la prueba debe FALLAR.
+// lo de este tramo. Ejecutar: node pruebas/prueba_tramo.mjs. Con MUTAR=1 se esconde todo: la prueba debe FALLAR.
 import { PIEZAS, DECORACION, enEsteTramo as enTramo } from '../src/logica/piezas.js';
 
-const enEsteTramo = process.env.MUTAR === '1' ? () => true : enTramo;
+const enEsteTramo = process.env.MUTAR === '1' ? () => false : enTramo;
 let ok = 0, mal = 0;
 function comprobar(nombre, cond, detalle = '') {
   if (cond) { ok++; console.log(`  OK   ${nombre}${detalle ? ' — ' + detalle : ''}`); }
   else { mal++; console.log(`  FALLA ${nombre}${detalle ? ' — ' + detalle : ''}`); }
 }
 
-const guardadas = ['tejado_tablilla', 'hogar', 'adarve', 'polea', 'polipasto', 'escalera_tabla'];
-for (const k of guardadas) comprobar(`guardada para su nivel: ${PIEZAS[k].nombre}`, !enEsteTramo(PIEZAS[k]));
-const caros = ['cama_madera', 'mesa', 'banco', 'arcon', 'barril', 'estanteria'];
-for (const k of caros) comprobar(`mueble caro guardado: ${DECORACION[k].nombre}`, !enEsteTramo(DECORACION[k]));
+// (20 nov, P10, «Las piezas de nivel 2 a la vista»: la tabla, el clavo y la barra de hierro ya salen del mundo, y el tramo
+// pasa al nivel 2: lo que antes se guardaba se enseña. Lo de nivel 3, si lo hubiera, seguiría escondido.)
+const nivel2 = ['suelo_tabla', 'muro_tabla', 'muro_tabla_puerta', 'muro_tabla_ventana', 'escalera_tabla', 'tejado_tablilla', 'remate_tablilla',
+  'puerta_tabla', 'contraventana', 'trampilla', 'hogar', 'adarve', 'polea', 'polipasto'];
+for (const k of nivel2) comprobar(`a la vista, de nivel 2: ${PIEZAS[k].nombre}`, enEsteTramo(PIEZAS[k]));
+const muebles2 = ['cama_madera', 'mesa', 'banco', 'arcon', 'barril', 'estanteria'];
+for (const k of muebles2) comprobar(`mueble de tablas a la vista: ${DECORACION[k].nombre}`, enEsteTramo(DECORACION[k]));
+comprobar('lo de nivel 3 sigue escondido', !enEsteTramo({ nivel: 3, coste: { piedra: 1 } }));
 
 // Lo de la casa humilde sigue a la vista: el mojón, cimientos, postes y vigas, muros de tronco y de zarzo, tejado de
 // juncos, escalera de mano, andamio, puerta de varas, cercas y los muebles de tronco. Lo de paja, escondido del 7 al 13 nov;

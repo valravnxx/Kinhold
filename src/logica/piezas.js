@@ -163,8 +163,11 @@ export const DECORACION = {
 // las gavillas en la era, y lo que la pide (el tejado y el remate de paja, la cama de paja, la antorcha de pie y la
 // alfombra) se enseña (pruebas/prueba_origenes.mjs sigue la cadena de cada material hasta el mundo).
 // (20 nov, P10: la teja sale del horno cerámico, y el tejado y el remate de teja se destapan)
-export const MATERIALES_POSTERIORES = ['tabla', 'clavo', 'hierro'];   // (13 nov: la paja ya sale de trillar en la era, P11)
-export const NIVEL_TRAMO = 1;
+// (20 nov, P10, «Las piezas de nivel 2 a la vista»: la tabla sale de serrar en el banco de tronco, el clavo y la barra
+// de hierro de la fragua; ya no queda ningún material escondido y el tramo pasa al nivel 2: se enseña todo lo de nivel
+// 2 o menos. Lo de nivel 3 o más (la mampostería, el vidrio…) seguiría escondido cuando lo haya.)
+export const MATERIALES_POSTERIORES = [];   // (13 nov: la paja ya sale de trillar en la era, P11; 20 nov: la tabla, el clavo y el hierro, de P10)
+export const NIVEL_TRAMO = 2;
 // Lo de nivel 2 que ya sale de lo que hay (P11c, «La casa más fuerte»: valravnx, 14 nov) lleva «destapada» y se enseña.
 export function enEsteTramo(def) {
   return ((def.nivel ?? 0) <= NIVEL_TRAMO || !!def.destapada) && !Object.keys(def.coste || {}).some(m => MATERIALES_POSTERIORES.includes(m));

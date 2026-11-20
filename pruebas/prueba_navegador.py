@@ -47,9 +47,9 @@ with sync_playwright() as p:
         ev(f"{K}.terminarObras()")  # se construye por obras: aquí se terminan al momento (con acciones)
         return v
 
-    print('PC: el menú de construir solo enseña lo de este tramo (lo de paja, desde la era: 13 nov; la empalizada, desde P11c)')
+    print('PC: el menú de construir enseña lo de este tramo (lo de paja, desde la era: 13 nov; la empalizada, desde P11c; lo de nivel 2, desde P10)')
     ev(f"{K}.cambiarModo('construir')")
-    guardadas = ['Tejado de tablillas', 'Chimenea', 'Adarve', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
+    nivel2 = ['Tejado de tablillas', 'Chimenea', 'Adarve', 'Polea', 'Polipasto con torno', 'Escalera de tablas',
                  'Cama de madera', 'Mesa', 'Banco', 'Arcón', 'Barril', 'Estantería', 'Muro de tablas']
     vistas = []
     for cat in ['tierra', 'base', 'estructura', 'muro', 'tejado', 'acceso', 'exterior', 'deco']:
@@ -59,8 +59,8 @@ with sync_playwright() as p:
         vistas += nombres
         if cat == 'acceso': pg.screenshot(path=f'{SALIDA}/00_menu_construir_acceso.png')
         if cat == 'deco': pg.screenshot(path=f'{SALIDA}/00b_menu_construir_muebles.png')
-    fuera = [n for n in guardadas if n in vistas]
-    comprobar('lo de niveles posteriores no sale en el menú', not fuera, ', '.join(fuera))
+    fuera = [n for n in nivel2 if n not in vistas]   # (20 nov, P10: lo de nivel 2, con las tablas, los clavos y el hierro, a la vista)
+    comprobar('lo de nivel 2 (tablas, clavos, hierro) sale en el menú', not fuera, ', '.join(fuera))
     comprobar('lo de la casa humilde sí sale', all(n in vistas for n in ['Muro de troncos', 'Tejado de juncos', 'Tejado de paja', 'Cama de paja', 'Escalera de mano', 'Andamio', 'Taburete']))
     comprobar('el juego completo de barro: el muro de zarzo liso, con puerta y con ventana (valravnx, 8 nov)', all(n in vistas for n in ['Muro de zarzo y barro', 'Muro de zarzo y barro con puerta', 'Muro de zarzo y barro con ventana']))
     pg.click('#pestanas button[data-cat="base"]')
