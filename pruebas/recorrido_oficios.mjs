@@ -192,7 +192,8 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   };
   // (si se muere por el camino, que se diga: le despojan de lo que lleva en las manos)
   const muertes = [];
-  J.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'muerte') { muertes.push(m.motivo); console.log(`     (se muere: ${m.motivo} · ${JSON.stringify(nec())})`); } });
+  let ultimaMuerte = null;
+  J.ws.on('message', (d) => { const m = JSON.parse(d.toString()); if (m.tipo === 'muerte') { muertes.push(m.motivo); ultimaMuerte = J.pos ? { ...J.pos } : null; if (m.posicion) J.pos = { x: m.posicion.x, z: m.posicion.z }; console.log(`     (se muere: ${m.motivo} · ${JSON.stringify(nec())})`); } });
   const secoHasta = (p, q) => { const n = Math.ceil(dist(p, q)); for (let i = 0; i <= n; i++) if (T.aguaEn(p.x + (q.x - p.x) * i / n, p.z + (q.z - p.z) * i / n)) return false; return true; };
 
   // su sitio de trabajo, junto al banco, en su tierra y donde no haya nada en el suelo
@@ -376,6 +377,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
     const aTiro = () => cerca([...J.liebres.values()], J.pos).filter(l => seco(J.pos, l) && s.fauna.de(l.id) && dist(l, J.pos) < 120);
     const fallos = [];
     for (let k = 0; k < 12 && lanzaEnMano(); k++) {
+      if (nec().sed > 70 || nec().hambre > 80) return { muerta: null, motivo: 'vuelve a beber o a comer' };
       const l = aTiro().find(x => sitioPara(x)); if (!l) return { muerta: null, motivo: `ninguna a tiro (${J.liebres.size} a la vista${fallos.length ? '; ' + fallos.join(', ') : ''})` };
       const q = await acercarse(l.id); if (!q) { fallos.push('huye'); continue; }
       await pausa(800 * RELOJ);
@@ -482,6 +484,7 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   await J.andar(taller.x, taller.z); await soltarManos(['lanza_endurecida']);
   const conCarne = () => J.cuantos('carne_cruda') + nEnSuelo('carne_cruda', taller, 6);
   let cazadas = 0, intentos = 0, porque = '';
+  let ultimaSalida = null;
   // por los prados de alrededor de su taller (a 150 m como mucho, por donde vuelve enseguida): en cada salida, a otro
   // (las cazadas tardan en volver a salir: en cada vuelta, más lejos, por otros trozos del mundo)
   const sitiosCaza = [taller, ...[120, 260, 400].flatMap(rr => Array.from({ length: 8 }, (_, k) => ({ x: r2(taller.x + Math.cos(k * Math.PI / 4 + rr) * rr), z: r2(taller.z + Math.sin(k * Math.PI / 4 + rr) * rr) })))].filter(p => !T.aguaEn(p.x, p.z));
@@ -489,6 +492,15 @@ export async function oficios({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, 
   while ((pieles() < PIELES || conCarne() < 1) && intentos < 40) {
     intentos++;
     const donde = sitiosCaza[(intentos - 1) % sitiosCaza.length];
+    // (con el reloj acelerado, la sed sube deprisa: a beber antes de cada salida, que de sed se moría a media caza)
+    await cuidarse();
+    // (si se murió en la salida de antes, le despojaron de las manos: la lanza está donde cayó; si no, otra al fuego)
+    if (!lanzaEnMano()) {
+      if (!J.cuantos('lanza_endurecida')) await buscar('lanza_endurecida', [[ultimaSalida, 60], [ultimaMuerte, 60]].filter(x => x[0]));
+      if (!J.cuantos('lanza_endurecida')) await lanzaNueva();
+      await aLaMano('lanza_endurecida');
+    }
+    ultimaSalida = { ...donde };
     await J.andar(donde.x, donde.z); await pausa(1000 * RELOJ);
     combate({ que: 'arma', sacada: true });
     const r = await cazarUna();
