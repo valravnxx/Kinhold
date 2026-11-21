@@ -7823,5 +7823,21 @@
   "pruebas": "Recorrido de jugador en la nube: 420 bien y 0 mal (128,7 min), con los oficios y el hierro enteros, sin morirse. Antes del arreglo de la sed, dos veces 364 bien y 2 mal (la caza de los oficios). Aquí, el hierro desde lo guardado tras los oficios, 43 bien y 0 mal; con MUTAR=1 (las manchas no dan nada) falla como debe. Solo el grupo del recorrido: es lo único que piden los archivos cambiados.",
   "capturas": "",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-21T06:25:44+00:00",
+  "fin": "2026-11-21T06:26:19+00:00",
+  "titulo": "Hierro y tablas: revisión completa; el hito pasa a revisión de valravnx (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "Repaso de lo que el hito prometía, cosa por cosa: el hierro de pantano con la pala y la criba; el horno de reducción y la lupia; el fuelle, la fragua y la barra de hierro; el mango, el hacha de hierro, el pico y los clavos; la sierra de tronzar y las tablas; romper las rocas grandes con el pico; las vetas de hierro en la roca; la arcilla y el horno cerámico; las tejas; y las piezas de nivel 2 a la vista en Construir. Todo publicado y unido a main (la última, la demo v245).",
+   "El recorrido de jugador, sin arcón, lo hace entero en su paso 28: criba el hierro de pantano, saca las lupias, bate las barras, se hace el hacha, el pico, la sierra y los clavos, sierra tablas, rompe una roca grande, cava arcilla, cuece tejas y pone un suelo de tablas y un tejado de teja (420 de 420 en la nube, en la sesión anterior). Las vetas de hierro no las pica (la más cercana está a unos 9,5 km); eso lo prueba su prueba propia.",
+   "En pruebas/prueba_origenes.mjs no queda nada de este hito pendiente: las 17 cosas esenciales del hierro y todas las piezas y muebles de nivel 2 salen del mundo.",
+   "Lo que queda para la revisión: los números son provisionales (1 h por carga del horno de reducción, media hora por hornada de tejas, 1 tronco corto da 4 tablas, 5 golpes por mineral en la veta…); los dedos no se cierran sobre lo que se lleva en la mano; serrar va puesto por código hasta que llegue su animación; los muros de tablas salen casi negros y a la sombra se pierde su dibujo; la teja es terracota limpia frente a la tejuela gastada de la referencia; el humo de la chimenea son bolas grises; el aro de la acción se ve bajo las rocas. Esperan a hitos congelados las herraduras (el caballo) y el foso de aserrar (cavar).",
+   "Todas las tareas del hito hechas: pasa a revisión y no se empieza ningún hito nuevo hasta que valravnx lo pruebe y lo apruebe. Sin versión nueva (no hay cambios jugables)."
+  ],
+  "pruebas": "Sin código cambiado, nada en la nube. Aquí: el origen de los materiales, 60 bien y 0 mal.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]

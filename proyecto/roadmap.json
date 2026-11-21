@@ -2632,7 +2632,7 @@
    "num": "P10",
    "nombre": "Hierro y tablas",
    "jugable": "Hierro de pantano con pala y criba, horno de reducción, fuelle y fragua; hacha de hierro, pico, sierra y clavos; tablas; arcilla, horno cerámico y tejas; las piezas de nivel 2 que ya existen (suelos, muros y escaleras de tablas, tejado de teja…) a la vista; romper las rocas grandes y las vetas de hierro con el pico.",
-   "estado": "en_curso",
+   "estado": "revision",
    "nota": "valravnx, 8 nov: el tramo siguiente a la casa (estudio en diseno/estudios/siguiente_tramo.html), en este orden: el caballo primero, salvaje y a pelo. Planificado el 13 nov: el primer mineral es el de pantano (pala y criba), porque el pico ya pide hierro; las manchas, por las señales del GDD (tierra encharcada y agua rojiza), en las vegas y las turberas (Whitholm casi no tiene turberas). El carbón y el cuero del fuelle salen de P9. Las herraduras esperan a P8 (congelado): sin caballo no se usan. Foso de aserrar (valravnx, 14 nov): «me encantaría que requiriera hacer el agujero en el suelo antes con lo de cavar»: el tronco largo encima de un foso cavado y una sierra larga (uno arriba y otro abajo; uno solo, despacio) dan tablones largos y vigas escuadradas. Llega con cavar (hito «Cavar y minar», congelado): hasta entonces, las tablas, en el banco con el tronco corto.",
    "tareas": [
     {
@@ -2714,9 +2714,9 @@
     },
     {
      "nombre": "Revisión completa y publicación",
-     "estado": "en_curso",
+     "estado": "hecho",
      "inicio": "2026-11-21T06:25:44+00:00",
-     "rama": "trabajo/20261121-0625"
+     "fin": "2026-11-21T06:26:19+00:00"
     }
    ]
   },
