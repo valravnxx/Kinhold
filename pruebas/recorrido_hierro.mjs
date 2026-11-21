@@ -64,7 +64,8 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
     const total = () => nEnSuelo(da, sitio, 3) + J.cuantos(da);
     for (const radio of radios) {
       if (total() >= n) break;
-      const lista = alrededor(sitio, radio).filter(q => tipos.includes(q.tipo));
+      // (solo lo que está a la vista: lo que se cogió en los pasos de antes no ha vuelto a salir aún)
+      const lista = alrededor(sitio, radio).filter(q => tipos.includes(q.tipo) && (s.objetos.recoleccion.disponible(q.id, Date.now()) || !s.objetos.recoleccion.porId.has(q.id)));
       for (let k = 0; k < 80 && total() < n; k++) {
         const p = cerca(lista.filter(q => !probados.has(q.id)), J.pos)[0];
         if (!p) break;
