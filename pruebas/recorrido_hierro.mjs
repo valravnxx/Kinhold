@@ -18,6 +18,8 @@
 //  - Lo que tarda horas de verdad (la carbonera, el horno de reducción, la hornada de tejas) se adelanta como en los
 //    oficios: la prueba pone en ya pasada la hora a la que termina lo que encargó este jugador. No le da nada.
 //  - Los puestos (horno de reducción, fragua, horno cerámico), junto a su banco de tronco, en su tierra.
+//  - El cuero del fuelle sale de 2 pieles limpias que los oficios (el paso 27) cazan de más y guardan: 7 liebres, no 5.
+//  - Lo de la planta de arriba de su casa, por un andamio que levanta junto a ella (como el tejado de juncos, el paso 16).
 import { recogidaEn } from '../src/logica/recogida_mundo.js';
 import { vegetacionEn } from '../src/logica/vegetacion.js';
 import { idArbol } from '../src/logica/tala.js';
