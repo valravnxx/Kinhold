@@ -7806,5 +7806,22 @@
   "pruebas": "Comprobador de código correcto. Prueba de orígenes 60/60 y rota a propósito (el tramo otra vez en el nivel 1), falla. Prueba del tramo 63/63 y rota a propósito (todo escondido), falla. Prueba nueva de navegador de las piezas de nivel 2 (PC y móvil), bien; su rotura (MUTAR=1, una pieza que no existe) no se pasó en el navegador. En la nube: lógica, construir con el acabado nuevo y las piezas de nivel 2, bien. Construir con el acabado nuevo falló una vez (la pestaña Exterior ya tiene 5 piezas y la última no se cargaba sin deslizar); corregida la prueba, bien. Construcción falló solo en una comprobación vieja que esperaba la polea y el polipasto escondidos en el móvil (la lista que sacó ya los enseñaba); se dio la vuelta a esa comprobación. El panel de fabricación falló en una espera (el aviso «Reparado: hacha de piedra…» llegó justo después de los 5 s; no es de este cambio, que solo cambia la carpeta de las imágenes de las piezas). Sin esperar al recorrido de jugador: no usa nada de lo que cambia (lo que se enseña en el menú). La segunda mirada a las capturas dijo sí; la cuerda de la polea cruzaba la escalera por cómo se montó la escena, y se cambió de viga.",
   "capturas": "capturas/demo-v245",
   "estado": "ok"
+ },
+ {
+  "inicio": "2026-11-20T13:27:02+00:00",
+  "fin": "2026-11-21T05:53:50+00:00",
+  "titulo": "Hierro: el recorrido de jugador, sin arcón, del hierro de pantano al tejado de teja (carril A)",
+  "hito": "hierro",
+  "hecho": [
+   "Paso 28 del recorrido de jugador (pruebas/recorrido_hierro.mjs), el mismo jugador después de los oficios, sin arcón y con lo que recoge: con su pala de madera y una criba (2 mimbres de la ribera y una vara, en el banco) criba las manchas de agua rojiza de la vega hasta juntar 15 de mineral de hierro.",
+   "Hace carbón en 7 carboneras, levanta el horno de reducción en su tierra (20 de barro, 10 piedras y 4 carbones) y lo carga 5 veces: 5 lupias. Curte las 2 pieles limpias que guardó de la caza, hace el fuelle en el banco, levanta la fragua y bate 5 barras de hierro con el mazo de piedra.",
+   "En el banco, 4 mangos; en la fragua, el hacha de hierro, el pico, la sierra de tronzar y 10 clavos. Con el hacha tala un árbol adulto, con la sierra lo tronza y sierra 4 tablas; con el pico rompe una roca grande en bloques de piedra en bruto.",
+   "Cava 8 cestas de arcilla en la ribera, levanta el horno cerámico, lo enciende con leña y cuece 10 tejas. En su casa levanta un andamio (8 varas y 2 cuerdas), sube por él las tablas, los clavos y las tejas, rueda el tronco delgado hasta lo alto por dos varas con una cuerda y pone un suelo de tablas en lo alto y un tejado de teja.",
+   "Lo que salió al jugarlo: con el reloj adelantado, en la caza de los oficios se moría de sed a media salida y, al morir, perdía la lanza y no cazaba más. Ahora bebe antes de cada salida, vuelve si tiene mucha sed y, si aun así se muere, sigue desde su cama y busca la lanza donde cayó o endurece otra.",
+   "Decisiones provisionales: lo que tarda horas de verdad (la carbonera, el horno de reducción, la hornada de tejas) se adelanta sin darle nada; los puestos, junto a su banco, en su tierra; el cuero del fuelle sale de 2 pieles de más que caza en los oficios (7 liebres, no 5); y lo de la planta de arriba se sube por un andamio junto a la casa."
+  ],
+  "pruebas": "Recorrido de jugador en la nube: 420 bien y 0 mal (128,7 min), con los oficios y el hierro enteros, sin morirse. Antes del arreglo de la sed, dos veces 364 bien y 2 mal (la caza de los oficios). Aquí, el hierro desde lo guardado tras los oficios, 43 bien y 0 mal; con MUTAR=1 (las manchas no dan nada) falla como debe. Solo el grupo del recorrido: es lo único que piden los archivos cambiados.",
+  "capturas": "",
+  "estado": "ok"
  }
 ]
