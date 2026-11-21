@@ -9,6 +9,8 @@
 // zapatos de cuero (1 cuero y el hilo) y hace el cinto de cuero (2 cueros y una rama). Y parte 2 troncos cortos con el
 // hacha (10 leñas), levanta con ellas la carbonera, la enciende con su yesca y su taladro de fuego y, pasadas las
 // horas (adelantadas), saca los 4 carbones, y la carbonera se deshace.
+// Con el reloj adelantado la sed sube deprisa: antes de cada salida de caza va a beber; y si aun así se muere, sigue
+// desde su cama (donde lo pone el servidor) y busca la lanza donde cayó o endurece otra.
 // Cadena: piel y carne ← liebre (lanza endurecida, lasca de sílex); tronco delgado y vara ← árbol joven (hacha de
 // piedra); cuerda ← 3 cordeles ← 9 de fibra; corteza de roble ← roble en pie (lasca); agua ← el río (cubo ← tronco
 // corto, en el banco); barro ← la ribera (palo cavador ← rama); tronco corto ← tronzar un tronco largo (árbol adulto);
