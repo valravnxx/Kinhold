@@ -961,10 +961,11 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
     for (let i = 0; i < 4 && J.inv.lugares[l]; i++) if (J.inv.lugares.espalda?.tipo === 'zurron' && !J.inv.lugares.espalda.dentro?.[i]) await J.objeto({ tipo: 'mover', de: l, a: `espalda/${i}` });
     return !J.inv.lugares[l];
   };
-  // coger n de tipo del suelo de donde: en las manos y, llenas, pasando lo de una mano al zurrón
+  // coger n de tipo del suelo de los sitios de su taller (donde: una lista): en las manos y, llenas, pasando lo de una
+  // mano al zurrón (lo que llevaba en la mano al trenzar una cuerda, por ejemplo, se quedó junto al banco)
   const cargar = async (tipo, n, donde) => {
     for (let k = 0; k < 10 && J.cuantos(tipo) < n; k++) {
-      const o = enSuelo(tipo, donde, 5)[0];
+      const o = donde.map(p => enSuelo(tipo, p, 5)[0]).find(Boolean);
       if (!o) break;
       let l = MANOS.find(x => !J.inv.lugares[x]);
       if (!l) { l = enLaMano(tipo) || 'mano:der'; if (!(await alZurron(l))) break; }
@@ -979,7 +980,7 @@ export async function hierro({ J, s, T, O, comprobar, pausa, cerca, RELOJ = 8, g
     for (; viajes < 4 && q.ok && tipos.some(t => falta(pz, t) > 0); viajes++) {
       await ponerZurron();
       await J.andar(taller.x, taller.z); await soltarManos();
-      for (const t of tipos) if (falta(pz, t) > 0) await cargar(t, falta(pz, t), taller);
+      for (const t of tipos) if (falta(pz, t) > 0) await cargar(t, falta(pz, t), [taller, banco, hornoC].filter(Boolean));
       if (!tipos.some(t => J.cuantos(t) > 0)) return { ok: false, motivo: `no encuentra ${tipos.join(' ni ')} en su taller (${enMano()})` };
       if (!viajes) { const abajo = await entregar(pz, tipos.find(t => J.cuantos(t)), 1); if (abajo.ok || !/andamio/.test(abajo.motivo || '')) return { ok: false, motivo: `desde el suelo: ${abajo.motivo || 'se lo da'}` }; }
       await porElAndamio(true);
