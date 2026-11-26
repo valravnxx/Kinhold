@@ -7601,23 +7601,6 @@
   "estado": "ok"
  },
  {
-  "inicio": "2026-11-18T21:14:50+01:00",
-  "fin": "2026-11-19T00:13:10+01:00",
-  "titulo": "El castillo del rey, visitable",
-  "hito": "aspecto",
-  "hecho": [
-   "El castillo del rey de la maqueta del chat entra en el mundo como pieza fija, a unos 260 m al sur de la ciudad del rey; se carga al acercarse (unos 2 MB).",
-   "Se pisa lo que se ve: suelos, adarves, terrazas, escaleras, caracoles, el puente y el muelle de la poterna; sus muros, muebles y portones abiertos paran el paso.",
-   "El foso baja el terreno con marcas de nivelado; en el castillo, el foso y la explanada no crece nada ni sale nada que recoger.",
-   "Bajo techo el castillo se corta por plantas y la cámara mira desde arriba; fuera, sus muros no se meten entre la cámara y el personaje.",
-   "Arreglos del castillo para andarlo: la puerta del homenaje, fuera del hueco del caracol; los caracoles arrancan de cara a su sala; muebles apartados de puertas y caracoles; rastrillos alzados dentro de su cámara.",
-   "Las herramientas de la maqueta, en herramientas/castillo_rey/: de ahí salen la malla y los choques juntos."
-  ],
-  "pruebas": "Lógica: el castillo se recorre entero (cuatro recorridos, 433 puntos). Navegador, aquí y en la nube: los cuatro recorridos andando en el juego (el que ataca, la guardia, la puerta y la poterna); rota a propósito, falla. Nube: lógica, recorrido, velocidad con pocos fotogramas y lo que se recoge, bien. No comprobado: los fotogramas en un móvil de verdad.",
-  "capturas": "capturas/demo-v236",
-  "estado": "ok"
- },
- {
   "inicio": "2026-11-18T16:24:05+00:00",
   "fin": "2026-11-19T00:14:35+00:00",
   "titulo": "Oficios: el recorrido de jugador, sin arcón, hace todos los oficios (carril A)",
@@ -7684,23 +7667,6 @@
   ],
   "pruebas": "Comprobador de código correcto. Prueba nueva de las herramientas de hierro (lógica y servidor) 26/26; rota a propósito (sin el mango, 1 clavo por barra), falla. Revisor en la nube, sin lo que solo pedía un archivo compartido y no toca el cambio (la hoguera, los almacenajes, los colgaderos, el hogar, la cama, el inventario, la velocidad, el mazo, despiezar, la demo única y el acabado de construir): las herramientas de hierro en el navegador (PC y móvil) bien; objetos en el suelo bien; recorrido de jugador 378/378; la lógica bien al poner al día la prueba de los iconos (el hacha de hierro ya no es provisional); el panel de fabricación falló una vez en «la criba y el grano, soltados al suelo», que no toca el cambio, y bien al repetirlo. «Lo que llevas se ve puesto» falla igual que en main (el cinturón y la mano sobre el tronco al hombro), sin tocar este cambio. Choque anotado: src/juego/main.js lo cambia también la rama del chat del castillo (una línea aquí: el pico cuenta como herramienta en la mano).",
   "capturas": "capturas/demo-v238",
-  "estado": "ok"
- },
- {
-  "inicio": "2026-11-19T06:50:00+01:00",
-  "fin": "2026-11-19T17:00:38+01:00",
-  "titulo": "El castillo del rey, con el acabado del juego",
-  "hito": "aspecto",
-  "hecho": [
-   "Todo el castillo lleva textura de color y de relieve hecha por código: sillería, mampostería con esquinales, piedra labrada en dovelas, peldaños y albardillas, enlosados de piedras irregulares, empedrado de cantos, tierra con chinas, madera con veta, tejuela gastada con musgo y tela tejida.",
-   "Desgaste en el juego, por encima de las texturas: manchas a gran escala, regueros, humedad y verdín al pie de los muros y musgo en lo que mira arriba.",
-   "Muebles con más detalle: mesas de caballete con vajilla, arcas de tapa abombada con flejes, la cama del alcaide con dosel de tela y postes, tapices con pliegues, alfombras y candelabros; el rastrillo con puntas y pletinas de hierro; la barca con su plan y el cabo combado; el fuego del hogar con brillo propio.",
-   "La malla, sin costuras ni hilos de luz: posiciones en doble precisión y a 2 mm, la normal de cada cara en el archivo, muros triangulados por columnas y la textura con el mismo sentido en cada cara.",
-   "Caminos empedrados con el borde irregular; junto al castillo ya no salen las rocas grandes de los cortados; bajo techo, lo cortado se ve como sección.",
-   "Nueve rondas de segunda mirada de un agente aparte, con capturas de PC y de móvil de las 19 vistas, hasta que dijo que se puede enseñar."
-  ],
-  "pruebas": "Lógica: el castillo se recorre entero (433 puntos). Nube: lógica, velocidad con pocos fotogramas, el castillo se recorre andando y la demo única, bien. No comprobado: los fotogramas en un móvil de verdad.",
-  "capturas": "capturas/demo-v239",
   "estado": "ok"
  },
  {

@@ -7,6 +7,10 @@ Escribe aquí debajo lo que quieras: aprobar un hito ("apruebo el 1b"), pedir ca
 
 ## Procesado
 
+### 26 nov 2026, 05:40 UTC — por el chat, fuera el castillo del rey
+
+valravnx: «quita el castillo y la marca del castillo del mapa del juego, no publiques noticias de todo esto que hablamos, y si lo has hecho, borralas». El castillo no salía con la calidad pedida (con agujeros y fallos). Hecho: el castillo ya no se carga, no se pisa, no cava el foso ni aparta la hierba, los árboles o la recogida (`CASTILLO_REY_ACTIVO = false` en `src/logica/castillo_rey.js`; lo hecho se queda en `herramientas/castillo_rey/` por si vuelve); fuera el dibujo de la ciudad amurallada del mapa del rey; sus dos pruebas, apartadas en `probar_todo.sh`. Borradas las noticias del castillo (las dos entradas del diario, las notas de v236 y v239 en la web y en el registro del juego, y sus capturas). Demo v246, sin entrada en el diario. La ciudad del rey queda sin decidir: no se construye nada de ella sin que valravnx lo pida.
+
 ### 22 nov 2026, 09:30 UTC — por una sesión del carril A, pausa de los carriles
 
 valravnx: «cancela los carriles automaticos por ahora» → la tarea programada del carril A queda desactivada (el carril B ya lo estaba). No hay sesiones automáticas hasta que valravnx diga de volver a encenderlas.

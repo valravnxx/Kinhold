@@ -4949,13 +4949,6 @@
      "notas": "La carbonera y el carbón"
     },
     {
-     "v": "v236",
-     "fecha": "2026-11-18",
-     "archivo": "jugar/demo/v236.html",
-     "capturas": "capturas/demo-v236",
-     "notas": "El castillo del rey, en el mundo y visitable: a unos 260 m al sur de la ciudad del rey. Se pisa todo (suelos, adarves, escaleras, caracoles, puente y muelle), sus muros y muebles paran el paso, el foso está cavado y bajo techo se corta por plantas con la cámara desde arriba."
-    },
-    {
      "v": "v237",
      "fecha": "2026-11-19",
      "archivo": "jugar/demo/v237.html",
@@ -4968,13 +4961,6 @@
      "archivo": "jugar/demo/v238.html",
      "capturas": "capturas/demo-v238",
      "notas": "Las primeras herramientas de hierro: el mango (1 vara, en el banco de tronco) y, en la fragua encendida con el mazo de piedra, el hacha de hierro (1 barra y 1 mango), el pico (1 barra y 1 mango) y los clavos (1 barra da 10); cada una se ve en la mano, en el cinto y en el suelo"
-    },
-    {
-     "v": "v239",
-     "fecha": "2026-11-19",
-     "archivo": "jugar/demo/v239.html",
-     "capturas": "capturas/demo-v239",
-     "notas": "El castillo del rey, con el acabado del juego: piedra (sillería, mampostería, piedra labrada), enlosados, empedrados, tierra, madera, tejas y telas con textura de color y de relieve hecha por código y desgaste en el juego (manchas, regueros, humedad y verdín al pie de los muros, musgo); muebles con más detalle (mesas de caballete con vajilla, arcas, la cama del alcaide con dosel, tapices, alfombras, candelabros), el rastrillo con puntas de hierro, la barca con su plan y el fuego con brillo propio."
     },
     {
      "v": "v240",
@@ -5017,6 +5003,13 @@
      "archivo": "jugar/demo/v245.html",
      "capturas": "capturas/demo-v245",
      "notas": "Las piezas de nivel 2 a la vista: con las tablas, los clavos y las barras de hierro, en Construir salen el suelo, los muros y la escalera de tablas, el tejado y el remate de tablillas, la puerta de tablas, la contraventana, la trampilla, la chimenea, el adarve, la polea, el polipasto y los muebles de tablas"
+    },
+    {
+     "v": "v246",
+     "fecha": "2026-11-26",
+     "archivo": "jugar/demo/v246.html",
+     "capturas": null,
+     "notas": "Ajustes en Strandvang."
     }
    ]
   },

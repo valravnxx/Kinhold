@@ -250,7 +250,7 @@ export function montarMapaRey({ paisaje, comarcas, posicion, tuTierra = () => nu
     lineas(s); lindesZonas(s); for (const r of rey) tierraBorde(r, s, 'rgba(128,88,18,.95)', true);
     for (const o of otras) tierraBorde(o, s, o.invita ? 'rgba(150,34,22,.95)' : `rgba(${o.rgb.map(c => Math.round(c * 0.7)).join(',')},.95)`);
     if (tierra) tierraBorde(tierra, s);
-    rios(s); montes(s); arboles(s, t); ciudad(s); nombres(s); regiones(s);
+    rios(s); montes(s); arboles(s, t); nombres(s);   // (la ciudad del rey, sin marca: valravnx, 26 nov) regiones(s);
     reyNombres(rey, s);
     for (const o of otras) mojonOtro(o, s);
     if (tierra) mojon(s);

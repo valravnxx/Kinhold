@@ -21,12 +21,15 @@
 import { ZONA, FOSO, SIN_HIERBA, HIERBA_DENTRO } from './castillo_rey_datos.js';
 
 export const ORIGEN_CASTILLO = { x: 217600, z: 52990 };
+// Quitado del juego (valravnx, 26 nov 2026): el castillo no se carga, no se pisa, no cava el foso y no aparta la
+// hierba, los árboles ni la recogida. Lo hecho se queda aquí y en herramientas/castillo_rey/ por si vuelve.
+export const CASTILLO_REY_ACTIVO = false;
 export const SUBIR = 0.6, CUERPO = 1.75, RADIO = 0.3, CABEZA = 2.0;
 // La zona del castillo, del foso, de la barbacana y de su explanada (en el mundo): ahí no crecen árboles ni matas ni
 // salen puntos de recogida (src/logica/vegetacion.js, src/logica/recogida_mundo.js). Y el foso: marcas de nivelado
 // (src/logica/nivelado.js) que bajan el suelo a su fondo. Los dos salen de la maqueta (castillo_rey_datos.js).
 export const ZONA_CASTILLO = ZONA;
-export const MARCAS_FOSO = FOSO.map(([x, z, y, r, borde]) => ({ x, z, y, r, borde }));
+export const MARCAS_FOSO = !CASTILLO_REY_ACTIVO ? [] : FOSO.map(([x, z, y, r, borde]) => ({ x, z, y, r, borde }));
 const CAJA_ZONA = ZONA.reduce((c, [x, z]) => ({ x0: Math.min(c.x0, x), z0: Math.min(c.z0, z), x1: Math.max(c.x1, x), z1: Math.max(c.z1, z) }), { x0: Infinity, z0: Infinity, x1: -Infinity, z1: -Infinity });
 
 const dentroDe = (p, x, z) => {
@@ -40,6 +43,7 @@ const dentroDe = (p, x, z) => {
 // donde no crece la hierba ni las matas (el recinto, el patio de la barbacana y los caminos); en el foso, la explanada y
 // al pie de los muros del patio de armas (HIERBA_DENTRO), sí
 export function sinHierbaCastillo(x, z) {
+  if (!CASTILLO_REY_ACTIVO) return false;
   if (!enZonaCastillo(x, z)) return false;
   if (HIERBA_DENTRO.some(([a, ...huecos]) => dentroDe(a, x, z) && !huecos.some(h => dentroDe(h, x, z)))) return false;
   return SIN_HIERBA.some(p => dentroDe(p, x, z));
@@ -48,6 +52,7 @@ export function sinHierbaCastillo(x, z) {
 /** cerca de la zona (a menos de `m` metros, mirando en 8 direcciones): para las rocas grandes de los cortados, que no
  *  tapen el acantilado del castillo ni su embarcadero */
 export function cercaZonaCastillo(x, z, m = 60) {
+  if (!CASTILLO_REY_ACTIVO) return false;
   if (x < CAJA_ZONA.x0 - m || x > CAJA_ZONA.x1 + m || z < CAJA_ZONA.z0 - m || z > CAJA_ZONA.z1 + m) return false;
   if (enZonaCastillo(x, z)) return true;
   for (let k = 0; k < 8; k++) {
@@ -58,6 +63,7 @@ export function cercaZonaCastillo(x, z, m = 60) {
 }
 
 export function enZonaCastillo(x, z) {
+  if (!CASTILLO_REY_ACTIVO) return false;
   if (x < CAJA_ZONA.x0 || x > CAJA_ZONA.x1 || z < CAJA_ZONA.z0 || z > CAJA_ZONA.z1) return false;
   let r = false; const p = ZONA_CASTILLO;
   for (let i = 0, j = p.length - 1; i < p.length; j = i++) {

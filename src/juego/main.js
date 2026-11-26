@@ -71,7 +71,7 @@ import { crearAccionVista, urlIcono, esc } from './accion_vista.js';
 import { crearCamposVista } from './campos_vista.js';
 import { crearPozosVista } from './pozos_vista.js';
 import { crearCastilloRey } from '../mundo/castillo_rey.js';
-import { MARCAS_FOSO, sinHierbaCastillo } from '../logica/castillo_rey.js';
+import { MARCAS_FOSO, sinHierbaCastillo, CASTILLO_REY_ACTIVO } from '../logica/castillo_rey.js';
 import { pozoCercano, pozoConAgua, siguientePaso, tramosDe, SEGUNDOS_CAVAR, GOLPES_TRAMO, PIEDRAS_TRAMO, PIEDRAS_BROCAL, TRAVESANO, ENTRE_POZOS, RADIO_POZO, TOPE as TOPE_POZO } from '../logica/pozo.js';
 import { estacaCercana, cerraria, campoAbierto, campoEn, porLimpiar, MAX_ESTACAS, labradoEn, labradoVivo, rejilla, casillasLabradas, RADIO_LABRAR, SEGUNDOS_LABRAR, CULTIVOS, CULTIVO_DE_SEMILLA, malSembrar, RADIO_VOLEO, voleoEn, casillasVoleo, SEGUNDOS_VOLEO, SEGUNDOS_PLANTAR, plantaMadura, cebadaCerca, SEGUNDOS_SEGAR, SEGUNDOS_COGER, hierbasCerca, SEGUNDOS_ESCARDAR, plantasParaRegar, SEGUNDOS_REGAR, llenarCubo, vaciarCubo } from '../logica/campos.js';
 
@@ -274,7 +274,7 @@ function sitioDeSalida() {
 const mundoJ = MUNDO ? crearMundoJuego({ escena, mapa: MUNDO.mapa, origen: sitioDeSalida(), camara }) : null;
 // el castillo del rey (src/mundo/castillo_rey.js): pieza fija del mundo, se carga al acercarse; se pisa y para el paso.
 // Su foso baja el suelo con marcas de nivelado (en metros de la escena, como las de lo construido).
-const castillo = mundoJ ? crearCastilloRey({ escena, origen: mundoJ.salida, y0: mundoJ.y0, base: '../../' }) : null;
+const castillo = mundoJ && CASTILLO_REY_ACTIVO ? crearCastilloRey({ escena, origen: mundoJ.salida, y0: mundoJ.y0, base: '../../' }) : null;
 const marcasFoso = mundoJ ? MARCAS_FOSO.map(m => ({ x: m.x - mundoJ.salida.x, z: m.z - mundoJ.salida.z, y: m.y - mundoJ.y0, r: m.r, borde: m.borde })) : [];
 renderer.localClippingEnabled = true;   // (el corte por plantas del castillo)
 // el perfil gráfico y el posprocesado (valravnx, 5 nov; src/juego/graficos.js): la oclusión ambiental, el mapeo tonal, la

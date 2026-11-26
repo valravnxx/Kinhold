@@ -19,7 +19,6 @@ export const ESENCIALES = [];   // (8 nov: ninguna de siempre; cada una, solo si
 // grupo → archivos (expresiones sobre la ruta) que, si cambian, piden ese grupo. Lo de todo el juego (main.js,
 // plantilla, idiomas) no pide nada aquí: la demo única lo cubre y quien lo toca nombra lo suyo.
 export const TOCA = {
-  'el-castillo-del-rey-se-recorre-andando': [/^src\/(logica|mundo)\/castillo_rey(_datos)?\.js$/, /^docs\/recursos\/mundo\/castillo-rey-v\d+\//, /^pruebas\/prueba_castillo_rey_navegador\.py$/, /^pruebas\/datos\/recorrido_castillo_rey\.json$/, /^src\/juego\/movimiento\.js$/],
   'logica': [/^src\/logica\//, /^src\/combate\/logica\.js$/, /^servidor\//, /^pruebas\/prueba_(?!recorrido)[^/]*\.mjs$/],
   'recorrido': [/^src\/logica\/(acciones|construccion|piezas|fabricacion|recoleccion|recogida_mundo|inventario|necesidades|muerte|tala|troceo|fuego|suelo|objetos_red|obras_red|presencia|arma_mano|combate_servidor|fauna|desgaste|campos|tiempo|pozo|rastra|canoa)\.js$/, /^servidor\/(servidor|guardado)\.mjs$/, /^servidor\/sistemas\//, /^pruebas\/prueba_recorrido\.mjs$/, /^pruebas\/recorrido_granja\.mjs$/, /^pruebas\/recorrido_pozo\.mjs$/, /^pruebas\/recorrido_casa_fuerte\.mjs$/, /^pruebas\/recorrido_canoa\.mjs$/, /^pruebas\/recorrido_oficios\.mjs$/, /^pruebas\/recorrido_hierro\.mjs$/],
   'demo-unica': [/^src\/demo\//, /^src\/plantilla\.html$/, /^construir_demo\.mjs$/, /^src\/mundo\/(cliente|conexion|mundo_juego)\.js$/],
